@@ -8,5 +8,5 @@ TargetLibrary fdir_dependencies {
 	
 	RepositoryLocation EclipseOxygen url "http://download.eclipse.org/releases/oxygen/"{
 		Unit org.eclipse.linuxtools.docker.feature.feature.group version 3.2.1.201803061555;
-	}
+	} 
 }
