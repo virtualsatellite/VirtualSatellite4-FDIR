@@ -23,9 +23,5 @@
 <project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir.feature"/>
 <project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir.test"/>
 <project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir.ui"/>
-<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fs"/>
-<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fs.feature"/>
-<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fs.test"/>
-<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fs.ui"/>
 </provider>
 </psf>
