@@ -31,6 +31,5 @@ Export-Package: de.dlr.sc.virsat.fdir.galileo.dft.impl,
  de.dlr.sc.virsat.fdir.galileo.services,
  de.dlr.sc.virsat.fdir.galileo.parser.antlr.internal,
  de.dlr.sc.virsat.fdir.galileo.formatting
-Import-Package: org.apache.log4j
 Bundle-Activator: de.dlr.sc.virsat.fdir.galileo.Activator
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.galileo
