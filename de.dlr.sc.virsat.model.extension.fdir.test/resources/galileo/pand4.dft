@@ -1,0 +1,6 @@
+toplevel "tle";
+"tle" pand "A" "B" "C" "D";
+"A" lambda=5.8;
+"B" lambda=4.6;
+"C" lambda=3.9;
+"D" lambda=2.9;

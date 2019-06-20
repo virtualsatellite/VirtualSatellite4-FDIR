@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat Model Extension FDIR
+Bundle-SymbolicName: de.dlr.sc.virsat.model.extension.fdir;singleton:=true
+Bundle-Version: 4.7.0.qualifier
+Bundle-Vendor: German Aerospace Center (DLR)
+Require-Bundle: org.eclipse.core.runtime,
+ de.dlr.sc.virsat.model,
+ de.dlr.sc.virsat.model.edit,
+ de.dlr.sc.virsat.project,
+ de.dlr.sc.virsat.build,
+ de.dlr.sc.virsat.fdir.galileo,
+ de.dlr.sc.virsat.fdir.core,
+ de.dlr.sc.virsat.model.calculation,
+ org.eclipse.elk.conn.graphiti,
+ de.dlr.sc.virsat.fdir.storm
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Eclipse-ExtensibleAPI: true
+Export-Package: de.dlr.sc.virsat.model.extension.fdir,
+ de.dlr.sc.virsat.model.extension.fdir.command,
+ de.dlr.sc.virsat.model.extension.fdir.converter,
+ de.dlr.sc.virsat.model.extension.fdir.evaluator,
+ de.dlr.sc.virsat.model.extension.fdir.model,
+ de.dlr.sc.virsat.model.extension.fdir.preferences,
+ de.dlr.sc.virsat.model.extension.fdir.recovery,
+ de.dlr.sc.virsat.model.extension.fdir.synthesizer,
+ de.dlr.sc.virsat.model.extension.fdir.util,
+ de.dlr.sc.virsat.model.extension.fdir.validator
+Bundle-Activator: de.dlr.sc.virsat.model.extension.fdir.Activator
+Automatic-Module-Name: de.dlr.sc.virsat.model.extension.fdir

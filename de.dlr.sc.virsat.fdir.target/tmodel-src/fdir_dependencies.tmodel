@@ -1,0 +1,12 @@
+TargetLibrary fdir_dependencies {
+	RepositoryLocation Elk url "http://download.eclipse.org/elk/updates/releases/0.4.0/" {
+		Unit org.eclipse.elk.feature.feature.group version 0.4.0;
+		Unit org.eclipse.elk.graphiti.feature.feature.group version 0.4.0;
+		Unit org.eclipse.elk.sdk.feature.feature.group version 0.4.0;
+		Unit org.eclipse.elk.ui.feature.feature.group version 0.4.0;
+	}
+	
+	RepositoryLocation Eclipse url "http://p2-mirror.sc.dlr.de/releases/oxygen" {
+		Unit org.eclipse.linuxtools.docker.feature.feature.group version 3.2.1.201803061555;
+	}
+}

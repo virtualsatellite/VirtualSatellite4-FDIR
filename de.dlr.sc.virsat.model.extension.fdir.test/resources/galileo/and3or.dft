@@ -1,0 +1,7 @@
+toplevel "tle";
+"tle" or "OR" "D";
+"OR" and "A" "B" "C";
+"A" lambda=1.6;
+"B" lambda=1.8;
+"C" lambda=1.4;
+"D" lambda=0.3;

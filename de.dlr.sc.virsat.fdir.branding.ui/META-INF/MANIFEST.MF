@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat FDIR Branding
+Bundle-SymbolicName: de.dlr.sc.virsat.fdir.branding.ui;singleton:=true
+Bundle-Version: 4.7.0.qualifier
+Bundle-Activator: de.dlr.sc.virsat.fdir.branding.ui.BrandingPlugin
+Bundle-Vendor: DLR (German Aerospace Center)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.ui.workbench,
+ org.eclipse.jface,
+ org.eclipse.osgi,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.intro,
+ org.eclipse.ui,
+ de.dlr.sc.virsat.model.extension.fdir.ui
+Automatic-Module-Name: de.dlr.sc.virsat.fdir.branding.ui

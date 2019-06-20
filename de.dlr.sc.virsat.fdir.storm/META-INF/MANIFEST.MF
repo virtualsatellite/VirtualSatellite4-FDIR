@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat External Lib - STORM
+Bundle-SymbolicName: de.dlr.sc.virsat.fdir.storm;singleton:=true
+Bundle-Version: 4.7.0.qualifier
+Bundle-Vendor: German Aerospace Center (DLR)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Eclipse-ExtensibleAPI: true
+Export-Package: de.dlr.sc.virsat.fdir.storm.runner
+Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
+ de.dlr.sc.virsat.fdir.core,
+ com.google.guava,
+ com.spotify.docker.client;visibility:=reexport

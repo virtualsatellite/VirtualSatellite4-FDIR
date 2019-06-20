@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="de.dlr.sc.virsat.fdir.test.feature"
+      label="Virsat FDIR Tests Feature"
+      version="4.7.0.qualifier"
+      provider-name="DLR (German Aerospace Center)"
+      plugin="de.dlr.sc.virsat.fdir.branding.ui"
+      license-feature="de.dlr.sc.virsat.fdir.license.feature">
+
+   <description>
+      Feature for workspace-wide Test Execution
+for the Eclipse Feature Based Template Project
+German Aerospace Center (DLR e.V.)
+Simulation and Software Technology
+   </description>
+
+   <copyright>
+      Copyright 2015
+
+by German Aerospace Center (DLR e.V.)
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.junit" version="4.12.0" match="greaterOrEqual"/>
+      <import plugin="de.dlr.sc.virsat.model.extension.fdir" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="de.dlr.sc.virsat.model.feature" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="de.dlr.sc.virsat.project.feature" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="de.dlr.sc.virsat.svn.feature" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="de.dlr.sc.virsat.uiengine.feature" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="de.dlr.sc.virsat.model" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="de.dlr.sc.virsat.project" version="0.0.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="de.dlr.sc.virsat.fdir.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.dlr.sc.virsat.model.extension.fdir.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+</feature>

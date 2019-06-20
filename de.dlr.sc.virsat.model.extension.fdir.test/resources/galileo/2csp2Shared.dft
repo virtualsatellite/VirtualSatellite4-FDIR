@@ -1,0 +1,8 @@
+toplevel "root";
+"root" or "SG1" "SG2";
+"SG1" csp "Memory1_P" "Memory1_R" "Memory2_R";
+"SG2" csp "Memory2_P" "Memory1_R" "Memory2_R";
+"Memory1_P" lambda=2 dorm=0;
+"Memory2_P" lambda=2 dorm=0;
+"Memory1_R" lambda=4 dorm=0;
+"Memory2_R" lambda=2 dorm=0;

@@ -1,0 +1,38 @@
+grammar de.dlr.sc.virsat.fdir.galileo.Dft with org.eclipse.xtext.common.Terminals
+
+generate dft "http://www.dlr.de/sc/virsat/fdir/galileo/Dft"
+
+GalileoDft:
+	'toplevel' root=[GalileoFaultTreeNode|STRING] ';'
+	(gates+=GalileoGate ';' | basicEvents+=GalileoBasicEvent ';')*
+;
+
+GalileoGate returns GalileoFaultTreeNode:
+	name=STRING type=GalileoNodeType (children+=[GalileoFaultTreeNode|STRING])*
+;
+
+GalileoBasicEvent returns GalileoFaultTreeNode:
+	name=STRING 'lambda' '=' lambda=Float ('dorm' '=' dorm=Float)? ('repair' '=' repair=Float)?
+;
+
+GalileoNodeType:
+	NamedType | ObserverType | RDEPType
+;
+
+NamedType returns GalileoNodeType:
+	typeName=('and' | 'or' | XOFY | 'pand' | 'pand_i' | 'por' | 'por_i' | 'sand' | 'hsp' | 'wsp' | 'csp' | 'seq' | 'fdep')
+;
+
+ObserverType returns GalileoNodeType: 
+	'observer' (observables+=[GalileoFaultTreeNode|STRING])* 'obsRate' '=' observationRate=Float 
+;
+
+RDEPType returns GalileoNodeType:
+	'rdep' 'rateFactor' rateFactor=Float
+;
+
+Float:
+	'-'? INT ('.' INT)?	('e' '-'? INT)?
+;
+
+terminal XOFY: INT 'of' INT;

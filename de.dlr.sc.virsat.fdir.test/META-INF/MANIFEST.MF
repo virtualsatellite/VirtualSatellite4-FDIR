@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat FDIR Test Plugin
+Bundle-SymbolicName: de.dlr.sc.virsat.fdir.test
+Bundle-Version: 4.7.0.qualifier
+Bundle-Activator: de.dlr.sc.virsat.fdir.test.Activator
+Bundle-Vendor: German Aerospace Center (DLR)
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit,
+ de.dlr.sc.virsat.model.extension.fdir,
+ de.dlr.sc.virsat.fdir.galileo.tests,
+ de.dlr.sc.virsat.test,
+ de.dlr.sc.virsat.fdir.core,
+ de.dlr.sc.virsat.fdir.storm
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: de.dlr.sc.virsat.model.extension.fdir.test,
+ de.dlr.sc.virsat.fdir.core.test,
+ de.dlr.sc.virsat.fdir.storm.test
+Automatic-Module-Name: de.dlr.sc.virsat.fdir.test

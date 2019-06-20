@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="de.dlr.sc.virsat.model.extension.fdir.feature"
+      label="VirSat Model Extension FDIR Feature"
+      version="4.7.0.qualifier"
+      provider-name="DLR (German Aerospace Center)"
+      plugin="de.dlr.sc.virsat.fdir.branding.ui"
+      license-feature="de.dlr.sc.virsat.fdir.license.feature">
+
+   <description>
+      FDIR Model Extension Feature
+German Aerospace Center (DLR e.V.)
+Simulation and Software Technology
+   </description>
+
+   <copyright>
+      Copyright 2016
+by German Aerospace Center (DLR e.V.)
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+   
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="de.dlr.sc.virsat.model"/>
+      <import plugin="de.dlr.sc.virsat.model.edit"/>
+      <import plugin="de.dlr.sc.virsat.project"/>
+      <import plugin="de.dlr.sc.virsat.build"/>
+      <import plugin="de.dlr.sc.virsat.fdir.galileo"/>
+      <import plugin="de.dlr.sc.virsat.model.calculation"/>
+      <import plugin="org.eclipse.elk.conn.graphiti"/>
+      <import plugin="de.dlr.sc.virsat.project.ui"/>
+      <import plugin="de.dlr.sc.virsat.uiengine.ui"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.views.properties.tabbed"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.expressions"/>
+      <import plugin="org.eclipse.emf.edit"/>
+      <import plugin="org.eclipse.emf.transaction"/>
+      <import plugin="org.eclipse.graphiti"/>
+      <import plugin="org.eclipse.graphiti.ui"/>
+      <import plugin="org.eclipse.elk.graph"/>
+      <import plugin="org.eclipse.elk.core.service"/>
+      <import plugin="org.eclipse.elk.alg.layered"/>
+      <import plugin="de.dlr.sc.virsat.external.lib.jfreechart"/>
+      <import plugin="de.dlr.sc.virsat.graphiti.ui"/>
+      <import plugin="de.dlr.sc.virsat.graphiti"/>
+      <import plugin="de.dlr.sc.virsat.commons.ui"/>
+      <import plugin="com.google.guava"/>
+      <import plugin="com.spotify.docker.client"/>
+   </requires>
+
+   <plugin
+         id="de.dlr.sc.virsat.model.extension.fdir"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.dlr.sc.virsat.model.extension.fdir.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.dlr.sc.virsat.fdir.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.dlr.sc.virsat.fdir.storm"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

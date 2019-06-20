@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.intro">
+      <intro
+            class="de.dlr.sc.virsat.fdir.branding.ui.intro.IntroPart"
+            id="de.dlr.sc.virsat.fdir.branding.ui.intro">
+      </intro>
+      <introProductBinding
+            introId="de.dlr.sc.virsat.fdir.branding.ui.intro"
+            productId="de.dlr.sc.virsat.fdir.branding.ui.VirSat_FDIR">
+      </introProductBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="de.dlr.sc.virsat.fdir.branding.ui.perspective.DefaultPerspective"
+            icon="resources/images/Branding/fdir16.png"
+            id="de.dlr.sc.virsat.fdir.branding.ui.default.perspective"
+            name="FDIR Default">
+      </perspective>
+   </extension>
+   <extension
+         id="VirSat_FDIR"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="VirSat FDIR Edition">
+         <property
+               name="windowImages"
+               value="resources/images/Branding/fdir16.png,resources/images/Branding/fdir32.png,resources/images/Branding/fdir48.png,resources/images/Branding/fdir64.png,resources/images/Branding/fdir128.png">
+         </property>
+         <property
+               name="aboutText"
+               value="Virtual Satellite - FDIR&#x0A;Version 4.7.0&#x0A;&#x0A;Copyright 2015 by German Aerospace Center (DLR) e.V.&#x0A;&#x0A;Unauthorized Distribution in any way is not permitted.&#x0A;&#x0A;German Aerospace Center (DLR) e.V.&#x0A;Lilienthalplatz 7&#x0A;38108 Braunschweig&#x0A;Germany">
+         </property>
+         <property
+               name="aboutImage"
+               value="resources/images/Branding/Configuration.gif">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="808080">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,275,445,15">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="7,252,445,20">
+         </property>
+         <property
+               name="appName"
+               value="VirSat FDIR Edition">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
+</plugin>

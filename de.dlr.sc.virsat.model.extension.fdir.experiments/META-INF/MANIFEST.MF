@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Experiments
+Bundle-SymbolicName: de.dlr.sc.virsat.model.extension.fdir.experiments
+Bundle-Version: 4.5.0
+Bundle-Vendor: German Areospace Center (DLR)
+Fragment-Host: de.dlr.sc.virsat.model.extension.fdir;bundle-version="4.5.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit,
+ de.dlr.sc.virsat.concept.unittest.util
+Automatic-Module-Name: de.dlr.sc.virsat.model.extension.fdir.experiments
