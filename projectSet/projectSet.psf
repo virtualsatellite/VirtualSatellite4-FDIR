@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <psf version="2.0">
 <provider id="org.eclipse.egit.core.GitProvider">
-<project reference="1.0,https://gitlab-ee.sc.dlr.de/virsat4/virsat4-fdir.git,development,de.dlr.sc.virsat.external.lib.storm"/>
+<project reference="1.0,development,de.dlr.sc.virsat.external.lib.storm"/>
 <project reference="1.0,development,de.dlr.sc.virsat.fdir"/>
 <project reference="1.0,development,de.dlr.sc.virsat.fdir.branding.feature"/>
 <project reference="1.0,development,de.dlr.sc.virsat.fdir.branding.ui"/>
