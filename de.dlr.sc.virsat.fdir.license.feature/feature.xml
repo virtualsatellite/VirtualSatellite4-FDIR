@@ -2,7 +2,7 @@
 <feature
       id="de.dlr.sc.virsat.fdir.license.feature"
       label="VirSat FDIR License Feature"
-      version="4.7.0.qualifier"
+      version="4.9.0.qualifier"
       provider-name="DLR (German Aerospace Center)">
 
    <description>

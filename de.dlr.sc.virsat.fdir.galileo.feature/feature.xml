@@ -2,7 +2,7 @@
 <feature
       id="de.dlr.sc.virsat.fdir.galileo.feature"
       label="VirSat FDIR Galileo Feature"
-      version="4.7.0.qualifier"
+      version="4.9.0.qualifier"
       provider-name="DLR (German Aerospace Center)"
       plugin="de.dlr.sc.virsat.fdir.branding.ui"
       license-feature="de.dlr.sc.virsat.fdir.license.feature">
