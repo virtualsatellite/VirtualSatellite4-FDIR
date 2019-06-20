@@ -31,6 +31,10 @@ JFreeChart
 Nebula Widgets Incubation
 
  * License: Eclipse Public License, 1.0
+ 
+Eclipse Layout Kernel
+
+ * License: Eclipse Public License, 1.0
 
 Google Protobuf
 
