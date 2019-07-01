@@ -87,7 +87,7 @@ after_failure:
   # SWTBot to see what happened 
   # ----------------------------------------
   - mkdir -p -m 700 /tmp/.sourceforge_ssh
-  - openssl aes-256-cbc -K $encrypted_9c25c12f834a_key -iv $encrypted_9c25c12f834a_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
+  - openssl aes-256-cbc -K $encrypted_230a39a1f351_key -iv $encrypted_230a39a1f351_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
   - chmod 600 /tmp/.sourceforge_ssh/id_ed25519
   - ssh-add /tmp/.sourceforge_ssh/id_ed25519
   - ls -l $TRAVIS_BUILD_DIR/swtbot/
@@ -280,7 +280,7 @@ jobs:
         # deployment store and add it to ssh-agent
         # ----------------------------------------
         - mkdir -p -m 700 /tmp/.sourceforge_ssh
-        - openssl aes-256-cbc -K $encrypted_9c25c12f834a_key -iv $encrypted_9c25c12f834a_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
+        - openssl aes-256-cbc -K $encrypted_230a39a1f351_key -iv $encrypted_230a39a1f351_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
         - chmod 600 /tmp/.sourceforge_ssh/id_ed25519
         - ssh-add /tmp/.sourceforge_ssh/id_ed25519
         # -----------------------------------------------------------
@@ -352,7 +352,7 @@ jobs:
         # deployment store and add it to ssh-agent
         # ----------------------------------------
         - mkdir -p -m 700 /tmp/.sourceforge_ssh
-        - openssl aes-256-cbc -K $encrypted_9c25c12f834a_key -iv $encrypted_9c25c12f834a_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
+        - openssl aes-256-cbc -K $encrypted_230a39a1f351_key -iv $encrypted_230a39a1f351_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
         - chmod 600 /tmp/.sourceforge_ssh/id_ed25519
         - ssh-add /tmp/.sourceforge_ssh/id_ed25519
         # -----------------------------------------------------------
@@ -424,7 +424,7 @@ jobs:
         # deployment store and add it to ssh-agent
         # ----------------------------------------
         - mkdir -p -m 700 /tmp/.sourceforge_ssh
-        - openssl aes-256-cbc -K $encrypted_9c25c12f834a_key -iv $encrypted_9c25c12f834a_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
+        - openssl aes-256-cbc -K $encrypted_230a39a1f351_key -iv $encrypted_230a39a1f351_iv -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
         - chmod 600 /tmp/.sourceforge_ssh/id_ed25519
         - ssh-add /tmp/.sourceforge_ssh/id_ed25519
       deploy:
