@@ -67,20 +67,7 @@ public class FaultTreeHolder {
 	private void init() {
 		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
 		
-		mapNodeToChildren = new HashMap<>();
-		mapNodeToSpares = new HashMap<>();
-		mapNodeToParents = new HashMap<>();
-		mapNodeToDEPTriggers = new HashMap<>();
-		mapFaultToBasicEvents = new HashMap<>();
-		mapNodeToObservers = new HashMap<>();
-		mapNodeToIndex = new HashMap<>();
-		mapBasicEventToFault = new HashMap<>();
-		mapBasicEventToHotFailRate = new HashMap<>();
-		mapBasicEventToColdFailRate = new HashMap<>();
-		mapBasicEventToRepairRate = new HashMap<>();
-		mapNodeToSubNodes = new HashMap<>();
-		nodes = new HashSet<>();
-		faultTrees = new HashSet<>();
+		initDataStructures();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
@@ -183,6 +170,34 @@ public class FaultTreeHolder {
 			toProcess.addAll(spares);
 		}
 		
+		indexNodes();
+		mapNodeToSubNodes();
+	}
+	
+	/**
+	 * Initializes all data structures
+	 */
+	private void initDataStructures() {
+		mapNodeToChildren = new HashMap<>();
+		mapNodeToSpares = new HashMap<>();
+		mapNodeToParents = new HashMap<>();
+		mapNodeToDEPTriggers = new HashMap<>();
+		mapFaultToBasicEvents = new HashMap<>();
+		mapNodeToObservers = new HashMap<>();
+		mapNodeToIndex = new HashMap<>();
+		mapBasicEventToFault = new HashMap<>();
+		mapBasicEventToHotFailRate = new HashMap<>();
+		mapBasicEventToColdFailRate = new HashMap<>();
+		mapBasicEventToRepairRate = new HashMap<>();
+		mapNodeToSubNodes = new HashMap<>();
+		nodes = new HashSet<>();
+		faultTrees = new HashSet<>();
+	}
+	
+	/**
+	 * Creates an index of all nodes
+	 */
+	private void indexNodes() {
 		List<FaultTreeNode> indexedNodes = new ArrayList<>(nodes);
 		for (Entry<FaultTreeNode, Set<BasicEvent>> entry : mapFaultToBasicEvents.entrySet()) {
 			indexedNodes.addAll(entry.getValue());
@@ -192,6 +207,12 @@ public class FaultTreeHolder {
 			mapNodeToIndex.put(indexedNodes.get(i), i);
 		}
 		
+	}
+	
+	/**
+	 * Maps all nodes to the nodes of the sub tree
+	 */
+	private void mapNodeToSubNodes() {
 		for (FaultTreeNode node : getNodes()) {
 			List<FaultTreeNode> children = getMapNodeToChildren().get(node);
 			List<FaultTreeNode> spares = getMapNodeToSpares().get(node);
