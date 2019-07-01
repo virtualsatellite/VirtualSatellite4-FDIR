@@ -34,6 +34,45 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 
 	@Override
 	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
+		Map<S, Double> results = computeValues(ma, initialMa);
+		for (S failState : ma.getFinalStates()) {
+			results.put(failState, Double.NEGATIVE_INFINITY);
+		}
+		
+		Queue<S> toProcess = new LinkedList<>();
+		toProcess.offer(initialMa);
+		Set<S> handledNonDetStates = new HashSet<>();
+		
+		Map<S, Set<MarkovTransition<S>>> schedule = new HashMap<>();
+		while (!toProcess.isEmpty()) {
+			S state = toProcess.poll();
+			
+			for (MarkovTransition<S> markovianTransition : ma.getSuccTransitions(state)) {
+				if (!state.isMarkovian()) {
+					Set<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, results, state);
+					
+					if (bestTransitionGroup != null) {
+						schedule.put(state, bestTransitionGroup);
+						for (MarkovTransition<S> transition : bestTransitionGroup) {
+							S nextState = transition.getTo();
+							if (handledNonDetStates.add(nextState)) {
+								toProcess.offer(nextState);
+							} 
+						}
+					}
+				} else {
+					S nextState = markovianTransition.getTo();
+					if (handledNonDetStates.add(nextState)) {
+						toProcess.offer(nextState);
+					} 
+				}
+			}
+		}
+	
+		return schedule;
+	}
+	
+	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
 		boolean converged = false;
 		List<Map<S, Double>> values = new ArrayList<>();
 		int iteration = 0;
@@ -94,56 +133,27 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			}
 		}
 		
-		Map<S, Double> results = values.get(iteration);
-		for (S failState : ma.getFinalStates()) {
-			results.put(failState, Double.NEGATIVE_INFINITY);
-		}
+		return values.get(iteration);
+	}
+	
+	private Set<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, Map<S, Double> results, S state) {
+		Set<MarkovTransition<S>> bestTransitionGroup = null;
+		double bestValue = Double.NEGATIVE_INFINITY;
 		
-		Queue<S> toProcess = new LinkedList<>();
-		toProcess.offer(initialMa);
-		Set<S> handledNonDetStates = new HashSet<>();
+		Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 		
-		Map<S, Set<MarkovTransition<S>>> schedule = new HashMap<>();
-		while (!toProcess.isEmpty()) {
-			S state = toProcess.poll();
-			
-			for (MarkovTransition<S> markovianTransition : ma.getSuccTransitions(state)) {
-				if (!state.isMarkovian()) {
-					Set<MarkovTransition<S>> bestTransitionGroup = null;
-					double bestValue = Double.NEGATIVE_INFINITY;
-					
-					Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
-					
-					for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
-						double expectationValue = 0;
-						for (MarkovTransition<S> transition : transitionGroup) {
-							expectationValue += transition.getRate() * results.get(transition.getTo());
-						}
-						if (expectationValue >= bestValue) {
-							bestValue = expectationValue;
-							bestTransitionGroup = transitionGroup;
-						}
-					}
-					
-					if (bestTransitionGroup != null) {
-						schedule.put(state, bestTransitionGroup);
-						for (MarkovTransition<S> transition : bestTransitionGroup) {
-							S nextState = transition.getTo();
-							if (handledNonDetStates.add(nextState)) {
-								toProcess.offer(nextState);
-							} 
-						}
-					}
-				} else {
-					S nextState = markovianTransition.getTo();
-					if (handledNonDetStates.add(nextState)) {
-						toProcess.offer(nextState);
-					} 
-				}
+		for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
+			double expectationValue = 0;
+			for (MarkovTransition<S> transition : transitionGroup) {
+				expectationValue += transition.getRate() * results.get(transition.getTo());
+			}
+			if (expectationValue >= bestValue) {
+				bestValue = expectationValue;
+				bestTransitionGroup = transitionGroup;
 			}
 		}
-	
-		return schedule;
+		
+		return bestTransitionGroup;
 	}
 
 }
