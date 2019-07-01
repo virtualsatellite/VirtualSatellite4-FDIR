@@ -88,8 +88,8 @@ public class StormModelChecker implements IMarkovModelChecker {
 	@Override
 	public void checkModel(MarkovAutomaton<? extends MarkovState> ma, IMetric... metrics) {
 		Storm storm = new Storm(ma, delta, metrics);
-	
-		StormRunner<Double> stormRunner = new StormRunner<Double>(storm, stormExecutionEnvironment);
+		StormRunner<Double> stormRunner = createStormRunner(storm);
+		
 		try {
 			resultExtracted  = stormRunner.run();
 			for (IMetric metric : metrics) {
@@ -99,6 +99,15 @@ public class StormModelChecker implements IMarkovModelChecker {
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Creates a storm runner for a storm program
+	 * @param storm the storm program
+	 * @return the storm runner
+	 */
+	protected StormRunner<Double> createStormRunner(Storm storm) {
+		return new StormRunner<Double>(storm, stormExecutionEnvironment);
 	}
 
 	@Override

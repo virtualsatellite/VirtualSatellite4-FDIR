@@ -11,6 +11,8 @@ package de.dlr.sc.virsat.fdir.storm.runner;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,24 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
  */
 public class StormModelCheckerTest {
 	
+	/**
+	 * Creates a StormModelChecker with a mocked runner, producing always the passed results
+	 * @param mockResults the mock results
+	 * @return a storm model checker not depending on a storm installation
+	 */
+	private StormModelChecker createMockStormModelChecker(List<Double> mockResults) {
+		return new StormModelChecker(1, StormExecutionEnvironment.Docker) {
+			protected StormRunner<Double> createStormRunner(Storm storm) {
+				return new StormRunner<Double>(storm, StormExecutionEnvironment.Docker) {
+					public List<Double> run() throws IOException, URISyntaxException {
+						return mockResults;
+					};
+				};
+			}
+		};
+	}
+	
+
 	@Test
 	public void testCheckModel() {
 		final List<Double> EXPECTED_FAIL_RATES = new ArrayList<>();
@@ -36,7 +56,11 @@ public class StormModelCheckerTest {
 		EXPECTED_FAIL_RATES.add((double) 0);
 		EXPECTED_FAIL_RATES.add(FAIL_RATE);
 		final double EXPECTED_MTTF = 0.166666666;
-		StormModelChecker modelChecker = new StormModelChecker(1, StormExecutionEnvironment.Docker);
+		
+		final List<Double> MOCK_RESULTS = new ArrayList<>();
+		MOCK_RESULTS.add(FAIL_RATE);
+		MOCK_RESULTS.add(EXPECTED_MTTF);
+		StormModelChecker modelChecker = createMockStormModelChecker(MOCK_RESULTS);
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		MarkovState state1 = new MarkovState();
@@ -62,7 +86,11 @@ public class StormModelCheckerTest {
 		EXPECTED_FAIL_RATES.add((double) 0);
 		EXPECTED_FAIL_RATES.add(FAIL_RATE);
 		final double EXPECTED_MTTF = 0.166666666;
-		StormModelChecker modelChecker = new StormModelChecker(1, StormExecutionEnvironment.Docker);
+		
+		final List<Double> MOCK_RESULTS = new ArrayList<>();
+		MOCK_RESULTS.add(FAIL_RATE);
+		MOCK_RESULTS.add(EXPECTED_MTTF);
+		StormModelChecker modelChecker = createMockStormModelChecker(MOCK_RESULTS);
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		MarkovState state1 = new MarkovState();
@@ -87,7 +115,11 @@ public class StormModelCheckerTest {
 		EXPECTED_FAIL_RATES.add((double) 0);
 		EXPECTED_FAIL_RATES.add(FAIL_RATE);
 		final double EXPECTED_MTTF = 0.5;
-		StormModelChecker modelChecker = new StormModelChecker(1, StormExecutionEnvironment.Docker);
+		
+		final List<Double> MOCK_RESULTS = new ArrayList<>();
+		MOCK_RESULTS.add(FAIL_RATE);
+		MOCK_RESULTS.add(EXPECTED_MTTF);
+		StormModelChecker modelChecker = createMockStormModelChecker(MOCK_RESULTS);
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		MarkovState state1 = new MarkovState();
@@ -117,7 +149,10 @@ public class StormModelCheckerTest {
 	@Test
 	public void testSteadyStateAvailability() {
 		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.5;
-		StormModelChecker modelChecker = new StormModelChecker(1, StormExecutionEnvironment.Docker);
+		
+		final List<Double> MOCK_RESULTS = new ArrayList<>();
+		MOCK_RESULTS.add(EXPECTED_STEADY_STATE_AVAILABILITY);
+		StormModelChecker modelChecker = createMockStormModelChecker(MOCK_RESULTS);
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		MarkovState state1 = new MarkovState();
