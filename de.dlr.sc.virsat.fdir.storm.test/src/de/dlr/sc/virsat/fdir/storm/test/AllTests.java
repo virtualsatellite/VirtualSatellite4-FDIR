@@ -18,6 +18,7 @@ import de.dlr.sc.virsat.fdir.storm.files.ExplicitDRNFileWriterTest;
 import de.dlr.sc.virsat.fdir.storm.files.ExplicitPropFileWriterTest;
 import de.dlr.sc.virsat.fdir.storm.runner.StormDFTTest;
 import de.dlr.sc.virsat.fdir.storm.runner.StormModelCheckerTest;
+import de.dlr.sc.virsat.fdir.storm.runner.StormTest;
 import junit.framework.JUnit4TestAdapter;
 
 /**
@@ -32,7 +33,8 @@ import junit.framework.JUnit4TestAdapter;
 		StormDFTTest.class,
 		ExplicitDRNFileWriterTest.class,
 		ExplicitPropFileWriterTest.class,
-		StormModelCheckerTest.class
+		StormModelCheckerTest.class,
+		StormTest.class
 		})
 
 public class AllTests {

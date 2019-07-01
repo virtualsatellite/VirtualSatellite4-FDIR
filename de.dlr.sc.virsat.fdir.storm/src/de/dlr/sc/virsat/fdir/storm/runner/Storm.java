@@ -95,7 +95,6 @@ public class Storm implements IStormProgram<Double> {
 			}
 		}
 
-
 		return resultExtracted;
 	}
 }
