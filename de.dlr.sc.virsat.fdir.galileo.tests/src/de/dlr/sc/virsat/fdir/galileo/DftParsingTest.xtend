@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.galileo.tests
+package de.dlr.sc.virsat.fdir.galileo
 
 import com.google.inject.Inject
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft
@@ -17,6 +17,7 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import de.dlr.sc.virsat.fdir.galileo.tests.DftInjectorProvider
 
 @RunWith(XtextRunner)
 @InjectWith(DftInjectorProvider)

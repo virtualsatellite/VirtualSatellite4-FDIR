@@ -7,7 +7,7 @@
  * 
  * SPDX-License-Identifier: EPL-2.0
  */
-package de.dlr.sc.virsat.fdir.galileo.tests;
+package de.dlr.sc.virsat.fdir.galileo;
 
 import com.google.inject.Inject;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
