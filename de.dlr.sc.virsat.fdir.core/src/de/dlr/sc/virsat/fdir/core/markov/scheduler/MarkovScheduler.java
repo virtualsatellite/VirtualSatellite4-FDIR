@@ -72,6 +72,12 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		return schedule;
 	}
 	
+	/**
+	 * Computes a utility value for every node
+	 * @param ma the markov automaton
+	 * @param initialMa the initial stae
+	 * @return a mapping from state to its utility value
+	 */
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
 		boolean converged = false;
 		List<Map<S, Double>> values = new ArrayList<>();
@@ -136,6 +142,13 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		return values.get(iteration);
 	}
 	
+	/**
+	 * Selects the optimal transition group for a given state
+	 * @param ma the markov automaton
+	 * @param results the utility valuation
+	 * @param state the state
+	 * @return the optimal transition group of successor states
+	 */
 	private Set<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, Map<S, Double> results, S state) {
 		Set<MarkovTransition<S>> bestTransitionGroup = null;
 		double bestValue = Double.NEGATIVE_INFINITY;
