@@ -3,38 +3,13 @@ VirSat FDIR Release Notes
 
 VirSat FDIR is based on VirSat Core. Please don't forget to read the Release Notes of VirSat Core as well!
 
-Release 4.7.0 (24th July 2018)
+Release 4.9.0 (2nd July 2019)
 ----------------------------------
 
 New Features:
-	Graphical modeling for recovery automata - #76 Feature
-	Automatic layouting in fault tree and recovery automata diagrams - #108 #109 Feature
-	Collapsing / uncollapsing fault tree - #78 Feature
-	Faults can now have a description note - #103 Feature
-	Integration of STORM as fault tree solver backend - #93 #100 Feature
-	Integration of analysis information into the conceptual model - #91 Feature
-	Cascade deletion of fault tree nodes and states - #86 Feature
-	Support for exporting fault trees as GalileoDFTs - #69 Feature
-	
+	Initial Open Source Release #3
+
 Usability Updates:
-	Improved handling of adding new faults to a fault tree diagram - #111 Comfort/Usability
-	Added tooltips in fault tree diagrams  - #104 NiceToHave
 	
 Fixed Bug:
-	Fixed issues with implementation of NdDFT semantics - #116 Bug
-    Fixed issue causing an error during fault tree node layouting - #112 Bug
-	Fixed issue causing an error in the FMECA Table UI when a fault has no basic events - 105 Bug
-	Fixed issue of GalileoDFT format not being fully compliant - #94 Bug
-
-	
-Release 4.5.0 (29th September 2017)
-----------------------------------
-
-New Features:
-	FDIR Data Model - #30 #32 #35 #38 #41 #47 #50 Feature
-    Graphical Modeling for Fault Trees - #10 #51 #57 Feature
-	ECSS Compliant FMECA modeling - #36 #44 Feature
-	FMECA Excel Export - #37 Feature
-	Fault Tree Evaluation - #42 #45 #39 Feature
-	Validation of Dependability requirements - #46 Feature
 
