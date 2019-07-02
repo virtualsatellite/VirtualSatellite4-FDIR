@@ -1,6 +1,6 @@
 Virtual Satellite Release Version 4.x.x
 
-This ticket captures all release related work of the VirtualSatellite4-CEF release
+This ticket captures all release related work of the VirtualSatellite4-FDIR release
 
 1. Perform version update:
 - [ ] Checkout/Update the Development branch
@@ -22,5 +22,5 @@ This ticket captures all release related work of the VirtualSatellite4-CEF relea
 4. Merge back integration branch:
 - [ ] Merge integration branch into development branch (Pull Request named "Integration 4.x.x - Remerge Fixes")
  
-Well Done!! You should have a new Virtual Satellite CEF Release :rocket:
+Well Done!! You should have a new Virtual Satellite FDIR Release :rocket:
 
