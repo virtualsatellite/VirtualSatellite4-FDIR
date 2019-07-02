@@ -16,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import de.dlr.sc.virsat.fdir.storm.docker.DockerHelperTest;
 import de.dlr.sc.virsat.fdir.storm.files.ExplicitDRNFileWriterTest;
 import de.dlr.sc.virsat.fdir.storm.files.ExplicitPropFileWriterTest;
+import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGeneratorTest;
 import de.dlr.sc.virsat.fdir.storm.runner.StormDFTTest;
 import de.dlr.sc.virsat.fdir.storm.runner.StormModelCheckerTest;
 import de.dlr.sc.virsat.fdir.storm.runner.StormTest;
@@ -31,6 +32,7 @@ import junit.framework.JUnit4TestAdapter;
 @SuiteClasses({ 
 		DockerHelperTest.class,
 		StormDFTTest.class,
+		InstanceFileGeneratorTest.class,
 		ExplicitDRNFileWriterTest.class,
 		ExplicitPropFileWriterTest.class,
 		StormModelCheckerTest.class,
