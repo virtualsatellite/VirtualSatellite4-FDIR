@@ -249,7 +249,7 @@ jobs:
       - mvn clean compile -P development,target -B -V | tee maven.log
       - echo "Check for Maven Problems on Overtarget:"
       - (grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
-      - mvn install -P development,javadoc,deploy,deployUnsecured,product -B -V | tee maven.log
+      - mvn install -P development,deploy,deployUnsecured,product -B -V | tee maven.log
       - echo "Check for Maven Problems on Product:"
       - (grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
 
@@ -267,7 +267,7 @@ jobs:
       - mvn clean compile -P development,target -B -V | tee maven.log
       - echo "Check for Maven Problems on Overtarget:"
       - (grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
-      - mvn install -P development,javadoc,deploy,deployUnsecured,product -B -V | tee maven.log
+      - mvn install -P development,deploy,deployUnsecured,product -B -V | tee maven.log
       - echo "Check for Maven Problems on Product:"
       - (grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
       before_deploy:
@@ -339,7 +339,7 @@ jobs:
       - mvn clean compile -P development,target -B -V | tee maven.log
       - echo "Check for Maven Problems on Overtarget:"
       - (grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
-      - mvn install -P integration,javadoc,deploy,deployUnsecured,product -B -V | tee maven.log
+      - mvn install -P integration,deploy,deployUnsecured,product -B -V | tee maven.log
       - echo "Check for Maven Problems on Product:"
       - (grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
       before_deploy:
@@ -411,7 +411,7 @@ jobs:
       - mvn clean compile -P development,target -B -V | tee maven.log
       - echo "Check for Maven Problems on Overtarget:"
       - (grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
-      - mvn install -P release,javadoc,deploy,deployBackuped,product -B -V | tee maven.log
+      - mvn install -P release,deploy,deployBackuped,product -B -V | tee maven.log
       - echo "Check for Maven Problems on Product:"
       - (grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
       before_deploy:
