@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat FDIR Galileo
+Bundle-Vendor: DLR (German Aerospace Center)
+Bundle-Version: 4.9.0.qualifier
+Bundle-SymbolicName: de.dlr.sc.virsat.fdir.galileo; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common,
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib,
+ org.antlr.runtime,
+ org.eclipse.xtext.util,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.common,
+ org.eclipse.xtext.generator,
+ org.eclipse.osgi,
+ org.eclipse.emf.mwe2.launch,
+ org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: de.dlr.sc.virsat.fdir.galileo.dft.impl,
+ de.dlr.sc.virsat.fdir.galileo.validation,
+ de.dlr.sc.virsat.fdir.galileo.generator,
+ de.dlr.sc.virsat.fdir.galileo.parser.antlr,
+ de.dlr.sc.virsat.fdir.galileo.dft.util,
+ de.dlr.sc.virsat.fdir.galileo.scoping,
+ de.dlr.sc.virsat.fdir.galileo.serializer,
+ de.dlr.sc.virsat.fdir.galileo.dft,
+ de.dlr.sc.virsat.fdir.galileo,
+ de.dlr.sc.virsat.fdir.galileo.services,
+ de.dlr.sc.virsat.fdir.galileo.parser.antlr.internal,
+ de.dlr.sc.virsat.fdir.galileo.formatting
+Bundle-Activator: de.dlr.sc.virsat.fdir.galileo.Activator
+Automatic-Module-Name: de.dlr.sc.virsat.fdir.galileo

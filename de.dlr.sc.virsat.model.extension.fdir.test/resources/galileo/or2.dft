@@ -1,0 +1,4 @@
+toplevel "tle";
+"tle" or "A" "B";
+"A" lambda=0.1;
+"B" lambda=0.01;

@@ -1,0 +1,6 @@
+toplevel "tle";
+"tle" or "SPARE" "C";
+"SPARE" csp "A" "B";
+"A" lambda=2;
+"B" lambda=4;
+"C" lambda=1;

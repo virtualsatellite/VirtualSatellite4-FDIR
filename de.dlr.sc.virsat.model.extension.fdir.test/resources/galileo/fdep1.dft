@@ -1,0 +1,5 @@
+toplevel "TLE";
+"TLE" and "A";
+"FDEP" fdep "B" "A";
+"A" lambda=0.0;
+"B" lambda=0.1;

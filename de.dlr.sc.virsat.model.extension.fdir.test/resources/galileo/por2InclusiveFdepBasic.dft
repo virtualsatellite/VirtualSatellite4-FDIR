@@ -1,0 +1,8 @@
+toplevel "tle";
+"tle" 1of2 "POR" "SAND";
+"POR" por "A" "B";
+"SAND" sand "A" "B";
+"FDEP" fdep "C" "A" "B";
+"A" lambda=1.8;
+"B" lambda=1.6;
+"C" lambda=0.1;

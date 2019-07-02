@@ -1,0 +1,7 @@
+toplevel "tle";
+"tle" or "PAND" "SPARE";
+"PAND" pand "A" "B";
+"SPARE" csp "B" "C";
+"A" lambda=1;
+"B" lambda=2;
+"C" lambda=3;

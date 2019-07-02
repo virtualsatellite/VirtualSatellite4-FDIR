@@ -1,0 +1,6 @@
+toplevel "tle";
+"tle" csp "A" "B" "C" "D";
+"A" lambda=4 dorm=0;
+"B" lambda=8 dorm=0;
+"C" lambda=16 dorm=0;
+"D" lambda=32 dorm=0;

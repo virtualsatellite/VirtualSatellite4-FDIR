@@ -1,0 +1,2 @@
+toplevel "FailureMode";
+"FailureMode" lambda=0.1;

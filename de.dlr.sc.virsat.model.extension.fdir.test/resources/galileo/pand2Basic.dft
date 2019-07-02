@@ -1,0 +1,5 @@
+toplevel "tle";
+"tle" and "POR" "B";
+"POR" por "A" "B";
+"A" lambda=1.8;
+"B" lambda=1.6;

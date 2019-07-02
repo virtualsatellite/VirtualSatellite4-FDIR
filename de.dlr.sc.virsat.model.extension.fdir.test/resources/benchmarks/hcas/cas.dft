@@ -1,0 +1,18 @@
+toplevel "SF";
+"SF" or "POW" "PL" "CPU" "MOT" "F1";
+"POW" or "BAT" "CTRL" "COIL";
+"BAT" lambda=1.0e-5 dorm=0;
+"CTRL" lambda=1.0e-6 dorm=0;
+"COIL" lambda=1.0e-6 dorm=0;
+"PL" lambda=1.0e-6 dorm=0;
+"CPU" wsp "CPUA" "CPUB";
+"CPUA" lambda=3.0e-6 dorm=0;
+"CPUB" lambda=3.0e-6 dorm=0.5;
+"F1" fdep "CBS" "CPUA" "CPUB";
+"CBS" lambda=2.0e-6 dorm=0;
+"MOT" or "MAMP" "MC" "M" "P";
+"MAMP" lambda=1.0e-6 dorm=0;
+"MC" lambda=1.0e-7 dorm=0;
+"M" lambda=1.0e-6 dorm=0;
+"P" lambda=1.0e-5 dorm=0;
+

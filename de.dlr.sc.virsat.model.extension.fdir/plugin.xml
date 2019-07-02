@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension point="de.dlr.sc.virsat.model.Concept">
+	<concept
+	          id="de.dlr.sc.virsat.model.extension.fdir"
+	          version="1.0"
+	          xmi="concept/concept.xmi">
+	    </concept>
+	</extension>
+	<extension point="de.dlr.sc.virsat.build.DvlmValidator">
+		<dvlmValidator>
+			<seiValidator
+				id="de.dlr.sc.virsat.model.extension.fdir"
+				class="de.dlr.sc.virsat.model.extension.fdir.validator.StructuralElementInstanceValidator">
+			</seiValidator>
+		</dvlmValidator>
+	</extension>
+	<extension point="de.dlr.sc.virsat.model.edit.ConceptTypeFactoryCaBeanRegistration">
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.AND"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.AND">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.OR"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.OR">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.VOTE"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.VOTE">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.PAND"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PAND">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.SPARE"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.SPARE">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.POR"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.POR">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.SAND"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.SAND">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.PORI"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PORI">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.PANDI"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PANDI">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.OBSERVER"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FDEP"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDEP">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.RDEP"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.RDEP">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.PDEP"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PDEP">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FaultTreeEdge"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FaultTree"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FaultTree">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.Fault"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.Fault">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.BasicEvent"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.CutSet"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.CutSet">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.MCSAnalysis"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysis">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.ReliabilityRequirement"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FaultToleranceRequirement"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirement">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomaton"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.ClaimAction"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FreeAction"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FreeAction">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.State"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.State">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.Transition"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.Transition">
+		</CategoryAssignmentBean>
+	</extension>
+	<!-- Plugin.XML Protected Region Start -->
+<extension point="de.dlr.sc.virsat.model.edit.ConceptMigrator">
+	<migrator
+		id="de.dlr.sc.virsat.model.extension.fdir"
+		version="1.0"
+		class="de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v0"
+		xmi="concept/concept_v1_0.xmi">
+	</migrator>
+</extension>
+	<!-- Plugin.XML Protected Region End -->
+	<!-- Plugin.XML Protected Region Start -->
+<extension
+         id="classifyFunction"
+         name="Classify Function"
+         point="de.dlr.sc.virsat.model.calculation.setFunction">
+      <setFunction
+      		name="classify"
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassify">
+      </setFunction>
+   </extension>
+ <extension
+      id="de.dlr.sc.virsat.problem.markers.validation.fdir"
+      name="VirSat FDIR Validator Problem Marker"
+      point="org.eclipse.core.resources.markers">
+   <persistent
+         value="true">
+   </persistent>
+   <super
+         type="de.dlr.sc.virsat.problem.markers.validation">
+   </super>
+   <attribute
+         name="SecondIUuid">
+   </attribute>
+</extension>
+<extension
+      point="de.dlr.sc.virsat.project.markerHelper">
+   <markerHelper
+         markerHelper="de.dlr.sc.virsat.model.extension.fdir.marker.VirSatFDIRMarkerHelper"
+         markerType="de.dlr.sc.virsat.problem.markers.validation.fdir">
+   </markerHelper>
+</extension>
+<extension
+      point="org.eclipse.core.runtime.preferences">
+   <initializer
+         class="de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences$FaultTreePreferenceInitalizer">
+   </initializer>
+</extension>
+	<!-- Plugin.XML Protected Region End -->
+</plugin>

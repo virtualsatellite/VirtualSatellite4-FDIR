@@ -1,0 +1,11 @@
+/builds/
+**/workspace/
+**/target/
+**/temp/
+**/*._trace
+**/*.xtendbin
+/bin/
+/deploy/
+/swtbot/
+/report/
+id_ed25519
