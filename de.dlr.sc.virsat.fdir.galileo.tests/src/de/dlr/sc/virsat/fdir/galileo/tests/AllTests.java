@@ -7,29 +7,41 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.test;
+package de.dlr.sc.virsat.fdir.galileo.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+import de.dlr.sc.virsat.fdir.galileo.GalileoDFTWriterTest;
+import junit.framework.JUnit4TestAdapter;
 
 /**
- * 
+ * Test suite
  * @author muel_s8
  *
  */
 @RunWith(Suite.class)
 
-@Suite.SuiteClasses({
-		de.dlr.sc.virsat.test.ProjectAllTest.class,
-		de.dlr.sc.virsat.fdir.galileo.tests.AllTests.class,
-		de.dlr.sc.virsat.fdir.core.test.AllTests.class,
-		de.dlr.sc.virsat.fdir.storm.test.AllTests.class,
-		de.dlr.sc.virsat.model.extension.fdir.test.AllTests.class,
-		de.dlr.sc.virsat.model.extension.fdir.test.AllTestsGen.class,
+@SuiteClasses({ 
+	GalileoDFTWriterTest.class,
+	DftParsingTest.class
 	})
 
-/**
- * Test Class
- */
-public class ProjectAllTest {   
+public class AllTests {
+
+	/**
+	 * Constructor for Test Suite
+	 */
+	private AllTests() {
+	}
+
+	/**
+	 * entry point for test suite
+	 * 
+	 * @return the test suite
+	 */
+	public static junit.framework.Test suite() {
+		return new JUnit4TestAdapter(AllTests.class);
+	}
 }

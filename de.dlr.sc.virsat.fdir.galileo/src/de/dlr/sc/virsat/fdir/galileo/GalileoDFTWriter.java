@@ -9,9 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.galileo;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.eclipse.emf.common.util.URI;
@@ -47,10 +47,12 @@ public class GalileoDFTWriter {
 	/**
 	 * The galileo dft to write
 	 * @param galileoDft the galileo dft
+	 * @return the created file
 	 * @throws IOException 
 	 */
-	public void write(GalileoDft galileoDft) throws IOException {
-		OutputStream outputStream = new FileOutputStream(path);
+	public File write(GalileoDft galileoDft) throws IOException {
+		File file = new File(path);
+		FileOutputStream outputStream = new FileOutputStream(file);
 		ResourceSet set = new ResourceSetImpl(); 
 		Resource resource = set.createResource(URI.createURI("tmp")); 
 		resource.getContents().add(galileoDft);
@@ -58,5 +60,9 @@ public class GalileoDFTWriter {
 		Injector injector = Guice.createInjector(new DftRuntimeModule());
 		ISerializer serializer = injector.getInstance(ISerializer.class);  
 		serializer.serialize(galileoDft, new OutputStreamWriter(outputStream), SaveOptions.newBuilder().format().getOptions());
+		
+		outputStream.close();
+		
+		return file;
 	}
 }

@@ -40,7 +40,7 @@ public class StormTest {
 	
 	@Test
 	public void testExtractResults() {
-		List<String> resultsString = Arrays.asList("1", "Result (for initial states):", "0.1", "inf");
+		List<String> resultsString = Arrays.asList("1", "Result (for initial states): 0.1, inf");
 		
 		Storm storm = new Storm(ma, 0);
 		List<Double> resultsDouble = storm.extractResult(resultsString);
