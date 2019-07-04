@@ -1,0 +1,4 @@
+toplevel "tle";
+"tle" 2of2 "A" "B";
+"A" lambda=0.4;
+"B" lambda=0.8;

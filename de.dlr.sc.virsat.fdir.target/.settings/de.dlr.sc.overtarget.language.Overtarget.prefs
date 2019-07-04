@@ -1,0 +1,12 @@
+BuilderConfiguration.is_project_specific=true
+autobuilding=true
+eclipse.preferences.version=1
+outlet.de.dlr.sc.overtarget.output.cleanDirectory=false
+outlet.de.dlr.sc.overtarget.output.cleanupDerived=false
+outlet.de.dlr.sc.overtarget.output.createDirectory=true
+outlet.de.dlr.sc.overtarget.output.derived=false
+outlet.de.dlr.sc.overtarget.output.directory=./
+outlet.de.dlr.sc.overtarget.output.hideLocalSyntheticVariables=true
+outlet.de.dlr.sc.overtarget.output.installDslAsPrimarySource=false
+outlet.de.dlr.sc.overtarget.output.keepLocalHistory=false
+outlet.de.dlr.sc.overtarget.output.override=true

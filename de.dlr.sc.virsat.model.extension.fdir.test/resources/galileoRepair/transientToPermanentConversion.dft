@@ -1,0 +1,7 @@
+toplevel "tle";
+"tle" 1of2 "permanent" "transient";
+"permanent" lambda=0;
+"transient" csp "A" "B";
+"FDEP" fdep "B" "permanent";
+"A" lambda=0.4 repair=0.04;
+"B" lambda=0.8;

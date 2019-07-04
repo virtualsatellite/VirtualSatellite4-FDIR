@@ -1,0 +1,8 @@
+toplevel "tle";
+"tle" sand "A" "B" "C" "D";
+"FDEP" fdep "E" "A" "B" "C" "D";
+"A" lambda=0.4;
+"B" lambda=0.8;
+"C" lambda=0.4;
+"D" lambda=0.8;
+"E" lambda=0.1;

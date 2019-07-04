@@ -1,0 +1,9 @@
+toplevel "tle";
+"tle" por "AND" "POR";
+"POR" por "OR" "AND";
+"OR" 1of2 "A" "B";
+"AND" 2of2 "A" "B";
+"FDEP" fdep "C" "A" "B";
+"A" lambda=0.4;
+"B" lambda=0.8;
+"C" lambda=0.1;

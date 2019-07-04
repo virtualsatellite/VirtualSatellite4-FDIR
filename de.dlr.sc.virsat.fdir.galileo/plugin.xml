@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<package 
+			uri = "http://www.dlr.de/sc/virsat/fdir/galileo/Dft"
+			class = "de.dlr.sc.virsat.fdir.galileo.dft.DftPackage"
+			genModel = "model/generated/Dft.genmodel" />
+	</extension>
+</plugin>

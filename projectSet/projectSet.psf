@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psf version="2.0">
+<provider id="org.eclipse.egit.core.GitProvider">
+<project reference="1.0,development,de.dlr.sc.virsat.external.lib.storm"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.branding.feature"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.branding.ui"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.core"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.core.test"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.docs.feature"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.galileo"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.galileo.feature"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.galileo.ide"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.galileo.tests"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.galileo.ui"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.license.feature"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.product"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.target"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.test"/>
+<project reference="1.0,development,de.dlr.sc.virsat.fdir.test.feature"/>
+<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir"/>
+<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir.experiments"/>
+<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir.feature"/>
+<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir.test"/>
+<project reference="1.0,development,de.dlr.sc.virsat.model.extension.fdir.ui"/>
+</provider>
+</psf>

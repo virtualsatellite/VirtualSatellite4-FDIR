@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat FDIR STORM Test
+Bundle-SymbolicName: de.dlr.sc.virsat.fdir.storm.test
+Bundle-Version: 4.9.0.qualifier
+Fragment-Host: de.dlr.sc.virsat.fdir.storm
+Automatic-Module-Name: de.dlr.sc.virsat.fdir.storm.test
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit,
+ com.spotify.docker.client
+Bundle-Vendor: DLR (German Aerospace Center)
+Export-Package: de.dlr.sc.virsat.fdir.storm.test

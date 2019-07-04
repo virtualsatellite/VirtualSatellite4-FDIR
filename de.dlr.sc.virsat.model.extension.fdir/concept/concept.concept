@@ -1,0 +1,241 @@
+/*******************************************************************************
+
+ * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "VirSat DLR FDIR Concept"  version 1.0
+{
+	
+	/* Components for describing the fault model */
+	
+	Category FaultTreeNode {
+		
+	}
+	
+	Category FaultEvent extends FaultTreeNode {
+		IsAbstract;
+	}
+	
+	Category Gate extends FaultTreeNode {
+		IsAbstract;
+	}
+	
+	Category AND extends Gate {
+		
+	}
+	
+	Category OR extends Gate {
+		
+	}
+	
+	Category VOTE extends Gate {
+		IntProperty votingThreshold default 0 quantityKind "Dimensionless" unit "No Unit";
+	}
+	
+	Category PAND extends Gate {
+		
+	}
+	
+	Category SPARE extends Gate {
+		
+	}
+	
+	Category POR extends Gate {
+		
+	}
+	
+	Category SAND extends Gate {
+		
+	}
+	
+	Category PORI extends Gate {
+		
+	}
+	
+	Category PANDI extends Gate {
+		
+	}
+	
+	Category OBSERVER extends Gate {
+		FloatProperty observationRate default 0 quantityKind "Frequency" unit "Hertz";
+	}
+	
+	Category ADEP extends Gate {
+		IsAbstract;
+	}
+	
+	Category FDEP extends ADEP {
+		
+	}
+	
+	Category RDEP extends ADEP {
+		FloatProperty rateChange quantityKind "Frequency" unit "Per Hour" default 0.0 description "The change of hot failure rate at the target event when the trigger occurs. ";
+	}
+	
+	Category PDEP extends ADEP {
+		FloatProperty probability quantityKind "Dimensionless" unit "Percent" default 0.0 description "The probability that the Probabilistic Dependency Gate fires the dependent events.";
+	}
+	
+	Category AbstractFaultTreeEdge {
+		IsAbstract;
+		Reference from of Type FaultTreeNode;
+		Reference to of Type FaultTreeNode;
+	}
+	
+	Category FaultTreeEdge extends AbstractFaultTreeEdge {
+		
+	}
+	
+	Category FaultTree {
+		Type gates[] of Category Gate;
+		Type propagations[] of Category FaultTreeEdge;
+		Type spares[] of Category FaultTreeEdge;
+		Type deps[] of Category FaultTreeEdge;
+		Type observations[] of Category FaultTreeEdge;
+	}
+	
+	Category Fault extends FaultEvent {
+		Applicable For All;
+		
+		StringProperty detail description "A description giving more details about this fault";
+		Type basicEvents[] of Category BasicEvent description "Failure modes that directly cause this Fault";
+		
+		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
+		
+		EnumProperty severityLevel values [
+			Catastrophic=4, Critical=3, Major=2, Minor=1
+		] default Minor quantityKind "Dimensionless" unit "No Unit" description "Severity Level according to ECSS-Q-ST-30-02C";
+		EnumProperty probabilityLevel values [
+			ExtremelyRemote=1, Remote=2, Occasional=3, Probable=4
+		] default ExtremelyRemote quantityKind "Dimensionless" unit "No Unit" description "Probability Level according to ECSS-Q-ST-30-02C";
+		EnumProperty detectionLevel values [
+			ExtremelyUnlikely=4, Unlikely=3, Likely=2, VeryLikely=1
+		] default VeryLikely quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
+		FloatProperty criticalityLevel default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
+		
+		FloatProperty failureRate default 0.0 quantityKind "Frequency" unit "Per Hour" description "FailureRate of the occurrence of this event";
+		
+		Type faultTree of Category FaultTree description "The Fault Tree explaining the indirect causes of this Fault";
+		
+		// Approximate the failure rate to a constant failure rate
+		Ref: failureRate = 1 / meanTimeToFailure;
+		
+		// Criticality Level Computation according to ECSS-Q-ST-30-02C
+		Ref: probabilityLevel = classify(failureRate);
+		Ref: criticalityLevel = severityLevel * probabilityLevel * detectionLevel;
+	}
+	
+	Category BasicEvent extends FaultEvent {
+		FloatProperty hotFailureRate default 0.0 quantityKind "Frequency" unit "Per Hour";
+		FloatProperty coldFailureRate default 0.0 quantityKind "Frequency" unit "Per Hour";
+		FloatProperty repairRate default 0.0 quantityKind "Frequency" unit "Per Hour";
+		StringProperty repairAction description "Description of the action(s) needed to be performed for the repair.";
+	}
+	
+	Category CutSet {
+		Reference basicEvents [] of Type BasicEvent description "Set of events leading to a top level failure";
+	}
+	
+	Category FDIRParameters {
+		Applicable For All;
+		Cardinality 1;
+		FloatProperty missionTime quantityKind "Time" unit "Hour";
+		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
+		//FloatProperty probabilityLevels[] quantityKind "Frequency" unit "Per Hour";
+		//FloatProperty detectionLevels[] quantityKind "Dimensionless" unit "Percent";
+	}
+	
+	Category FDIRAnalysis {
+		IsAbstract;
+		Applicable For All;
+	}
+	
+	Category ReliabilityAnalysis extends FDIRAnalysis {
+		Cardinality 1;
+		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
+		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
+		FloatProperty reliability quantityKind "Dimensionless" unit "Percent";
+		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour";
+		FloatProperty reliabilityCurve[] quantityKind "Dimensionless" unit "Percent";
+
+		Ref: remainingMissionTime = FDIRParameters.missionTime;
+		Ref: timestep = FDIRParameters.timestep;
+	}	
+	
+	Category AvailabilityAnalysis extends FDIRAnalysis {
+		Cardinality 1;
+		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
+		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
+		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent";
+		FloatProperty pointAvailabilityCurve[] quantityKind "Dimensionless" unit "Percent";//PointAvailability
+
+		Ref: remainingMissionTime = FDIRParameters.missionTime;
+		Ref: timestep = FDIRParameters.timestep;
+	}
+	
+	Category MCSAnalysis extends FDIRAnalysis {
+		Cardinality 1;
+		IntProperty maxMinimumCutSetSize unit "No Unit";
+		IntProperty faultTolerance unit "No Unit";
+		Type minimumCutSets [] of Category CutSet;
+	}
+	
+	/* Components for describing FDIR Requirements */
+	
+	Category FDIRRequirement {
+		IsAbstract;
+		Applicable For All;
+	}
+	
+	Category ReliabilityRequirement extends FDIRRequirement {	
+		Cardinality 1;
+		FloatProperty minReliability default 0.0 quantityKind "Dimensionless" unit "Percent";
+		FloatProperty maxCriticality default 0.0 quantityKind "Dimensionless" unit "No Unit";
+	}
+	
+	Category FaultToleranceRequirement extends FDIRRequirement {	
+		Cardinality 1;
+		IntProperty minFaultTolerance default 0 quantityKind "Dimensionless" unit "No Unit";
+	}
+	
+	/* Components for describing recovery behavior */
+	
+	Category RecoveryAutomaton {
+		Applicable For All;
+		Cardinality 1;
+		Reference initial of Type State;
+		Type states [] of Category State;
+		Type transitions [] of Category Transition;
+	}
+
+	Category RecoveryAction {
+		IsAbstract;
+	}
+
+	Category ClaimAction extends RecoveryAction {
+		Reference spareGate of Type SPARE;
+		Reference claimSpare of Type FaultTreeNode;
+	}
+	
+	Category FreeAction extends RecoveryAction {
+		Reference freeSpare of Type FaultTreeNode;	
+	}
+
+	Category State {
+		
+	}
+
+	Category Transition {
+		Reference from of Type State;
+		Reference to of Type State;
+		Reference guards [] of Type FaultTreeNode;
+		BooleanProperty isRepair default false;
+		Type recoveryActions [] of Category RecoveryAction;
+	}
+}
+

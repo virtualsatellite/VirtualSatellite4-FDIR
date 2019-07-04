@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat FDIR Galileo
+Bundle-Vendor: DLR (German Aerospace Center)
+Bundle-Version: 4.9.0.qualifier
+Bundle-SymbolicName: de.dlr.sc.virsat.fdir.galileo.tests; singleton:=true
+Bundle-ActivationPolicy: lazy
+Eclipse-ExtensibleAPI: true
+Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
+ org.junit,
+ org.eclipse.xtext.junit4,
+ org.eclipse.xtext.xbase.junit,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtext.testing,
+ org.eclipse.xtext.xbase.testing
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: de.dlr.sc.virsat.fdir.galileo.tests;x-internal=true
+Automatic-Module-Name: de.dlr.sc.virsat.fdir.galileo.tests

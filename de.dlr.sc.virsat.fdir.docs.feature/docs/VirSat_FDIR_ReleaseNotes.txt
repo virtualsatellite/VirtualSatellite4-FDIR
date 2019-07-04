@@ -1,0 +1,15 @@
+VirSat FDIR Release Notes
+-------------------------
+
+VirSat FDIR is based on VirSat Core. Please don't forget to read the Release Notes of VirSat Core as well!
+
+Release 4.9.0 (2nd July 2019)
+----------------------------------
+
+New Features:
+	Initial Open Source Release #3
+
+Usability Updates:
+	
+Fixed Bug:
+

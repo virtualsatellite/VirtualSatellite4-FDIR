@@ -1,0 +1,4 @@
+toplevel "tle";
+"tle" and "A" "B";
+"A" lambda=0.4 repair=0.04;
+"B" lambda=0.8;
