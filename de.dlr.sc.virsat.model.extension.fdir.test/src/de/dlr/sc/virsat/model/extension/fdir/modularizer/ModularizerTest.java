@@ -363,10 +363,6 @@ public class ModularizerTest extends ATestCase {
 		Fault rootFDEP2 = createDFT("/resources/galileo/fdep2.dft");
 		Set<Module> modules = modularizer.getModules(rootFDEP2.getFaultTree());
 		
-		for (Module mod : modules) {
-			System.out.println(mod);
-		}
-		
 		final int ANDGATE1_INDEX = 0;
 		final int ANDGATE2_INDEX = 1;
 		final int FDEPGATE_INDEX = 0;
