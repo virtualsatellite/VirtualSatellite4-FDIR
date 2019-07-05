@@ -28,10 +28,10 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
  */
 public class ParallelComposer {
 	
-	private Map<State, String> mapStateToPos = new HashMap<State, String>();
-	private Map<String, State> mapPosToState = new HashMap<String, State>();
-	private Map<RecoveryAutomaton, Map<State, List<Transition>>> mapRAtoTransitionMap = new HashMap<RecoveryAutomaton, Map<State, List<Transition>>>();
-	//private Map<State, Integer> mapStateToInt = new HashMap<State, Integer>();
+	private Map<State, String> mapStateToPos;
+	private Map<String, State> mapPosToState;
+	private Map<RecoveryAutomaton, Map<State, List<Transition>>> mapRAtoTransitionMap;
+	private Map<State, Integer> mapStateToInt;
 	protected Concept concept;
 	
 	/**
@@ -46,9 +46,12 @@ public class ParallelComposer {
 			return ras.iterator().next();
 		}
 		
+		this.mapStateToPos = new HashMap<State, String>();
+		this.mapPosToState = new HashMap<String, State>();
+		this.mapRAtoTransitionMap = new HashMap<RecoveryAutomaton, Map<State, List<Transition>>>();
 		this.concept = ras.iterator().next().getConcept();
 		
-		renameStatesAndAddRAsToMap(ras);
+		indexStates(ras);
 		
 		int numRAs = ras.size();
 		String initialPos = new String(new char[numRAs]).replace('\0', '0');
@@ -68,11 +71,12 @@ public class ParallelComposer {
 			int currRA = 0;
 			for (RecoveryAutomaton ra : ras) {
 				String fromStateName = Character.toString(mapStateToPos.get(fromState).charAt(currRA));
-				State originalFromState = rah.getState(ra, fromStateName);
+				Integer fromStateIndex = Integer.parseInt(fromStateName);
+				State originalFromState = ra.getStates().get(fromStateIndex);
 				
 				String toPos = fromPos;
 				for (Transition t : mapRAtoTransitionMap.get(ra).get(originalFromState)) {
-					int changedNum = Integer.parseInt(t.getTo().getName());
+					int changedNum = mapStateToInt.get(t.getTo());
 					toPos = toPos.substring(0, currRA) + changedNum + toPos.substring(currRA + 1);
 					
 					State stateInMap = mapPosToState.get(toPos);
@@ -112,15 +116,15 @@ public class ParallelComposer {
 	 * Add recovery automata to map and rename all the states for future lookup
 	 * @param ras the set of recovery automata
 	 */
-	private void renameStatesAndAddRAsToMap(Set<RecoveryAutomaton> ras) {
+	private void indexStates(Set<RecoveryAutomaton> ras) {
+		mapStateToInt = new HashMap<State, Integer>();
+		
 		RecoveryAutomatonHelper rah = new RecoveryAutomatonHelper(concept);
 		for (RecoveryAutomaton ra : ras) {
 			mapRAtoTransitionMap.put(ra, rah.getCurrentTransitions(ra));
 			
-			int i = 0;
-			for (State s : ra.getStates()) {
-				s.setName(Integer.toString(i));
-				i++;
+			for (int i = 0; i < ra.getStates().size(); ++i) {
+				mapStateToInt.put(ra.getStates().get(i), i);
 			}
 		}
 	}
