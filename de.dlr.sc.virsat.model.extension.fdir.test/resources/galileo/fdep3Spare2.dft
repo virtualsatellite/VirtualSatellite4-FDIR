@@ -1,0 +1,18 @@
+toplevel "TLE";
+"TLE" and "A FAILURE" "B FAILURE" "C1" "D1";
+"A FAILURE" csp "A1" "A2" "A SPARE";
+"FDEP3" fdep "POW3" "A SPARE";
+"B FAILURE" csp "B1" "B2" "B SPARE";
+"FDEP1" fdep "POW1" "C1";
+"FDEP2" fdep "POW2" "D1";
+"A1" lambda=0.0;
+"A2" lambda=0.0;
+"A SPARE" lambda=0.0;
+"B1" lambda=0.0;
+"B2" lambda=0.0;
+"B SPARE" lambda=0.0;
+"C1" lambda=0.0;
+"D1" lambda=0.0;
+"POW1" lambda=0;
+"POW2" lambda=2;
+"POW3" lambda=1;

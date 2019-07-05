@@ -1,0 +1,6 @@
+toplevel "TLE";
+"TLE" and "A";
+"FDEP" fdep "AND1" "A";
+"AND1" and "C";
+"A" lambda=0.0;
+"C" lambda=0.0;
