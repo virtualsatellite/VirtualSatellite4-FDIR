@@ -50,6 +50,9 @@ public class ModularizerTest extends ATestCase {
 		modularizer = new Modularizer();
 	}
 	
+	
+
+	
 	/* **********************************************
 	 * TESTING TREE COUNT
 	 * *********************************************/
@@ -113,14 +116,19 @@ public class ModularizerTest extends ATestCase {
 	 * TESTING TREE DEPTH
 	 * *********************************************/
 	@Test
+	public void testNullTree() {
+		final int TREE_DEPTH = -1;
+		assertEquals(TREE_DEPTH, modularizer.getTreeDepth(null));
+	}
+	
+	@Test
 	public void testTreeDepthCSP2() throws IOException {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
 		int ans = modularizer.getTreeDepth(rootcsp2.getFaultTree());
 		final int EXPECTED_DEPTH = 3;		
 		assertEquals(EXPECTED_DEPTH, ans);
 	}
-	
-	
+
 	@Test
 	public void testTreeDepthOr3AndCSPBasic() throws IOException {
 		Fault rootOr3Andcsp = createDFT("/resources/galileo/or3AndColdSpareBasic.dft");
@@ -228,6 +236,7 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeNode orGate = rootOr2.getFaultTree().getGates().get(OR_INDEX);
 		Module module = modularizer.harvestModule(orGate);
 		assertFalse(module.isDynamic());
+		assertEquals(orGate, module.getRootNode());
 	}
 	
 	

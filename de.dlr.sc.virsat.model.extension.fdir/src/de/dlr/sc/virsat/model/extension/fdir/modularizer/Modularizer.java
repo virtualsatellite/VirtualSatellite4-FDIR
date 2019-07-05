@@ -275,9 +275,7 @@ public class Modularizer implements IModularizer {
 		
 		for (FaultTreeNodePlus child : children) {
 			if (!child.isHarvested()) {
-				if (!child.isWithinBoundsOf(root)) {
-					return false;
-				} else if (!this.allChildrenWithinBounds(child, root)) {
+				if (!child.isWithinBoundsOf(root) || !this.allChildrenWithinBounds(child, root)) {
 					return false;
 				}
 			}
@@ -294,11 +292,9 @@ public class Modularizer implements IModularizer {
 	private boolean allChildrenWithinBounds(FaultTreeNodePlus child, FaultTreeNodePlus root) {
 		List<FaultTreeNodePlus> children = this.getChildren(child);
 		
-		for (FaultTreeNodePlus c : children) {
-			if (!c.isHarvested()) {
-				if (!c.isWithinBoundsOf(root)) {
-					return false;
-				} else if (!this.allChildrenWithinBounds(c, root)) {
+		for (FaultTreeNodePlus childOfChild : children) {
+			if (!childOfChild.isHarvested()) {
+				if (!childOfChild.isWithinBoundsOf(root) || !this.allChildrenWithinBounds(childOfChild, root)) {
 					return false;
 				}
 			}
