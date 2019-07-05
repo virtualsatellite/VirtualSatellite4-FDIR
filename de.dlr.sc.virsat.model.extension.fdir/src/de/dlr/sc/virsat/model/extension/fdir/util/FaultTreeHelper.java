@@ -538,6 +538,28 @@ public class FaultTreeHelper {
 	}
 	
 	/**
+	 * Get the dependencies of a node
+	 * 
+	 * @param node
+	 *            the node want to know the dependencies of
+	 * @param faultTrees the fault trees containing the edges
+	 * @return a list of dependencies
+	 */
+	public List<FaultTreeNode> getDeps(FaultTreeNode node, Set<FaultTree> faultTrees) {
+		List<FaultTreeNode> deps = new ArrayList<FaultTreeNode>();
+
+		for (FaultTree faultTree : faultTrees) {
+			for (FaultTreeEdge edge : faultTree.getDeps()) {
+				if (edge.getTo().equals(node)) {
+					deps.add(edge.getFrom());
+				}
+			}
+		}
+
+		return deps;
+	}
+	
+	/**
 	 * Gets the nodes observed by this node
 	 * 
 	 * @param node

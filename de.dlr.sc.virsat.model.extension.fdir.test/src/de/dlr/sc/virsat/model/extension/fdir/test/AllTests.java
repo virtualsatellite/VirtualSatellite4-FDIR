@@ -19,6 +19,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConve
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModularizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferencesTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.CleanMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizerTest;
@@ -48,7 +49,8 @@ import junit.framework.JUnit4TestAdapter;
 		ComposedMinimizerTest.class,
 		StormEvaluatorTest.class,
 		FaultTreePreferencesTest.class,
-		PONDDFTSemanticsTest.class
+		PONDDFTSemanticsTest.class,
+		ModularizerTest.class
 		})
 
 public class AllTests {
