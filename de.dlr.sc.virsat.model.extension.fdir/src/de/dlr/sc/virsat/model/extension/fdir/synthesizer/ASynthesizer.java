@@ -59,9 +59,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 		fault = (Fault) conversionResult.getRoot();
 		
 		Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-		modules = trimStaticModules(modules);
+		Set<Module> trimmedModules = trimStaticModules(modules);
 		
-		Set<RecoveryAutomaton> ras = modules.stream()
+		Set<RecoveryAutomaton> ras = trimmedModules.stream()
 					.map(module -> convertToRecoveryAutomaton(module))
 					.collect(Collectors.toSet());
 		
@@ -164,9 +164,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	private static Set<Module> trimStaticModules(Set<Module> modules) {
 		Set<Module> result = new HashSet<Module>();
-		for (Module m : modules) {
-			if (m.isDynamic()) {
-				result.add(m);
+		for (Module module : modules) {
+			if (module.isDynamic()) {
+				result.add(module);
 			}
 		}
 		return result;
@@ -178,8 +178,17 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(Module module) {
+		return convertToRecoveryAutomaton(module.getRootNode());
+	}
+	
+	/**
+	 * Convert a fault tree to recovery automaton
+	 * @param root  the root of the fault tree
+	 * @return the recovery automaton
+	 */
+	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
 		ExplicitDFT2MAConverter dft2ma = createDFT2MAConverter();
-		MarkovAutomaton<DFTState> ma = dft2ma.convert(module.getRootNode());
+		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		Set<Object> faultEvents = ma.getEvents();
 		normalizeRates(ma, faultEvents);
 		
