@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.test.TestActivator;
@@ -73,6 +76,27 @@ public class BasicSynthesizerTest extends ATestCase {
 		ftEvaluator.evaluateFaultTree(fault);
 		
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
+	}
+	
+	@Test
+	public void testEvaluateHECS11() throws IOException {
+		InputStream is = TestActivator.getResourceContentAsString("/resources/benchmarks/hecs/hecs_1_1_0_np.dft");
+		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
+		Fault fault = converter.convert();
+		
+		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+
+		System.out.println("\nPRINTING INFO\n===============================");
+		for (State s : ra.getStates()) {
+			System.out.println(s.getName());
+		}
+		for (Transition t : ra.getTransitions()) {
+			System.out.println("Name: " + t.toString() + ", from: " + t.getFrom().getName() + ", to: " + t.getTo().getName() + ", isRepair?: " + t.getIsRepair());
+		}
+		
+		final int NUM_STATES = 2;
+		assertEquals(NUM_STATES, ra.getStates().size());
 	}
 	
 }

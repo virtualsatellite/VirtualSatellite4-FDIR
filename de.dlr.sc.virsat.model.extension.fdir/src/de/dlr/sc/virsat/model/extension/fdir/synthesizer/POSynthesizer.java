@@ -75,7 +75,7 @@ public class POSynthesizer extends ASynthesizer {
 	private MarkovAutomaton<BeliefState> beliefMa;
 	
 	@Override
-	protected RecoveryAutomaton computeMarkovAutomatonSchedule(DFTState initialMa) {
+	protected RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initialMa) {
 		beliefMa = new MarkovAutomaton<>();
 		
 		ExplicitPODFTState initialPo = (ExplicitPODFTState) initialMa;
@@ -88,7 +88,7 @@ public class POSynthesizer extends ASynthesizer {
 		
 		while (!toProcess.isEmpty()) {
 			BeliefState beliefState = toProcess.poll();
-			Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(beliefState);
+			Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 			
 			if (beliefState.isMarkovian()) {
 				for (Entry<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
@@ -201,9 +201,10 @@ public class POSynthesizer extends ASynthesizer {
 	 * Checks for all MA states in the belief state how the observation set of their successors look like
 	 * and groups all possible successors according to their observation sets
 	 * @param beliefState the belief state
+	 * @param ma the markov automaton
 	 * @return a mapping from an observation set to the transitions that lead to states with this observation set
 	 */
-	private Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(BeliefState beliefState) {
+	private Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
 		Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new HashMap<>();
 		for (Entry<ExplicitPODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
 			List<MarkovTransition<DFTState>> succTransitions = ma.getSuccTransitions(entry.getKey());
