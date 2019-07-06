@@ -72,7 +72,22 @@ public class DFTSemantics {
 	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, ExplicitDFTState pred, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
 		worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
-		return updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
+
+		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
+		boolean existsNonTLESucc = existsNonTLE(ftHolder, succs);
+		
+		if (!existsNonTLESucc) {
+			ExplicitDFTState baseSucc = succs.get(0);
+			succs.clear();
+			succs.add(baseSucc);
+			recoveryActions.clear();
+			recoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
+		} else {
+			ExplicitDFTState baseSucc = succs.remove(0);
+			succs.add(baseSucc);
+		}
+		
+		return changedNodes;
 	}
 	
 	/**
@@ -154,6 +169,23 @@ public class DFTSemantics {
 		
 		return hasChanged;
 	}
+	
+	/**
+	 * Checks if in the set of states contains a state without the TLE triggered
+	 * @param ftHolder the fault tree holder
+	 * @param states set of states
+	 * @return true iff there exists a node without a failed TLE
+	 */
+	private boolean existsNonTLE(FaultTreeHolder ftHolder, List<ExplicitDFTState> states) {
+		for (ExplicitDFTState state : states) {
+			if (!state.hasFaultTreeNodeFailed(ftHolder.getRoot())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	
 	/**
 	 * Extracts the occured event set for recovery strategies

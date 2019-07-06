@@ -40,7 +40,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirementTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.TransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARETest;
@@ -89,7 +88,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	ClaimActionTest.class,
 	FreeActionTest.class,
 	StateTest.class,
-	TransitionTest.class,
 	FaultEventTransitionTest.class,
 	TimedTransitionTest.class,
 	Migrator1v0Test.class,

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -74,14 +75,17 @@ public class RecoveryAutomatonStrategy extends ARecoveryStrategy {
 		if (mapStateToOutTransitions.get(currentState) != null) {
 			Set<String> faultUUIDs = faults.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
 			for (Transition transition : mapStateToOutTransitions.get(currentState)) {
-				Set<String> guardUUIDs = transition.getGuards().stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
-				if (guardUUIDs.equals(faultUUIDs)) {
-					RecoveryAutomatonStrategy ras = new RecoveryAutomatonStrategy();
-					ras.ra = ra;
-					ras.currentState = transition.getTo();
-					ras.recoveryAction = transition.getRecoveryActions();
-					ras.mapStateToOutTransitions = mapStateToOutTransitions;
-					return ras;
+				if (transition instanceof FaultEventTransition) {
+					Set<String> guardUUIDs = ((FaultEventTransition) transition).getGuards()
+							.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
+					if (guardUUIDs.equals(faultUUIDs)) {
+						RecoveryAutomatonStrategy ras = new RecoveryAutomatonStrategy();
+						ras.ra = ra;
+						ras.currentState = transition.getTo();
+						ras.recoveryAction = transition.getRecoveryActions();
+						ras.mapStateToOutTransitions = mapStateToOutTransitions;
+						return ras;
+					}
 				}
 			}
 		}

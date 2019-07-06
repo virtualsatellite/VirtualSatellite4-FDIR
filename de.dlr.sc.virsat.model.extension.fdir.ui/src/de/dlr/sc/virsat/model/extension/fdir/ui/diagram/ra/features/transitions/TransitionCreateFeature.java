@@ -22,22 +22,23 @@ import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 /**
- * Feature for creating new transitions in a graphiti recovery automaton diagram.
+ * Generic creation feature for transitions
  * @author muel_s8
  *
  */
 
-public class TransitionCreateFeature extends AbstractCreateConnectionFeature {
+public abstract class TransitionCreateFeature extends AbstractCreateConnectionFeature {
 
 	/**
-	 * Default constructor.
-	 * @param fp the feature provider.
+	 * Standard consturctor
+	 * @param fp the feature provider
+	 * @param name the name
+	 * @param description the description
 	 */
-	
-	public TransitionCreateFeature(IFeatureProvider fp) {
-		super(fp, "Transition", "Create a transition");
+	public TransitionCreateFeature(IFeatureProvider fp, String name, String description) {
+		super(fp, name, description);
 	}
-
+	
 	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
 		// Check if the desired anchors are properly linked
@@ -49,32 +50,32 @@ public class TransitionCreateFeature extends AbstractCreateConnectionFeature {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public Connection create(ICreateConnectionContext context) {
-
-		Connection newConnection = null;
 		
 		State source = (State) getBusinessObjectForPictogramElement(context.getSourceAnchor());
 		State target = (State) getBusinessObjectForPictogramElement(context.getTargetAnchor());
 		
-		if (source != null && target != null) {
-			Concept concept = source.getConcept();
-			
-			Transition transition = new Transition(concept);
-			transition.setFrom(source);
-			transition.setTo(target);
-			RecoveryAutomaton ra = source.getParentCaBeanOfClass(RecoveryAutomaton.class);
-			ra.getTransitions().add(transition);
-			
-			AddConnectionContext addContext = new AddConnectionContext(context.getSourceAnchor(), context.getTargetAnchor());
-			addContext.setNewObject(transition);
-			newConnection = (Connection) getFeatureProvider().addIfPossible(addContext);
+		if (source == null || target == null) {
+			return null;
 		}
+		
+		Concept concept = source.getConcept();
+		
+		Transition transition = createTransition(concept);
+		transition.setFrom(source);
+		transition.setTo(target);
+		RecoveryAutomaton ra = source.getParentCaBeanOfClass(RecoveryAutomaton.class);
+		ra.getTransitions().add(transition);
+		
+		AddConnectionContext addContext = new AddConnectionContext(context.getSourceAnchor(), context.getTargetAnchor());
+		addContext.setNewObject(transition);
+		Connection newConnection = (Connection) getFeatureProvider().addIfPossible(addContext);
 		
 		return newConnection;
 	}
-
+	
 	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
 		Object source = getBusinessObjectForPictogramElement(context.getSourceAnchor());
@@ -83,10 +84,11 @@ public class TransitionCreateFeature extends AbstractCreateConnectionFeature {
 		}
 		return false;
 	}
-
-	@Override
-	public String getCreateImageId() {
-		return Transition.FULL_QUALIFIED_CATEGORY_NAME;
-	}
 	
+	/**
+	 * Creates the actual transition data
+	 * @param concept the concept
+	 * @return the created transition
+	 */
+	public abstract Transition createTransition(Concept concept);
 }

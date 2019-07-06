@@ -136,6 +136,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 			}
 		}
 		
+
+		ExplicitDFTState baseSucc = succs.remove(0);
+		succs.add(baseSucc);
+		
 		return changedNodes;
 	}
 	

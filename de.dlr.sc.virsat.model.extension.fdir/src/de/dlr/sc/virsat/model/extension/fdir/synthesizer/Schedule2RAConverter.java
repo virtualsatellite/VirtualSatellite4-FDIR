@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -110,11 +111,10 @@ public class Schedule2RAConverter<S extends MarkovState> {
 					Set<MarkovTransition<S>> bestTransitionSet = schedule.getOrDefault(markovianTransition.getTo(), Collections.EMPTY_SET);
 					
 					for (MarkovTransition<S> bestTransition : bestTransitionSet) {
-						Transition raTransition = new Transition(concept);
 						State fromRaState = getOrCreateRecoveryAutomatonState(ra, markovianTransition.getFrom());
-						State toRaState = getOrCreateRecoveryAutomatonState(ra, bestTransition.getTo());
-						raTransition.setFrom(fromRaState);
-						raTransition.setTo(toRaState);
+						State toRaState = getOrCreateRecoveryAutomatonState(ra, bestTransition.getTo());						
+						FaultEventTransition raTransition = raHelper.createFaultEventTransition(ra, fromRaState, toRaState);
+						
 						if (event instanceof Collection<?>) {
 							raTransition.getGuards().addAll((Collection<? extends FaultTreeNode>) event);
 						} else {
@@ -126,6 +126,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 						for (RecoveryAction recoveryAction : recoveryActions)  {
 							raTransition.getRecoveryActions().add(raHelper.copyRecoveryAction(recoveryAction));
 						}
+						
 						createdTransitions.add(raTransition);
 						
 						MarkovState nextState = bestTransition.getTo();
@@ -134,11 +135,10 @@ public class Schedule2RAConverter<S extends MarkovState> {
 						} 
 					}
 				} else {
-					Transition raTransition = new Transition(concept);
 					State fromRaState = getOrCreateRecoveryAutomatonState(ra, markovianTransition.getFrom());
 					State toRaState = getOrCreateRecoveryAutomatonState(ra, markovianTransition.getTo());
-					raTransition.setFrom(fromRaState);
-					raTransition.setTo(toRaState);
+					FaultEventTransition raTransition = raHelper.createFaultEventTransition(ra, fromRaState, toRaState);
+					
 					if (event instanceof Collection<?>) {
 						raTransition.getGuards().addAll((Collection<? extends FaultTreeNode>) event);
 					} else {

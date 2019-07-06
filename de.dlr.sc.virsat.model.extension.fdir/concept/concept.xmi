@@ -180,7 +180,7 @@
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="freeSpare" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
   </categories>
   <categories name="State"/>
-  <categories name="Transition">
+  <categories name="Transition" isAbstract="true">
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="from" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="to" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="guards" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode">

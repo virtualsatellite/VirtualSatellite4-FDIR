@@ -14,8 +14,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 /**
  * This class test the clean minimizer for removing duplicate transitions and epsilon loops
@@ -40,7 +40,7 @@ public class CleanMinimizerTest extends AMinimizerTestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		recoveryAutomatonHelper.createStates(ra, INITIAL_STATES); 
 		
-		Transition transition00 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(0));
+		FaultEventTransition transition00 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(0));
 		recoveryAutomatonHelper.assignInputs(transition00, fault);
 		
 		ARecoveryAutomatonMinimizer minimizer = createMinimizer();
@@ -60,9 +60,9 @@ public class CleanMinimizerTest extends AMinimizerTestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		recoveryAutomatonHelper.createStates(ra, INITIAL_STATES); 
 		
-		Transition transition010 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition010 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
 		recoveryAutomatonHelper.assignInputs(transition010, fault);
-		Transition transition011 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition011 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
 		recoveryAutomatonHelper.assignInputs(transition011, fault);
 		
 		ARecoveryAutomatonMinimizer minimizer = createMinimizer();

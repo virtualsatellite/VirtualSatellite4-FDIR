@@ -231,6 +231,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 
 	Category Transition {
+		IsAbstract;
 		Reference from of Type State;
 		Reference to of Type State;
 		Reference guards [] of Type FaultTreeNode;

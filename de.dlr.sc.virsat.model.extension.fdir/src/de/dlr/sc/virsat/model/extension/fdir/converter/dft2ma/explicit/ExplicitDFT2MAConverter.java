@@ -169,21 +169,9 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 						IRecoveryStrategy recoveryStrategy = state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
 						dftSemantics.determinizeSuccs(ftHelper, recoveryStrategy, succs, mapStateToRecoveryActions);
 					} else {
-						boolean existsNonTLESucc = existsNonTLE(succs);
-						
 						markovSucc = dftSemantics.getStateGenerator().generateState(baseSucc);
 						ma.addState(markovSucc);
 						ma.addMarkovianTransition(event, state, markovSucc, rate);
-						
-						if (!existsNonTLESucc) {
-							succs.clear();
-							succs.add(baseSucc);
-							mapStateToRecoveryActions.clear();
-							mapStateToRecoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
-						} else {
-							succs.remove(0);
-							succs.add(baseSucc);
-						}
 					}
 				
 				}
@@ -237,21 +225,6 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 			}
 		}
 		return occurableEvents;
-	}
-	
-	/**
-	 * Checks if in the set of states contains a state without the TLE triggered
-	 * @param states set of states
-	 * @return true iff there exists a node without a failed TLE
-	 */
-	private boolean existsNonTLE(List<ExplicitDFTState> states) {
-		for (ExplicitDFTState state : states) {
-			if (!state.hasFaultTreeNodeFailed(root)) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 	
 	/**
