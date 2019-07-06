@@ -147,6 +147,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 * @return true iff the node is being observed
 	 */
 	private boolean existsNonFailedImmediateObserver(ExplicitDFTState state, FaultTreeHolder ftHolder, FaultTreeNode node) {
+		if (node instanceof OBSERVER) {
+			return true;
+		}
+		
 		List<OBSERVER> observers = ftHolder.getMapNodeToObservers().get(node);
 		if (observers != null) {
 			for (OBSERVER observer : observers) {
