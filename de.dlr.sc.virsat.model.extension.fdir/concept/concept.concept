@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "VirSat DLR FDIR Concept"  version 1.0
+Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "VirSat DLR FDIR Concept"  version 1.1
 {
 	
 	/* Components for describing the fault model */
@@ -236,6 +236,15 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Reference guards [] of Type FaultTreeNode;
 		BooleanProperty isRepair default false;
 		Type recoveryActions [] of Category RecoveryAction;
+	}
+	
+	Category FaultEventTransition extends Transition {
+		Reference guards [] of Type FaultTreeNode;
+		BooleanProperty isRepair default false;
+	}
+	
+	Category TimedTransition extends Transition {
+		FloatProperty time default 0.0 quantityKind "Time" unit "Second";
 	}
 }
 
