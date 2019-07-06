@@ -59,7 +59,7 @@ public class RecoveryAutomatonHolder {
 	}
 	
 	/**
-	 * Gives acces tot he underyling ra helper
+	 * Gives access to the underyling ra helper
 	 * @return the ra helper
 	 */
 	public RecoveryAutomatonHelper getRaHelper() {
