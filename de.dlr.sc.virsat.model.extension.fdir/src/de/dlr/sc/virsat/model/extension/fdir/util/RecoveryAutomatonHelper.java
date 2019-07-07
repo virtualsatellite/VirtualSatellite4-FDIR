@@ -377,9 +377,7 @@ public class RecoveryAutomatonHelper {
 	public TimedTransition copyTimedTransition(TimedTransition transition) {
 		TimedTransition newTransition = new TimedTransition(concept);
 		
-		newTransition.setTime(transition.getTime());
-		newTransition.getTimeBean().setUnit(transition.getTimeBean().getUnit());
-		
+		newTransition.setTime(transition.getTimeBean().getValueToBaseUnit());
 		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {
 			newTransition.getRecoveryActions().add(copyRecoveryAction(recoveryAction));
 		}
