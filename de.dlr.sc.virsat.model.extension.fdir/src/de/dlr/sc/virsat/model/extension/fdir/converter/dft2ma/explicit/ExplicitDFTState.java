@@ -171,11 +171,19 @@ public class ExplicitDFTState extends DFTState {
 	
 	@Override
 	public String getLabel() {
-		if (failedNodes.isEmpty() && mapSpareToClaimedSpares.isEmpty()) {
-			return index + " initial";
-		} else {
-			return index + " " + unorderedBes.toString() + orderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
+		String raSuffix = "";
+		if (recoveryStrategy != null) {
+			raSuffix = ", " +  recoveryStrategy.getCurrentState();
 		}
+		
+		String ftInfix = "";
+		if (failedNodes.isEmpty() && mapSpareToClaimedSpares.isEmpty()) {
+			ftInfix = " initial";
+		} else {
+			ftInfix = " " + unorderedBes.toString() + orderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
+		}
+		
+		return index + ftInfix + raSuffix;
 	}
 	
 	/**

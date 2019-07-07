@@ -60,8 +60,6 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 		staticAnalysis();
 		buildMA();
 		
-		System.out.println(ma.toDot());
-		
 		return ma;
 	}
 	
