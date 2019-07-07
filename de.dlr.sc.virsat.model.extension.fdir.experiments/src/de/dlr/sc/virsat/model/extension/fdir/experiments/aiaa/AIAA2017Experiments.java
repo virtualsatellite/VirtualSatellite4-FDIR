@@ -17,7 +17,7 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
 
 /**
@@ -51,7 +51,7 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		saveRA(ra, "aiaa/2017/switch2AndRedundancy/synthesizedMinimized");
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ndDFTftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for switch2AndRedundancy with NdDFT -----------------------");
@@ -82,7 +82,7 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		saveRA(ra, "aiaa/2017/memory2/synthesizedMinimized");
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ndDFTftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for Memory2 with NdDFT -----------------------");

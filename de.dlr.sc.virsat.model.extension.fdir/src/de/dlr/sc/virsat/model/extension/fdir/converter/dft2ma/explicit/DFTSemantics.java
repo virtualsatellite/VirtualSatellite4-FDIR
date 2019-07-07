@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,7 +24,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -70,6 +71,10 @@ public class DFTSemantics {
 	 * @return the list of updated nodes
 	 */
 	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, ExplicitDFTState pred, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
+		if (event.getNode() == null) {
+			return Collections.emptyList();
+		}
+		
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
 		worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
 
@@ -213,7 +218,7 @@ public class DFTSemantics {
 	 * @param succs a list of generated successor nodes
 	 * @param recoveryActions  mapping for state to recovery action
 	 */
-	public void determinizeSuccs(FaultTreeHelper ftHelper, IRecoveryStrategy recoveryStrategy, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions) {
+	public void determinizeSuccs(FaultTreeHelper ftHelper, RecoveryStrategy recoveryStrategy, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions) {
 		List<RecoveryAction> chosenRecoveryActions = recoveryStrategy.getRecoveryActions();
 		for (Entry<ExplicitDFTState, List<RecoveryAction>> entry : recoveryActions.entrySet()) {
 			if (ftHelper.hasEquivalentRecoveryActions(entry.getValue(), chosenRecoveryActions)) {

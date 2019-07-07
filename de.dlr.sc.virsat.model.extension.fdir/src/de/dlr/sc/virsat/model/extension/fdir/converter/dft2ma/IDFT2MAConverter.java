@@ -12,7 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Interface for converting a Fault tree to a Markov automaton.
@@ -39,5 +39,5 @@ public interface IDFT2MAConverter {
 	 * Sets the recovery strategy
 	 * @param recoveryStrategy the recovery strategy
 	 */
-	void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy);
+	void setRecoveryStrategy(RecoveryStrategy recoveryStrategy);
 }

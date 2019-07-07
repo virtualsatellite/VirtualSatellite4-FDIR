@@ -26,7 +26,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Fault Tree Evaluator using the STORM Engine.
@@ -107,7 +107,7 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 	}
 
 	@Override
-	public void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy) {
+	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		// TODO Auto-generated method stub
 	}
 

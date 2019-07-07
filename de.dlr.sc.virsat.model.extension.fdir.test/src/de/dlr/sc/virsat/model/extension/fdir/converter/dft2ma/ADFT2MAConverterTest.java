@@ -27,7 +27,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -362,7 +362,7 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		ca.setClaimSpare(helper.getSpares(spareGate).get(0));
 		raHelper.assignAction(t, ca);
 		
-		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
@@ -397,7 +397,7 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		ca.setClaimSpare(helper.getSpares(spareGate).get(0));
 		raHelper.assignAction(t1, ca);
 		
-		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);

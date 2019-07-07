@@ -27,7 +27,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -50,7 +50,7 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 	private Set<BasicEvent> orderDependentBasicEvents;
 	private Map<Set<BasicEvent>, List<ExplicitDFTState>> mapUnorderedBesToMarkovianDFTStates;
 	private FaultTreeHolder ftHolder;
-	private IRecoveryStrategy recoveryStrategy;
+	private RecoveryStrategy recoveryStrategy;
 	
 	@Override
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
@@ -59,6 +59,8 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 		init();
 		staticAnalysis();
 		buildMA();
+		
+		System.out.println(ma.toDot());
 		
 		return ma;
 	}
@@ -78,6 +80,10 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 			if (be.isSetRepairRate() && be.getRepairRate() > 0) {
 				transientNodes.add(be);			
 			}
+		}
+		
+		if (recoveryStrategy != null) {
+			events.addAll(recoveryStrategy.createEventSet());
 		}
 	}
 	
@@ -150,6 +156,7 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 			
 			for (IDFTEvent event : occurableEvents) {
 				ExplicitDFTState baseSucc = dftSemantics.getStateGenerator().generateState(state);
+				baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
 				event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
 				Double rate = event.getRate(state);
 				
@@ -166,7 +173,7 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 				if (succs.size() > 1) { 
 					if (recoveryStrategy != null) {
 						Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(ftHolder, baseSucc, event, changedNodes);
-						IRecoveryStrategy recoveryStrategy = state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
+						RecoveryStrategy recoveryStrategy = state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
 						dftSemantics.determinizeSuccs(ftHelper, recoveryStrategy, succs, mapStateToRecoveryActions);
 					} else {
 						markovSucc = dftSemantics.getStateGenerator().generateState(baseSucc);
@@ -266,7 +273,7 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 	}
 	
 	@Override
-	public void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy) {
+	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		this.recoveryStrategy = recoveryStrategy;
 	}
 }

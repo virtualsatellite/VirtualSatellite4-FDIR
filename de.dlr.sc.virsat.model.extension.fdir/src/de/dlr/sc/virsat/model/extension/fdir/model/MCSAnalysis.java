@@ -15,7 +15,7 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 import java.util.List;
 import java.util.Set;
@@ -102,7 +102,7 @@ public  class MCSAnalysis extends AMCSAnalysis {
 			
 			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
 			if (ra != null) {
-				ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+				ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 			}
 			if (monitor != null) {
 				if (monitor.isCanceled()) {

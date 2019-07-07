@@ -18,7 +18,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.test.TestActivator;
 
@@ -46,7 +46,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
-		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);
 		System.out.println(ra.toDot());
 		
@@ -69,7 +69,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
-		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);
 		
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
