@@ -30,7 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.EngineExecutionPreference;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * This class provides a configureable evaluation workflow for fault trees.
@@ -113,7 +113,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 
 	@Override
-	public void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy) {
+	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		evaluator.setRecoveryStrategy(recoveryStrategy);
 	}
 	

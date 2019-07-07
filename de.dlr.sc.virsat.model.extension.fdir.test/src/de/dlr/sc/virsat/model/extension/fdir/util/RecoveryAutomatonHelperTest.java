@@ -22,9 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
@@ -47,7 +49,7 @@ public class RecoveryAutomatonHelperTest extends ATestCase {
 	}
 	
 	@Test 
-	public void inputsTest() {
+	public void testComputeInputs() {
 		
 		final int STATES = 4;
 
@@ -61,10 +63,10 @@ public class RecoveryAutomatonHelperTest extends ATestCase {
 		ra.setInitial(ra.getStates().get(0));
 		
 		//CHECKSTYLE:OFF
-		Transition transition01 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		Transition transition02 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
-		Transition transition13 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(1), ra.getStates().get(3));
-		Transition transition23 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(2), ra.getStates().get(3));
+		FaultEventTransition transition01 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition02 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
+		FaultEventTransition transition13 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(3));
+		FaultEventTransition transition23 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(3));
 		//CHECKSTYLE:ON
 		
 		recoveryAutomatonHelper.assignInputs(transition01, fault1);
@@ -88,6 +90,24 @@ public class RecoveryAutomatonHelperTest extends ATestCase {
 		assertEquals(inputs.get(ra.getStates().get(2)).size(), 1);
 		assertEquals(inputs.get(ra.getStates().get(3)).size(), 2);
 		//CHECKSTYLE:ON
+	}
+	
+	@Test
+	public void testCopyRA() {
+		final int NUMBER_STATES = 2;
+		
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		recoveryAutomatonHelper.createStates(ra, NUMBER_STATES);
+		
+		recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		recoveryAutomatonHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
+		
+		RecoveryAutomaton raCopy = recoveryAutomatonHelper.copyRA(ra);
+		
+		assertEquals(ra.getStates().size(), raCopy.getStates().size());
+		assertEquals(ra.getTransitions().size(), raCopy.getTransitions().size());
+		assertTrue(ra.getTransitions().get(0) instanceof FaultEventTransition);
+		assertTrue(ra.getTransitions().get(1) instanceof TimedTransition);
 	}
 
 }

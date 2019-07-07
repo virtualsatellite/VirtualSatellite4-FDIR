@@ -163,6 +163,14 @@
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.Transition"
 		pathToImage="resources/icons/Transition.gif">
 	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FaultEventTransition"
+		pathToImage="resources/icons/FaultEventTransition.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.TimedTransition"
+		pathToImage="resources/icons/TimedTransition.gif">
+	</conceptImage>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
 	<command
@@ -282,8 +290,12 @@
 		name="Add State">
 	</command>
 	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition"
-		name="Add Transition">
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition"
+		name="Add FaultEventTransition">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
+		name="Add TimedTransition">
 	</command>
 	</extension>
 	<extension point="org.eclipse.ui.commandImages">
@@ -433,9 +445,14 @@
 	      icon="resources/icons/State.gif">
 	</image>
 	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition"
-	      disabledIcon="resources/icons/Transition_disabled.gif"
-	      icon="resources/icons/Transition.gif">
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition"
+	      disabledIcon="resources/icons/FaultEventTransition_disabled.gif"
+	      icon="resources/icons/FaultEventTransition.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
+	      disabledIcon="resources/icons/TimedTransition_disabled.gif"
+	      icon="resources/icons/TimedTransition.gif">
 	</image>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
@@ -556,8 +573,12 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddState">
 	</handler>
 	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTransitionHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition">
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFaultEventTransitionHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTimedTransitionHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition">
 	</handler>
 	</extension>
 	<extension point="org.eclipse.ui.menus">
@@ -1243,7 +1264,29 @@
 			</visibleWhen>
 		</command>
 		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1653,9 +1696,14 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonStatesState">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsFaultEventTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsFaultEventTransition">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTimedTransition"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTimedTransition">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetClaimAction"
@@ -1688,29 +1736,49 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionState">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransition">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFaultEventTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFaultEventTransition">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransitionGuards"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransitionGuards"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransitionGuards">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionGuards">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransitionRecoveryActionsClaimAction"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransitionRecoveryActionsClaimAction"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransitionRecoveryActionsClaimAction">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionRecoveryActionsClaimAction">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransitionRecoveryActionsFreeAction"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransitionRecoveryActionsFreeAction"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransitionRecoveryActionsFreeAction">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionRecoveryActionsFreeAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransition"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransition">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTimedTransition"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTimedTransition">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsClaimAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsClaimAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsFreeAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsFreeAction">
 		</uiSnippet>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->

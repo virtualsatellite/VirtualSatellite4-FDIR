@@ -171,11 +171,19 @@ public class ExplicitDFTState extends DFTState {
 	
 	@Override
 	public String getLabel() {
-		if (failedNodes.isEmpty() && mapSpareToClaimedSpares.isEmpty()) {
-			return index + " initial";
-		} else {
-			return index + " " + unorderedBes.toString() + orderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
+		String raSuffix = "";
+		if (recoveryStrategy != null) {
+			raSuffix = ", " +  recoveryStrategy.getCurrentState();
 		}
+		
+		String ftInfix = "";
+		if (failedNodes.isEmpty() && mapSpareToClaimedSpares.isEmpty()) {
+			ftInfix = " initial";
+		} else {
+			ftInfix = " " + unorderedBes.toString() + orderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
+		}
+		
+		return index + ftInfix + raSuffix;
 	}
 	
 	/**
@@ -393,8 +401,13 @@ public class ExplicitDFTState extends DFTState {
 	 * @return true iff also the claims and the order of the ordered failed basic events match
 	 */
 	public boolean isEquivalent(ExplicitDFTState other) {
-		boolean sameClaims = other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares());
-		
+		if (recoveryStrategy != null) {
+			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {
+				return false;
+			}
+		}
+			
+		boolean sameClaims = other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares());	
 		if (sameClaims) {
 			boolean sameFms = orderedBes.equals(other.orderedBes);
 			if (sameFms) {
