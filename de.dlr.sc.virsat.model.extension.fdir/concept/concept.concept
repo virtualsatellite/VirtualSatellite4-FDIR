@@ -234,8 +234,6 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		IsAbstract;
 		Reference from of Type State;
 		Reference to of Type State;
-		Reference guards [] of Type FaultTreeNode;
-		BooleanProperty isRepair default false;
 		Type recoveryActions [] of Category RecoveryAction;
 	}
 	

@@ -183,10 +183,6 @@
   <categories name="Transition" isAbstract="true">
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="from" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="to" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
-    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="guards" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode">
-      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
-    </properties>
-    <properties xsi:type="dvlm_cppd:BooleanProperty" name="isRepair" defaultValue="false"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="recoveryActions" type="de.dlr.sc.virsat.model.extension.fdir.RecoveryAction">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
