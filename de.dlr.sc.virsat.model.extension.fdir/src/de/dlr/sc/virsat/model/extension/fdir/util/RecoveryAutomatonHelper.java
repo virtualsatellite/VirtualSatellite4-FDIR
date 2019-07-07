@@ -335,6 +335,8 @@ public class RecoveryAutomatonHelper {
 				newTransition = copyFaultEventTransition((FaultEventTransition) transition);
 			} else if (transition instanceof TimedTransition) {
 				newTransition = copyTimedTransition((TimedTransition) transition);
+			} else {
+				throw new RuntimeException("Unknown transition type " +  transition);
 			}
 			
 			newTransition.setFrom(mapOldStateToNewState.get(transition.getFrom()));
