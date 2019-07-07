@@ -75,19 +75,37 @@ public class RecoveryAutomatonHelper {
 
 
 	/**
-	 * Creates a transition from a state to another state
+	 * Creates a fault event guarded transition from a state to another state
 	 * @param ra Recovery Automaton to add the transition to  
 	 * @param presentState the present state from which the transition is created
 	 * @param successorState the next state to which the transition is created
 	 * @return transition between the present and the successor states
 	 */
-	
 	public FaultEventTransition createFaultEventTransition(RecoveryAutomaton ra, State presentState, State successorState) {
 		FaultEventTransition transition = new FaultEventTransition(concept);
 		
 		transition.setFrom(presentState);
 		transition.setTo(successorState);
 		ra.getTransitions().add(transition);
+		
+		return transition; 
+	}
+	
+	/**
+	 * Creates a timed transition from a state to another state
+	 * @param ra Recovery Automaton to add the transition to  
+	 * @param presentState the present state from which the transition is created
+	 * @param successorState the next state to which the transition is created
+	 * @param time the time guard
+	 * @return transition between the present and the successor states
+	 */
+	public TimedTransition createTimedTransition(RecoveryAutomaton ra, State presentState, State successorState, float time) {
+		TimedTransition transition = new TimedTransition(concept);
+		
+		transition.setFrom(presentState);
+		transition.setTo(successorState);
+		ra.getTransitions().add(transition);
+		transition.setTime(time);
 		
 		return transition; 
 	}

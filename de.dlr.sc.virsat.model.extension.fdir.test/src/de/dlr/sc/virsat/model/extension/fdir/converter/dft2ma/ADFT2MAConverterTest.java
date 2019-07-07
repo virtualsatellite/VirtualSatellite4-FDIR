@@ -369,6 +369,41 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateColdSpare2WithTimedRa() throws IOException {
+		final double[] EXPECTED = {
+			9.9e-05,
+			0.0003921,
+			0.0008735,
+			0.0015375
+		};
+		final double EXPECTEDMTTF = 1.5;
+		
+		Fault fault = createDFT("/resources/galileo/csp2.dft");
+		
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		State s0 = raHelper.createSingleState(ra, 0);
+		ra.setInitial(s0);
+		State s1 = raHelper.createSingleState(ra, 1);
+		
+		raHelper.createTimedTransition(ra, s0, s1, 1);
+		
+		FaultEventTransition t1 = raHelper.createFaultEventTransition(ra, s1, s1);
+		SPARE spareGate = (SPARE) helper.getChildren(fault).get(0);
+		Fault faultA = (Fault) helper.getChildren(spareGate).get(0);
+		BasicEvent be = faultA.getBasicEvents().get(0);
+		raHelper.assignInputs(t1, be);
+		ClaimAction ca = new ClaimAction(concept);
+		ca.setSpareGate(spareGate);
+		ca.setClaimSpare(helper.getSpares(spareGate).get(0));
+		raHelper.assignAction(t1, ca);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(ftEvaluator, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testEvaluateColdSpare3() throws IOException {
 		final double[] EXPECTED = {
 			1.03e-05,
