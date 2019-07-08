@@ -20,7 +20,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.test.TestActivator;
@@ -83,9 +82,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
-		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
-		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 
 		final int NUM_STATES = 2;
@@ -105,9 +102,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
-		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
-		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		System.out.println(ra.toDot());
@@ -123,19 +118,17 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateCM1() throws IOException {
 		final double[] EXPECTED = {
-			6.26785e-05,
-			0.000463328,
-			0.00168649,
-			0.00428919
+			2.803584434531355e-04,
+			0.001814592976612034,
+			0.005429907093144522,
+			0.011686562300949988
 		};
 		
 		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm1.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
-		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
-		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
@@ -147,19 +140,39 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateCM2() throws IOException {
 		final double[] EXPECTED = {
-			3.79089e-05,
-			0.000151929,
-			0.000374514,
-			0.00079721
+			5.3201174491172875e-05,
+			3.447393133310826e-04,
+			0.0011910623555364203,
+			0.002982714823326954
 		};
 
 		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm2.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
-		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
-		synthesizer.setModularizer(modularizer);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		ftEvaluator.evaluateFaultTree(fault);
+		
+		assertIterationResultsEquals(ftEvaluator, EXPECTED);
+	}
+	
+	@Test
+	public void testEvaluateCM3() throws IOException {
+		final double[] EXPECTED = {
+			6.16556000812423e-08,
+			2.4408204974576935e-06,
+			2.1472266922680997e-05,
+			9.927550244312611e-05
+		};
+
+		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm3.dft");
+		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
+		Fault fault = converter.convert();
+		
+		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));

@@ -48,7 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimize
 public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
-	protected Modularizer modularizer;
+	protected Modularizer modularizer = new Modularizer();
 	protected Concept concept;
 	
 	@Override
@@ -68,19 +68,20 @@ public abstract class ASynthesizer implements ISynthesizer {
 						.map(module -> convertToRecoveryAutomaton(module))
 						.collect(Collectors.toSet());
 			
+			if (minimizer != null) {
+				ras.forEach(ra -> minimizer.minimize(ra));
+			}
+			ras.stream().forEach(ra -> remapToGeneratorNodes(ra, conversionResult.getMapGeneratedToGenerator()));
+			
 			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
+			if (minimizer != null) {
+				minimizer.minimize(synthesizedRA);
+			}
+			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 		}
-		
-		System.out.println(synthesizedRA.toDot());
-		
-		if (minimizer != null) {
-			minimizer.minimize(synthesizedRA);
-		}
-		
-		remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 		
 		return synthesizedRA;
 	}

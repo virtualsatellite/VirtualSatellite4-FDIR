@@ -18,6 +18,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
@@ -87,7 +88,14 @@ public class ParallelComposer {
 						toState = createNewState(result, toPos);
 						dfsStack.push(toState);
 					}
-					rah.createFaultEventTransition(result, fromState, toState);
+					
+					if (t instanceof FaultEventTransition) {
+						FaultEventTransition copiedTransition = rah.copyFaultEventTransition((FaultEventTransition) t);
+						copiedTransition.setFrom(fromState);
+						copiedTransition.setTo(toState);
+						result.getTransitions().add(copiedTransition);
+					}
+					
 				}
 				currRA++;
 			}	
