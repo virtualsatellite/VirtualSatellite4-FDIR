@@ -48,14 +48,18 @@ public class ParallelComposerTest {
 	
 	@Test
 	public void testNull() {
-		RecoveryAutomaton result = pc.compose(null);
+		RecoveryAutomaton result = pc.compose(null, null);
 		assertNull(result);
 	}
 	
 	@Test
 	public void testNone() {
-		RecoveryAutomaton result = pc.compose(new HashSet<RecoveryAutomaton>());
-		assertNull(result);
+		RecoveryAutomaton result = pc.compose(new HashSet<RecoveryAutomaton>(), concept);
+		
+		final int NUM_STATES = 0;
+		final int NUM_TRANSITIONS = 0;
+		assertEquals(NUM_STATES, result.getStates().size());
+		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 	}
 	
 	@Test
@@ -69,7 +73,7 @@ public class ParallelComposerTest {
 		
 		Set<RecoveryAutomaton> ras = new HashSet<RecoveryAutomaton>();
 		ras.add(ra1);
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		assertEquals(ra1, result);
 	}
@@ -99,17 +103,17 @@ public class ParallelComposerTest {
 		ras.add(ra1);
 		ras.add(ra2);
 		
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		final int NUM_STATES = 4;
 		final int NUM_TRANSITIONS = 4;
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
-		
-		State r0 = rahelp.getState(result, "00");
-		State r1 = rahelp.getState(result, "01");
-		State r2 = rahelp.getState(result, "10");
-		State r3 = rahelp.getState(result, "11");
+
+		State r0 = rahelp.getState(result, "[0, 0]");
+		State r1 = rahelp.getState(result, "[0, 1]");
+		State r2 = rahelp.getState(result, "[1, 0]");
+		State r3 = rahelp.getState(result, "[1, 1]");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r0, r2));
@@ -145,19 +149,19 @@ public class ParallelComposerTest {
 		ras.add(ra1);
 		ras.add(ra2);
 		
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		final int NUM_STATES = 6;
 		final int NUM_TRANSITIONS = 10;
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 		
-		State r0 = rahelp.getState(result, "00");
-		State r1 = rahelp.getState(result, "01");
-		State r2 = rahelp.getState(result, "02");
-		State r3 = rahelp.getState(result, "10");
-		State r4 = rahelp.getState(result, "11");
-		State r5 = rahelp.getState(result, "12");
+		State r0 = rahelp.getState(result, "[0, 0]");
+		State r1 = rahelp.getState(result, "[0, 1]");
+		State r2 = rahelp.getState(result, "[0, 2]");
+		State r3 = rahelp.getState(result, "[1, 0]");
+		State r4 = rahelp.getState(result, "[1, 1]");
+		State r5 = rahelp.getState(result, "[1, 2]");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r1, r2));
@@ -197,21 +201,21 @@ public class ParallelComposerTest {
 		ras.add(ra2);
 		ras.add(ra3);
 		
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		final int NUM_STATES = 8;
 		final int NUM_TRANSITIONS = 12;
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 		
-		State r0 = rahelp.getState(result, "000");
-		State r1 = rahelp.getState(result, "001");
-		State r2 = rahelp.getState(result, "010");
-		State r3 = rahelp.getState(result, "011");
-		State r4 = rahelp.getState(result, "100");
-		State r5 = rahelp.getState(result, "101");
-		State r6 = rahelp.getState(result, "110");
-		State r7 = rahelp.getState(result, "111");
+		State r0 = rahelp.getState(result, "[0, 0, 0]");
+		State r1 = rahelp.getState(result, "[0, 0, 1]");
+		State r2 = rahelp.getState(result, "[0, 1, 0]");
+		State r3 = rahelp.getState(result, "[0, 1, 1]");
+		State r4 = rahelp.getState(result, "[1, 0, 0]");
+		State r5 = rahelp.getState(result, "[1, 0, 1]");
+		State r6 = rahelp.getState(result, "[1, 1, 0]");
+		State r7 = rahelp.getState(result, "[1, 1, 1]");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r0, r2));

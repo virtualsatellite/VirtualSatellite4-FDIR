@@ -69,7 +69,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 						.collect(Collectors.toSet());
 			
 			ParallelComposer pc = new ParallelComposer();
-			synthesizedRA = pc.compose(ras);
+			synthesizedRA = pc.compose(ras, concept);
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 		}

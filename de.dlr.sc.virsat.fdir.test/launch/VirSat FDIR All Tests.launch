@@ -53,6 +53,7 @@
 <setEntry value="de.dlr.sc.virsat.license.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.model.calculation.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.model.extension.fdir.feature:default"/>
+<setEntry value="de.dlr.sc.virsat.model.extension.fs.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.model.extension.ps.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.model.extension.tests.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.model.extension.visualisation.feature:default"/>
@@ -97,6 +98,7 @@
 <setEntry value="org.eclipse.xtext.xbase.lib:default"/>
 <setEntry value="org.eclipse.xtext.xbase:default"/>
 <setEntry value="org.eclipse.xtext.xtext.ui:default"/>
+<setEntry value="org.polarion.eclipse.team.svn.connector:default"/>
 </setAttribute>
 <booleanAttribute key="show_selected_only" value="false"/>
 <booleanAttribute key="tracing" value="false"/>
