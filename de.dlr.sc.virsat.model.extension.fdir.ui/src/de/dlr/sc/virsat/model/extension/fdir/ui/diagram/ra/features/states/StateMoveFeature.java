@@ -18,7 +18,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatMoveShapeFeature;
-import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionCreateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.FaultEventTransitionCreateFeature;
 
 /**
  * This class handles the drag & drop behavior of statesfor easy reconnection
@@ -53,7 +53,8 @@ public class StateMoveFeature extends VirSatMoveShapeFeature {
 			CreateConnectionContext createConnectionContext = new CreateConnectionContext();
 			createConnectionContext.setSourceAnchor(movedObjectAnchor);
 			createConnectionContext.setTargetAnchor(end);
-			new TransitionCreateFeature(getFeatureProvider()).create(createConnectionContext);
+			new FaultEventTransitionCreateFeature(getFeatureProvider()).create(createConnectionContext);
+
 		}
 		
 		super.moveShape(context);

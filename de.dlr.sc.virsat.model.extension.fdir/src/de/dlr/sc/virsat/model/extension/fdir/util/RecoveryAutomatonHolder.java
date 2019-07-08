@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -72,7 +73,10 @@ public class RecoveryAutomatonHolder {
 	 */
 	public List<Transition> getTransitions() {
 		if (transitions == null) {
-			transitions = new ArrayList<>(ra.getTransitions());
+			transitions = new ArrayList<>();
+			for (Transition transition : ra.getTransitions()) {
+				transitions.add(transition);
+			}
 		}
 		return transitions;
 	}
@@ -123,7 +127,9 @@ public class RecoveryAutomatonHolder {
 			mapTransitionToGuards = new HashMap<>();
 			
 			for (Transition transition : getTransitions()) {
-				mapTransitionToGuards.put(transition, new HashSet<>(transition.getGuards()));
+				if (transition instanceof FaultEventTransition) {
+					mapTransitionToGuards.put(transition, new HashSet<>(((FaultEventTransition) transition).getGuards()));
+				}
 			}
 		}
 		return mapTransitionToGuards;

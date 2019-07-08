@@ -24,11 +24,11 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
@@ -72,8 +72,7 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		raHelper.createStates(ra, 2);
 		ra.setInitial(ra.getStates().get(0));
 		
-		Transition transition = raHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		
+		FaultEventTransition transition = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
 		List<FaultTreeNode> allNodes = ftHelper.getAllNodes(root);
 		
 		ClaimAction ca = new ClaimAction(concept);
@@ -83,7 +82,7 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		raHelper.assignInputs(transition, allNodes.stream().filter(node -> node instanceof SPARE && node.getName().equals("tle")).findFirst().get());
 		raHelper.assignAction(transition, ca);
 		
-		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(root, Reliability.UNIT_RELIABILITY);
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
 	}

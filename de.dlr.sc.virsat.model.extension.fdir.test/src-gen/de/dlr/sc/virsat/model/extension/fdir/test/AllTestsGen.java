@@ -30,15 +30,16 @@ import de.dlr.sc.virsat.model.extension.fdir.model.PDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTETest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v0Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysisTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysisTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CutSetTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeActionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ORTest;
+import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirementTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.TransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARETest;
@@ -47,6 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.StateTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
@@ -86,8 +88,10 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	ClaimActionTest.class,
 	FreeActionTest.class,
 	StateTest.class,
-	TransitionTest.class,
+	FaultEventTransitionTest.class,
+	TimedTransitionTest.class,
 	Migrator1v0Test.class,
+	Migrator1v1Test.class,
 				})
 
 /**

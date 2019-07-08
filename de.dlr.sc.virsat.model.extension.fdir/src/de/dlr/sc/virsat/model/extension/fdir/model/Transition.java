@@ -9,17 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 // *****************************************************************
@@ -34,7 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
  * 
  * 
  */	
-public class Transition extends ATransition {
+public abstract class Transition extends ATransition {
 	
 	/**
 	 * Constructor of Concept Class
@@ -63,17 +59,6 @@ public class Transition extends ATransition {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(); 
-		
-		String faultType = getIsRepair() ? "R" : "F";
-		sb.append("{");
-		
-		for (FaultTreeNode guard : getGuards()) {
-			StructuralElementInstance guardSei = VirSatEcoreUtil.getEContainerOfClass(guard.getATypeInstance(), StructuralElementInstance.class);
-			String parentPrefix = guardSei != null ? (guard.getParent().getName() + ".") : "";
-			sb.append(faultType + "(" +  parentPrefix + guard.toString() + ")");
-		}
-
-		sb.append("}");
 		sb.append(" : ");
 		
 		if (getRecoveryActions().isEmpty()) {
@@ -99,23 +84,14 @@ public class Transition extends ATransition {
 	}
 	
 	/**
-	 * Checks whether transitions have equivalent guards 
-	 * @param transition to which the guards with 
-	 * @return true if guards are equivalent, and false otherwise  
-	 */
-	public boolean hasEquivalentGuards(Transition transition) {
-		Set<FaultTreeNode> guards = new HashSet<>(getGuards());
-		Set<FaultTreeNode> guardsOther = new HashSet<>(transition.getGuards());
-		
-		return guards.equals(guardsOther);
-	}
-	
-	/**
 	 * Checks whether transitions are equivalent 
 	 * @param transition to check the equivalence 
 	 * @return true if equivalent, false otherwise 
 	 */
 	public boolean isEquivalentTransition(Transition transition) {
-		return Objects.equals(getFrom(), transition.getFrom()) && Objects.equals(getTo(), transition.getTo()) && hasEquivalentGuards(transition) && hasEquivalentRecoveryActions(transition);
+		return Objects.equals(getFrom(), transition.getFrom()) 
+				&& Objects.equals(getTo(), transition.getTo()) 
+				&& hasEquivalentRecoveryActions(transition);
+
 	}
 }

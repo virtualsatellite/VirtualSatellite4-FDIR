@@ -14,7 +14,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetGenericCategoryAssignmentTable;
-import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddTransitionCommand;
+import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddTimedTransitionCommand;
 
 ;
 
@@ -26,16 +26,16 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddTransitionComma
  * 
  * 
  */	
-public abstract class AUiSnippetTableTransition extends AUiSnippetGenericCategoryAssignmentTable implements IUiSnippet {
-	public AUiSnippetTableTransition() {
+public abstract class AUiSnippetTableTimedTransition extends AUiSnippetGenericCategoryAssignmentTable implements IUiSnippet {
+	public AUiSnippetTableTimedTransition() {
 		super("de.dlr.sc.virsat.model.extension.fdir",
-			"Transition",
-			"de.dlr.sc.virsat.model.extension.fdir.Transition",
+			"TimedTransition",
+			"de.dlr.sc.virsat.model.extension.fdir.TimedTransition",
 			STYLE_ADD_BUTTON | STYLE_REMOVE_BUTTON | STYLE_EDITOR_BUTTON);
 	}
 
 	@Override
 	protected Command createAddCommand(EditingDomain editingDomain, Concept activeConcept) {
-		return new CreateAddTransitionCommand().create(editingDomain, model, activeConcept);
+		return new CreateAddTimedTransitionCommand().create(editingDomain, model, activeConcept);
 	}
 }

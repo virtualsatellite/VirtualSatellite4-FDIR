@@ -15,7 +15,7 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Interface for evaluating fault trees.
@@ -54,7 +54,7 @@ public interface IFaultTreeEvaluator {
 	 * Sets the recovery strategy for the fault tree evaluation
 	 * @param recoveryStrategy the recovery strategy
 	 */
-	void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy);
+	void setRecoveryStrategy(RecoveryStrategy recoveryStrategy);
 	
 	/**
 	 * Computes the long run availability

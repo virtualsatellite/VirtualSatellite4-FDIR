@@ -7,25 +7,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.recovery;
+package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-import java.util.List;
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 
 /**
- * Abstract base class for recovery strategies.
- * @author muel_s8
- *
+ * Auto Generated Class inheriting from Generator Gap Class
+ * 
+ * This class is generated once, do your changes here
+ * 
+ * 
+ * 
  */
-
-public abstract class ARecoveryStrategy implements IRecoveryStrategy {
-
-	protected List<RecoveryAction> recoveryAction;
-	
-	@Override
-	public List<RecoveryAction> getRecoveryActions() {
-		return recoveryAction;
-	}
-
+public class UiSnippetTableFaultEventTransitionRecoveryActionsClaimAction extends AUiSnippetTableFaultEventTransitionRecoveryActionsClaimAction implements IUiSnippet {
 }

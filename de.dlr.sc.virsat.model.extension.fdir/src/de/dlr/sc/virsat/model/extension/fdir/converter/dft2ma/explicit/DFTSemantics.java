@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,7 +24,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -70,9 +71,28 @@ public class DFTSemantics {
 	 * @return the list of updated nodes
 	 */
 	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, ExplicitDFTState pred, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
+		if (event.getNode() == null) {
+			return Collections.emptyList();
+		}
+		
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
 		worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
-		return updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
+
+		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
+		boolean existsNonTLESucc = existsNonTLE(ftHolder, succs);
+		
+		if (!existsNonTLESucc) {
+			ExplicitDFTState baseSucc = succs.get(0);
+			succs.clear();
+			succs.add(baseSucc);
+			recoveryActions.clear();
+			recoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
+		} else {
+			ExplicitDFTState baseSucc = succs.remove(0);
+			succs.add(baseSucc);
+		}
+		
+		return changedNodes;
 	}
 	
 	/**
@@ -156,6 +176,23 @@ public class DFTSemantics {
 	}
 	
 	/**
+	 * Checks if in the set of states contains a state without the TLE triggered
+	 * @param ftHolder the fault tree holder
+	 * @param states set of states
+	 * @return true iff there exists a node without a failed TLE
+	 */
+	private boolean existsNonTLE(FaultTreeHolder ftHolder, List<ExplicitDFTState> states) {
+		for (ExplicitDFTState state : states) {
+			if (!state.hasFaultTreeNodeFailed(ftHolder.getRoot())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	
+	/**
 	 * Extracts the occured event set for recovery strategies
 	 * @param ftHolder the fault tree holder
 	 * @param pred the predecessor state
@@ -181,7 +218,7 @@ public class DFTSemantics {
 	 * @param succs a list of generated successor nodes
 	 * @param recoveryActions  mapping for state to recovery action
 	 */
-	public void determinizeSuccs(FaultTreeHelper ftHelper, IRecoveryStrategy recoveryStrategy, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions) {
+	public void determinizeSuccs(FaultTreeHelper ftHelper, RecoveryStrategy recoveryStrategy, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions) {
 		List<RecoveryAction> chosenRecoveryActions = recoveryStrategy.getRecoveryActions();
 		for (Entry<ExplicitDFTState, List<RecoveryAction>> entry : recoveryActions.entrySet()) {
 			if (ftHelper.hasEquivalentRecoveryActions(entry.getValue(), chosenRecoveryActions)) {

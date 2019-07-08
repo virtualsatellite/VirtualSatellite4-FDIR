@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -61,8 +62,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 		normalizeRates();	
 		
 		RecoveryAutomaton ra = computeMarkovAutomatonSchedule(dft2Ma.getInitial());
-		
-		System.out.println(ra.toDot());
 		
 		if (minimizer != null) {
 			minimizer.minimize(ra);
@@ -106,15 +105,17 @@ public abstract class ASynthesizer implements ISynthesizer {
 		// We do this by comparing two successive states and using the delta
 				
 		for (Transition t : ra.getTransitions()) {
+			if (t instanceof FaultEventTransition) {
+				FaultEventTransition fet = (FaultEventTransition) t;
+				List<FaultTreeNode> generatorGuards = new ArrayList<>();
+				
+				for (FaultTreeNode guard : fet.getGuards()) {
+					generatorGuards.add(mapGeneratedToGenerator.get(guard));
+				}
 			
-			List<FaultTreeNode> generatorGuards = new ArrayList<>();
-			
-			for (FaultTreeNode guard : t.getGuards()) {
-				generatorGuards.add(mapGeneratedToGenerator.get(guard));
+				fet.getGuards().clear();
+				fet.getGuards().addAll(generatorGuards);
 			}
-			
-			t.getGuards().clear();
-			t.getGuards().addAll(generatorGuards);
 			
 		    for (RecoveryAction recoveryAction : t.getRecoveryActions()) {
 		    	if (recoveryAction instanceof ClaimAction) {

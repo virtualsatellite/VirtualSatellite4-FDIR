@@ -7,15 +7,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.handler;
+package de.dlr.sc.virsat.model.extension.fdir.ui.command;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoriesPackage;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.edit.command.AddCommand;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import org.eclipse.emf.ecore.EObject;
 
-import de.dlr.sc.virsat.project.ui.transactional.handler.ATransactionalAddCategoryHandler;
-import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddTransitionCommand;
+
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 
 /**
  * Auto Generated Abstract Generator Gap Class
@@ -25,15 +28,10 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddTransitionComma
  * 
  * 
  */	
-public abstract class AAddTransitionHandler extends ATransactionalAddCategoryHandler {
-	
-	@Override
-	protected String getConceptName() {
-		return "de.dlr.sc.virsat.model.extension.fdir";
-	}
-	
-	@Override
-	protected Command createAddCommand(EditingDomain editingDomain, EObject owner, Concept activeConcept) {
-		return new CreateAddTransitionCommand().create(editingDomain, owner, activeConcept);
+public abstract class ACreateAddFaultEventTransitionCommand {
+	public Command create(EditingDomain editingDomain, EObject owner, Concept activeConcept) {
+		FaultEventTransition conceptObject = new FaultEventTransition(activeConcept);
+		CategoryAssignment ca = conceptObject.getTypeInstance();
+		return AddCommand.create(editingDomain, owner, CategoriesPackage.Literals.ICATEGORY_ASSIGNMENT_CONTAINER__CATEGORY_ASSIGNMENTS, ca);
 	}
 }
