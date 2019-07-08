@@ -168,28 +168,4 @@ public class BasicSynthesizerTest extends ATestCase {
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
 	}
 	
-	@Test
-	public void testEvaluateCM3() throws IOException {
-		final double[] EXPECTED = {
-			3.9285940392535636E-9,
-			2.14672716459039E-7,
-			2.84423746211353E-6,
-			1.839713418160933E-5
-		};
-		
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm3.dft");
-		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
-		Fault fault = converter.convert();
-		
-		Modularizer modularizer = new Modularizer();
-		BasicSynthesizer synthesizer = new BasicSynthesizer();
-		synthesizer.setModularizer(modularizer);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		ftEvaluator.evaluateFaultTree(fault);
-		
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-	}
-	
 }
