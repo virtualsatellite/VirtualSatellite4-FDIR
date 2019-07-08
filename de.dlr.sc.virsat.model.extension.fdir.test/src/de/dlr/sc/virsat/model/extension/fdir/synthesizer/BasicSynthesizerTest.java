@@ -104,6 +104,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
+		
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);
