@@ -48,14 +48,18 @@ public class ParallelComposerTest {
 	
 	@Test
 	public void testNull() {
-		RecoveryAutomaton result = pc.compose(null);
+		RecoveryAutomaton result = pc.compose(null, null);
 		assertNull(result);
 	}
 	
 	@Test
 	public void testNone() {
-		RecoveryAutomaton result = pc.compose(new HashSet<RecoveryAutomaton>());
-		assertNull(result);
+		RecoveryAutomaton result = pc.compose(new HashSet<RecoveryAutomaton>(), concept);
+		
+		final int NUM_STATES = 0;
+		final int NUM_TRANSITIONS = 0;
+		assertEquals(NUM_STATES, result.getStates().size());
+		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 	}
 	
 	@Test
@@ -69,7 +73,7 @@ public class ParallelComposerTest {
 		
 		Set<RecoveryAutomaton> ras = new HashSet<RecoveryAutomaton>();
 		ras.add(ra1);
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		assertEquals(ra1, result);
 	}
@@ -99,7 +103,7 @@ public class ParallelComposerTest {
 		ras.add(ra1);
 		ras.add(ra2);
 		
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		final int NUM_STATES = 4;
 		final int NUM_TRANSITIONS = 4;
@@ -145,7 +149,7 @@ public class ParallelComposerTest {
 		ras.add(ra1);
 		ras.add(ra2);
 		
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		final int NUM_STATES = 6;
 		final int NUM_TRANSITIONS = 10;
@@ -197,7 +201,7 @@ public class ParallelComposerTest {
 		ras.add(ra2);
 		ras.add(ra3);
 		
-		RecoveryAutomaton result = pc.compose(ras);
+		RecoveryAutomaton result = pc.compose(ras, concept);
 		
 		final int NUM_STATES = 8;
 		final int NUM_TRANSITIONS = 12;

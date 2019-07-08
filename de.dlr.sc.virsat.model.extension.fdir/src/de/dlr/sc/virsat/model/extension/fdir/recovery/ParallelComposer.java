@@ -39,11 +39,15 @@ public class ParallelComposer {
 	/**
 	 * Takes a set of Recovery Automata and returns the composed Recovery Automaton
 	 * @param ras the set of Recovery Automata
+	 * @param concept the concept
 	 * @return the composed recovery automaton
 	 */
-	public RecoveryAutomaton compose(Set<RecoveryAutomaton> ras) {
-		if (ras == null || ras.isEmpty()) {
+	public RecoveryAutomaton compose(Set<RecoveryAutomaton> ras, Concept concept) {
+		this.concept = concept;
+		if (ras == null) {
 			return null;
+		} else if (ras.isEmpty()) {
+			return new RecoveryAutomaton(concept);
 		} else if (ras.size() == 1) {
 			return ras.iterator().next();
 		}
@@ -51,7 +55,6 @@ public class ParallelComposer {
 		this.mapStateToPos = new HashMap<>();
 		this.mapPosToState = new HashMap<>();
 		this.mapRAtoTransitionMap = new HashMap<>();
-		this.concept = ras.iterator().next().getConcept();
 		
 		indexStates(ras);
 		List<Integer> initialPos = ras.stream().map(ra -> 0).collect(Collectors.toList());
