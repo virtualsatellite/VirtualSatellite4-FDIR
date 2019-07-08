@@ -47,7 +47,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimize
 public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
-	protected Modularizer modularizer = new Modularizer();
+	protected Modularizer modularizer;
 	protected Concept concept;
 	
 	@Override
@@ -58,25 +58,31 @@ public abstract class ASynthesizer implements ISynthesizer {
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
 		fault = (Fault) conversionResult.getRoot();
 		
-		Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-		Set<Module> trimmedModules = trimStaticModules(modules);
+		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
+		if (modularizer != null) {
 		
-		Set<RecoveryAutomaton> ras = trimmedModules.stream()
-					.map(module -> convertToRecoveryAutomaton(module))
-					.collect(Collectors.toSet());
-		
-		ParallelComposer pc = new ParallelComposer();
-		RecoveryAutomaton composedRA = pc.compose(ras);
-		
-		System.out.println(composedRA.toDot());
-		
-		if (minimizer != null) {
-			minimizer.minimize(composedRA);
+			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
+			Set<Module> trimmedModules = trimStaticModules(modules);
+			
+			Set<RecoveryAutomaton> ras = trimmedModules.stream()
+						.map(module -> convertToRecoveryAutomaton(module))
+						.collect(Collectors.toSet());
+			
+			ParallelComposer pc = new ParallelComposer();
+			synthesizedRA = pc.compose(ras);
+		} else {
+			synthesizedRA = convertToRecoveryAutomaton(fault);
 		}
 		
-		remapToGeneratorNodes(composedRA, conversionResult.getMapGeneratedToGenerator());
+		System.out.println(synthesizedRA.toDot());
 		
-		return composedRA;
+		if (minimizer != null) {
+			minimizer.minimize(synthesizedRA);
+		}
+		
+		remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
+		
+		return synthesizedRA;
 	}
 	
 	/**
@@ -101,6 +107,11 @@ public abstract class ASynthesizer implements ISynthesizer {
 	@Override
 	public void setMinimizer(ARecoveryAutomatonMinimizer minimizer) {
 		this.minimizer = minimizer;
+	}
+	
+	@Override
+	public void setModularizer(Modularizer modularizer) {
+		this.modularizer = modularizer;
 	}
 	
 	/**

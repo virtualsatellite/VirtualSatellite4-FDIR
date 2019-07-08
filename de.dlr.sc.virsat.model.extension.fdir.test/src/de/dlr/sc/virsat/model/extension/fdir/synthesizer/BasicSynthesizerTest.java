@@ -20,6 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.test.TestActivator;
@@ -82,7 +83,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
+		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 
 		final int NUM_STATES = 2;
@@ -102,7 +105,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
+		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		System.out.println(ra.toDot());
@@ -128,7 +133,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
+		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
@@ -150,7 +157,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
+		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
@@ -172,7 +181,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
 		
+		Modularizer modularizer = new Modularizer();
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		synthesizer.setModularizer(modularizer);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
