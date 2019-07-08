@@ -84,8 +84,7 @@ public class ParallelComposer {
 					} else {
 						toState =  stateInMap;
 					}
-					Transition transition = rah.createTransition(result, fromState, toState);
-					transition.setIsRepair(t.getIsRepair());
+					rah.createFaultEventTransition(result, fromState, toState);
 				}
 				currRA++;
 			}	

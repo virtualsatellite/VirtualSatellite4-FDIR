@@ -16,8 +16,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -27,7 +25,6 @@ import org.junit.Test;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
@@ -68,7 +65,7 @@ public class ParallelComposerTest {
 		RecoveryAutomatonHelper rahelp = rahold1.getRaHelper();
 		State s10 = rahelp.createSingleState(ra1, 0);
 		State s11 = rahelp.createSingleState(ra1, 1);
-		rahelp.createTransition(ra1, s10, s11);
+		rahelp.createFaultEventTransition(ra1, s10, s11);
 		
 		Set<RecoveryAutomaton> ras = new HashSet<RecoveryAutomaton>();
 		ras.add(ra1);
@@ -85,14 +82,13 @@ public class ParallelComposerTest {
 		RecoveryAutomatonHelper rahelp = rahold1.getRaHelper();
 		State s10 = rahelp.createSingleState(ra1, 0);
 		State s11 = rahelp.createSingleState(ra1, 1);
-		Transition t1 = rahelp.createTransition(ra1, s10, s11);
-		t1.setIsRepair(true);
+		rahelp.createFaultEventTransition(ra1, s10, s11);
 		
 		RecoveryAutomaton ra2 = new RecoveryAutomaton(concept);
 		ra2.setName("ra2");
 		State s20 = rahelp.createSingleState(ra2, 0);
 		State s21 = rahelp.createSingleState(ra2, 1);
-		rahelp.createTransition(ra2, s20, s21);
+		rahelp.createFaultEventTransition(ra2, s20, s21);
 		
 		Set<RecoveryAutomaton> ras = new TreeSet<RecoveryAutomaton>(new Comparator<RecoveryAutomaton>() {
 			@Override
@@ -110,8 +106,6 @@ public class ParallelComposerTest {
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 		
-		Map<State, List<Transition>> transitionMap = rahelp.getCurrentTransitions(result);
-		
 		State r0 = rahelp.getState(result, "00");
 		State r1 = rahelp.getState(result, "01");
 		State r2 = rahelp.getState(result, "10");
@@ -121,8 +115,6 @@ public class ParallelComposerTest {
 		assertTrue(rahelp.isConnected(result, r0, r2));
 		assertTrue(rahelp.isConnected(result, r1, r3));
 		assertTrue(rahelp.isConnected(result, r2, r3));
-		assertTrue(transitionMap.get(r0).get(0).getIsRepair());
-		assertTrue(transitionMap.get(r1).get(0).getIsRepair());
 	}
 	
 	@Test
@@ -133,16 +125,16 @@ public class ParallelComposerTest {
 		ra1.setName("ra1");
 		State s10 = rahelp.createSingleState(ra1, 0);
 		State s11 = rahelp.createSingleState(ra1, 1);
-		rahelp.createTransition(ra1, s10, s11);
-		rahelp.createTransition(ra1, s11, s10);
+		rahelp.createFaultEventTransition(ra1, s10, s11);
+		rahelp.createFaultEventTransition(ra1, s11, s10);
 		
 		RecoveryAutomaton ra2 = new RecoveryAutomaton(concept);
 		ra2.setName("ra2");
 		State s20 = rahelp.createSingleState(ra2, 0);
 		State s21 = rahelp.createSingleState(ra2, 1);
 		State s22 = rahelp.createSingleState(ra2, 2);
-		rahelp.createTransition(ra2, s20, s21);
-		rahelp.createTransition(ra2, s21, s22);
+		rahelp.createFaultEventTransition(ra2, s20, s21);
+		rahelp.createFaultEventTransition(ra2, s21, s22);
 		
 		Set<RecoveryAutomaton> ras = new TreeSet<RecoveryAutomaton>(new Comparator<RecoveryAutomaton>() {
 			@Override
@@ -188,17 +180,17 @@ public class ParallelComposerTest {
 		RecoveryAutomatonHelper rahelp = rahold1.getRaHelper();
 		State s10 = rahelp.createSingleState(ra1, 0);
 		State s11 = rahelp.createSingleState(ra1, 1);
-		rahelp.createTransition(ra1, s10, s11);
+		rahelp.createFaultEventTransition(ra1, s10, s11);
 		
 		RecoveryAutomaton ra2 = new RecoveryAutomaton(concept);
 		State s20 = rahelp.createSingleState(ra2, 0);
 		State s21 = rahelp.createSingleState(ra2, 1);
-		rahelp.createTransition(ra2, s20, s21);
+		rahelp.createFaultEventTransition(ra2, s20, s21);
 		
 		RecoveryAutomaton ra3 = new RecoveryAutomaton(concept);
 		State s30 = rahelp.createSingleState(ra3, 0);
 		State s31 = rahelp.createSingleState(ra3, 1);
-		rahelp.createTransition(ra3, s30, s31);
+		rahelp.createFaultEventTransition(ra3, s30, s31);
 		
 		Set<RecoveryAutomaton> ras = new HashSet<RecoveryAutomaton>();
 		ras.add(ra1);

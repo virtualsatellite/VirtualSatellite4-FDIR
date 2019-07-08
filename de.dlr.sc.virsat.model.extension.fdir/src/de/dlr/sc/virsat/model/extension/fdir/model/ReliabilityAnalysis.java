@@ -31,7 +31,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -120,7 +120,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 			RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
 			if (ra != null) {
-				ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+				ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 			}
 
 			double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();

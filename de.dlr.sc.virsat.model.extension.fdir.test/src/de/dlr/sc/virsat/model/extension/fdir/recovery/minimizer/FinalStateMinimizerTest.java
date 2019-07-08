@@ -15,10 +15,10 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 /**
  * Class that implements the FinalStateMinimizer 
@@ -45,8 +45,8 @@ public class FinalStateMinimizerTest extends AMinimizerTestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		recoveryAutomatonHelper.createStates(ra, INITIAL_STATES); 
 	
-		Transition transition01 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		Transition transition11 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
+		FaultEventTransition transition01 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition11 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
 		
 		recoveryAutomatonHelper.assignInputs(transition01, fault);
 		recoveryAutomatonHelper.assignInputs(transition11, fault);
@@ -86,10 +86,10 @@ public class FinalStateMinimizerTest extends AMinimizerTestCase {
 		recoveryAutomatonHelper.createStates(ra, INITIAL_STATES); 
 		
 		//CHECKSTYLE:OFF
-		Transition transition01 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		Transition transition11 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
-		Transition transition01_2 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		Transition transition11_2 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
+		FaultEventTransition transition01 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition11 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
+		FaultEventTransition transition01_2 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition11_2 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
 		//CHECKSTYLE:ON
 		
 		recoveryAutomatonHelper.assignInputs(transition01, fault1);
@@ -137,10 +137,10 @@ public class FinalStateMinimizerTest extends AMinimizerTestCase {
 		recoveryAutomatonHelper.createStates(ra, INITIAL_STATES); 
 		
 		//CHECKSTYLE:OFF
-		Transition transition01 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		Transition transition02 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
-		Transition transition13 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(1), ra.getStates().get(3));
-		Transition transition23 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(2), ra.getStates().get(3));
+		FaultEventTransition transition01 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition02 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
+		FaultEventTransition transition13 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(3));
+		FaultEventTransition transition23 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(3));
 		//CHECKSTYLE:ON
 		
 		recoveryAutomatonHelper.assignInputs(transition01, fault1);

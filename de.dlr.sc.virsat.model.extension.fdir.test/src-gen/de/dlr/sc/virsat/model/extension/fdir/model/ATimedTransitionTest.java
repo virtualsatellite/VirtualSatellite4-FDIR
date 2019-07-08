@@ -15,10 +15,10 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoriesFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import java.lang.Exception;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 
 // *****************************************************************
@@ -41,7 +41,7 @@ import org.junit.Test;
  * 
  * 
  */	
-public abstract class ATransitionTest {
+public abstract class ATimedTransitionTest {
 	
 	protected Concept concept;
 	
@@ -61,24 +61,24 @@ public abstract class ATransitionTest {
 	// *****************************************************************
 	
 	@Test
-	public void testTransition() {
-		Transition testTransition = new Transition();
+	public void testTimedTransition() {
+		TimedTransition testTimedTransition = new TimedTransition();
 	
-		assertNull("There is no internal DVLM object", testTransition.getTypeInstance());
+		assertNull("There is no internal DVLM object", testTimedTransition.getTypeInstance());
 	}
 	
 	@Test
-	public void testTransitionConcept() {
-		Transition testTransition = new Transition(concept);
+	public void testTimedTransitionConcept() {
+		TimedTransition testTimedTransition = new TimedTransition(concept);
 		
-		assertNotNull("There is an internal DVLM object", testTransition.getATypeInstance());
+		assertNotNull("There is an internal DVLM object", testTimedTransition.getATypeInstance());
 	}
 	
 	@Test
-	public void testTransitionCategoryAssignment() {
+	public void testTimedTransitionCategoryAssignment() {
 		CategoryAssignment testCa = CategoriesFactory.eINSTANCE.createCategoryAssignment();
-		Transition testTransition = new Transition(testCa);
+		TimedTransition testTimedTransition = new TimedTransition(testCa);
 		
-		assertEquals("DVLM object has been set as specified", testCa, testTransition.getTypeInstance());
+		assertEquals("DVLM object has been set as specified", testCa, testTimedTransition.getTypeInstance());
 	}
 }

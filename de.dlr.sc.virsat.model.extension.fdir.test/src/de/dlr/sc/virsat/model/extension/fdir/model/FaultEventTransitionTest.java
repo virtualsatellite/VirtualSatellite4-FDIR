@@ -7,7 +7,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
+package de.dlr.sc.virsat.model.extension.fdir.model;
+
+// *****************************************************************
+// * Import Statements
+// *****************************************************************
+
 
 
 // *****************************************************************
@@ -22,5 +27,6 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
  * 
  * 
  */
-public class UiSnippetTableTransition extends AUiSnippetTableTransition {
+public class FaultEventTransitionTest extends AFaultEventTransitionTest {
+
 }

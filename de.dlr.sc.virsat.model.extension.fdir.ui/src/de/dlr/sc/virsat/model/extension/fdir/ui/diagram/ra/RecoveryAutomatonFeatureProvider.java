@@ -57,8 +57,9 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.State
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateSetAsInitialStateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateUnsetAsInitialStateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateUpdateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.FaultEventTransitionCreateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TimedTransitionCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionAddFeature;
-import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionReconnectionFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionUpdateFeature;
 
@@ -185,7 +186,7 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 	
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { new TransitionCreateFeature(this) };
+		return new ICreateConnectionFeature[] { new FaultEventTransitionCreateFeature(this), new TimedTransitionCreateFeature(this) };
 	}
 	
 	@Override

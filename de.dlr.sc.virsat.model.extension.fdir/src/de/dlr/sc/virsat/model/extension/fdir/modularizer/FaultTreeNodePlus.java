@@ -50,13 +50,7 @@ public class FaultTreeNodePlus {
 		this.firstVisit = firstVisit;
 		this.lastVisit = lastVisit;
 		
-		if (visitedFrom == null) {
-			this.visitedFrom = new HashSet<FaultTreeNodePlus>();
-		} else {
-			this.visitedFrom = visitedFrom;
-			this.determineIfHasPriorityAbove();
-			this.determineIfIsDEPDescendant();
-		}
+		this.visitedFrom = new HashSet<FaultTreeNodePlus>();
 		
 		this.depth = depth;
 		this.harvested = harvested;
@@ -109,14 +103,6 @@ public class FaultTreeNodePlus {
 	 */
 	FaultTreeNode getFaultTreeNode() {
 		return this.node;
-	}
-	
-	/**
-	 * Get set of nodes we have visited this node from
-	 * @return the set of neighbouring nodes
-	 */
-	Set<FaultTreeNodePlus> getSetFrom() {
-		return this.visitedFrom;
 	}
 	
 	/** 
@@ -270,8 +256,6 @@ public class FaultTreeNodePlus {
 	 * @return the string
 	 */
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Name: " + this.node.getName());
-		return sb.toString();
+		return "Name: " + this.node.getName();
 	}
 }

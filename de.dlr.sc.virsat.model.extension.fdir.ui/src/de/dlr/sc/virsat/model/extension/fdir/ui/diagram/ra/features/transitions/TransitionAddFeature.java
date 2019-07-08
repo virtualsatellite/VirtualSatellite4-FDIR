@@ -29,6 +29,7 @@ import org.eclipse.graphiti.util.IColorConstant;
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatAddConnectionFeature;
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
@@ -54,7 +55,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 	
 	@Override
 	public boolean canAdd(IAddContext context) {
-		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new Transition((CategoryAssignment) context.getNewObject());
+		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new FaultEventTransition((CategoryAssignment) context.getNewObject());
 		
 		for (Connection connection : getDiagram().getConnections()) {
 			Object bo = getBusinessObjectForPictogramElement(connection);
@@ -68,7 +69,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 	
 	@Override
 	public PictogramElement add(IAddContext context) {
-		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new Transition((CategoryAssignment) context.getNewObject());
+		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new FaultEventTransition((CategoryAssignment) context.getNewObject());
 		
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		

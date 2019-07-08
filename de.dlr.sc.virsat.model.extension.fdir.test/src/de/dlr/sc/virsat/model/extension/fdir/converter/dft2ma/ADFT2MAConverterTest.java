@@ -17,17 +17,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -352,7 +354,7 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		State s = raHelper.createSingleState(ra, 0);
 		ra.setInitial(s);
-		Transition t = raHelper.createTransition(ra, s, s);
+		FaultEventTransition t = raHelper.createFaultEventTransition(ra, s, s);
 		SPARE spareGate = (SPARE) helper.getChildren(fault).get(0);
 		Fault faultA = (Fault) helper.getChildren(spareGate).get(0);
 		BasicEvent be = faultA.getBasicEvents().get(0);
@@ -362,7 +364,46 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		ca.setClaimSpare(helper.getSpares(spareGate).get(0));
 		raHelper.assignAction(t, ca);
 		
-		ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(ftEvaluator, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateColdSpare2WithTimedRa() throws IOException {
+		ExplicitDFT2MAConverter converter = new ExplicitDFT2MAConverter();
+		converter.setSemantics(DFTSemantics.createNDDFTSemantics());
+		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(converter, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
+		
+		final double[] EXPECTED = {
+			0.0099009,
+			0.0196078,
+			0.0291264,
+			0.0384621
+		};
+		final double EXPECTEDMTTF = 1.25;
+		
+		Fault fault = createDFT("/resources/galileo/csp2.dft");
+		
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		State s0 = raHelper.createSingleState(ra, 0);
+		ra.setInitial(s0);
+		State s1 = raHelper.createSingleState(ra, 1);
+		
+		raHelper.createTimedTransition(ra, s0, s1, 1);
+		
+		FaultEventTransition t1 = raHelper.createFaultEventTransition(ra, s1, s1);
+		SPARE spareGate = (SPARE) helper.getChildren(fault).get(0);
+		Fault faultA = (Fault) helper.getChildren(spareGate).get(0);
+		BasicEvent be = faultA.getBasicEvents().get(0);
+		raHelper.assignInputs(t1, be);
+		ClaimAction ca = new ClaimAction(concept);
+		ca.setSpareGate(spareGate);
+		ca.setClaimSpare(helper.getSpares(spareGate).get(0));
+		raHelper.assignAction(t1, ca);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);

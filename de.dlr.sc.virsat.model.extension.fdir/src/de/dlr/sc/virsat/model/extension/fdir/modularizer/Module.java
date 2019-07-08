@@ -59,14 +59,6 @@ public class Module {
 	}
 	
 	/**
-	 * Get nodes of a module. For testing only.
-	 * @return list of FaultTreeNodePlus
-	 */
-	List<FaultTreeNodePlus> getNodesPlus() {
-		return this.moduleNodes;
-	}
-	
-	/**
 	 * Get the root node of the module
 	 * @return the root node
 	 */

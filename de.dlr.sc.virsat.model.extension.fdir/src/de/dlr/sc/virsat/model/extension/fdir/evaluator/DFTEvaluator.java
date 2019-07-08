@@ -23,7 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitD
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Evaluator for Dynamic Fault Trees, resolving non determinism using a recovery
@@ -37,7 +37,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private final IDFT2MAConverter dft2MAConverter;
 
 	private MarkovAutomaton<DFTState> mc;
-	private IRecoveryStrategy recoveryStrategy;
+	private RecoveryStrategy recoveryStrategy;
 	private IMarkovModelChecker markovModelChecker;
 
 	/**
@@ -55,7 +55,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 
 	@Override
-	public void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy) {
+	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		this.recoveryStrategy = recoveryStrategy;
 	}
 

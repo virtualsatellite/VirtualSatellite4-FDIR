@@ -10,7 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Abstract class for representing the state of a DFT
@@ -20,7 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
 
 public abstract class DFTState extends MarkovState {
 	protected boolean isFailState;
-	protected IRecoveryStrategy recoveryStrategy;
+	protected RecoveryStrategy recoveryStrategy;
 	
 	/**
 	 * Is this state representing a fail state?
@@ -35,7 +35,7 @@ public abstract class DFTState extends MarkovState {
 	 * Sets the recovery strategy state
 	 * @param recoveryStrategy the recovery strategy state
 	 */
-	public void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy) {
+	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		this.recoveryStrategy = recoveryStrategy;
 	}
 	
@@ -43,7 +43,7 @@ public abstract class DFTState extends MarkovState {
 	 * Gets the recovery strategy state
 	 * @return the recovery strategy state
 	 */
-	public IRecoveryStrategy getRecoveryStrategy() {
+	public RecoveryStrategy getRecoveryStrategy() {
 		return recoveryStrategy;
 	}
 	

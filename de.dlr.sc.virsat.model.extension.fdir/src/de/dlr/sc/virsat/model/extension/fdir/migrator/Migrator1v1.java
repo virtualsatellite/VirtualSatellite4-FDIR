@@ -7,16 +7,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.command;
+package de.dlr.sc.virsat.model.extension.fdir.migrator;
 
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.migrator.IMigrator;
+
+
+// *****************************************************************
+// * Class Declaration
+// *****************************************************************
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
  * 
  * This class is generated once, do your changes here
  * 
- * 
+ * VirSat DLR FDIR Concept
  * 
  */
-public class CreateAddTransitionCommand extends ACreateAddTransitionCommand {
+public class Migrator1v1 extends AMigrator1v1 implements IMigrator {
+
+	@Override
+	public void migrate(Concept concept, IMigrator previousMigrator) {
+		//TODO: Implement custom concept migration for version 1.1
+		super.migrate(concept, previousMigrator);
+	}
 }

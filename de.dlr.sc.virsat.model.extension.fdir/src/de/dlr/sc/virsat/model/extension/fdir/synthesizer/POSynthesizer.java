@@ -62,7 +62,7 @@ public class POSynthesizer extends ASynthesizer {
 					.map(entry -> entry.getValue() + ": " +  entry.getKey().getLabel())
 					.collect(Collectors.joining(","));
 			
-			String label = index + " [label=\"[" + beliefs + "]\"";
+			String label = index + " [label=\"[" + index + beliefs + "]\"";
 			if (beliefMa.getFinalStates().contains(this)) {
 				label += ", color=\"red\"";
 			}
