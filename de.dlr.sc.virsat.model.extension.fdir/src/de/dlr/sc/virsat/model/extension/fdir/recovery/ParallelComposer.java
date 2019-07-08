@@ -83,8 +83,7 @@ public class ParallelComposer {
 						toState = createNewState(result, toPos);
 						dfsStack.push(toState);
 					}
-					Transition transition = rah.createTransition(result, fromState, toState);
-					transition.setIsRepair(t.getIsRepair());
+					rah.createFaultEventTransition(result, fromState, toState);
 				}
 				currRA++;
 			}	
