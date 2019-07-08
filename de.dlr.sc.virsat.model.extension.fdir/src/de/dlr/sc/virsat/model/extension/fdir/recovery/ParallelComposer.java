@@ -63,6 +63,7 @@ public class ParallelComposer {
 		RecoveryAutomatonHelper rah = new RecoveryAutomatonHelper(concept);
 		
 		State startState = createNewState(result, initialPos);
+		result.setInitial(startState);
 		
 		Stack<State> dfsStack = new Stack<State>();
 		dfsStack.push(startState);
