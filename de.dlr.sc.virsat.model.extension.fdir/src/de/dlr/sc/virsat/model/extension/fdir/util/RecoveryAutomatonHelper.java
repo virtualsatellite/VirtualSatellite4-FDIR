@@ -141,7 +141,7 @@ public class RecoveryAutomatonHelper {
 	 */
 	public boolean isConnected(RecoveryAutomaton ra, State from, State to) {
 		for (Transition transition : ra.getTransitions()) {
-			if (transition.getFrom().getName().equals(from.getName()) && transition.getTo().getName().equals(to.getName())) {
+			if (transition.getFrom().equals(from) && transition.getTo().equals(to)) {
 				return true;
 			}
 		}
