@@ -133,6 +133,38 @@ public class RecoveryAutomatonHelper {
 	}
 	
 	/**
+	 * Determine if two states in a recovery automaton are connected by a transition
+	 * @param ra the recovery automaton
+	 * @param from the state where the transition is from
+	 * @param to the state where the transition is to
+	 * @return true if there exists such a transition, false otherwise
+	 */
+	public boolean isConnected(RecoveryAutomaton ra, State from, State to) {
+		for (Transition transition : ra.getTransitions()) {
+			if (transition.getFrom().equals(from) && transition.getTo().equals(to)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	/** 
+	 * Get state by its name
+	 * @param ra the recovery automaton
+	 * @param name name of the state
+	 * @return the state
+	 */
+	public State getState(RecoveryAutomaton ra, String name) {
+		for (State state : ra.getStates()) {
+			if (state.getName().equals(name)) {
+				return state;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Creates a map of current transitions to states
 	 * @param ra recovery automaton
 	 * @return a map of current transitions to states
