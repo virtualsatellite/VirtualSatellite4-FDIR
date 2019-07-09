@@ -109,7 +109,7 @@ public class ParallelComposerTest {
 		final int NUM_TRANSITIONS = 4;
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
-		
+
 		State r0 = rahelp.getState(result, "[0, 0]");
 		State r1 = rahelp.getState(result, "[0, 1]");
 		State r2 = rahelp.getState(result, "[1, 0]");

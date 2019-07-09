@@ -14,6 +14,7 @@ import java.util.Map;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 
 /**
@@ -44,4 +45,10 @@ public interface ISynthesizer {
 	 * @param minimizer the minimizer
 	 */
 	void setMinimizer(ARecoveryAutomatonMinimizer minimizer);
+	
+	/**
+	 * Sets the modularizer that will be used to modularize the fault tree
+	 * @param modularizer the modularizer
+	 */
+	void setModularizer(Modularizer modularizer);
 }

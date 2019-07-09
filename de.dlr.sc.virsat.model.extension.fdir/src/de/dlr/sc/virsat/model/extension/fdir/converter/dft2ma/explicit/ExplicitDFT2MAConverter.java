@@ -127,7 +127,6 @@ public class ExplicitDFT2MAConverter implements IDFT2MAConverter {
 			}
 			
 			List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
-			parents = ftHolder.getMapNodeToParents().get(node.getFault());
 			toProcess.addAll(parents);
 		}
 		

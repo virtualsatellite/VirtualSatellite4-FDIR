@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.Before;
 
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
