@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimi
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmerTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
 import junit.framework.JUnit4TestAdapter;
 
@@ -54,7 +55,8 @@ import junit.framework.JUnit4TestAdapter;
 		PONDDFTSemanticsTest.class,
 		ModularizerTest.class,
 		RecoveryAutomatonHelperTest.class,
-		ParallelComposerTest.class
+		ParallelComposerTest.class,
+		FaultTreeTrimmerTest.class
 		})
 
 public class AllTests {
