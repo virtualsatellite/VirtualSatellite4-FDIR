@@ -17,6 +17,9 @@
   <categories name="OBSERVER" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="observationRate" quantityKindName="Frequency" unitName="Hertz" defaultValue="0"/>
   </categories>
+  <categories name="DELAY" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="time" quantityKindName="Time" unitName="Second" defaultValue="0"/>
+  </categories>
   <categories name="ADEP" isAbstract="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
   <categories name="FDEP" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.ADEP"/>
   <categories name="RDEP" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.ADEP">
@@ -76,19 +79,19 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="severityLevel" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.20/@properties.3/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severityLevel" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.21/@properties.3/@values.3">
       <values name="Catastrophic" value="4"/>
       <values name="Critical" value="3"/>
       <values name="Major" value="2"/>
       <values name="Minor" value="1"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="probabilityLevel" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.20/@properties.4/@values.0">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="probabilityLevel" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.21/@properties.4/@values.0">
       <values name="ExtremelyRemote" value="1"/>
       <values name="Remote" value="2"/>
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detectionLevel" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.20/@properties.5/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detectionLevel" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.21/@properties.5/@values.3">
       <values name="ExtremelyUnlikely" value="4"/>
       <values name="Unlikely" value="3"/>
       <values name="Likely" value="2"/>

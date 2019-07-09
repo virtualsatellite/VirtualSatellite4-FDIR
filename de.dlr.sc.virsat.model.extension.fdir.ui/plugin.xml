@@ -68,6 +68,10 @@
 		pathToImage="resources/icons/OBSERVER.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.DELAY"
+		pathToImage="resources/icons/DELAY.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ADEP"
 		pathToImage="resources/icons/ADEP.gif">
 	</conceptImage>
@@ -218,6 +222,10 @@
 		name="Add OBSERVER">
 	</command>
 	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
+		name="Add DELAY">
+	</command>
+	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP"
 		name="Add FDEP">
 	</command>
@@ -353,6 +361,11 @@
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
 	      disabledIcon="resources/icons/OBSERVER_disabled.gif"
 	      icon="resources/icons/OBSERVER.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
+	      disabledIcon="resources/icons/DELAY_disabled.gif"
+	      icon="resources/icons/DELAY.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP"
@@ -499,6 +512,10 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddOBSERVERHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddDELAYHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDEPHandler"
@@ -847,6 +864,28 @@
 		</command>
 		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1431,6 +1470,16 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionOBSERVER">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDELAY">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionDELAY">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDEP"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDEP">
@@ -1529,6 +1578,11 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesOBSERVER"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesOBSERVER">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesDELAY">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesFDEP"
