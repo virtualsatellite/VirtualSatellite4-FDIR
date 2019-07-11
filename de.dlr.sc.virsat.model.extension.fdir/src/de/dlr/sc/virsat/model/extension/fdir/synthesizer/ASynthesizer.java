@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +37,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 
 /**
  * Abstract class providing some default implementations for the ISynthesizer interface.
@@ -49,6 +49,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
 	protected Modularizer modularizer = new Modularizer();
+	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected Concept concept;
 	
 	@Override
@@ -62,7 +63,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-			Set<Module> trimmedModules = trimStaticModules(modules);
+			Set<Module> trimmedModules = ftTrimmer.trimModules(modules);
 			
 			Set<RecoveryAutomaton> ras = trimmedModules.stream()
 						.map(module -> convertToRecoveryAutomaton(module))
@@ -81,6 +82,10 @@ public abstract class ASynthesizer implements ISynthesizer {
 				minimizer.minimize(synthesizedRA);
 			}
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
+		}
+		
+		if (minimizer != null) {
+			minimizer.minimize(synthesizedRA);
 		}
 		
 		return synthesizedRA;
@@ -113,6 +118,11 @@ public abstract class ASynthesizer implements ISynthesizer {
 	@Override
 	public void setModularizer(Modularizer modularizer) {
 		this.modularizer = modularizer;
+	}
+	
+	@Override
+	public void setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
+		this.ftTrimmer = ftTrimmer;
 	}
 	
 	/**
@@ -169,21 +179,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Trim the static modules out of a set of modules
-	 * @param modules the original set of modules
-	 * @return the set of modules without static modules
-	 */
-	private static Set<Module> trimStaticModules(Set<Module> modules) {
-		Set<Module> result = new HashSet<Module>();
-		for (Module module : modules) {
-			if (module.isDynamic()) {
-				result.add(module);
-			}
-		}
-		return result;
 	}
 	
 	/**

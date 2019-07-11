@@ -45,7 +45,7 @@ public class FaultTreeTrimmer {
 			return modules;
 		}
 		
-		Set<Module> trimmedModules = trimStaticModules(modules);
+		Set<Module> trimmedModules = trimDeterministicModules(modules);
 		return trimmedModules;
 	}
 	
@@ -54,14 +54,14 @@ public class FaultTreeTrimmer {
 	 * @param modules the set of modules
 	 * @return the dynamic modules
 	 */
-	private static Set<Module> trimStaticModules(Set<Module> modules) {
-		Set<Module> dynamicModules = new HashSet<Module>();
+	private static Set<Module> trimDeterministicModules(Set<Module> modules) {
+		Set<Module> nondeterministicModules = new HashSet<Module>();
 		for (Module module : modules) {
-			if (module.isDynamic()) {
-				dynamicModules.add(module);
+			if (module.isNondeterministic()) {
+				nondeterministicModules.add(module);
 			}
 		}
-		return dynamicModules;
+		return nondeterministicModules;
 	}
 	
 }

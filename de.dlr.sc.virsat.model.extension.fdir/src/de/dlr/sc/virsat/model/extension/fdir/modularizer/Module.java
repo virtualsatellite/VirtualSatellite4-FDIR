@@ -31,7 +31,7 @@ public class Module {
 	 */
 	public Module() {
 		this.moduleNodes = new ArrayList<FaultTreeNodePlus>();
-		this.moduleType = ModuleType.STATIC;
+		this.moduleType = ModuleType.DETERMINISTIC;
 	}
 	
 	
@@ -45,8 +45,8 @@ public class Module {
 		}
 		
 		this.moduleNodes.add(node);
-		if (node.isDynamic()) {
-			this.moduleType = ModuleType.DYNAMIC;
+		if (node.isNondeterministic()) {
+			this.moduleType = ModuleType.NONDETERMINISTIC;
 		}
 	}
 	
@@ -67,11 +67,11 @@ public class Module {
 	}
 	
 	/**
-	 * Returns true if module is dynamic, false otherwise
+	 * Returns true if module is nondeterministic, false otherwise
 	 * @return is dynamic
 	 */
-	public boolean isDynamic() {
-		return this.moduleType == ModuleType.DYNAMIC;
+	public boolean isNondeterministic() {
+		return this.moduleType == ModuleType.NONDETERMINISTIC;
 	}
 	
 	/**

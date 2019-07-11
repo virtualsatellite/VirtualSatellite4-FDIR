@@ -16,6 +16,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 
 /**
  * Interface for defining synthesizers for recovery automatons.
@@ -26,14 +27,14 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomat
 public interface ISynthesizer {
 	
 	/**
-	 * Synthesies a recovery automaton.
+	 * Synthesizes a recovery automaton.
 	 * @param fault the fault
 	 * @return the synthesized recovery automaton
 	 */
 	RecoveryAutomaton synthesize(Fault fault);
 	
 	/**
-	 * Synthesies a recovery automaton.
+	 * Synthesizes a recovery automaton.
 	 * @param fault the fault
 	 * @param requirements map of requirements that need each fault needs to fulfill
 	 * @return the synthesized recovery automaton
@@ -51,4 +52,10 @@ public interface ISynthesizer {
 	 * @param modularizer the modularizer
 	 */
 	void setModularizer(Modularizer modularizer);
+	
+	/**
+	 * Sets the fault tree trimmer that will be used to trim the fault tree
+	 * @param ftTrimmer the trimmer
+	 */
+	void setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer);
 }

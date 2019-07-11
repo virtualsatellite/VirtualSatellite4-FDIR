@@ -223,7 +223,7 @@ public class ModularizerTest extends ATestCase {
 		final int AND1_INDEX = 1;
 		FaultTreeNode andGate1 = rootOr2And2Basic.getFaultTree().getGates().get(AND1_INDEX);
 		Module module = modularizer.harvestModule(andGate1);
-		assertTrue(module.isDynamic());
+		assertTrue(module.isNondeterministic());
 	}
 	
 	@Test
@@ -235,7 +235,7 @@ public class ModularizerTest extends ATestCase {
 		final int OR_INDEX = 0;
 		FaultTreeNode orGate = rootOr2.getFaultTree().getGates().get(OR_INDEX);
 		Module module = modularizer.harvestModule(orGate);
-		assertFalse(module.isDynamic());
+		assertFalse(module.isNondeterministic());
 		assertEquals(orGate, module.getRootNode());
 	}
 	

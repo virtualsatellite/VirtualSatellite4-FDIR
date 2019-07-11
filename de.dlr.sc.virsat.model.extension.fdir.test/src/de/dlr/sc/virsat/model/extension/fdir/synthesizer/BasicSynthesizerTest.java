@@ -107,6 +107,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		System.out.println(ra.toDot());
 		
+		final int NUM_STATES = 3;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);

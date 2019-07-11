@@ -56,7 +56,7 @@ public class ParallelComposerTest {
 	public void testNone() {
 		RecoveryAutomaton result = pc.compose(new HashSet<RecoveryAutomaton>(), concept);
 		
-		final int NUM_STATES = 0;
+		final int NUM_STATES = 1;
 		final int NUM_TRANSITIONS = 0;
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());

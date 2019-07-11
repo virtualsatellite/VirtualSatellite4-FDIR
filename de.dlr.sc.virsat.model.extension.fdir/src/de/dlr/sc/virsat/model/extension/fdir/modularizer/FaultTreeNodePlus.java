@@ -194,18 +194,12 @@ public class FaultTreeNodePlus {
 
 	
 	/**
-	 * Returns whether a FaultTreeNodePlus is dynamic or not
-	 * @return true if dynamic, false otherwise
+	 * Returns whether a FaultTreeNodePlus is nondeterministic or not
+	 * @return true if nondeterministic, false otherwise
 	 */
-	public boolean isDynamic() {
+	public boolean isNondeterministic() {
 		switch (this.getFaultTreeNode().getFaultTreeNodeType()) {
-			case FDEP:
-				return true;
 			case SPARE:
-				return true;
-			case PAND:
-				return true;
-			case POR:
 				return true;
 			default: return false;
 		}
