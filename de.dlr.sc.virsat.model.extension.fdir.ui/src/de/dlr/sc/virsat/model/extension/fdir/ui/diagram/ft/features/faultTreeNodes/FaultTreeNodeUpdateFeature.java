@@ -27,6 +27,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.util.IColorConstant;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatUpdateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
@@ -78,6 +79,14 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 		        if (!Objects.equals(votingThreshold, text.getValue())) {
 		        	neededUpdates.add("Voting Treshold out of date");
 		        }
+			} else if (bean instanceof DELAY) {
+				DELAY delayNode = (DELAY) bean;
+				String delay = String.valueOf("\u2265" + delayNode.getTime());
+		        Shape delayShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE);
+		        Text text = (Text) delayShape.getGraphicsAlgorithm();
+		        if (!Objects.equals(delay, text.getValue())) {
+		        	neededUpdates.add("Delay out of date");
+		        }
 			}
 	        
 	        if (AnchorUtil.getFreeAnchors(cs, AnchorType.INPUT).size() != 1) {
@@ -124,6 +133,12 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 		        Shape votingTresholdShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
 		        Text text = (Text) votingTresholdShape.getGraphicsAlgorithm();
 		        text.setValue(votingThreshold);
+            } else if (bean instanceof DELAY) {
+            	DELAY delayNode = (DELAY) bean;
+				String delay = String.valueOf("\u2265" + delayNode.getTime());
+		        Shape delayShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE);
+		        Text text = (Text) delayShape.getGraphicsAlgorithm();
+		        text.setValue(delay);
             }
             
             changeDuringUpdate |= updateAnchors(cs, bean, FaultTreeNodeAddFeature.PORT_COLOR, AnchorType.INPUT);

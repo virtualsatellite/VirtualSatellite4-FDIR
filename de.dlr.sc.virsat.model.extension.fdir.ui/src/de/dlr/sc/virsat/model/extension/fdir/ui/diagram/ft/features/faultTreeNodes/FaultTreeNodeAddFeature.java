@@ -30,6 +30,7 @@ import com.google.common.base.Objects;
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatAddShapeFeature;
 import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
@@ -52,6 +53,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	public static final int INDEX_NAME_TEXT_SHAPE = 1;
 	public static final int INDEX_SPARE_RECT_SHAPE = 0;
 	public static final int INDEX_VOTE_TRESHOLD_SHAPE = 1;
+	public static final int INDEX_DELAY_SHAPE = 1;
 	
 	public static final String FAULT_TREE_NODE_TYPE_KEY = "fault-tree-node-type";
 	public static final String COUNT_BASE_SUB_SHAPES_KEY = "count-base-sub-shapes";
@@ -124,7 +126,12 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 			String votingThreshold = String.valueOf(vote.getVotingThreshold());
 			Shape votingTresholdShape = createLabel("\u2265" + votingThreshold, containerShape);
 			link(votingTresholdShape, vote);
-		} 
+		} else if (addedNode instanceof DELAY) {
+			DELAY delayNode = (DELAY) addedNode;
+			String delay = String.valueOf(delayNode.getTime());
+			Shape delayShape = createLabel("\u2265" + delay, containerShape);
+			link(delayShape, delayNode);
+		}
 		
 		Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
 		link(outputAnchor, addedNode);
