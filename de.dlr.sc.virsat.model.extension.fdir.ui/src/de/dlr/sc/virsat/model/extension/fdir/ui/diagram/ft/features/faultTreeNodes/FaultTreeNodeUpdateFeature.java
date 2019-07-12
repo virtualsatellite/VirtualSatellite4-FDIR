@@ -81,7 +81,7 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 		        }
 			} else if (bean instanceof DELAY) {
 				DELAY delayNode = (DELAY) bean;
-				String delay = String.valueOf("\u2265" + delayNode.getTime());
+				String delay = String.valueOf(delayNode.getTimeBean().getValueWithUnit());
 		        Shape delayShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE);
 		        Text text = (Text) delayShape.getGraphicsAlgorithm();
 		        if (!Objects.equals(delay, text.getValue())) {
@@ -135,7 +135,7 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 		        text.setValue(votingThreshold);
             } else if (bean instanceof DELAY) {
             	DELAY delayNode = (DELAY) bean;
-				String delay = String.valueOf("\u2265" + delayNode.getTime());
+				String delay = String.valueOf(delayNode.getTimeBean().getValueWithUnit());
 		        Shape delayShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE);
 		        Text text = (Text) delayShape.getGraphicsAlgorithm();
 		        text.setValue(delay);
