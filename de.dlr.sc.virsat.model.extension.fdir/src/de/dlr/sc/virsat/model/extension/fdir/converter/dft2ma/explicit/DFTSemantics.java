@@ -21,6 +21,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -55,6 +56,13 @@ public class DFTSemantics {
 			
 			if (be.isSetHotFailureRate() && be.getHotFailureRate() > 0) {
 				faultEvents.add(new FaultEvent(be, false, ftHolder));
+			}
+		}
+		
+		for (FaultTreeNode node : ftHolder.getNodes()) {
+			if (node instanceof DELAY) {
+				DELAY delayNode = (DELAY) node;
+				faultEvents.add(new DelayEvent(delayNode));
 			}
 		}
 		

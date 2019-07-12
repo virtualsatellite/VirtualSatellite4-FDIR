@@ -26,28 +26,14 @@ public class DelaySemantics implements INodeSemantics {
 	public boolean handleUpdate(FaultTreeNode node, ExplicitDFTState state, ExplicitDFTState pred,
 			FaultTreeHolder ftHolder, GenerationResult generationResult) {
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
-		boolean hasFailed = false;
-		
-		if (hasFailed) {
-			boolean hasPermanentlyFailed = false;
-			
-			if (hasPermanentlyFailed) {
-				state.setFaultTreeNodePermanent(node, true);
-				return state.setFaultTreeNodeFailed(node, true);
-			}
-		}
 		
 		for (FaultTreeNode child : children) {
 			if (state.hasFaultTreeNodeFailed(child)) {
-				hasFailed = true;
-				if (state.isFaultTreeNodePermanent(child)) {
-					state.setFaultTreeNodePermanent(node, true);
-					return state.setFaultTreeNodeFailed(node, true);
-				}
+				return state.setFaultTreeNodeFailing(node, true);
 			}
 		}
 		
-		return state.setFaultTreeNodeFailed(node, hasFailed);
+		return state.setFaultTreeNodeFailing(node, false) | state.setFaultTreeNodeFailed(node, false);
 	}
 
 }

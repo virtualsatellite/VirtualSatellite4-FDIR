@@ -45,6 +45,7 @@ public class ExplicitDFTState extends DFTState {
 	
 	private BitSet failedNodes;
 	private BitSet permanentNodes;
+	private BitSet failingNodes;
 	
 	List<BasicEvent> orderedBes;
 	Set<BasicEvent> unorderedBes;
@@ -60,6 +61,7 @@ public class ExplicitDFTState extends DFTState {
 		mapNodeToAffectors = new HashMap<>();
 		activeFaults = new HashSet<>();
 		permanentNodes = new BitSet(ftHolder.getNodes().size());
+		failingNodes = new BitSet(ftHolder.getNodes().size());
 		orderedBes = new ArrayList<>();
 		unorderedBes = new HashSet<>();
 	}
@@ -76,6 +78,7 @@ public class ExplicitDFTState extends DFTState {
 		mapSpareToClaimedSpares = new HashMap<>(other.mapSpareToClaimedSpares);
 		failedNodes = (BitSet) other.failedNodes.clone();
 		permanentNodes = (BitSet) other.permanentNodes.clone();
+		failingNodes = (BitSet) other.failedNodes.clone();
 		ftHolder = other.ftHolder;
 	}
 	
@@ -133,6 +136,29 @@ public class ExplicitDFTState extends DFTState {
 	public boolean hasFaultTreeNodeFailed(FaultTreeNode node) {
 		int nodeID = ftHolder.getNodeIndex(node);
 		return failedNodes.get(nodeID);
+	}
+	
+	/**
+	 * Sets whether a node is curently in the process of failing
+	 * @param node the node to modify
+	 * @param failing the new node state
+	 * @return true iff the state of the fault tree node changed
+	 */
+	public boolean setFaultTreeNodeFailing(FaultTreeNode node, boolean failing) {
+		int nodeID = ftHolder.getNodeIndex(node);
+		boolean hasChanged = failingNodes.get(nodeID) != failing;
+		failingNodes.set(nodeID, failing);
+		return hasChanged;
+	}
+	
+	/**
+	 * Checks if the given fault tree node is failed in this state
+	 * @param node the fault tree node
+	 * @return true iff the fault tree node is in a failed state
+	 */
+	public boolean isFaultTreeNodeFailing(FaultTreeNode node) {
+		int nodeID = ftHolder.getNodeIndex(node);
+		return failingNodes.get(nodeID);
 	}
 	
 	/**
