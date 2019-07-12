@@ -65,6 +65,10 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty observationRate default 0 quantityKind "Frequency" unit "Hertz";
 	}
 	
+	Category DELAY extends Gate {
+		FloatProperty time default 0 quantityKind "Time" unit "Second";
+	}
+	
 	Category ADEP extends Gate {
 		IsAbstract;
 	}

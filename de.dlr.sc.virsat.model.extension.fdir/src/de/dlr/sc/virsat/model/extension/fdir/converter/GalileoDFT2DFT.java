@@ -23,6 +23,7 @@ import de.dlr.sc.virsat.model.concept.types.structural.ABeanStructuralElementIns
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -208,7 +209,9 @@ public class GalileoDFT2DFT {
 				((OBSERVER) gate).setObservationRate(Double.valueOf(galileoType.getObservationRate()));
 			} else if (type.equals(FaultTreeNodeType.RDEP)) {
 				((RDEP) gate).setRateChange(Double.valueOf(galileoType.getRateFactor()));
-			}
+			} else if (type.equals(FaultTreeNodeType.DELAY)) {
+				((DELAY) gate).setTime(Double.valueOf(galileoType.getTime()));
+			} 
 			
 			ftn = gate;
 		} else {
@@ -241,7 +244,10 @@ public class GalileoDFT2DFT {
 			return FaultTreeNodeType.OBSERVER;
 		} else if (galileoType.getRateFactor() != null) {
 			return FaultTreeNodeType.RDEP;
+		} else if (galileoType.getTime() != null) {
+			return FaultTreeNodeType.DELAY;
 		}
+
 		
 		throw new RuntimeException("Unknown Galileo Fault Tree Node Type: " + galileoType);
 	}

@@ -38,7 +38,7 @@ public class TimeEvent implements IDFTEvent {
 	
 	@Override
 	public double getRate(ExplicitDFTState state) {
-		return time;
+		return 1 / time;
 	}
 
 	@Override

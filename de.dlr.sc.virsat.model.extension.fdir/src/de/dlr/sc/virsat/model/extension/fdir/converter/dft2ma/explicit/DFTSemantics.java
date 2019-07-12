@@ -21,6 +21,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -58,6 +59,13 @@ public class DFTSemantics {
 			}
 		}
 		
+		for (FaultTreeNode node : ftHolder.getNodes()) {
+			if (node instanceof DELAY) {
+				DELAY delayNode = (DELAY) node;
+				faultEvents.add(new DelayEvent(delayNode));
+			}
+		}
+		
 		return faultEvents;
 	}
 	
@@ -76,7 +84,11 @@ public class DFTSemantics {
 		}
 		
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
-		worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
+		if (event.getNode() instanceof BasicEvent) {
+			worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
+		} else {
+			worklist.addAll(ftHolder.getMapNodeToParents().get(event.getNode()));
+		}
 
 		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
 		boolean existsNonTLESucc = existsNonTLE(ftHolder, succs);
@@ -257,6 +269,7 @@ public class DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new StandardSPARESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.OBSERVER, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
 		return semantics;
 	}
 	

@@ -53,6 +53,10 @@ public class PluginXml {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER";
 			public static final String NAME = "Add OBSERVER";
 		}	
+		public static class CommandAddDELAY {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY";
+			public static final String NAME = "Add DELAY";
+		}	
 		public static class CommandAddFDEP {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP";
 			public static final String NAME = "Add FDEP";
@@ -198,6 +202,10 @@ public class PluginXml {
 		public static class ConceptImageOBSERVER {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.OBSERVER";
 			public static final String PATHTOIMAGE = "resources/icons/OBSERVER.gif";
+		}	
+		public static class ConceptImageDELAY {
+			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.DELAY";
+			public static final String PATHTOIMAGE = "resources/icons/DELAY.gif";
 		}	
 		public static class ConceptImageADEP {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.ADEP";
@@ -415,6 +423,16 @@ public class PluginXml {
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
 			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionOBSERVER";
 		}	
+		public static class UiSnippetTableUiSnippetDELAY {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDELAY";
+			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDELAY";
+		}	
+		public static class UiSnippetSectionUiSnippetDELAY {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetDELAY";
+			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionDELAY";
+		}	
 		public static class UiSnippetTableUiSnippetFDEP {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDEP";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
@@ -514,6 +532,11 @@ public class PluginXml {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesOBSERVER";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
 			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesOBSERVER";
+		}	
+		public static class UiSnippetTableUiSnippetFaultTreeGatesDELAY {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesDELAY";
+			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesDELAY";
 		}	
 		public static class UiSnippetTableUiSnippetFaultTreeGatesFDEP {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesFDEP";
@@ -755,11 +778,6 @@ public class PluginXml {
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
 			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTimedTransition";
 		}	
-		public static class UiSnippetTableUiSnippetTimedTransitionGuards {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionGuards";
-			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
-			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionGuards";
-		}	
 		public static class UiSnippetTableUiSnippetTimedTransitionRecoveryActionsClaimAction {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsClaimAction";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
@@ -825,6 +843,10 @@ public class PluginXml {
 		public static class HandlerAddOBSERVERHandler {
 			public static final String CLASSNAME = "de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddOBSERVERHandler";
 			public static final String COMMANDID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER";
+		}	
+		public static class HandlerAddDELAYHandler {
+			public static final String CLASSNAME = "de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddDELAYHandler";
+			public static final String COMMANDID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY";
 		}	
 		public static class HandlerAddFDEPHandler {
 			public static final String CLASSNAME = "de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDEPHandler";

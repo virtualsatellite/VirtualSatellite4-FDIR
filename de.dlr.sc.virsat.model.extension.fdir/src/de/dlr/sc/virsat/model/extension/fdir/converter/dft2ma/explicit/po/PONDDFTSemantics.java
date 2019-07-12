@@ -18,6 +18,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DelaySemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.FaultSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
@@ -52,6 +53,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.OBSERVER, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new PONDSPARESemantics(semantics.stateGenerator));
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
 		return semantics;
 	}
 	

@@ -17,6 +17,7 @@ import java.util.Map;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -256,6 +257,8 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 				((OBSERVER) gate).setObservationRate(((OBSERVER) oldGate).getObservationRate());
 			} else if (gate instanceof RDEP) {
 				((RDEP) gate).setRateChange(((RDEP) oldGate).getRateChange());
+			} else if (gate instanceof DELAY) {
+				((DELAY) gate).setTime(((DELAY) oldGate).getTime());
 			}
 			
 			gate.setName(oldGate.getName());

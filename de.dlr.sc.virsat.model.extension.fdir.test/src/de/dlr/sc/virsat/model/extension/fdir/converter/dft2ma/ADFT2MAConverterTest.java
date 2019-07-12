@@ -705,6 +705,14 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateDelay1() throws IOException {
+		final double EXPECTEDMTTF = 11;
+		Fault fault = createDFT("/resources/galileo/delay1.dft");
+		ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testEvaluateCMSimple() throws IOException {
 		final double[] EXPECTED = {
 			0.0060088,
@@ -718,7 +726,6 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		assertIterationResultsEquals(ftEvaluator, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
 	}
-	
 	
 	@Test
 	public void testEvaluateCM1() throws IOException {

@@ -62,6 +62,10 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.DELAY"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.DELAY">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.FDEP"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDEP">
 		</CategoryAssignmentBean>

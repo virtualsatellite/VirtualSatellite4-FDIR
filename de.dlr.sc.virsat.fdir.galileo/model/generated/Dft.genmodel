@@ -24,6 +24,7 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Dft.ecore#//GalileoNodeType/observables"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoNodeType/observationRate"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoNodeType/rateFactor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoNodeType/time"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

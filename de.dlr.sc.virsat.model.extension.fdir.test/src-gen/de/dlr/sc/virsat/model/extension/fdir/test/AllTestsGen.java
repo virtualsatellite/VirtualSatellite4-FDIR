@@ -43,6 +43,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirementTest
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARETest;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAYTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirementTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.StateTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SANDTest;
@@ -70,6 +71,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	PORITest.class,
 	PANDITest.class,
 	OBSERVERTest.class,
+	DELAYTest.class,
 	FDEPTest.class,
 	RDEPTest.class,
 	PDEPTest.class,

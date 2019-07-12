@@ -223,13 +223,22 @@ public interface DftPackage extends EPackage
   int GALILEO_NODE_TYPE__RATE_FACTOR = 3;
 
   /**
+   * The feature id for the '<em><b>Time</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int GALILEO_NODE_TYPE__TIME = 4;
+
+  /**
    * The number of structural features of the '<em>Galileo Node Type</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int GALILEO_NODE_TYPE_FEATURE_COUNT = 4;
+  int GALILEO_NODE_TYPE_FEATURE_COUNT = 5;
 
 
   /**
@@ -406,6 +415,17 @@ public interface DftPackage extends EPackage
   EAttribute getGalileoNodeType_RateFactor();
 
   /**
+   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType#getTime <em>Time</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Time</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType#getTime()
+   * @see #getGalileoNodeType()
+   * @generated
+   */
+  EAttribute getGalileoNodeType_Time();
+
+  /**
    * Returns the factory that creates the instances of the model.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -561,6 +581,14 @@ public interface DftPackage extends EPackage
      * @generated
      */
     EAttribute GALILEO_NODE_TYPE__RATE_FACTOR = eINSTANCE.getGalileoNodeType_RateFactor();
+
+    /**
+     * The meta object literal for the '<em><b>Time</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute GALILEO_NODE_TYPE__TIME = eINSTANCE.getGalileoNodeType_Time();
 
   }
 
