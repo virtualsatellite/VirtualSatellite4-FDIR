@@ -10,10 +10,15 @@
 package de.dlr.sc.virsat.model.extension.fdir.trimmer;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 /**
  * Class for trimming fault trees
@@ -24,15 +29,30 @@ public class FaultTreeTrimmer {
 
 	/**
 	 * Trim a fault tree
-	 * @param ft the fault tree
+	 * @param ftNode the fault tree node
 	 * @return the trimmed fault tree
 	 */
-	public FaultTree trimFaultTree(FaultTree ft) {
-		if (ft == null || ft.getChildFaults().size() == 0) {
-			return ft;
+	public FaultTree trimFaultTree(FaultTreeNode ftNode) {
+		if (ftNode == null) {
+			return null;
 		}
 		
-		return new FaultTree(ft.getConcept());
+		FaultTreeHelper ftHelp = new FaultTreeHelper(ftNode.getConcept());
+		FaultTree trimmedTree = new FaultTree(ftNode.getConcept());
+		
+		Stack<FaultTreeNode> stack = new Stack<FaultTreeNode>();
+		stack.push(ftNode);
+		
+		while (!stack.isEmpty()) {
+			FaultTreeNode curr = stack.pop();
+			List<FaultTreeNode> children = ftHelp.getAllChildren(curr, curr.getFault().getFaultTree());
+			
+			for (FaultTreeNode child : children) {
+				Fault childCopy = ftHelp.copyFault(child.getFault());
+			}
+		}
+		
+		return null;
 	}
 	
 	/**

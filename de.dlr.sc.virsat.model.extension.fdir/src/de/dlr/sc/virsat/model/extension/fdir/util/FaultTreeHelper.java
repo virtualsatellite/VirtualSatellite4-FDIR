@@ -448,6 +448,36 @@ public class FaultTreeHelper {
 				throw new RuntimeException("Cannot create FaultTree Gate: Unknown type " + type); 
 		}
 	}
+	
+	
+	/**
+	 * Get ALL children of a node (events, spares, dependencies, faults)
+	 * @param node the node you want to find the children of
+	 * @param ft the fault tree
+	 * @return the list of children
+	 */
+	public List<FaultTreeNode> getAllChildren(FaultTreeNode node, FaultTree ft) {
+		List<FaultTreeNode> children = new ArrayList<FaultTreeNode>();
+		/* get children, spares, and dependencies and compile one big list */
+			
+		List<FaultTreeEdge> allEdges = new ArrayList<FaultTreeEdge>(ft.getPropagations());
+		allEdges.addAll(ft.getDeps());
+		allEdges.addAll(ft.getSpares());
+		
+		for (FaultTreeEdge edge : allEdges) {
+			if (edge.getTo().equals(node)) {
+				children.add(edge.getFrom());
+			}
+		}
+		
+		if (node instanceof Fault) {
+			children.addAll(((Fault) node).getBasicEvents());
+		}
+		
+		return children;
+	}
+	
+	
 
 	/**
 	 * Get the children of a node
@@ -535,6 +565,17 @@ public class FaultTreeHelper {
 			}
 		}
 		return children;
+	}
+	
+	/**
+	 * Get the dependencies of a node
+	 * 
+	 * @param node
+	 *            the node want to know the dependencies of
+	 * @return a list of dependencies
+	 */
+	public List<FaultTreeNode> getDeps(FaultTreeNode node) {
+		return getDeps(node, Collections.singleton(node.getFault().getFaultTree()));
 	}
 	
 	/**
@@ -650,7 +691,7 @@ public class FaultTreeHelper {
 	 * Gets all the propagations in the fault tree of the passed fault
 	 * including all propagations in sub trees
 	 * @param fault the root fault of a fault tree
-	 * @return all propagatiosn in the entire fault tree
+	 * @return all propagations in the entire fault tree
 	 */
 	public List<FaultTreeEdge> getAllPropagations(Fault fault) {
 		List<FaultTreeNode> allNodes = getAllNodes(fault);

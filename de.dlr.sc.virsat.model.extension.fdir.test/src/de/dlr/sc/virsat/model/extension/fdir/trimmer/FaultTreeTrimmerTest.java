@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +21,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 
 
@@ -29,7 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
  * @author jord_ad
  *
  */
-public class FaultTreeTrimmerTest {
+public class FaultTreeTrimmerTest extends ATestCase {
 	
 	protected Concept concept;
 	protected FaultTreeTrimmer fttrim;
@@ -51,7 +56,7 @@ public class FaultTreeTrimmerTest {
 		assertNull(resultSet);
 	}
 	
-	@Test
+	/* @Test
 	public void testNone() {
 		FaultTree result = fttrim.trimFaultTree(new FaultTree(concept));
 		final int NUM_STATES = 0;
@@ -64,6 +69,21 @@ public class FaultTreeTrimmerTest {
 		
 		Set<Module> resultSet = fttrim.trimModules(new HashSet<Module>());
 		assertTrue(resultSet.isEmpty());
+	} */
+	
+	@Test
+	public void testTrimNondeterministicModules() throws IOException {
+		Fault rootNestedComplex = createDFT("/resources/galileo/nestedPand2.dft");
+		Modularizer modularizer = new Modularizer();
+		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
+		modules = fttrim.trimModules(modules);
+		
+		for (Module m : modules) {
+			System.out.println(m);
+		}
+		
+		final int NUM_NONDET_MODULES = 1;
+		assertEquals(NUM_NONDET_MODULES, modules.size());
 	}
 
 }

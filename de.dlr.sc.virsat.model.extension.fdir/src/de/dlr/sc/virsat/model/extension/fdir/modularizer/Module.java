@@ -78,9 +78,7 @@ public class Module {
 	 * Trim the module from the tree.
 	 */
 	public void harvestFromFaultTree() {
-		for (FaultTreeNodePlus node : this.moduleNodes) {
-			node.harvestFromFaultTree();
-		}
+		this.moduleNodes.stream().forEach(node -> node.harvestFromFaultTree());
 	}
 	
 	/**
