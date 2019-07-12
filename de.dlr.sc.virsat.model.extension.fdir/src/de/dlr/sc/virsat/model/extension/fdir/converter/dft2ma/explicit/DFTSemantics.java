@@ -84,7 +84,11 @@ public class DFTSemantics {
 		}
 		
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
-		worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
+		if (event.getNode() instanceof BasicEvent) {
+			worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
+		} else {
+			worklist.addAll(ftHolder.getMapNodeToParents().get(event.getNode()));
+		}
 
 		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
 		boolean existsNonTLESucc = existsNonTLE(ftHolder, succs);
@@ -265,6 +269,7 @@ public class DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new StandardSPARESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.OBSERVER, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
 		return semantics;
 	}
 	

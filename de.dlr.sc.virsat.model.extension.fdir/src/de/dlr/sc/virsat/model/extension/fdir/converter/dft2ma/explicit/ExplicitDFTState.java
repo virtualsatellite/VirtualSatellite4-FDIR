@@ -78,7 +78,7 @@ public class ExplicitDFTState extends DFTState {
 		mapSpareToClaimedSpares = new HashMap<>(other.mapSpareToClaimedSpares);
 		failedNodes = (BitSet) other.failedNodes.clone();
 		permanentNodes = (BitSet) other.permanentNodes.clone();
-		failingNodes = (BitSet) other.failedNodes.clone();
+		failingNodes = (BitSet) other.failingNodes.clone();
 		ftHolder = other.ftHolder;
 	}
 	
@@ -437,7 +437,8 @@ public class ExplicitDFTState extends DFTState {
 		if (sameClaims) {
 			boolean sameFms = orderedBes.equals(other.orderedBes);
 			if (sameFms) {
-				return true;
+				boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
+				return sameFailingNodes;
 			}
 		}
 		

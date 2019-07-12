@@ -41,17 +41,23 @@ public class DelayEvent implements IDFTEvent {
 
 	@Override
 	public boolean canOccur(ExplicitDFTState state) {
-		return state.isFaultTreeNodeFailing(delayNode);
+		return state.isFaultTreeNodeFailing(delayNode) && !state.hasFaultTreeNodeFailed(delayNode);
 	}
 
 	@Override
 	public void execute(ExplicitDFTState state, Set<BasicEvent> orderDependentBasicEvents,
 			Set<FaultTreeNode> transientNodes) {
 		state.setFaultTreeNodeFailed(delayNode, true);
+		state.setFaultTreeNodeFailing(delayNode, false);
 	}
 
 	@Override
 	public FaultTreeNode getNode() {
 		return delayNode;
+	}
+	
+	@Override
+	public String toString() {
+		return "F(" + delayNode.getName() + ")";
 	}
 }
