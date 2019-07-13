@@ -87,19 +87,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 				S fromState = markovianTransition.getFrom();
 				S toState = markovianTransition.getTo();
 				
-				if (event instanceof Collection<?>) {
-					Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
-					if (guards.isEmpty()) {
-						createdTransitions.add(createTimedTransition(fromState, toState, 1 / markovianTransition.getRate()));
-						
-						if (handledNonDetStates.add(toState)) {
-							toProcess.offer(toState);
-						}
-						
-						continue;
-					}
-				}
-				
 				if (!markovianTransition.getTo().isMarkovian()) {
 					Set<MarkovTransition<S>> bestTransitionSet = schedule.getOrDefault(toState, Collections.EMPTY_SET);
 					
@@ -119,6 +106,19 @@ public class Schedule2RAConverter<S extends MarkovState> {
 						} 
 					}
 				} else {
+					if (event instanceof Collection<?>) {
+						Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
+						if (guards.isEmpty()) {
+							createdTransitions.add(createTimedTransition(fromState, toState, 1 / markovianTransition.getRate()));
+							
+							if (handledNonDetStates.add(toState)) {
+								toProcess.offer(toState);
+							}
+							
+							continue;
+						}
+					}
+					
 					createdTransitions.add(createFaultEventTransition(fromState, toState, event));
 					
 					if (handledNonDetStates.add(toState)) {

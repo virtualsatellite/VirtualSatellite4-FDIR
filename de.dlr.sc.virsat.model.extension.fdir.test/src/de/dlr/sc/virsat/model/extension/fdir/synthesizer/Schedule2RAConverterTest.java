@@ -104,7 +104,7 @@ public class Schedule2RAConverterTest extends ATestCase {
 		//     |									|
 		//	   v									v
 		// 	nondet1 -- ca1 --> correct <-- ca2 -- nondet2
-		//	    \----- ca2 -->  wrong <-- ca2 ------/     									
+		//	    \----- ca2 -->  wrong <-- ca1 ------/     									
 	
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		
@@ -168,6 +168,5 @@ public class Schedule2RAConverterTest extends ATestCase {
 		assertEquals(EXPTED_TRANSITION_TIME, timedTransition.getTime(), TEST_EPSILON);
 		assertTrue(raHelper.isConnected(ra, ra.getInitial(), finalState));
 		assertTrue(raHelper.isConnected(ra, timedState, finalState));
-	}	
-
+	}
 }
