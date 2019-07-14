@@ -80,7 +80,7 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		final int EXPECTED_NUMBER_STATES = 4;
-		final int EXPECTED_NUMBER_TRANSITIONS = 5;
+		final int EXPECTED_NUMBER_TRANSITIONS = 6;
 		assertEquals(EXPECTED_NUMBER_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_NUMBER_TRANSITIONS, ra.getTransitions().size());
 	}
