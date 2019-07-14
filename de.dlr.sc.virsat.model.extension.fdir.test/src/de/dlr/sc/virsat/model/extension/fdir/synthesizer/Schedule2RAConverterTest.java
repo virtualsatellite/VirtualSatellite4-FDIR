@@ -215,15 +215,9 @@ public class Schedule2RAConverterTest extends ATestCase {
 		// Expected recovery automaton:
 		// initial ---- fault : ca1 -----> x
 		
-		assertEquals(2, ra.getStates().size());
-		assertEquals(1, ra.getTransitions().size());
-		assertEquals(ra.getInitial(), ra.getStates().get(0));
-		
-		FaultEventTransition transition = (FaultEventTransition) ra.getTransitions().get(0);
-		assertEquals(ra.getStates().get(0), transition.getFrom());
-		assertEquals(ra.getStates().get(1), transition.getTo());
-		assertThat(transition.getGuards(), hasItem(fault));
-		assertEquals(1, transition.getRecoveryActions().size());
-		assertEquals(fault, ((ClaimAction) transition.getRecoveryActions().get(0)).getSpareGate());
+		final int EXPECTED_NUMBER_STATES = 3;
+		final int EXPECTED_NUMBER_TRANSITIONS = 3;
+		assertEquals(EXPECTED_NUMBER_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_NUMBER_TRANSITIONS, ra.getTransitions().size());
 	}
 }

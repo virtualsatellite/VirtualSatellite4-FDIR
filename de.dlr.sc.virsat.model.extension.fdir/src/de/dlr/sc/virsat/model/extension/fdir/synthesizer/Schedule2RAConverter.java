@@ -81,7 +81,33 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		while (!toProcess.isEmpty()) {
 			MarkovState state = toProcess.poll();
 			
-			List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
+			List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
+			
+			if (state.isMarkovian()) {
+				/*
+				 * Provide event synchronization for internal transitions:
+				 * If an event that is only enabled for a later transition occurs,
+				 * it means we have to synchronize the recovery automaton with this event.
+				 * That means we need to create a corresponding transition in the recovery automaton
+				 * to react to the event.
+				 */
+				
+				MarkovState internalState = state;
+				MarkovTransition<S> internalTransition = null;
+				while ((internalTransition = getInternalTransition(internalState)) != null) {
+					internalState = internalTransition.getTo();
+					
+					List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
+					for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
+						if (!isInternalTransition(internalMarkovTransition) && !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
+							MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
+							pseudoTransition.setFrom((S) state);
+							markovianTransitions.add(pseudoTransition);
+						}
+					}
+				}
+			}
+			
 			for (MarkovTransition<S> markovianTransition : markovianTransitions) {
 				Object event = markovianTransition.getEvent();
 				S fromState = markovianTransition.getFrom();
@@ -106,17 +132,14 @@ public class Schedule2RAConverter<S extends MarkovState> {
 						} 
 					}
 				} else {
-					if (event instanceof Collection<?>) {
-						Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
-						if (guards.isEmpty()) {
-							createdTransitions.add(createTimedTransition(fromState, toState, 1 / markovianTransition.getRate()));
-							
-							if (handledNonDetStates.add(toState)) {
-								toProcess.offer(toState);
-							}
-							
-							continue;
+					if (isInternalTransition(markovianTransition)) {
+						createdTransitions.add(createTimedTransition(fromState, toState, 1 / markovianTransition.getRate()));
+						
+						if (handledNonDetStates.add(toState)) {
+							toProcess.offer(toState);
 						}
+						
+						continue;
 					}
 					
 					createdTransitions.add(createFaultEventTransition(fromState, toState, event));
@@ -135,23 +158,51 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	}
 	
 	/**
-	 * Checks for internal transitions
-	 * @param markovianTransitions set of markovian transitions
-	 * @return an internal transition if there is one, null otherwise
+	 * Checks if a given transition is internal
+	 * @param markovianTransition the transition
+	 * @return true iff the transition has no guards
 	 */
 	@SuppressWarnings("unchecked")
-	protected MarkovTransition<S> getInternalTransition(List<MarkovTransition<S>> markovianTransitions) {
+	protected boolean isInternalTransition(MarkovTransition<S> markovianTransition) {
+		Object event = markovianTransition.getEvent();
+		if (event instanceof Collection<?>) {
+			Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
+			return guards.isEmpty();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks for internal transitions
+	 * @param state set of markovian state
+	 * @return an internal transition if there is one, null otherwise
+	 */
+	protected MarkovTransition<S> getInternalTransition(MarkovState state) {
+		List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
 		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
-			Object event = markovianTransition.getEvent();
-			if (event instanceof Collection<?>) {
-				Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
-				if (guards.isEmpty()) {
-					return markovianTransition;
-				} 
+			if (isInternalTransition(markovianTransition)) {
+				return markovianTransition;
 			}
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Checks if a given list of markov transitions has a transition for a specified event
+	 * @param event the event
+	 * @param markovTransitions the list of markov transitions
+	 * @return true iff an event in the list corresponds to the given event
+	 */
+	protected boolean hasEvent(Object event, List<MarkovTransition<S>> markovTransitions) {
+		for (MarkovTransition<S> markovTransition : markovTransitions) {
+			if (markovTransition.getEvent().equals(event)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/**
