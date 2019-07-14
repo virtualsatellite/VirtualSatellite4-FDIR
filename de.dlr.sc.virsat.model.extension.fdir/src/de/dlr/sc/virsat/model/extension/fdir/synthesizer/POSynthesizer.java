@@ -40,6 +40,13 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 public class POSynthesizer extends ASynthesizer {
 
 	/**
+	 * Default constructor
+	 */
+	public POSynthesizer() {
+		modularizer = null;
+	}
+	
+	/**
 	 * Represents a belief state
 	 * @author muel_s8
 	 *
@@ -164,10 +171,6 @@ public class POSynthesizer extends ASynthesizer {
 				}
 			}
 		}
-		
-		System.out.println("-------------------------------------");
-		System.out.println(beliefMa.toDot());
-		System.out.println("-------------------------------------");
 		
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);

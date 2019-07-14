@@ -77,6 +77,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
+			
 			if (minimizer != null) {
 				minimizer.minimize(synthesizedRA);
 			}

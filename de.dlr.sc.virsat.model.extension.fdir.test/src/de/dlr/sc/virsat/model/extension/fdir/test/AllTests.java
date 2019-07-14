@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimi
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
 import junit.framework.JUnit4TestAdapter;
@@ -44,6 +45,7 @@ import junit.framework.JUnit4TestAdapter;
 		ExplicitDFT2MAConverterTest.class, 
 		GalileoDFT2DFTTest.class,
 		BasicSynthesizerTest.class,
+		POSynthesizerTest.class,
 		Schedule2RAConverterTest.class,
 		DFT2GalileoDFTTest.class,
 		OrthogonalPartitionRefinementMinimizerTest.class,

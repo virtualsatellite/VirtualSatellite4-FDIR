@@ -93,15 +93,17 @@ public class DFTSemantics {
 		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
 		boolean existsNonTLESucc = existsNonTLE(ftHolder, succs);
 		
-		if (!existsNonTLESucc) {
-			ExplicitDFTState baseSucc = succs.get(0);
-			succs.clear();
-			succs.add(baseSucc);
-			recoveryActions.clear();
-			recoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
-		} else {
-			ExplicitDFTState baseSucc = succs.remove(0);
-			succs.add(baseSucc);
+		if (succs.size() > 1) {
+			if (!existsNonTLESucc) {
+				ExplicitDFTState baseSucc = succs.get(0);
+				succs.clear();
+				succs.add(baseSucc);
+				recoveryActions.clear();
+				recoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
+			} else {
+				ExplicitDFTState baseSucc = succs.remove(0);
+				succs.add(baseSucc);
+			}
 		}
 		
 		return changedNodes;

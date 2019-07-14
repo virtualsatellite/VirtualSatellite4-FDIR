@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Test;
@@ -30,7 +32,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsCsp2.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		System.out.println(ra.toDot());
+		assertEquals(1, ra.getStates().size());
+		assertEquals(1, ra.getTransitions().size());
 	}
 	
 	@Test
@@ -38,7 +41,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsCsp2Delayed.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		System.out.println(ra.toDot());
+		assertEquals(1, ra.getStates().size());
+		assertEquals(1, ra.getTransitions().size());
 	}
 
 	@Test
@@ -46,7 +50,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		System.out.println(ra.toDot());
+		assertEquals(1, ra.getStates().size());
+		assertEquals(1, ra.getTransitions().size());
 	}
 	
 	@Test
@@ -54,7 +59,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2Delayed.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		System.out.println(ra.toDot());
+		assertEquals(1, ra.getStates().size());
+		assertEquals(1, ra.getTransitions().size());
 	}
 	
 	@Test
@@ -62,14 +68,17 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBE.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		System.out.println(ra.toDot());
+		final int EXPECTED_NUMBER_STATES = 3;
+		final int EXPECTED_NUMBER_TRANSITIONS = 3;
+		assertEquals(EXPECTED_NUMBER_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_NUMBER_TRANSITIONS, ra.getTransitions().size());
 	}
 	
 	@Test
 	public void testEvaluateObsOr2Csp2ObsBEUnreliable() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		System.out.println(ra.toDot());
+		synthesizer.synthesize(fault);
+		// TODO: correct assertions
 	}
 }
