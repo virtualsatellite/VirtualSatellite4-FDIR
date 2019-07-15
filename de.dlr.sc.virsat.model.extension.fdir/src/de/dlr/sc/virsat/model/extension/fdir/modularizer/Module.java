@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,16 @@ public class Module {
 	public Module() {
 		this.moduleNodes = new ArrayList<FaultTreeNodePlus>();
 		this.moduleType = ModuleType.DETERMINISTIC;
+	}
+	
+	/**
+	 * Constructor which takes in the known module nodes
+	 * @param moduleNodes the module nodes
+	 */
+	public Module(List<FaultTreeNode> moduleNodes) {
+		for (FaultTreeNode ftn : moduleNodes) {
+			this.moduleNodes.add(new FaultTreeNodePlus(ftn, null, 0, 0, 0, false));
+		}
 	}
 	
 	
@@ -68,7 +79,7 @@ public class Module {
 	
 	/**
 	 * Returns true if module is nondeterministic, false otherwise
-	 * @return is dynamic
+	 * @return is nondeterministic
 	 */
 	public boolean isNondeterministic() {
 		return this.moduleType == ModuleType.NONDETERMINISTIC;
@@ -79,6 +90,13 @@ public class Module {
 	 */
 	public void harvestFromFaultTree() {
 		this.moduleNodes.stream().forEach(node -> node.harvestFromFaultTree());
+	}
+	
+	/**
+	 * Create the fault tree copy that is required for conversion to markov automata
+	 */
+	public void constructFaultTreeCopy() {
+		FaultTreeHelper fthelp = new FaultTreeHelper(this.moduleNodes.get(0).getFaultTreeNode().getConcept());
 	}
 	
 	/**

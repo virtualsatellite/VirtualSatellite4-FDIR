@@ -10,15 +10,10 @@
 package de.dlr.sc.virsat.model.extension.fdir.trimmer;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Stack;
-
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 /**
  * Class for trimming fault trees
@@ -36,22 +31,6 @@ public class FaultTreeTrimmer {
 		if (ftNode == null) {
 			return null;
 		}
-		
-		FaultTreeHelper ftHelp = new FaultTreeHelper(ftNode.getConcept());
-		FaultTree trimmedTree = new FaultTree(ftNode.getConcept());
-		
-		Stack<FaultTreeNode> stack = new Stack<FaultTreeNode>();
-		stack.push(ftNode);
-		
-		while (!stack.isEmpty()) {
-			FaultTreeNode curr = stack.pop();
-			List<FaultTreeNode> children = ftHelp.getAllChildren(curr, curr.getFault().getFaultTree());
-			
-			for (FaultTreeNode child : children) {
-				Fault childCopy = ftHelp.copyFault(child.getFault());
-			}
-		}
-		
 		return null;
 	}
 	
@@ -66,6 +45,7 @@ public class FaultTreeTrimmer {
 		}
 		
 		Set<Module> trimmedModules = trimDeterministicModules(modules);
+
 		return trimmedModules;
 	}
 	
