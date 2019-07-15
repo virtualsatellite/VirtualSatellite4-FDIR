@@ -74,7 +74,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		for (Transition transition : ra.getTransitions()) {
 			State state = transition.getFrom();
 			Set<FaultTreeNode> guaranteedInputs = mapStateToGuaranteedInputs.get(state);
-			if (guaranteedInputs.containsAll(mapTransitionToGuards.get(transition))) {
+			if (mapTransitionToGuards.containsKey(transition) && guaranteedInputs.containsAll(mapTransitionToGuards.get(transition))) {
 				toRemove.add(transition);
 				mapStateToIncomingTransitions.get(transition.getTo()).remove(transition);
 				mapStateToOutgoingTransitions.get(state).remove(transition);
@@ -298,6 +298,10 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		for (Transition transition : outgoingTransitions0) {
 			// Check for orthogonality
 			Set<FaultTreeNode> guards0 = mapTransitionToGuards.get(transition);
+			if (guards0 == null) {
+				return false;
+			}
+			
 			if (isOrthogonalWithRespectToGuards(state0, state1, guards0)) {
 				continue;
 			}
@@ -310,6 +314,11 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		for (Transition transition : outgoingTransitions1) {
 			// Check for orthogonality
 			Set<FaultTreeNode> guards0 = mapTransitionToGuards.get(transition);
+			
+			if (guards0 == null) {
+				return false;
+			}
+			
 			if (isOrthogonalWithRespectToGuards(state0, state1, guards0)) {
 				continue;
 			}
