@@ -174,8 +174,8 @@ public class GalileoDFT2DFT {
 				
 				List<GalileoFaultTreeNode> observables = galileoFtn.getType().getObservables();
 				for (GalileoFaultTreeNode observable : observables) {
-					FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
-					FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
+					FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
+					FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
 					ftHelper.connectObserver(fault, ftnFrom, ftnTo);
 				}
 			}

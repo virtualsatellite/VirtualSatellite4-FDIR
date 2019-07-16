@@ -88,14 +88,6 @@ public class DFTState extends MarkovState {
 	}
 	
 	/**
-	 * Is this state representing a fail state?
-	 * @return true iff this state is a fail state
-	 */
-	public boolean isFailState() {
-		return isFailState;
-	}
-	
-	/**
 	 * Sets the recovery strategy state
 	 * @param recoveryStrategy the recovery strategy state
 	 */

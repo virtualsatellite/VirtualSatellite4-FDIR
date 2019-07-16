@@ -138,8 +138,8 @@ public class FaultTreeHolder {
 				}
 				
 				for (FaultTreeEdge obs : node.getFault().getFaultTree().getObservations()) {
-					OBSERVER observer = (OBSERVER) obs.getFrom();
-					FaultTreeNode observable = obs.getTo();
+					OBSERVER observer = (OBSERVER) obs.getTo();
+					FaultTreeNode observable = obs.getFrom();
 					
 					List<OBSERVER> nodeObservers = mapNodeToObservers.get(observable);
 					if (nodeObservers == null) {
