@@ -96,8 +96,8 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			for (int i = 0; i < observers.size(); ++i) {
 				OBSERVER observer = observers.get(i);
 				List<FaultTreeNode> newChildNodeList = mapNodes.get(observer);
-				FaultTreeNode newSpareOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-				ftHelper.connectObserver(fault, newSpareOutputNode, newNodeOutputNode);
+				FaultTreeNode newObserverOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
+				ftHelper.connectObserver(fault, newNodeOutputNode, newObserverOutputNode);
 			}
 			
 			List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);

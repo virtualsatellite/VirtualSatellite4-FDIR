@@ -168,15 +168,8 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 				anythingChanged |= layoutVOTE(containerShape, width, height, typeText.getFont(), bean);
 			} else if (bean instanceof DELAY) {
 				anythingChanged |= layoutDELAY(containerShape, width, height, typeText.getFont(), bean);
-			}
-			
-			if (bean instanceof OBSERVER) {
-				List<Anchor> observerAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.OBSERVER);
-				for (int i = 0; i < observerAnchors.size(); ++i) {
-					BoxRelativeAnchor anchor = (BoxRelativeAnchor) observerAnchors.get(i);
-					double relativeWidth = (1 + ((double) (i + 1) / (observerAnchors.size() + 1))) / 2;
-					anchor.setRelativeWidth(relativeWidth);
-				}
+			} else if (bean instanceof OBSERVER) {
+				anythingChanged |= layoutOBSERVER(containerShape, width, height, typeText.getFont(), bean);
 			}
 		} 
         
@@ -257,6 +250,37 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 		int delayHeight = delayDimension.getHeight();
 		
 		return layoutGa(delayGa, delayX, delayY, delayWidth, delayHeight);
+	}
+	
+	/**
+	 * Layouts an OBSERVER gate
+	 * @param containerShape the container shape
+	 * @param width the width
+	 * @param height the height
+	 * @param font the font
+	 * @param bean the space
+	 * @return true iff there is any change
+	 */
+	private boolean layoutOBSERVER(ContainerShape containerShape, int width, int height, Font font, FaultTreeNode bean) {
+		Shape delayShape = containerShape.getChildren()
+				.get(FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE);
+		Text delayGa = (Text) delayShape.getGraphicsAlgorithm();
+		IDimension delayDimension = GraphitiUi.getUiLayoutService()
+				.calculateTextSize(delayGa.getValue(), font);
+		
+		int observationRateX = 0;
+		int observationRateY = height - delayDimension.getHeight() - AnchorUtil.ANCHOR_HEIGHT / 2;
+		int observationRateWidth = width;
+		int observationRateHeight = delayDimension.getHeight();
+		
+		List<Anchor> observerAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.OBSERVER);
+		for (int i = 0; i < observerAnchors.size(); ++i) {
+			BoxRelativeAnchor anchor = (BoxRelativeAnchor) observerAnchors.get(i);
+			double relativeWidth = (1 + ((double) (i + 1) / (observerAnchors.size() + 1))) / 2;
+			anchor.setRelativeWidth(relativeWidth);
+		}
+		
+		return layoutGa(delayGa, observationRateX, observationRateY, observationRateWidth, observationRateHeight);
 	}
 	
 	/**
