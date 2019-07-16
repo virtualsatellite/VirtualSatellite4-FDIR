@@ -16,6 +16,7 @@ import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
@@ -114,6 +115,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 				subMonitor.setTaskName("Creating Data Model");
 				subMonitor.split(1);
 			}
+			
 			double delta = getTimestepBean().getValueToBaseUnit();
 			IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
 					(StructuralElementInstance) getTypeInstance().eContainer());
@@ -133,7 +135,9 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 				subMonitor.setTaskName("Performing Model Checking");
 				subMonitor.split(1);
 			}
-			ftEvaluator.evaluateFaultTree(fault, new Reliability(maxTime), MTTF.MTTF);
+			
+			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new Reliability(maxTime), MTTF.MTTF);
+			
 			if (monitor != null) {
 				if (monitor.isCanceled()) {
 					return UnexecutableCommand.INSTANCE;
@@ -141,21 +145,22 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 				subMonitor.setTaskName("Updating Results");
 				subMonitor.split(1);
 			}
-			double mttf = ftEvaluator.getMeanTimeToFailure();
+			
+			double mttf = result.getMeanTimeToFailure();
 			return new RecordingCommand(ed, "Reliability Analysis") {
 				@Override
 				protected void doExecute() {
 					setReliability(
-							TO_PERCENT * (1 - ftEvaluator.getFailRates().get(ftEvaluator.getFailRates().size() - 1)));
+							TO_PERCENT * (1 - result.getFailRates().get(result.getFailRates().size() - 1)));
 					getMeanTimeToFailureBean().setValueAsBaseUnit(mttf);
 
 					getReliabilityCurve().clear();
 
 					double accDelta = pointDelta;
-					for (int i = 0; i < ftEvaluator.getFailRates().size(); ++i) {
+					for (int i = 0; i < result.getFailRates().size(); ++i) {
 						accDelta += delta;
 						if (accDelta >= pointDelta) {
-							createNewReliabilityCurveEntry(TO_PERCENT * (1 - ftEvaluator.getFailRates().get(i)));
+							createNewReliabilityCurveEntry(TO_PERCENT * (1 - result.getFailRates().get(i)));
 							accDelta -= pointDelta;
 						}
 					}
@@ -182,5 +187,4 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		newBeanProperty.setValue(value);
 		getReliabilityCurve().add(newBeanProperty);
 	}
-
 }

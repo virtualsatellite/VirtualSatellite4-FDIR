@@ -16,6 +16,7 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFT2MAConverter;
@@ -60,10 +61,10 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 
 	@Override
-	public void evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		mc = dft2MAConverter.convert(root);
-		markovModelChecker.checkModel(mc, metrics);
+		return markovModelChecker.checkModel(mc, metrics);
 	}
 
 	/**
@@ -74,27 +75,6 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 
 	public String toDot() {
 		return mc.toDot();
-	}
-
-	@Override
-	public List<Double> getFailRates() {
-		return markovModelChecker.getFailRates();
-	}
-
-	@Override
-	public double getMeanTimeToFailure() {
-		return markovModelChecker.getMeanTimeToFailure();
-	}
-
-	@Override
-	public List<Double> getPointAvailability() {
-		return markovModelChecker.getPointAvailability();
-	}
-
-	
-	@Override
-	public double getSteadyStateAvailability() {
-		return markovModelChecker.getSteadyStateAvailability();
 	}
 
 	@Override

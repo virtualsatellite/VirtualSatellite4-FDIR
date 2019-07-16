@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.ADFT2MAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFT2MAConverter;
@@ -47,9 +48,9 @@ public class ExplicitDFT2MAConverterTest extends ADFT2MAConverterTest {
 		final double EXPECTEDMTTF = 2.9435483;
 		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test

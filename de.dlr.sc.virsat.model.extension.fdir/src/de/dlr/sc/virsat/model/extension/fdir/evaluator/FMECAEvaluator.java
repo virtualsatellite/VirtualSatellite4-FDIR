@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 
@@ -48,8 +49,8 @@ public class FMECAEvaluator {
 		Map<Fault, Double> mapFaultToMTTF = new HashMap<>();
 		
 		for (Fault fault : faults) {
-			ftEvaluator.evaluateFaultTree(fault);
-			double mttf = ftEvaluator.getMeanTimeToFailure();
+			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+			double mttf = result.getMeanTimeToFailure();
 			mapFaultToMTTF.put(fault, mttf);
 		}
 		

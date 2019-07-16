@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -41,14 +42,14 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 	 */
 	protected void assertIterationResultsEquals(FaultTreeNode root1, FaultTreeNode root2) {
 		IFaultTreeEvaluator evaluator1 = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
-		evaluator1.evaluateFaultTree(root1);
+		ModelCheckingResult result1 = evaluator1.evaluateFaultTree(root1);
 
 		IFaultTreeEvaluator evaluator2 = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
-		evaluator2.evaluateFaultTree(root2);
+		ModelCheckingResult result2 = evaluator2.evaluateFaultTree(root2);
 		
 		for (int i = 0; i < TIMESTEPS; ++i) {
-			double failRateOld = evaluator1.getFailRates().get(i);
-			double failRateNew = evaluator2.getFailRates().get(i);
+			double failRateOld = result1.getFailRates().get(i);
+			double failRateNew = result2.getFailRates().get(i);
 			assertEquals("Evaluation result is correct after time: " + ((i + 1) * DELTA), failRateOld, failRateNew, TEST_EPSILON);
 		}
 	}

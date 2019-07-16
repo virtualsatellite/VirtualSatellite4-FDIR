@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -37,10 +38,10 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		final float DELTA = 0.01f;
 		
 		FaultTreeEvaluator dftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(false, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		dftEvaluator.evaluateFaultTree(tle);
+		ModelCheckingResult result = dftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for switch2AndRedundancy with DFT ---------------------");
-		printResults(dftEvaluator, DELTA);
+		printResults(dftEvaluator, result, DELTA);
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -52,12 +53,12 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		ndDFTftEvaluator.evaluateFaultTree(tle);
+		result = ndDFTftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for switch2AndRedundancy with NdDFT -----------------------");
 		System.out.println("RA #States: " +  ra.getStates().size());
 		System.out.println(ra.toDot());
-		printResults(ndDFTftEvaluator, DELTA);
+		printResults(ndDFTftEvaluator, result, DELTA);
 	}
 	
 	@Test
@@ -66,12 +67,12 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		Fault tle = createGalileoDFT("/resources/aiaa/2017/memory2.dft");
 		
 		FaultTreeEvaluator dftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(false);
-		dftEvaluator.evaluateFaultTree(tle);
+		ModelCheckingResult result = dftEvaluator.evaluateFaultTree(tle);
 		
 		final float DELTA = 0.01f;
 		
 		System.out.println("--------------------- Evaluation results for Memory2 with DFT ---------------------");
-		printResults(dftEvaluator, DELTA);
+		printResults(dftEvaluator, result, DELTA);
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -83,11 +84,11 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		ndDFTftEvaluator.evaluateFaultTree(tle);
+		result = ndDFTftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for Memory2 with NdDFT -----------------------");
 		System.out.println("RA #States: " +  ra.getStates().size());
 		System.out.println(ra.toDot());
-		printResults(ndDFTftEvaluator, DELTA);
+		printResults(ndDFTftEvaluator, result, DELTA);
 	}
 }

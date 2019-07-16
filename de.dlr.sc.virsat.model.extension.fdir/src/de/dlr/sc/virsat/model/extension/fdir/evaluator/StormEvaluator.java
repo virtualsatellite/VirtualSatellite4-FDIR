@@ -12,10 +12,10 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.storm.runner.IStormProgram;
@@ -37,9 +37,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 public class StormEvaluator implements IFaultTreeEvaluator {
 	
 	private final double delta;
-	
-	private List<Double> failRates;
-	private double mttf;
+	private ModelCheckingResult modelCheckingResult;
 	
 	/**
 	 * Constructor for computing reliability and mean time to failure
@@ -50,10 +48,11 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public void evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
 		
 		DFT2GalileoDFT converter = new DFT2GalileoDFT(false);
 		GalileoDft dft = converter.convert((Fault) root);
+		modelCheckingResult = new ModelCheckingResult();
 		
 		try {
 			StormDFT storm = new StormDFT();
@@ -67,17 +66,17 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 			StormRunner<Double> stormRunner = createStormRunner(storm);
 			List<Double> result = stormRunner.run();
 			
-			mttf = result.get(0);
+			modelCheckingResult.setMeanTimeToFailure(result.get(0));
 			
-			failRates = new ArrayList<>();
 			for (int i = 1; i < result.size(); ++i) {
 				Double failRate = result.get(i);
-				failRates.add(failRate);
+				modelCheckingResult.getFailRates().add(failRate);
 			}
-			
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
+		
+		return modelCheckingResult;
 	}
 	
 	/**
@@ -89,15 +88,11 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 	protected StormRunner<Double> createStormRunner(IStormProgram<Double> storm) {
 		return new StormRunner<>(storm, FaultTreePreferences.getStormExecutionEnvironmentPreference());
 	}
-	
-	@Override
-	public List<Double> getFailRates() {
-		return failRates;
-	}
 
 	@Override
-	public double getMeanTimeToFailure() {
-		return mttf;
+	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -105,26 +100,4 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public List<Double> getPointAvailability() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getSteadyStateAvailability() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-
-
-
 }
