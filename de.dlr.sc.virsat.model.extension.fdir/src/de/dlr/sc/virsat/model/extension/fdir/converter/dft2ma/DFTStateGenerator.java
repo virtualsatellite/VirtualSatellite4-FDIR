@@ -7,28 +7,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
- * Generator interface for creating new states
+ * This class generates explicit dft states
  * @author muel_s8
  *
  */
 
-public interface IStateGenerator {
-	/**
-	 * Generates a state by copying the base state
-	 * @param baseState the base state
-	 * @return a new state copying data from the base state
-	 */
-	ExplicitDFTState generateState(ExplicitDFTState baseState);
-	
-	/**
-	 * Generates an empty new state
-	 * @param ftHolder the fault tree
-	 * @return a new empty state
-	 */
-	ExplicitDFTState generateState(FaultTreeHolder ftHolder);
+public class DFTStateGenerator implements IStateGenerator {
+
+	@Override
+	public DFTState generateState(DFTState baseState) {
+		return new DFTState(baseState);
+	}
+
+	@Override
+	public DFTState generateState(FaultTreeHolder ftHolder) {
+		return new DFTState(ftHolder);
+	}
+
 }

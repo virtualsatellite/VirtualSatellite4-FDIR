@@ -7,49 +7,35 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.List;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
- * Standard VOTE gate semantics.
+ * Simple propagation semantics. A node with this semantics fails iff a child fails.
  * @author muel_s8
  *
  */
 
-public class VOTESemantics implements INodeSemantics {
+public class DelaySemantics implements INodeSemantics {
 
 	@Override
-	public boolean handleUpdate(FaultTreeNode node, ExplicitDFTState state, ExplicitDFTState pred,
+	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			FaultTreeHolder ftHolder, GenerationResult generationResult) {
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		
-		int failed = 0;
-		int permanentlyFailed = 0;
-		
 		for (FaultTreeNode child : children) {
 			if (state.hasFaultTreeNodeFailed(child)) {
-				failed++;
-				if (state.isFaultTreeNodePermanent(child)) {
-					permanentlyFailed++;
-				}
+				return state.setFaultTreeNodeFailing(node, true);
 			}
 		}
 		
-		long votingThreshold = ((VOTE) node).getVotingThreshold();
-		boolean hasFailed = failed >= votingThreshold;
-		
-		if (hasFailed) {
-			boolean hasPermanentlyFailed = permanentlyFailed >= votingThreshold;
-			if (hasPermanentlyFailed) {
-				state.setFaultTreeNodePermanent(node, true);
-			} 
-		}
-		
-		return state.setFaultTreeNodeFailed(node, hasFailed);
+		return state.setFaultTreeNodeFailing(node, false) | state.setFaultTreeNodeFailed(node, false);
 	}
+
 }

@@ -7,13 +7,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -46,12 +49,12 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	}
 	
 	@Override
-	protected boolean performClaim(SPARE node, FaultTreeNode spare, ExplicitDFTState state,
+	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state,
 			GenerationResult generationResult) {
 		List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 		
 		ClaimAction ca = getOrCreateClaimAction(node, spare, mapNodeToNodeToClaimAction);
-		ExplicitDFTState newState = stateGenerator.generateState(state);
+		DFTState newState = stateGenerator.generateState(state);
 		ca.execute(newState);
 		newState.setFaultTreeNodeFailed(node, false);
 		List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);

@@ -16,8 +16,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovScheduler;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 /**
@@ -36,7 +36,7 @@ public class BasicSynthesizer extends ASynthesizer {
 	}
 
 	@Override
-	protected ExplicitDFT2MAConverter createDFT2MAConverter() {
-		return new ExplicitDFT2MAConverter();
+	protected DFT2MAConverter createDFT2MAConverter() {
+		return new DFT2MAConverter();
 	}
 }

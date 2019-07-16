@@ -7,14 +7,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.List;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.GenerationResult;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IStateGenerator;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.NDSPARESemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -40,7 +40,7 @@ public class PONDSPARESemantics extends NDSPARESemantics {
 	}
 	
 	@Override
-	public boolean handleUpdate(FaultTreeNode node, ExplicitDFTState state, ExplicitDFTState pred,
+	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			FaultTreeHolder ftHolder, GenerationResult generationResult) {
 		
 		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(node);

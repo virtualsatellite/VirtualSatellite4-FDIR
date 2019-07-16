@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,14 +23,14 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
  */
 
 public class GenerationResult {
-	private Set<ExplicitDFTState> generatedStates = new HashSet<>();
-	private Map<ExplicitDFTState, List<RecoveryAction>> mapStateToRecoveryActions;
+	private Set<DFTState> generatedStates = new HashSet<>();
+	private Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions;
 	
 	/**
 	 * Standard constructor
 	 * @param mapStateToRecoveryActions injected map
 	 */
-	public GenerationResult(Map<ExplicitDFTState, List<RecoveryAction>> mapStateToRecoveryActions) {
+	public GenerationResult(Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions) {
 		this.mapStateToRecoveryActions = mapStateToRecoveryActions;
 	}
 
@@ -38,7 +38,7 @@ public class GenerationResult {
 	 * Gets the set of states generated during the semantical update
 	 * @return the set of newly generated states
 	 */
-	public Set<ExplicitDFTState> getGeneratedStates() {
+	public Set<DFTState> getGeneratedStates() {
 		return generatedStates;
 	}
 	
@@ -46,7 +46,7 @@ public class GenerationResult {
 	 * A map of recovery actions detailing which actions to apply to go to the desired state
 	 * @return recovery actions needed to move to the newly generated states
 	 */
-	public Map<ExplicitDFTState, List<RecoveryAction>> getMapStateToRecoveryActions() {
+	public Map<DFTState, List<RecoveryAction>> getMapStateToRecoveryActions() {
 		return mapStateToRecoveryActions;
 	}
 }

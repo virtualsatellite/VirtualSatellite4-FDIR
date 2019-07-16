@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.Set;
 
@@ -35,17 +35,17 @@ public class DelayEvent implements IDFTEvent {
 	}
 	
 	@Override
-	public double getRate(ExplicitDFTState state) {
+	public double getRate(DFTState state) {
 		return 1 / delay;
 	}
 
 	@Override
-	public boolean canOccur(ExplicitDFTState state) {
+	public boolean canOccur(DFTState state) {
 		return state.isFaultTreeNodeFailing(delayNode) && !state.hasFaultTreeNodeFailed(delayNode);
 	}
 
 	@Override
-	public void execute(ExplicitDFTState state, Set<BasicEvent> orderDependentBasicEvents,
+	public void execute(DFTState state, Set<BasicEvent> orderDependentBasicEvents,
 			Set<FaultTreeNode> transientNodes) {
 		state.setFaultTreeNodeFailed(delayNode, true);
 		state.setFaultTreeNodeFailing(delayNode, false);

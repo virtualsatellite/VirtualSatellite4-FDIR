@@ -16,10 +16,10 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
@@ -40,7 +40,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
  *
  */
 
-public abstract class ADFT2MAConverterTest extends ATestCase {
+public class DFT2MAConverterTest extends ATestCase {
 	
 	protected IFaultTreeEvaluator ftEvaluator;
 	protected RecoveryAutomatonHelper raHelper;
@@ -50,12 +50,16 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		raHelper = new RecoveryAutomatonHelper(concept);
 		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(createDFT2MAConverter(), new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
 	}
-	
+
 	/**
-	 * Create the concrete DFT2MAConverter
-	 * @return a DFT2MAConverter instance
+	 * Creates the dft2MAconverter to be used
+	 * @return a dft2MAconverter
 	 */
-	protected abstract IDFT2MAConverter createDFT2MAConverter();
+	public DFT2MAConverter createDFT2MAConverter() {
+		DFT2MAConverter converter = new DFT2MAConverter();
+		converter.setSemantics(DFTSemantics.createStandardDFTSemantics());
+		return converter;
+	}
 	
 	@Test
 	public void testEvaluateFailureMode() throws IOException {
@@ -373,7 +377,7 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateColdSpare2WithTimedRa() throws IOException {
-		ExplicitDFT2MAConverter converter = new ExplicitDFT2MAConverter();
+		DFT2MAConverter converter = new DFT2MAConverter();
 		converter.setSemantics(DFTSemantics.createNDDFTSemantics());
 		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(converter, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
 		
@@ -815,5 +819,51 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/ftpp4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateAnd2Repair1() throws IOException {
+		final double[] EXPECTED = {
+			3.1802e-5,
+			1.2642e-4,
+			2.8270e-4,
+			4.9948e-4
+		};
+		final double EXPECTEDMTTF = 2.9435483;
+		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateTransientOrPermanent() throws IOException {
+		Fault fault = createDFT("/resources/galileoRepair/transientOrPermanent.dft");
+		
+		DFT2MAConverter dft2MaConverter = (DFT2MAConverter) createDFT2MAConverter();
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
+		final int EXPECTED_COUNT_STATES = 3;
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+	}
+	
+	@Test
+	public void testEvaluateTransientToPermanentConversion() throws IOException {
+		Fault fault = createDFT("/resources/galileoRepair/transientToPermanentConversion.dft");
+		
+		DFT2MAConverter dft2MaConverter = (DFT2MAConverter) createDFT2MAConverter();
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
+		final int EXPECTED_COUNT_STATES = 3;
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+	}
+	
+	@Test
+	public void testEvaluateCsp2Repair2() throws IOException {
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
+		
+		DFT2MAConverter dft2MaConverter = (DFT2MAConverter) createDFT2MAConverter();
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
+		final int EXPECTED_COUNT_STATES = 4;
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 	}
 }
