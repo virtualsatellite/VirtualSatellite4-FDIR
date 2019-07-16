@@ -42,7 +42,7 @@ public class DelegateSynthesizer implements ISynthesizer {
 	public ISynthesizer chooseSynthesizer(Fault fault) {
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		if (ftHolder.getMapNodeToObservers().values().stream().filter(observers -> observers.size() > 0).findAny().isPresent()) {
+		if (ftHolder.isPartialObservable()) {
 			return poSynthesizer;
 		} else {
 			return basicSynthesizer;

@@ -48,7 +48,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	@Before
 	public void setup() {
 		raHelper = new RecoveryAutomatonHelper(concept);
-		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(createDFT2MAConverter(), new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
+		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(DFTSemantics.createStandardDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
 	}
 
 	/**
@@ -377,9 +377,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateColdSpare2WithTimedRa() throws IOException {
-		DFT2MAConverter converter = new DFT2MAConverter();
-		converter.setSemantics(DFTSemantics.createNDDFTSemantics());
-		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(converter, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
+		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(DFTSemantics.createNDDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
 		
 		final double[] EXPECTED = {
 			0.0099009,

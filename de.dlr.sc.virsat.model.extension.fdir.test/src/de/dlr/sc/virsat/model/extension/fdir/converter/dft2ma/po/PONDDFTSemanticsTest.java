@@ -15,12 +15,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
@@ -42,19 +39,15 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
 public class PONDDFTSemanticsTest extends ATestCase {
 
-	private DFT2MAConverter converter;
 	private RecoveryAutomatonHelper raHelper;
 	private FaultTreeHelper ftHelper;
 	private IFaultTreeEvaluator ftEvaluator;
 	
 	@Before
 	public void setup() {
-		converter = new DFT2MAConverter();
-		converter.setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
-		
 		raHelper = new RecoveryAutomatonHelper(concept);
 		ftHelper = new FaultTreeHelper(concept);
-		ftEvaluator = new DFTEvaluator(converter, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON));
+		ftEvaluator = new DFTEvaluator(null, PONDDFTSemantics.createPONDDFTSemantics(), new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON));
 	}
 	
 	@Test
@@ -86,40 +79,5 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Reliability.UNIT_RELIABILITY);
 		assertIterationResultsEquals(result, EXPECTED);
-	}
-	
-	@Test
-	public void testObsCsp2Delayed() throws IOException {		
-		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsCsp2Delayed.dft");
-		MarkovAutomaton<DFTState> ma = converter.convert(root);
-		System.out.println(ma.toDot());
-	}
-	
-	@Test
-	public void testObsOr2Csp2() throws IOException {		
-		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2.dft");
-		MarkovAutomaton<DFTState> ma = converter.convert(root);
-		System.out.println(ma.toDot());
-	}
-
-	@Test
-	public void testObsOr2Csp2Delayed() throws IOException {		
-		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2Delayed.dft");
-		MarkovAutomaton<DFTState> ma = converter.convert(root);
-		System.out.println(ma.toDot());
-	}
-
-	@Test
-	public void testObsOr2Csp2BE() throws IOException {		
-		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2ObsBE.dft");
-		MarkovAutomaton<DFTState> ma = converter.convert(root);
-		System.out.println(ma.toDot());
-	}
-	
-	@Test
-	public void testObsOr2Csp2BEUnreliable() throws IOException {		
-		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
-		MarkovAutomaton<DFTState> ma = converter.convert(root);
-		System.out.println(ma.toDot());
 	}
 }
