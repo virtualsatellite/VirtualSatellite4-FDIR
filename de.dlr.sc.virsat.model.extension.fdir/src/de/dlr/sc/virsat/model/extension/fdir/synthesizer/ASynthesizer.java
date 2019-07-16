@@ -101,17 +101,27 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	protected abstract RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initial);
 
-	@Override
+	/**
+	 * Synthesies a recovery automaton.
+	 * @param fault the fault
+	 * @return the synthesized recovery automaton
+	 */
 	public RecoveryAutomaton synthesize(Fault fault) {
 		return synthesize(fault, Collections.emptyMap());
 	}
 
-	@Override
+	/**
+	 * Sets the minimizer that will be used to synthesize the recovery automaton
+	 * @param minimizer the minimizer
+	 */
 	public void setMinimizer(ARecoveryAutomatonMinimizer minimizer) {
 		this.minimizer = minimizer;
 	}
 	
-	@Override
+	/**
+	 * Sets the modularizer that will be used to modularize the fault tree
+	 * @param modularizer the modularizer
+	 */
 	public void setModularizer(Modularizer modularizer) {
 		this.modularizer = modularizer;
 	}

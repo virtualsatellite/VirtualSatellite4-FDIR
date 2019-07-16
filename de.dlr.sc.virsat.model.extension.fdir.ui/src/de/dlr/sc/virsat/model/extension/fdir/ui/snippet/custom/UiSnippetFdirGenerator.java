@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom;
 
+import java.util.Collections;
+
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
@@ -27,7 +29,8 @@ import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementIns
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
 import de.dlr.sc.virsat.project.editingDomain.VirSatTransactionalEditingDomain;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSectionSnippet;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
@@ -92,8 +95,8 @@ public class UiSnippetFdirGenerator extends AUiSectionSnippet implements IUiSnip
 				Fault fault = beanSei.getFirst(Fault.class);
 				
 				if (fault != null) {
-					BasicSynthesizer basicSynthesizer = new BasicSynthesizer();
-					RecoveryAutomaton ra = basicSynthesizer.synthesize(fault);
+					ISynthesizer synthesizer = new DelegateSynthesizer();
+					RecoveryAutomaton ra = synthesizer.synthesize(fault, Collections.emptyMap());
 					Command addCommand = beanSei.add(virSatEd, ra);
 					virSatEd.getCommandStack().execute(addCommand);
 				}
