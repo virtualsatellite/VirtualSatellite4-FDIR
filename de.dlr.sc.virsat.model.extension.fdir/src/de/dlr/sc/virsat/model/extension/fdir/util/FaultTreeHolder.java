@@ -251,6 +251,14 @@ public class FaultTreeHolder {
 	}
 	
 	/**
+	 * Checks if the passed tree is partially observable
+	 * @return true iff the tree has an observer node
+	 */
+	public boolean isPartialObservable() {
+		return getNodes().stream().filter(node -> node instanceof OBSERVER).findAny().isPresent();
+	}
+	
+	/**
 	 * Gets a mapping from any node to the spares
 	 * @return map from node to spares
 	 */
