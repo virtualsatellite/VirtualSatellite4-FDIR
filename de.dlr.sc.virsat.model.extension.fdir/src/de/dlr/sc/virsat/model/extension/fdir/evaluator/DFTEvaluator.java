@@ -18,10 +18,9 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFT2MAConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
@@ -35,7 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  */
 public class DFTEvaluator implements IFaultTreeEvaluator {
 	
-	private final IDFT2MAConverter dft2MAConverter;
+	private final DFT2MAConverter dft2MAConverter;
 
 	private MarkovAutomaton<DFTState> mc;
 	private RecoveryStrategy recoveryStrategy;
@@ -50,7 +49,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 *            Model Checker
 	 */
 
-	public DFTEvaluator(IDFT2MAConverter dft2MAConverter, IMarkovModelChecker markovModelChecker) {
+	public DFTEvaluator(DFT2MAConverter dft2MAConverter, IMarkovModelChecker markovModelChecker) {
 		this.dft2MAConverter = dft2MAConverter;
 		this.markovModelChecker = markovModelChecker;
 	}
@@ -91,7 +90,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			List<MarkovTransition<DFTState>> predTransitions = mc.getPredTransitions(failState);
 			for (MarkovTransition<DFTState> predTransition : predTransitions) {
 				Set<BasicEvent> minimumCutSet = new HashSet<>();
-				ExplicitDFTState predecessor = (ExplicitDFTState) predTransition.getFrom();
+				DFTState predecessor = (DFTState) predTransition.getFrom();
 				Object event = predTransition.getEvent();
 
 				minimumCutSet.add((BasicEvent) ((IDFTEvent) event).getNode());

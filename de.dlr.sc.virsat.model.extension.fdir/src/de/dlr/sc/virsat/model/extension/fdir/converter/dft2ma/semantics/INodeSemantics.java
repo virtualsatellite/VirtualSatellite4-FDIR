@@ -7,8 +7,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -29,5 +31,5 @@ public interface INodeSemantics {
 	 * @param generationResult accumulator for state space generation results
 	 * @return true iff the node state changed
 	 */
-	boolean handleUpdate(FaultTreeNode node, ExplicitDFTState state, ExplicitDFTState pred, FaultTreeHolder ftHolder, GenerationResult generationResult);
+	boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred, FaultTreeHolder ftHolder, GenerationResult generationResult);
 }

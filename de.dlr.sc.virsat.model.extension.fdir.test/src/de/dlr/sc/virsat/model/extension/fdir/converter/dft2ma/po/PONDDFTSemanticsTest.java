@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,8 +19,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
@@ -42,14 +42,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
 public class PONDDFTSemanticsTest extends ATestCase {
 
-	private ExplicitDFT2MAConverter converter;
+	private DFT2MAConverter converter;
 	private RecoveryAutomatonHelper raHelper;
 	private FaultTreeHelper ftHelper;
 	private IFaultTreeEvaluator ftEvaluator;
 	
 	@Before
 	public void setup() {
-		converter = new ExplicitDFT2MAConverter();
+		converter = new DFT2MAConverter();
 		converter.setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
 		
 		raHelper = new RecoveryAutomatonHelper(concept);

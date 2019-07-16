@@ -7,10 +7,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.List;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -23,7 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class PORSemantics implements INodeSemantics {
 
 	@Override
-	public boolean handleUpdate(FaultTreeNode node, ExplicitDFTState state, ExplicitDFTState pred,
+	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			FaultTreeHolder ftHolder, GenerationResult generationResult) {
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		

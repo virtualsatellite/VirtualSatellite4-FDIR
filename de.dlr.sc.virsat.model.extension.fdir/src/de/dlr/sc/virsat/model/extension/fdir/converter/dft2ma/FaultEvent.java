@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.Set;
 
@@ -52,7 +52,7 @@ public class FaultEvent implements IDFTEvent {
 	}
 
 	@Override
-	public double getRate(ExplicitDFTState state) {
+	public double getRate(DFTState state) {
 		boolean isParentNodeActive = state.isNodeActive(be.getFault());
 		
 		if (isRepair) {
@@ -68,7 +68,7 @@ public class FaultEvent implements IDFTEvent {
 	 * @param orderDependentBasicEvents set of all basic events that are order dependent 
 	 * @param transientNodes set of all transient nodes
 	 */
-	public void execute(ExplicitDFTState state, Set<BasicEvent> orderDependentBasicEvents, Set<FaultTreeNode> transientNodes) {
+	public void execute(DFTState state, Set<BasicEvent> orderDependentBasicEvents, Set<FaultTreeNode> transientNodes) {
 		if (isRepair) {
 			if (orderDependentBasicEvents.contains(be)) {
 				state.orderedBes.remove(be);
@@ -90,7 +90,7 @@ public class FaultEvent implements IDFTEvent {
 	}
 	
 	@Override
-	public boolean canOccur(ExplicitDFTState state) {
+	public boolean canOccur(DFTState state) {
 		if (state.isFaultTreeNodePermanent(be)) {
 			return false;
 		}

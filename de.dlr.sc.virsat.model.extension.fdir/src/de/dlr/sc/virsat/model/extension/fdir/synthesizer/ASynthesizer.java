@@ -22,8 +22,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
@@ -91,7 +91,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * Creates the state space generator
 	 * @return the state space generator
 	 */
-	protected abstract ExplicitDFT2MAConverter createDFT2MAConverter();
+	protected abstract DFT2MAConverter createDFT2MAConverter();
 
 	/**
 	 * Performs the actual synthesis of the recovery automaton by optimizing the ma scheduler
@@ -214,7 +214,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
-		ExplicitDFT2MAConverter dft2ma = createDFT2MAConverter();
+		DFT2MAConverter dft2ma = createDFT2MAConverter();
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		Set<Object> faultEvents = ma.getEvents();
 		normalizeRates(ma, faultEvents);

@@ -7,26 +7,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
- * This class generates explicit dft states
+ * This class generates explicit partial observable dft states
  * @author muel_s8
  *
  */
 
-public class ExplicitDFTStateGenerator implements IStateGenerator {
+public class PODFTStateGenerator implements IStateGenerator {
 
 	@Override
-	public ExplicitDFTState generateState(ExplicitDFTState baseState) {
-		return new ExplicitDFTState(baseState);
+	public PODFTState generateState(DFTState baseState) {
+		return new PODFTState((PODFTState) baseState);
 	}
 
 	@Override
-	public ExplicitDFTState generateState(FaultTreeHolder ftHolder) {
-		return new ExplicitDFTState(ftHolder);
+	public PODFTState generateState(FaultTreeHolder ftHolder) {
+		return new PODFTState(ftHolder);
 	}
 
 }

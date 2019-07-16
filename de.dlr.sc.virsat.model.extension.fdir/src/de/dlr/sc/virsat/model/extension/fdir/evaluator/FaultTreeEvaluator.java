@@ -25,8 +25,8 @@ import de.dlr.sc.virsat.fdir.storm.runner.StormModelChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.IDFT2DFTConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.EngineExecutionPreference;
@@ -128,7 +128,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 		if (preferences.equals(EngineExecutionPreference.StormDFT.toString())) {
 			return decorateFaultTreeEvaluator(new StormEvaluator(delta));
 		} else {
-			ExplicitDFT2MAConverter explicitDFT2MAConverter = new ExplicitDFT2MAConverter();
+			DFT2MAConverter explicitDFT2MAConverter = new DFT2MAConverter();
 			explicitDFT2MAConverter.setSemantics(isNondeterministic ? DFTSemantics.createNDDFTSemantics() : DFTSemantics.createStandardDFTSemantics());
 			IMarkovModelChecker markovModelChecker = preferences.equals(EngineExecutionPreference.Custom.toString()) ?  new MarkovModelChecker(delta, eps) : new StormModelChecker(delta, FaultTreePreferences.getStormExecutionEnvironmentPreference());
 			

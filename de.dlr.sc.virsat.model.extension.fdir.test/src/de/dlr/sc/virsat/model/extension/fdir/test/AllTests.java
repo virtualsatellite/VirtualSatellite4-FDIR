@@ -16,8 +16,8 @@ import org.junit.runners.Suite.SuiteClasses;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverterTest;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverterTest;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po.PONDDFTSemanticsTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverterTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModularizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferencesTest;
@@ -43,7 +43,7 @@ import junit.framework.JUnit4TestAdapter;
 
 @SuiteClasses({ 
 		DFT2BasicDFTConverterTest.class, 
-		ExplicitDFT2MAConverterTest.class, 
+		DFT2MAConverterTest.class, 
 		GalileoDFT2DFTTest.class,
 		BasicSynthesizerTest.class,
 		POSynthesizerTest.class,

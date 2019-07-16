@@ -7,13 +7,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.List;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
@@ -46,7 +46,7 @@ public class ObservationEvent implements IDFTEvent {
 	}
 
 	@Override
-	public double getRate(ExplicitDFTState state) {
+	public double getRate(DFTState state) {
 		double rate = 0;
 		List<OBSERVER> observers = state.getFTHolder().getMapNodeToObservers().get(node);
 		for (OBSERVER observer : observers) {
@@ -58,9 +58,9 @@ public class ObservationEvent implements IDFTEvent {
 	}
 
 	@Override
-	public void execute(ExplicitDFTState state, Set<BasicEvent> orderDependentBasicEvents,
+	public void execute(DFTState state, Set<BasicEvent> orderDependentBasicEvents,
 			Set<FaultTreeNode> transientNodes) {
-		ExplicitPODFTState poState = (ExplicitPODFTState) state;
+		PODFTState poState = (PODFTState) state;
 		poState.setNodeFailObserved(node, !isRepair);
 	}
 	
@@ -70,8 +70,8 @@ public class ObservationEvent implements IDFTEvent {
 	}
 
 	@Override
-	public boolean canOccur(ExplicitDFTState state) {
-		ExplicitPODFTState poState = (ExplicitPODFTState) state;
+	public boolean canOccur(DFTState state) {
+		PODFTState poState = (PODFTState) state;
 		if (isRepair) {
 			if (state.hasFaultTreeNodeFailed(node) || !poState.isNodeFailObserved(node))  {
 				return false;

@@ -7,13 +7,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -24,14 +24,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  *
  */
 
-public class ExplicitPODFTState extends ExplicitDFTState {
+public class PODFTState extends DFTState {
 	private BitSet observedFailed;
 	
 	/**
 	 * Default constructor
 	 * @param ftHolder the fault tree
 	 */
-	public ExplicitPODFTState(FaultTreeHolder ftHolder) {
+	public PODFTState(FaultTreeHolder ftHolder) {
 		super(ftHolder);
 		observedFailed = new BitSet(ftHolder.getNodes().size());
 	}
@@ -82,7 +82,7 @@ public class ExplicitPODFTState extends ExplicitDFTState {
 	 * Standard constructor
 	 * @param other the other partial observable explicit dft state
 	 */
-	public ExplicitPODFTState(ExplicitPODFTState other) {
+	public PODFTState(PODFTState other) {
 		super(other);
 		observedFailed = (BitSet) other.observedFailed.clone();
 	}
@@ -93,8 +93,8 @@ public class ExplicitPODFTState extends ExplicitDFTState {
 	}
 	
 	@Override
-	public boolean isEquivalent(ExplicitDFTState other) {
-		ExplicitPODFTState poState = (ExplicitPODFTState) other;
+	public boolean isEquivalent(DFTState other) {
+		PODFTState poState = (PODFTState) other;
 		if (!observedFailed.equals(poState.observedFailed)) {
 			return false;
 		}

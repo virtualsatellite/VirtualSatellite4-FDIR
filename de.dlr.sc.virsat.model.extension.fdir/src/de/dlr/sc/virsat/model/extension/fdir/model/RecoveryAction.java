@@ -14,7 +14,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 
 // *****************************************************************
 // * Class Declaration
@@ -59,7 +59,7 @@ public abstract class RecoveryAction extends ARecoveryAction {
 	 * Executes the recovery action on the given DFT state
 	 * @param state the current DFT state
 	 */
-	public abstract void execute(ExplicitDFTState state);
+	public abstract void execute(DFTState state);
 	
 	/**
 	 * Gets an action label from this recovery action such that

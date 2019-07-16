@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +20,13 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateGenerator;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DelayEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -78,7 +85,7 @@ public class DFTSemantics {
 	 * @param ftHolder 
 	 * @return the list of updated nodes
 	 */
-	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, ExplicitDFTState pred, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
+	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, DFTState pred, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
 		if (event.getNode() == null) {
 			return Collections.emptyList();
 		}
@@ -95,13 +102,13 @@ public class DFTSemantics {
 		
 		if (succs.size() > 1) {
 			if (!existsNonTLESucc) {
-				ExplicitDFTState baseSucc = succs.get(0);
+				DFTState baseSucc = succs.get(0);
 				succs.clear();
 				succs.add(baseSucc);
 				recoveryActions.clear();
 				recoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
 			} else {
-				ExplicitDFTState baseSucc = succs.remove(0);
+				DFTState baseSucc = succs.remove(0);
 				succs.add(baseSucc);
 			}
 		}
@@ -118,7 +125,7 @@ public class DFTSemantics {
 	 * @param ftHolder 
 	 * @return the list of updated nodes
 	 */
-	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, ExplicitDFTState pred, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions, Queue<FaultTreeNode> worklist) {
+	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, DFTState pred, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, Queue<FaultTreeNode> worklist) {
 		List<FaultTreeNode> changedNodes = new ArrayList<>();
 		
 		while (!worklist.isEmpty()) {
@@ -148,7 +155,7 @@ public class DFTSemantics {
 	 * @param mapStateToRecoveryActions map from state to recovery actions needed to go to the state from the predecessor
 	 * @return true iff a change occurred in the update
 	 */
-	public boolean updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, ExplicitDFTState pred, List<ExplicitDFTState> states, Map<ExplicitDFTState, List<RecoveryAction>> mapStateToRecoveryActions, FaultTreeNode node) {
+	public boolean updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, DFTState pred, List<DFTState> states, Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions, FaultTreeNode node) {
 		if (pred.isFaultTreeNodePermanent(node)) {
 			return false;
 		}
@@ -158,7 +165,7 @@ public class DFTSemantics {
 		
 		if (node instanceof BasicEvent) {
 			List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().get(node);
-			for (ExplicitDFTState state : states) {
+			for (DFTState state : states) {
 				if (state.handleUpdateTriggers(node, depTriggers)) {
 					hasChanged = true;
 				}
@@ -173,7 +180,7 @@ public class DFTSemantics {
 		}
 		
 		List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().get(node);
-		for (ExplicitDFTState state : states) {
+		for (DFTState state : states) {
 			if (state.handleUpdateTriggers(node, depTriggers)) {
 				hasChanged = true;
 			}
@@ -195,8 +202,8 @@ public class DFTSemantics {
 	 * @param states set of states
 	 * @return true iff there exists a node without a failed TLE
 	 */
-	private boolean existsNonTLE(FaultTreeHolder ftHolder, List<ExplicitDFTState> states) {
-		for (ExplicitDFTState state : states) {
+	private boolean existsNonTLE(FaultTreeHolder ftHolder, List<DFTState> states) {
+		for (DFTState state : states) {
 			if (!state.hasFaultTreeNodeFailed(ftHolder.getRoot())) {
 				return true;
 			}
@@ -214,7 +221,7 @@ public class DFTSemantics {
 	 * @param changedNodes the nodes that were affected due to the event
 	 * @return the set of nodes that affect the recovery actions
 	 */
-	public Set<FaultTreeNode> extractRecoveryActionInput(FaultTreeHolder ftHolder, ExplicitDFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
+	public Set<FaultTreeNode> extractRecoveryActionInput(FaultTreeHolder ftHolder, DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
 		Set<FaultTreeNode> occuredBasicEvents = new HashSet<>();
 		occuredBasicEvents.add(event.getNode());
 		for (FaultTreeNode node : changedNodes) {
@@ -232,9 +239,9 @@ public class DFTSemantics {
 	 * @param succs a list of generated successor nodes
 	 * @param recoveryActions  mapping for state to recovery action
 	 */
-	public void determinizeSuccs(FaultTreeHelper ftHelper, RecoveryStrategy recoveryStrategy, List<ExplicitDFTState> succs, Map<ExplicitDFTState, List<RecoveryAction>> recoveryActions) {
+	public void determinizeSuccs(FaultTreeHelper ftHelper, RecoveryStrategy recoveryStrategy, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions) {
 		List<RecoveryAction> chosenRecoveryActions = recoveryStrategy.getRecoveryActions();
-		for (Entry<ExplicitDFTState, List<RecoveryAction>> entry : recoveryActions.entrySet()) {
+		for (Entry<DFTState, List<RecoveryAction>> entry : recoveryActions.entrySet()) {
 			if (ftHelper.hasEquivalentRecoveryActions(entry.getValue(), chosenRecoveryActions)) {
 				succs.clear();
 				entry.getKey().setRecoveryStrategy(recoveryStrategy);
@@ -243,7 +250,7 @@ public class DFTSemantics {
 			}
 		}
 		
-		ExplicitDFTState baseState = succs.get(0);
+		DFTState baseState = succs.get(0);
 		succs.clear();
 		baseState.setRecoveryStrategy(recoveryStrategy);
 		succs.add(baseState);
@@ -263,7 +270,7 @@ public class DFTSemantics {
 	 */
 	public static DFTSemantics createStandardDFTSemantics() {
 		DFTSemantics semantics = new DFTSemantics();
-		semantics.stateGenerator = new ExplicitDFTStateGenerator();
+		semantics.stateGenerator = new DFTStateGenerator();
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FAULT, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FDEP, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.RDEP, new FaultSemantics());
