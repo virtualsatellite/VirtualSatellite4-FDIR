@@ -174,6 +174,13 @@ public class POSynthesizer extends ASynthesizer {
 		
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
+		
+		for (MarkovTransition<BeliefState> transition : beliefMa.getTransitions()) {
+			if (transition.isMarkovian()) {
+				transition.setRate(transition.getRate() * normalizationRate);
+			}
+		}
+		
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState);
 	}
 	

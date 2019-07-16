@@ -148,17 +148,19 @@ public abstract class ASynthesizer implements ISynthesizer {
 		}
 	}
 	
+	protected double normalizationRate;
+	
 	/**
 	 * Normalizes the transition rates in the given markov automaton
 	 * @param ma the markov automaton
 	 * @param faultEvents the fault events
 	 */
 	protected void normalizeRates(MarkovAutomaton<DFTState> ma, Set<Object> faultEvents) {
-		float totalRate = 0;
+		normalizationRate = 0;
 		for (Object event : faultEvents) {
 			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
 				if (transition.isMarkovian()) {
-					totalRate += transition.getRate();
+					normalizationRate += transition.getRate();
 				}
 			}
 		}
@@ -166,7 +168,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		for (Object event : faultEvents) {
 			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
 				if (transition.isMarkovian()) {
-					transition.setRate(transition.getRate() / totalRate);
+					transition.setRate(transition.getRate() / normalizationRate);
 				}
 			}
 		}
