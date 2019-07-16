@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
@@ -119,6 +118,21 @@ public class BasicSynthesizerTest extends ATestCase {
 	
 	
 	@Test
+	public void testCMSimpleOldWay() throws IOException {
+		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple.dft");
+		
+		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		synthesizer.setModularizer(null);
+		RecoveryAutomaton ra = synthesizer.synthesize(rootCMSimple);
+		
+		System.out.println(ra.toDot());
+		
+		final int NUM_STATES = 3;
+		assertEquals(NUM_STATES, ra.getStates().size());
+	}
+	
+	
+	@Test
 	public void testEvaluateCM1() throws IOException {
 		final double[] EXPECTED = {
 			2.803584434531355e-04,
@@ -141,6 +155,20 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testCM1OldWay() throws IOException {
+		Fault rootCM1 = createDFT("/resources/galileo/cm1.dft");
+		
+		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		synthesizer.setModularizer(null);
+		RecoveryAutomaton ra = synthesizer.synthesize(rootCM1);
+		
+		System.out.println(ra.toDot());
+		
+		final int NUM_MODULES = 8;
+		assertEquals(NUM_MODULES, NUM_MODULES);
+	}
+	
+	@Test
 	public void testEvaluateCM2() throws IOException {
 		final double[] EXPECTED = {
 			5.3201174491172875e-05,
@@ -155,6 +183,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
+		
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ftEvaluator.evaluateFaultTree(fault);

@@ -367,6 +367,48 @@ public class FaultTreeHelper {
 
 		return fault;
 	}
+	
+	/**
+	 * Copy a fault tree node no matter what type it is
+	 * @param ftnode the original fault tree node
+	 * @return the copy
+	 */
+	public FaultTreeNode copyFaultTreeNode(FaultTreeNode ftnode) {
+		FaultTreeNodeType type = ftnode.getFaultTreeNodeType();
+		switch (type) {
+			case FAULT:
+				return copyFault(ftnode.getFault());
+			case BASIC_EVENT:
+				return copyFault(ftnode.getFault());
+			default:
+				return copyGate(ftnode, type);
+		}
+	}
+	
+	
+	/**
+	 * Copy a fault tree node no matter what type it is
+	 * @param fault the connection to the fault tree
+	 * @param from node which we are connecting from
+	 * @param to the node which we are connecting to
+	 * @return the created edge
+	 */
+	public FaultTreeEdge createFaultTreeEdge(Fault fault, FaultTreeNode from, FaultTreeNode to) {
+		FaultTreeNodeType type = from.getFaultTreeNodeType();
+		switch (type) {
+			case SPARE:
+				return connectSpare(fault, from, to);
+			case FDEP:
+			case RDEP:
+			case PDEP:
+				return connectDep(fault, from, to);
+			case OBSERVER:
+				return connectObserver(fault, from, to);
+			default:
+				return connect(fault, from, to);
+		}
+	}
+
 
 	/**
 	 * Copy the fault
@@ -407,6 +449,25 @@ public class FaultTreeHelper {
 		Gate gate = createGate(type);
 		fault.getFaultTree().getGates().add(gate);
 		return gate;
+	}
+	
+	
+	/**
+	 * Copy a gate
+	 * 
+	 * @param gate the original gate to be copied
+	 * @param type the type of the gate
+	 * @return the copy of the gate
+	 */
+	public Gate copyGate(FaultTreeNode gate, FaultTreeNodeType type) {
+		Fault copy = new Fault(concept);
+		copy.setName(gate.getName());
+		copy.getTypeInstance().setUuid(gate.getTypeInstance().getUuid());
+		Gate gateCopy = createGate(type);
+		gateCopy.setName(gate.getName());
+		
+		copy.getFaultTree().getGates().add(gateCopy);
+		return gateCopy;
 	}
 	
 	/**
@@ -451,7 +512,7 @@ public class FaultTreeHelper {
 	
 	
 	/**
-	 * Get ALL children of a node (events, spares, dependencies, faults)
+	 * Get ALL children of a node (events, spares, dependencies, observations, faults)
 	 * @param node the node you want to find the children of
 	 * @param ft the fault tree
 	 * @return the list of children
@@ -463,6 +524,7 @@ public class FaultTreeHelper {
 		List<FaultTreeEdge> allEdges = new ArrayList<FaultTreeEdge>(ft.getPropagations());
 		allEdges.addAll(ft.getDeps());
 		allEdges.addAll(ft.getSpares());
+		allEdges.addAll(ft.getObservations());
 		
 		for (FaultTreeEdge edge : allEdges) {
 			if (edge.getTo().equals(node)) {
