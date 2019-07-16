@@ -40,7 +40,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
  *
  */
 
-public abstract class DFT2MAConverterTest extends ATestCase {
+public class DFT2MAConverterTest extends ATestCase {
 	
 	protected IFaultTreeEvaluator ftEvaluator;
 	protected RecoveryAutomatonHelper raHelper;
