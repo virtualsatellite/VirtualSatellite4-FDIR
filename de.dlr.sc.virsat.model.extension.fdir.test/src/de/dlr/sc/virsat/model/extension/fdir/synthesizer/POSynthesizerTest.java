@@ -10,7 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -97,6 +97,15 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final int EXPECTED_NUMBER_TRANSITIONS = 3;
 		assertEquals(EXPECTED_NUMBER_TRANSITIONS, transitions.size());
-		assertTrue(transitions.stream().filter(transition -> transitions instanceof TimedTransition).findAny().isPresent());
+		TimedTransition timedTransition = null;
+		for (Transition transition : transitions) {
+			if (transition instanceof TimedTransition) {
+				timedTransition = (TimedTransition) transition;
+			}
+		}
+		
+		assertNotNull(timedTransition);
+		final int EXPECTED_TRANSITION_TIME = 10000;
+		assertEquals(EXPECTED_TRANSITION_TIME, timedTransition.getTime(), TEST_EPSILON);
 	}
 }
