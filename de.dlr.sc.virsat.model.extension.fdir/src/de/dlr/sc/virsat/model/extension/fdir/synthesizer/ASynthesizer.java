@@ -78,8 +78,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			
-			System.out.println(synthesizedRA.toDot());
-			
 			if (minimizer != null) {
 				minimizer.minimize(synthesizedRA);
 			}

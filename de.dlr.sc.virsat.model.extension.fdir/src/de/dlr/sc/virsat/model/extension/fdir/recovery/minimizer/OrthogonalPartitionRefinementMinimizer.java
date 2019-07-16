@@ -293,7 +293,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 */
 	private boolean isActionEquivalent(State state0, State state1) {
 		List<Transition> outgoingTransitions0 = mapStateToOutgoingTransitions.get(state0);
-		List<Transition> outgoingTransitions1 = mapStateToOutgoingTransitions.get(state0);
+		List<Transition> outgoingTransitions1 = mapStateToOutgoingTransitions.get(state1);
 		
 		for (Transition transition : outgoingTransitions0) {
 			// Check for orthogonality
