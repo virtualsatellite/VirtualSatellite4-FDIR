@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
@@ -68,10 +69,10 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 10;
 		
 		Fault fault = createDFT("/resources/galileo/failureMode.dft");
-
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 
 	@Test
@@ -85,10 +86,10 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 9.09091;
 		
 		Fault fault = createDFT("/resources/galileo/or2.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -101,10 +102,10 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 2.9166666;
 		Fault fault = createDFT("/resources/galileo/and2.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -117,10 +118,10 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 5.119047;
 		Fault fault = createDFT("/resources/galileo/or2and.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -136,9 +137,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.315681444;
 		Fault fault = createDFT("/resources/galileo/and2or.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -154,9 +155,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.9874231;
 		Fault fault = createDFT("/resources/galileo/and3.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -172,9 +173,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 1.011779;
 		Fault fault = createDFT("/resources/galileo/and4.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -188,9 +189,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.92780513;
 		Fault fault = createDFT("/resources/galileo/and3or.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -204,9 +205,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.7770698;
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -220,9 +221,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.686274;
 		Fault fault = createDFT("/resources/galileo/or2AndOr2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -236,9 +237,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.7291666;
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -252,9 +253,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.5232843;
 		Fault fault = createDFT("/resources/galileo/vote2Of3.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -268,9 +269,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = Double.NaN;
 		Fault fault = createDFT("/resources/galileo/pand2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -284,9 +285,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = Double.NaN;
 		Fault fault = createDFT("/resources/galileo/pand3.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -300,9 +301,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = Double.NaN;
 		Fault fault = createDFT("/resources/galileo/pand4.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -316,9 +317,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = Double.NaN;
 		Fault fault = createDFT("/resources/galileo/por2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -333,9 +334,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	
@@ -365,9 +366,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		raHelper.assignAction(t, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -404,9 +405,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		raHelper.assignAction(t1, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -420,9 +421,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.875;
 		Fault fault = createDFT("/resources/galileo/csp3.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -436,9 +437,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.46875;
 		Fault fault = createDFT("/resources/galileo/csp4.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -452,9 +453,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.46666666;
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare2Basic.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -468,9 +469,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.5;
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 
 	@Test
@@ -484,9 +485,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.39583333;
 		Fault fault = createDFT("/resources/galileo/and2ColdSpare2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -500,9 +501,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.55;
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare1Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -517,9 +518,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare2Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -533,9 +534,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.86422902;
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare3Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -549,9 +550,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 1.283333;
 		Fault fault = createDFT("/resources/galileo/and2ColdSpare1Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -566,9 +567,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/and2ColdSpare3Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -582,9 +583,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.132007;
 		Fault fault = createDFT("/resources/galileo/and3ColdSpare3Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -598,9 +599,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.1291801;
 		Fault fault = createDFT("/resources/galileo/and4ColdSpare3Shared.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -615,9 +616,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/or2Pand2ColdSpare2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -631,9 +632,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 2.083333333;
 		Fault fault = createDFT("/resources/galileo/coldSpare2ColdSpare2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -647,9 +648,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 1.25;
 		Fault fault = createDFT("/resources/galileo/wsp2.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -663,9 +664,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 1.342517;
 		Fault fault = createDFT("/resources/galileo/wsp3.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -681,9 +682,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/fdep1.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -699,17 +700,17 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/rdep1.dft");
 		
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
 	public void testEvaluateDelay1() throws IOException {
 		final double EXPECTEDMTTF = 11;
 		Fault fault = createDFT("/resources/galileo/delay1.dft");
-		ftEvaluator.evaluateFaultTree(fault);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -722,9 +723,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 0.25627188;
 		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -737,10 +738,10 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 0.2807429;
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
-		ftEvaluator.evaluateFaultTree(fault);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -754,9 +755,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.3279815;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
-		ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -769,10 +770,10 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 0.3634892;
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
-		ftEvaluator.evaluateFaultTree(fault);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	
@@ -791,9 +792,9 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 		Fault fault = converter.convert();
 		
 		IFaultTreeEvaluator ftEvaluator = createFaultTreeEvaluator();
-		ftEvaluator.evaluateFaultTree(fault);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
+		assertIterationResultsEquals(result, EXPECTED);
 	}
 	*/
 	
@@ -801,10 +802,10 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 	@Test
 	public void testEvaluateVGS1() throws IOException {
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
-		ftEvaluator.evaluateFaultTree(fault);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		final double EXPECTEDMTTF = 39595.24895;
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	*/
 	
@@ -812,7 +813,7 @@ public abstract class ADFT2MAConverterTest extends ATestCase {
 	public void testFTPP4() throws IOException {
 		final double EXPECTEDMTTF = 4182.3955631269;
 		Fault fault = createDFT("/resources/galileo/ftpp4.dft");
-		ftEvaluator.evaluateFaultTree(fault);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, ftEvaluator.getMeanTimeToFailure(), TEST_EPSILON);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 }

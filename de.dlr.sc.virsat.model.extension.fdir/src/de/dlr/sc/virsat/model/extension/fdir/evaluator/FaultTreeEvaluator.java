@@ -17,6 +17,7 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
@@ -56,7 +57,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public void evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -68,7 +69,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		evaluator.evaluateFaultTree(convertedRoot, metrics);
+		return evaluator.evaluateFaultTree(convertedRoot, metrics);
 	}
 	
 	/**
@@ -90,26 +91,6 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 		}
 		
 		return originalMinimumCutSets;
-	}
-
-	@Override
-	public List<Double> getFailRates() {
-		return evaluator.getFailRates();
-	}
-
-	@Override
-	public double getMeanTimeToFailure() {
-		return evaluator.getMeanTimeToFailure();
-	}
-
-	@Override
-	public List<Double> getPointAvailability() {
-		return evaluator.getPointAvailability();
-	}
-
-	@Override
-	public double getSteadyStateAvailability() {
-		return evaluator.getSteadyStateAvailability();
 	}
 
 	@Override

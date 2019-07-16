@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
@@ -83,8 +84,8 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		raHelper.assignAction(transition, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		ftEvaluator.evaluateFaultTree(root, Reliability.UNIT_RELIABILITY);
-		assertIterationResultsEquals(ftEvaluator, EXPECTED);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Reliability.UNIT_RELIABILITY);
+		assertIterationResultsEquals(result, EXPECTED);
 	}
 	
 	@Test

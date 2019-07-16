@@ -16,7 +16,9 @@ import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
@@ -122,6 +124,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 			if (ra != null) {
 				ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 			}
+			
 			double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
 			double pointDelta = maxTime / COUNT_AVAILABILITY_POINTS;
 			if (monitor != null) {
@@ -131,8 +134,10 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 				subMonitor.setTaskName("Performing Model Checking");
 				subMonitor.split(1);
 			}
-			ftEvaluator.evaluateFaultTree(fault, new PointAvailability(maxTime),
-					de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+			
+			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new PointAvailability(maxTime),
+					SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+			
 			if (monitor != null) {
 				if (monitor.isCanceled()) {
 					return UnexecutableCommand.INSTANCE;
@@ -140,7 +145,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 				subMonitor.setTaskName("Updating Results");
 				subMonitor.split(1);
 			}
-			double steadyStateAvailability = ftEvaluator.getSteadyStateAvailability();
+			double steadyStateAvailability = result.getSteadyStateAvailability();
 			return new RecordingCommand(ed, "Availability Analysis") {
 				@Override
 				protected void doExecute() {
@@ -148,12 +153,12 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 					getPointAvailabilityCurve().clear();
 
 					double accDelta = pointDelta;
-					if (ftEvaluator.getPointAvailability() != null) {
-						for (int i = 0; i < ftEvaluator.getPointAvailability().size(); ++i) {
+					if (result.getPointAvailability() != null) {
+						for (int i = 0; i < result.getPointAvailability().size(); ++i) {
 							accDelta += delta;
 							if (accDelta >= pointDelta) {
 								createNewAvailabilityCurveEntry(
-										TO_PERCENT * (ftEvaluator.getPointAvailability().get(i)));
+										TO_PERCENT * (result.getPointAvailability().get(i)));
 								accDelta -= pointDelta;
 							}
 						}
