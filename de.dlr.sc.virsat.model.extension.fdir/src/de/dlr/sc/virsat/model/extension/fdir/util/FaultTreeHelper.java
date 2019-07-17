@@ -371,17 +371,23 @@ public class FaultTreeHelper {
 	/**
 	 * Copy a fault tree node no matter what type it is
 	 * @param ftnode the original fault tree node
+	 * @param fault the fault that is associated with the fault tree you want to add the node to
 	 * @return the copy
 	 */
-	public FaultTreeNode copyFaultTreeNode(FaultTreeNode ftnode) {
-		FaultTreeNodeType type = ftnode.getFaultTreeNodeType();
-		switch (type) {
-			case FAULT:
-				return copyFault(ftnode.getFault());
-			case BASIC_EVENT:
-				return copyFault(ftnode.getFault());
-			default:
-				return copyGate(ftnode, type);
+	public FaultTreeNode copyFaultTreeNode(FaultTreeNode ftnode, Fault fault) {
+		if (fault == null) {
+			return copyFault(ftnode.getFault());
+		} else {
+			FaultTreeNodeType type = ftnode.getFaultTreeNodeType();
+			switch (type) {
+				case FAULT:
+				case BASIC_EVENT:
+					return copyFault(ftnode.getFault());
+				default:
+					FaultTreeNode gateCopy = createGate(fault, type);
+					gateCopy.setName(ftnode.getName());
+					return gateCopy;
+			}
 		}
 	}
 	
@@ -394,10 +400,8 @@ public class FaultTreeHelper {
 	 * @return the created edge
 	 */
 	public FaultTreeEdge createFaultTreeEdge(Fault fault, FaultTreeNode from, FaultTreeNode to) {
-		FaultTreeNodeType type = from.getFaultTreeNodeType();
-		switch (type) {
-			case SPARE:
-				return connectSpare(fault, from, to);
+		FaultTreeNodeType typeTo = to.getFaultTreeNodeType();
+		switch (typeTo) {
 			case FDEP:
 			case RDEP:
 			case PDEP:
@@ -449,25 +453,6 @@ public class FaultTreeHelper {
 		Gate gate = createGate(type);
 		fault.getFaultTree().getGates().add(gate);
 		return gate;
-	}
-	
-	
-	/**
-	 * Copy a gate
-	 * 
-	 * @param gate the original gate to be copied
-	 * @param type the type of the gate
-	 * @return the copy of the gate
-	 */
-	public Gate copyGate(FaultTreeNode gate, FaultTreeNodeType type) {
-		Fault copy = new Fault(concept);
-		copy.setName(gate.getName());
-		copy.getTypeInstance().setUuid(gate.getTypeInstance().getUuid());
-		Gate gateCopy = createGate(type);
-		gateCopy.setName(gate.getName());
-		
-		copy.getFaultTree().getGates().add(gateCopy);
-		return gateCopy;
 	}
 	
 	/**
@@ -787,6 +772,17 @@ public class FaultTreeHelper {
 		});
 		
 		return allSpares;
+	}
+	
+	/**
+	 * get all spare NODES in the fault tree
+	 * @param fault the fault containing the fault tree
+	 * @return a list of all the spare nodes in the tree
+	 */
+	public List<FaultTreeNode> getAllSpareNodes(Fault fault) {
+		List<FaultTreeNode> spareNodes = new ArrayList<FaultTreeNode>();
+		this.getAllSpares(fault).stream().forEach(edge -> spareNodes.add(edge.getFrom()));
+		return spareNodes;
 	}
 	
 	/**

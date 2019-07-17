@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 import java.util.ArrayList;
@@ -59,7 +60,10 @@ public class Module {
 			this.moduleRoot = node;
 		}
 		
-		this.moduleNodes.add(node);
+		if (!this.moduleNodes.contains(node)) {
+			this.moduleNodes.add(node);
+		}
+		
 		if (node.isNondeterministic()) {
 			this.moduleType = ModuleType.NONDETERMINISTIC;
 		}
@@ -114,8 +118,10 @@ public class Module {
 		Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
 		FaultTreeNode originalRoot = this.moduleNodes.get(0).getFaultTreeNode().getFault().getFaultTree().getRoot();
-		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot);
+		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, null);
 		rootCopy.setName(originalRoot.getName());
+
+		List<FaultTreeNode> sparesInOriginalFaultTree = fthelp.getAllSpareNodes(originalRoot.getFault());
 		mapOriginalToCopy.put(originalRoot, rootCopy);
 		dfsStack.push(originalRoot);
 		
@@ -129,17 +135,27 @@ public class Module {
 			
 			List<FaultTreeNode> children = fthelp.getAllChildren(curr, curr.getFault().getFaultTree());
 			for (FaultTreeNode child : children) {
+				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
+				
 				FaultTreeNode childCopy;
 				if (mapOriginalToCopy.get(child) == null) {
-					childCopy = fthelp.copyFaultTreeNode(child);
-					childCopy.setName(child.getName());
+					if (moduleContainsCurrAndChild) {
+						childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
+					} else {
+						childCopy = fthelp.copyFaultTreeNode(child, null);
+					}
 					mapOriginalToCopy.put(child, childCopy);
 				} else {
 					childCopy = mapOriginalToCopy.get(child);
 				}
 
-				if (this.containsFaultTreeNode(curr)) {
-					fthelp.createFaultTreeEdge(rootCopy.getFault(), childCopy, currCopy);
+				if (moduleContainsCurrAndChild
+						&& child.getFaultTreeNodeType() != FaultTreeNodeType.BASIC_EVENT) {
+					if (sparesInOriginalFaultTree.contains(child)) {
+						fthelp.connectSpare(currCopy.getFault(), childCopy, currCopy);
+					} else {
+						fthelp.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);
+					}
 				}
 				dfsStack.push(child);
 			}
