@@ -120,6 +120,14 @@
 		pathToImage="resources/icons/FDIRAnalysis.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECA"
+		pathToImage="resources/icons/FMECA.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry"
+		pathToImage="resources/icons/FMECAEntry.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
 		pathToImage="resources/icons/ReliabilityAnalysis.gif">
 	</conceptImage>
@@ -260,6 +268,14 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
 		name="Add FDIRParameters">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+		name="Add FMECA">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
+		name="Add FMECAEntry">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityAnalysis"
@@ -413,6 +429,16 @@
 	      icon="resources/icons/FDIRParameters.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+	      disabledIcon="resources/icons/FMECA_disabled.gif"
+	      icon="resources/icons/FMECA.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
+	      disabledIcon="resources/icons/FMECAEntry_disabled.gif"
+	      icon="resources/icons/FMECAEntry.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityAnalysis"
 	      disabledIcon="resources/icons/ReliabilityAnalysis_disabled.gif"
 	      icon="resources/icons/ReliabilityAnalysis.gif">
@@ -552,6 +578,14 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDIRParametersHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFMECAHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFMECAEntryHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddReliabilityAnalysisHandler"
@@ -1084,6 +1118,50 @@
 		</command>
 		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1668,6 +1746,36 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFDIRParameters"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFDIRParameters">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECA"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECA">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFMECA"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFMECA">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntriesFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntriesFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntryFailureEffects"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryFailureEffects">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysis"

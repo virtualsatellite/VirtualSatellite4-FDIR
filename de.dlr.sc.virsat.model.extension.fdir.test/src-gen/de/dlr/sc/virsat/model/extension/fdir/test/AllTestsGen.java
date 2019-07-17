@@ -41,6 +41,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirementTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECATest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARETest;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAYTest;
@@ -49,6 +50,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.StateTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntryTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTest;
@@ -81,6 +83,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	BasicEventTest.class,
 	CutSetTest.class,
 	FDIRParametersTest.class,
+	FMECATest.class,
+	FMECAEntryTest.class,
 	ReliabilityAnalysisTest.class,
 	AvailabilityAnalysisTest.class,
 	MCSAnalysisTest.class,
