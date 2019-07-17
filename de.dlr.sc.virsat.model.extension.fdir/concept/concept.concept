@@ -146,10 +146,10 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 	
 	Category FMECAEntry {
-		Reference failure of Type Fault;
-		Reference failureMode of Type FaultEvent;
-		Reference failureCause of Type FaultEvent;
-		Reference failureEffects[] of Type Fault; 
+		Reference failure of Type Fault description "The loss of a function / item";
+		Reference failureMode of Type FaultEvent description "The specific manner in which the failure occurs";
+		Reference failureCause of Type FaultEvent description "The cause of the failure mode";
+		Reference failureEffects[] of Type Fault description "The items / functions affected by the failure"; 
 		
 		EnumProperty severity values [
 			Catastrophic=4, Critical=3, Major=2, Minor=1
@@ -162,7 +162,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		] quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
 		FloatProperty criticality default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
 		
-		StringProperty mitigation;
+		StringProperty recovery description "Proposed recovery actions";
 	
 		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
 		FloatProperty failureRate default 0.0 quantityKind "Frequency" unit "Per Hour" description "FailureRate of the occurrence of this event";

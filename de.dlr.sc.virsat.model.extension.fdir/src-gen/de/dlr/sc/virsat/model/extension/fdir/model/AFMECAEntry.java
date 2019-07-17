@@ -72,7 +72,7 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public static final String PROPERTY_PROBABILITY = "probability";
 	public static final String PROPERTY_DETECTION = "detection";
 	public static final String PROPERTY_CRITICALITY = "criticality";
-	public static final String PROPERTY_MITIGATION = "mitigation";
+	public static final String PROPERTY_RECOVERY = "recovery";
 	public static final String PROPERTY_MEANTIMETOFAILURE = "meanTimeToFailure";
 	public static final String PROPERTY_FAILURERATE = "failureRate";
 	
@@ -431,34 +431,34 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	}
 	
 	// *****************************************************************
-	// * Attribute: mitigation
+	// * Attribute: recovery
 	// *****************************************************************
-	private BeanPropertyString mitigation = new BeanPropertyString();
+	private BeanPropertyString recovery = new BeanPropertyString();
 	
-	private void safeAccessMitigation() {
-		if (mitigation.getTypeInstance() == null) {
-			mitigation.setTypeInstance((ValuePropertyInstance) helper.getPropertyInstance("mitigation"));
+	private void safeAccessRecovery() {
+		if (recovery.getTypeInstance() == null) {
+			recovery.setTypeInstance((ValuePropertyInstance) helper.getPropertyInstance("recovery"));
 		}
 	}
 	
-	public Command setMitigation(EditingDomain ed, String value) {
-		safeAccessMitigation();
-		return this.mitigation.setValue(ed, value);
+	public Command setRecovery(EditingDomain ed, String value) {
+		safeAccessRecovery();
+		return this.recovery.setValue(ed, value);
 	}
 	
-	public void setMitigation(String value) {
-		safeAccessMitigation();
-		this.mitigation.setValue(value);
+	public void setRecovery(String value) {
+		safeAccessRecovery();
+		this.recovery.setValue(value);
 	}
 	
-	public String getMitigation() {
-		safeAccessMitigation();
-		return mitigation.getValue();
+	public String getRecovery() {
+		safeAccessRecovery();
+		return recovery.getValue();
 	}
 	
-	public BeanPropertyString getMitigationBean() {
-		safeAccessMitigation();
-		return mitigation;
+	public BeanPropertyString getRecoveryBean() {
+		safeAccessRecovery();
+		return recovery;
 	}
 	
 	// *****************************************************************

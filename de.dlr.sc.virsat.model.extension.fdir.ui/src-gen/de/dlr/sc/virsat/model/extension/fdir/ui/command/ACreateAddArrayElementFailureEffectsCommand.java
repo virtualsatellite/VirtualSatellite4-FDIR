@@ -24,7 +24,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
  * 
  * Don't Manually modify this class
  * 
- * 
+ * The items / functions affected by the failure
  * 
  */	
 public abstract class ACreateAddArrayElementFailureEffectsCommand {
