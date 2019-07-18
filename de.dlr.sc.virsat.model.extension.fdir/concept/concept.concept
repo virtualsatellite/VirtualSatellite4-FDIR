@@ -172,7 +172,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Ref: failureRate = 1 / meanTimeToFailure;
 		
 		// Criticality Level Computation according to ECSS-Q-ST-30-02C
-		Ref: probability = classify(failureRate);
+		Ref: probability = classifyPL(failureRate);
 		Ref: criticality = severity * probability * detection;
 	}
 	

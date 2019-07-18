@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPLTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverterTest;
@@ -60,7 +61,8 @@ import junit.framework.JUnit4TestAdapter;
 		PONDDFTSemanticsTest.class,
 		ModularizerTest.class,
 		RecoveryAutomatonHelperTest.class,
-		ParallelComposerTest.class
+		ParallelComposerTest.class,
+		OpClassifyPLTest.class
 		})
 
 public class AllTests {
