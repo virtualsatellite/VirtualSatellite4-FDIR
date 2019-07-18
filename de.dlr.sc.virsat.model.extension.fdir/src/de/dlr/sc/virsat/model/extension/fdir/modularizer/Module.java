@@ -135,20 +135,15 @@ public class Module {
 			
 			List<FaultTreeNode> children = fthelp.getAllChildren(curr, curr.getFault().getFaultTree());
 			for (FaultTreeNode child : children) {
-				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
-				
 				FaultTreeNode childCopy;
 				if (mapOriginalToCopy.get(child) == null) {
-					if (moduleContainsCurrAndChild) {
-						childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
-					} else {
-						childCopy = fthelp.copyFaultTreeNode(child, null);
-					}
+					childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
 					mapOriginalToCopy.put(child, childCopy);
 				} else {
 					childCopy = mapOriginalToCopy.get(child);
 				}
-
+				
+				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
 				if (moduleContainsCurrAndChild
 						&& child.getFaultTreeNodeType() != FaultTreeNodeType.BASIC_EVENT) {
 					if (sparesInOriginalFaultTree.contains(child)) {

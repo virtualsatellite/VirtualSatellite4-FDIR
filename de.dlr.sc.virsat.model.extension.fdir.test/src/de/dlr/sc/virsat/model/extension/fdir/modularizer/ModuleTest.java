@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -50,9 +51,7 @@ public class ModuleTest extends ATestCase {
 		while (!module.isNondeterministic()) {
 			module = iter.next();
 		}
-		System.out.println(module);
 		module.constructFaultTreeCopy();
-		System.out.println(module.getRootNodeCopy().getFault().getFaultTree().toDot());
 		
 		FaultTreeHelper fthelp = new FaultTreeHelper(module.getRootNodeCopy().getConcept());
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", fthelp.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
@@ -69,12 +68,36 @@ public class ModuleTest extends ATestCase {
 		while (module.getNodes().size() < NUM_NODES_IN_SHARED_SPARE_MODULE) {
 			module = iter.next();
 		}
-		System.out.println("Module: " + module);
+
 		module.constructFaultTreeCopy();
-		System.out.println(module.getRootNodeCopy().getFault().getFaultTree().toDot());
+		assertEquals("CM1", module.getRootNodeCopy().getName());
 		
 		FaultTreeHelper fthelp = new FaultTreeHelper(module.getRootNodeCopy().getConcept());
+		final int NUM_NODES = 18;
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", fthelp.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
+		assertEquals(NUM_NODES, fthelp.getAllNodes(module.getRootNodeCopy().getFault()).size());
+	}
+	
+	@Test
+	public void testCopyFaultTreeCM2() throws IOException {
+		Fault rootCM2 = createDFT("/resources/galileo/cm2.dft");
+		Set<Module> modules = modularizer.getModules(rootCM2.getFaultTree());
+		Iterator<Module> iter = modules.iterator();
+		Module module = iter.next();
+		final int NUM_NODES_IN_MODULE_DESIRED = 8;
+		while (module.getNodes().size() < NUM_NODES_IN_MODULE_DESIRED) {
+			module = iter.next();
+		}
+		module.constructFaultTreeCopy();
+		
+		assertEquals("CM1", module.getRootNodeCopy().getName());
+		
+		FaultTreeHelper fthelp = new FaultTreeHelper(module.getRootNodeCopy().getConcept());
+		final int NUM_NODES = 24;
+		final int NUM_SPARES = 3;
+		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", fthelp.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
+		assertEquals(NUM_NODES, fthelp.getAllNodes(module.getRootNodeCopy().getFault()).size());
+		assertEquals(NUM_SPARES, fthelp.getAllSpares(module.getRootNodeCopy().getFault()).size());
 	}
 
 }
