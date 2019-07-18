@@ -119,7 +119,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 		}
 
-		Fault newFault = (Fault) mapNodes.get(root).get(0);
+		FaultTreeNode newRoot = mapNodes.get(root).get(0);
 		
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerators = new HashMap<>();
 		for (FaultTreeNode generator : mapNodes.keySet()) {
@@ -129,7 +129,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 		} 
 		
-		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newFault, mapGeneratedToGenerators);
+		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newRoot, mapGeneratedToGenerators);
 		
 		return conversionResult;
 	}

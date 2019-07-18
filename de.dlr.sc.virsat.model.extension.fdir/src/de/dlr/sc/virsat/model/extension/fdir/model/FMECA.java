@@ -9,18 +9,32 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
+import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
+import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -59,7 +73,18 @@ public  class FMECA extends AFMECA {
 	public FMECA(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
 	}
+	
+	@Override
+	public IBeanStructuralElementInstance getParent() {
+		return new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
+	}
 
+	/**
+	 * Creates a command for regenerating the FMECA
+	 * @param editingDomain the editing domain
+	 * @param monitor a monitor
+	 * @return a command to regenerate the fmeca
+	 */
 	public Command perform(TransactionalEditingDomain editingDomain, IProgressMonitor monitor) {
 		return new RecordingCommand(editingDomain, "FMECA") {
 			@Override
@@ -70,7 +95,84 @@ public  class FMECA extends AFMECA {
 		};
 	}
 	
+	/**
+	 * Generates the FMECA entries
+	 * @param monitor a progress monitor
+	 * @return the newly generated fmeca entries
+	 */
 	public List<FMECAEntry> generateEntries(IProgressMonitor monitor) {
-		return null;
+		List<FMECAEntry> entries = new ArrayList<>();
+		List<Fault> failures = getParent().getAll(Fault.class).stream()
+				.filter(fault -> fault.isLocalTopLevelFault())
+				.collect(Collectors.toList());
+		
+		for (Fault failure : failures) {
+			Set<FaultEvent> failureModes = failure.getFaultTree().getFailureModes();
+			for (FaultEvent failureMode : failureModes) {
+				if (failureMode instanceof Fault) {
+					Fault nonBasicFailureMode = (Fault) failureMode; 
+					Set<FaultEvent> failureCauses = nonBasicFailureMode.getFaultTree().getFailureModes();
+					
+					for (FaultEvent failureCause : failureCauses) {
+						entries.add(generateEntry(failure, failureMode, failureCause));
+					}
+					
+					if (failureCauses.isEmpty()) {
+						entries.add(generateEntry(failure, failureMode, null));
+					}
+				} else {
+					entries.add(generateEntry(failure, failureMode, null));
+				}
+			}
+			
+			if (failureModes.isEmpty()) {
+				entries.add(generateEntry(failure, null, null));
+			}
+		}
+		
+		return entries;
+	}
+	
+	/**
+	 * Generates a single fmeca entry for a <failure, failureMode, failureCause> triple
+	 * @param failure the failure
+	 * @param failureMode the failure mode
+	 * @param failureCause the failure cause
+	 * @return the fmeca entry
+	 */
+	private FMECAEntry generateEntry(Fault failure, FaultEvent failureMode, FaultEvent failureCause) {
+		FMECAEntry entry = new FMECAEntry(getConcept());
+		entry.setFailure(failure);
+		entry.setFailureMode(failureMode);
+		entry.setFailureCause(failureCause);
+		entry.setSeverity(failure.getSeverity());
+		
+		FaultTreeNode analysisNode = failureCause != null ? failureCause : failureMode;
+		
+		if (analysisNode != null) {
+			RecoveryAutomaton ra = getParent().getFirst(RecoveryAutomaton.class);
+			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
+			if (ra != null) {
+				ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+			}
+			
+			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(analysisNode, MTTF.MTTF);
+			entry.getMeanTimeToFailureBean().setValueAsBaseUnit(result.getMeanTimeToFailure());
+		} else {
+			entry.setMeanTimeToFailure(Double.NaN);
+		}
+		
+		entry.getFailureEffects().addAll(failure.getFaultTree().getAffectedFaults());
+		
+		CategoryInstantiator ci = new CategoryInstantiator();
+		for (String proposedRecoveryAction : failure.getFaultTree().getPotentialRecoveryActions()) {
+			APropertyInstance pi = ci.generateInstance(entry.getProposedRecovery().getArrayInstance());
+			BeanPropertyString newBeanProperty = new BeanPropertyString();
+			newBeanProperty.setTypeInstance((ValuePropertyInstance) pi);
+			newBeanProperty.setValue(proposedRecoveryAction);
+			entry.getProposedRecovery().add(newBeanProperty);
+		}
+		
+		return entry;
 	}
 }

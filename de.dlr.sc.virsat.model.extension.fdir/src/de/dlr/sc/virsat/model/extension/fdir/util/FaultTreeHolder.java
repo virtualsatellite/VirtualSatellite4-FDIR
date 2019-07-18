@@ -70,7 +70,7 @@ public class FaultTreeHolder {
 		initDataStructures();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
-		toProcess.offer(root);
+		toProcess.offer(root.getFault());
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
 			

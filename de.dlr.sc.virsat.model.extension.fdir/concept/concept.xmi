@@ -126,7 +126,7 @@
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.27/@properties.6/@values.3">
       <values name="ExtremelyUnlikely" value="4"/>
       <values name="Unlikely" value="3"/>
       <values name="Likely" value="2"/>

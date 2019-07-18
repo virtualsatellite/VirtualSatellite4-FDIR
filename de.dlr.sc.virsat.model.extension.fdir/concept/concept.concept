@@ -160,7 +160,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		] quantityKind "Dimensionless" unit "No Unit" description "Probability Level according to ECSS-Q-ST-30-02C";
 		EnumProperty detection values [
 			ExtremelyUnlikely=4, Unlikely=3, Likely=2, VeryLikely=1
-		] quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
+		] default VeryLikely quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
 		FloatProperty criticality default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
 	
 		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";

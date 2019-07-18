@@ -9,17 +9,19 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,14 +93,20 @@ public class FMECATest extends AFMECATest {
 	
 	@Test
 	public void testGenerateEntriesEffect() {
+		ResourceSet rs = new ResourceSetImpl();
+		Resource resource = new ResourceImpl();
+		rs.getResources().add(resource);
+		
 		Fault fault = new Fault(concept);
 		beanSei.add(fault);
 		Fault effect1 = new Fault(concept);
-		beanSei.add(effect1);
 		Fault effect2 = new Fault(concept);
-		beanSei.add(effect2);
 		ftHelper.connect(effect1, fault, effect1);
 		ftHelper.connect(effect2, fault, effect2);
+		
+		resource.getContents().add(fault.getATypeInstance());
+		resource.getContents().add(effect1.getATypeInstance());
+		resource.getContents().add(effect2.getATypeInstance());
 		
 		FMECAEntry entry = fmeca.generateEntries(new NullProgressMonitor()).get(0);
 		assertThat(entry.getFailureEffects(), hasItem(effect1));
@@ -106,61 +114,83 @@ public class FMECATest extends AFMECATest {
 	}
 	
 	@Test
-	public void testGenerateEntriesFailureMode() {
+	public void testGenerateEntriesFailureMode1() {
 		Fault fault = new Fault(concept);
 		beanSei.add(fault);
-		BasicEvent fm1 = new BasicEvent(concept);
-		fm1.setHotFailureRate(1);
-		Fault fm2 = new Fault(concept);
-		fault.getBasicEvents().add(fm1);
-		ftHelper.connect(fault, fm2, fault);
+		BasicEvent fm = new BasicEvent(concept);
+		fm.setHotFailureRate(1);
+		fault.getBasicEvents().add(fm);
 		
 		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());
-		assertEquals(2, entries.size());
+		assertEquals(1, entries.size());
 		
-		FMECAEntry entry1 = entries.get(0);
-		assertEquals(fault, entry1.getFailure());
-		assertEquals(fm1, entry1.getFailureMode());
-		assertEquals(1, entry1.getMeanTimeToFailure(), TEST_EPSILON);
-		
-		FMECAEntry entry2 = entries.get(1);
-		assertEquals(fault, entry2.getFailure());
-		assertEquals(fm2, entry2.getFailureMode());
-		assertFalse(entry2.isSetMeanTimeToFailure());
+		FMECAEntry entry = entries.get(0);
+		assertEquals(fault, entry.getFailure());
+		assertEquals(fm, entry.getFailureMode());
+		assertEquals(1, entry.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
-	public void testGenerateEntriesCause() {
+	public void testGenerateEntriesFailureMode2() {
+		Fault fault = new Fault(concept);
+		beanSei.add(fault);
+		Fault fm = new Fault(concept);
+		ftHelper.connect(fault, fm, fault);
+		
+		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());
+		assertEquals(1, entries.size());
+		
+		FMECAEntry entry = entries.get(0);
+		assertEquals(fault, entry.getFailure());
+		assertEquals(fm, entry.getFailureMode());
+		assertEquals(Double.NaN, entry.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testGenerateEntriesCause1() {
 		Fault fault = new Fault(concept);
 		beanSei.add(fault);
 		
 		Fault fm = new Fault(concept);
 		
-		BasicEvent cause1 = new BasicEvent(concept);
-		cause1.setHotFailureRate(1);
-		Fault cause2 = new Fault(concept);
+		BasicEvent cause = new BasicEvent(concept);
+		cause.setHotFailureRate(1);
+		
+		ftHelper.connect(fault, fm, fault);
+		fm.getBasicEvents().add(cause);
+		
+		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());
+		assertEquals(1, entries.size());
+		
+		FMECAEntry entry = entries.get(0);
+		assertEquals(fault, entry.getFailure());
+		assertEquals(fm, entry.getFailureMode());
+		assertEquals(cause, entry.getFailureCause());
+		assertEquals(1, entry.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testGenerateEntriesCause2() {
+		Fault fault = new Fault(concept);
+		beanSei.add(fault);
+		
+		Fault fm = new Fault(concept);
+		Fault cause = new Fault(concept);
 		BasicEvent be = new BasicEvent(concept);
 		be.setHotFailureRate(1);
 		
 		ftHelper.connect(fault, fm, fault);
-		fm.getBasicEvents().add(cause1);
-		ftHelper.connect(fm, cause2, fm);
-		cause2.getBasicEvents().add(be);
+		ftHelper.connect(fm, cause, fm);
+		cause.getBasicEvents().add(be);
 		
 		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());
-		assertEquals(2, entries.size());
+		assertEquals(1, entries.size());
 		
-		FMECAEntry entry1 = entries.get(0);
-		assertEquals(fault, entry1.getFailure());
-		assertEquals(fm, entry1.getFailureMode());
-		assertEquals(cause1, entry1.getFailureCause());
-		assertEquals(1, entry1.getMeanTimeToFailure(), TEST_EPSILON);
-		
-		FMECAEntry entry2 = entries.get(0);
-		assertEquals(fault, entry2.getFailure());
-		assertEquals(fm, entry2.getFailureMode());
-		assertEquals(cause2, entry2.getFailureCause());
-		assertEquals(1, entry1.getMeanTimeToFailure(), TEST_EPSILON);
+		FMECAEntry entry = entries.get(0);
+		assertEquals(fault, entry.getFailure());
+		assertEquals(fm, entry.getFailureMode());
+		assertEquals(cause, entry.getFailureCause());
+		assertEquals(1, entry.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -186,11 +216,8 @@ public class FMECATest extends AFMECATest {
 		assertEquals(1, entries.size());
 		
 		FMECAEntry entry = entries.get(0);
-		assertEquals(fault, entry.getFailure());
-		assertEquals(fm, entry.getFailureMode());
-		assertEquals(cause, entry.getFailureCause());
-		assertEquals(1, entry.getMeanTimeToFailure(), TEST_EPSILON);
-		assertEquals(cause.getRepairAction(), entry.getProposedRecovery().get(0));
-		assertEquals("Switch to Redundancy", entry.getProposedRecovery().get(1));
+		assertEquals(2, entry.getProposedRecovery().size());
+		assertEquals(cause.getRepairAction(), entry.getProposedRecovery().get(0).getValue());
+		assertEquals("Switch to Redundancy", entry.getProposedRecovery().get(1).getValue());
 	}
 }

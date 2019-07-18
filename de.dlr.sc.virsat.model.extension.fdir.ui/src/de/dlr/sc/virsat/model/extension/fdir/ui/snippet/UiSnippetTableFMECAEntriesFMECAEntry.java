@@ -9,6 +9,11 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 
@@ -21,4 +26,9 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  */
 public class UiSnippetTableFMECAEntriesFMECAEntry extends AUiSnippetTableFMECAEntriesFMECAEntry implements IUiSnippet {
+	@Override
+	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
+		hideNameColumn = true;
+		super.createSwt(toolkit, editingDomain, composite, initModel);
+	}
 }
