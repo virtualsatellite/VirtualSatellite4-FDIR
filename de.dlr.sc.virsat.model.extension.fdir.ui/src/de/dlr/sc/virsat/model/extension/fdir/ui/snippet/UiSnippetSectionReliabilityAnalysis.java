@@ -96,13 +96,14 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 				Job job = new Job("Reliability Analysis") {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {	
-						monitor.setTaskName("Reliability Analysis");
 						ReliabilityAnalysis relAnalysis = new ReliabilityAnalysis((CategoryAssignment) model);
 						Command reliabilityAnalysisCommand = relAnalysis
 								.perform((TransactionalEditingDomain) editingDomain, monitor);
+						
 						if (monitor.isCanceled()) {
 							return Status.CANCEL_STATUS;
 						}
+						
 						editingDomain.getCommandStack().execute(reliabilityAnalysisCommand);
 						return Status.OK_STATUS;
 					}

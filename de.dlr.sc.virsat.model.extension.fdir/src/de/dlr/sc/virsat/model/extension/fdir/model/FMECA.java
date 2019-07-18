@@ -106,6 +106,7 @@ public  class FMECA extends AFMECA {
 				.filter(fault -> fault.isLocalTopLevelFault())
 				.collect(Collectors.toList());
 		
+		monitor.beginTask("Collecting FMECA entries", 1);
 		for (Fault failure : failures) {
 			Set<FaultEvent> failureModes = failure.getFaultTree().getFailureModes();
 			for (FaultEvent failureMode : failureModes) {
@@ -114,20 +115,27 @@ public  class FMECA extends AFMECA {
 					Set<FaultEvent> failureCauses = nonBasicFailureMode.getFaultTree().getFailureModes();
 					
 					for (FaultEvent failureCause : failureCauses) {
-						entries.add(generateEntry(failure, failureMode, failureCause));
+						entries.add(generateEntry(failure, failureMode, failureCause, monitor));
 					}
 					
 					if (failureCauses.isEmpty()) {
-						entries.add(generateEntry(failure, failureMode, null));
+						entries.add(generateEntry(failure, failureMode, null, monitor));
 					}
 				} else {
-					entries.add(generateEntry(failure, failureMode, null));
+					entries.add(generateEntry(failure, failureMode, null, monitor));
 				}
 			}
 			
 			if (failureModes.isEmpty()) {
-				entries.add(generateEntry(failure, null, null));
+				entries.add(generateEntry(failure, null, null, monitor));
 			}
+		}
+		monitor.worked(1);
+		
+		monitor.beginTask("Filling out FMECA entries", entries.size());
+		for (FMECAEntry entry : entries) {
+			fillEntry(entry);
+			monitor.worked(1);
 		}
 		
 		return entries;
@@ -138,16 +146,25 @@ public  class FMECA extends AFMECA {
 	 * @param failure the failure
 	 * @param failureMode the failure mode
 	 * @param failureCause the failure cause
+	 * @param monitor the progress monitor
 	 * @return the fmeca entry
 	 */
-	private FMECAEntry generateEntry(Fault failure, FaultEvent failureMode, FaultEvent failureCause) {
+	private FMECAEntry generateEntry(Fault failure, FaultEvent failureMode, FaultEvent failureCause, IProgressMonitor monitor) {
 		FMECAEntry entry = new FMECAEntry(getConcept());
 		entry.setFailure(failure);
 		entry.setFailureMode(failureMode);
 		entry.setFailureCause(failureCause);
-		entry.setSeverity(failure.getSeverity());
+		return entry;
+	}
+	
+	/**
+	 * Fills out an FMECA entry as much as possible
+	 * @param entry the fmeca entry
+	 */
+	private void fillEntry(FMECAEntry entry) {
+		entry.setSeverity(entry.getFailure().getSeverity());
 		
-		FaultTreeNode analysisNode = failureCause != null ? failureCause : failureMode;
+		FaultTreeNode analysisNode = entry.getFailureCause() != null ? entry.getFailureCause() : entry.getFailureMode();
 		
 		if (analysisNode != null) {
 			RecoveryAutomaton ra = getParent().getFirst(RecoveryAutomaton.class);
@@ -162,17 +179,15 @@ public  class FMECA extends AFMECA {
 			entry.setMeanTimeToFailure(Double.NaN);
 		}
 		
-		entry.getFailureEffects().addAll(failure.getFaultTree().getAffectedFaults());
+		entry.getFailureEffects().addAll(entry.getFailure().getFaultTree().getAffectedFaults());
 		
 		CategoryInstantiator ci = new CategoryInstantiator();
-		for (String proposedRecoveryAction : failure.getFaultTree().getPotentialRecoveryActions()) {
+		for (String proposedRecoveryAction : entry.getFailure().getFaultTree().getPotentialRecoveryActions()) {
 			APropertyInstance pi = ci.generateInstance(entry.getProposedRecovery().getArrayInstance());
 			BeanPropertyString newBeanProperty = new BeanPropertyString();
 			newBeanProperty.setTypeInstance((ValuePropertyInstance) pi);
 			newBeanProperty.setValue(proposedRecoveryAction);
 			entry.getProposedRecovery().add(newBeanProperty);
 		}
-		
-		return entry;
 	}
 }
