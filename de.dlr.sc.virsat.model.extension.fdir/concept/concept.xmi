@@ -93,7 +93,7 @@
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
     </equationDefinitions>
     <equationDefinitions>
-      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classify">
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
         <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
       </expression>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
