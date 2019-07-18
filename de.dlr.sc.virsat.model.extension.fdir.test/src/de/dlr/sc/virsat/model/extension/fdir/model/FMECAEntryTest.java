@@ -7,7 +7,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
+package de.dlr.sc.virsat.model.extension.fdir.model;
+
+// *****************************************************************
+// * Import Statements
+// *****************************************************************
+
+
 
 // *****************************************************************
 // * Class Declaration
@@ -21,6 +27,6 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
  * 
  * 
  */
-public class UiSnippetTableFault extends AUiSnippetTableFault {
-	
+public class FMECAEntryTest extends AFMECAEntryTest {
+
 }

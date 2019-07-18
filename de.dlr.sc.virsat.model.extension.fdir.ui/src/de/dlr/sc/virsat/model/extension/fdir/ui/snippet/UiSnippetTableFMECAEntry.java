@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+
 // *****************************************************************
 // * Class Declaration
 // *****************************************************************
@@ -21,6 +22,5 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
  * 
  * 
  */
-public class UiSnippetTableFault extends AUiSnippetTableFault {
-	
+public class UiSnippetTableFMECAEntry extends AUiSnippetTableFMECAEntry {
 }

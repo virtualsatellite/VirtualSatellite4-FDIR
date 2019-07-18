@@ -9,9 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-// *****************************************************************
-// * Class Declaration
-// *****************************************************************
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
+
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
@@ -21,6 +25,10 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
  * 
  * 
  */
-public class UiSnippetTableFault extends AUiSnippetTableFault {
-	
+public class UiSnippetTableFMECAEntriesFMECAEntry extends AUiSnippetTableFMECAEntriesFMECAEntry implements IUiSnippet {
+	@Override
+	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
+		hideNameColumn = true;
+		super.createSwt(toolkit, editingDomain, composite, initModel);
+	}
 }

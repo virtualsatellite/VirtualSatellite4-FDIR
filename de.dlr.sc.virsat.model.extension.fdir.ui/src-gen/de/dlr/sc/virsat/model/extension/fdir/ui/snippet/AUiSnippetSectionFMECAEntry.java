@@ -9,18 +9,20 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-// *****************************************************************
-// * Class Declaration
-// *****************************************************************
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetGenericPropertyInstances;
+
 
 /**
- * Auto Generated Class inheriting from Generator Gap Class
+ * Auto Generated Abstract Generator Gap Class
  * 
- * This class is generated once, do your changes here
+ * Don't Manually modify this class
  * 
  * 
  * 
- */
-public class UiSnippetTableFault extends AUiSnippetTableFault {
-	
+ */	
+public abstract class AUiSnippetSectionFMECAEntry extends AUiSnippetGenericPropertyInstances implements IUiSnippet {
+	public AUiSnippetSectionFMECAEntry() {
+		super("de.dlr.sc.virsat.model.extension.fdir", "FMECAEntry");
+	}
 }

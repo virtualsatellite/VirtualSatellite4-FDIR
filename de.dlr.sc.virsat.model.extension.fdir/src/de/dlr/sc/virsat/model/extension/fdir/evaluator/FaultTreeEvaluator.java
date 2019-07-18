@@ -123,7 +123,6 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	 * @return a fault tree evaluator
 	 */
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic, double delta, double eps) {
-		
 		String preferences = FaultTreePreferences.getEnginePreference();
 		if (preferences.equals(EngineExecutionPreference.StormDFT.toString())) {
 			return decorateFaultTreeEvaluator(new StormEvaluator(delta));

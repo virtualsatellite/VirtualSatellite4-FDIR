@@ -9,18 +9,16 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-// *****************************************************************
-// * Class Declaration
-// *****************************************************************
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
+
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
  * 
  * This class is generated once, do your changes here
  * 
- * 
+ * Proposed recovery actions
  * 
  */
-public class UiSnippetTableFault extends AUiSnippetTableFault {
-	
+public class UiSnippetTableFMECAEntryRecovery extends AUiSnippetTableFMECAEntryRecovery implements IUiSnippet {
 }

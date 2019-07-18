@@ -276,6 +276,11 @@ public class DFTState extends MarkovState {
 	 * @param node the node to activate
 	 */
 	public void activateNode(FaultTreeNode node) {
+		if (node instanceof BasicEvent) {
+			activeFaults.add(node.getFault());
+			return;
+		}
+		
 		if (node instanceof Fault) {
 			activeFaults.add((Fault) node);
 			

@@ -106,71 +106,62 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
 		FaultTreeNode fault = getFault();
-		if (fault != null) {
-			SubMonitor subMonitor = null;
-			if (monitor != null) {
-				monitor.setTaskName("Reliability Analysis");
-				final int COUNT_TASKS = 3;
-				subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
-				subMonitor.setTaskName("Creating Data Model");
-				subMonitor.split(1);
-			}
-			
-			double delta = getTimestepBean().getValueToBaseUnit();
-			IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-					(StructuralElementInstance) getTypeInstance().eContainer());
-			RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
-			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
-			if (ra != null) {
-				ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-			}
-
-			double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-			double pointDelta = maxTime / COUNT_RELIABILITY_POINTS;
-			
-			if (monitor != null) {
-				if (monitor.isCanceled()) {
-					return UnexecutableCommand.INSTANCE;
-				}
-				subMonitor.setTaskName("Performing Model Checking");
-				subMonitor.split(1);
-			}
-			
-			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new Reliability(maxTime), MTTF.MTTF);
-			
-			if (monitor != null) {
-				if (monitor.isCanceled()) {
-					return UnexecutableCommand.INSTANCE;
-				}
-				subMonitor.setTaskName("Updating Results");
-				subMonitor.split(1);
-			}
-			
-			double mttf = result.getMeanTimeToFailure();
-			return new RecordingCommand(ed, "Reliability Analysis") {
-				@Override
-				protected void doExecute() {
-					setReliability(
-							TO_PERCENT * (1 - result.getFailRates().get(result.getFailRates().size() - 1)));
-					getMeanTimeToFailureBean().setValueAsBaseUnit(mttf);
-
-					getReliabilityCurve().clear();
-
-					double accDelta = pointDelta;
-					for (int i = 0; i < result.getFailRates().size(); ++i) {
-						accDelta += delta;
-						if (accDelta >= pointDelta) {
-							createNewReliabilityCurveEntry(TO_PERCENT * (1 - result.getFailRates().get(i)));
-							accDelta -= pointDelta;
-						}
-					}
-
-				}
-			};
-
-		} else {
+		if (fault == null) {
 			return UnexecutableCommand.INSTANCE;
 		}
+		
+		monitor.setTaskName("Reliability Analysis");
+		final int COUNT_TASKS = 3;
+		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
+		subMonitor.split(1);
+		subMonitor.setTaskName("Creating Data Model");
+		
+		double delta = getTimestepBean().getValueToBaseUnit();
+		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
+		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
+		if (ra != null) {
+			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		}
+
+		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
+		double pointDelta = maxTime / COUNT_RELIABILITY_POINTS;
+		
+		if (monitor.isCanceled()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		subMonitor.split(1);
+		subMonitor.setTaskName("Performing Model Checking");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new Reliability(maxTime), MTTF.MTTF);
+		
+		if (monitor.isCanceled()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		subMonitor.split(1);
+		subMonitor.setTaskName("Updating Results");
+		
+		double mttf = result.getMeanTimeToFailure();
+		return new RecordingCommand(ed, "Reliability Analysis") {
+			@Override
+			protected void doExecute() {
+				setReliability(TO_PERCENT * (1 - result.getFailRates().get(result.getFailRates().size() - 1)));
+				getMeanTimeToFailureBean().setValueAsBaseUnit(mttf);
+
+				getReliabilityCurve().clear();
+
+				double accDelta = pointDelta;
+				for (int i = 0; i < result.getFailRates().size(); ++i) {
+					accDelta += delta;
+					if (accDelta >= pointDelta) {
+						createNewReliabilityCurveEntry(TO_PERCENT * (1 - result.getFailRates().get(i)));
+						accDelta -= pointDelta;
+					}
+				}
+
+			}
+		};
+
 	}
 
 	/**

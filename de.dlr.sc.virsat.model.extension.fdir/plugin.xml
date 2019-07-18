@@ -102,6 +102,14 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FMECA"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FMECA">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis">
 		</CategoryAssignmentBean>
