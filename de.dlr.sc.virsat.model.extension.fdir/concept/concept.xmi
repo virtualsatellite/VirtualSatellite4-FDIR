@@ -55,13 +55,13 @@
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="basicEvents" description="Failure modes that directly cause this Fault" type="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.21/@properties.3/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.21/@properties.2/@values.3">
       <values name="Catastrophic" value="4"/>
       <values name="Critical" value="3"/>
       <values name="Major" value="2"/>
       <values name="Minor" value="1"/>
     </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
   </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
@@ -133,9 +133,11 @@
       <values name="VeryLikely" value="1"/>
     </properties>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
-    <properties xsi:type="dvlm_cppd:StringProperty" name="recovery" description="Proposed recovery actions"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="failureRate" description="FailureRate of the occurrence of this event" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:StringProperty" name="proposedRecovery" description="Proposed recovery actions">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
   </categories>
   <categories name="ReliabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
     <equationDefinitions>

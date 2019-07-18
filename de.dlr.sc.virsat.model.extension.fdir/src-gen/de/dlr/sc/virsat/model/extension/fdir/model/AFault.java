@@ -60,8 +60,8 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	// property name constants
 	public static final String PROPERTY_DETAIL = "detail";
 	public static final String PROPERTY_BASICEVENTS = "basicEvents";
-	public static final String PROPERTY_FAULTTREE = "faultTree";
 	public static final String PROPERTY_SEVERITY = "severity";
+	public static final String PROPERTY_FAULTTREE = "faultTree";
 	
 	// Severity enumeration value names
 	public static final String SEVERITY_Catastrophic_NAME = "Catastrophic";
@@ -141,23 +141,6 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	}
 	
 	// *****************************************************************
-	// * Attribute: faultTree
-	// *****************************************************************
-	private FaultTree faultTree = new FaultTree();
-	
-	private void safeAccessFaultTree() {
-		if (faultTree.getTypeInstance() == null) {
-			ComposedPropertyInstance propertyInstance = (ComposedPropertyInstance) helper.getPropertyInstance("faultTree");
-			faultTree.setTypeInstance(propertyInstance.getTypeInstance());
-		}
-	}
-	
-	public FaultTree getFaultTree () {
-		safeAccessFaultTree();
-		return faultTree;
-	}
-	
-	// *****************************************************************
 	// * Attribute: severity
 	// *****************************************************************
 	private BeanPropertyEnum severity = new BeanPropertyEnum();
@@ -191,6 +174,23 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	public BeanPropertyEnum getSeverityBean() {
 		safeAccessSeverity();
 		return severity;
+	}
+	
+	// *****************************************************************
+	// * Attribute: faultTree
+	// *****************************************************************
+	private FaultTree faultTree = new FaultTree();
+	
+	private void safeAccessFaultTree() {
+		if (faultTree.getTypeInstance() == null) {
+			ComposedPropertyInstance propertyInstance = (ComposedPropertyInstance) helper.getPropertyInstance("faultTree");
+			faultTree.setTypeInstance(propertyInstance.getTypeInstance());
+		}
+	}
+	
+	public FaultTree getFaultTree () {
+		safeAccessFaultTree();
+		return faultTree;
 	}
 	
 	

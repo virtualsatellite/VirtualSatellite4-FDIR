@@ -93,9 +93,7 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-
 				Job job = new Job("Reliability Analysis") {
-					
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {	
 						monitor.setTaskName("Reliability Analysis");

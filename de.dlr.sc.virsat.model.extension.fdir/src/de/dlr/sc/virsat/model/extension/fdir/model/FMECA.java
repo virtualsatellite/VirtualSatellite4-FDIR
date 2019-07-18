@@ -9,11 +9,18 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 
 // *****************************************************************
 // * Class Declaration
@@ -51,5 +58,19 @@ public  class FMECA extends AFMECA {
 	 */
 	public FMECA(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
+	}
+
+	public Command perform(TransactionalEditingDomain editingDomain, IProgressMonitor monitor) {
+		return new RecordingCommand(editingDomain, "FMECA") {
+			@Override
+			protected void doExecute() {
+				getEntries().clear();
+				getEntries().addAll(generateEntries(monitor));
+			}
+		};
+	}
+	
+	public List<FMECAEntry> generateEntries(IProgressMonitor monitor) {
+		return null;
 	}
 }

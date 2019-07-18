@@ -150,8 +150,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 			return new RecordingCommand(ed, "Reliability Analysis") {
 				@Override
 				protected void doExecute() {
-					setReliability(
-							TO_PERCENT * (1 - result.getFailRates().get(result.getFailRates().size() - 1)));
+					setReliability(TO_PERCENT * (1 - result.getFailRates().get(result.getFailRates().size() - 1)));
 					getMeanTimeToFailureBean().setValueAsBaseUnit(mttf);
 
 					getReliabilityCurve().clear();

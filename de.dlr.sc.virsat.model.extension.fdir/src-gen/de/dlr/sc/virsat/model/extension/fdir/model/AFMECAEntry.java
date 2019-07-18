@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
+import de.dlr.sc.virsat.model.concept.list.TypeSafeArrayInstanceList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import org.eclipse.core.runtime.CoreException;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
@@ -29,7 +30,6 @@ import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
@@ -72,9 +72,9 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public static final String PROPERTY_PROBABILITY = "probability";
 	public static final String PROPERTY_DETECTION = "detection";
 	public static final String PROPERTY_CRITICALITY = "criticality";
-	public static final String PROPERTY_RECOVERY = "recovery";
 	public static final String PROPERTY_MEANTIMETOFAILURE = "meanTimeToFailure";
 	public static final String PROPERTY_FAILURERATE = "failureRate";
+	public static final String PROPERTY_PROPOSEDRECOVERY = "proposedRecovery";
 	
 	// Severity enumeration value names
 	public static final String SEVERITY_Catastrophic_NAME = "Catastrophic";
@@ -431,37 +431,6 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	}
 	
 	// *****************************************************************
-	// * Attribute: recovery
-	// *****************************************************************
-	private BeanPropertyString recovery = new BeanPropertyString();
-	
-	private void safeAccessRecovery() {
-		if (recovery.getTypeInstance() == null) {
-			recovery.setTypeInstance((ValuePropertyInstance) helper.getPropertyInstance("recovery"));
-		}
-	}
-	
-	public Command setRecovery(EditingDomain ed, String value) {
-		safeAccessRecovery();
-		return this.recovery.setValue(ed, value);
-	}
-	
-	public void setRecovery(String value) {
-		safeAccessRecovery();
-		this.recovery.setValue(value);
-	}
-	
-	public String getRecovery() {
-		safeAccessRecovery();
-		return recovery.getValue();
-	}
-	
-	public BeanPropertyString getRecoveryBean() {
-		safeAccessRecovery();
-		return recovery;
-	}
-	
-	// *****************************************************************
 	// * Attribute: meanTimeToFailure
 	// *****************************************************************
 	private BeanPropertyFloat meanTimeToFailure = new BeanPropertyFloat();
@@ -531,6 +500,22 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public BeanPropertyFloat getFailureRateBean() {
 		safeAccessFailureRate();
 		return failureRate;
+	}
+	
+	// *****************************************************************
+	// * Array Attribute: proposedRecovery
+	// *****************************************************************
+	private IBeanList<BeanPropertyString> proposedRecovery = new TypeSafeArrayInstanceList<>(BeanPropertyString.class);
+	
+	private void safeAccessProposedRecovery() {
+		if (proposedRecovery.getArrayInstance() == null) {
+			proposedRecovery.setArrayInstance((ArrayInstance) helper.getPropertyInstance("proposedRecovery"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyString> getProposedRecovery() {
+		safeAccessProposedRecovery();
+		return proposedRecovery;
 	}
 	
 	
