@@ -68,6 +68,10 @@
 		pathToImage="resources/icons/OBSERVER.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.DELAY"
+		pathToImage="resources/icons/DELAY.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ADEP"
 		pathToImage="resources/icons/ADEP.gif">
 	</conceptImage>
@@ -114,6 +118,14 @@
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis"
 		pathToImage="resources/icons/FDIRAnalysis.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECA"
+		pathToImage="resources/icons/FMECA.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry"
+		pathToImage="resources/icons/FMECAEntry.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
@@ -218,6 +230,10 @@
 		name="Add OBSERVER">
 	</command>
 	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
+		name="Add DELAY">
+	</command>
+	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP"
 		name="Add FDEP">
 	</command>
@@ -252,6 +268,14 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
 		name="Add FDIRParameters">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+		name="Add FMECA">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
+		name="Add FMECAEntry">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityAnalysis"
@@ -355,6 +379,11 @@
 	      icon="resources/icons/OBSERVER.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
+	      disabledIcon="resources/icons/DELAY_disabled.gif"
+	      icon="resources/icons/DELAY.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP"
 	      disabledIcon="resources/icons/FDEP_disabled.gif"
 	      icon="resources/icons/FDEP.gif">
@@ -398,6 +427,16 @@
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
 	      disabledIcon="resources/icons/FDIRParameters_disabled.gif"
 	      icon="resources/icons/FDIRParameters.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+	      disabledIcon="resources/icons/FMECA_disabled.gif"
+	      icon="resources/icons/FMECA.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
+	      disabledIcon="resources/icons/FMECAEntry_disabled.gif"
+	      icon="resources/icons/FMECAEntry.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityAnalysis"
@@ -501,6 +540,10 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER">
 	</handler>
 	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddDELAYHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY">
+	</handler>
+	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDEPHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP">
 	</handler>
@@ -535,6 +578,14 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDIRParametersHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFMECAHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFMECAEntryHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddReliabilityAnalysisHandler"
@@ -868,6 +919,28 @@
 			</visibleWhen>
 		</command>
 		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP"
 			style="push">
 			<visibleWhen
@@ -1045,6 +1118,50 @@
 		</command>
 		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1431,6 +1548,16 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionOBSERVER">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDELAY">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionDELAY">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDEP"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDEP">
@@ -1531,6 +1658,11 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesOBSERVER">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesDELAY">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesFDEP"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesFDEP">
@@ -1614,6 +1746,41 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFDIRParameters"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFDIRParameters">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECA"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECA">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFMECA"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFMECA">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntriesFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntriesFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntryFailureEffects"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryFailureEffects">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntryProposedRecovery"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryProposedRecovery">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysis"

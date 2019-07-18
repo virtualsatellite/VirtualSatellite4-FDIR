@@ -16,10 +16,11 @@ import org.junit.runners.Suite.SuiteClasses;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverterTest;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverterTest;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po.PONDDFTSemanticsTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverterTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModularizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModuleTest;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferencesTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.CleanMinimizerTest;
@@ -29,6 +30,9 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartit
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmerTest;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
 import junit.framework.JUnit4TestAdapter;
 
@@ -41,9 +45,12 @@ import junit.framework.JUnit4TestAdapter;
 
 @SuiteClasses({ 
 		DFT2BasicDFTConverterTest.class, 
-		ExplicitDFT2MAConverterTest.class, 
+		DFT2MAConverterTest.class, 
 		GalileoDFT2DFTTest.class,
 		BasicSynthesizerTest.class,
+		POSynthesizerTest.class,
+		DelegateSynthesizerTest.class,
+		Schedule2RAConverterTest.class,
 		DFT2GalileoDFTTest.class,
 		OrthogonalPartitionRefinementMinimizerTest.class,
 		PartitionRefinementMinimizerTest.class,
@@ -54,6 +61,7 @@ import junit.framework.JUnit4TestAdapter;
 		FaultTreePreferencesTest.class,
 		PONDDFTSemanticsTest.class,
 		ModularizerTest.class,
+		ModuleTest.class,
 		RecoveryAutomatonHelperTest.class,
 		ParallelComposerTest.class,
 		FaultTreeTrimmerTest.class

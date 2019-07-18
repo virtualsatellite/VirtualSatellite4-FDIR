@@ -65,6 +65,10 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty observationRate default 0 quantityKind "Frequency" unit "Hertz";
 	}
 	
+	Category DELAY extends Gate {
+		FloatProperty time default 0 quantityKind "Time" unit "Second";
+	}
+	
 	Category ADEP extends Gate {
 		IsAbstract;
 	}
@@ -105,29 +109,11 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		StringProperty detail description "A description giving more details about this fault";
 		Type basicEvents[] of Category BasicEvent description "Failure modes that directly cause this Fault";
 		
-		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
-		
-		EnumProperty severityLevel values [
+		EnumProperty severity values [
 			Catastrophic=4, Critical=3, Major=2, Minor=1
 		] default Minor quantityKind "Dimensionless" unit "No Unit" description "Severity Level according to ECSS-Q-ST-30-02C";
-		EnumProperty probabilityLevel values [
-			ExtremelyRemote=1, Remote=2, Occasional=3, Probable=4
-		] default ExtremelyRemote quantityKind "Dimensionless" unit "No Unit" description "Probability Level according to ECSS-Q-ST-30-02C";
-		EnumProperty detectionLevel values [
-			ExtremelyUnlikely=4, Unlikely=3, Likely=2, VeryLikely=1
-		] default VeryLikely quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
-		FloatProperty criticalityLevel default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
-		
-		FloatProperty failureRate default 0.0 quantityKind "Frequency" unit "Per Hour" description "FailureRate of the occurrence of this event";
-		
+	
 		Type faultTree of Category FaultTree description "The Fault Tree explaining the indirect causes of this Fault";
-		
-		// Approximate the failure rate to a constant failure rate
-		Ref: failureRate = 1 / meanTimeToFailure;
-		
-		// Criticality Level Computation according to ECSS-Q-ST-30-02C
-		Ref: probabilityLevel = classify(failureRate);
-		Ref: criticalityLevel = severityLevel * probabilityLevel * detectionLevel;
 	}
 	
 	Category BasicEvent extends FaultEvent {
@@ -153,6 +139,41 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	Category FDIRAnalysis {
 		IsAbstract;
 		Applicable For All;
+	}
+	
+	Category FMECA extends FDIRAnalysis {
+		Cardinality 1;
+		Type entries[] of Category FMECAEntry;
+	}
+	
+	Category FMECAEntry {
+		Reference failure of Type Fault description "The loss of a function / item";
+		Reference failureMode of Type FaultEvent description "The specific manner in which the failure occurs";
+		Reference failureCause of Type FaultEvent description "The cause of the failure mode";
+		Reference failureEffects[] of Type Fault description "The items / functions affected by the failure"; 
+		
+		EnumProperty severity values [
+			Catastrophic=4, Critical=3, Major=2, Minor=1
+		] quantityKind "Dimensionless" unit "No Unit" description "Severity Level according to ECSS-Q-ST-30-02C";
+		EnumProperty probability values [
+			ExtremelyRemote=1, Remote=2, Occasional=3, Probable=4
+		] quantityKind "Dimensionless" unit "No Unit" description "Probability Level according to ECSS-Q-ST-30-02C";
+		EnumProperty detection values [
+			ExtremelyUnlikely=4, Unlikely=3, Likely=2, VeryLikely=1
+		] default VeryLikely quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
+		FloatProperty criticality default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
+	
+		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
+		FloatProperty failureRate default 0.0 quantityKind "Frequency" unit "Per Hour" description "FailureRate of the occurrence of this event";
+		
+		StringProperty proposedRecovery[] description "Proposed recovery actions";
+		
+		// Approximate the failure rate to a constant failure rate
+		Ref: failureRate = 1 / meanTimeToFailure;
+		
+		// Criticality Level Computation according to ECSS-Q-ST-30-02C
+		Ref: probability = classify(failureRate);
+		Ref: criticality = severity * probability * detection;
 	}
 	
 	Category ReliabilityAnalysis extends FDIRAnalysis {

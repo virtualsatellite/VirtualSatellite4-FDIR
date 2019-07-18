@@ -17,6 +17,9 @@
   <categories name="OBSERVER" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="observationRate" quantityKindName="Frequency" unitName="Hertz" defaultValue="0"/>
   </categories>
+  <categories name="DELAY" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="time" quantityKindName="Time" unitName="Second" defaultValue="0"/>
+  </categories>
   <categories name="ADEP" isAbstract="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
   <categories name="FDEP" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.ADEP"/>
   <categories name="RDEP" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.ADEP">
@@ -48,54 +51,16 @@
     </properties>
   </categories>
   <categories name="Fault" isApplicableForAll="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
-    <equationDefinitions>
-      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
-        <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
-        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.meanTimeToFailure"/>
-      </expression>
-      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.failureRate"/>
-    </equationDefinitions>
-    <equationDefinitions>
-      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classify">
-        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.failureRate"/>
-      </expression>
-      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.probabilityLevel"/>
-    </equationDefinitions>
-    <equationDefinitions>
-      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
-        <left xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
-          <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.severityLevel"/>
-          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.probabilityLevel"/>
-        </left>
-        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.detectionLevel"/>
-      </expression>
-      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.Fault.criticalityLevel"/>
-    </equationDefinitions>
     <properties xsi:type="dvlm_cppd:StringProperty" name="detail" description="A description giving more details about this fault"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="basicEvents" description="Failure modes that directly cause this Fault" type="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="severityLevel" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.20/@properties.3/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.21/@properties.2/@values.3">
       <values name="Catastrophic" value="4"/>
       <values name="Critical" value="3"/>
       <values name="Major" value="2"/>
       <values name="Minor" value="1"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="probabilityLevel" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.20/@properties.4/@values.0">
-      <values name="ExtremelyRemote" value="1"/>
-      <values name="Remote" value="2"/>
-      <values name="Occasional" value="3"/>
-      <values name="Probable" value="4"/>
-    </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detectionLevel" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.20/@properties.5/@values.3">
-      <values name="ExtremelyUnlikely" value="4"/>
-      <values name="Unlikely" value="3"/>
-      <values name="Likely" value="2"/>
-      <values name="VeryLikely" value="1"/>
-    </properties>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="criticalityLevel" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="failureRate" description="FailureRate of the occurrence of this event" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
   </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
@@ -114,6 +79,66 @@
     <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
   </categories>
   <categories name="FDIRAnalysis" isApplicableForAll="true" isAbstract="true"/>
+  <categories name="FMECA" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="entries" type="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+  </categories>
+  <categories name="FMECAEntry">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
+        <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
+        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.meanTimeToFailure"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classify">
+        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+        <left xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+          <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.severity"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
+        </left>
+        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.detection"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.criticality"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failure" description="The loss of a function / item" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failureMode" description="The specific manner in which the failure occurs" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultEvent"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failureCause" description="The cause of the failure mode" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultEvent"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failureEffects" description="The items / functions affected by the failure" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Catastrophic" value="4"/>
+      <values name="Critical" value="3"/>
+      <values name="Major" value="2"/>
+      <values name="Minor" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="probability" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="ExtremelyRemote" value="1"/>
+      <values name="Remote" value="2"/>
+      <values name="Occasional" value="3"/>
+      <values name="Probable" value="4"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.27/@properties.6/@values.3">
+      <values name="ExtremelyUnlikely" value="4"/>
+      <values name="Unlikely" value="3"/>
+      <values name="Likely" value="2"/>
+      <values name="VeryLikely" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="failureRate" description="FailureRate of the occurrence of this event" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:StringProperty" name="proposedRecovery" description="Proposed recovery actions">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+  </categories>
   <categories name="ReliabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>

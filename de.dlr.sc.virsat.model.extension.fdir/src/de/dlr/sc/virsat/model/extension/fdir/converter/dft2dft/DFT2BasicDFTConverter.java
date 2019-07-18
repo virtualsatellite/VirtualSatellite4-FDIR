@@ -17,6 +17,7 @@ import java.util.Map;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -95,8 +96,8 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			for (int i = 0; i < observers.size(); ++i) {
 				OBSERVER observer = observers.get(i);
 				List<FaultTreeNode> newChildNodeList = mapNodes.get(observer);
-				FaultTreeNode newSpareOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-				ftHelper.connectObserver(fault, newSpareOutputNode, newNodeOutputNode);
+				FaultTreeNode newObserverOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
+				ftHelper.connectObserver(fault, newNodeOutputNode, newObserverOutputNode);
 			}
 			
 			List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
@@ -118,7 +119,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 		}
 
-		Fault newFault = (Fault) mapNodes.get(root).get(0);
+		FaultTreeNode newRoot = mapNodes.get(root).get(0);
 		
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerators = new HashMap<>();
 		for (FaultTreeNode generator : mapNodes.keySet()) {
@@ -128,7 +129,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 		} 
 		
-		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newFault, mapGeneratedToGenerators);
+		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newRoot, mapGeneratedToGenerators);
 		
 		return conversionResult;
 	}
@@ -256,6 +257,8 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 				((OBSERVER) gate).setObservationRate(((OBSERVER) oldGate).getObservationRate());
 			} else if (gate instanceof RDEP) {
 				((RDEP) gate).setRateChange(((RDEP) oldGate).getRateChange());
+			} else if (gate instanceof DELAY) {
+				((DELAY) gate).setTime(((DELAY) oldGate).getTime());
 			}
 			
 			gate.setName(oldGate.getName());

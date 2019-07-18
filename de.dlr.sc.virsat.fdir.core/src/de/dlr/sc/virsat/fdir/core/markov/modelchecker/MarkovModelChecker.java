@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -171,10 +170,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	private double[] resultBuffer;
 	
 	/* Results */
-	private double meanTimeToFailure;
-	private List<Double> failRates;
-	private List<Double> pointAvailability;
-	private double steadyStateAvailability;
+	private ModelCheckingResult modelCheckingResult;
 	
 	/**
 	 * 
@@ -193,11 +189,15 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 * 
 	 */
 	@Override
-	public void checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics) {
 		this.mc = mc;
+		this.modelCheckingResult = new ModelCheckingResult();
+		
 		for (IMetric metric : metrics) {
 			metric.accept(this);
 		}
+		
+		return modelCheckingResult;
 	}
 
 	@Override
@@ -208,12 +208,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		int steps = (int) (reliabilityMetric.getTime() / delta);
 		
-		failRates = new ArrayList<>(steps + 1);
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 		
 		for (int time = 0; time <= steps; ++time) {
-			failRates.add(getFailRate());
+			modelCheckingResult.failRates.add(getFailRate());
 			iterate(tmTerminal);
 		}	
 	}
@@ -249,7 +248,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 		
-		meanTimeToFailure = probabilityDistribution[0];
+		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);
 	}
 
 	
@@ -261,12 +260,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		int steps = (int) (pointAvailabilityMetric.getTime() / delta);
 
-		pointAvailability = new ArrayList<>(steps + 1);
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 
 		for (int time = 0; time <= steps; ++time) {
-			pointAvailability.add(1 - getFailRate());
+			modelCheckingResult.pointAvailability.add(1 - getFailRate());
 			iterate(tm);
 		}
 	}
@@ -291,28 +289,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 			oldFailRate = newFailRate;
 		}
-		steadyStateAvailability = 1 - getFailRate();		
+		modelCheckingResult.setSteadyStateAvailability(1 - getFailRate());		
 	}
 
-	@Override
-	public List<Double> getPointAvailability() {
-		return pointAvailability;
-	}
-
-	@Override
-	public double getSteadyStateAvailability() {
-		return steadyStateAvailability;
-	}
-
-	@Override
-	public double getMeanTimeToFailure() {
-		return meanTimeToFailure;
-	}
-
-	@Override
-	public List<Double> getFailRates() {
-		return failRates;
-	}
 	/**
 	 * Gets the fail rate at the current iteration
 	 * @return the fail rate at the current iteration

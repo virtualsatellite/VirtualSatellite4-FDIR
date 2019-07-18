@@ -16,14 +16,16 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFT2MAConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * Evaluator for Dynamic Fault Trees, resolving non determinism using a recovery
@@ -33,9 +35,10 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  *
  */
 public class DFTEvaluator implements IFaultTreeEvaluator {
-	
-	private final IDFT2MAConverter dft2MAConverter;
 
+	private DFTSemantics defaultSemantics;
+	private DFTSemantics poSemantics;
+	
 	private MarkovAutomaton<DFTState> mc;
 	private RecoveryStrategy recoveryStrategy;
 	private IMarkovModelChecker markovModelChecker;
@@ -43,14 +46,13 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	/**
 	 * Constructor using the passed recovery strategy
 	 * 
-	 * @param dft2MAConverter
-	 *            the converter
-	 * @param markovModelChecker
-	 *            Model Checker
+	 * @param defaultSemantics the dft semantics
+	 * @param poSemantics the semantics to be used for partial observable fault trees
+	 * @param markovModelChecker the model Checker
 	 */
-
-	public DFTEvaluator(IDFT2MAConverter dft2MAConverter, IMarkovModelChecker markovModelChecker) {
-		this.dft2MAConverter = dft2MAConverter;
+	public DFTEvaluator(DFTSemantics defaultSemantics, DFTSemantics poSemantics, IMarkovModelChecker markovModelChecker) {
+		this.defaultSemantics = defaultSemantics;
+		this.poSemantics = poSemantics;
 		this.markovModelChecker = markovModelChecker;
 	}
 
@@ -60,41 +62,26 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 
 	@Override
-	public void evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+		DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
+		dft2MAConverter.setSemantics(chooseSemantics(root));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		mc = dft2MAConverter.convert(root);
-		markovModelChecker.checkModel(mc, metrics);
+		return markovModelChecker.checkModel(mc, metrics);
 	}
-
-	/**
-	 * Converts the markov chain into a .dot format adhering string
-	 * 
-	 * @return the .dot format string respresenting the markov chain
-	 */
-
-	public String toDot() {
-		return mc.toDot();
-	}
-
-	@Override
-	public List<Double> getFailRates() {
-		return markovModelChecker.getFailRates();
-	}
-
-	@Override
-	public double getMeanTimeToFailure() {
-		return markovModelChecker.getMeanTimeToFailure();
-	}
-
-	@Override
-	public List<Double> getPointAvailability() {
-		return markovModelChecker.getPointAvailability();
-	}
-
 	
-	@Override
-	public double getSteadyStateAvailability() {
-		return markovModelChecker.getSteadyStateAvailability();
+	/**
+	 * Chooses the semantics depending on the type of tree
+	 * @param root the root of the tree
+	 * @return the semantics required based on the tree type
+	 */
+	private DFTSemantics chooseSemantics(FaultTreeNode root) {
+		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+		if (ftHolder.isPartialObservable()) {
+			return poSemantics;
+		} else {
+			return defaultSemantics;
+		}
 	}
 
 	@Override
@@ -111,7 +98,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			List<MarkovTransition<DFTState>> predTransitions = mc.getPredTransitions(failState);
 			for (MarkovTransition<DFTState> predTransition : predTransitions) {
 				Set<BasicEvent> minimumCutSet = new HashSet<>();
-				ExplicitDFTState predecessor = (ExplicitDFTState) predTransition.getFrom();
+				DFTState predecessor = (DFTState) predTransition.getFrom();
 				Object event = predTransition.getEvent();
 
 				minimumCutSet.add((BasicEvent) ((IDFTEvent) event).getNode());

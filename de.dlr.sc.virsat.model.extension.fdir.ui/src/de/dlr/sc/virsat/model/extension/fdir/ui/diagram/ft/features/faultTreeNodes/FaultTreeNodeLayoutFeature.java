@@ -17,6 +17,7 @@ import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -27,6 +28,7 @@ import org.eclipse.graphiti.ui.services.GraphitiUi;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatLayoutFeature;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
@@ -137,34 +139,7 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 				anythingChanged |= layoutGa(nameText, 0, typeText.getY() + typeDimension.getHeight(), width, nameHeight);
 			}
 			
-			
 			anythingChanged |= layoutGa(containerGa, containerGa.getX(), containerGa.getY(), width, height);
-			
-			if (bean instanceof SPARE) {
-				Shape spareRectShape = containerShape.getChildren()
-						.get(FaultTreeNodeAddFeature.INDEX_SPARE_RECT_SHAPE);
-				GraphicsAlgorithm spareGa = spareRectShape.getGraphicsAlgorithm();
-
-				int spareRectX = width / 2;
-				int spareRectY = typeDimension.getHeight() + SPARE_RECT_POS_Y;
-				int spareRectWidth = spareRectX;
-				int spareRectHeight = height - spareRectY;
-				
-				anythingChanged |= layoutGa(spareGa, spareRectX, spareRectY, spareRectWidth, spareRectHeight);
-			} else if (bean instanceof VOTE) {
-				Shape voteTresholdShape = containerShape.getChildren()
-						.get(FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
-				Text voteTresholdGa = (Text) voteTresholdShape.getGraphicsAlgorithm();
-				IDimension voteTresholdDimension = GraphitiUi.getUiLayoutService()
-						.calculateTextSize(voteTresholdGa.getValue(), typeText.getFont());
-				
-				int voteTresholdX = 0;
-				int voteTresholdY = height - voteTresholdDimension.getHeight() - AnchorUtil.ANCHOR_HEIGHT;
-				int voteTresholdWidth = width;
-				int voteTresholdHeight = voteTresholdDimension.getHeight();
-				
-				anythingChanged |= layoutGa(voteTresholdGa, voteTresholdX, voteTresholdY, voteTresholdWidth, voteTresholdHeight);
-			}
 			
 			List<Anchor> inputAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.INPUT);
 			AnchorUtil.sortAnchorsForXPosition(inputAnchors);
@@ -188,25 +163,124 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 			}
 			
 			if (bean instanceof SPARE) {
-				List<Anchor> spareAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.SPARE);
-				for (int i = 0; i < spareAnchors.size(); ++i) {
-					BoxRelativeAnchor anchor = (BoxRelativeAnchor) spareAnchors.get(i);
-					double relativeWidth = (1 + ((double) (i + 1) / (spareAnchors.size() + 1))) / 2;
-					anchor.setRelativeWidth(relativeWidth);
-				}
-			}
-			
-			if (bean instanceof OBSERVER) {
-				List<Anchor> observerAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.OBSERVER);
-				for (int i = 0; i < observerAnchors.size(); ++i) {
-					BoxRelativeAnchor anchor = (BoxRelativeAnchor) observerAnchors.get(i);
-					double relativeWidth = (1 + ((double) (i + 1) / (observerAnchors.size() + 1))) / 2;
-					anchor.setRelativeWidth(relativeWidth);
-				}
+				anythingChanged |= layoutSPARE(containerShape, width, typeDimension.getHeight(), bean);
+			} else if (bean instanceof VOTE) {
+				anythingChanged |= layoutVOTE(containerShape, width, height, typeText.getFont(), bean);
+			} else if (bean instanceof DELAY) {
+				anythingChanged |= layoutDELAY(containerShape, width, height, typeText.getFont(), bean);
+			} else if (bean instanceof OBSERVER) {
+				anythingChanged |= layoutOBSERVER(containerShape, width, height, typeText.getFont(), bean);
 			}
 		} 
         
 		return anythingChanged;
+	}
+	
+	/**
+	 * Layouts a SPARE gate
+	 * @param containerShape the container shape
+	 * @param width the width
+	 * @param height the height
+	 * @param bean the space
+	 * @return true iff there is any change
+	 */
+	private boolean layoutSPARE(ContainerShape containerShape, int width, int height, FaultTreeNode bean) {
+		Shape spareRectShape = containerShape.getChildren()
+				.get(FaultTreeNodeAddFeature.INDEX_SPARE_RECT_SHAPE);
+		GraphicsAlgorithm spareGa = spareRectShape.getGraphicsAlgorithm();
+
+		int spareRectX = width / 2;
+		int spareRectY = height + SPARE_RECT_POS_Y;
+		int spareRectWidth = spareRectX;
+		int spareRectHeight = height - spareRectY;
+	
+		List<Anchor> spareAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.SPARE);
+		for (int i = 0; i < spareAnchors.size(); ++i) {
+			BoxRelativeAnchor anchor = (BoxRelativeAnchor) spareAnchors.get(i);
+			double relativeWidth = (1 + ((double) (i + 1) / (spareAnchors.size() + 1))) / 2;
+			anchor.setRelativeWidth(relativeWidth);
+		}
+		
+		return layoutGa(spareGa, spareRectX, spareRectY, spareRectWidth, spareRectHeight);
+	}
+	
+	/**
+	 * Layouts a VOTE gate
+	 * @param containerShape the container shape
+	 * @param width the width
+	 * @param height the height
+	 * @param font the font
+	 * @param bean the space
+	 * @return true iff there is any change
+	 */
+	private boolean layoutVOTE(ContainerShape containerShape, int width, int height, Font font, FaultTreeNode bean) {
+		Shape voteTresholdShape = containerShape.getChildren()
+				.get(FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
+		Text voteTresholdGa = (Text) voteTresholdShape.getGraphicsAlgorithm();
+		IDimension voteTresholdDimension = GraphitiUi.getUiLayoutService()
+				.calculateTextSize(voteTresholdGa.getValue(), font);
+		
+		int voteTresholdX = 0;
+		int voteTresholdY = height - voteTresholdDimension.getHeight() - AnchorUtil.ANCHOR_HEIGHT;
+		int voteTresholdWidth = width;
+		int voteTresholdHeight = voteTresholdDimension.getHeight();
+		
+		return layoutGa(voteTresholdGa, voteTresholdX, voteTresholdY, voteTresholdWidth, voteTresholdHeight);
+	}
+	
+	/**
+	 * Layouts a DELAY gate
+	 * @param containerShape the container shape
+	 * @param width the width
+	 * @param height the height
+	 * @param font the font
+	 * @param bean the space
+	 * @return true iff there is any change
+	 */
+	private boolean layoutDELAY(ContainerShape containerShape, int width, int height, Font font, FaultTreeNode bean) {
+		Shape delayShape = containerShape.getChildren()
+				.get(FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE);
+		Text delayGa = (Text) delayShape.getGraphicsAlgorithm();
+		IDimension delayDimension = GraphitiUi.getUiLayoutService()
+				.calculateTextSize(delayGa.getValue(), font);
+		
+		int delayX = 0;
+		int delayY = height - delayDimension.getHeight() - AnchorUtil.ANCHOR_HEIGHT / 2;
+		int delayWidth = width;
+		int delayHeight = delayDimension.getHeight();
+		
+		return layoutGa(delayGa, delayX, delayY, delayWidth, delayHeight);
+	}
+	
+	/**
+	 * Layouts an OBSERVER gate
+	 * @param containerShape the container shape
+	 * @param width the width
+	 * @param height the height
+	 * @param font the font
+	 * @param bean the space
+	 * @return true iff there is any change
+	 */
+	private boolean layoutOBSERVER(ContainerShape containerShape, int width, int height, Font font, FaultTreeNode bean) {
+		Shape delayShape = containerShape.getChildren()
+				.get(FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE);
+		Text delayGa = (Text) delayShape.getGraphicsAlgorithm();
+		IDimension delayDimension = GraphitiUi.getUiLayoutService()
+				.calculateTextSize(delayGa.getValue(), font);
+		
+		int observationRateX = 0;
+		int observationRateY = height - delayDimension.getHeight() - AnchorUtil.ANCHOR_HEIGHT / 2;
+		int observationRateWidth = width;
+		int observationRateHeight = delayDimension.getHeight();
+		
+		List<Anchor> observerAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.OBSERVER);
+		for (int i = 0; i < observerAnchors.size(); ++i) {
+			BoxRelativeAnchor anchor = (BoxRelativeAnchor) observerAnchors.get(i);
+			double relativeWidth = (1 + ((double) (i + 1) / (observerAnchors.size() + 1))) / 2;
+			anchor.setRelativeWidth(relativeWidth);
+		}
+		
+		return layoutGa(delayGa, observationRateX, observationRateY, observationRateWidth, observationRateHeight);
 	}
 	
 	/**

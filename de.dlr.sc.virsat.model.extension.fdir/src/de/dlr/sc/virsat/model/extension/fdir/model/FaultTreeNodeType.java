@@ -18,7 +18,7 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
  */
 
 public enum FaultTreeNodeType {
-	FAULT, AND, OR, VOTE, SPARE, POR_I, PAND_I, SAND, POR, PAND, BASIC_EVENT, FDEP, RDEP, PDEP, OBSERVER;
+	FAULT, AND, OR, VOTE, SPARE, POR_I, PAND_I, SAND, POR, PAND, BASIC_EVENT, FDEP, RDEP, PDEP, OBSERVER, DELAY;
 	
 	/**
 	 * Checks if this is an order dependent fault tree node type
