@@ -179,7 +179,7 @@
          point="de.dlr.sc.virsat.model.calculation.setFunction">
       <setFunction
       		name="classify"
-            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassify">
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL">
       </setFunction>
    </extension>
  <extension
