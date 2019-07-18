@@ -11,11 +11,11 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
@@ -66,14 +66,17 @@ public abstract class ASynthesizer implements ISynthesizer {
 			Set<Module> trimmedModules = ftTrimmer.trimModules(modules);
 			trimmedModules.stream().forEach(module -> module.constructFaultTreeCopy());
 			
-			Set<RecoveryAutomaton> ras = trimmedModules.stream()
-						.map(module -> convertToRecoveryAutomaton(module))
-						.collect(Collectors.toSet());
-			
-			if (minimizer != null) {
-				ras.forEach(ra -> minimizer.minimize(ra));
+			Set<RecoveryAutomaton> ras = new HashSet<>();
+			for (Module module : trimmedModules) {
+				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
+				if (minimizer != null) {
+					minimizer.minimize(ra);
+				}
+				
+				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.mapCopyToOriginalNodes(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
+				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
+				ras.add(ra);
 			}
-			ras.stream().forEach(ra -> remapToGeneratorNodes(ra, conversionResult.getMapGeneratedToGenerator()));
 			
 			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
@@ -126,6 +129,22 @@ public abstract class ASynthesizer implements ISynthesizer {
 	
 	/**
 	 * Maps all references from generated nodes to references of the generator nodes
+	 * @param mapNewToOriginal map provided by the dft to dft conversion
+	 * @param mapNewToCopy map provided by the module
+	 * @return the map from copy to original fault tree nodes
+	 */
+	protected Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginalNodes(Map<FaultTreeNode, FaultTreeNode> mapNewToOriginal, Map<FaultTreeNode, FaultTreeNode> mapNewToCopy) {
+		Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
+		for (FaultTreeNode node : mapNewToCopy.keySet()) {
+			mapCopyToOriginal.put(mapNewToCopy.get(node), mapNewToOriginal.get(node));
+		}
+		return mapCopyToOriginal;
+	}
+	
+	
+	
+	/**
+	 * Maps all references from generated nodes to references of the generator nodes
 	 * @param ra the recovery automaton
 	 * @param mapGeneratedToGenerator from the generated fault tree nodes to the generated ones
 	 */
@@ -141,7 +160,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 				for (FaultTreeNode guard : fet.getGuards()) {
 					generatorGuards.add(mapGeneratedToGenerator.get(guard));
 				}
-			
 				fet.getGuards().clear();
 				fet.getGuards().addAll(generatorGuards);
 			}
@@ -195,8 +213,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
-		Fault f = root.getFault();
-		System.out.println(f.getFaultTree().toDot());
 		ExplicitDFT2MAConverter dft2ma = createDFT2MAConverter();
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		Set<Object> faultEvents = ma.getEvents();

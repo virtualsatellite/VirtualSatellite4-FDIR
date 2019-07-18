@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -31,6 +32,7 @@ public class Module {
 	private ModuleType moduleType;
 	private List<FaultTreeNodePlus> moduleNodes;
 	private FaultTreeNode moduleRootCopy;
+	private Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy;
 	
 	/**
 	 * Default constructor.
@@ -93,6 +95,14 @@ public class Module {
 		return this.moduleRootCopy;
 	}
 	
+	/**
+	 * Get the map which maps original fault tree nodes to the copy fault tree nodes
+	 * @return the map
+	 */
+	public Map<FaultTreeNode, FaultTreeNode> getMapOriginalToCopy() {
+		return this.mapOriginalToCopy;
+	}
+	
 	
 	/**
 	 * Returns true if module is nondeterministic, false otherwise
@@ -115,7 +125,7 @@ public class Module {
 	public void constructFaultTreeCopy() {
 		FaultTreeHelper fthelp = new FaultTreeHelper(this.moduleNodes.get(0).getFaultTreeNode().getConcept());
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
-		Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
+		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
 		FaultTreeNode originalRoot = this.moduleNodes.get(0).getFaultTreeNode().getFault().getFaultTree().getRoot();
 		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, null);
@@ -139,6 +149,11 @@ public class Module {
 				if (mapOriginalToCopy.get(child) == null) {
 					childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
 					mapOriginalToCopy.put(child, childCopy);
+					for (int i = 0; i < childCopy.getFault().getBasicEvents().size(); ++i) {
+						BasicEvent oldBasicEvent = child.getFault().getBasicEvents().get(i);
+						BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
+						mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
+					}
 				} else {
 					childCopy = mapOriginalToCopy.get(child);
 				}
