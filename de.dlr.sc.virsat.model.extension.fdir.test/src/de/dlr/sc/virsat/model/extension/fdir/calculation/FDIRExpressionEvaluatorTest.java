@@ -47,7 +47,7 @@ public class FDIRExpressionEvaluatorTest extends ATestCase {
 		fdirParameters.setDefaultProbablityThresholds();
 		
 		NumberLiteralResult nlr = (NumberLiteralResult) new ValuePropertyGetter().get(fdirParameters.getMissionTimeBean().getTypeInstance());
-		ArrayResult ar = (ArrayResult) new ArrayGetter().get(fdirParameters.getProbabilityLevels().getArrayInstance());
+		ArrayResult ar = (ArrayResult) new FDIRParametersGetter().get(fdirParameters.getTypeInstance());
 		
 		inputs.add(nlr);
 		inputs.add(ar);

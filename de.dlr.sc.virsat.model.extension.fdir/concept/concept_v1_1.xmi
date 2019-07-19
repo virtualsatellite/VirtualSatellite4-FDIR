@@ -98,7 +98,6 @@
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
         <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
-        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.probabilityLevels"/>
       </expression>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
     </equationDefinitions>

@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import de.dlr.sc.virsat.model.extension.fdir.calculation.ArrayGetterTest;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRParametersGetterTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionExtensionTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPLTest;
@@ -66,7 +66,7 @@ import junit.framework.JUnit4TestAdapter;
 		RecoveryAutomatonHelperTest.class,
 		ParallelComposerTest.class,
 		OpClassifyPLTest.class,
-		ArrayGetterTest.class,
+		FDIRParametersGetterTest.class,
 		FDIRExpressionEvaluatorTest.class,
 		FDIRExpressionExtensionTest.class
 		})

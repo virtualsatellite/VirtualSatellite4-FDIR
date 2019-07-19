@@ -38,7 +38,7 @@ public class FDIRExpressionExtension implements IExpressionExtender {
 
 	@Override
 	public List<IInputGetter> getInputGetters() {
-		return Arrays.asList(new ArrayGetter());
+		return Arrays.asList(new FDIRParametersGetter());
 	}
 
 }

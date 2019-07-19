@@ -18,21 +18,17 @@ import de.dlr.sc.virsat.model.calculation.compute.IExpressionResult;
 import de.dlr.sc.virsat.model.calculation.compute.IInputGetter;
 import de.dlr.sc.virsat.model.calculation.compute.extensions.NumberLiteralResult;
 import de.dlr.sc.virsat.model.calculation.compute.extensions.ValuePropertyGetter;
-import de.dlr.sc.virsat.model.dvlm.categories.ATypeDefinition;
-import de.dlr.sc.virsat.model.dvlm.categories.propertydefinitions.FloatProperty;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters;
 
 /**
- * This class gets an ArrayResult from a DVLM array,
- * if the array is part of the FDIR concept.
+ * This class gets the probability levels from FDIRParameters
  * @author muel_s8
  *
  */
 
-public class ArrayGetter implements IInputGetter {
+public class FDIRParametersGetter implements IInputGetter {
 
 	private ValuePropertyGetter vpg = new ValuePropertyGetter();
 	
@@ -43,21 +39,12 @@ public class ArrayGetter implements IInputGetter {
 	 */
 	public boolean isApplicableFor(EObject input) {
 		// Check that we have an array...
-		if (!(input instanceof ArrayInstance)) {
+		if (!(input instanceof CategoryAssignment)) {
 			return false;
 		}
 		
-		ArrayInstance ai = (ArrayInstance) input;
-		ATypeDefinition aiType = ai.getType();
-		
-		// ... over float ...
-		if (!(aiType instanceof FloatProperty)) {
-			return false;
-		}
-		
-		// ... thats from the FDIR concept
-		Concept concept = ActiveConceptHelper.getConcept(aiType);
-		return concept.getName().equals("de.dlr.sc.virsat.model.extension.fdir");
+		CategoryAssignment ca = (CategoryAssignment) input;
+		return ca.getType().getName().equals(FDIRParameters.class.getSimpleName());
 	}
 	
 	@Override
@@ -66,9 +53,10 @@ public class ArrayGetter implements IInputGetter {
 			return null;
 		}
 		
-		ArrayInstance ai = (ArrayInstance) input;
+		CategoryAssignment ca = (CategoryAssignment) input;
+		FDIRParameters fdirParameters = new FDIRParameters(ca);
 		List<NumberLiteralResult> results = new ArrayList<>();
-		for (APropertyInstance pi : ai.getArrayInstances()) {
+		for (APropertyInstance pi : fdirParameters.getProbabilityLevels().getArrayInstance().getArrayInstances()) {
 			NumberLiteralResult nlr = (NumberLiteralResult) vpg.get(pi);
 			results.add(nlr);
 		}

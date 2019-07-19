@@ -27,15 +27,15 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
  *
  */
 
-public class ArrayGetterTest extends ATestCase {
+public class FDIRParametersGetterTest extends ATestCase {
 
 	@Test
 	public void testIsApplicableFor() {
 		FDIRParameters fdirParameters = new FDIRParameters(concept);
 		
-		ArrayGetter arrayGetter = new ArrayGetter();
-		assertTrue(arrayGetter.isApplicableFor(fdirParameters.getProbabilityLevels().getArrayInstance()));
-		assertFalse(arrayGetter.isApplicableFor(fdirParameters.getMissionTimeBean().getTypeInstance()));
+		FDIRParametersGetter probabilityLevelGetter = new FDIRParametersGetter();
+		assertTrue(probabilityLevelGetter.isApplicableFor(fdirParameters.getTypeInstance()));
+		assertFalse(probabilityLevelGetter.isApplicableFor(fdirParameters.getMissionTimeBean().getTypeInstance()));
 	}
 	
 	@Test
@@ -43,9 +43,9 @@ public class ArrayGetterTest extends ATestCase {
 		FDIRParameters fdirParameters = new FDIRParameters(concept);
 		fdirParameters.setDefaultProbablityThresholds();
 		
-		ArrayGetter arrayGetter = new ArrayGetter();
-		assertNull(arrayGetter.get(fdirParameters.getMissionTimeBean().getTypeInstance()));
-		IExpressionResult result = arrayGetter.get(fdirParameters.getProbabilityLevels().getArrayInstance());
+		FDIRParametersGetter probabilityLevelGetter = new FDIRParametersGetter();
+		assertNull(probabilityLevelGetter.get(fdirParameters.getMissionTimeBean().getTypeInstance()));
+		IExpressionResult result = probabilityLevelGetter.get(fdirParameters.getTypeInstance());
 		assertTrue(result instanceof ArrayResult);
 		
 		ArrayResult arrayResult = (ArrayResult) result;
