@@ -123,7 +123,7 @@ public class Module {
 	 * Create the fault tree copy that is required for conversion to markov automata, with only the edges in the module
 	 */
 	public void constructFaultTreeCopy() {
-		FaultTreeHelper fthelp = new FaultTreeHelper(this.moduleNodes.get(0).getFaultTreeNode().getConcept());
+		FaultTreeHelper fthelp = new FaultTreeHelper(this.moduleRoot.getFaultTreeNode().getConcept());
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
 		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
@@ -169,6 +169,7 @@ public class Module {
 				dfsStack.push(child);
 			}
 		}
+		fthelp.createFaultTreeEdge(rootCopy.getFault(), this.moduleRootCopy, rootCopy);
 	}
 	
 	/**

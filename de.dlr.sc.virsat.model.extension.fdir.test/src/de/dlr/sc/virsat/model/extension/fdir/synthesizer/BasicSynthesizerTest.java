@@ -133,10 +133,10 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateCM1() throws IOException {
 		final double[] EXPECTED = {
-			2.803584434531355e-04,
-			0.001814592976612034,
-			0.005429907093144522,
-			0.011686562300949988
+			6.297634506950505e-05,
+			4.654260986536632e-04,
+			0.0016928828332256056,  
+			0.004302923685329981
 		};
 		
 		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm1.dft");
@@ -154,10 +154,10 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateCM2() throws IOException {
 		final double[] EXPECTED = {
-			5.3201174491172875e-05,
-			3.447393133310826e-04,
-			0.0011910623555364203,
-			0.002982714823326954
+			3.791112982388163e-05,
+			1.5198531228025698e-04,
+			3.748693875510452e-04,
+			7.984689349664446e-04
 		};
 
 		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm2.dft");
@@ -175,10 +175,10 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateCM3() throws IOException {
 		final double[] EXPECTED = {
-			6.16556000812423e-08,
-			2.4408204974576935e-06,
-			2.1472266922680997e-05,
-			9.927550244312611e-05
+			2.166214533082528e-07,
+			2.166214533082528e-07,
+			2.8658522870311545e-06,
+			1.851515224177692e-05
 		};
 
 		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm3.dft");
