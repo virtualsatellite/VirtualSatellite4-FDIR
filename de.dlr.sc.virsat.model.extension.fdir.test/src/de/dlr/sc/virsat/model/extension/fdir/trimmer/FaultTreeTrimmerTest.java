@@ -75,7 +75,7 @@ public class FaultTreeTrimmerTest extends ATestCase {
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
 		modules = fttrim.trimModules(modules);
 		
-		final int NUM_NONDET_MODULES = 3;
+		final int NUM_NONDET_MODULES = 4;
 		assertEquals(NUM_NONDET_MODULES, modules.size());
 	}
 
