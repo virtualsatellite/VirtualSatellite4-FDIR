@@ -167,10 +167,9 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		StringProperty proposedRecovery[] description "Proposed recovery actions";
 		
 		// Approximate the failure rate to a constant failure rate
-		Calc: failureRate = 1 / meanTimeToFailure;
+		Ref: probability = classifyPL(1 / meanTimeToFailure);
 		
 		// Criticality Level Computation according to ECSS-Q-ST-30-02C
-		Ref: probability = classifyPL(failureRate);
 		Ref: criticality = severity * probability * detection;
 	}
 	
