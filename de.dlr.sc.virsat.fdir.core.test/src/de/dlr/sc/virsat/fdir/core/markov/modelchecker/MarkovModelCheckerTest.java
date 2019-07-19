@@ -50,11 +50,11 @@ public class MarkovModelCheckerTest {
 		ma.getFinalStates().add(state2);
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		ma.addMarkovianTransition("b", state2, state1, 1);
-		modelChecker.checkModel(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF);
+		ModelCheckingResult result = modelChecker.checkModel(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF);
 		
 		int timepoint = (int) (1 / DELTA) - 1;
-		assertEquals(EXPECTED_MTTF, modelChecker.getMeanTimeToFailure(), EPSILON);
-		assertEquals(EXPECTED_FAIL_RATE, modelChecker.getFailRates().get(timepoint), EPSILON);
+		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), EPSILON);
+		assertEquals(EXPECTED_FAIL_RATE, result.getFailRates().get(timepoint), EPSILON);
 	}
 
 	@Test
@@ -80,10 +80,10 @@ public class MarkovModelCheckerTest {
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 
-		modelChecker.checkModel(ma, PointAvailability.UNIT_POINTAVAILABILITY,
+		ModelCheckingResult result = modelChecker.checkModel(ma, PointAvailability.UNIT_POINTAVAILABILITY,
 				SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 
-		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, modelChecker.getSteadyStateAvailability(), EPSILON);
-		assertEquals(EXPECTED_POINT_AVAILABILITY, modelChecker.getPointAvailability()); 
+		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
+		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getPointAvailability()); 
 	}
 }

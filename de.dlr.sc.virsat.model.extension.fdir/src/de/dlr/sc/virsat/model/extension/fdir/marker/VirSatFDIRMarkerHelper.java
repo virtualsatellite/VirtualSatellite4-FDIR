@@ -77,7 +77,7 @@ public class VirSatFDIRMarkerHelper extends VirSatValidationMarkerHelper impleme
 	 *  This information should be evaluated in out Editor to show the exact place of problem
 	 * @return The created Marker
 	 */
-	public IMarker createFEAValidationMarker(int severity, String message, IUuid iUuid) {
+	public IMarker createFDIRValidationMarker(int severity, String message, IUuid iUuid) {
 		IMarker marker = createMarker(ID_FDIR_VALIDATION_PROBLEM_MARKER, severity, message, iUuid);
 		return marker;
 	}

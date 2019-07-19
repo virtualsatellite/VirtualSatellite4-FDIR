@@ -22,6 +22,7 @@ import java.nio.file.StandardOpenOption;
 import org.junit.Before;
 
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
@@ -80,16 +81,17 @@ public class ASynthesizerExperiment {
 	
 	/**
 	 * Prints the evaluation results of a fault tree eveluator
-	 * @param ftEvaluator the fault tree evaluator
+	 * @param result the results
+	 * @param evaluator the evaluator
 	 * @param delta the timestep
 	 */
-	protected void printResults(FaultTreeEvaluator ftEvaluator, float delta) {
-		System.out.println("MTTF: " + ftEvaluator.getMeanTimeToFailure());
-		printStateStatistics(ftEvaluator);
+	protected void printResults(FaultTreeEvaluator evaluator, ModelCheckingResult result, float delta) {
+		System.out.println("MTTF: " + result.getMeanTimeToFailure());
+		printStateStatistics(evaluator);
 		
-		for (int i = 0; i < ftEvaluator.getFailRates().size(); ++i) {
+		for (int i = 0; i < result.getFailRates().size(); ++i) {
 			float time = i * delta;
-			double reliability = 1 - ftEvaluator.getFailRates().get(i);
+			double reliability = 1 - result.getFailRates().get(i);
 			System.out.println(time + " " + reliability);
 		}
 	}

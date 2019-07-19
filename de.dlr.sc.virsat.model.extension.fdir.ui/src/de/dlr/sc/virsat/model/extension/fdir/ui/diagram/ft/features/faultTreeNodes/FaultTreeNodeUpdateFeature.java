@@ -27,6 +27,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.util.IColorConstant;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatUpdateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
@@ -62,21 +63,24 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 			ContainerShape cs = (ContainerShape) pictogramElement;
 			
 			if (bean instanceof Fault) {
-		        // check name
-		        Shape nameShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE);
-		        Text text = (Text) nameShape.getGraphicsAlgorithm();
-		        String businessName = bean.getParent().getName() + "." + bean.getName();
-		        String pictogramName = text.getValue();
-		        if (!Objects.equals(pictogramName, businessName)) {
+				String expectedName = bean.getParent().getName() + "." + bean.getName();
+		        if (hasOutOfDateText(expectedName, cs, FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE)) {
 		        	neededUpdates.add("Name out of date");
 		        }
 			} else if (bean instanceof VOTE) {
-				VOTE vote = (VOTE) bean;
-				String votingThreshold = String.valueOf("\u2265" + vote.getVotingThreshold());
-		        Shape votingTresholdShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
-		        Text text = (Text) votingTresholdShape.getGraphicsAlgorithm();
-		        if (!Objects.equals(votingThreshold, text.getValue())) {
-		        	neededUpdates.add("Voting Treshold out of date");
+				String expectedVotingThreshold = String.valueOf("\u2265" + ((VOTE) bean).getVotingThreshold());
+		        if (hasOutOfDateText(expectedVotingThreshold, cs, FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE)) {
+		        	neededUpdates.add("Voting threshold out of date");
+		        }
+			} else if (bean instanceof DELAY) {
+				String expectedDelay = String.valueOf(((DELAY) bean).getTimeBean().getValueWithUnit());
+				if (hasOutOfDateText(expectedDelay, cs, FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE)) {
+		        	neededUpdates.add("Delay out of date");
+		        }
+			} else if (bean instanceof OBSERVER) {
+				String expectedObservationRate = String.valueOf(((OBSERVER) bean).getObservationRateBean().getValueWithUnit());
+				if (hasOutOfDateText(expectedObservationRate, cs, FaultTreeNodeAddFeature.INDEX_OBSERVATION_RATE_SHAPE)) {
+		        	neededUpdates.add("Observation rate out of date");
 		        }
 			}
 	        
@@ -101,7 +105,20 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
             return Reason.createTrueReason(neededUpdates.stream().collect(Collectors.joining("\n")));
         }
 	}
-
+	
+	/**
+	 * Checks if a text is out of date
+	 * @param expectedText the should be text
+	 * @param cs the container shape
+	 * @param childIndex the child index
+	 * @return true iff the text is out of date
+	 */
+	private boolean hasOutOfDateText(String expectedText, ContainerShape cs, int childIndex) {
+        Shape shape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE);
+        Text text = (Text) shape.getGraphicsAlgorithm();
+        return !Objects.equals(text.getValue(), expectedText);
+	}
+	
 	@Override
 	public boolean update(IUpdateContext context) {
         PictogramElement pictogramElement = context.getPictogramElement();
@@ -113,17 +130,17 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
             
             // update name
             if (bean instanceof Fault) {
-	            Shape nameShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE);
-	            Text text = (Text) nameShape.getGraphicsAlgorithm();
 	            String businessName = bean.getParent().getName() + "." + bean.getName();
-	            text.setValue(businessName);
-	            changeDuringUpdate = true;
+	            changeDuringUpdate |= updateText(businessName, cs, FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE);
             } else if (bean instanceof VOTE) {
-				VOTE vote = (VOTE) bean;
-				String votingThreshold = String.valueOf("\u2265" + vote.getVotingThreshold());
-		        Shape votingTresholdShape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
-		        Text text = (Text) votingTresholdShape.getGraphicsAlgorithm();
-		        text.setValue(votingThreshold);
+		        String votingThreshold = String.valueOf("\u2265" + ((VOTE) bean).getVotingThreshold());
+	            changeDuringUpdate |= updateText(votingThreshold, cs, FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
+            } else if (bean instanceof DELAY) {
+            	String delay = String.valueOf(((DELAY) bean).getTimeBean().getValueWithUnit());
+	            changeDuringUpdate |= updateText(delay, cs, FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
+            } else if (bean instanceof OBSERVER) {
+            	String observationRate = String.valueOf(((OBSERVER) bean).getObservationRateBean().getValueWithUnit());
+	            changeDuringUpdate |= updateText(observationRate, cs, FaultTreeNodeAddFeature.INDEX_OBSERVATION_RATE_SHAPE);
             }
             
             changeDuringUpdate |= updateAnchors(cs, bean, FaultTreeNodeAddFeature.PORT_COLOR, AnchorType.INPUT);
@@ -139,6 +156,25 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
         }
         
 		return changeDuringUpdate;
+	}
+	
+	/**
+	 * Updates a text child if necessary
+	 * @param newText the new text value
+	 * @param cs the container shape
+	 * @param childIndex the child index
+	 * @return true iff the text was modified
+	 */
+	private boolean updateText(String newText, ContainerShape cs, int childIndex) {
+		Shape shape = cs.getChildren().get(childIndex);
+        Text text = (Text) shape.getGraphicsAlgorithm();
+        String businessName = newText;
+        if (!text.getValue().equals(newText)) {
+        	text.setValue(businessName);
+        	return true;
+        }
+        
+        return false;
 	}
 	
 	/**

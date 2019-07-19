@@ -22,8 +22,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
@@ -77,6 +77,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
+			
 			if (minimizer != null) {
 				minimizer.minimize(synthesizedRA);
 			}
@@ -90,7 +91,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * Creates the state space generator
 	 * @return the state space generator
 	 */
-	protected abstract ExplicitDFT2MAConverter createDFT2MAConverter();
+	protected abstract DFT2MAConverter createDFT2MAConverter();
 
 	/**
 	 * Performs the actual synthesis of the recovery automaton by optimizing the ma scheduler
@@ -100,17 +101,27 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	protected abstract RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initial);
 
-	@Override
+	/**
+	 * Synthesies a recovery automaton.
+	 * @param fault the fault
+	 * @return the synthesized recovery automaton
+	 */
 	public RecoveryAutomaton synthesize(Fault fault) {
 		return synthesize(fault, Collections.emptyMap());
 	}
 
-	@Override
+	/**
+	 * Sets the minimizer that will be used to synthesize the recovery automaton
+	 * @param minimizer the minimizer
+	 */
 	public void setMinimizer(ARecoveryAutomatonMinimizer minimizer) {
 		this.minimizer = minimizer;
 	}
 	
-	@Override
+	/**
+	 * Sets the modularizer that will be used to modularize the fault tree
+	 * @param modularizer the modularizer
+	 */
 	public void setModularizer(Modularizer modularizer) {
 		this.modularizer = modularizer;
 	}
@@ -147,17 +158,19 @@ public abstract class ASynthesizer implements ISynthesizer {
 		}
 	}
 	
+	protected double normalizationRate;
+	
 	/**
 	 * Normalizes the transition rates in the given markov automaton
 	 * @param ma the markov automaton
 	 * @param faultEvents the fault events
 	 */
 	protected void normalizeRates(MarkovAutomaton<DFTState> ma, Set<Object> faultEvents) {
-		float totalRate = 0;
+		normalizationRate = 0;
 		for (Object event : faultEvents) {
 			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
 				if (transition.isMarkovian()) {
-					totalRate += transition.getRate();
+					normalizationRate += transition.getRate();
 				}
 			}
 		}
@@ -165,7 +178,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		for (Object event : faultEvents) {
 			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
 				if (transition.isMarkovian()) {
-					transition.setRate(transition.getRate() / totalRate);
+					transition.setRate(transition.getRate() / normalizationRate);
 				}
 			}
 		}
@@ -201,7 +214,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
-		ExplicitDFT2MAConverter dft2ma = createDFT2MAConverter();
+		DFT2MAConverter dft2ma = createDFT2MAConverter();
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		Set<Object> faultEvents = ma.getEvents();
 		normalizeRates(ma, faultEvents);

@@ -25,10 +25,10 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovScheduler;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po.ExplicitPODFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.po.PONDDFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 /**
@@ -40,19 +40,26 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 public class POSynthesizer extends ASynthesizer {
 
 	/**
+	 * Default constructor
+	 */
+	public POSynthesizer() {
+		modularizer = null;
+	}
+	
+	/**
 	 * Represents a belief state
 	 * @author muel_s8
 	 *
 	 */
 	private class BeliefState extends MarkovState {
-		Map<ExplicitPODFTState, Double> mapStateToBelief = new HashMap<>();
-		ExplicitPODFTState representant;
+		Map<PODFTState, Double> mapStateToBelief = new HashMap<>();
+		PODFTState representant;
 		
 		/**
 		 * Standard constructor
 		 * @param representant the representant
 		 */
-		BeliefState(ExplicitPODFTState representant) {
+		BeliefState(PODFTState representant) {
 			this.representant = representant;
 		}
 		
@@ -78,7 +85,7 @@ public class POSynthesizer extends ASynthesizer {
 	protected RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initialMa) {
 		beliefMa = new MarkovAutomaton<>();
 		
-		ExplicitPODFTState initialPo = (ExplicitPODFTState) initialMa;
+		PODFTState initialPo = (PODFTState) initialMa;
 		BeliefState initialBeliefState = new BeliefState(initialPo);
 		initialBeliefState.mapStateToBelief.put(initialPo, 1d);
 		beliefMa.addState(initialBeliefState);
@@ -88,10 +95,10 @@ public class POSynthesizer extends ASynthesizer {
 		
 		while (!toProcess.isEmpty()) {
 			BeliefState beliefState = toProcess.poll();
-			Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
+			Map<PODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 			
 			if (beliefState.isMarkovian()) {
-				for (Entry<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
+				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 					double exitRate = getTotalRate(entry.getValue());
 					BeliefState beliefSucc = new BeliefState(entry.getKey());
 					
@@ -102,7 +109,7 @@ public class POSynthesizer extends ASynthesizer {
 					boolean isFinal = false;
 					for (MarkovTransition<DFTState> transition : entry.getValue()) {
 						double prob = beliefState.mapStateToBelief.get(transition.getFrom()) * transition.getRate() / exitRate;
-						beliefSucc.mapStateToBelief.put((ExplicitPODFTState) transition.getTo(), prob);
+						beliefSucc.mapStateToBelief.put((PODFTState) transition.getTo(), prob);
 						if (!transition.getTo().isMarkovian()) {
 							isMarkovian = false;
 						}
@@ -125,13 +132,13 @@ public class POSynthesizer extends ASynthesizer {
 					beliefMa.addMarkovianTransition(observationSet, beliefState, equivalentbeliefSucc, exitRate);
 				}
 			} else {
-				for (Entry<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
+				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 					BeliefState beliefSucc = new BeliefState(entry.getKey());
 					
 					Set<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 					boolean isFinal = false;
 					for (MarkovTransition<DFTState> succTransition : succTransitions) {
-						ExplicitPODFTState succState = (ExplicitPODFTState) succTransition.getTo();
+						PODFTState succState = (PODFTState) succTransition.getTo();
 						
 						double prob = succTransition.getRate() * beliefState.mapStateToBelief.get(succTransition.getFrom());
 						beliefSucc.mapStateToBelief.put(succState, prob);
@@ -165,12 +172,15 @@ public class POSynthesizer extends ASynthesizer {
 			}
 		}
 		
-		System.out.println("-------------------------------------");
-		System.out.println(beliefMa.toDot());
-		System.out.println("-------------------------------------");
-		
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
+		
+		for (MarkovTransition<BeliefState> transition : beliefMa.getTransitions()) {
+			if (transition.isMarkovian()) {
+				transition.setRate(transition.getRate() * normalizationRate);
+			}
+		}
+		
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState);
 	}
 	
@@ -204,16 +214,16 @@ public class POSynthesizer extends ASynthesizer {
 	 * @param ma the markov automaton
 	 * @return a mapping from an observation set to the transitions that lead to states with this observation set
 	 */
-	private Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
-		Map<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new HashMap<>();
-		for (Entry<ExplicitPODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
+	private Map<PODFTState, Set<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
+		Map<PODFTState, Set<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new HashMap<>();
+		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
 			List<MarkovTransition<DFTState>> succTransitions = ma.getSuccTransitions(entry.getKey());
 			for (MarkovTransition<DFTState> succTransition : succTransitions) {
-				ExplicitPODFTState succState = (ExplicitPODFTState) succTransition.getTo();
+				PODFTState succState = (PODFTState) succTransition.getTo();
 				Set<MarkovTransition<DFTState>> transitions = null;
 				
-				for (Entry<ExplicitPODFTState, Set<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {
-					ExplicitPODFTState representant = representantEntry.getKey();
+				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {
+					PODFTState representant = representantEntry.getKey();
 					if (representant.getObservedFailed().equals(succState.getObservedFailed()) 
 							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())) {
 						transitions = representantEntry.getValue();
@@ -275,8 +285,8 @@ public class POSynthesizer extends ASynthesizer {
 	}
 
 	@Override
-	protected ExplicitDFT2MAConverter createDFT2MAConverter() {
-		ExplicitDFT2MAConverter dft2MAConverter = new ExplicitDFT2MAConverter();
+	protected DFT2MAConverter createDFT2MAConverter() {
+		DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
 		dft2MAConverter.setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
 		return dft2MAConverter;
 	}

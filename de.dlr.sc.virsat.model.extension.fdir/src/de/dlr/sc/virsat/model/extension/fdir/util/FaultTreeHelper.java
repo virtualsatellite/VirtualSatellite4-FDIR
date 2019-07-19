@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.AND;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
@@ -337,19 +338,6 @@ public class FaultTreeHelper {
 	 * 
 	 * @param name
 	 *            The name of the basic fault event
-	 * @param failureRate
-	 *            The failure rate of the basic fault event
-	 * @return The fault tree node for the basic fault event
-	 */
-	public Fault createBasicFault(String name, double failureRate) {
-		return createBasicFault(name, failureRate, 0);
-	}
-
-	/**
-	 * Creates a fault tree node for a basic fault event
-	 * 
-	 * @param name
-	 *            The name of the basic fault event
 	 * @param failureRateHot
 	 *            The hot failure rate of the basic fault event
 	 * @param failureRateCold
@@ -444,6 +432,8 @@ public class FaultTreeHelper {
 				return new PDEP(concept);
 			case OBSERVER:
 				return new OBSERVER(concept);
+			case DELAY:
+				return new DELAY(concept);
 			default:
 				throw new RuntimeException("Cannot create FaultTree Gate: Unknown type " + type); 
 		}

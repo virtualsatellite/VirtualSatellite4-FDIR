@@ -26,7 +26,7 @@ GalileoBasicEvent returns GalileoFaultTreeNode:
 ;
 
 GalileoNodeType:
-	NamedType | ObserverType | RDEPType
+	NamedType | ObserverType | RDEPType | DelayType
 ;
 
 NamedType returns GalileoNodeType:
@@ -40,6 +40,11 @@ ObserverType returns GalileoNodeType:
 RDEPType returns GalileoNodeType:
 	'rdep' 'rateFactor' rateFactor=Float
 ;
+
+DelayType returns GalileoNodeType:
+	'delay' 'time' time=Float
+;
+
 
 Float:
 	'-'? INT ('.' INT)?	('e' '-'? INT)?

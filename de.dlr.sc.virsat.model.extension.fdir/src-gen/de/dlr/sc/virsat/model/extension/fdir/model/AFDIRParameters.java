@@ -12,17 +12,20 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeArrayInstanceList;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.concept.list.IBeanList;
+import de.dlr.sc.virsat.model.dvlm.categories.Category;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
-import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.Category;
 
 
 // *****************************************************************
@@ -52,6 +55,7 @@ public abstract class AFDIRParameters extends ABeanCategoryAssignment implements
 	// property name constants
 	public static final String PROPERTY_MISSIONTIME = "missionTime";
 	public static final String PROPERTY_TIMESTEP = "timestep";
+	public static final String PROPERTY_PROBABILITYLEVELS = "probabilityLevels";
 	
 	
 	
@@ -143,6 +147,22 @@ public abstract class AFDIRParameters extends ABeanCategoryAssignment implements
 	public BeanPropertyFloat getTimestepBean() {
 		safeAccessTimestep();
 		return timestep;
+	}
+	
+	// *****************************************************************
+	// * Array Attribute: probabilityLevels
+	// *****************************************************************
+	private IBeanList<BeanPropertyFloat> probabilityLevels = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	
+	private void safeAccessProbabilityLevels() {
+		if (probabilityLevels.getArrayInstance() == null) {
+			probabilityLevels.setArrayInstance((ArrayInstance) helper.getPropertyInstance("probabilityLevels"));
+		}
+	}
+		
+	public IBeanList<BeanPropertyFloat> getProbabilityLevels() {
+		safeAccessProbabilityLevels();
+		return probabilityLevels;
 	}
 	
 	

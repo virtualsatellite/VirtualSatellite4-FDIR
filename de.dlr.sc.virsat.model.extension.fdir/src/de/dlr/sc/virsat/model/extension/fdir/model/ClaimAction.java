@@ -16,7 +16,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 
 // *****************************************************************
 // * Class Declaration
@@ -71,7 +71,7 @@ public  class ClaimAction extends AClaimAction {
 	}
 
 	@Override
-	public void execute(ExplicitDFTState state) {
+	public void execute(DFTState state) {
 		state.getSpareClaims().put(getClaimSpare(), getSpareGate());
 	}
 	

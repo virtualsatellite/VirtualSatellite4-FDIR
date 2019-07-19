@@ -109,8 +109,8 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		FaultTreeNode spare2 = ftHelper.createGate(tle, FaultTreeNodeType.SPARE);
 		spare2.setName("SPARE2");
 		final float FAILURE_RATE = 1f;
-		Fault memory1 = ftHelper.createBasicFault("B1", FAILURE_RATE);
-		Fault memory2 = ftHelper.createBasicFault("B2", FAILURE_RATE);
+		Fault memory1 = ftHelper.createBasicFault("B1", FAILURE_RATE, 0);
+		Fault memory2 = ftHelper.createBasicFault("B2", FAILURE_RATE, 0);
 		
 		ftHelper.connect(tle, or, tle);
 		ftHelper.connect(tle, spare1, or);
@@ -123,7 +123,7 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		final int MAX_BACKUPS = 10;
 		
 		for (int i = 1; i <= MAX_BACKUPS; ++i) {
-			Fault backup = ftHelper.createBasicFault("B" + (i + 2), FAILURE_RATE);
+			Fault backup = ftHelper.createBasicFault("B" + (i + 2), FAILURE_RATE, 0);
 			ftHelper.connectSpare(tle, backup, spare1);
 			ftHelper.connectSpare(tle, backup, spare2);
 			
