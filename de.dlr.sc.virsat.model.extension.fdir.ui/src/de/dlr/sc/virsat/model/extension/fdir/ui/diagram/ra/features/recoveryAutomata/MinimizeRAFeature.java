@@ -61,12 +61,12 @@ public class MinimizeRAFeature extends AbstractCustomFeature {
 			RecoveryAutomaton ra = state.getParentCaBeanOfClass(RecoveryAutomaton.class);
 			ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
 			minimizer.minimize(ra);
-
+			updatePictogramElement(pe);
 			IWorkbenchPart part = ((DiagramBehavior) getDiagramBehavior()).getDiagramContainer().getWorkbenchPart();
 	        DiagramLayoutEngine.invokeLayout(part, null, null);
 		}
 		
-		updatePictogramElement(pe);
+
 	}
 	
 	@Override
