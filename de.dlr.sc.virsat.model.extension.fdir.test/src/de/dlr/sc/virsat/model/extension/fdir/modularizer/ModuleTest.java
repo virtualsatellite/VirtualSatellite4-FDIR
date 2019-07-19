@@ -35,6 +35,20 @@ public class ModuleTest extends ATestCase {
 		super.set();
 		modularizer = new Modularizer();
 	}
+	
+	@Test
+	public void testEvaluateCsp2() throws IOException {
+		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
+		Set<Module> modules = modularizer.getModules(rootcsp2.getFaultTree());
+		final int NUM_NODES_IN_SHARED_SPARE_MODULE = 3;
+		Module module = modules.stream().filter(m -> m.getNodes().size() >= NUM_NODES_IN_SHARED_SPARE_MODULE)
+				.findAny().get();
+		module.constructFaultTreeCopy();
+		
+		System.out.println(module.getRootNodeCopy().getFault().getFaultTree().toDot());
+		
+		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
+	}
 
 	@Test
 	public void testCopyFaultTreeCMSimple() throws IOException {

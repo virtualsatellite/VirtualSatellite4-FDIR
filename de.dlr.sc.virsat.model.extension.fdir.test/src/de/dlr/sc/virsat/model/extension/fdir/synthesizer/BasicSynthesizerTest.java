@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.junit.Before;
 import org.junit.Test;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
@@ -31,6 +32,11 @@ import de.dlr.sc.virsat.model.extension.fdir.test.TestActivator;
 
 public class BasicSynthesizerTest extends ATestCase {
 
+	@Before
+	public void setUp() throws Exception {
+		super.set();
+	}
+	
 	@Test
 	public void testEvaluateCsp2WithoutModularization() throws IOException {
 		final double[] EXPECTED = {
@@ -72,6 +78,19 @@ public class BasicSynthesizerTest extends ATestCase {
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+	}
+
+	@Test
+	public void testEvaluateCsp2() throws IOException {
+		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/csp2.dft");
+		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
+		Fault fault = converter.convert();
+		
+		BasicSynthesizer synthesizer = new BasicSynthesizer();
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+
+		final int NUM_STATES = 1;
+		assertEquals(NUM_STATES, ra.getStates().size());
 	}
 	
 	@Test
@@ -126,6 +145,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
@@ -164,9 +184,10 @@ public class BasicSynthesizerTest extends ATestCase {
 		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm3.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		Fault fault = converter.convert();
-		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
