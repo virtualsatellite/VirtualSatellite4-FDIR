@@ -29,6 +29,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -43,6 +44,7 @@ import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
@@ -99,13 +101,13 @@ public class UiSnippetSectionAvailabilityAnalysis extends AUiSnippetSectionAvail
 							return Status.CANCEL_STATUS;
 						}
 						editingDomain.getCommandStack().execute(availabilityAnalysisCommand);
+						Display.getDefault().syncExec(() -> xyPlotChartViewer.refresh());
 						monitor.done();
 						return Status.OK_STATUS;
 					}
 				};
 				job.setUser(true);
 				job.schedule();
-				xyPlotChartViewer.refresh();
 			}
 		});
 
@@ -217,16 +219,16 @@ public class UiSnippetSectionAvailabilityAnalysis extends AUiSnippetSectionAvail
 		@Override
 		public Double[] getValuesX(Object object) {
 			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
+			double timestep = availAnalysis.getTimestepBean().getValueToBaseUnit();
 			double maxTime = availAnalysis.getRemainingMissionTime();
-			double delta = maxTime / AvailabilityAnalysis.COUNT_AVAILABILITY_POINTS;
+			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(availAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
 			int steps = (int) (maxTime / delta);
 			Double[] timeSteps = new Double[steps + 1];
 			for (int time = 0; time <= steps; ++time) {
 				timeSteps[time] = time * delta;
 			}
-
+	
 			XYPlot plot = chart.getXYPlot();
-
 			plot.getDomainAxis().setUpperBound(maxTime);
 
 			return timeSteps;
