@@ -73,7 +73,6 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public static final String PROPERTY_DETECTION = "detection";
 	public static final String PROPERTY_CRITICALITY = "criticality";
 	public static final String PROPERTY_MEANTIMETOFAILURE = "meanTimeToFailure";
-	public static final String PROPERTY_FAILURERATE = "failureRate";
 	public static final String PROPERTY_PROPOSEDRECOVERY = "proposedRecovery";
 	
 	// Severity enumeration value names
@@ -464,42 +463,6 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public BeanPropertyFloat getMeanTimeToFailureBean() {
 		safeAccessMeanTimeToFailure();
 		return meanTimeToFailure;
-	}
-	
-	// *****************************************************************
-	// * Attribute: failureRate
-	// *****************************************************************
-	private BeanPropertyFloat failureRate = new BeanPropertyFloat();
-	
-	private void safeAccessFailureRate() {
-		if (failureRate.getTypeInstance() == null) {
-			failureRate.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("failureRate"));
-		}
-	}
-	
-	public Command setFailureRate(EditingDomain ed, double value) {
-		safeAccessFailureRate();
-		return this.failureRate.setValue(ed, value);
-	}
-	
-	public void setFailureRate(double value) {
-		safeAccessFailureRate();
-		this.failureRate.setValue(value);
-	}
-	
-	public double getFailureRate() {
-		safeAccessFailureRate();
-		return failureRate.getValue();
-	}
-	
-	public boolean isSetFailureRate() {
-		safeAccessFailureRate();
-		return failureRate.isSet();
-	}
-	
-	public BeanPropertyFloat getFailureRateBean() {
-		safeAccessFailureRate();
-		return failureRate;
 	}
 	
 	// *****************************************************************

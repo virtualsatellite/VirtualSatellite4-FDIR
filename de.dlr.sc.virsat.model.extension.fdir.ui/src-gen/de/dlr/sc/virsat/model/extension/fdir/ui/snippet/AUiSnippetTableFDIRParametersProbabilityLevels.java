@@ -11,10 +11,10 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetArrayInstancePropertyTable;
-import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddArrayElementProbabilityLevelsCommand;
 
 
 /**
@@ -31,11 +31,11 @@ public abstract class AUiSnippetTableFDIRParametersProbabilityLevels extends AUi
 		super("de.dlr.sc.virsat.model.extension.fdir",
 			"probabilityLevels",
 			"FDIRParameters",
-			STYLE_ADD_BUTTON | STYLE_REMOVE_BUTTON | STYLE_EDITOR_BUTTON);
+			STYLE_NONE);
 	}
 
 	@Override
 	protected Command createAddCommand(EditingDomain editingDomain, Concept activeConcept) {
-		return new CreateAddArrayElementProbabilityLevelsCommand().create(editingDomain, getArrayInstance(model), null);
+		return UnexecutableCommand.INSTANCE;
 	}
 }

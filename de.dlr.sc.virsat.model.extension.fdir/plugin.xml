@@ -182,6 +182,15 @@
             class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL">
       </setFunction>
    </extension>
+    <extension
+         id="fdirExpressionExtender"
+         name="FDIR Expression Extender"
+         point="de.dlr.sc.virsat.model.edit.TypeInstanceSetterProvider">
+      <typeInstanceSetterProvider
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionExtension"
+            priority="1">
+      </typeInstanceSetterProvider>
+	</extension>
  <extension
       id="de.dlr.sc.virsat.problem.markers.validation.fdir"
       name="VirSat FDIR Validator Problem Marker"
