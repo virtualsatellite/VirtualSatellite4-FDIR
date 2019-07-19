@@ -60,7 +60,7 @@ public class UiSnippetSectionRecoveryAutomaton extends AUiSnippetSectionRecovery
 
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
-						monitor.setTaskName("Reliability Analysis");
+						monitor.setTaskName("Minimize Automata");
 						RecoveryAutomaton recAutomaton = new RecoveryAutomaton((CategoryAssignment) model);
 						Command recAutomatonMinimizeCommand = recAutomaton
 								.performMinimize((TransactionalEditingDomain) editingDomain);
