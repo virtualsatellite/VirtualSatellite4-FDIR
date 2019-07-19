@@ -26,7 +26,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
@@ -39,13 +38,11 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 public class ModularizerTest extends ATestCase {
 	
-	protected Concept concept;
 	protected Modularizer modularizer;
 	
 	@Before
 	public void setUp() throws Exception {
-		String conceptXmiPluginPath = "de.dlr.sc.virsat.model.extension.fdir/concept/concept.xmi";
-		concept = de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader.loadConceptFromPlugin(conceptXmiPluginPath);
+		super.set();
 		
 		modularizer = new Modularizer();
 	}
@@ -415,8 +412,6 @@ public class ModularizerTest extends ATestCase {
 	public void testCM1() throws IOException {
 		Fault rootCM1 = createDFT("/resources/galileo/cm1.dft");
 		Set<Module> modules = modularizer.getModules(rootCM1.getFaultTree());
-		
-		modules.stream().forEach(m -> System.out.println(m));
 		
 		final int NUM_MODULES = 8;
 		assertEquals(NUM_MODULES, modules.size());

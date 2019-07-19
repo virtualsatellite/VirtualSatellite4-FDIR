@@ -10,14 +10,15 @@
 package de.dlr.sc.virsat.model.extension.fdir.trimmer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
@@ -32,13 +33,11 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
  */
 public class FaultTreeTrimmerTest extends ATestCase {
 	
-	protected Concept concept;
 	protected FaultTreeTrimmer fttrim;
 	
 	@Before
 	public void setUp() throws Exception {
-		String conceptXmiPluginPath = "de.dlr.sc.virsat.model.extension.fdir/concept/concept.xmi";
-		concept = de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader.loadConceptFromPlugin(conceptXmiPluginPath);
+		super.set();
 		
 		fttrim = new FaultTreeTrimmer();
 	}
@@ -52,20 +51,11 @@ public class FaultTreeTrimmerTest extends ATestCase {
 		assertNull(resultSet);
 	}
 	
-	/* @Test
+	@Test
 	public void testNone() {
-		FaultTree result = fttrim.trimFaultTree(new FaultTree(concept));
-		final int NUM_STATES = 0;
-		final int NUM_TRANSITIONS = 0;
-		assertEquals(NUM_STATES, result.getChildFaults().size());
-		assertEquals(NUM_STATES, result.getChildSpares().size());
-		assertEquals(NUM_STATES, result.getDeps().size());
-		assertEquals(NUM_STATES, result.getGates().size());
-		assertEquals(NUM_TRANSITIONS, result.getPropagations().size());
-		
 		Set<Module> resultSet = fttrim.trimModules(new HashSet<Module>());
 		assertTrue(resultSet.isEmpty());
-	} */
+	}
 	
 	@Test
 	public void testTrimNondeterministicModules() throws IOException {
@@ -73,10 +63,6 @@ public class FaultTreeTrimmerTest extends ATestCase {
 		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
 		modules = fttrim.trimModules(modules);
-		
-		for (Module m : modules) {
-			System.out.println(m);
-		}
 		
 		final int NUM_NONDET_MODULES = 1;
 		assertEquals(NUM_NONDET_MODULES, modules.size());
@@ -88,10 +74,6 @@ public class FaultTreeTrimmerTest extends ATestCase {
 		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
 		modules = fttrim.trimModules(modules);
-		
-		for (Module m : modules) {
-			System.out.println(m);
-		}
 		
 		final int NUM_NONDET_MODULES = 3;
 		assertEquals(NUM_NONDET_MODULES, modules.size());

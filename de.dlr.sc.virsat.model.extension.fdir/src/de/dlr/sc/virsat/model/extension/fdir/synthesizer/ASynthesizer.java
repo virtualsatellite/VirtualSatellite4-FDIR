@@ -73,7 +73,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 					minimizer.minimize(ra);
 				}
 				
-				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.mapCopyToOriginalNodes(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
+				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
 				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
 				ras.add(ra);
 			}
@@ -145,7 +145,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @param mapNewToCopy map provided by the module
 	 * @return the map from copy to original fault tree nodes
 	 */
-	protected Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginalNodes(Map<FaultTreeNode, FaultTreeNode> mapNewToOriginal, Map<FaultTreeNode, FaultTreeNode> mapNewToCopy) {
+	protected Map<FaultTreeNode, FaultTreeNode> createCopyToOriginalNodesMap(Map<FaultTreeNode, FaultTreeNode> mapNewToOriginal, Map<FaultTreeNode, FaultTreeNode> mapNewToCopy) {
 		Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
 		for (FaultTreeNode node : mapNewToCopy.keySet()) {
 			mapCopyToOriginal.put(mapNewToCopy.get(node), mapNewToOriginal.get(node));

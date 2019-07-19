@@ -32,7 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.test.TestActivator;
 public class BasicSynthesizerTest extends ATestCase {
 
 	@Test
-	public void testEvaluateCsp2() throws IOException {
+	public void testEvaluateCsp2WithoutModularization() throws IOException {
 		final double[] EXPECTED = {
 			9.9e-05,
 			0.0003921,
@@ -53,7 +53,7 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 
 	@Test
-	public void testEvaluate2Csp2Shared() throws IOException {
+	public void testEvaluate2Csp2SharedWithoutModularization() throws IOException {
 		final double[] EXPECTED = {
 			1.55e-05,
 			0.0001194,

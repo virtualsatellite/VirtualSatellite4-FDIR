@@ -127,7 +127,7 @@ public class Module {
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
 		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
-		FaultTreeNode originalRoot = this.moduleNodes.get(0).getFaultTreeNode().getFault().getFaultTree().getRoot();
+		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode().getFault().getFaultTree().getRoot();
 		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, null);
 		rootCopy.setName(originalRoot.getName());
 
@@ -159,8 +159,7 @@ public class Module {
 				}
 				
 				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
-				if (moduleContainsCurrAndChild
-						&& child.getFaultTreeNodeType() != FaultTreeNodeType.BASIC_EVENT) {
+				if (moduleContainsCurrAndChild && !child.getFaultTreeNodeType().equals(FaultTreeNodeType.BASIC_EVENT)) {
 					if (sparesInOriginalFaultTree.contains(child)) {
 						fthelp.connectSpare(currCopy.getFault(), childCopy, currCopy);
 					} else {

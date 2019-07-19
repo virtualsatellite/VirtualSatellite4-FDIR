@@ -28,9 +28,6 @@ public class FaultTreeTrimmer {
 	 * @return the trimmed fault tree
 	 */
 	public FaultTree trimFaultTree(FaultTreeNode ftNode) {
-		if (ftNode == null) {
-			return null;
-		}
 		return null;
 	}
 	
