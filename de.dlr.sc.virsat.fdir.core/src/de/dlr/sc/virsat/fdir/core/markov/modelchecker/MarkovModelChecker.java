@@ -228,7 +228,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		boolean convergence = false;
 		while (!convergence) {
-			multiply(bellmanMatrix, res, resultBuffer, 1);
+			multiply(bellmanMatrix, res, resultBuffer);
 			
 			for (int i = 0; i < baseMTTFs.length; ++i) {
 				resultBuffer[i] += baseMTTFs[i];
@@ -333,8 +333,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				probabilityDistribution[j] += res[j] * lambda;
 			}
 			
-			double change = multiply(tm, res, resultBuffer, 1);
 			lambda = lambda / (i + 1);
+			double change = lambda * multiply(tm, res, resultBuffer) / delta;
 			
 			// Swap the discrete time buffers
 			double[] tmp = res;
@@ -358,10 +358,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 * @param tm the transition matrix
 	 * @param vector the current probability distribution
 	 * @param result the vector to put the result into
-	 * @param lambda multiplication factor
 	 * @return squared length of the result vector
 	 */
-	private double multiply(Matrix tm, double[] vector, double[] result, double lambda) {
+	private double multiply(Matrix tm, double[] vector, double[] result) {
 		int countStates = vector.length;
 		double res = 0;
 		
