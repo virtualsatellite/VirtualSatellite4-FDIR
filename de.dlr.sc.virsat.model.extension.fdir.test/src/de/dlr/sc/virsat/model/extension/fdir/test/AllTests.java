@@ -13,6 +13,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import de.dlr.sc.virsat.model.extension.fdir.calculation.ArrayGetterTest;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionEvaluatorTest;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionExtensionTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPLTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
@@ -62,7 +65,10 @@ import junit.framework.JUnit4TestAdapter;
 		ModularizerTest.class,
 		RecoveryAutomatonHelperTest.class,
 		ParallelComposerTest.class,
-		OpClassifyPLTest.class
+		OpClassifyPLTest.class,
+		ArrayGetterTest.class,
+		FDIRExpressionEvaluatorTest.class,
+		FDIRExpressionExtensionTest.class
 		})
 
 public class AllTests {

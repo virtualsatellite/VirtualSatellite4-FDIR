@@ -16,10 +16,8 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters;
 
 /**
@@ -41,10 +39,7 @@ public class CreateAddFDIRParametersCommand extends ACreateAddFDIRParametersComm
 			protected void doExecute() {
 				CategoryAssignment ca = (CategoryAssignment) createCommand.getResult().iterator().next();
 				FDIRParameters fdirParameters = new FDIRParameters(ca);
-				for (int i = 0; i < OpClassifyPL.DEFAULT_PL_THRESHOLDS.length; ++i) {
-					BeanPropertyFloat beanFloat = fdirParameters.getProbabilityLevels().get(i);
-					beanFloat.setValueAsBaseUnit(OpClassifyPL.DEFAULT_PL_THRESHOLDS[i]);
-				}
+				fdirParameters.setDefaultProbablityThresholds();
 			}
 		});
 		

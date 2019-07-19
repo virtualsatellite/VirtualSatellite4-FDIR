@@ -38,19 +38,19 @@ public class OpClassifyPL extends AAdvancedFunctionOp {
 	public static final int PL_EXTREMELY_REMOTE = Integer.valueOf(FMECAEntry.PROBABILITY_ExtremelyRemote_VALUE);
 	
 	public static final int[] PL_LEVELS = new int[] { PL_PROBABLE, PL_OCCASIONAL, PL_REMOTE, PL_EXTREMELY_REMOTE};
-	public static final double[] DEFAULT_PL_THRESHOLDS =  new double[] { LIMIT_PROBABLE, LIMIT_OCCASIONAL, LIMIT_REMOTE, LIMIT_EXTREMELY_REMOTE };
+	public static final Double[] DEFAULT_PL_THRESHOLDS = new Double[] { LIMIT_PROBABLE, LIMIT_OCCASIONAL, LIMIT_REMOTE, LIMIT_EXTREMELY_REMOTE };
 	
 	@Override
 	public double apply(double[] inputs) {
-		if (inputs.length != 1) {
+		if (inputs.length != PL_LEVELS.length + 1) {
 			return Double.NaN;
 		}
 		
 		double failureRate = inputs[0];
 		
-		for (int i = 0; i < DEFAULT_PL_THRESHOLDS.length; ++i) {
-			if (failureRate >= DEFAULT_PL_THRESHOLDS[i]) {
-				return PL_LEVELS[i];
+		for (int i = 1; i < inputs.length; ++i) {
+			if (failureRate >= inputs[i]) {
+				return PL_LEVELS[i - 1];
 			}
 		}
 		
