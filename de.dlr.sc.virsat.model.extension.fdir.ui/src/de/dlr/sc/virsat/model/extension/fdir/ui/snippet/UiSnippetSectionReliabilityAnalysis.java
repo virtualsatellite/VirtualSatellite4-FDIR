@@ -16,7 +16,6 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -30,25 +29,22 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.Marker;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.ui.Layer;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.TextAnchor;
 
 import de.dlr.sc.virsat.commons.ui.jface.viewer.ISeriesXYValueLabelProvider;
 import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
@@ -105,6 +101,8 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 						}
 						
 						editingDomain.getCommandStack().execute(reliabilityAnalysisCommand);
+						Display.getDefault().syncExec(() -> xyPlotChartViewer.refresh());
+						monitor.done();
 						return Status.OK_STATUS;
 					}
 
@@ -112,7 +110,6 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 
 				job.setUser(true);
 				job.schedule();
-				xyPlotChartViewer.refresh();
 			}
 		});
 
@@ -224,7 +221,8 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 		public Double[] getValuesX(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			double maxTime = relAnalysis.getRemainingMissionTime();
-			double delta = maxTime / ReliabilityAnalysis.COUNT_RELIABILITY_POINTS;
+			double timestep = relAnalysis.getTimestepBean().getValueToBaseUnit();
+			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(relAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
 			int steps = (int) (maxTime / delta);
 			Double[] timeSteps = new Double[steps + 1];
 			for (int time = 0; time <= steps; ++time) {
@@ -232,18 +230,8 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 			}
 
 			XYPlot plot = chart.getXYPlot();
-
-			double mttf = relAnalysis.getMeanTimeToFailure();
-
-			final Marker mttfMarker = new ValueMarker(mttf);
-			mttfMarker.setPaint(Color.red);
-			mttfMarker.setLabel("MTTF = " + mttf);
-			mttfMarker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-			mttfMarker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-
-			plot.addDomainMarker(mttfMarker, Layer.BACKGROUND);
 			plot.getDomainAxis().setUpperBound(maxTime);
-
+	
 			return timeSteps;
 		}
 

@@ -150,8 +150,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		return inititalVector;
 	}
 	
-	private static final int MAX_DISCRETE_ITERATIONS = 20;
-	
 	/* Parameters */
 	
 	private double delta;
@@ -277,17 +275,17 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
-		double oldFailRate = getFailRate();
+		double oldUnavailability = getFailRate();
 		double difference = 0;
 		boolean convergence = false;
 		while (!convergence) {
 			iterate(tm);
-			double newFailRate = getFailRate();
-			difference = Math.abs(newFailRate - oldFailRate);
-			if (difference < eps) {
+			double newUnavailability = getFailRate();
+			difference = Math.abs(newUnavailability - oldUnavailability);
+			if (difference < (eps / delta) || Double.isNaN(difference)) {
 				convergence = true;
 			}
-			oldFailRate = newFailRate;
+			oldUnavailability = newUnavailability;
 		}
 		modelCheckingResult.setSteadyStateAvailability(1 - getFailRate());		
 	}
@@ -328,32 +326,30 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = new double[probabilityDistribution.length];
 		
 		double lambda = 1;
-		for (int i = 0; i < MAX_DISCRETE_ITERATIONS; ++i) {
+		int i = 0;
+		boolean convergence = false;
+		while (!convergence) {
 			for (int j = 0; j < probabilityDistribution.length; ++j) {
 				probabilityDistribution[j] += res[j] * lambda;
 			}
 			
-			double change = multiply(tm, res, resultBuffer);
-			if (change < eps * eps) {
-				lambda = lambda / (i + 1);
-				
-				// Swap the discrete time buffers
-				double[] tmp = res;
-				res = resultBuffer;
-				resultBuffer = tmp;
-				
-				for (int j = 0; j < probabilityDistribution.length; ++j) {
-					probabilityDistribution[j] += res[j] * lambda;
-				}
-				break;
-			}
-			
 			lambda = lambda / (i + 1);
+			double change = lambda * multiply(tm, res, resultBuffer) / delta;
 			
 			// Swap the discrete time buffers
 			double[] tmp = res;
 			res = resultBuffer;
 			resultBuffer = tmp;
+			
+			if (change < eps * eps || !Double.isFinite(change)) {
+				for (int j = 0; j < probabilityDistribution.length; ++j) {
+					probabilityDistribution[j] += res[j] * lambda;
+				}
+				
+				convergence = true;
+			} else {
+				++i;
+			}
 		}
 	}
 	
