@@ -39,7 +39,7 @@ public class OpClassifyPLTest {
 	}
 	
 	@Test
-	public void testClassify2() {
+	public void testClassify0() {
 		OpClassifyPL op = new OpClassifyPL();
 		double result = op.apply(new double[] { 0 });
 		assertEquals(OpClassifyPL.PL_EXTREMELY_REMOTE, result, TEST_EPS);
@@ -50,6 +50,13 @@ public class OpClassifyPLTest {
 		OpClassifyPL op = new OpClassifyPL();
 		double result = op.apply(new double[] { 1 });
 		assertEquals(OpClassifyPL.PL_PROBABLE, result, TEST_EPS);
+	}
+	
+	@Test
+	public void testClassifyNaN() {
+		OpClassifyPL op = new OpClassifyPL();
+		double result = op.apply(new double[] { Double.NaN });
+		assertEquals(Double.NaN, result, TEST_EPS);
 	}
 	
 	@Test

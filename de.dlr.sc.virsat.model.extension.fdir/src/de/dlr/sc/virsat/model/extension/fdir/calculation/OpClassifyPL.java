@@ -30,6 +30,7 @@ public class OpClassifyPL extends AAdvancedFunctionOp {
 	public static final double LIMIT_PROBABLE = 1E-1 / SECONDS_PER_HOUR;
 	public static final double LIMIT_OCCASIONAL = 1E-3 / SECONDS_PER_HOUR;
 	public static final double LIMIT_REMOTE = 1E-5 / SECONDS_PER_HOUR;
+	public static final double LIMIT_EXTREMELY_REMOTE = 0;
 	
 	public static final int PL_PROBABLE = Integer.valueOf(FMECAEntry.PROBABILITY_Probable_VALUE);
 	public static final int PL_OCCASIONAL = Integer.valueOf(FMECAEntry.PROBABILITY_Occasional_VALUE);
@@ -37,7 +38,7 @@ public class OpClassifyPL extends AAdvancedFunctionOp {
 	public static final int PL_EXTREMELY_REMOTE = Integer.valueOf(FMECAEntry.PROBABILITY_ExtremelyRemote_VALUE);
 	
 	public static final int[] PL_LEVELS = new int[] { PL_PROBABLE, PL_OCCASIONAL, PL_REMOTE, PL_EXTREMELY_REMOTE};
-	public static final double[] DEFAULT_PL_THRESHOLDS =  new double[] { LIMIT_PROBABLE, LIMIT_OCCASIONAL, LIMIT_REMOTE };
+	public static final double[] DEFAULT_PL_THRESHOLDS =  new double[] { LIMIT_PROBABLE, LIMIT_OCCASIONAL, LIMIT_REMOTE, LIMIT_EXTREMELY_REMOTE };
 	
 	@Override
 	public double apply(double[] inputs) {
@@ -53,7 +54,7 @@ public class OpClassifyPL extends AAdvancedFunctionOp {
 			}
 		}
 		
-		return PL_EXTREMELY_REMOTE;
+		return Double.NaN;
 	}
 	
 	@Override

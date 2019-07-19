@@ -132,7 +132,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Cardinality 1;
 		FloatProperty missionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
-		//FloatProperty probabilityLevels[] quantityKind "Frequency" unit "Per Hour";
+		FloatProperty probabilityLevels[4] quantityKind "Frequency" unit "Per Hour";
 		//FloatProperty detectionLevels[] quantityKind "Dimensionless" unit "Percent";
 	}
 	
@@ -172,7 +172,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Ref: failureRate = 1 / meanTimeToFailure;
 		
 		// Criticality Level Computation according to ECSS-Q-ST-30-02C
-		Ref: probability = classifyPL(failureRate);
+		Ref: probability = classifyPL(failureRate, FDIRParameters.probabilityLevels);
 		Ref: criticality = severity * probability * detection;
 	}
 	

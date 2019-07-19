@@ -77,6 +77,9 @@
   <categories name="FDIRParameters" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="missionTime" quantityKindName="Time" unitName="Hour"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="probabilityLevels" quantityKindName="Frequency" unitName="Per Hour">
+      <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
+    </properties>
   </categories>
   <categories name="FDIRAnalysis" isApplicableForAll="true" isAbstract="true"/>
   <categories name="FMECA" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
@@ -95,6 +98,7 @@
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
         <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
+        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.probabilityLevels"/>
       </expression>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
     </equationDefinitions>
