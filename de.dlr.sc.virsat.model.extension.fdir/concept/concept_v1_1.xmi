@@ -93,11 +93,11 @@
         <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
         <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.meanTimeToFailure"/>
       </expression>
-      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
+      <result xsi:type="dvlm_calc:EquationIntermediateResult" uuid="d1750f60-15eb-493a-93a7-e5db65b4fdcd" name="failureRate"/>
     </equationDefinitions>
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
-        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.failureRate"/>
+        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="d1750f60-15eb-493a-93a7-e5db65b4fdcd"/>
       </expression>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
     </equationDefinitions>
@@ -137,7 +137,6 @@
     </properties>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="failureRate" description="FailureRate of the occurrence of this event" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
     <properties xsi:type="dvlm_cppd:StringProperty" name="proposedRecovery" description="Proposed recovery actions">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
