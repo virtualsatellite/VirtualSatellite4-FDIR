@@ -35,6 +35,7 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolderTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
 import junit.framework.JUnit4TestAdapter;
 
@@ -61,6 +62,7 @@ import junit.framework.JUnit4TestAdapter;
 		ComposedMinimizerTest.class,
 		StormEvaluatorTest.class,
 		FaultTreePreferencesTest.class,
+		FaultTreeHolderTest.class,
 		PONDDFTSemanticsTest.class,
 		ModularizerTest.class,
 		RecoveryAutomatonHelperTest.class,
