@@ -357,4 +357,22 @@ public class FaultTreeHolder {
 	public Map<FaultTreeNode, List<FaultTreeNode>> getMapNodeToSubNodes() {
 		return mapNodeToSubNodes;
 	}
+	
+	/**
+	 * Gets a fault tree node by name
+	 * @param name the name of the node
+	 * @param ftnClazz the fault tree node type
+	 * @param <T> the fault tree node type
+	 * @return the node if there is 
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends FaultTreeNode> T getNodeByName(String name, Class<T> ftnClazz) {
+		if (ftnClazz == BasicEvent.class) {
+			return (T) getMapBasicEventToFault().keySet().stream()
+					.filter(be -> be.getName().equals(name)).findFirst().get();
+		} else {
+			return (T) getNodes().stream()
+					.filter(node -> ftnClazz.isAssignableFrom(node.getClass()) && node.getName().equals(name)).findFirst().get();
+		}
+	}
 }
