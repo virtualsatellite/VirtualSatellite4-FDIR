@@ -43,12 +43,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 public class DFT2MAConverterTest extends ATestCase {
 	
 	protected IFaultTreeEvaluator ftEvaluator;
+	protected DFTEvaluator dftEvaluator;
 	protected RecoveryAutomatonHelper raHelper;
 	
 	@Before
 	public void setup() {
 		raHelper = new RecoveryAutomatonHelper(concept);
-		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(DFTSemantics.createStandardDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
+		dftEvaluator = new DFTEvaluator(DFTSemantics.createStandardDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON));
+		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(dftEvaluator);
 	}
 
 	/**
@@ -110,6 +112,17 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateAnd2Symmetric() throws IOException {
+		final double EXPECTEDMTTF = 3;
+		final int EXPECTEDSTATES = 2;
+		
+		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
 	}
 	
 	@Test
@@ -212,6 +225,17 @@ public class DFT2MAConverterTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateAnd2OrAnd2Symmetric() throws IOException {
+		final double EXPECTEDMTTF = 4;
+		final int EXPECTEDSTATES = 8;
+		
+		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
 	}
 	
 	@Test
@@ -779,7 +803,6 @@ public class DFT2MAConverterTest extends ATestCase {
 	}
 	
 	
-	/*
 	@Test
 	public void testEvaluateCM4() throws IOException {
 		final double[] EXPECTED = {
@@ -789,16 +812,10 @@ public class DFT2MAConverterTest extends ATestCase {
 			0.00079721
 		};
 		
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/cm4.dft");
-		GalileoDFT2Fault converter = new GalileoDFT2Fault(concept, is);
-		Fault fault = converter.convert();
-		
-		IFaultTreeEvaluator ftEvaluator = createFaultTreeEvaluator();
+		Fault fault = createDFT("/resources/galileo/cm4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		
 		assertIterationResultsEquals(result, EXPECTED);
 	}
-	*/
 	
 	/*
 	@Test
