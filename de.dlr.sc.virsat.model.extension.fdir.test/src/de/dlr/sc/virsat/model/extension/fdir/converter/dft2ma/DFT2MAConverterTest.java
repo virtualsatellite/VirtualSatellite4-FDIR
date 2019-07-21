@@ -232,7 +232,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		final double EXPECTEDMTTF = 4;
 		final int EXPECTEDSTATES = 8;
 		
-		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
+		Fault fault = createDFT("/resources/galileo/and2OrAnd2Symmetric.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());

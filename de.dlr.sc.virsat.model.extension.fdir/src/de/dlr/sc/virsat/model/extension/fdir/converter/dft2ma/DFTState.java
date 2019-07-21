@@ -355,7 +355,7 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				Set<BasicEvent> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
+				List<BasicEvent> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
 				if (basicEvents != null) {
 					for (BasicEvent be : basicEvents) {
 						int beID = ftHolder.getNodeIndex(be);

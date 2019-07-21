@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
@@ -33,7 +32,7 @@ public class FaultSemantics implements INodeSemantics {
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		boolean hasFailed = false;
 		
-		Set<BasicEvent> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(node, Collections.emptySet());
+		List<BasicEvent> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(node, Collections.emptyList());
 		for (BasicEvent be : basicEvents) {
 			int nodeID = ftHolder.getNodeIndex(be);
 			if (state.getFailedNodes().get(nodeID)) {

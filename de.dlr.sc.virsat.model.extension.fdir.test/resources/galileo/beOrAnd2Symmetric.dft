@@ -1,0 +1,6 @@
+toplevel "tle";
+"tle" or "A" "AND";
+"AND" and "B" "C";
+"A" lambda=2;
+"B" lambda=2;
+"C" lambda=2;
