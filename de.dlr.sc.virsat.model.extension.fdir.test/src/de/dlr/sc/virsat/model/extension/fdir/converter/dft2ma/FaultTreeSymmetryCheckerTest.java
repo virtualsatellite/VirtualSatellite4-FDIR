@@ -37,6 +37,24 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 	private FaultTreeSymmetryChecker ftSymmetryChecker = new FaultTreeSymmetryChecker();
 	
 	@Test
+	public void testAnd2() throws IOException {
+		Fault fault = createDFT("/resources/galileo/and2.dft");
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		
+		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryRelation = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		
+		BasicEvent a = ftHolder.getNodeByName("A",  BasicEvent.class);
+		BasicEvent b = ftHolder.getNodeByName("B",  BasicEvent.class);
+		Fault faultA = ftHolder.getNodeByName("A",  Fault.class);
+		Fault faultB = ftHolder.getNodeByName("B",  Fault.class);
+		
+		assertEquals(1, symmetryRelation.get(a).size());
+		assertEquals(1, symmetryRelation.get(b).size());
+		assertEquals(1, symmetryRelation.get(faultA).size());
+		assertEquals(1, symmetryRelation.get(faultB).size());
+	}
+	
+	@Test
 	public void testAnd2Symmetric() throws IOException {
 		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
