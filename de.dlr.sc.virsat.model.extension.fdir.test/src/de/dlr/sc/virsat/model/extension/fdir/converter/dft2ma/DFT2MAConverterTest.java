@@ -50,6 +50,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	public void setup() {
 		raHelper = new RecoveryAutomatonHelper(concept);
 		dftEvaluator = new DFTEvaluator(DFTSemantics.createStandardDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON));
+		dftEvaluator.getDft2MAConverter().setEnableSymmetryReduction(true);
 		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(dftEvaluator);
 	}
 
@@ -117,7 +118,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2Symmetric() throws IOException {
 		final double EXPECTEDMTTF = 3;
-		final int EXPECTEDSTATES = 2;
+		final int EXPECTEDSTATES = 3;
 		
 		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -229,7 +230,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateAnd2OrAnd2Symmetric() throws IOException {
-		final double EXPECTEDMTTF = 4;
+		final double EXPECTEDMTTF = 1.1388888;
 		final int EXPECTEDSTATES = 8;
 		
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2Symmetric.dft");
@@ -802,7 +803,6 @@ public class DFT2MAConverterTest extends ATestCase {
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
-	
 	@Test
 	public void testEvaluateCM4() throws IOException {
 		final double[] EXPECTED = {
@@ -814,6 +814,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		System.out.println("CM4 SYM: " + dftEvaluator.getMc().getStates().size());
 		assertIterationResultsEquals(result, EXPECTED);
 	}
 	

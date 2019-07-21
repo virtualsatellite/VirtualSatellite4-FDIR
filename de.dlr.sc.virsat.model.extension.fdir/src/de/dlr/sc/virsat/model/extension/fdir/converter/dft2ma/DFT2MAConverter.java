@@ -50,6 +50,9 @@ public class DFT2MAConverter {
 	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToMarkovianDFTStates;
 	private FaultTreeHolder ftHolder;
 	private RecoveryStrategy recoveryStrategy;
+	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReduction;
+	
+	private boolean enableSymmetryReduction = false;
 	
 	/**
 	 * Converts a fault tree with the passed node as a root to a
@@ -86,6 +89,11 @@ public class DFT2MAConverter {
 		
 		if (recoveryStrategy != null) {
 			events.addAll(recoveryStrategy.createEventSet());
+		}
+		
+		if (enableSymmetryReduction) {
+			FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
+			symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 		}
 	}
 	
@@ -156,10 +164,33 @@ public class DFT2MAConverter {
 			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
 			
 			for (IDFTEvent event : occurableEvents) {
+				Double rate = event.getRate(state);
+				
+				// Very simple symmetry reduction to get started
+				// Doesnt yet work with deps so disable symmetry reduction if we have deps
+				if (enableSymmetryReduction) {
+					if (state.orderedBes.size() + state.unorderedBes.size() == 0 && ftHolder.getMapNodeToDEPTriggers().getOrDefault(event.getNode(), Collections.emptyList()).isEmpty()) {
+						if (event instanceof FaultEvent) {
+							boolean isReducible = false;
+							for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
+								if (!be.equals(event.getNode()) && symmetryReduction.get(be).contains(event.getNode())) {
+									isReducible = true;
+									break;
+								}
+							}
+							
+							if (isReducible) {
+								continue;
+							}
+							
+							rate *= symmetryReduction.get(event.getNode()).size();
+						} 
+					}
+				}
+				
 				DFTState baseSucc = dftSemantics.getStateGenerator().generateState(state);
 				baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
 				event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
-				Double rate = event.getRate(state);
 				
 				List<DFTState> succs = new ArrayList<>();
 				succs.add(baseSucc);
@@ -186,6 +217,7 @@ public class DFT2MAConverter {
 				
 				for (DFTState succ : succs) {
 					succ.failDontCares(changedNodes, orderDependentBasicEvents);
+					
 					DFTState equivalentState = getEquivalentState(succ);
 					
 					if (equivalentState == succ) {
@@ -282,5 +314,13 @@ public class DFT2MAConverter {
 	 */
 	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		this.recoveryStrategy = recoveryStrategy;
+	}
+	
+	/**
+	 * Sets whether symmetry reduction should be enabled
+	 * @param enableSymmetryReduction set to true for symmetry reduction
+	 */
+	public void setEnableSymmetryReduction(boolean enableSymmetryReduction) {
+		this.enableSymmetryReduction = enableSymmetryReduction;
 	}
 }
