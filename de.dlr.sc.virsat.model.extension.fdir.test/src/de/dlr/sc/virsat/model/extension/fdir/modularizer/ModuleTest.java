@@ -45,8 +45,6 @@ public class ModuleTest extends ATestCase {
 				.findAny().get();
 		module.constructFaultTreeCopy();
 		
-		System.out.println(module.getRootNodeCopy().getFault().getFaultTree().toDot());
-		
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
 	}
 
@@ -71,9 +69,9 @@ public class ModuleTest extends ATestCase {
 				.findAny().get();
 
 		module.constructFaultTreeCopy();
-		assertEquals("CM1", module.getRootNodeCopy().getName());
+		assertEquals("Fault", module.getRootNodeCopy().getName());
 		
-		final int NUM_NODES = 18;
+		final int NUM_NODES = 17;
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
 		assertEquals(NUM_NODES, helper.getAllNodes(module.getRootNodeCopy().getFault()).size());
 	}
@@ -87,9 +85,9 @@ public class ModuleTest extends ATestCase {
 				.findAny().get();
 		module.constructFaultTreeCopy();
 		
-		assertEquals("CM1", module.getRootNodeCopy().getName());
+		assertEquals("Fault", module.getRootNodeCopy().getName());
 		
-		final int NUM_NODES = 24;
+		final int NUM_NODES = 23;
 		final int NUM_SPARES = 3;
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
 		assertEquals(NUM_NODES, helper.getAllNodes(module.getRootNodeCopy().getFault()).size());
