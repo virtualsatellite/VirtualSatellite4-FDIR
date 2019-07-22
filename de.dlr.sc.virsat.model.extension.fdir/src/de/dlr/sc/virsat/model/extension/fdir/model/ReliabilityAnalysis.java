@@ -48,9 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  */
 public class ReliabilityAnalysis extends AReliabilityAnalysis {
 
-	private static final double TO_PERCENT = 100;
 	private static final double EPS = 0.0001;
-	public static final int COUNT_RELIABILITY_POINTS = 100;
 
 	/**
 	 * Constructor of Concept Class
@@ -125,8 +123,6 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		}
 
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		double pointDelta = maxTime / COUNT_RELIABILITY_POINTS;
-		
 		if (monitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
@@ -145,23 +141,14 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		return new RecordingCommand(ed, "Reliability Analysis") {
 			@Override
 			protected void doExecute() {
-				setReliability(TO_PERCENT * (1 - result.getFailRates().get(result.getFailRates().size() - 1)));
+				getReliabilityBean().setValueAsBaseUnit(1 - result.getFailRates().get(result.getFailRates().size() - 1));
 				getMeanTimeToFailureBean().setValueAsBaseUnit(mttf);
-
 				getReliabilityCurve().clear();
-
-				double accDelta = pointDelta;
 				for (int i = 0; i < result.getFailRates().size(); ++i) {
-					accDelta += delta;
-					if (accDelta >= pointDelta) {
-						createNewReliabilityCurveEntry(TO_PERCENT * (1 - result.getFailRates().get(i)));
-						accDelta -= pointDelta;
-					}
+					createNewReliabilityCurveEntry(1 - result.getFailRates().get(i));
 				}
-
 			}
 		};
-
 	}
 
 	/**
@@ -175,7 +162,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		APropertyInstance pi = ci.generateInstance(getReliabilityCurve().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
-		newBeanProperty.setValue(value);
+		newBeanProperty.setValueAsBaseUnit(value);
 		getReliabilityCurve().add(newBeanProperty);
 	}
 }

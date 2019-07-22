@@ -338,19 +338,6 @@ public class FaultTreeHelper {
 	 * 
 	 * @param name
 	 *            The name of the basic fault event
-	 * @param failureRate
-	 *            The failure rate of the basic fault event
-	 * @return The fault tree node for the basic fault event
-	 */
-	public Fault createBasicFault(String name, double failureRate) {
-		return createBasicFault(name, failureRate, 0);
-	}
-
-	/**
-	 * Creates a fault tree node for a basic fault event
-	 * 
-	 * @param name
-	 *            The name of the basic fault event
 	 * @param failureRateHot
 	 *            The hot failure rate of the basic fault event
 	 * @param failureRateCold

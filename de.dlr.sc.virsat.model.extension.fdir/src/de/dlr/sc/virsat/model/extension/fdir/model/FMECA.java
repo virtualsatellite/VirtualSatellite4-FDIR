@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
@@ -24,6 +25,10 @@ import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
+import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
+import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
+import de.dlr.sc.virsat.model.dvlm.calculation.Equation;
+import de.dlr.sc.virsat.model.dvlm.calculation.ReferencedInput;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
@@ -33,6 +38,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
@@ -188,6 +194,20 @@ public  class FMECA extends AFMECA {
 			newBeanProperty.setTypeInstance((ValuePropertyInstance) pi);
 			newBeanProperty.setValue(proposedRecoveryAction);
 			entry.getProposedRecovery().add(newBeanProperty);
+		}
+		
+		EObject root = VirSatEcoreUtil.getRootContainer(getTypeInstance().eContainer());
+		if (root != null) {
+			BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance((StructuralElementInstance) root);
+			FDIRParameters fdirParameters = beanSei.getFirst(FDIRParameters.class);
+			
+			if (fdirParameters != null) {
+				Equation equation = entry.getTypeInstance().getEquationSection().getEquations().get(0);
+				AdvancedFunction opClassifyPL = (AdvancedFunction) equation.getExpression();
+				ReferencedInput ri = CalculationFactory.eINSTANCE.createReferencedInput();
+				ri.setReference(fdirParameters.getTypeInstance());
+				opClassifyPL.getInputs().add(ri);
+			}
 		}
 	}
 }

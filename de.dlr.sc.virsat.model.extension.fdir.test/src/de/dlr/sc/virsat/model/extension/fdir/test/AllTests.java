@@ -13,6 +13,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRParametersGetterTest;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionEvaluatorTest;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionExtensionTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPLTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
@@ -34,6 +37,7 @@ import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolderTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
 import junit.framework.JUnit4TestAdapter;
 
@@ -60,13 +64,17 @@ import junit.framework.JUnit4TestAdapter;
 		ComposedMinimizerTest.class,
 		StormEvaluatorTest.class,
 		FaultTreePreferencesTest.class,
+		FaultTreeHolderTest.class,
 		PONDDFTSemanticsTest.class,
 		ModularizerTest.class,
 		ModuleTest.class,
 		RecoveryAutomatonHelperTest.class,
 		ParallelComposerTest.class,
-		FaultTreeTrimmerTest.class,
-		OpClassifyPLTest.class
+		OpClassifyPLTest.class,
+		FDIRParametersGetterTest.class,
+		FDIRExpressionEvaluatorTest.class,
+		FDIRExpressionExtensionTest.class,
+		FaultTreeTrimmerTest.class
 		})
 
 public class AllTests {

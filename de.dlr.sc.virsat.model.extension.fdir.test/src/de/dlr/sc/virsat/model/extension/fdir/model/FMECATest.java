@@ -77,6 +77,8 @@ public class FMECATest extends AFMECATest {
 	public void testGenerateEntries() {
 		Fault fault = new Fault(concept);
 		fault.setSeverity("Critical");
+		FDIRParameters fdirParameters = new FDIRParameters(concept);
+		beanSei.add(fdirParameters);
 		beanSei.add(fault);
 	
 		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());

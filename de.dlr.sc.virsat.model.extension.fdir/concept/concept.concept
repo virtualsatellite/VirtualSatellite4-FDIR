@@ -132,7 +132,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Cardinality 1;
 		FloatProperty missionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
-		//FloatProperty probabilityLevels[] quantityKind "Frequency" unit "Per Hour";
+		FloatProperty probabilityLevels[4] quantityKind "Frequency" unit "Per Hour";
 		//FloatProperty detectionLevels[] quantityKind "Dimensionless" unit "Percent";
 	}
 	
@@ -164,15 +164,12 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty criticality default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
 	
 		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
-		FloatProperty failureRate default 0.0 quantityKind "Frequency" unit "Per Hour" description "FailureRate of the occurrence of this event";
-		
 		StringProperty proposedRecovery[] description "Proposed recovery actions";
 		
 		// Approximate the failure rate to a constant failure rate
-		Ref: failureRate = 1 / meanTimeToFailure;
+		Ref: probability = classifyPL(1 / meanTimeToFailure);
 		
 		// Criticality Level Computation according to ECSS-Q-ST-30-02C
-		Ref: probability = classifyPL(failureRate);
 		Ref: criticality = severity * probability * detection;
 	}
 	
