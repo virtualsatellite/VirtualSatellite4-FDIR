@@ -26,7 +26,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
@@ -39,19 +38,14 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 public class ModularizerTest extends ATestCase {
 	
-	protected Concept concept;
 	protected Modularizer modularizer;
 	
 	@Before
 	public void setUp() throws Exception {
-		String conceptXmiPluginPath = "de.dlr.sc.virsat.model.extension.fdir/concept/concept.xmi";
-		concept = de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader.loadConceptFromPlugin(conceptXmiPluginPath);
+		super.set();
 		
 		modularizer = new Modularizer();
 	}
-	
-	
-
 	
 	/* **********************************************
 	 * TESTING TREE COUNT
@@ -223,7 +217,7 @@ public class ModularizerTest extends ATestCase {
 		final int AND1_INDEX = 1;
 		FaultTreeNode andGate1 = rootOr2And2Basic.getFaultTree().getGates().get(AND1_INDEX);
 		Module module = modularizer.harvestModule(andGate1);
-		assertTrue(module.isDynamic());
+		assertTrue(module.isNondeterministic());
 	}
 	
 	@Test
@@ -235,7 +229,7 @@ public class ModularizerTest extends ATestCase {
 		final int OR_INDEX = 0;
 		FaultTreeNode orGate = rootOr2.getFaultTree().getGates().get(OR_INDEX);
 		Module module = modularizer.harvestModule(orGate);
-		assertFalse(module.isDynamic());
+		assertFalse(module.isNondeterministic());
 		assertEquals(orGate, module.getRootNode());
 	}
 	
@@ -295,6 +289,14 @@ public class ModularizerTest extends ATestCase {
 		Set<Module> modules = modularizer.getModules(rootOr2And2SharedSP.getFaultTree());
 		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());
+		
+		Map<FaultTreeNode, FaultTreeNodePlus> map = modularizer.getTable();
+		assertFalse(map.get(a).hasSpareBelow());
+		assertFalse(map.get(and2).hasSpareBelow());
+		assertTrue(map.get(and1).hasSpareBelow());
+		assertTrue(map.get(b).hasSpareAbove());
+		assertTrue(map.get(c).hasSpareAbove());
+		assertFalse(map.get(d).hasSpareAbove());
 
 		for (Module module : modules) {
 			assertThat(module.getNodes(), anyOf(
@@ -313,15 +315,15 @@ public class ModularizerTest extends ATestCase {
 		Fault rootNestedPand = createDFT("/resources/galileo/nestedPand.dft");
 		Set<Module> modules = modularizer.getModules(rootNestedPand.getFaultTree());
 		
-		final int NUM_MODULES = 2;
+		final int NUM_MODULES = 4;
 		assertEquals(NUM_MODULES, modules.size());
 		
-		final int PAND1_IND = 0;
-		final int PAND2_IND = 1;
-		final int PAND3_IND = 2;
+		final int AND1_IND = 0;
+		final int PAND1_IND = 1;
+		final int PAND2_IND = 2;
+		FaultTreeNode and1 = rootNestedPand.getFaultTree().getGates().get(AND1_IND);
 		FaultTreeNode pand1 = rootNestedPand.getFaultTree().getGates().get(PAND1_IND);
 		FaultTreeNode pand2 = rootNestedPand.getFaultTree().getGates().get(PAND2_IND);
-		FaultTreeNode pand3 = rootNestedPand.getFaultTree().getGates().get(PAND3_IND);
 		
 		FaultTreeNode a = rootNestedPand.getFaultTree().getChildFaults().stream()
 				.filter(node -> node.getName().equals("A"))
@@ -339,10 +341,17 @@ public class ModularizerTest extends ATestCase {
 				.filter(node -> node.getName().equals("E"))
 				.findAny().get();
 		
+		Map<FaultTreeNode, FaultTreeNodePlus> map = modularizer.getTable();
+		assertTrue(map.get(b).hasPriorityAbove());
+		assertFalse(map.get(a).hasPriorityAbove());
+		assertFalse(map.get(pand2).hasPriorityAbove());
+		
 		for (Module module : modules) {
 			assertThat(module.getNodes(), anyOf(
-					allOf(hasItems(pand1, pand2, pand3, a, b, c, d, e), not(hasItems(rootNestedPand))),
-					allOf(not(hasItems(pand1, pand2, pand3, a, b, c, d, e)), hasItems(rootNestedPand))
+					allOf(hasItems(and1, a), not(hasItems(rootNestedPand, pand1, pand2, b, c, d, e))),
+					allOf(hasItems(pand1, b, c), not(hasItems(rootNestedPand, pand2, d, e, and1, a))),
+					allOf(hasItems(pand2, d, e), not(hasItems(rootNestedPand, pand1, b, c, and1, a))),
+					allOf(not(hasItems(and1, pand1, pand2, a, b, c, d, e)), hasItems(rootNestedPand))
 			));
 		}
 	}
@@ -351,7 +360,8 @@ public class ModularizerTest extends ATestCase {
 	public void testNestedPriorityComplex() throws IOException {
 		Fault rootNestedComplex = createDFT("/resources/galileo/nestedPand2.dft");
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
-		final int NUM_MODULES = 2;
+
+		final int NUM_MODULES = 7;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -363,7 +373,7 @@ public class ModularizerTest extends ATestCase {
 	public void testModularizeFDEP1() throws IOException {
 		Fault rootFDEP1 = createDFT("/resources/galileo/fdep1.dft");
 		Set<Module> modules = modularizer.getModules(rootFDEP1.getFaultTree());
-		final int NUM_MODULES = 4;
+		final int NUM_MODULES = 5;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -372,36 +382,12 @@ public class ModularizerTest extends ATestCase {
 		Fault rootFDEP2 = createDFT("/resources/galileo/fdep2.dft");
 		Set<Module> modules = modularizer.getModules(rootFDEP2.getFaultTree());
 		
-		final int ANDGATE1_INDEX = 0;
-		final int ANDGATE2_INDEX = 1;
-		final int FDEPGATE_INDEX = 0;
-		
-		FaultTreeNode andGate1 = rootFDEP2.getFaultTree().getGates().get(ANDGATE1_INDEX);
-		FaultTreeNode andGate2 = rootFDEP2.getFaultTree().getGates().get(ANDGATE2_INDEX);
-		FaultTreeNode fdep = rootFDEP2.getFaultTree().getDeps().get(FDEPGATE_INDEX).getTo();
-		Fault a = rootFDEP2.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("A"))
-				.findAny().get();
-		Fault c = rootFDEP2.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("C"))
-				.findAny().get();
-		FaultTreeNode aBE = ((Fault) a).getBasicEvents().get(0);
-		
-		final int NUM_MODULES = 4;
+		final int NUM_MODULES = 6;
 		assertEquals(NUM_MODULES, modules.size());
-		
-		for (Module module : modules) {
-			assertThat(module.getNodes(), anyOf(
-					allOf(hasItems(aBE, c, andGate2, fdep), not(hasItems(rootFDEP2, andGate1, a))),
-					allOf(hasItems(a), not(hasItems(rootFDEP2, andGate1, aBE, c, andGate2, fdep))),
-					allOf(hasItems(andGate1), not(hasItems(rootFDEP2, a, c, andGate2, fdep, aBE))),
-					allOf(hasItems(rootFDEP2), not(hasItems(andGate1, a, c, andGate2, fdep, aBE)))
-			));
-		}
 	}
 	
 	/* *****************************************************
-	 *  TESTING A MORE REALISTIC & COMPLETE FAULT TREE
+	 *  TESTING MORE REALISTIC & COMPLETE FAULT TREES
 	 * *****************************************************/
 
 	@Test
@@ -413,4 +399,39 @@ public class ModularizerTest extends ATestCase {
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
+	@Test
+	public void testCMSimple() throws IOException {
+		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple.dft");
+		Set<Module> modules = modularizer.getModules(rootCMSimple.getFaultTree());
+		
+		final int NUM_MODULES = 5;
+		assertEquals(NUM_MODULES, modules.size());
+	}
+	
+	@Test
+	public void testCM1() throws IOException {
+		Fault rootCM1 = createDFT("/resources/galileo/cm1.dft");
+		Set<Module> modules = modularizer.getModules(rootCM1.getFaultTree());
+		
+		final int NUM_MODULES = 8;
+		assertEquals(NUM_MODULES, modules.size());
+	}
+	
+	@Test
+	public void testCM2() throws IOException {
+		Fault rootCM2 = createDFT("/resources/galileo/cm2.dft");
+		Set<Module> modules = modularizer.getModules(rootCM2.getFaultTree());
+		
+		final int NUM_MODULES = 10;
+		assertEquals(NUM_MODULES, modules.size());
+	}
+	
+	@Test
+	public void testCM3() throws IOException {
+		Fault rootCM3 = createDFT("/resources/galileo/cm3.dft");
+		Set<Module> modules = modularizer.getModules(rootCM3.getFaultTree());
+		
+		final int NUM_MODULES = 16;
+		assertEquals(NUM_MODULES, modules.size());
+	}
 }

@@ -56,7 +56,7 @@ public class ParallelComposerTest {
 	public void testNone() {
 		RecoveryAutomaton result = pc.compose(new HashSet<RecoveryAutomaton>(), concept);
 		
-		final int NUM_STATES = 0;
+		final int NUM_STATES = 1;
 		final int NUM_TRANSITIONS = 0;
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
@@ -110,10 +110,10 @@ public class ParallelComposerTest {
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 
-		State r0 = rahelp.getState(result, "[0, 0]");
-		State r1 = rahelp.getState(result, "[0, 1]");
-		State r2 = rahelp.getState(result, "[1, 0]");
-		State r3 = rahelp.getState(result, "[1, 1]");
+		State r0 = rahelp.getState(result, "00");
+		State r1 = rahelp.getState(result, "01");
+		State r2 = rahelp.getState(result, "10");
+		State r3 = rahelp.getState(result, "11");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r0, r2));
@@ -156,12 +156,12 @@ public class ParallelComposerTest {
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 		
-		State r0 = rahelp.getState(result, "[0, 0]");
-		State r1 = rahelp.getState(result, "[0, 1]");
-		State r2 = rahelp.getState(result, "[0, 2]");
-		State r3 = rahelp.getState(result, "[1, 0]");
-		State r4 = rahelp.getState(result, "[1, 1]");
-		State r5 = rahelp.getState(result, "[1, 2]");
+		State r0 = rahelp.getState(result, "00");
+		State r1 = rahelp.getState(result, "01");
+		State r2 = rahelp.getState(result, "02");
+		State r3 = rahelp.getState(result, "10");
+		State r4 = rahelp.getState(result, "11");
+		State r5 = rahelp.getState(result, "12");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r1, r2));
@@ -208,14 +208,14 @@ public class ParallelComposerTest {
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 		
-		State r0 = rahelp.getState(result, "[0, 0, 0]");
-		State r1 = rahelp.getState(result, "[0, 0, 1]");
-		State r2 = rahelp.getState(result, "[0, 1, 0]");
-		State r3 = rahelp.getState(result, "[0, 1, 1]");
-		State r4 = rahelp.getState(result, "[1, 0, 0]");
-		State r5 = rahelp.getState(result, "[1, 0, 1]");
-		State r6 = rahelp.getState(result, "[1, 1, 0]");
-		State r7 = rahelp.getState(result, "[1, 1, 1]");
+		State r0 = rahelp.getState(result, "000");
+		State r1 = rahelp.getState(result, "001");
+		State r2 = rahelp.getState(result, "010");
+		State r3 = rahelp.getState(result, "011");
+		State r4 = rahelp.getState(result, "100");
+		State r5 = rahelp.getState(result, "101");
+		State r6 = rahelp.getState(result, "110");
+		State r7 = rahelp.getState(result, "111");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r0, r2));

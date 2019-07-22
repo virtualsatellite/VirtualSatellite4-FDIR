@@ -11,12 +11,11 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
@@ -38,6 +37,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 
 /**
  * Abstract class providing some default implementations for the ISynthesizer interface.
@@ -49,6 +49,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
 	protected Modularizer modularizer = new Modularizer();
+	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected Concept concept;
 	
 	@Override
@@ -62,26 +63,30 @@ public abstract class ASynthesizer implements ISynthesizer {
 		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-			Set<Module> trimmedModules = trimStaticModules(modules);
+			Set<Module> trimmedModules = ftTrimmer.trimModules(modules);
+			trimmedModules.stream().forEach(module -> module.constructFaultTreeCopy());
 			
-			Set<RecoveryAutomaton> ras = trimmedModules.stream()
-						.map(module -> convertToRecoveryAutomaton(module))
-						.collect(Collectors.toSet());
-			
-			if (minimizer != null) {
-				ras.forEach(ra -> minimizer.minimize(ra));
+			Set<RecoveryAutomaton> ras = new HashSet<>();
+			for (Module module : trimmedModules) {
+				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
+				if (minimizer != null) {
+					minimizer.minimize(ra);
+				}
+				
+				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
+				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
+				ras.add(ra);
 			}
-			ras.stream().forEach(ra -> remapToGeneratorNodes(ra, conversionResult.getMapGeneratedToGenerator()));
 			
 			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
-			
-			if (minimizer != null) {
-				minimizer.minimize(synthesizedRA);
-			}
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
+		}
+		
+		if (minimizer != null) {
+			minimizer.minimize(synthesizedRA);
 		}
 		
 		return synthesizedRA;
@@ -127,6 +132,30 @@ public abstract class ASynthesizer implements ISynthesizer {
 	}
 	
 	/**
+	 * Set the fault tree trimmer. If null, no trimmer will be used and fault tree will not be trimmed.
+	 * @param ftTrimmer the trimmer
+	 */
+	public void setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
+		this.ftTrimmer = ftTrimmer;
+	}
+	
+	/**
+	 * Maps all references from generated nodes to references of the generator nodes
+	 * @param mapNewToOriginal map provided by the dft to dft conversion
+	 * @param mapNewToCopy map provided by the module
+	 * @return the map from copy to original fault tree nodes
+	 */
+	protected Map<FaultTreeNode, FaultTreeNode> createCopyToOriginalNodesMap(Map<FaultTreeNode, FaultTreeNode> mapNewToOriginal, Map<FaultTreeNode, FaultTreeNode> mapNewToCopy) {
+		Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
+		for (FaultTreeNode node : mapNewToCopy.keySet()) {
+			mapCopyToOriginal.put(mapNewToCopy.get(node), mapNewToOriginal.get(node));
+		}
+		return mapCopyToOriginal;
+	}
+	
+	
+	
+	/**
 	 * Maps all references from generated nodes to references of the generator nodes
 	 * @param ra the recovery automaton
 	 * @param mapGeneratedToGenerator from the generated fault tree nodes to the generated ones
@@ -143,7 +172,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 				for (FaultTreeNode guard : fet.getGuards()) {
 					generatorGuards.add(mapGeneratedToGenerator.get(guard));
 				}
-			
 				fet.getGuards().clear();
 				fet.getGuards().addAll(generatorGuards);
 			}
@@ -185,27 +213,12 @@ public abstract class ASynthesizer implements ISynthesizer {
 	}
 	
 	/**
-	 * Trim the static modules out of a set of modules
-	 * @param modules the original set of modules
-	 * @return the set of modules without static modules
-	 */
-	private static Set<Module> trimStaticModules(Set<Module> modules) {
-		Set<Module> result = new HashSet<Module>();
-		for (Module module : modules) {
-			if (module.isDynamic()) {
-				result.add(module);
-			}
-		}
-		return result;
-	}
-	
-	/**
 	 * Convert a module to recovery automaton
 	 * @param module the module
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(Module module) {
-		return convertToRecoveryAutomaton(module.getRootNode());
+		return convertToRecoveryAutomaton(module.getRootNodeCopy());
 	}
 	
 	/**
