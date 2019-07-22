@@ -26,9 +26,15 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.AND;
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.OR;
+import de.dlr.sc.virsat.model.extension.fdir.model.PAND;
+import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 
 /**
@@ -74,17 +80,12 @@ public class ModularizerTest extends ATestCase {
 	
 	@Test
 	public void testCountTreeOr3AndCSPBasic() throws IOException {
-		final int ANDGATE_INDEX = 1;
-		final int SPARE_INDEX = 0;
-		final int SPAREGATE_INDEX = 0;
-		
 		Fault rootOr3Andcsp = createDFT("/resources/galileo/or3AndColdSpareBasic.dft");
-		FaultTreeNode spare = rootOr3Andcsp.getFaultTree().getSpares().get(SPARE_INDEX).getFrom();
-		FaultTreeNode andGate = rootOr3Andcsp.getFaultTree().getGates().get(ANDGATE_INDEX);
-		FaultTreeNode spareGate = rootOr3Andcsp.getFaultTree().getSpares().get(SPAREGATE_INDEX).getTo();
-		Fault c = rootOr3Andcsp.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("C"))
-				.findAny().get();
+		FaultTreeHolder fthold = new FaultTreeHolder(rootOr3Andcsp);
+		FaultTreeNode spare = fthold.getNodeByName("SPARE", Fault.class);
+		FaultTreeNode andGate = fthold.getNodeByName("AND", AND.class);
+		FaultTreeNode spareGate = fthold.getNodeByName("SPAREGATE", SPARE.class);
+		Fault c = fthold.getNodeByName("C", Fault.class);
 
 		modularizer.setFaultTree(rootOr3Andcsp.getFaultTree());
 		modularizer.countTree();
@@ -143,11 +144,9 @@ public class ModularizerTest extends ATestCase {
 		modularizer.countTree();
 		Module module = modularizer.harvestModule(rootcsp2);
 		
-		final int SPARE_INDEX = 0;
-		final int SPAREGATE_INDEX = 0;
-		
-		FaultTreeNode spare = rootcsp2.getFaultTree().getSpares().get(SPARE_INDEX).getFrom();
-		FaultTreeNode spareGate = rootcsp2.getFaultTree().getSpares().get(SPAREGATE_INDEX).getTo();
+		FaultTreeHolder fthold = new FaultTreeHolder(rootcsp2);
+		FaultTreeNode spare = fthold.getNodeByName("B", Fault.class);
+		FaultTreeNode spareGate = fthold.getNodeByName("tle", SPARE.class);
 		FaultTreeNode child = rootcsp2.getFaultTree().getChildFaults().iterator().next();
 		
 		final int MODULESIZE_ROOT = 6;
@@ -161,11 +160,9 @@ public class ModularizerTest extends ATestCase {
 		modularizer.setFaultTree(rootcsp2.getFaultTree());
 		modularizer.countTree();
 		
-		final int SPARE_INDEX = 0;
-		final int SPAREGATE_INDEX = 0;
-		
-		FaultTreeNode spare = rootcsp2.getFaultTree().getSpares().get(SPARE_INDEX).getFrom();
-		FaultTreeNode spareGate = rootcsp2.getFaultTree().getSpares().get(SPAREGATE_INDEX).getTo();
+		FaultTreeHolder fthold = new FaultTreeHolder(rootcsp2);
+		FaultTreeNode spare = fthold.getNodeByName("B", Fault.class);
+		FaultTreeNode spareGate = fthold.getNodeByName("tle", SPARE.class);
 		FaultTreeNode child = rootcsp2.getFaultTree().getChildFaults().iterator().next();
 		
 		Module module = modularizer.harvestModule(spareGate);
@@ -238,14 +235,12 @@ public class ModularizerTest extends ATestCase {
 	public void testModularizeCSP2() throws IOException {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
 		
-		final int SPAREGATE_INDEX = 0;
-		final int SPARE_INDEX = 0;
-		
-		FaultTreeNode spareGate = rootcsp2.getFaultTree().getSpares().get(SPAREGATE_INDEX).getTo();
-		FaultTreeNode child = rootcsp2.getFaultTree().getChildFaults().iterator().next();
-		FaultTreeNode spare = rootcsp2.getFaultTree().getSpares().get(SPARE_INDEX).getFrom();
-		FaultTreeNode childBE = ((Fault) child).getBasicEvents().get(0);
-		FaultTreeNode spareBE = ((Fault) spare).getBasicEvents().get(0);
+		FaultTreeHolder fthold = new FaultTreeHolder(rootcsp2);
+		FaultTreeNode spare = fthold.getNodeByName("B", Fault.class);
+		FaultTreeNode spareBE = fthold.getNodeByName("B", BasicEvent.class);
+		FaultTreeNode spareGate = fthold.getNodeByName("tle", SPARE.class);
+		FaultTreeNode primary = fthold.getNodeByName("A", Fault.class);
+		FaultTreeNode primaryBE = fthold.getNodeByName("A", BasicEvent.class);
 		
 		Set<Module> modules = modularizer.getModules(rootcsp2.getFaultTree());
 
@@ -254,8 +249,8 @@ public class ModularizerTest extends ATestCase {
 
 		for (Module module : modules) {
 			assertThat(module.getNodes(), anyOf(
-					allOf(hasItems(child, spareGate, spare, childBE, spareBE), not(hasItems(rootcsp2))),
-					allOf(not(hasItems(child, spareGate, spare, childBE, spareBE)), hasItems(rootcsp2))
+					allOf(hasItems(primary, spareGate, spare, primaryBE, spareBE), not(hasItems(rootcsp2))),
+					allOf(not(hasItems(primary, spareGate, spare, primaryBE, spareBE)), hasItems(rootcsp2))
 			));
 		}
 	}
@@ -263,28 +258,15 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testModularizeOr2And2SharedSP() throws IOException {
 		Fault rootOr2And2SharedSP = createDFT("/resources/galileo/or2And2SharedSpare.dft");
-		
-		final int AND1_INDEX = 1;
-		final int AND2_INDEX = 2;
-		final int OR_INDEX = 0;
-		final int SPAREGATE_INDEX = 0;
-		final int C_INDEX = 0;
-		
-		FaultTreeNode and1 = rootOr2And2SharedSP.getFaultTree().getGates().get(AND1_INDEX);
-		FaultTreeNode and2 = rootOr2And2SharedSP.getFaultTree().getGates().get(AND2_INDEX);
-		FaultTreeNode or = rootOr2And2SharedSP.getFaultTree().getGates().get(OR_INDEX);
-		FaultTreeNode spareGate = rootOr2And2SharedSP.getFaultTree().getSpares().get(SPAREGATE_INDEX).getTo();
-		FaultTreeNode c = rootOr2And2SharedSP.getFaultTree().getSpares().get(C_INDEX).getFrom();
-		
-		FaultTreeNode a = rootOr2And2SharedSP.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("A"))
-				.findAny().get();
-		FaultTreeNode b = rootOr2And2SharedSP.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("B"))
-				.findAny().get();
-		FaultTreeNode d = rootOr2And2SharedSP.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("D"))
-				.findAny().get();
+		FaultTreeHolder fthold = new FaultTreeHolder(rootOr2And2SharedSP);
+		FaultTreeNode and1 = fthold.getNodeByName("AND1", AND.class);
+		FaultTreeNode and2 = fthold.getNodeByName("AND2", AND.class);
+		FaultTreeNode or = fthold.getNodeByName("OR", OR.class);
+		FaultTreeNode spareGate = fthold.getNodeByName("SPAREGATE", SPARE.class);
+		FaultTreeNode c = fthold.getNodeByName("C", Fault.class);
+		FaultTreeNode a = fthold.getNodeByName("A", Fault.class);
+		FaultTreeNode b = fthold.getNodeByName("B", Fault.class);
+		FaultTreeNode d = fthold.getNodeByName("D", Fault.class);
 		
 		Set<Module> modules = modularizer.getModules(rootOr2And2SharedSP.getFaultTree());
 		final int NUM_MODULES = 2;
@@ -318,28 +300,15 @@ public class ModularizerTest extends ATestCase {
 		final int NUM_MODULES = 4;
 		assertEquals(NUM_MODULES, modules.size());
 		
-		final int AND1_IND = 0;
-		final int PAND1_IND = 1;
-		final int PAND2_IND = 2;
-		FaultTreeNode and1 = rootNestedPand.getFaultTree().getGates().get(AND1_IND);
-		FaultTreeNode pand1 = rootNestedPand.getFaultTree().getGates().get(PAND1_IND);
-		FaultTreeNode pand2 = rootNestedPand.getFaultTree().getGates().get(PAND2_IND);
-		
-		FaultTreeNode a = rootNestedPand.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("A"))
-				.findAny().get();
-		FaultTreeNode b = rootNestedPand.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("B"))
-				.findAny().get();
-		FaultTreeNode c = rootNestedPand.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("C"))
-				.findAny().get();
-		FaultTreeNode d = rootNestedPand.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("D"))
-				.findAny().get();
-		FaultTreeNode e = rootNestedPand.getFaultTree().getChildFaults().stream()
-				.filter(node -> node.getName().equals("E"))
-				.findAny().get();
+		FaultTreeHolder fthold = new FaultTreeHolder(rootNestedPand);
+		FaultTreeNode and1 = fthold.getNodeByName("tle", AND.class);
+		FaultTreeNode pand1 = fthold.getNodeByName("PAND1", PAND.class);
+		FaultTreeNode pand2 = fthold.getNodeByName("PAND2", PAND.class);
+		FaultTreeNode a = fthold.getNodeByName("A", Fault.class);
+		FaultTreeNode b = fthold.getNodeByName("B", Fault.class);
+		FaultTreeNode c = fthold.getNodeByName("C", Fault.class);
+		FaultTreeNode d = fthold.getNodeByName("D", Fault.class);
+		FaultTreeNode e = fthold.getNodeByName("E", Fault.class);
 		
 		Map<FaultTreeNode, FaultTreeNodePlus> map = modularizer.getTable();
 		assertTrue(map.get(b).hasPriorityAbove());
