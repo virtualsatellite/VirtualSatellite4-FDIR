@@ -38,9 +38,9 @@ public class ParallelComposerTest extends ATestCase {
 	protected ParallelComposer pc;
 	
 	@Before
+	@Override
 	public void setUp() throws Exception {
-		super.set();
-		
+		super.setUp();
 		pc = new ParallelComposer();
 	}
 	

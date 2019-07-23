@@ -13,13 +13,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
  * Test class for FaultTreeHelper
@@ -27,30 +26,23 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
  *
  */
 public class FaultTreeHelperTest extends ATestCase {
-	
-	@Before
-	public void setUp() throws Exception {
-		super.set();
-	}
 
 	@Test
 	public void testCopyNode() throws IOException {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
-		FaultTreeHelper fthelp = new FaultTreeHelper(rootcsp2.getConcept());
-		FaultTreeNode copy = fthelp.copyFaultTreeNode(rootcsp2, null);
+		FaultTreeNode copy = ftHelper.copyFaultTreeNode(rootcsp2, null);
 		
-		assertEquals(0, fthelp.getAllChildren(copy, copy.getFault().getFaultTree()).size());
+		assertEquals(0, ftHelper.getAllChildren(copy, copy.getFault().getFaultTree()).size());
 	}
 	
 	@Test
 	public void testCopySpare() throws IOException {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
-		FaultTreeHelper fthelp = new FaultTreeHelper(rootcsp2.getConcept());
-		FaultTreeNode spareGate = fthelp.getAllSpares(rootcsp2).get(0).getTo();
+		FaultTreeNode spareGate = ftHelper.getAllSpares(rootcsp2).get(0).getTo();
 		assertEquals(FaultTreeNodeType.SPARE, spareGate.getFaultTreeNodeType());
 		
 		Fault rootCopy = new Fault(concept);
-		FaultTreeNode copy = fthelp.copyFaultTreeNode(spareGate, rootCopy);
+		FaultTreeNode copy = ftHelper.copyFaultTreeNode(spareGate, rootCopy);
 		
 		assertEquals(FaultTreeNodeType.SPARE, copy.getFaultTreeNodeType());
 	}
@@ -58,34 +50,32 @@ public class FaultTreeHelperTest extends ATestCase {
 	@Test
 	public void testCreateEdge() throws IOException {
 		Fault rootand2or = createDFT("/resources/galileo/and2or.dft");
-		FaultTreeHelper fthelp = new FaultTreeHelper(rootand2or.getConcept());
-		FaultTreeNode orGate = fthelp.getAllNodes(rootand2or).get(2);
+		FaultTreeNode orGate = ftHelper.getAllNodes(rootand2or).get(2);
 		
-		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(rootand2or, null);
-		FaultTreeNode orGateCopy = fthelp.copyFaultTreeNode(orGate, rootCopy.getFault());
+		FaultTreeNode rootCopy = ftHelper.copyFaultTreeNode(rootand2or, null);
+		FaultTreeNode orGateCopy = ftHelper.copyFaultTreeNode(orGate, rootCopy.getFault());
 		
-		fthelp.createFaultTreeEdge(rootCopy.getFault(), orGateCopy, rootCopy);
+		ftHelper.createFaultTreeEdge(rootCopy.getFault(), orGateCopy, rootCopy);
 		
-		assertEquals(1, fthelp.getAllPropagations(rootCopy.getFault()).size());
+		assertEquals(1, ftHelper.getAllPropagations(rootCopy.getFault()).size());
 	}
 	
 	@Test
 	public void testCreateEdgesSpare() throws IOException {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
-		FaultTreeHelper fthelp = new FaultTreeHelper(rootcsp2.getConcept());
-		FaultTreeNode spareGate = fthelp.getAllSpares(rootcsp2).get(0).getTo();
-		FaultTreeNode spare = fthelp.getAllSpares(rootcsp2).get(0).getFrom();
+		FaultTreeNode spareGate = ftHelper.getAllSpares(rootcsp2).get(0).getTo();
+		FaultTreeNode spare = ftHelper.getAllSpares(rootcsp2).get(0).getFrom();
 		
-		FaultTreeNode spareGateCopy = fthelp.copyFaultTreeNode(spareGate, null);
+		FaultTreeNode spareGateCopy = ftHelper.copyFaultTreeNode(spareGate, null);
 		FaultTreeNode primary = new Fault(rootcsp2.getConcept());
 		primary.setName("PRIMARY");
-		FaultTreeNode spareCopy = fthelp.copyFaultTreeNode(spare, null);
+		FaultTreeNode spareCopy = ftHelper.copyFaultTreeNode(spare, null);
 
-		fthelp.connectSpare(spareGateCopy.getFault(), spareCopy, spareGateCopy);
-		fthelp.createFaultTreeEdge(spareGateCopy.getFault(), primary, spareGateCopy);
+		ftHelper.connectSpare(spareGateCopy.getFault(), spareCopy, spareGateCopy);
+		ftHelper.createFaultTreeEdge(spareGateCopy.getFault(), primary, spareGateCopy);
 		
-		assertEquals(1, fthelp.getAllPropagations(spareGateCopy.getFault()).size());
-		assertEquals(1, fthelp.getAllSpares(spareGateCopy.getFault()).size());
+		assertEquals(1, ftHelper.getAllPropagations(spareGateCopy.getFault()).size());
+		assertEquals(1, ftHelper.getAllSpares(spareGateCopy.getFault()).size());
 	}
 
 }

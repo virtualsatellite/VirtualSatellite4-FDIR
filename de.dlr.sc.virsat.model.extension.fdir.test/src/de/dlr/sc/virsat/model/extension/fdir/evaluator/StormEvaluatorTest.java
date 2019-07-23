@@ -24,21 +24,18 @@ import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.storm.runner.IStormProgram;
 import de.dlr.sc.virsat.fdir.storm.runner.StormExecutionEnvironment;
 import de.dlr.sc.virsat.fdir.storm.runner.StormRunner;
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
  * This class tests the StormEvaluator implementation
  * @author muel_s8
  *
  */
-public class StormEvaluatorTest {
+public class StormEvaluatorTest extends ATestCase {
 
 	@Test
 	public void testEvaluateFaultTree() {
-		String conceptXmiPluginPath = "de.dlr.sc.virsat.model.extension.fdir/concept/concept.xmi";
-		Concept concept = de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader.loadConceptFromPlugin(conceptXmiPluginPath);
-		
 		StormEvaluator stormEvaluator = new StormEvaluator(1) {
 			// Mock the creation of the StormRunner to simulate the Storm program returning some values
 			@Override

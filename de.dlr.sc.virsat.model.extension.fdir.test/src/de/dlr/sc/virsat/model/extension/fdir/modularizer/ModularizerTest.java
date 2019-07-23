@@ -47,9 +47,9 @@ public class ModularizerTest extends ATestCase {
 	protected Modularizer modularizer;
 	
 	@Before
+	@Override
 	public void setUp() throws Exception {
-		super.set();
-		
+		super.setUp();
 		modularizer = new Modularizer();
 	}
 	

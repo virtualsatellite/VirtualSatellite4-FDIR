@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConve
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
 /**
  * Abstract test base class
@@ -36,12 +37,14 @@ public abstract class ATestCase {
 	protected static final double TEST_EPSILON =  0.000001;
 	
 	protected Concept concept;
-	protected FaultTreeHelper helper;
+	protected FaultTreeHelper ftHelper;
+	protected RecoveryAutomatonHelper raHelper; 
 	
 	@Before
-	public void set() throws Exception {
+	public void setUp() throws Exception {
 	    concept = ConceptXmiLoader.loadConceptFromPlugin(Activator.getPluginId() + "/concept/concept.xmi");
-	    helper = new FaultTreeHelper(concept);
+	    ftHelper = new FaultTreeHelper(concept);
+	    raHelper = new RecoveryAutomatonHelper(concept);
 	}
 	
 	protected static final double DELTA = 0.01;
