@@ -360,13 +360,13 @@ public class DFT2MAConverterTest extends ATestCase {
 		State s = raHelper.createSingleState(ra, 0);
 		ra.setInitial(s);
 		FaultEventTransition t = raHelper.createFaultEventTransition(ra, s, s);
-		SPARE spareGate = (SPARE) helper.getChildren(fault).get(0);
-		Fault faultA = (Fault) helper.getChildren(spareGate).get(0);
+		SPARE spareGate = (SPARE) ftHelper.getChildren(fault).get(0);
+		Fault faultA = (Fault) ftHelper.getChildren(spareGate).get(0);
 		BasicEvent be = faultA.getBasicEvents().get(0);
 		raHelper.assignInputs(t, be);
 		ClaimAction ca = new ClaimAction(concept);
 		ca.setSpareGate(spareGate);
-		ca.setClaimSpare(helper.getSpares(spareGate).get(0));
+		ca.setClaimSpare(ftHelper.getSpares(spareGate).get(0));
 		raHelper.assignAction(t, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
@@ -397,13 +397,13 @@ public class DFT2MAConverterTest extends ATestCase {
 		raHelper.createTimedTransition(ra, s0, s1, 1);
 		
 		FaultEventTransition t1 = raHelper.createFaultEventTransition(ra, s1, s1);
-		SPARE spareGate = (SPARE) helper.getChildren(fault).get(0);
-		Fault faultA = (Fault) helper.getChildren(spareGate).get(0);
+		SPARE spareGate = (SPARE) ftHelper.getChildren(fault).get(0);
+		Fault faultA = (Fault) ftHelper.getChildren(spareGate).get(0);
 		BasicEvent be = faultA.getBasicEvents().get(0);
 		raHelper.assignInputs(t1, be);
 		ClaimAction ca = new ClaimAction(concept);
 		ca.setSpareGate(spareGate);
-		ca.setClaimSpare(helper.getSpares(spareGate).get(0));
+		ca.setClaimSpare(ftHelper.getSpares(spareGate).get(0));
 		raHelper.assignAction(t1, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));

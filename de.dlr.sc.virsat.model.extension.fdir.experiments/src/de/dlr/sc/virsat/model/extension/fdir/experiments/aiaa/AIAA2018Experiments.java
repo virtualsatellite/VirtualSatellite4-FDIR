@@ -37,7 +37,7 @@ public class AIAA2018Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMemory2WithFDEP() throws IOException {
 		System.out.println("--------------------- Experiment: Memory2 With FDEP  ---------------------");
-		Fault tle = createGalileoDFT("/resources/aiaa/2018/memory2WithFDEP.dft");
+		Fault tle = createDFT("/resources/aiaa/2018/memory2WithFDEP.dft");
 		
 		final float DELTA = 0.01f;
 		

@@ -22,9 +22,9 @@ import java.util.TreeSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
@@ -33,16 +33,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  * @author jord_ad
  *
  */
-public class ParallelComposerTest {
+public class ParallelComposerTest extends ATestCase {
 	
-	protected Concept concept;
 	protected ParallelComposer pc;
 	
 	@Before
+	@Override
 	public void setUp() throws Exception {
-		String conceptXmiPluginPath = "de.dlr.sc.virsat.model.extension.fdir/concept/concept.xmi";
-		concept = de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader.loadConceptFromPlugin(conceptXmiPluginPath);
-		
+		super.setUp();
 		pc = new ParallelComposer();
 	}
 	

@@ -31,8 +31,9 @@ public class ModuleTest extends ATestCase {
 	protected Modularizer modularizer;
 	
 	@Before
+	@Override
 	public void setUp() throws Exception {
-		super.set();
+		super.setUp();
 		modularizer = new Modularizer();
 	}
 	
@@ -45,9 +46,7 @@ public class ModuleTest extends ATestCase {
 				.findAny().get();
 		module.constructFaultTreeCopy();
 		
-		System.out.println(module.getRootNodeCopy().getFault().getFaultTree().toDot());
-		
-		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
+		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
 	}
 
 	@Test
@@ -57,14 +56,13 @@ public class ModuleTest extends ATestCase {
 		Module module = modules.stream().filter(m -> m.isNondeterministic()).findAny().get();
 		module.constructFaultTreeCopy();
 		
-		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
+		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
 	}
 	
 	@Test
 	public void testCopyFaultTreeCM1() throws IOException {
 		Fault rootCM1 = createDFT("/resources/galileo/cm1.dft");
 		Set<Module> modules = modularizer.getModules(rootCM1.getFaultTree());
-		
 		
 		final int NUM_NODES_IN_SHARED_SPARE_MODULE = 8;
 		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_SHARED_SPARE_MODULE)
@@ -74,8 +72,8 @@ public class ModuleTest extends ATestCase {
 		assertEquals("CM1", module.getRootNodeCopy().getName());
 		
 		final int NUM_NODES = 18;
-		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
-		assertEquals(NUM_NODES, helper.getAllNodes(module.getRootNodeCopy().getFault()).size());
+		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
+		assertEquals(NUM_NODES, ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size());
 	}
 	
 	@Test
@@ -91,9 +89,8 @@ public class ModuleTest extends ATestCase {
 		
 		final int NUM_NODES = 24;
 		final int NUM_SPARES = 3;
-		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", helper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
-		assertEquals(NUM_NODES, helper.getAllNodes(module.getRootNodeCopy().getFault()).size());
-		assertEquals(NUM_SPARES, helper.getAllSpares(module.getRootNodeCopy().getFault()).size());
+		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
+		assertEquals(NUM_NODES, ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size());
+		assertEquals(NUM_SPARES, ftHelper.getAllSpares(module.getRootNodeCopy().getFault()).size());
 	}
-
 }

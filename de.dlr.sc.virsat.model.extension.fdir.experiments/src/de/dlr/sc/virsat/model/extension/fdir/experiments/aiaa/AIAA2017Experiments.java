@@ -33,7 +33,7 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentSwitch2AndRedundancy() throws IOException {
 		System.out.println("--------------------- Experiment: Switch2 and Redundancy  ---------------------");
-		Fault tle = createGalileoDFT("/resources/aiaa/2017/switch2AndRedundancy.dft");
+		Fault tle = createDFT("/resources/aiaa/2017/switch2AndRedundancy.dft");
 		
 		final float DELTA = 0.01f;
 		
@@ -64,7 +64,7 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMemory2() throws IOException {
 		System.out.println("--------------------- Experiment: Memory2  ---------------------");
-		Fault tle = createGalileoDFT("/resources/aiaa/2017/memory2.dft");
+		Fault tle = createDFT("/resources/aiaa/2017/memory2.dft");
 		
 		FaultTreeEvaluator dftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(false);
 		ModelCheckingResult result = dftEvaluator.evaluateFaultTree(tle);

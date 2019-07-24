@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -37,17 +36,6 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
  */
 public class RecoveryAutomatonHelperTest extends ATestCase {
 
-	protected RecoveryAutomatonHelper recoveryAutomatonHelper; 
-	protected FaultTreeHelper faultTreeHelper;
-	
-	@Before
-	@Override
-	public void set() throws Exception {
-		super.set();
-		recoveryAutomatonHelper = new RecoveryAutomatonHelper(concept);
-		faultTreeHelper = new FaultTreeHelper(concept);
-	}
-	
 	@Test 
 	public void testComputeInputs() {
 		
@@ -59,28 +47,28 @@ public class RecoveryAutomatonHelperTest extends ATestCase {
 		fault2.setName("Fault2");
 		
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
-		recoveryAutomatonHelper.createStates(ra, STATES);
+		raHelper.createStates(ra, STATES);
 		ra.setInitial(ra.getStates().get(0));
 		
 		//CHECKSTYLE:OFF
-		FaultEventTransition transition01 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		FaultEventTransition transition02 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
-		FaultEventTransition transition13 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(3));
-		FaultEventTransition transition23 = recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(3));
+		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition02 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
+		FaultEventTransition transition13 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(3));
+		FaultEventTransition transition23 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(3));
 		//CHECKSTYLE:ON
 		
-		recoveryAutomatonHelper.assignInputs(transition01, fault1);
-		recoveryAutomatonHelper.assignInputs(transition02, fault2);
-		recoveryAutomatonHelper.assignInputs(transition13, fault2);
-		recoveryAutomatonHelper.assignInputs(transition23, fault1);
+		raHelper.assignInputs(transition01, fault1);
+		raHelper.assignInputs(transition02, fault2);
+		raHelper.assignInputs(transition13, fault2);
+		raHelper.assignInputs(transition23, fault1);
 		
 		Map<Transition, State> mapTransitionToTo = new HashMap<>();
 		for (Transition transition : ra.getTransitions()) {
 			mapTransitionToTo.put(transition, transition.getTo());
 		}
 		
-		Map<State, Set<FaultTreeNode>> inputs = recoveryAutomatonHelper
-				.computeInputs(ra, recoveryAutomatonHelper.getPreviousTransitions(ra), recoveryAutomatonHelper.getCurrentTransitions(ra), mapTransitionToTo);
+		Map<State, Set<FaultTreeNode>> inputs = raHelper
+				.computeInputs(ra, raHelper.getPreviousTransitions(ra), raHelper.getCurrentTransitions(ra), mapTransitionToTo);
 		//CHECKSTYLE:OFF
 		assertTrue(inputs.get(ra.getStates().get(0)).isEmpty());
 		assertThat(inputs.get(ra.getStates().get(1)), hasItems(fault1));
@@ -97,12 +85,12 @@ public class RecoveryAutomatonHelperTest extends ATestCase {
 		final int NUMBER_STATES = 2;
 		
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
-		recoveryAutomatonHelper.createStates(ra, NUMBER_STATES);
+		raHelper.createStates(ra, NUMBER_STATES);
 		
-		recoveryAutomatonHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		recoveryAutomatonHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
+		raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
 		
-		RecoveryAutomaton raCopy = recoveryAutomatonHelper.copyRA(ra);
+		RecoveryAutomaton raCopy = raHelper.copyRA(ra);
 		
 		assertEquals(ra.getStates().size(), raCopy.getStates().size());
 		assertEquals(ra.getTransitions().size(), raCopy.getTransitions().size());
