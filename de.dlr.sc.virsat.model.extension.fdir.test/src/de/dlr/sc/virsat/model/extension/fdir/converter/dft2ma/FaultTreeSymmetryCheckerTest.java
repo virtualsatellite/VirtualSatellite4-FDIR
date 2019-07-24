@@ -37,7 +37,7 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 	private FaultTreeSymmetryChecker ftSymmetryChecker = new FaultTreeSymmetryChecker();
 	
 	@Test
-	public void testAnd2() throws IOException {
+	public void testAnd2NonSymmetric() throws IOException {
 		Fault fault = createDFT("/resources/galileo/and2.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		

@@ -57,8 +57,8 @@ public class FaultTreeSymmetryChecker {
 		// Process all isomomorphism candidates as follows:
 		// A pair is correct iff 
 		// * the nodes have the same properties (node type, failure rate if it is a BE, etc)
-		// * the nodes have the same amount of child nodes
-		// * for any child node, there exists at least one pair of child nodes in both trees that are isomomorphic
+		// * the nodes have the degree
+		// * for any connected node, there exists at least one pair of connected nodes in both trees that are isomomorphic
 		while (!toProcess.isEmpty()) {
 			Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = toProcess.poll();
 			Set<Entry<FaultTreeNode, FaultTreeNode>> incorrectPairs = new HashSet<>();
@@ -124,7 +124,15 @@ public class FaultTreeSymmetryChecker {
 					}
 					
 					mapChildPairsToParentPair.put(childCandidatePairs, pair);
-					if (!generated.contains(childCandidatePairs)) {
+					
+					boolean hasBeenGenerated = false;
+					for (Set<Entry<FaultTreeNode, FaultTreeNode>> generatedPair : generated) {
+						if (generatedPair.containsAll(childCandidatePairs)) {
+							hasBeenGenerated = true;	
+						}
+					}
+					
+					if (!hasBeenGenerated) {
 						toProcess.add(childCandidatePairs);
 						generated.add(new HashSet<>(childCandidatePairs));
 					}
