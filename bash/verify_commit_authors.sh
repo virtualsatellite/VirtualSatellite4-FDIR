@@ -55,7 +55,7 @@ if [ ! -v $TRAVIS_PULL_REQUEST ]; then
 	echo "[Info] Repo Slug: ${TRAVIS_REPO_SLUG}"
 	echo "[Info] PR   Slug: ${TRAVIS_PULL_REQUEST_SLUG}"
 
-	if [ "$TRAVIS_REPO_SLUG" ==  "$TRAVIS_PULL_REQUEST_SLUG" ]; then
+	if [ "$TRAVIS_REPO_SLUG" ==  "$TRAVIS_PULL_REQUEST_SLUG" || ! -v $TRAVIS_PULL_REQUEST_SLUG ]; then
 		echo "[Info] Building a local PR, RELAXED rules apply!"
 		STRICT_RULES="false"
 	else
