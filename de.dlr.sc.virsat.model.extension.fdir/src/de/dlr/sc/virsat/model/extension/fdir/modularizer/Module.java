@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -127,9 +128,12 @@ public class Module {
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
 		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
-		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode().getFault().getFaultTree().getRoot();
-		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, null);
+		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode();
+		Fault rootFault = new Fault(originalRoot.getConcept());
+		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, rootFault.getFault());
 		rootCopy.setName(originalRoot.getName());
+		this.moduleRootCopy = rootFault;
+		fthelp.connect(rootFault, rootCopy, rootFault);
 
 		List<FaultTreeNode> sparesInOriginalFaultTree = fthelp.getAllSpareNodes(originalRoot.getFault());
 		mapOriginalToCopy.put(originalRoot, rootCopy);
@@ -138,10 +142,6 @@ public class Module {
 		while (!dfsStack.isEmpty()) {
 			FaultTreeNode curr = dfsStack.pop();
 			FaultTreeNode currCopy = mapOriginalToCopy.get(curr);
-			
-			if (curr.equals(moduleRoot.getFaultTreeNode())) {
-				this.moduleRootCopy = currCopy;
-			}
 			
 			List<FaultTreeNode> children = fthelp.getAllChildren(curr, curr.getFault().getFaultTree());
 			for (FaultTreeNode child : children) {
@@ -169,7 +169,6 @@ public class Module {
 				dfsStack.push(child);
 			}
 		}
-		fthelp.createFaultTreeEdge(rootCopy.getFault(), this.moduleRootCopy, rootCopy);
 	}
 	
 	/**
