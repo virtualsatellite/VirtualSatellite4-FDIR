@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateGenerator;
@@ -240,9 +241,9 @@ public class DFTSemantics {
 	 * @param recoveryActions  mapping for state to recovery action
 	 */
 	public void determinizeSuccs(FaultTreeHelper ftHelper, RecoveryStrategy recoveryStrategy, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions) {
-		List<RecoveryAction> chosenRecoveryActions = recoveryStrategy.getRecoveryActions();
+		String chosenRecoveryActionsLabel = recoveryStrategy.getRecoveryActionsLabel();
 		for (Entry<DFTState, List<RecoveryAction>> entry : recoveryActions.entrySet()) {
-			if (ftHelper.hasEquivalentRecoveryActions(entry.getValue(), chosenRecoveryActions)) {
+			if (entry.getValue().stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining()).equals(chosenRecoveryActionsLabel)) {
 				succs.clear();
 				entry.getKey().setRecoveryStrategy(recoveryStrategy);
 				succs.add(entry.getKey());
