@@ -142,6 +142,6 @@ public class RecoveryStrategy {
 	 * @return A list of recommened recovery actions.
 	 */
 	public String getRecoveryActionsLabel() {
-		return recoveryActionsLabel;
+		return recoveryActionsLabel != null ? recoveryActionsLabel : "";
 	}
 }

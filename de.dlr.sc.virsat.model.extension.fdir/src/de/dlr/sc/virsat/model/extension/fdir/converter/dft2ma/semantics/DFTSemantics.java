@@ -243,7 +243,8 @@ public class DFTSemantics {
 	public void determinizeSuccs(FaultTreeHelper ftHelper, RecoveryStrategy recoveryStrategy, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions) {
 		String chosenRecoveryActionsLabel = recoveryStrategy.getRecoveryActionsLabel();
 		for (Entry<DFTState, List<RecoveryAction>> entry : recoveryActions.entrySet()) {
-			if (entry.getValue().stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining()).equals(chosenRecoveryActionsLabel)) {
+			String entryLabel = entry.getValue().stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining());
+			if (entryLabel.equals(chosenRecoveryActionsLabel)) {
 				succs.clear();
 				entry.getKey().setRecoveryStrategy(recoveryStrategy);
 				succs.add(entry.getKey());

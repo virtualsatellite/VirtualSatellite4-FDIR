@@ -64,8 +64,6 @@ public class DFT2MAConverter {
 		staticAnalysis();
 		buildMA();
 		
-		System.out.println(ma.toDot());
-		
 		return ma;
 	}
 	
