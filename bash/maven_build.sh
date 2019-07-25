@@ -1,169 +1,142 @@
 #!/bin/bash
 
-echo "[Info] ------------------------------------"
-echo "[Info] Verify commit authors"
-echo "[Info] ------------------------------------"
-echo "[Info] "
+#/*******************************************************************************
+# * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+# *
+# * This program and the accompanying materials are made available under the
+# * terms of the Eclipse Public License 2.0 which is available at
+# * http://www.eclipse.org/legal/epl-2.0.
+# *
+# * SPDX-License-Identifier: EPL-2.0
+# *******************************************************************************/
 
-echo "[Info] ------------------------------------"
-echo "[Info] Get the full history"
-echo "[Info] and prepare local git repo"
-echo "[Info] ------------------------------------"
-echo "[Info] "
+# --------------------------------------------------------------------------
+# This script handles the different calls to maven
+# --------------------------------------------------------------------------
 
-# Test if it is a shallow repository as usually checked out
-# on travis ci build nodes
+# fail the script if a call fails
+set -e
 
-if [ -f $(git rev-parse --git-dir)/shallow ]; then
-	echo "[Info] Current repository is shallow"
-	echo "[Info] Need to unshallow"
-	git fetch origin development:development
-	git fetch --unshallow
-else
-  echo "[Info] Current repository is not shallow"
-fi
+# Store the name of the command calling from commandline to be properly
+# displayed in case of usage issues
+COMMAND=$0
 
-echo "[Info] ------------------------------------"
-echo "[Info] Show current branches"
-echo "[Info] ------------------------------------"
+# this method gives some little usage info
+printUsage() {
+	echo "usage: ${COMMAND} -j [surefire|spotbugs|checkstyle|assemble] -p [development|integration|release]"
+	echo ""
+	echo "Options:"
+	echo " -j, --jobs <jobname>	    The name of the Travis-CI job to be build."
+	echo " -p, --profile <profile>  The name of the maven profile to be build."
+	echo ""
+	echo "Jobname:"
+	echo " surefire      To run all surefire tests including junit and swtbot."
+	echo " spotbugs      To run spotbugs static code analysis."
+	echo " checkstyle    To run checkstyle for testing style guidelines."
+	echo " assemble      To run full assemble including the java docs build."
+	echo ""
+	echo "Profile:"
+	echo " development      Maven profile for development and feature builds."
+	echo " integration      Maven profile for integration builds."
+	echo " release          Maven profile for release builds. Fails to overwrite deployments."
+	echo ""
+	echo "Copyright by DLR (German Aerospace Center)"
+}
 
-git branch -a
+callMavenSurefire() {
+	echo "Maven - Surefire - ${MAVEN_PROFILE}"
+	mvn clean compile -P ${MAVEN_PROFILE},target -B -V | tee maven.log
+	echo "Check for Maven Problems on Overtarget:"
+	(grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+	mvn install -P ${MAVEN_PROFILE},surefire,product -B -V | tee maven.log
+	echo "Check for Maven Problems on Product:"
+	(grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+	echo "Check for failed test cases:"
+	(grep -n "<<< FAILURE!" maven.log || exit 0 && exit 1;)
+	echo "Ant jacoco Reports"
+	ant jacocoPrepareDependencies
+	ant jacocoReport 2>&1 | tee ant.log
+	(grep -n "\(Rule violated\|BUILD FAILED\)" ant.log || exit 0 && exit 1;)
+	echo "CodeCov"
+	bash <(curl -s https://codecov.io/bash)
+}
 
-echo "[Info] ------------------------------------"
-echo "[Info] Analyse authors integrity"
-echo "[Info] ------------------------------------"
+callMavenSpotbugs() {
+	echo "Maven - Spotbugs - ${MAVEN_PROFILE}"
+	mvn clean compile -P $MAVEN_PROFILE,target -B -V | tee maven.log
+	echo "Check for Maven Problems on Overtarget:"
+	(grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+	mvn install -P $MAVEN_PROFILE,spotbugs,product -B -V | tee maven.log
+	echo "Check for Maven Problems on Product:"
+	(grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+}
 
-echo "[Info] Checking .mailmap"
+callMavenCheckstyle() {
+	echo "Maven - Checkstyle - ${MAVEN_PROFILE}"
+	mvn clean compile -P ${MAVEN_PROFILE},target -B -V | tee maven.log
+	echo "Check for Maven Problems on Overtarget:"
+	(grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+	mvn install -P ${MAVEN_PROFILE},checkstyle,product -B -V | tee maven.log
+	echo "Check for Maven Problems on Product:"
+	(grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+}
 
-git diff --quiet development .mailmap
-CHANGED_MAILMAP=$?
-
-echo "[Info] Checking known_authors.txt"
-
-git diff --quiet development known_authors.txt
-CHANGED_KNOWN_AUTHORS=$?
-
-echo "[Info] ------------------------------------"
-echo "[Info] Fork detection"
-echo "[Info] ------------------------------------"
-
-# Now checking if we are on normal PR or on a forked PR
-# we usually assume we are on a fork
-STRICT_RULES="true"
-if [ ! -v $TRAVIS_PULL_REQUEST ]; then 
-	echo "[Info] Running on Travis CI"
-	echo "[Info] Repo Slug: ${TRAVIS_REPO_SLUG}"
-	echo "[Info] PR   Slug: ${TRAVIS_PULL_REQUEST_SLUG}"
-
-	if [ "$TRAVIS_REPO_SLUG" ==  "$TRAVIS_PULL_REQUEST_SLUG" ]; then
-		echo "[Info] Building a local PR, RELAXED rules apply!"
-		STRICT_RULES="false"
+callMavenAssemble() {
+	if [ "$MAVEN_PROFILE" == "release" ] ; then
+		DEPLOY_TYPE="deployBackuped"
 	else
-		echo "[Info] Building either a fork PR or a branch, STRICT rules apply!"
+		DEPLOY_TYPE="deployUnsecured"
 	fi
-else
-	echo "[Info] Not running on Travis CI"
-fi
+	echo "Maven - Assemlbe - ${MAVEN_PROFILE} - ${DEPLOY_TYPE}"
+	mvn clean compile -P ${MAVEN_PROFILE},target -B -V | tee maven.log
+	echo "Check for Maven Problems on Overtarget:"
+	(grep -n "\[\(WARN\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+	mvn install -P ${MAVEN_PROFILE},javadoc,deploy,${DEPLOY_TYPE},product -B -V | tee maven.log
+	echo "Check for Maven Problems on Product:"
+	(grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log || exit 0  && exit 1;)
+}
 
-echo "[Info] ------------------------------------"
-echo "[Info] Create commit authors file"
-echo "[Info] ------------------------------------"
-echo "[Info] "
 
-git fetch origin development development:development
-git log development... --pretty=format:"%aN" | sort | uniq > ./commit_authors.txt
+# process all command line arguments
+while [ "$1" != "" ]; do
+    case $1 in
+        -j | --jobs )           shift
+                                TRAVIS_JOB=$1
+                                ;;
+        -p | --profile )    	shift
+                                MAVEN_PROFILE=$1
+                                ;;
+        -h | --help )           printUsage
+                                exit
+                                ;;
+        * )                     printUsage
+                                exit 1
+    esac
+    shift
+done
 
-echo "[Info] ------------------------------------"
-echo "[Info] List of Commits and Authors"
-echo "[Info] ------------------------------------"
-echo "[Info] "
+case $MAVEN_PROFILE in
+    development )       ;;
+    integration )       ;;
+    release )           ;;
+    * )                 printUsage
+                        exit 1
+esac
 
-git --no-pager log development... --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%aN>%Creset" --abbrev-commit --reverse
-
-echo ""
-echo "[Info] ------------------------------------"
-echo "[Info] List of Commit Authors"
-echo "[Info] ------------------------------------"
-echo "[Info] "
-
-cat ./commit_authors.txt
-
-echo "[Info] ------------------------------------"
-echo "[Info] List of Known Authors"
-echo "[Info] ------------------------------------"
-echo "[Info] "
-
-cat ./known_authors.txt
-
-echo "[Info] ------------------------------------"
-echo "[Info] List of unknown Authors"
-echo "[Info] ------------------------------------"
-echo "[Info] "
-
-UNKNOWN_AUTHORS=$(grep -v -F -f ./known_authors.txt ./commit_authors.txt)
-
-CR='\033[0;31m' # Red Color
-CY='\033[1;33m' # Yellow Color
-CG='\033[1;32m' # Green Color
-CN='\033[0m'    # Reset Color
-
-echo -e "${CR}${UNKNOWN_AUTHORS}${CN}"
-
-echo "[Info] "
-echo "[Info] ------------------------------------"
-echo "[Info] generate Analysis Report"
-echo "[Info] ------------------------------------"
-echo "[Info] "
-
-# Set the Review Status to APPROVE
-# in case of one test failing, set it to REQUEST_CHANGES
-REVIEW_STATUS="APPROVE"
-
-REPORT=$'[Info] Author Verification Report \n'
-REPORT+=$'[Info] ---------------------------\n'
-
-REVIEW_STATUS_WARNINGS="REQUEST_CHANGES"
-if [ $STRICT_RULES != "true" ]; then
-	REVIEW_STATUS_WARNINGS="APPROVE"
-	REPORT+=$"[Info] Using RELAXED fail rules \n"
-else
-	REPORT+=$"[Info] Using STRICT fail rules \n"
-fi
-
-if [ "$UNKNOWN_AUTHORS" != "" ]; then
-	REVIEW_STATUS="REQUEST_CHANGES"
-	REPORT+=$"[Warn] SERIOUS: Some Authors in commit History without CLA!...(REQUEST_CHANGES) \n"
-else
-	REPORT+=$"[Info] OK:      All Authors in commit history with CLA........(APPROVE) \n"
-fi
-
-if [ $CHANGED_MAILMAP -ne 0 ]; then
-	REVIEW_STATUS="${REVIEW_STATUS_WARNINGS}"
-	REPORT+=$"[Warn] WARNING: <.mailmap> file has been changed!.............(${REVIEW_STATUS_WARNINGS}) \n"
-else
-	REPORT+=$"[Info] OK:      <.mailmap> file is not modified...............(APPROVE) \n"	
-fi
-
-if [ $CHANGED_KNOWN_AUTHORS -ne 0 ]; then
-	REVIEW_STATUS="${REVIEW_STATUS_WARNINGS}"
-	REPORT+=$"[Warn] WARNING: <known_authors.txt> file has been changed!....(${REVIEW_STATUS_WARNINGS}) \n"
-else
-	REPORT+=$"[Info] OK:      <known_authors.txt> file is not modified......(APPROVE) \n"	
-fi
-
-COLORED_REPORT=$(echo "${REPORT}" | sed -e "s/SERIOUS/\\${CR}SERIOUS\\${CN}/g" | sed -e "s/WARNING/\\${CY}WARNING\\${CN}/g" | sed -e "s/OK/\\${CG}OK\\${CN}/g")
-COLORED_REPORT=$(echo "${COLORED_REPORT}" | sed -e "s/REQUEST_CHANGES/\\${CR}REQUEST_CHANGES\\${CN}/g" | sed -e "s/APPROVE/\\${CG}APPROVE\\${CN}/g")
-
-echo -e "${COLORED_REPORT}"
-if [ "$REVIEW_STATUS" == "APPROVE" ] ; then
-  echo    "[Info] ------------------------------------"
-  echo -e "[Info] ${CG}Report does not show anomalies!${CN}"
-  echo    "[Info] ------------------------------------"
-else
-  echo    "[Warn] ------------------------------------"
-  echo -e "[Warn] ${CR}Report shows anomalies!${CN}"
-  echo    "[Warn] ------------------------------------"
-  exit 1
-fi
-
-    
+# Decide which job to run
+case $TRAVIS_JOB in
+    surefire )          callMavenSurefire
+    					exit
+                        ;;
+    spotbugs )      	callMavenSpotbugs
+    					exit
+                        ;;
+    checkstyle )      	callMavenCheckstyle
+    					exit
+                        ;;
+    assemble )      	callMavenAssemble
+    					exit
+                        ;;
+    * )                 printUsage
+                        exit 1
+esac
