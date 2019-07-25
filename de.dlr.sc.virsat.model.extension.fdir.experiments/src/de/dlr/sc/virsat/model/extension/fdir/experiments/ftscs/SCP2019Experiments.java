@@ -51,7 +51,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMultiProcessorSystemBenchmark() throws Exception {
 		System.out.println("--------------------- Experiment: MCS Benchmark  ---------------------");
-		Fault fault = createGalileoDFT("/resources/ftscs/cm1.dft");
+		Fault fault = createDFT("/resources/ftscs/cm1.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -103,7 +103,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMultiProcessorSystemNested() throws Exception {
 		System.out.println("--------------------- Experiment: MCS Nested  ---------------------");
-		Fault fault = createGalileoDFT("/resources/scp/cm1Nested.dft");
+		Fault fault = createDFT("/resources/scp/cm1Nested.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -166,7 +166,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMultiProcessorSystemNestedBenchmark() throws Exception {
 		System.out.println("--------------------- Experiment: MCS Nested Benchmark  ---------------------");
-		Fault fault = createGalileoDFT("/resources/scp/cm1Nested.dft");
+		Fault fault = createDFT("/resources/scp/cm1Nested.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);

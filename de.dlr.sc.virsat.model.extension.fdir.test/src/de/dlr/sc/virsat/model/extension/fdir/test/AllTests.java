@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverterTes
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModularizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModuleTest;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferencesTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.CleanMinimizerTest;
@@ -32,9 +33,11 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimi
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolderTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
 import junit.framework.JUnit4TestAdapter;
 
@@ -61,14 +64,17 @@ import junit.framework.JUnit4TestAdapter;
 		ComposedMinimizerTest.class,
 		StormEvaluatorTest.class,
 		FaultTreePreferencesTest.class,
+		FaultTreeHolderTest.class,
 		PONDDFTSemanticsTest.class,
 		ModularizerTest.class,
+		ModuleTest.class,
 		RecoveryAutomatonHelperTest.class,
 		ParallelComposerTest.class,
 		OpClassifyPLTest.class,
 		FDIRParametersGetterTest.class,
 		FDIRExpressionEvaluatorTest.class,
-		FDIRExpressionExtensionTest.class
+		FDIRExpressionExtensionTest.class,
+		FaultTreeTrimmerTest.class
 		})
 
 public class AllTests {

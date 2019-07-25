@@ -89,15 +89,11 @@
   </categories>
   <categories name="FMECAEntry">
     <equationDefinitions>
-      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
-        <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
-        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.meanTimeToFailure"/>
-      </expression>
-      <result xsi:type="dvlm_calc:EquationIntermediateResult" uuid="d1750f60-15eb-493a-93a7-e5db65b4fdcd" name="failureRate"/>
-    </equationDefinitions>
-    <equationDefinitions>
       <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
-        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="d1750f60-15eb-493a-93a7-e5db65b4fdcd"/>
+        <inputs xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
+          <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.meanTimeToFailure"/>
+        </inputs>
       </expression>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
     </equationDefinitions>

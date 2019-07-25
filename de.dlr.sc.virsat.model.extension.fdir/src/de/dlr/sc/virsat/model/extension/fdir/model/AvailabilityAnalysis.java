@@ -47,9 +47,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  * 
  */
 public class AvailabilityAnalysis extends AAvailabilityAnalysis {
-	private static final double TO_PERCENT = 100;
 	private static final double EPS = 0.0001;
-	public static final int COUNT_AVAILABILITY_POINTS = 100;
 
 	/**
 	 * Constructor of Concept Class
@@ -126,7 +124,6 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		}
 		
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		double pointDelta = maxTime / COUNT_AVAILABILITY_POINTS;
 		if (monitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
@@ -146,17 +143,11 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		return new RecordingCommand(ed, "Availability Analysis") {
 			@Override
 			protected void doExecute() {
-				getSteadyStateAvailabilityBean().setValue(TO_PERCENT * steadyStateAvailability);
-				getPointAvailabilityCurve().clear();
-
-				double accDelta = pointDelta;
+				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
 				if (result.getPointAvailability() != null) {
+					getPointAvailabilityCurve().clear();
 					for (int i = 0; i < result.getPointAvailability().size(); ++i) {
-						accDelta += delta;
-						if (accDelta >= pointDelta) {
-							createNewAvailabilityCurveEntry(TO_PERCENT * (result.getPointAvailability().get(i)));
-							accDelta -= pointDelta;
-						}
+						createNewAvailabilityCurveEntry(result.getPointAvailability().get(i));
 					}
 				}
 			}
@@ -174,7 +165,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		APropertyInstance pi = ci.generateInstance(getPointAvailabilityCurve().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
-		newBeanProperty.setValue(value);
+		newBeanProperty.setValueAsBaseUnit(value);
 		getPointAvailabilityCurve().add(newBeanProperty);
 	}
 }

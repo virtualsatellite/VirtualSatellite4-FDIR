@@ -202,7 +202,7 @@ public  class FMECA extends AFMECA {
 			FDIRParameters fdirParameters = beanSei.getFirst(FDIRParameters.class);
 			
 			if (fdirParameters != null) {
-				Equation equation = entry.getTypeInstance().getEquationSection().getEquations().get(1);
+				Equation equation = entry.getTypeInstance().getEquationSection().getEquations().get(0);
 				AdvancedFunction opClassifyPL = (AdvancedFunction) equation.getExpression();
 				ReferencedInput ri = CalculationFactory.eINSTANCE.createReferencedInput();
 				ri.setReference(fdirParameters.getTypeInstance());

@@ -31,9 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
  */
 
 public class DFT2BasicDFTConverterTest extends ATestCase {
-	
-	private static final int TIMESTEPS = 5;
-	
+
 	/**
 	 * Compares equivalence of two fault trees by evaluating their reliability curves
 	 * 
@@ -47,6 +45,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 		IFaultTreeEvaluator evaluator2 = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ModelCheckingResult result2 = evaluator2.evaluateFaultTree(root2);
 		
+		final int TIMESTEPS = 5;
 		for (int i = 0; i < TIMESTEPS; ++i) {
 			double failRateOld = result1.getFailRates().get(i);
 			double failRateNew = result2.getFailRates().get(i);
@@ -61,7 +60,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 		DFT2BasicDFTConverter converter = new DFT2BasicDFTConverter();
 		FaultTreeNode newRoot = converter.convert(root).getRoot();
 		
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(newRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(newRoot));
 		
 		// Recreate the tree without syntactic sugar
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/1of2.dft");
@@ -75,7 +74,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 		DFT2BasicDFTConverter converter = new DFT2BasicDFTConverter();
 		FaultTreeNode convertedRoot = converter.convert(root).getRoot();
 		
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		
 		// Recreate the fault tree without syntactic sugar
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/1of4.dft");
@@ -88,7 +87,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 
 		DFT2BasicDFTConverter converter = new DFT2BasicDFTConverter();
 		FaultTreeNode newRoot = converter.convert(root).getRoot();
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(newRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(newRoot));
 		
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/2of2.dft");
 		assertIterationResultsEquals(basicFaultTreeRoot, newRoot);
@@ -101,7 +100,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 		DFT2BasicDFTConverter converter = new DFT2BasicDFTConverter();
 		FaultTreeNode convertedRoot = converter.convert(root).getRoot();
 
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		
 		// Recreate a tree without syntactic sugar
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/4of4.dft");
@@ -115,7 +114,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 		DFT2BasicDFTConverter converter = new DFT2BasicDFTConverter();
 		FaultTreeNode convertedRoot = converter.convert(root).getRoot();
 		
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		
 		// Recreate a fault tree without syntactic sugar
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/sand2FdepBasic.dft");
@@ -129,7 +128,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 		DFT2BasicDFTConverter converter = new DFT2BasicDFTConverter();
 		FaultTreeNode convertedRoot = converter.convert(root).getRoot();
 
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		
 		// Recreate a fault tree without syntactic sugar
 
@@ -148,7 +147,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/pand2Basic.dft");
 		
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		assertIterationResultsEquals(basicFaultTreeRoot, convertedRoot);
 	}
 
@@ -163,7 +162,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/por2InclusiveFdepBasic.dft");
 
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		assertIterationResultsEquals(basicFaultTreeRoot, convertedRoot);
 	}
 
@@ -178,7 +177,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 
 		Fault basicFaultTreeRoot = createDFT("/resources/galileo/pand2InclusiveFdepBasic.dft");
 
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		assertIterationResultsEquals(basicFaultTreeRoot, convertedRoot);
 	}
 
@@ -189,7 +188,7 @@ public class DFT2BasicDFTConverterTest extends ATestCase {
 		DFT2BasicDFTConverter converter = new DFT2BasicDFTConverter();
 		FaultTreeNode convertedRoot = converter.convert(root).getRoot();
 
-		assertFalse("The tree still contains syntactic sugar.", !helper.checkSyntacticSugar(convertedRoot));
+		assertFalse("The tree still contains syntactic sugar.", !ftHelper.checkSyntacticSugar(convertedRoot));
 		assertIterationResultsEquals(root, convertedRoot);
 	}
 }

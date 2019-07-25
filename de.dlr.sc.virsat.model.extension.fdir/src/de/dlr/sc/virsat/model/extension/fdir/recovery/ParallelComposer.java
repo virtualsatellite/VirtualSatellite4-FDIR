@@ -48,7 +48,11 @@ public class ParallelComposer {
 		if (ras == null) {
 			return null;
 		} else if (ras.isEmpty()) {
-			return new RecoveryAutomaton(concept);
+			RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+			State state = new State(concept);
+			ra.getStates().add(state);
+			ra.setInitial(state);
+			return ra;
 		} else if (ras.size() == 1) {
 			return ras.iterator().next();
 		}
@@ -111,7 +115,7 @@ public class ParallelComposer {
 	 */
 	private State createNewState(RecoveryAutomaton ra, List<Integer> pos) {			
 		State newState = new State(concept);
-		newState.setName(pos.toString());
+		newState.setName(pos.stream().map(Object::toString).collect(Collectors.joining()));
 		mapStateToPos.put(newState, pos);
 		mapPosToState.put(pos, newState);
 		ra.getStates().add(newState);

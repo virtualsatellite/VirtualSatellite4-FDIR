@@ -15,6 +15,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 
+
 /**
  * Interface for defining synthesizers for recovery automatons.
  * @author muel_s8
@@ -24,7 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 public interface ISynthesizer {
 	
 	/**
-	 * Synthesies a recovery automaton.
+	 * Synthesizes a recovery automaton.
 	 * @param fault the fault
 	 * @param requirements map of requirements that need each fault needs to fulfill
 	 * @return the synthesized recovery automaton
