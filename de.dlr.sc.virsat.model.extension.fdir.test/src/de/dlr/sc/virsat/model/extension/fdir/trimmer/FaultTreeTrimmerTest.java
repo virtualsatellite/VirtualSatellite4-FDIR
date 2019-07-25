@@ -36,9 +36,9 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	protected FaultTreeTrimmer fttrim;
 	
 	@Before
+	@Override
 	public void setUp() throws Exception {
-		super.set();
-		
+		super.setUp();
 		fttrim = new FaultTreeTrimmer();
 	}
 	

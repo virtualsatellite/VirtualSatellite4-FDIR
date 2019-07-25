@@ -12,8 +12,10 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -31,9 +33,9 @@ public class BasicSynthesizerTest extends ATestCase {
 	protected BasicSynthesizer synthesizer;
 	
 	@Before
+	@Override
 	public void setUp() throws Exception {
-		super.set();
-		
+		super.setUp();
 		synthesizer = new BasicSynthesizer();
 	}
 	
@@ -158,53 +160,4 @@ public class BasicSynthesizerTest extends ATestCase {
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	} 
-	
-	/*@Test
-	public void testBCMSimpleOldWay() throws IOException {
-		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple.dft");
-		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(rootCMSimple);
-		
-		System.out.println(ra.toDot());
-		
-		final int NUM_STATES = 3;
-		assertEquals(NUM_STATES, ra.getStates().size());
-	}
-	
-	@Test
-	public void testCM1OldWay() throws IOException {
-		Fault rootCM1 = createDFT("/resources/galileo/cm1.dft");
-		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(rootCM1);
-		
-		System.out.println(ra.toDot());
-		
-		final int NUM_MODULES = 8;
-		assertEquals(NUM_MODULES, NUM_MODULES);
-	}
-	
-	@Test
-	public void testCM2OldWay() throws IOException {
-		Fault rootCM2 = createDFT("/resources/galileo/cm2.dft");
-		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(rootCM2);
-		
-		System.out.println(ra.toDot());
-		
-		final int NUM_MODULES = 8;
-		assertEquals(NUM_MODULES, NUM_MODULES);
-	}
-	
-	@Test
-	public void testCM3OldWay() throws IOException {
-		Fault rootCM3 = createDFT("/resources/galileo/cm3.dft");
-		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(rootCM3);
-		
-		System.out.println(ra.toDot());
-		
-		final int NUM_MODULES = 8;
-		assertEquals(NUM_MODULES, NUM_MODULES);
-	}*/
-	
 }
