@@ -847,6 +847,20 @@ public class FaultTreeHelper {
 	}
 	
 	/**
+	 * Remove an edge from the fault tree
+	 * @param edge the edge
+	 * @param ft the fault tree
+	 * @return true if edge removed, false otherwise
+	 */
+	public boolean removeEdgeFromFaultTree(FaultTreeEdge edge, FaultTree ft) {
+		if (ft.getPropagations().contains(edge)) {
+			ft.getPropagations().remove(edge);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Computes a string in the dot format representing
 	 * the complete fault tree under the passed fault
 	 * @param faultTree the fault tree

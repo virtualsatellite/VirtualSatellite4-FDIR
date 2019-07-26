@@ -10,6 +10,8 @@
 package de.dlr.sc.virsat.model.extension.fdir.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -76,6 +78,26 @@ public class FaultTreeHelperTest extends ATestCase {
 		
 		assertEquals(1, ftHelper.getAllPropagations(spareGateCopy.getFault()).size());
 		assertEquals(1, ftHelper.getAllSpares(spareGateCopy.getFault()).size());
+	}
+
+	@Test
+	public void testRemoveNullEdge() {
+		FaultTreeNode root = ftHelper.createBasicFault("ROOT", 0, 0);
+		FaultTreeNode child = ftHelper.createBasicFault("CHILD", 0, 0);
+		ftHelper.createFaultTreeEdge(root.getFault(), child, root);
+		
+		boolean removeEdge = ftHelper.removeEdgeFromFaultTree(null, root.getFault().getFaultTree());
+		assertFalse(removeEdge);
+	}
+	
+	@Test
+	public void testRemoveOneEdge() {
+		FaultTreeNode root = ftHelper.createBasicFault("ROOT", 0, 0);
+		FaultTreeNode child = ftHelper.createBasicFault("CHILD", 0, 0);
+		ftHelper.createFaultTreeEdge(root.getFault(), child, root);
+		
+		boolean removeEdge = ftHelper.removeEdgeFromFaultTree(root.getFault().getFaultTree().getPropagations().get(0), root.getFault().getFaultTree());
+		assertTrue(removeEdge);
 	}
 
 }

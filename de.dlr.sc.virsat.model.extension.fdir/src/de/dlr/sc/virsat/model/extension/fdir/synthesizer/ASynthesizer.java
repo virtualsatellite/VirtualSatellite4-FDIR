@@ -63,8 +63,11 @@ public abstract class ASynthesizer implements ISynthesizer {
 		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-			Set<Module> trimmedModules = ftTrimmer.trimModules(modules);
+			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
 			trimmedModules.stream().forEach(module -> module.constructFaultTreeCopy());
+			trimmedModules = ftTrimmer.trimDeterministicNodes(trimmedModules);
+			
+			trimmedModules.forEach(module -> System.out.println(module.getRootNodeCopy().getFault().getFaultTree().toDot()));
 			
 			Set<RecoveryAutomaton> ras = new HashSet<>();
 			for (Module module : trimmedModules) {
@@ -76,6 +79,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
 				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
 				ras.add(ra);
+				System.out.println(ra.toDot());
 			}
 			
 			ParallelComposer pc = new ParallelComposer();

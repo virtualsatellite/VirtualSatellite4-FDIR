@@ -160,4 +160,17 @@ public class BasicSynthesizerTest extends ATestCase {
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	} 
+	
+	
+	@Test
+	public void testSynthesizeVGS1() throws IOException {
+		Fault fault = createDFT("/resources/galileo/vgs1.dft");
+		synthesizer.synthesize(fault);
+	} 
+	
+	@Test
+	public void testSynthesizeCM4() throws IOException {
+		Fault fault = createDFT("/resources/galileo/cm4.dft");
+		synthesizer.synthesize(fault);
+	} 
 }

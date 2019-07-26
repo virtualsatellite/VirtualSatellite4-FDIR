@@ -61,13 +61,16 @@ public class ParallelComposer {
 		this.mapPosToState = new HashMap<>();
 		this.mapRAtoTransitionMap = new HashMap<>();
 		
-		indexStates(ras);
+		Map<RecoveryAutomaton, List<State>> mapRAtoStates = this.createMapRAtoStates(ras);
+		indexStates(ras, mapRAtoStates);
 		List<Integer> initialPos = ras.stream().map(ra -> 0).collect(Collectors.toList());
 		
 		RecoveryAutomaton result = new RecoveryAutomaton(concept);
+		mapRAtoStates.put(result, result.getStates());
+		List<Transition> resultTransitions = result.getTransitions();
 		RecoveryAutomatonHelper rah = new RecoveryAutomatonHelper(concept);
 		
-		State startState = createNewState(result, initialPos);
+		State startState = createNewState(result, initialPos, mapRAtoStates);
 		result.setInitial(startState);
 		
 		Stack<State> dfsStack = new Stack<State>();
@@ -80,7 +83,7 @@ public class ParallelComposer {
 			int currRA = 0;
 			for (RecoveryAutomaton ra : ras) {
 				Integer fromStateIndex = mapStateToPos.get(fromState).get(currRA);
-				State originalFromState = ra.getStates().get(fromStateIndex);
+				State originalFromState = mapRAtoStates.get(ra).get(fromStateIndex);
 				
 				for (Transition t : mapRAtoTransitionMap.get(ra).get(originalFromState)) {
 					int changedNum = mapStateToInt.get(t.getTo());
@@ -89,7 +92,7 @@ public class ParallelComposer {
 					
 					State toState = mapPosToState.get(toPos);
 					if (toState == null) {
-						toState = createNewState(result, toPos);
+						toState = createNewState(result, toPos, mapRAtoStates);
 						dfsStack.push(toState);
 					}
 					
@@ -97,7 +100,7 @@ public class ParallelComposer {
 						FaultEventTransition copiedTransition = rah.copyFaultEventTransition((FaultEventTransition) t);
 						copiedTransition.setFrom(fromState);
 						copiedTransition.setTo(toState);
-						result.getTransitions().add(copiedTransition);
+						resultTransitions.add(copiedTransition);
 					}
 					
 				}
@@ -111,32 +114,45 @@ public class ParallelComposer {
 	 * create a new state
 	 * @param ra the recovery automaton you wish to add the state to
 	 * @param pos the coordinates of the state in the new recovery automaton
+	 * @param mapRAtoState map of RA to states
 	 * @return a new State
 	 */
-	private State createNewState(RecoveryAutomaton ra, List<Integer> pos) {			
+	private State createNewState(RecoveryAutomaton ra, List<Integer> pos, Map<RecoveryAutomaton, List<State>> mapRAtoState) {			
 		State newState = new State(concept);
 		newState.setName(pos.stream().map(Object::toString).collect(Collectors.joining()));
 		mapStateToPos.put(newState, pos);
 		mapPosToState.put(pos, newState);
-		ra.getStates().add(newState);
+		mapRAtoState.get(ra).add(newState);
 		return newState;
 	}
 	
 	/**
 	 * Add recovery automata to map and rename all the states for future lookup
 	 * @param ras the set of recovery automata
+	 * @param mapRAtoState map of RA to its states
 	 */
-	private void indexStates(Set<RecoveryAutomaton> ras) {
+	private void indexStates(Set<RecoveryAutomaton> ras, Map<RecoveryAutomaton, List<State>> mapRAtoState) {
 		mapStateToInt = new HashMap<State, Integer>();
 		
 		RecoveryAutomatonHelper rah = new RecoveryAutomatonHelper(concept);
 		for (RecoveryAutomaton ra : ras) {
 			mapRAtoTransitionMap.put(ra, rah.getCurrentTransitions(ra));
 			
-			for (int i = 0; i < ra.getStates().size(); ++i) {
-				mapStateToInt.put(ra.getStates().get(i), i);
+			for (int i = 0; i < mapRAtoState.get(ra).size(); ++i) {
+				mapStateToInt.put(mapRAtoState.get(ra).get(i), i);
 			}
 		}
+	}
+	
+	/**
+	 * Get the states for each RA and save them in a map
+	 * @param ras the set of RAs
+	 * @return the map of each RA to its states
+	 */
+	private Map<RecoveryAutomaton, List<State>> createMapRAtoStates(Set<RecoveryAutomaton> ras) {
+		Map<RecoveryAutomaton, List<State>> mapRAtoStates = new HashMap<RecoveryAutomaton, List<State>>();
+		ras.forEach(ra -> mapRAtoStates.put(ra, ra.getStates()));
+		return mapRAtoStates;
 	}
 
 }

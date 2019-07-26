@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -33,6 +34,8 @@ public class Module {
 	private List<FaultTreeNodePlus> moduleNodes;
 	private FaultTreeNode moduleRootCopy;
 	private Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy;
+	private Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal;
+	private Map<FaultTreeNode, FaultTreeNodePlus> mapOriginalToNodePlus;
 	
 	/**
 	 * Default constructor.
@@ -50,6 +53,14 @@ public class Module {
 		for (FaultTreeNode ftn : moduleNodes) {
 			this.moduleNodes.add(new FaultTreeNodePlus(ftn, null, 0, 0, 0, false));
 		}
+	}
+	
+	/**
+	 * Set the table used when creating this module by the modularizer
+	 * @param mapOriginalToNodePlus the table
+	 */
+	void setTable(Map<FaultTreeNode, FaultTreeNodePlus> mapOriginalToNodePlus) {
+		this.mapOriginalToNodePlus = mapOriginalToNodePlus;
 	}
 	
 	
@@ -126,34 +137,40 @@ public class Module {
 		FaultTreeHelper fthelp = new FaultTreeHelper(this.moduleRoot.getFaultTreeNode().getConcept());
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
 		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
+		this.mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
-		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode().getFault().getFaultTree().getRoot();
-		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, null);
+		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode();
+		Fault rootFault = new Fault(originalRoot.getConcept());
+		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, rootFault.getFault());
 		rootCopy.setName(originalRoot.getName());
+		this.moduleRootCopy = rootFault;
+		fthelp.connect(rootFault, rootCopy, rootFault);
 
 		List<FaultTreeNode> sparesInOriginalFaultTree = fthelp.getAllSpareNodes(originalRoot.getFault());
 		mapOriginalToCopy.put(originalRoot, rootCopy);
+		mapCopyToOriginal.put(rootCopy, originalRoot);
 		dfsStack.push(originalRoot);
 		
 		while (!dfsStack.isEmpty()) {
 			FaultTreeNode curr = dfsStack.pop();
 			FaultTreeNode currCopy = mapOriginalToCopy.get(curr);
 			
-			if (curr.equals(moduleRoot.getFaultTreeNode())) {
-				this.moduleRootCopy = currCopy;
-			}
-			
-			List<FaultTreeNode> children = fthelp.getAllChildren(curr, curr.getFault().getFaultTree());
-			for (FaultTreeNode child : children) {
+			List<FaultTreeNodePlus> children = this.mapOriginalToNodePlus.get(curr).getChildren();
+			for (FaultTreeNodePlus childPlus : children) {
+				FaultTreeNode child = childPlus.getFaultTreeNode();
 				FaultTreeNode childCopy;
 				if (mapOriginalToCopy.get(child) == null) {
 					childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
 					mapOriginalToCopy.put(child, childCopy);
+					mapCopyToOriginal.put(childCopy, child);
 					for (int i = 0; i < childCopy.getFault().getBasicEvents().size(); ++i) {
 						BasicEvent oldBasicEvent = child.getFault().getBasicEvents().get(i);
 						BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
 						mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
+						mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
 					}
+					
+					dfsStack.push(child);
 				} else {
 					childCopy = mapOriginalToCopy.get(child);
 				}
@@ -166,10 +183,35 @@ public class Module {
 						fthelp.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);
 					}
 				}
-				dfsStack.push(child);
 			}
 		}
-		fthelp.createFaultTreeEdge(rootCopy.getFault(), this.moduleRootCopy, rootCopy);
+	}
+	
+	/**
+	 * Return whether or not the node has a priority node above it
+	 * @param ftnode the node
+	 * @return true if priority above, false otherwise
+	 */
+	public boolean hasPriorityAbove(FaultTreeNode ftnode) {
+		return mapOriginalToNodePlus.get(mapCopyToOriginal.get(ftnode)).hasPriorityAbove();
+	}
+	
+	/**
+	 * Return whether or not the node has a spare gate above it
+	 * @param ftnode the node
+	 * @return true if spare gate above, false otherwise
+	 */
+	public boolean hasSpareAbove(FaultTreeNode ftnode) {
+		return mapOriginalToNodePlus.get(mapCopyToOriginal.get(ftnode)).hasSpareAbove();
+	}
+	
+	/**
+	 * Return whether or not the node has a spare gate below it
+	 * @param ftnode the node
+	 * @return true if spare gate below, false otherwise
+	 */
+	public boolean hasSpareBelow(FaultTreeNode ftnode) {
+		return mapOriginalToNodePlus.get(mapCopyToOriginal.get(ftnode)).hasSpareBelow();
 	}
 	
 	/**
