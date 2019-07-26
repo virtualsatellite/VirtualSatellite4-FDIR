@@ -77,6 +77,10 @@ public  class ClaimAction extends AClaimAction {
 	
 	@Override
 	public String getActionLabel() {
+		if (actionLabel != null) {
+			return actionLabel;
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("Claim(");
 		
@@ -99,6 +103,8 @@ public  class ClaimAction extends AClaimAction {
 		
 		sb.append(")");
 		
-		return sb.toString();
+		actionLabel = sb.toString();
+		
+		return actionLabel;
 	}
 }
