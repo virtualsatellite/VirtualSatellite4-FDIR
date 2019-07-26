@@ -408,8 +408,9 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertIterationResultsEquals(result, EXPECTED);
 	}
 	
 	@Test
