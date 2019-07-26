@@ -48,6 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
+	protected ARecoveryAutomatonMinimizer endMinimizer = ComposedMinimizer.createEndMinimizer();
 	protected Modularizer modularizer = new Modularizer();
 	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected Concept concept;
@@ -56,9 +57,14 @@ public abstract class ASynthesizer implements ISynthesizer {
 	public RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements) {
 		concept = fault.getConcept();
 		
+		long startTime = System.currentTimeMillis();
+		System.out.println("Start time: " + 0);
+		
 		DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
 		fault = (Fault) conversionResult.getRoot();
+		
+		System.out.println("DFT to DFT conversion: " + (System.currentTimeMillis() - startTime));
 		
 		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
 		if (modularizer != null) {
@@ -66,8 +72,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
 			trimmedModules.stream().forEach(module -> module.constructFaultTreeCopy());
 			trimmedModules = ftTrimmer.trimDeterministicNodes(trimmedModules);
-			
-			trimmedModules.forEach(module -> System.out.println(module.getRootNodeCopy().getFault().getFaultTree().toDot()));
 			
 			Set<RecoveryAutomaton> ras = new HashSet<>();
 			for (Module module : trimmedModules) {
@@ -79,19 +83,23 @@ public abstract class ASynthesizer implements ISynthesizer {
 				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
 				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
 				ras.add(ra);
-				System.out.println(ra.toDot());
 			}
+			
+			System.out.println("RAs converted: " + (System.currentTimeMillis() - startTime));
 			
 			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
+			System.out.println("Final RA composed: " + (System.currentTimeMillis() - startTime));
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 		}
 		
-		if (minimizer != null) {
-			minimizer.minimize(synthesizedRA);
+		if (endMinimizer != null) {
+			endMinimizer.minimize(synthesizedRA);
 		}
+		
+		System.out.println("Final minimization: " + (System.currentTimeMillis() - startTime));
 		
 		return synthesizedRA;
 	}
