@@ -38,7 +38,7 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 	
 	@Test
 	public void experimentMultiProcessorSystem() throws Exception {
-		Fault fault = createGalileoDFT("/resources/ftscs/cm1.dft");
+		Fault fault = createDFT("/resources/ftscs/cm1.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);

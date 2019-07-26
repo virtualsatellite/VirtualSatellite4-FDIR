@@ -21,7 +21,7 @@ import java.nio.file.StandardOpenOption;
 
 import org.junit.Before;
 
-import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
+import de.dlr.sc.virsat.concept.unittest.util.test.AConceptTestCase;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
@@ -38,7 +38,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
  *
  */
 
-public class ASynthesizerExperiment {
+public class ASynthesizerExperiment extends AConceptTestCase {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
 	
@@ -47,8 +47,8 @@ public class ASynthesizerExperiment {
 	protected RecoveryAutomatonHelper raHelper;
 	
 	@Before
-	public void setup() {
-		concept = ConceptXmiLoader.loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
+	public void setUp() {
+		concept = loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
 		this.ftHelper = new FaultTreeHelper(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
 	}
@@ -59,7 +59,7 @@ public class ASynthesizerExperiment {
 	 * @return the root of the DFT
 	 * @throws IOException thrown if reading the .dft file fails
 	 */
-	protected Fault createGalileoDFT(String resourcePath) throws IOException {
+	protected Fault createDFT(String resourcePath) throws IOException {
 		URL url = new URL("platform:/plugin/" + FRAGMENT_ID + resourcePath);
 		InputStream inputStream = url.openConnection().getInputStream();
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, inputStream);
