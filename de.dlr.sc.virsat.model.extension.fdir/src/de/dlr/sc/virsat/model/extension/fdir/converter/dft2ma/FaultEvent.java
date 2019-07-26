@@ -100,7 +100,7 @@ public class FaultEvent implements IDFTEvent {
 		if (isRepair) {
 			return hasAlreadyFailed;
 		} else {
-			boolean isParentNodeActive = state.isNodeActive(be.getFault());
+			boolean isParentNodeActive = state.isNodeActive(state.getFTHolder().getMapBasicEventToFault().get(be));
 			return !hasAlreadyFailed && (isParentNodeActive || coldFailRate != 0);
 		} 
 	}
