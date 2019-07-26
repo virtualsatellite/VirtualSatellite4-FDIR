@@ -57,14 +57,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 	public RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements) {
 		concept = fault.getConcept();
 		
-		long startTime = System.currentTimeMillis();
-		System.out.println("Start time: " + 0);
-		
 		DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
 		fault = (Fault) conversionResult.getRoot();
-		
-		System.out.println("DFT to DFT conversion: " + (System.currentTimeMillis() - startTime));
 		
 		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
 		if (modularizer != null) {
@@ -85,11 +80,8 @@ public abstract class ASynthesizer implements ISynthesizer {
 				ras.add(ra);
 			}
 			
-			System.out.println("RAs converted: " + (System.currentTimeMillis() - startTime));
-			
 			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
-			System.out.println("Final RA composed: " + (System.currentTimeMillis() - startTime));
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
@@ -98,9 +90,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		if (endMinimizer != null) {
 			endMinimizer.minimize(synthesizedRA);
 		}
-		
-		System.out.println("Final minimization: " + (System.currentTimeMillis() - startTime));
-		
+
 		return synthesizedRA;
 	}
 	
