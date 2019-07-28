@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -51,6 +52,7 @@ public class DFT2MAConverter {
 	private FaultTreeHolder ftHolder;
 	private RecoveryStrategy recoveryStrategy;
 	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
+	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted;
 	
 	private boolean enableSymmetryReduction = false;
 	
@@ -96,6 +98,16 @@ public class DFT2MAConverter {
 		if (enableSymmetryReduction) {
 			FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
 			symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+			symmetryReductionInverted = new HashMap<>();
+			for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
+				for (FaultTreeNode node : entry.getValue()) {
+					if (!node.equals(entry.getKey())) {
+						symmetryReductionInverted.computeIfAbsent(node, v -> new HashSet<>()).add(entry.getKey());
+					} else {
+						symmetryReductionInverted.computeIfAbsent(node, v -> new HashSet<>());
+					}
+				}
+			}
 		}
 	}
 	
@@ -171,22 +183,12 @@ public class DFT2MAConverter {
 				// Very simple symmetry reduction to get started
 				// Doesnt yet work with deps so disable symmetry reduction if we have deps
 				if (enableSymmetryReduction) {
-					if (state.orderedBes.size() + state.unorderedBes.size() == 0) {
-						if (event instanceof FaultEvent) {
-							boolean isReducible = false;
-							for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
-								if (!be.equals(event.getNode()) && symmetryReduction.get(be).contains(event.getNode())) {
-									isReducible = true;
-									break;
-								}
-							}
-							
-							if (isReducible) {
-								continue;
-							}
-							
-							rate *= symmetryReduction.get(event.getNode()).size();
-						} 
+					if (event instanceof FaultEvent && canApplySymmetryReduction(state, (FaultEvent) event)) {
+						if (!symmetryReductionInverted.get(event.getNode()).isEmpty()) {
+							continue;
+						}
+						
+						rate *= symmetryReduction.get(event.getNode()).size();
 					}
 				}
 				
@@ -241,6 +243,17 @@ public class DFT2MAConverter {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Checks if symmetry reduction can be applied
+	 * @param state 
+	 * @param event 
+	 * @return true iff applying symmetry reduction is valid
+	 */
+	private boolean canApplySymmetryReduction(DFTState state, FaultEvent event) {
+		Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
+		return failedBasicEvents.size() == 0;
 	}
 
 	/**
