@@ -67,6 +67,8 @@ public class DFT2MAConverter {
 		staticAnalysis();
 		buildMA();
 		
+		System.out.println("STATES: " + ma.getStates().size());
+		
 		return ma;
 	}
 	
@@ -169,7 +171,7 @@ public class DFT2MAConverter {
 				// Very simple symmetry reduction to get started
 				// Doesnt yet work with deps so disable symmetry reduction if we have deps
 				if (enableSymmetryReduction) {
-					if (state.orderedBes.size() + state.unorderedBes.size() == 0 && ftHolder.getMapNodeToDEPTriggers().getOrDefault(event.getNode(), Collections.emptyList()).isEmpty()) {
+					if (state.orderedBes.size() + state.unorderedBes.size() == 0) {
 						if (event instanceof FaultEvent) {
 							boolean isReducible = false;
 							for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
