@@ -43,7 +43,7 @@ public class FaultTreeHolder {
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToDEPTriggers;
 	private Map<FaultTreeNode, List<OBSERVER>> mapNodeToObservers;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSubNodes;
-	private Map<FaultTreeNode, List<BasicEvent>> mapFaultToBasicEvents;
+	private Map<FaultTreeNode, List<FaultTreeNode>> mapFaultToBasicEvents;
 	private Map<BasicEvent, Fault> mapBasicEventToFault;
 	private Map<BasicEvent, Double> mapBasicEventToHotFailRate;
 	private Map<BasicEvent, Double> mapBasicEventToColdFailRate;
@@ -199,7 +199,7 @@ public class FaultTreeHolder {
 	 */
 	private void indexNodes() {
 		List<FaultTreeNode> indexedNodes = new ArrayList<>(nodes);
-		for (Entry<FaultTreeNode, List<BasicEvent>> entry : mapFaultToBasicEvents.entrySet()) {
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : mapFaultToBasicEvents.entrySet()) {
 			indexedNodes.addAll(entry.getValue());
 		}
 		
@@ -278,7 +278,7 @@ public class FaultTreeHolder {
 	 * Gets a mapping from any fault to the basic events
 	 * @return map fault to basic events
 	 */
-	public Map<FaultTreeNode, List<BasicEvent>> getMapFaultToBasicEvents() {
+	public Map<FaultTreeNode, List<FaultTreeNode>> getMapFaultToBasicEvents() {
 		return mapFaultToBasicEvents;
 	}
 	

@@ -50,7 +50,7 @@ public class DFT2MAConverter {
 	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToMarkovianDFTStates;
 	private FaultTreeHolder ftHolder;
 	private RecoveryStrategy recoveryStrategy;
-	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReduction;
+	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
 	
 	private boolean enableSymmetryReduction = false;
 	

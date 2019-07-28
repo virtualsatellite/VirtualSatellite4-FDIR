@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,18 +33,35 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class FaultTreeSymmetryChecker {
 	
 	/**
+	 * Enum for different type of edges
+	 * @author muel_s8
+	 *
+	 */
+	private enum EdgeType {
+		CHILD, BE, SPARE, DEP, PARENT
+	}
+	
+	/**
 	 * Computes a symmetry reduction between two FTs
 	 * @param ftHolder1 the first ft
 	 * @param ftHolder2 the second ft
 	 * @return a symmetry reduction
 	 */
-	public Map<FaultTreeNode, Set<FaultTreeNode>> computeSymmetryReduction(FaultTreeHolder ftHolder1, FaultTreeHolder ftHolder2) {
-		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryRelation = new HashMap<>();	
-		Map<Entry<FaultTreeNode, FaultTreeNode>, Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>>> mapPairToChildToChildPairs = new HashMap<>();
-		Map<Set<Entry<FaultTreeNode, FaultTreeNode>>, Entry<FaultTreeNode, FaultTreeNode>> mapChildPairsToParentPair = new HashMap<>();
+	public Map<FaultTreeNode, List<FaultTreeNode>> computeSymmetryReduction(FaultTreeHolder ftHolder1, FaultTreeHolder ftHolder2) {
+		Set<Entry<FaultTreeNode, FaultTreeNode>> pairs = new HashSet<>();
+		Map<Entry<FaultTreeNode, FaultTreeNode>, Set<Entry<FaultTreeNode, FaultTreeNode>>> mapChildPairToParentPairs = new HashMap<>();
 		Map<Entry<FaultTreeNode, FaultTreeNode>, Set<Entry<FaultTreeNode, FaultTreeNode>>> mapPairToPairSet = new HashMap<>();
 		Queue<Set<Entry<FaultTreeNode, FaultTreeNode>>> toProcess = new LinkedList<>();
 		Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> generated = new HashSet<>();
+		
+		Map<EdgeType, Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>>> mapEdgeTypeToLookUp = new HashMap<>();
+		
+		mapEdgeTypeToLookUp.put(EdgeType.CHILD, new SimpleEntry<>(ftHolder1.getMapNodeToChildren(), ftHolder2.getMapNodeToChildren()));
+		mapEdgeTypeToLookUp.put(EdgeType.BE, new SimpleEntry<>(ftHolder1.getMapFaultToBasicEvents(), ftHolder2.getMapFaultToBasicEvents()));
+		mapEdgeTypeToLookUp.put(EdgeType.SPARE, new SimpleEntry<>(ftHolder1.getMapNodeToSpares(), ftHolder2.getMapNodeToSpares()));
+		mapEdgeTypeToLookUp.put(EdgeType.DEP, new SimpleEntry<>(ftHolder1.getMapNodeToDEPTriggers(), ftHolder2.getMapNodeToDEPTriggers()));
+		mapEdgeTypeToLookUp.put(EdgeType.PARENT, new SimpleEntry<>(ftHolder1.getMapNodeToParents(), ftHolder2.getMapNodeToParents()));
+		
 		
 		// For the trees to be symmetric, at least the root nodes have to be isomorphic
 		Set<Entry<FaultTreeNode, FaultTreeNode>> initialCandidates = new HashSet<>();
@@ -63,7 +81,7 @@ public class FaultTreeSymmetryChecker {
 			Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = toProcess.poll();
 			Set<Entry<FaultTreeNode, FaultTreeNode>> incorrectPairs = new HashSet<>();
 			
-			for (Entry<FaultTreeNode, FaultTreeNode> pair : candidatePairs) {
+			nextPair: for (Entry<FaultTreeNode, FaultTreeNode> pair : candidatePairs) {
 				FaultTreeNode node1 = pair.getKey();
 				FaultTreeNode node2 = pair.getValue();
 				if (!node1.hasSameProperties(node2)) {
@@ -71,60 +89,36 @@ public class FaultTreeSymmetryChecker {
 					continue;
 				}
 				
+				// For order dependent nodes we must have actual equality
 				Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allSubCandidatePairs = new HashMap<>();
-				Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allChildCandidatePairs = createMapNodeToNodePairs(
-						ftHolder1.getMapNodeToChildren().getOrDefault(node1, Collections.emptyList()), 
-						ftHolder2.getMapNodeToChildren().getOrDefault(node2, Collections.emptyList()));
-				if (allChildCandidatePairs == null) {
-					incorrectPairs.add(pair);
-					continue;
-				}
-				allSubCandidatePairs.putAll(allChildCandidatePairs);
-				
-				Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allBeCandidatePairs = createMapNodeToNodePairs(
-						ftHolder1.getMapFaultToBasicEvents().getOrDefault(node1, Collections.emptyList()), 
-						ftHolder2.getMapFaultToBasicEvents().getOrDefault(node2, Collections.emptyList()));
-				if (allBeCandidatePairs == null) {
-					incorrectPairs.add(pair);
-					continue;
-				}
-				allSubCandidatePairs.putAll(allBeCandidatePairs);
-				
-				Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allSpareCandidatePairs = createMapNodeToNodePairs(
-						ftHolder1.getMapNodeToSpares().getOrDefault(node1, Collections.emptyList()), 
-						ftHolder2.getMapNodeToSpares().getOrDefault(node2, Collections.emptyList()));
-				if (allSpareCandidatePairs == null) {
-					incorrectPairs.add(pair);
-					continue;
-				}
-				allSubCandidatePairs.putAll(allSpareCandidatePairs);
-				
-				Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allDEPCandidatePairs = createMapNodeToNodePairs(
-						ftHolder1.getMapNodeToDEPTriggers().getOrDefault(node1, Collections.emptyList()), 
-						ftHolder2.getMapNodeToDEPTriggers().getOrDefault(node2, Collections.emptyList()));
-				if (allDEPCandidatePairs == null) {
-					incorrectPairs.add(pair);
-					continue;
-				}
-				allSubCandidatePairs.putAll(allDEPCandidatePairs);
-				
-				Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allParentCandidatePairs = createMapNodeToNodePairs(
-						ftHolder1.getMapNodeToParents().getOrDefault(node1, Collections.emptyList()), 
-						ftHolder2.getMapNodeToParents().getOrDefault(node2, Collections.emptyList()));
-				if (allParentCandidatePairs == null) {
-					incorrectPairs.add(pair);
-					continue;
-				}
-				allSubCandidatePairs.putAll(allParentCandidatePairs);
-				
-				mapPairToChildToChildPairs.put(pair, allSubCandidatePairs);
-				for (Set<Entry<FaultTreeNode, FaultTreeNode>> childCandidatePairs : allSubCandidatePairs.values()) {
-					for (Entry<FaultTreeNode, FaultTreeNode> childPair : childCandidatePairs) {
-						mapPairToPairSet.put(childPair, childCandidatePairs);
+				if (node1.getFaultTreeNodeType().isOrderDependent()) {
+					for (EdgeType edgeType : EdgeType.values()) {
+						Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>> lookup = mapEdgeTypeToLookUp.get(edgeType);
+						Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allCandidatePairs = createMapNodeToPairsOrderDependent(
+								lookup.getKey().getOrDefault(node1, Collections.emptyList()), 
+								lookup.getValue().getOrDefault(node2, Collections.emptyList()));
+						if (allCandidatePairs == null) {
+							incorrectPairs.add(pair);
+							continue nextPair;
+						}
+						allSubCandidatePairs.putAll(allCandidatePairs);
 					}
-					
-					mapChildPairsToParentPair.put(childCandidatePairs, pair);
-					
+				} else {
+					for (EdgeType edgeType : EdgeType.values()) {
+						Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>> lookup = mapEdgeTypeToLookUp.get(edgeType);
+						Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> allCandidatePairs = createMapNodeToNodePairs(
+								lookup.getKey().getOrDefault(node1, Collections.emptyList()), 
+								lookup.getValue().getOrDefault(node2, Collections.emptyList()));
+						if (allCandidatePairs == null) {
+							incorrectPairs.add(pair);
+							continue nextPair;
+						}
+						allSubCandidatePairs.putAll(allCandidatePairs);
+					}
+				}
+				
+				pairs.add(pair);
+				for (Set<Entry<FaultTreeNode, FaultTreeNode>> childCandidatePairs : allSubCandidatePairs.values()) {
 					boolean hasBeenGenerated = false;
 					for (Set<Entry<FaultTreeNode, FaultTreeNode>> generatedPair : generated) {
 						if (generatedPair.containsAll(childCandidatePairs)) {
@@ -132,7 +126,12 @@ public class FaultTreeSymmetryChecker {
 						}
 					}
 					
-					if (!hasBeenGenerated) {
+						if (!hasBeenGenerated) {
+						for (Entry<FaultTreeNode, FaultTreeNode> childPair : childCandidatePairs) {
+							mapPairToPairSet.put(childPair, childCandidatePairs);
+							mapChildPairToParentPairs.computeIfAbsent(childPair, v -> new HashSet<>()).add(pair);
+						}
+					
 						toProcess.add(childCandidatePairs);
 						generated.add(new HashSet<>(childCandidatePairs));
 					}
@@ -144,40 +143,42 @@ public class FaultTreeSymmetryChecker {
 			// If the candidate set is empty, then we need to clean up the possible isomorphisms
 			if (candidatePairs.isEmpty()) {
 				// The parent pair of this pair is confirmed incorrect
-				Entry<FaultTreeNode, FaultTreeNode> parentPair = mapChildPairsToParentPair.get(candidatePairs);
+				Set<Entry<FaultTreeNode, FaultTreeNode>> parentPairs = mapChildPairToParentPairs.get(incorrectPairs.iterator().next());
 				Queue<Entry<FaultTreeNode, FaultTreeNode>> worklist = new LinkedList<>();
-				worklist.add(parentPair);
+				if (parentPairs != null) {
+					worklist.addAll(parentPairs);
+				}
 				
 				while (!worklist.isEmpty()) {
-					parentPair = worklist.poll();
+					Entry<FaultTreeNode, FaultTreeNode> parentPair = worklist.poll();
 					
-					if (parentPair == null) {
-						continue;
-					}
-					
-					mapPairToChildToChildPairs.remove(parentPair);
 					Set<Entry<FaultTreeNode, FaultTreeNode>> parentPairSet = mapPairToPairSet.get(parentPair);
-					parentPairSet.remove(parentPair);
-					
-					// Check further upwards in the tree if new parent pairs became incorrect
-					if (parentPairSet.isEmpty()) {
-						parentPair = mapChildPairsToParentPair.get(parentPairSet);
-						worklist.add(parentPair);
+					if (!parentPairSet.isEmpty()) {
+						parentPairSet.remove(parentPair);
+						pairs.remove(parentPair);
+						
+						// Check further upwards in the tree if new parent pairs became incorrect
+						if (parentPairSet.isEmpty()) {
+							parentPairs = mapChildPairToParentPairs.get(parentPair);
+							if (parentPairs != null) {
+								worklist.addAll(parentPairs);
+							}
+						}
 					}
 				}
 			}
 		}
 		
 		// Add the remaining valid isomorphisms into the symmetry relation and order them
-		for (Entry<Entry<FaultTreeNode, FaultTreeNode>, Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>>> entry : mapPairToChildToChildPairs.entrySet()) {
-			Entry<FaultTreeNode, FaultTreeNode> pair = entry.getKey();
-			boolean isSmaller = symmetryRelation.getOrDefault(pair.getValue(), Collections.emptySet()).contains(pair.getKey());
-			if (!isSmaller) {
-				symmetryRelation.computeIfAbsent(pair.getKey(), v -> new HashSet<>()).add(pair.getValue());
+		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = new HashMap<>();	
+		for (Entry<FaultTreeNode, FaultTreeNode> pair : pairs) {
+			boolean isBigger = !symmetryReduction.getOrDefault(pair.getValue(), Collections.emptyList()).contains(pair.getKey());
+			if (isBigger) {
+				symmetryReduction.computeIfAbsent(pair.getKey(), v -> new ArrayList<>()).add(pair.getValue());
 			}
 		}
 		
-		return symmetryRelation;
+		return symmetryReduction;
 	}
 	
 	/**
@@ -197,6 +198,33 @@ public class FaultTreeSymmetryChecker {
 			mapNodeToNodePairs.put(child1, candidatePairs);
 			
 			for (FaultTreeNode child2 : nodes2) {
+				candidatePairs.add(new SimpleEntry<>(child1, child2));
+			}
+		}
+		
+		return mapNodeToNodePairs;
+	}
+	
+	/**
+	 * Helper method to create the ordered permutations between nodes of two given lists.
+	 * Since the lists are ordered, only the permutations of matching indexes are created.
+	 * @param nodes1 the first node list
+	 * @param nodes2 the second node list
+	 * @return null if the node lists dont have the same size, otherwise the permuntation of the matching indexes
+	 */
+	private Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> createMapNodeToPairsOrderDependent(List<? extends FaultTreeNode> nodes1, List<? extends FaultTreeNode> nodes2) {
+		if (nodes1.size() != nodes2.size()) {
+			return null;
+		}
+		
+		Map<FaultTreeNode, Set<Entry<FaultTreeNode, FaultTreeNode>>> mapNodeToNodePairs = new HashMap<>();
+		for (int i = 0; i < nodes1.size(); ++i) {
+			FaultTreeNode child1 = nodes1.get(i);
+			FaultTreeNode child2 = nodes2.get(i);
+			Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new HashSet<>();
+			mapNodeToNodePairs.put(child1, candidatePairs);
+	
+			if (child1.equals(child2)) {
 				candidatePairs.add(new SimpleEntry<>(child1, child2));
 			}
 		}

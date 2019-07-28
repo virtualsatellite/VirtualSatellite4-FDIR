@@ -324,8 +324,8 @@ public class DFT2MAConverterTest extends ATestCase {
 		final double[] EXPECTED = {
 			1e-07,
 			1.7e-06,
-			8.1e-06,
-			2.38e-05
+			6.14e-06,
+			1.81e-05
 		};
 		final double EXPECTEDMTTF = Double.NaN;
 		Fault fault = createDFT("/resources/galileo/pand4.dft");

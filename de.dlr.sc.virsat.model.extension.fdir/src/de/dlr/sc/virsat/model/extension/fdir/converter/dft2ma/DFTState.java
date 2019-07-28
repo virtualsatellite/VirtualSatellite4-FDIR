@@ -355,18 +355,18 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				List<BasicEvent> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
+				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
 				if (basicEvents != null) {
-					for (BasicEvent be : basicEvents) {
+					for (FaultTreeNode be : basicEvents) {
 						int beID = ftHolder.getNodeIndex(be);
 						failedNodes.set(beID);
 						permanentNodes.set(beID);
 						if (orderDependentBasicEvents.contains(be)) {
 							if (!orderedBes.contains(be)) {
-								orderedBes.add(be);
+								orderedBes.add((BasicEvent) be);
 							}
 						} else {
-							unorderedBes.add(be);
+							unorderedBes.add((BasicEvent) be);
 						}
 					}
 				}
