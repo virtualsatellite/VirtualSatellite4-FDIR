@@ -285,8 +285,9 @@ public class FaultTreeHolder {
 				queue.addAll(mapNodeToParents.get(node));
 				while (!queue.isEmpty()) {
 					FaultTreeNode parent = queue.poll();
-					allParents.add(parent);
-					queue.addAll(mapNodeToParents.get(parent));
+					if (allParents.add(parent)) {
+						queue.addAll(mapNodeToParents.get(parent));
+					}
 				}
 			}
 		}
