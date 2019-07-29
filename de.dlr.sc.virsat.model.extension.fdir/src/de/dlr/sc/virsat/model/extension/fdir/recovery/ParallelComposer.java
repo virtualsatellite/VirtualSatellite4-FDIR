@@ -79,6 +79,7 @@ public class ParallelComposer {
 		while (!dfsStack.isEmpty()) {
 			State fromState = dfsStack.pop();
 			List<Integer> fromPos = mapStateToPos.get(fromState);
+			List<Transition> intermediateTransitions = new ArrayList<Transition>();
 			
 			int currRA = 0;
 			for (RecoveryAutomaton ra : ras) {
@@ -95,17 +96,16 @@ public class ParallelComposer {
 						toState = createNewState(result, toPos, mapRAtoStates);
 						dfsStack.push(toState);
 					}
-					
 					if (t instanceof FaultEventTransition) {
 						FaultEventTransition copiedTransition = rah.copyFaultEventTransition((FaultEventTransition) t);
 						copiedTransition.setFrom(fromState);
 						copiedTransition.setTo(toState);
-						resultTransitions.add(copiedTransition);
+						intermediateTransitions.add(copiedTransition);
 					}
-					
 				}
 				currRA++;
-			}	
+			}
+			resultTransitions.addAll(intermediateTransitions);
 		}
 		return result;
 	}
