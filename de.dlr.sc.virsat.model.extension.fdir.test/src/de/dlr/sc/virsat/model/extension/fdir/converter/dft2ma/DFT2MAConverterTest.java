@@ -179,6 +179,17 @@ public class DFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateAnd3Symmetric() throws IOException {
+		final double EXPECTEDMTTF = 3.66666;
+		final int EXPECTEDSTATES = 4;
+		
+		Fault fault = createDFT("/resources/galileo/and3Symmetric.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
+	}
+	
+	@Test
 	public void testEvaluateAnd4() throws IOException {
 		final double[] EXPECTED = {
 			3e-07,

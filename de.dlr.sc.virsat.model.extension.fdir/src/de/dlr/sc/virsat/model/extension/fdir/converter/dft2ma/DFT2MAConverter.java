@@ -69,7 +69,7 @@ public class DFT2MAConverter {
 		staticAnalysis();
 		buildMA();
 		
-		System.out.println("STATES: " + ma.getStates().size());
+		System.out.println(ma.toDot());
 		
 		return ma;
 	}
@@ -184,7 +184,6 @@ public class DFT2MAConverter {
 				int multiplier = 1;
 				
 				// Very simple symmetry reduction to get started
-				// Doesnt yet work with deps so disable symmetry reduction if we have deps
 				if (enableSymmetryReduction) {
 					if (event instanceof FaultEvent) {
 						FaultTreeNode fault = ftHolder.getMapBasicEventToFault().get((BasicEvent) event.getNode());
