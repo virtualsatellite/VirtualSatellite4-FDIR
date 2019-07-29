@@ -195,20 +195,13 @@ public class DFT2MAConverter {
 							continue;
 						}
 						
-						Queue<FaultTreeNode> queue = new LinkedList<>();
 						List<FaultTreeNode> symmetricNodes = symmetryReduction.get(event.getNode());
 						for (FaultTreeNode node : symmetricNodes) {
 							if (!node.equals(event.getNode())) {
-								queue.add(ftHolder.getMapBasicEventToFault().get((BasicEvent) node));
-								hasMarkedParent = false;
-								while (!queue.isEmpty()) {
-									FaultTreeNode parent = queue.poll();
-									if (markedParents.contains(parent)) {
-										hasMarkedParent = true;
-										break;
-									}
-									queue.addAll(ftHolder.getMapNodeToParents().get(parent));
-								}
+								fault = ftHolder.getMapBasicEventToFault().get((BasicEvent) node);
+								allParents = ftHolder.getMapNodeToAllParents().get(fault);
+								hasMarkedParent = !Collections.disjoint(allParents, markedParents);
+
 								if (!hasMarkedParent) {
 									multiplier++;
 								}
