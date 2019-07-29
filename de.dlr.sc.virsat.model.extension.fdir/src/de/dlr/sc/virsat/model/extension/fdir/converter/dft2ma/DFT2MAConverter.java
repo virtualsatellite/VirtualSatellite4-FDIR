@@ -177,33 +177,27 @@ public class DFT2MAConverter {
 			DFTState state = toProcess.poll();
 			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
 			
+			Set<FaultTreeNode> markedParents = state.getMarkedParents();
+			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
+			
 			for (IDFTEvent event : occurableEvents) {
-				Double rate = event.getRate(state);
+				int multiplier = 1;
 				
 				// Very simple symmetry reduction to get started
 				// Doesnt yet work with deps so disable symmetry reduction if we have deps
 				if (enableSymmetryReduction) {
 					if (event instanceof FaultEvent) {
-						Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
-						Queue<FaultTreeNode> queue = new LinkedList<>();
-						Set<FaultTreeNode> markedParents = state.getMarkedParents();
-						queue.add(ftHolder.getMapBasicEventToFault().get((BasicEvent) event.getNode()));
-						boolean hasMarkedParent = false;
-						while (!queue.isEmpty()) {
-							FaultTreeNode parent = queue.poll();
-							if (markedParents.contains(parent)) {
-								hasMarkedParent = true;
-								break;
-							}
-							queue.addAll(ftHolder.getMapNodeToParents().get(parent));
-						}
-						
+						FaultTreeNode fault = ftHolder.getMapBasicEventToFault().get((BasicEvent) event.getNode());
+						Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(fault);
+						boolean hasMarkedParent = !Collections.disjoint(allParents, markedParents);
+
 						if (!hasMarkedParent && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
 							continue;
 						}
 						
-						int multiplier = 1;
-						for (FaultTreeNode node : symmetryReduction.get(event.getNode())) {
+						Queue<FaultTreeNode> queue = new LinkedList<>();
+						List<FaultTreeNode> symmetricNodes = symmetryReduction.get(event.getNode());
+						for (FaultTreeNode node : symmetricNodes) {
 							if (!node.equals(event.getNode())) {
 								queue.add(ftHolder.getMapBasicEventToFault().get((BasicEvent) node));
 								hasMarkedParent = false;
@@ -220,9 +214,10 @@ public class DFT2MAConverter {
 								}
 							}
 						}
-						rate *= multiplier;
 					}
 				}
+				
+				Double rate = event.getRate(state) * multiplier;
 				
 				DFTState baseSucc = dftSemantics.getStateGenerator().generateState(state);
 				baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());

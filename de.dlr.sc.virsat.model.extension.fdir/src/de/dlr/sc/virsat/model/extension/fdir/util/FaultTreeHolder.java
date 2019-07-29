@@ -40,6 +40,7 @@ public class FaultTreeHolder {
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToChildren;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSpares;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToParents;
+	private Map<FaultTreeNode, Set<FaultTreeNode>> mapNodeToAllParents;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToDEPTriggers;
 	private Map<FaultTreeNode, List<OBSERVER>> mapNodeToObservers;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSubNodes;
@@ -272,6 +273,24 @@ public class FaultTreeHolder {
 	 */
 	public Map<FaultTreeNode, List<FaultTreeNode>> getMapNodeToParents() {
 		return mapNodeToParents;
+	}
+	
+	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapNodeToAllParents() {
+		if (mapNodeToAllParents == null) {
+			mapNodeToAllParents = new HashMap<>();
+			for (FaultTreeNode node : mapNodeToParents.keySet()) {
+				Set<FaultTreeNode> allParents = new HashSet<>();
+				mapNodeToAllParents.put(node, allParents);
+				Queue<FaultTreeNode> queue = new LinkedList<>();
+				queue.addAll(mapNodeToParents.get(node));
+				while (!queue.isEmpty()) {
+					FaultTreeNode parent = queue.poll();
+					allParents.add(parent);
+					queue.addAll(mapNodeToParents.get(parent));
+				}
+			}
+		}
+		return mapNodeToAllParents;
 	}
 	
 	/**
