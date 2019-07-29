@@ -15,8 +15,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -51,6 +53,8 @@ public class DFTState extends MarkovState {
 	private BitSet failedNodes;
 	private BitSet permanentNodes;
 	private BitSet failingNodes;
+	
+	private Set<FaultTreeNode> markedParents;
 	
 	List<BasicEvent> orderedBes;
 	Set<BasicEvent> unorderedBes;
@@ -498,5 +502,31 @@ public class DFTState extends MarkovState {
 		}
 		
 		return false;
+	}
+	
+	public void createMarkings(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction, Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted) {
+		if (markedParents == null) {
+			markedParents = new HashSet<>(predecessor.getMarkedParents());
+		} else {
+			markedParents.addAll(predecessor.getMarkedParents());
+		}
+		
+		Queue<FaultTreeNode> queue = new LinkedList<>();
+		queue.addAll(symmetryReduction.get(ftHolder.getMapBasicEventToFault().get(basicEvent)));
+		
+		while (!queue.isEmpty()) {
+			FaultTreeNode parent = queue.poll();
+			if (!symmetryReductionInverted.get(parent).isEmpty()) {
+				markedParents.add(parent);
+				queue.addAll(ftHolder.getMapNodeToParents().get(parent));
+			}
+		}
+	}
+	
+	public Set<FaultTreeNode> getMarkedParents() {
+		if (markedParents == null) {
+			markedParents = new HashSet<>();
+		}
+		return markedParents;
 	}
 }

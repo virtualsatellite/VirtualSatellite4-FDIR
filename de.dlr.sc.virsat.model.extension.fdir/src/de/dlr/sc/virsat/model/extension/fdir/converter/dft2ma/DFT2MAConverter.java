@@ -186,19 +186,7 @@ public class DFT2MAConverter {
 					if (event instanceof FaultEvent) {
 						Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 						Queue<FaultTreeNode> queue = new LinkedList<>();
-						for (BasicEvent be : failedBasicEvents) {
-							queue.addAll(symmetryReduction.get(ftHolder.getMapBasicEventToFault().get(be)));
-						}
-						
-						Set<FaultTreeNode> markedParents = new HashSet<>();
-						while (!queue.isEmpty()) {
-							FaultTreeNode parent = queue.poll();
-							if (!symmetryReductionInverted.get(parent).isEmpty()) {
-								markedParents.add(parent);
-								queue.addAll(ftHolder.getMapNodeToParents().get(parent));
-							}
-						}
-						
+						Set<FaultTreeNode> markedParents = state.getMarkedParents();
 						queue.add(ftHolder.getMapBasicEventToFault().get((BasicEvent) event.getNode()));
 						boolean hasMarkedParent = false;
 						while (!queue.isEmpty()) {
@@ -269,6 +257,12 @@ public class DFT2MAConverter {
 					DFTState equivalentState = getEquivalentState(succ);
 					
 					if (equivalentState == succ) {
+						if (enableSymmetryReduction) {
+							if (event instanceof FaultEvent) {
+								succ.createMarkings(state, (BasicEvent) event.getNode(), symmetryReduction, symmetryReductionInverted);
+							}
+						}
+						
 						ma.addState(succ);
 						toProcess.offer(succ);
 						
