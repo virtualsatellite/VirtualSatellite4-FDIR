@@ -58,6 +58,7 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 	 */
 	public static ComposedMinimizer createEndMinimizer() {
 		ComposedMinimizer composedMinimizer = new ComposedMinimizer();
+		composedMinimizer.addMinimizer(new PartitionRefinementMinimizer());
 		composedMinimizer.addMinimizer(new FinalStateMinimizer());
 		return composedMinimizer;
 	}
