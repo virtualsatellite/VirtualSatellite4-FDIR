@@ -505,7 +505,6 @@ public class DFTState extends MarkovState {
 	}
 	
 	public void createMarkings(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction, Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted) {
-		markedParents = null;
 		if (markedParents == null) {
 			markedParents = new HashSet<>(predecessor.getMarkedParents());
 		} else {
