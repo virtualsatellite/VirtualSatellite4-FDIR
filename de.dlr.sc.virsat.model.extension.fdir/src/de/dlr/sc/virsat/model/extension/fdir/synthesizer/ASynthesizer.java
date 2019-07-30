@@ -85,10 +85,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
-		}
-		
-		if (endMinimizer != null) {
-			endMinimizer.minimize(synthesizedRA);
+			if (minimizer != null) {
+				minimizer.minimize(synthesizedRA);
+			}
 		}
 
 		return synthesizedRA;
