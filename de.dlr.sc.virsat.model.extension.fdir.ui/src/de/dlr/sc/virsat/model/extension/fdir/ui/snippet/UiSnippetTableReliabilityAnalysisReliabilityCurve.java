@@ -75,7 +75,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 		gridDataReliabilityChart.heightHint = DEFAULT_CHART_HEIGHT;
 		subSection.setLayoutData(gridDataReliabilityChart);
 
-
+		// make a chart
 		chart = createChart();
 		chart.setBorderVisible(false);
 
