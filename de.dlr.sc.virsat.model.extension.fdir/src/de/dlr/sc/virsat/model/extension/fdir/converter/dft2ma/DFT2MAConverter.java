@@ -191,9 +191,8 @@ public class DFT2MAConverter {
 				// Very simple symmetry reduction to get started
 				if (enableSymmetryReduction) {
 					if (event instanceof FaultEvent) {
-						FaultTreeNode fault = ftHolder.getMapBasicEventToFault().get((BasicEvent) event.getNode());
-						Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(fault);
-						boolean hasMarkedParent = markedParents.contains(fault) || !Collections.disjoint(allParents, markedParents);
+						Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(event.getNode());
+						boolean hasMarkedParent = !Collections.disjoint(allParents, markedParents);
 						
 						if (!hasMarkedParent && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
 							continue;
@@ -202,9 +201,8 @@ public class DFT2MAConverter {
 						List<FaultTreeNode> symmetricNodes = symmetryReduction.get(event.getNode());
 						for (FaultTreeNode node : symmetricNodes) {
 							if (!node.equals(event.getNode())) {
-								fault = ftHolder.getMapBasicEventToFault().get((BasicEvent) node);
-								allParents = ftHolder.getMapNodeToAllParents().get(fault);
-								hasMarkedParent = markedParents.contains(fault) || !Collections.disjoint(allParents, markedParents);
+								allParents = ftHolder.getMapNodeToAllParents().get(node);
+								hasMarkedParent = !Collections.disjoint(allParents, markedParents);
 
 								if (!hasMarkedParent) {
 									multiplier++;

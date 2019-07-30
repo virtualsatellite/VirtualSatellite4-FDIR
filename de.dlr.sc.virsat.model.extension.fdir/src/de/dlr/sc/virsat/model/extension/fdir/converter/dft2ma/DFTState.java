@@ -513,9 +513,8 @@ public class DFTState extends MarkovState {
 		}
 		
 		Queue<FaultTreeNode> queue = new LinkedList<>();
-		FaultTreeNode fault = ftHolder.getMapBasicEventToFault().get(basicEvent);
-		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(fault);
-		queue.add(fault);
+		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
+		queue.add(basicEvent);
 		
 		while (!queue.isEmpty()) {
 			FaultTreeNode parent = queue.poll();
