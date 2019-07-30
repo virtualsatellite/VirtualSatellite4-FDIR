@@ -518,8 +518,9 @@ public class DFTState extends MarkovState {
 			FaultTreeNode parent = queue.poll();
 			Set<FaultTreeNode> smallerNodes = symmetryReductionInverted.get(parent);
 			if (smallerNodes != null && !smallerNodes.isEmpty()) {
-				markedParents.add(parent);
 				queue.addAll(ftHolder.getMapNodeToParents().get(parent));
+			} else {
+				markedParents.add(parent);
 			}
 		}
 	}
