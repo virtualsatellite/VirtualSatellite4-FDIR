@@ -116,12 +116,16 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		FaultTreeNode min2 = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).skip(1).findFirst().get();
 		FaultTreeNode max1 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min1).contains(k) && symmetryReduction.get(k).size() == 0).findFirst().get();
 		FaultTreeNode max2 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min2).contains(k) && symmetryReduction.get(k).size() == 0).findFirst().get();
+		FaultTreeNode minParent = ftHolder.getMapNodeToParents().get(min1).get(0);
+		FaultTreeNode maxParent = ftHolder.getMapNodeToParents().get(max1).get(0);
 		//CHECKSTYLE:ON
 		
 		assertThat(symmetryReduction.get(min1), hasItems(max1));
 		assertThat(symmetryReduction.get(min2), hasItems(max2));
+		assertThat(symmetryReduction.get(minParent), hasItems(maxParent));
 		assertTrue(symmetryReduction.get(max1).isEmpty());
 		assertTrue(symmetryReduction.get(max2).isEmpty());
+		assertTrue(symmetryReduction.get(maxParent).isEmpty());
 	}
 	
 	@Test
