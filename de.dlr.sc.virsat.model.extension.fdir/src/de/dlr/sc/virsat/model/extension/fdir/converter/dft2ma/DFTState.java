@@ -505,6 +505,7 @@ public class DFTState extends MarkovState {
 	}
 	
 	public void createMarkings(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction, Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted) {
+		markedParents = null;
 		if (markedParents == null) {
 			markedParents = new HashSet<>(predecessor.getMarkedParents());
 		} else {
@@ -512,14 +513,24 @@ public class DFTState extends MarkovState {
 		}
 		
 		Queue<FaultTreeNode> queue = new LinkedList<>();
-		queue.addAll(symmetryReduction.get(ftHolder.getMapBasicEventToFault().get(basicEvent)));
+		FaultTreeNode fault = ftHolder.getMapBasicEventToFault().get(basicEvent);
+		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(fault);
+		queue.add(fault);
 		
 		while (!queue.isEmpty()) {
 			FaultTreeNode parent = queue.poll();
-			Set<FaultTreeNode> smallerNodes = symmetryReductionInverted.get(parent);
-			if (smallerNodes != null && !smallerNodes.isEmpty()) {
-				if (markedParents.add(parent)) {
-					queue.addAll(ftHolder.getMapNodeToParents().get(parent));
+			List<FaultTreeNode> biggerNodes = symmetryReduction.get(parent);
+			if (biggerNodes != null && !biggerNodes.isEmpty()) {
+				boolean addedMarkedParent = false;
+				for (FaultTreeNode biggerNode : biggerNodes) {
+					if (!allParents.contains(biggerNode)) {
+						addedMarkedParent |= markedParents.add(biggerNode);
+					}
+				}
+				
+				if (addedMarkedParent) {
+					List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(parent);
+					queue.addAll(parents);
 				}
 			}
 		}
