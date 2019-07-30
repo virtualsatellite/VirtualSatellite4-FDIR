@@ -10,9 +10,9 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,10 +48,10 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault faultA = ftHolder.getNodeByName("A",  Fault.class);
 		Fault faultB = ftHolder.getNodeByName("B",  Fault.class);
 		
-		assertEquals(1, symmetryReduction.get(a).size());
-		assertEquals(1, symmetryReduction.get(b).size());
-		assertEquals(1, symmetryReduction.get(faultA).size());
-		assertEquals(1, symmetryReduction.get(faultB).size());
+		assertTrue(symmetryReduction.get(a).isEmpty());
+		assertTrue(symmetryReduction.get(b).isEmpty());
+		assertTrue(symmetryReduction.get(faultA).isEmpty());
+		assertTrue(symmetryReduction.get(faultB).isEmpty());
 	}
 	
 	@Test
@@ -66,10 +66,10 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		BasicEvent c = ftHolder.getNodeByName("C",  BasicEvent.class);
 		BasicEvent d = ftHolder.getNodeByName("D",  BasicEvent.class);
 		
-		assertEquals(1, symmetryReduction.get(a).size());
-		assertEquals(1, symmetryReduction.get(b).size());
-		assertEquals(1, symmetryReduction.get(c).size());
-		assertEquals(1, symmetryReduction.get(d).size());
+		assertTrue(symmetryReduction.get(a).isEmpty());
+		assertTrue(symmetryReduction.get(b).isEmpty());
+		assertTrue(symmetryReduction.get(c).isEmpty());
+		assertTrue(symmetryReduction.get(d).isEmpty());
 	}
 	
 	@Test
@@ -79,11 +79,11 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		
 		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 
-		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 2).findFirst().get();
-		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
+		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
+		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 0).findFirst().get();
 		
-		assertThat(symmetryReduction.get(min), hasItems(min, max));
-		assertThat(symmetryReduction.get(max), hasItems(max));
+		assertThat(symmetryReduction.get(min), hasItems(max));
+		assertTrue(symmetryReduction.get(max).isEmpty());
 	}
 	
 	@Test
@@ -94,14 +94,14 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 		
 		//CHECKSTYLE:OFF
-		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 3).findFirst().get();
-		FaultTreeNode mid = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 2).findFirst().get();
-		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
+		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 2).findFirst().get();
+		FaultTreeNode mid = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
+		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 0).findFirst().get();
 		//CHECKSTYLE:ON
 		
-		assertThat(symmetryReduction.get(min), hasItems(min, mid, max));
-		assertThat(symmetryReduction.get(mid), hasItems(mid, max));
-		assertThat(symmetryReduction.get(max), hasItems(max));
+		assertThat(symmetryReduction.get(min), hasItems(mid, max));
+		assertThat(symmetryReduction.get(mid), hasItems(max));
+		assertTrue(symmetryReduction.get(max).isEmpty());
 	}
 	
 	@Test
@@ -112,16 +112,16 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 
 		//CHECKSTYLE:OFF
-		FaultTreeNode min1 = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 2).findFirst().get();
-		FaultTreeNode min2 = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 2).skip(1).findFirst().get();
-		FaultTreeNode max1 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min1).contains(k) && symmetryReduction.get(k).size() == 1).findFirst().get();
-		FaultTreeNode max2 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min2).contains(k) && symmetryReduction.get(k).size() == 1).findFirst().get();
+		FaultTreeNode min1 = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
+		FaultTreeNode min2 = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).skip(1).findFirst().get();
+		FaultTreeNode max1 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min1).contains(k) && symmetryReduction.get(k).size() == 0).findFirst().get();
+		FaultTreeNode max2 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min2).contains(k) && symmetryReduction.get(k).size() == 0).findFirst().get();
 		//CHECKSTYLE:ON
 		
-		assertThat(symmetryReduction.get(min1), hasItems(min1, max1));
-		assertThat(symmetryReduction.get(min2), hasItems(min2, max2));
-		assertThat(symmetryReduction.get(max1), hasItems(max1));
-		assertThat(symmetryReduction.get(max2), hasItems(max2));
+		assertThat(symmetryReduction.get(min1), hasItems(max1));
+		assertThat(symmetryReduction.get(min2), hasItems(max2));
+		assertTrue(symmetryReduction.get(max1).isEmpty());
+		assertTrue(symmetryReduction.get(max2).isEmpty());
 	}
 	
 	@Test
@@ -132,13 +132,12 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 
 		BasicEvent a = ftHolder.getNodeByName("A",  BasicEvent.class);
-		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 2).findFirst().get();
-		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1 && !k.equals(a)).findFirst().get();
+		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
+		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 0 && !k.equals(a)).findFirst().get();
 		
-		assertEquals(1, symmetryReduction.get(a).size());
-		assertThat(symmetryReduction.get(a), hasItems(a));
-		assertThat(symmetryReduction.get(min), hasItems(min, max));
-		assertThat(symmetryReduction.get(max), hasItems(max));
+		assertTrue(symmetryReduction.get(a).isEmpty());
+		assertThat(symmetryReduction.get(min), hasItems(max));
+		assertTrue(symmetryReduction.get(max).isEmpty());
 	}
 	
 	@Test

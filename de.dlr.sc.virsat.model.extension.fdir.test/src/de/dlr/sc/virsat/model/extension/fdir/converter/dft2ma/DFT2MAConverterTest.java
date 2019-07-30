@@ -180,7 +180,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateAnd3Symmetric() throws IOException {
-		final double EXPECTEDMTTF = 3.66666;
+		final double EXPECTEDMTTF = 3.666666666;
 		final int EXPECTEDSTATES = 4;
 		
 		Fault fault = createDFT("/resources/galileo/and3Symmetric.dft");

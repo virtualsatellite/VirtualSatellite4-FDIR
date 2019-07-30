@@ -174,7 +174,11 @@ public class FaultTreeSymmetryChecker {
 		for (Entry<FaultTreeNode, FaultTreeNode> pair : pairs) {
 			boolean isBigger = !symmetryReduction.getOrDefault(pair.getValue(), Collections.emptyList()).contains(pair.getKey());
 			if (isBigger) {
-				symmetryReduction.computeIfAbsent(pair.getKey(), v -> new ArrayList<>()).add(pair.getValue());
+				if (!pair.getValue().equals(pair.getKey())) {
+					symmetryReduction.computeIfAbsent(pair.getKey(), v -> new ArrayList<>()).add(pair.getValue());
+				} else {
+					symmetryReduction.computeIfAbsent(pair.getKey(), v -> new ArrayList<>());
+				}
 			}
 		}
 		
