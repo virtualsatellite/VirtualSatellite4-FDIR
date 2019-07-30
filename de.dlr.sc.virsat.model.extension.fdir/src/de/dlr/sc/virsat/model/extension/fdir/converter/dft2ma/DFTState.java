@@ -517,10 +517,10 @@ public class DFTState extends MarkovState {
 		queue.add(basicEvent);
 		
 		while (!queue.isEmpty()) {
-			FaultTreeNode parent = queue.poll();
-			List<FaultTreeNode> biggerNodes = symmetryReduction.get(parent);
+			FaultTreeNode node = queue.poll();
+			List<FaultTreeNode> biggerNodes = symmetryReduction.get(node);
 			if (biggerNodes != null && !biggerNodes.isEmpty()) {
-				boolean continueToParents = hasFaultTreeNodeFailed(parent);
+				boolean continueToParents = hasFaultTreeNodeFailed(node);
 				if (!continueToParents) {
 					for (FaultTreeNode biggerNode : biggerNodes) {
 						if (!allParents.contains(biggerNode)) {
@@ -530,7 +530,7 @@ public class DFTState extends MarkovState {
 				}
 				
 				if (continueToParents) {
-					List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(parent);
+					List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
 					queue.addAll(parents);
 				}
 			}
