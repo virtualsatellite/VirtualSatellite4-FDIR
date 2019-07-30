@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
-
 /**
  * Auto Generated Class inheriting from Generator Gap Class
  * 
@@ -20,5 +19,6 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  * 
  */
-public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnippetTableAvailabilityAnalysisAvailabilityCurve implements IUiSnippet {
+public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve
+		extends AUiSnippetTableAvailabilityAnalysisAvailabilityCurve implements IUiSnippet {
 }

@@ -1,11 +1,12 @@
-/**
- * This file is part of the VirSat project.
+/*******************************************************************************
+ * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
  *
- * Copyright (c) 2008-2016
- * German Aerospace Center (DLR), Simulation and Software Technology, Germany
- * All rights reserved
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- */
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
@@ -28,7 +29,7 @@ public abstract class AUiSnippetTableAvailabilityAnalysisAvailabilityCurve exten
 
 	public AUiSnippetTableAvailabilityAnalysisAvailabilityCurve() {
 		super("de.dlr.sc.virsat.model.extension.fdir",
-			"availabilityCurve",
+			"AvailabilityCurve",
 			"AvailabilityAnalysis",
 			STYLE_ADD_BUTTON | STYLE_REMOVE_BUTTON | STYLE_EDITOR_BUTTON);
 	}
