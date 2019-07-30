@@ -13,7 +13,9 @@ package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Links each FaultTreeNode in a FaultTree with the first and last date visited.
@@ -32,7 +34,11 @@ public class FaultTreeNodePlus {
 	
 	private boolean harvested = false;
 	private boolean hasPriorityAbove = false;
+	private boolean hasSpareAbove = false;
+	private boolean hasSpareBelow = false;
 	private boolean isDEPDescendant = false;
+	
+	private List<FaultTreeNodePlus> children = new ArrayList<FaultTreeNodePlus>();
 
 	/* CONSTRUCTORS */
 	
@@ -122,41 +128,95 @@ public class FaultTreeNodePlus {
 	}
 	
 	/**
-	 * Determine if this node has a priority gate above
-	 * @return true is has priority above, false otherwise
+	 * Get the nodes this node has been visited from
+	 * @return the set of nodes this node has been visited from
 	 */
-	boolean determineIfHasPriorityAbove() {
-		if (!this.hasPriorityAbove) {
-			for (FaultTreeNodePlus node : this.visitedFrom) {
-				if (node.isPriority() || node.determineIfHasPriorityAbove()) {
-					this.hasPriorityAbove = true;
-					break;
-				}
-			}
-		}
+	Set<FaultTreeNodePlus> getSetFrom() {
+		return this.visitedFrom;
+	}
+	
+	/**
+	 * Determine if this node has a priority gate above
+	 * @return true if has priority above, false otherwise
+	 */
+	boolean hasPriorityAbove() {
 		return this.hasPriorityAbove;
+	}
+	
+	/**
+	 * Determine if this node has a spare gate above
+	 * @return true if has spare above, false otherwise
+	 */
+	boolean hasSpareAbove() {
+		return this.hasSpareAbove;
 	}
 	
 	/**
 	 * Determine if this node is a DEP descendant
 	 * @return true if DEP descendant, false otherwise
 	 */
-	boolean determineIfIsDEPDescendant() {
-		if (!this.isDEPDescendant) {
-			for (FaultTreeNodePlus node : this.visitedFrom) {
-				if (node.isDependency() || node.determineIfIsDEPDescendant()) {
-					this.isDEPDescendant = true;
-					break;
-				}
-			}
-		}
+	boolean isDEPDescendant() {
 		return this.isDEPDescendant;
 	}
-
+	
+	/**
+	 * Does this node have a spare below
+	 * @return true if has spare below, false otherwise
+	 */
+	boolean hasSpareBelow() {
+		return this.hasSpareBelow;
+	}
+	
+	/**
+	 * Get the children of a node
+	 * @return list of children
+	 */
+	List<FaultTreeNodePlus> getChildren() {
+		return this.children;
+	}
 	
 	/* ***********************
 	 * OTHER METHODS
 	 *********************** */
+	
+	/**
+	 * Add a child to this node
+	 * @param child the child to be added
+	 */
+	void addChild(FaultTreeNodePlus child) {
+		if (this.children == null) {
+			this.children = new ArrayList<FaultTreeNodePlus>();
+		}
+		this.children.add(child);
+	}
+	
+	/**
+	 * Set node has is a dep descendant as true
+	 */
+	void setDEPDescendant() {
+		this.isDEPDescendant = true;
+	}
+	
+	/**
+	 * Set that there is a priority gate above
+	 */
+	void setHasPriorityAbove() {
+		this.hasPriorityAbove = true;
+	}
+	
+	/**
+	 * Set that there is a spare gate below
+	 */
+	void setHasSpareBelow() {
+		this.hasSpareBelow = true;
+	}
+	
+	/**
+	 * Set that there is a spare gate above
+	 */
+	void setHasSpareAbove() {
+		this.hasSpareAbove = true;
+	}
 	
 	/**
 	 * Trim node from fault tree
@@ -172,8 +232,6 @@ public class FaultTreeNodePlus {
 	 */
 	void addVisitedFrom(FaultTreeNodePlus node) {
 		this.visitedFrom.add(node);
-		this.determineIfHasPriorityAbove();
-		this.determineIfIsDEPDescendant();
 	}
 	
 	/**
@@ -184,9 +242,7 @@ public class FaultTreeNodePlus {
 	boolean visitedBeforeFromNode(FaultTreeNodePlus node) {
 		if (this.visitedFrom.isEmpty()) {
 			return false;
-		}
-		
-		if (this.visitedFrom.contains(node)) {
+		} else if (this.visitedFrom.contains(node)) {
 			return true;
 		}
 		return false;
@@ -194,18 +250,12 @@ public class FaultTreeNodePlus {
 
 	
 	/**
-	 * Returns whether a FaultTreeNodePlus is dynamic or not
-	 * @return true if dynamic, false otherwise
+	 * Returns whether a FaultTreeNodePlus is nondeterministic or not
+	 * @return true if nondeterministic, false otherwise
 	 */
-	public boolean isDynamic() {
+	public boolean isNondeterministic() {
 		switch (this.getFaultTreeNode().getFaultTreeNodeType()) {
-			case FDEP:
-				return true;
 			case SPARE:
-				return true;
-			case PAND:
-				return true;
-			case POR:
 				return true;
 			default: return false;
 		}

@@ -9,6 +9,24 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECA;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 
@@ -21,4 +39,44 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  */
 public class UiSnippetSectionFMECA extends AUiSnippetSectionFMECA implements IUiSnippet {
+	@Override
+	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
+		super.createSwt(toolkit, editingDomain, composite, initModel);
+
+		Composite buttonSectionBody = toolkit.createComposite(composite);
+		GridLayout layout = new GridLayout(1, true);
+		buttonSectionBody.setLayout(layout);
+		Button buttonUpdate = toolkit.createButton(buttonSectionBody, "Perform Analysis", SWT.PUSH);
+		buttonUpdate.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				widgetDefaultSelected(e);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				Job job = new Job("FMECA") {
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {	
+						monitor.setTaskName("FMECA");
+						FMECA fmeca = new FMECA((CategoryAssignment) model);
+						Command fmecaCommand = fmeca.perform((TransactionalEditingDomain) editingDomain, monitor);
+						
+						if (monitor.isCanceled()) {
+							return Status.CANCEL_STATUS;
+						}
+						
+						editingDomain.getCommandStack().execute(fmecaCommand);
+						return Status.OK_STATUS;
+					}
+
+				};
+
+				job.setUser(true);
+				job.schedule();
+			}
+		});
+
+	}
 }

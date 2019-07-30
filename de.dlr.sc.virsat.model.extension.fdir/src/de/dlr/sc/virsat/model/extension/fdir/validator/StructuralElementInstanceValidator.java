@@ -66,9 +66,10 @@ public class StructuralElementInstanceValidator extends AStructuralElementInstan
 					String fqn = rr.getMinReliabilityBean().getATypeInstance().getFullQualifiedInstanceName();
 					IUuid iUuid = rr.getMinReliabilityBean().getTypeInstance();
 																																	
-					vfmHelper.createFEAValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MIN_RELIABILITY + fqn, iUuid);
+					vfmHelper.createFDIRValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MIN_RELIABILITY + fqn, iUuid);
 				}
 				
+				/*
 				if (rr.getMaxCriticality() > 0 && fault.getCriticalityLevel() > rr.getMaxCriticality()) {
 					allInfoValid = false;
 					String fqn = rr.getMaxCriticalityBean().getATypeInstance().getFullQualifiedInstanceName();
@@ -76,6 +77,7 @@ public class StructuralElementInstanceValidator extends AStructuralElementInstan
 																																	
 					vfmHelper.createFEAValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MAX_CRITICALITY_LEVEL + fqn, iUuid);
 				}
+				*/
 			}
 			
 			if (ftr != null && cutSetAnalysis != null) {
@@ -84,7 +86,7 @@ public class StructuralElementInstanceValidator extends AStructuralElementInstan
 					String fqn = ftr.getMinFaultToleranceBean().getATypeInstance().getFullQualifiedInstanceName();
 					IUuid iUuid = ftr.getMinFaultToleranceBean().getTypeInstance();
 																																	
-					vfmHelper.createFEAValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MIN_FAULT_TOLERANCE + fqn, iUuid);
+					vfmHelper.createFDIRValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MIN_FAULT_TOLERANCE + fqn, iUuid);
 				}
 			}
 		}

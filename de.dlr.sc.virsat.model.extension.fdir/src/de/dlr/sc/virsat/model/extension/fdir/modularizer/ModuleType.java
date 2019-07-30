@@ -16,5 +16,5 @@ package de.dlr.sc.virsat.model.extension.fdir.modularizer;
  *
  */
 enum ModuleType {
-	STATIC, DYNAMIC;
+	STATIC, DYNAMIC, DETERMINISTIC, NONDETERMINISTIC;
 }

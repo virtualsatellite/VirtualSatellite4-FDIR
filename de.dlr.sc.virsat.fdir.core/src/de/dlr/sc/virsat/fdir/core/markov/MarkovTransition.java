@@ -41,6 +41,14 @@ public class MarkovTransition<S> {
 	}
 	
 	/**
+	 * Copy functionality
+	 * @return a copy of this markov transition
+	 */
+	public MarkovTransition<S> copy() {
+		return new MarkovTransition<S>(from, to, rate, event, isMarkovian);
+	}
+	
+	/**
 	 * Set the starting state of this transition
 	 * @param from the starting state of this transition
 	 */

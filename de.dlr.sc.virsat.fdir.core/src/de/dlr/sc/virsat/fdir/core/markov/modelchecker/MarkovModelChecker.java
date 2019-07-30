@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -151,8 +150,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		return inititalVector;
 	}
 	
-	private static final int MAX_DISCRETE_ITERATIONS = 20;
-	
 	/* Parameters */
 	
 	private double delta;
@@ -171,10 +168,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	private double[] resultBuffer;
 	
 	/* Results */
-	private double meanTimeToFailure;
-	private List<Double> failRates;
-	private List<Double> pointAvailability;
-	private double steadyStateAvailability;
+	private ModelCheckingResult modelCheckingResult;
 	
 	/**
 	 * 
@@ -193,11 +187,15 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 * 
 	 */
 	@Override
-	public void checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics) {
 		this.mc = mc;
+		this.modelCheckingResult = new ModelCheckingResult();
+		
 		for (IMetric metric : metrics) {
 			metric.accept(this);
 		}
+		
+		return modelCheckingResult;
 	}
 
 	@Override
@@ -208,12 +206,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		int steps = (int) (reliabilityMetric.getTime() / delta);
 		
-		failRates = new ArrayList<>(steps + 1);
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 		
 		for (int time = 0; time <= steps; ++time) {
-			failRates.add(getFailRate());
+			modelCheckingResult.failRates.add(getFailRate());
 			iterate(tmTerminal);
 		}	
 	}
@@ -249,7 +246,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 		
-		meanTimeToFailure = probabilityDistribution[0];
+		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);
 	}
 
 	
@@ -261,12 +258,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		int steps = (int) (pointAvailabilityMetric.getTime() / delta);
 
-		pointAvailability = new ArrayList<>(steps + 1);
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 
 		for (int time = 0; time <= steps; ++time) {
-			pointAvailability.add(1 - getFailRate());
+			modelCheckingResult.pointAvailability.add(1 - getFailRate());
 			iterate(tm);
 		}
 	}
@@ -279,40 +275,21 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
-		double oldFailRate = getFailRate();
+		double oldUnavailability = getFailRate();
 		double difference = 0;
 		boolean convergence = false;
 		while (!convergence) {
 			iterate(tm);
-			double newFailRate = getFailRate();
-			difference = Math.abs(newFailRate - oldFailRate);
-			if (difference < eps) {
+			double newUnavailability = getFailRate();
+			difference = Math.abs(newUnavailability - oldUnavailability);
+			if (difference < (eps / delta) || Double.isNaN(difference)) {
 				convergence = true;
 			}
-			oldFailRate = newFailRate;
+			oldUnavailability = newUnavailability;
 		}
-		steadyStateAvailability = 1 - getFailRate();		
+		modelCheckingResult.setSteadyStateAvailability(1 - getFailRate());		
 	}
 
-	@Override
-	public List<Double> getPointAvailability() {
-		return pointAvailability;
-	}
-
-	@Override
-	public double getSteadyStateAvailability() {
-		return steadyStateAvailability;
-	}
-
-	@Override
-	public double getMeanTimeToFailure() {
-		return meanTimeToFailure;
-	}
-
-	@Override
-	public List<Double> getFailRates() {
-		return failRates;
-	}
 	/**
 	 * Gets the fail rate at the current iteration
 	 * @return the fail rate at the current iteration
@@ -349,32 +326,30 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = new double[probabilityDistribution.length];
 		
 		double lambda = 1;
-		for (int i = 0; i < MAX_DISCRETE_ITERATIONS; ++i) {
+		int i = 0;
+		boolean convergence = false;
+		while (!convergence) {
 			for (int j = 0; j < probabilityDistribution.length; ++j) {
 				probabilityDistribution[j] += res[j] * lambda;
 			}
 			
-			double change = multiply(tm, res, resultBuffer);
-			if (change < eps * eps) {
-				lambda = lambda / (i + 1);
-				
-				// Swap the discrete time buffers
-				double[] tmp = res;
-				res = resultBuffer;
-				resultBuffer = tmp;
-				
-				for (int j = 0; j < probabilityDistribution.length; ++j) {
-					probabilityDistribution[j] += res[j] * lambda;
-				}
-				break;
-			}
-			
 			lambda = lambda / (i + 1);
+			double change = lambda * multiply(tm, res, resultBuffer) / delta;
 			
 			// Swap the discrete time buffers
 			double[] tmp = res;
 			res = resultBuffer;
 			resultBuffer = tmp;
+			
+			if (change < eps * eps || !Double.isFinite(change)) {
+				for (int j = 0; j < probabilityDistribution.length; ++j) {
+					probabilityDistribution[j] += res[j] * lambda;
+				}
+				
+				convergence = true;
+			} else {
+				++i;
+			}
 		}
 	}
 	

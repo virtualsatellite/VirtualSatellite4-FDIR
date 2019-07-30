@@ -23,9 +23,6 @@
 		<unit id="de.dlr.sc.virsat.target.feature.feature.group" version="4.9.0.r201904260828"/>
 		<repository location="https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/release/4.9.0/171/"/>
 		</location>              
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/releases/oxygen/"/>
-		</location>              
 		</locations>
 		<environment>
 		<os>win32</os>

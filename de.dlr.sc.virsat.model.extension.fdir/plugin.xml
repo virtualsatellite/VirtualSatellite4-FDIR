@@ -62,6 +62,10 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.DELAY"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.DELAY">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.FDEP"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDEP">
 		</CategoryAssignmentBean>
@@ -96,6 +100,14 @@
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FMECA"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FMECA">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
@@ -166,10 +178,19 @@
          name="Classify Function"
          point="de.dlr.sc.virsat.model.calculation.setFunction">
       <setFunction
-      		name="classify"
-            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassify">
+      		name="classifyPL"
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL">
       </setFunction>
    </extension>
+    <extension
+         id="fdirExpressionExtender"
+         name="FDIR Expression Extender"
+         point="de.dlr.sc.virsat.model.edit.TypeInstanceSetterProvider">
+      <typeInstanceSetterProvider
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionExtension"
+            priority="1">
+      </typeInstanceSetterProvider>
+	</extension>
  <extension
       id="de.dlr.sc.virsat.problem.markers.validation.fdir"
       name="VirSat FDIR Validator Problem Marker"

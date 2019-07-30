@@ -9,6 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.graphics.Image;
+
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
+import de.dlr.sc.virsat.project.ui.labelProvider.VirSatTransactionalAdapterFactoryLabelProvider;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 
@@ -21,4 +27,35 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  */
 public class UiSnippetTableFDIRParametersProbabilityLevels extends AUiSnippetTableFDIRParametersProbabilityLevels implements IUiSnippet {
+	
+	public static final String[] PROBABILITY_LEVEL_NAMES = { 
+		FMECAEntry.PROBABILITY_Probable_NAME,
+		FMECAEntry.PROBABILITY_Occasional_NAME,
+		FMECAEntry.PROBABILITY_Remote_NAME,
+		FMECAEntry.PROBABILITY_ExtremelyRemote_NAME
+	}; 
+	
+	@Override
+	protected ITableLabelProvider getTableLabelProvider() {
+		ITableLabelProvider superLabelProvider = super.getTableLabelProvider();
+		
+		VirSatTransactionalAdapterFactoryLabelProvider labelProvider = new VirSatTransactionalAdapterFactoryLabelProvider(adapterFactory) {
+			@Override
+			public String getColumnText(Object object, int columnIndex) {
+				if (columnIndex == 0) {
+					APropertyInstance pi = (APropertyInstance) object;
+					return PROBABILITY_LEVEL_NAMES[getTableObjects().indexOf(pi)];
+				} else {
+					return superLabelProvider.getColumnText(object, columnIndex);
+				}
+			}
+			
+			@Override
+			public Image getColumnImage(Object object, int columnIndex) {
+				return superLabelProvider.getColumnImage(object, columnIndex);
+			}
+		};
+		
+		return labelProvider;
+	}
 }

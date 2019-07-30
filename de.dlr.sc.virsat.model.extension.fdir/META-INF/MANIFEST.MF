@@ -18,6 +18,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true
 Export-Package: de.dlr.sc.virsat.model.extension.fdir,
+ de.dlr.sc.virsat.model.extension.fdir.calculation,
  de.dlr.sc.virsat.model.extension.fdir.command,
  de.dlr.sc.virsat.model.extension.fdir.converter,
  de.dlr.sc.virsat.model.extension.fdir.evaluator,

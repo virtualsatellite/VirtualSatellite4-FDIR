@@ -17,6 +17,7 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
@@ -24,8 +25,8 @@ import de.dlr.sc.virsat.fdir.storm.runner.StormModelChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.IDFT2DFTConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.EngineExecutionPreference;
@@ -56,7 +57,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public void evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -68,7 +69,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		evaluator.evaluateFaultTree(convertedRoot, metrics);
+		return evaluator.evaluateFaultTree(convertedRoot, metrics);
 	}
 	
 	/**
@@ -90,26 +91,6 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 		}
 		
 		return originalMinimumCutSets;
-	}
-
-	@Override
-	public List<Double> getFailRates() {
-		return evaluator.getFailRates();
-	}
-
-	@Override
-	public double getMeanTimeToFailure() {
-		return evaluator.getMeanTimeToFailure();
-	}
-
-	@Override
-	public List<Double> getPointAvailability() {
-		return evaluator.getPointAvailability();
-	}
-
-	@Override
-	public double getSteadyStateAvailability() {
-		return evaluator.getSteadyStateAvailability();
 	}
 
 	@Override
@@ -142,16 +123,16 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	 * @return a fault tree evaluator
 	 */
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic, double delta, double eps) {
-		
 		String preferences = FaultTreePreferences.getEnginePreference();
 		if (preferences.equals(EngineExecutionPreference.StormDFT.toString())) {
 			return decorateFaultTreeEvaluator(new StormEvaluator(delta));
 		} else {
-			ExplicitDFT2MAConverter explicitDFT2MAConverter = new ExplicitDFT2MAConverter();
-			explicitDFT2MAConverter.setSemantics(isNondeterministic ? DFTSemantics.createNDDFTSemantics() : DFTSemantics.createStandardDFTSemantics());
+			DFTSemantics defaultSemantics = isNondeterministic ? DFTSemantics.createNDDFTSemantics() : DFTSemantics.createStandardDFTSemantics();
+			DFTSemantics poSemantics = PONDDFTSemantics.createPONDDFTSemantics();
+			
 			IMarkovModelChecker markovModelChecker = preferences.equals(EngineExecutionPreference.Custom.toString()) ?  new MarkovModelChecker(delta, eps) : new StormModelChecker(delta, FaultTreePreferences.getStormExecutionEnvironmentPreference());
 			
-			return decorateFaultTreeEvaluator(new DFTEvaluator(explicitDFT2MAConverter, markovModelChecker));
+			return decorateFaultTreeEvaluator(new DFTEvaluator(defaultSemantics, poSemantics, markovModelChecker));
 		}
 	}
 	

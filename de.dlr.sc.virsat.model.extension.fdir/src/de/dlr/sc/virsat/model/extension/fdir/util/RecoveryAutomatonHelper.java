@@ -99,7 +99,7 @@ public class RecoveryAutomatonHelper {
 	 * @param time the time guard
 	 * @return transition between the present and the successor states
 	 */
-	public TimedTransition createTimedTransition(RecoveryAutomaton ra, State presentState, State successorState, float time) {
+	public TimedTransition createTimedTransition(RecoveryAutomaton ra, State presentState, State successorState, double time) {
 		TimedTransition transition = new TimedTransition(concept);
 		
 		transition.setFrom(presentState);

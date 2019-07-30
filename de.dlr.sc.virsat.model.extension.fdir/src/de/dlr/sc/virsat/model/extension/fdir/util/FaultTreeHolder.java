@@ -70,7 +70,7 @@ public class FaultTreeHolder {
 		initDataStructures();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
-		toProcess.offer(root);
+		toProcess.offer(root.getFault());
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
 			
@@ -138,8 +138,8 @@ public class FaultTreeHolder {
 				}
 				
 				for (FaultTreeEdge obs : node.getFault().getFaultTree().getObservations()) {
-					OBSERVER observer = (OBSERVER) obs.getFrom();
-					FaultTreeNode observable = obs.getTo();
+					OBSERVER observer = (OBSERVER) obs.getTo();
+					FaultTreeNode observable = obs.getFrom();
 					
 					List<OBSERVER> nodeObservers = mapNodeToObservers.get(observable);
 					if (nodeObservers == null) {
@@ -251,6 +251,14 @@ public class FaultTreeHolder {
 	}
 	
 	/**
+	 * Checks if the passed tree is partially observable
+	 * @return true iff the tree has an observer node
+	 */
+	public boolean isPartialObservable() {
+		return getNodes().stream().filter(node -> node instanceof OBSERVER).findAny().isPresent();
+	}
+	
+	/**
 	 * Gets a mapping from any node to the spares
 	 * @return map from node to spares
 	 */
@@ -348,5 +356,23 @@ public class FaultTreeHolder {
 	 */
 	public Map<FaultTreeNode, List<FaultTreeNode>> getMapNodeToSubNodes() {
 		return mapNodeToSubNodes;
+	}
+	
+	/**
+	 * Gets a fault tree node by name
+	 * @param name the name of the node
+	 * @param ftnClazz the fault tree node type
+	 * @param <T> the fault tree node type
+	 * @return the node if there is 
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends FaultTreeNode> T getNodeByName(String name, Class<T> ftnClazz) {
+		if (ftnClazz == BasicEvent.class) {
+			return (T) getMapBasicEventToFault().keySet().stream()
+					.filter(be -> be.getName().equals(name)).findFirst().get();
+		} else {
+			return (T) getNodes().stream()
+					.filter(node -> ftnClazz.isAssignableFrom(node.getClass()) && node.getName().equals(name)).findFirst().get();
+		}
 	}
 }

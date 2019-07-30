@@ -9,10 +9,16 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +31,25 @@ public class Module {
 	private FaultTreeNodePlus moduleRoot;
 	private ModuleType moduleType;
 	private List<FaultTreeNodePlus> moduleNodes;
+	private FaultTreeNode moduleRootCopy;
+	private Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy;
 	
 	/**
 	 * Default constructor.
 	 */
 	public Module() {
 		this.moduleNodes = new ArrayList<FaultTreeNodePlus>();
-		this.moduleType = ModuleType.STATIC;
+		this.moduleType = ModuleType.DETERMINISTIC;
+	}
+	
+	/**
+	 * Constructor which takes in the known module nodes
+	 * @param moduleNodes the module nodes
+	 */
+	public Module(List<FaultTreeNode> moduleNodes) {
+		for (FaultTreeNode ftn : moduleNodes) {
+			this.moduleNodes.add(new FaultTreeNodePlus(ftn, null, 0, 0, 0, false));
+		}
 	}
 	
 	
@@ -44,9 +62,12 @@ public class Module {
 			this.moduleRoot = node;
 		}
 		
-		this.moduleNodes.add(node);
-		if (node.isDynamic()) {
-			this.moduleType = ModuleType.DYNAMIC;
+		if (!this.moduleNodes.contains(node)) {
+			this.moduleNodes.add(node);
+		}
+		
+		if (node.isNondeterministic()) {
+			this.moduleType = ModuleType.NONDETERMINISTIC;
 		}
 	}
 	
@@ -67,20 +88,102 @@ public class Module {
 	}
 	
 	/**
-	 * Returns true if module is dynamic, false otherwise
-	 * @return is dynamic
+	 * Get the root node of the copied module
+	 * @return the root node of the copied module
 	 */
-	public boolean isDynamic() {
-		return this.moduleType == ModuleType.DYNAMIC;
+	public FaultTreeNode getRootNodeCopy() {
+		return this.moduleRootCopy;
+	}
+	
+	/**
+	 * Get the map which maps original fault tree nodes to the copy fault tree nodes
+	 * @return the map
+	 */
+	public Map<FaultTreeNode, FaultTreeNode> getMapOriginalToCopy() {
+		return this.mapOriginalToCopy;
+	}
+	
+	
+	/**
+	 * Returns true if module is nondeterministic, false otherwise
+	 * @return is nondeterministic
+	 */
+	public boolean isNondeterministic() {
+		return this.moduleType == ModuleType.NONDETERMINISTIC;
 	}
 	
 	/**
 	 * Trim the module from the tree.
 	 */
 	public void harvestFromFaultTree() {
-		for (FaultTreeNodePlus node : this.moduleNodes) {
-			node.harvestFromFaultTree();
+		this.moduleNodes.stream().forEach(node -> node.harvestFromFaultTree());
+	}
+	
+	/**
+	 * Create the fault tree copy that is required for conversion to markov automata, with only the edges in the module
+	 */
+	public void constructFaultTreeCopy() {
+		FaultTreeHelper fthelp = new FaultTreeHelper(this.moduleRoot.getFaultTreeNode().getConcept());
+		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
+		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
+		
+		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode().getFault().getFaultTree().getRoot();
+		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, null);
+		rootCopy.setName(originalRoot.getName());
+
+		List<FaultTreeNode> sparesInOriginalFaultTree = fthelp.getAllSpareNodes(originalRoot.getFault());
+		mapOriginalToCopy.put(originalRoot, rootCopy);
+		dfsStack.push(originalRoot);
+		
+		while (!dfsStack.isEmpty()) {
+			FaultTreeNode curr = dfsStack.pop();
+			FaultTreeNode currCopy = mapOriginalToCopy.get(curr);
+			
+			if (curr.equals(moduleRoot.getFaultTreeNode())) {
+				this.moduleRootCopy = currCopy;
+			}
+			
+			List<FaultTreeNode> children = fthelp.getAllChildren(curr, curr.getFault().getFaultTree());
+			for (FaultTreeNode child : children) {
+				FaultTreeNode childCopy;
+				if (mapOriginalToCopy.get(child) == null) {
+					childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
+					mapOriginalToCopy.put(child, childCopy);
+					for (int i = 0; i < childCopy.getFault().getBasicEvents().size(); ++i) {
+						BasicEvent oldBasicEvent = child.getFault().getBasicEvents().get(i);
+						BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
+						mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
+					}
+				} else {
+					childCopy = mapOriginalToCopy.get(child);
+				}
+				
+				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
+				if (moduleContainsCurrAndChild && !child.getFaultTreeNodeType().equals(FaultTreeNodeType.BASIC_EVENT)) {
+					if (sparesInOriginalFaultTree.contains(child)) {
+						fthelp.connectSpare(currCopy.getFault(), childCopy, currCopy);
+					} else {
+						fthelp.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);
+					}
+				}
+				dfsStack.push(child);
+			}
 		}
+		fthelp.createFaultTreeEdge(rootCopy.getFault(), this.moduleRootCopy, rootCopy);
+	}
+	
+	/**
+	 * If the module nodes contain a specific FaultTreeNode
+	 * @param ftnode the FaultTreeNode
+	 * @return true if this node is part of the module, false otherwise
+	 */
+	private boolean containsFaultTreeNode(FaultTreeNode ftnode) {
+		for (FaultTreeNodePlus ftPlus : moduleNodes) {
+			if (ftPlus.getFaultTreeNode().equals(ftnode)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**

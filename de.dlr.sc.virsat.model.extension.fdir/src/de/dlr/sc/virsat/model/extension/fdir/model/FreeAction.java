@@ -9,12 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFTState;
-import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 
 // *****************************************************************
 // * Class Declaration
@@ -55,7 +55,7 @@ public  class FreeAction extends AFreeAction {
 	}
 
 	@Override
-	public void execute(ExplicitDFTState state) {
+	public void execute(DFTState state) {
 		
 	}
 	

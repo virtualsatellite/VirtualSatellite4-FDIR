@@ -21,7 +21,8 @@ import java.nio.file.StandardOpenOption;
 
 import org.junit.Before;
 
-import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
+import de.dlr.sc.virsat.concept.unittest.util.test.AConceptTestCase;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
@@ -37,7 +38,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
  *
  */
 
-public class ASynthesizerExperiment {
+public class ASynthesizerExperiment extends AConceptTestCase {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
 	
@@ -46,8 +47,8 @@ public class ASynthesizerExperiment {
 	protected RecoveryAutomatonHelper raHelper;
 	
 	@Before
-	public void setup() {
-		concept = ConceptXmiLoader.loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
+	public void setUp() {
+		concept = loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
 		this.ftHelper = new FaultTreeHelper(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
 	}
@@ -58,7 +59,7 @@ public class ASynthesizerExperiment {
 	 * @return the root of the DFT
 	 * @throws IOException thrown if reading the .dft file fails
 	 */
-	protected Fault createGalileoDFT(String resourcePath) throws IOException {
+	protected Fault createDFT(String resourcePath) throws IOException {
 		URL url = new URL("platform:/plugin/" + FRAGMENT_ID + resourcePath);
 		InputStream inputStream = url.openConnection().getInputStream();
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, inputStream);
@@ -80,16 +81,17 @@ public class ASynthesizerExperiment {
 	
 	/**
 	 * Prints the evaluation results of a fault tree eveluator
-	 * @param ftEvaluator the fault tree evaluator
+	 * @param result the results
+	 * @param evaluator the evaluator
 	 * @param delta the timestep
 	 */
-	protected void printResults(FaultTreeEvaluator ftEvaluator, float delta) {
-		System.out.println("MTTF: " + ftEvaluator.getMeanTimeToFailure());
-		printStateStatistics(ftEvaluator);
+	protected void printResults(FaultTreeEvaluator evaluator, ModelCheckingResult result, float delta) {
+		System.out.println("MTTF: " + result.getMeanTimeToFailure());
+		printStateStatistics(evaluator);
 		
-		for (int i = 0; i < ftEvaluator.getFailRates().size(); ++i) {
+		for (int i = 0; i < result.getFailRates().size(); ++i) {
 			float time = i * delta;
-			double reliability = 1 - ftEvaluator.getFailRates().get(i);
+			double reliability = 1 - result.getFailRates().get(i);
 			System.out.println(time + " " + reliability);
 		}
 	}
