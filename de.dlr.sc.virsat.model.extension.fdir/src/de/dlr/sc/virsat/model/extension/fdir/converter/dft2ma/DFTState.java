@@ -54,7 +54,7 @@ public class DFTState extends MarkovState {
 	private BitSet permanentNodes;
 	private BitSet failingNodes;
 	
-	private Set<FaultTreeNode> markedParents;
+	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
 	
 	List<BasicEvent> orderedBes;
 	Set<BasicEvent> unorderedBes;
@@ -505,10 +505,10 @@ public class DFTState extends MarkovState {
 	}
 	
 	public void createMarkings(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction, Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted) {
-		if (markedParents == null) {
-			markedParents = new HashSet<>(predecessor.getMarkedParents());
+		if (mapParentToSymmetryRequirements == null) {
+			mapParentToSymmetryRequirements = new HashMap<>(predecessor.getMapParentToSymmetryRequirements());
 		} else {
-			markedParents.addAll(predecessor.getMarkedParents());
+			mapParentToSymmetryRequirements.putAll(predecessor.getMapParentToSymmetryRequirements());
 		}
 		
 		Queue<FaultTreeNode> queue = new LinkedList<>();
@@ -519,27 +519,34 @@ public class DFTState extends MarkovState {
 			FaultTreeNode node = queue.poll();
 			List<FaultTreeNode> biggerNodes = symmetryReduction.get(node);
 			if (biggerNodes != null && !biggerNodes.isEmpty()) {
-				boolean continueToParents = hasFaultTreeNodeFailed(node);
-				if (!continueToParents) {
-					for (FaultTreeNode biggerNode : biggerNodes) {
-						if (!allParents.contains(biggerNode)) {
-							continueToParents |= markedParents.add(biggerNode);
+				List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
+				for (FaultTreeNode parent : parents) {
+					boolean continueToParent = hasFaultTreeNodeFailed(parent);
+					
+					if (!continueToParent) {
+						for (FaultTreeNode biggerNode : biggerNodes) {
+							List<FaultTreeNode> biggerParents = ftHolder.getMapNodeToParents().get(biggerNode);
+							for (FaultTreeNode biggerParent : biggerParents) {
+								if (!allParents.contains(biggerParent)) {
+									Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, v -> new HashSet<>());
+									continueToParent |= symmetryRequirements.add(biggerNode);
+								}
+							}
 						}
 					}
-				}
-				
-				if (continueToParents) {
-					List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
-					queue.addAll(parents);
+					
+					if (continueToParent) {
+						queue.add(parent);
+					}
 				}
 			}
 		}
 	}
 	
-	public Set<FaultTreeNode> getMarkedParents() {
-		if (markedParents == null) {
-			markedParents = new HashSet<>();
+	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapParentToSymmetryRequirements() {
+		if (mapParentToSymmetryRequirements == null) {
+			mapParentToSymmetryRequirements = new HashMap<>();
 		}
-		return markedParents;
+		return mapParentToSymmetryRequirements;
 	}
 }

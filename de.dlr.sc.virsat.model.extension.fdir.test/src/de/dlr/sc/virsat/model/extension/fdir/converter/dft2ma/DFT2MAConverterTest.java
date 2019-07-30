@@ -122,8 +122,8 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -243,12 +243,27 @@ public class DFT2MAConverterTest extends ATestCase {
 	public void testEvaluateAnd2OrAnd2Symmetric() throws IOException {
 		final double EXPECTEDMTTF = 1.1388888;
 		final int EXPECTEDSTATES = 8;
+		final int EXPECTEDTRANSITIONS = 14;
 		
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2Symmetric.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getMc().getTransitions().size());
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
+	
+	/*
+	@Test
+	public void testEvaluateAnd2OrAnd2OrAnd2Symmetric() throws IOException {
+		final double EXPECTEDMTTF = 0.132007;
+		final int EXPECTEDSTATES = 5;
+		Fault fault = createDFT("/resources/galileo/and2OrAnd2OrAnd2Symmetric.dft");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	*/
 	
 	@Test
 	public void testEvaluateOr2AndOr2() throws IOException {

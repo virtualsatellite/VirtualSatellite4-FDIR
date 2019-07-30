@@ -181,8 +181,6 @@ public class DFT2MAConverter {
 		while (!toProcess.isEmpty()) {
 			DFTState state = toProcess.poll();
 			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
-			
-			Set<FaultTreeNode> markedParents = state.getMarkedParents();
 			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
 			for (IDFTEvent event : occurableEvents) {
@@ -191,20 +189,15 @@ public class DFT2MAConverter {
 				// Very simple symmetry reduction to get started
 				if (enableSymmetryReduction) {
 					if (event instanceof FaultEvent) {
-						Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(event.getNode());
-						boolean hasMarkedParent = !Collections.disjoint(allParents, markedParents);
-						
-						if (!hasMarkedParent && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
+						boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
+						if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
 							continue;
 						}
 						
 						List<FaultTreeNode> symmetricNodes = symmetryReduction.get(event.getNode());
 						for (FaultTreeNode node : symmetricNodes) {
 							if (!node.equals(event.getNode())) {
-								allParents = ftHolder.getMapNodeToAllParents().get(node);
-								hasMarkedParent = !Collections.disjoint(allParents, markedParents);
-
-								if (!hasMarkedParent) {
+								if (isSymmetryReductionApplicable(state, node)) {
 									multiplier++;
 								}
 							}
@@ -297,6 +290,22 @@ public class DFT2MAConverter {
 			}
 		}
 		return occurableEvents;
+	}
+	
+	private boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
+		Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements = state.getMapParentToSymmetryRequirements();
+		
+		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(node);
+		for (FaultTreeNode parent : allParents) {
+			Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.getOrDefault(parent, Collections.emptySet());
+			for (FaultTreeNode symmetryRequirement : symmetryRequirements) {
+				if (!state.hasFaultTreeNodeFailed(symmetryRequirement)) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/**

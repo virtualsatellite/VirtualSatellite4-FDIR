@@ -1,0 +1,11 @@
+toplevel "tle";
+"tle" or "AND1" "AND2" "AND3";
+"AND1" and "A" "B";
+"AND2" and "C" "D";
+"AND3" and "E" "F";
+"A" lambda=0.5;
+"B" lambda=2;
+"C" lambda=2;
+"D" lambda=0.5;
+"E" lambda=2;
+"F" lambda=0.5;
