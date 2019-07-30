@@ -48,6 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
+	protected ARecoveryAutomatonMinimizer endMinimizer = ComposedMinimizer.createEndMinimizer();
 	protected Modularizer modularizer = new Modularizer();
 	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected Concept concept;
@@ -63,8 +64,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-			Set<Module> trimmedModules = ftTrimmer.trimModules(modules);
+			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
 			trimmedModules.stream().forEach(module -> module.constructFaultTreeCopy());
+			trimmedModules = ftTrimmer.trimDeterministicNodes(trimmedModules);
 			
 			Set<RecoveryAutomaton> ras = new HashSet<>();
 			for (Module module : trimmedModules) {
@@ -83,12 +85,11 @@ public abstract class ASynthesizer implements ISynthesizer {
 		} else {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
+			if (minimizer != null) {
+				minimizer.minimize(synthesizedRA);
+			}
 		}
-		
-		if (minimizer != null) {
-			minimizer.minimize(synthesizedRA);
-		}
-		
+
 		return synthesizedRA;
 	}
 	
