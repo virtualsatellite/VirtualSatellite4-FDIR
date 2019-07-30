@@ -135,6 +135,7 @@ public class Modularizer implements IModularizer {
 					if (curr.isPriority() || curr.hasPriorityAbove()) {
 						child.setHasPriorityAbove();
 					}
+					
 					if (curr.isNondeterministic() || curr.hasSpareAbove()) {
 						child.setHasSpareAbove();
 					}
@@ -171,8 +172,8 @@ public class Modularizer implements IModularizer {
 						this.modules.add(module);
 					}
 				}
-			} 
-		} 
+			}
+		}
 	}
 	
 	
@@ -296,6 +297,7 @@ public class Modularizer implements IModularizer {
 		Module mod = collectModule(rootPlus);
 		if (mod != null) {
 			mod.harvestFromFaultTree();
+			mod.setTable(table);
 		}
 		return mod;
 	}

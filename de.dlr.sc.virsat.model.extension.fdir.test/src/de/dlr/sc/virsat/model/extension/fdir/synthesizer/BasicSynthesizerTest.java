@@ -105,7 +105,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int NUM_STATES = 3;
+		final int NUM_STATES = 4;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
@@ -159,5 +159,18 @@ public class BasicSynthesizerTest extends ATestCase {
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+	} 
+	
+	
+	@Test
+	public void testSynthesizeVGS1() throws IOException {
+		Fault fault = createDFT("/resources/galileo/vgs1.dft");
+		synthesizer.synthesize(fault);
+	} 
+	
+	@Test
+	public void testSynthesizeCM4() throws IOException {
+		Fault fault = createDFT("/resources/galileo/cm4.dft");
+		synthesizer.synthesize(fault);
 	} 
 }

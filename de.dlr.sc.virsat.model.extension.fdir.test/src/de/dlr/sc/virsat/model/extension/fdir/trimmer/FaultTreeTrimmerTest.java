@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.trimmer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import java.io.IOException;
@@ -20,8 +21,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 
@@ -47,13 +50,13 @@ public class FaultTreeTrimmerTest extends ATestCase {
 		FaultTree result = fttrim.trimFaultTree(null);
 		assertNull(result);
 		
-		Set<Module> resultSet = fttrim.trimModules(null);
+		Set<Module> resultSet = fttrim.trimModulesAll(null);
 		assertNull(resultSet);
 	}
 	
 	@Test
 	public void testNone() {
-		Set<Module> resultSet = fttrim.trimModules(new HashSet<Module>());
+		Set<Module> resultSet = fttrim.trimModulesAll(new HashSet<Module>());
 		assertTrue(resultSet.isEmpty());
 	}
 	
@@ -62,7 +65,8 @@ public class FaultTreeTrimmerTest extends ATestCase {
 		Fault rootNestedComplex = createDFT("/resources/galileo/nestedPand2.dft");
 		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
-		modules = fttrim.trimModules(modules);
+		modules.forEach(module -> module.constructFaultTreeCopy());
+		modules = fttrim.trimModulesAll(modules);
 		
 		final int NUM_NONDET_MODULES = 1;
 		assertEquals(NUM_NONDET_MODULES, modules.size());
@@ -73,10 +77,29 @@ public class FaultTreeTrimmerTest extends ATestCase {
 		Fault rootNestedComplex = createDFT("/resources/galileo/cm2.dft");
 		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
-		modules = fttrim.trimModules(modules);
+		modules.forEach(module -> module.constructFaultTreeCopy());
+		modules = fttrim.trimModulesAll(modules);
 		
 		final int NUM_NONDET_MODULES = 4;
 		assertEquals(NUM_NONDET_MODULES, modules.size());
+	}
+	
+	@Test
+	public void testTrimSideNode() throws IOException {
+		Fault rootSideNode = createDFT("/resources/galileo/sharedSpareWithSideNode.dft");
+		Modularizer modularizer = new Modularizer();
+		Set<Module> modules = modularizer.getModules(rootSideNode.getFaultTree());
+		modules.forEach(m -> m.constructFaultTreeCopy());
+		
+		final int NUM_NODES_IN_UNWANTED_MODULE = 2;
+		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_UNWANTED_MODULE)
+				.findAny().get();
+		FaultTreeHolder fthold = new FaultTreeHolder(module.getRootNodeCopy().getFault());
+		FaultTreeNode sideNode = fthold.getNodeByName("side node", Fault.class);
+		
+		modules = fttrim.trimModulesAll(modules);
+		assertFalse(modules.isEmpty());
+		assertFalse(ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).contains(sideNode));
 	}
 
 }
