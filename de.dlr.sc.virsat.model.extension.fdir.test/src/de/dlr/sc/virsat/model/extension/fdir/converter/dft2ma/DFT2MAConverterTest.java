@@ -74,10 +74,14 @@ public class DFT2MAConverterTest extends ATestCase {
 			0.004987521
 		};
 		final double EXPECTEDMTTF = 10;
+		final int EXPECTEDSTATES = 2;
+		final int EXPECTEDTRANSITIONS = 1;
 		
 		Fault fault = createDFT("/resources/galileo/failureMode.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getMc().getTransitions().size());
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
@@ -91,10 +95,14 @@ public class DFT2MAConverterTest extends ATestCase {
 			0.0043903
 		};
 		final double EXPECTEDMTTF = 9.09091;
+		final int EXPECTEDSTATES = 2;
+		final int EXPECTEDTRANSITIONS = 2;
 		
 		Fault fault = createDFT("/resources/galileo/or2.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getMc().getTransitions().size());
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
