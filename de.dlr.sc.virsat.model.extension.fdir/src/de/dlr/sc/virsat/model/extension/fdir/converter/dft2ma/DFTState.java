@@ -524,12 +524,15 @@ public class DFTState extends MarkovState {
 					boolean continueToParent = hasFaultTreeNodeFailed(parent);
 					
 					if (!continueToParent) {
+						Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
 						for (FaultTreeNode biggerNode : biggerNodes) {
 							List<FaultTreeNode> biggerParents = ftHolder.getMapNodeToParents().get(biggerNode);
 							for (FaultTreeNode biggerParent : biggerParents) {
-								if (!allParents.contains(biggerParent)) {
-									Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, v -> new HashSet<>());
-									continueToParent |= symmetryRequirements.add(biggerNode);
+								if (processedBiggerParents.add(biggerParent)) {
+									if (!allParents.contains(biggerParent)) {
+										Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, v -> new HashSet<>());
+										continueToParent |= symmetryRequirements.add(biggerNode);
+									}
 								}
 							}
 						}
