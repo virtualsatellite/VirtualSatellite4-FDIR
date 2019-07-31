@@ -11,10 +11,6 @@ package rise;
 
 
 
-import java.io.IOException;
-
-//import static org.junit.Assert.assertEquals;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,13 +29,14 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	
 	@Before
 	public void setUp() {
+		super.setUp();
 		synthesizer = new BasicSynthesizer();
 	}
 
 	/* 		No. BEs:	9
 	 * 		No. Gates:	6         */
 	@Test
-	public void testRC11() throws IOException {
+	public void testRC11() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-1-1-sc.dft");
 		synthesizer.synthesize(fault);
 	}
@@ -47,7 +44,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	/* 		No. BEs:	24
 	 * 		No. Gates:	18        */
 	@Test
-	public void testRC12() throws IOException {
+	public void testRC12() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-1-2-hc.dft");
 		synthesizer.synthesize(fault);
 	}
@@ -55,7 +52,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	/* 		No. BEs:	54
 	 * 		No. Gates:	25        */
 	@Test
-	public void testRC101() throws IOException {
+	public void testRC101() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-10-1-sc.dft");
 		synthesizer.synthesize(fault);
 	}
@@ -63,7 +60,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	/* 		No. BEs:	91
 	 * 		No. Gates:	43        */
 	@Test
-	public void testRC151() throws IOException {
+	public void testRC151() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-15-1-hc.dft");
 		synthesizer.synthesize(fault);
 	}
@@ -72,7 +69,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	/* 		No. BEs:	116
 	 * 		No. Gates:	53        */
 	@Test
-	public void testRC201() throws IOException {
+	public void testRC201() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-20-1-hc.dft");
 		synthesizer.synthesize(fault);
 	}
@@ -81,7 +78,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	/* 		No. BEs:	173
 	 * 		No. Gates:	111       */
 	@Test
-	public void testRC2020() throws IOException {
+	public void testRC2020() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-20-20-hc.dft");
 		synthesizer.synthesize(fault);
 	}

@@ -48,7 +48,7 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 	
 	@Before
 	public void setUp() {
-		concept = loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
+		concept = loadConceptFromPlugin(PLUGIN_ID);
 		this.ftHelper = new FaultTreeHelper(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
 	}
