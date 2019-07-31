@@ -814,6 +814,14 @@ public class DFT2MAConverterTest extends ATestCase {
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
+
+	@Test
+	public void testEvaluateAnd2And2Symmetric() throws IOException {
+		final double EXPECTEDMTTF = 0.26041666666;
+		Fault fault = createDFT("/resources/galileo/and2and2Symmetric.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
 	
 	@Test
 	public void testEvaluateCM1() throws IOException {

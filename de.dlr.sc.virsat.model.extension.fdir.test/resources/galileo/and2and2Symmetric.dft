@@ -1,0 +1,8 @@
+toplevel "System_1";
+"System_1" and "DISK1_1" "DISK2_1";
+"DISK1_1" and "D1_11" "D1_12";
+"D1_11" lambda=8.0 dorm=0;
+"D1_12" lambda=8.0 dorm=0;
+"DISK2_1" and "D2_11" "D2_12";
+"D2_11" lambda=8.0 dorm=0;
+"D2_12" lambda=8.0 dorm=0;
