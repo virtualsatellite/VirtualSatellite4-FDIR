@@ -69,7 +69,7 @@ public class DFT2MAConverter {
 		staticAnalysis();
 		buildMA();
 		
-		System.out.println("STATES: " + ma.getStates().size());
+		System.out.println(ma.toDot());
 		
 		return ma;
 	}
