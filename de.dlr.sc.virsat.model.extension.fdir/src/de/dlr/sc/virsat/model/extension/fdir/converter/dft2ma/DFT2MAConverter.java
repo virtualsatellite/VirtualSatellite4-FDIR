@@ -56,6 +56,8 @@ public class DFT2MAConverter {
 	
 	private boolean enableSymmetryReduction = false;
 	
+	private int generatedStates;
+	
 	/**
 	 * Converts a fault tree with the passed node as a root to a
 	 * Markov automaton.
@@ -63,13 +65,14 @@ public class DFT2MAConverter {
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
+		generatedStates = 0;
 		this.root = root;
 		
 		init();
 		staticAnalysis();
 		buildMA();
 		
-		System.out.println(ma.toDot());
+		System.out.println(generatedStates);
 		
 		return ma;
 	}
@@ -219,6 +222,8 @@ public class DFT2MAConverter {
 				
 				List<FaultTreeNode> changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(ftHolder, state, 
 						succs, mapStateToRecoveryActions, event);
+				
+				generatedStates += succs.size();
 				
 				DFTState markovSucc = null;
 				if (succs.size() > 1) { 

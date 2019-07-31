@@ -818,8 +818,11 @@ public class DFT2MAConverterTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2And2Symmetric() throws IOException {
 		final double EXPECTEDMTTF = 0.26041666666;
+		final int EXPECTEDSTATES = 9;
+		
 		Fault fault = createDFT("/resources/galileo/and2and2Symmetric.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getMc().getStates().size());
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
