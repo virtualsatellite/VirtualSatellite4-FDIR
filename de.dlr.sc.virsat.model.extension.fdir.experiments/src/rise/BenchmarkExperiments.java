@@ -76,11 +76,28 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	
 	
 	/* 		No. BEs:	173
-	 * 		No. Gates:	111       */
+	 * 		No. Gates:	111       
 	@Test
 	public void testRC2020() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-20-20-hc.dft");
 		synthesizer.synthesize(fault);
-	}
+	} */
+	
+	/* 		No. BEs:	213
+	 * 		No. Gates:	136       
+	@Test
+	public void testBigTree213() throws Exception {
+		Fault fault = createDFT("/resources/rise2019/bigTree_213BEs.dft");
+		synthesizer.synthesize(fault);
+	} */
 
+	
+	/* 		No. BEs:	253
+	 * 		No. Gates:	161       
+	@Test
+	public void testBigTree253() throws Exception {
+		Fault fault = createDFT("/resources/rise2019/bigTree_253BEs.dft");
+		synthesizer.synthesize(fault);
+	} */
+	
 }
