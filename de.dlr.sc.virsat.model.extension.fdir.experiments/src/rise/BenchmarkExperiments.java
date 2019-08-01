@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
 
 /**
@@ -71,17 +72,18 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testRC201() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-20-1-hc.dft");
-		synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise2019/rc/rc201");
 	}
 	
 	
 	/* 		No. BEs:	173
-	 * 		No. Gates:	111       
+	 * 		No. Gates:	111      */ 
 	@Test
 	public void testRC2020() throws Exception {
 		Fault fault = createDFT("/resources/rise2019/rc-20-20-hc.dft");
 		synthesizer.synthesize(fault);
-	} */
+	} 
 	
 	/* 		No. BEs:	213
 	 * 		No. Gates:	136       
