@@ -106,9 +106,7 @@ public class DFT2MAConverter {
 			
 			for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
 				for (FaultTreeNode node : entry.getValue()) {
-					if (!node.equals(entry.getKey())) {
-						symmetryReductionInverted.get(node).add(entry.getKey());
-					} 
+					symmetryReductionInverted.get(node).add(entry.getKey());
 				}
 			}
 		}
@@ -194,7 +192,7 @@ public class DFT2MAConverter {
 						
 						List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
 						for (FaultTreeNode node : symmetricNodes) {
-							if (!node.equals(event.getNode()) && !failedBasicEvents.contains(node)) {
+							if (!failedBasicEvents.contains(node)) {
 								if (isSymmetryReductionApplicable(state, node)) {
 									multiplier++;
 								}
