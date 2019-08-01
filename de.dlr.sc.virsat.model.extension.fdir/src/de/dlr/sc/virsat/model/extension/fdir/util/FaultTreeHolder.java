@@ -275,6 +275,10 @@ public class FaultTreeHolder {
 		return mapNodeToParents;
 	}
 	
+	/**
+	 * Gets a mapping from a node to all parents
+	 * @return a mapping from a node to all parents
+	 */
 	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapNodeToAllParents() {
 		if (mapNodeToAllParents == null) {
 			mapNodeToAllParents = new HashMap<>();

@@ -504,7 +504,14 @@ public class DFTState extends MarkovState {
 		return false;
 	}
 	
-	public void createMarkings(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction, Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted) {
+	
+	/**
+	 * Creates the symmetry requirements for this state
+	 * @param predecessor the predecessor state
+	 * @param basicEvent the basic event that has failed
+	 * @param symmetryReduction the symmetry reduction
+	 */
+	public void createSymmetryRequirements(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
 		if (mapParentToSymmetryRequirements == null) {
 			mapParentToSymmetryRequirements = new HashMap<>(predecessor.getMapParentToSymmetryRequirements());
 		} else {
@@ -546,6 +553,10 @@ public class DFTState extends MarkovState {
 		}
 	}
 	
+	/**
+	 * Gets the symmetry requirements from this state
+	 * @return the symmetry requirements
+	 */
 	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapParentToSymmetryRequirements() {
 		if (mapParentToSymmetryRequirements == null) {
 			mapParentToSymmetryRequirements = new HashMap<>();

@@ -197,12 +197,10 @@ public class DFT2MAConverter {
 							continue;
 						}
 						
-						List<FaultTreeNode> symmetricNodes = symmetryReduction.get(event.getNode());
+						List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
 						for (FaultTreeNode node : symmetricNodes) {
-							if (!node.equals(event.getNode()) && !failedBasicEvents.contains(node)) {
-								if (isSymmetryReductionApplicable(state, node)) {
-									multiplier++;
-								}
+							if (!node.equals(event.getNode()) && !failedBasicEvents.contains(node) && isSymmetryReductionApplicable(state, node)) {
+								multiplier++;
 							}
 						}
 					}
@@ -247,7 +245,7 @@ public class DFT2MAConverter {
 					if (equivalentState == succ) {
 						if (enableSymmetryReduction) {
 							if (event instanceof FaultEvent) {
-								succ.createMarkings(state, (BasicEvent) event.getNode(), symmetryReduction, symmetryReductionInverted);
+								succ.createSymmetryRequirements(state, (BasicEvent) event.getNode(), symmetryReduction);
 							}
 						}
 						
@@ -297,6 +295,12 @@ public class DFT2MAConverter {
 		return occurableEvents;
 	}
 	
+	/**
+	 * Checks if symmetry reduction is applicable for a given node
+	 * @param state the current state
+	 * @param node the node
+	 * @return true iff symmetry reduction is applicable
+	 */
 	private boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
 		Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements = state.getMapParentToSymmetryRequirements();
 		
