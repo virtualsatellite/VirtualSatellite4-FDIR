@@ -40,10 +40,11 @@ public class FaultTreeHolder {
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToChildren;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSpares;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToParents;
+	private Map<FaultTreeNode, Set<FaultTreeNode>> mapNodeToAllParents;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToDEPTriggers;
 	private Map<FaultTreeNode, List<OBSERVER>> mapNodeToObservers;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSubNodes;
-	private Map<FaultTreeNode, Set<BasicEvent>> mapFaultToBasicEvents;
+	private Map<FaultTreeNode, List<FaultTreeNode>> mapFaultToBasicEvents;
 	private Map<BasicEvent, Fault> mapBasicEventToFault;
 	private Map<BasicEvent, Double> mapBasicEventToHotFailRate;
 	private Map<BasicEvent, Double> mapBasicEventToColdFailRate;
@@ -156,7 +157,7 @@ public class FaultTreeHolder {
 					mapNodeToParents.get(observer).add(observable);
 				}
 
-				mapFaultToBasicEvents.put(node, new HashSet<>(node.getFault().getBasicEvents()));
+				mapFaultToBasicEvents.put(node, new ArrayList<>(node.getFault().getBasicEvents()));
 				for (BasicEvent basicEvent : node.getFault().getBasicEvents()) {
 					mapBasicEventToFault.put(basicEvent, node.getFault());
 					mapBasicEventToHotFailRate.put(basicEvent, basicEvent.getHotFailureRateBean().getValueToBaseUnit());
@@ -199,7 +200,7 @@ public class FaultTreeHolder {
 	 */
 	private void indexNodes() {
 		List<FaultTreeNode> indexedNodes = new ArrayList<>(nodes);
-		for (Entry<FaultTreeNode, Set<BasicEvent>> entry : mapFaultToBasicEvents.entrySet()) {
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : mapFaultToBasicEvents.entrySet()) {
 			indexedNodes.addAll(entry.getValue());
 		}
 		
@@ -275,10 +276,33 @@ public class FaultTreeHolder {
 	}
 	
 	/**
+	 * Gets a mapping from a node to all parents
+	 * @return a mapping from a node to all parents
+	 */
+	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapNodeToAllParents() {
+		if (mapNodeToAllParents == null) {
+			mapNodeToAllParents = new HashMap<>();
+			for (FaultTreeNode node : mapNodeToParents.keySet()) {
+				Set<FaultTreeNode> allParents = new HashSet<>();
+				mapNodeToAllParents.put(node, allParents);
+				Queue<FaultTreeNode> queue = new LinkedList<>();
+				queue.addAll(mapNodeToParents.get(node));
+				while (!queue.isEmpty()) {
+					FaultTreeNode parent = queue.poll();
+					if (allParents.add(parent)) {
+						queue.addAll(mapNodeToParents.get(parent));
+					}
+				}
+			}
+		}
+		return mapNodeToAllParents;
+	}
+	
+	/**
 	 * Gets a mapping from any fault to the basic events
 	 * @return map fault to basic events
 	 */
-	public Map<FaultTreeNode, Set<BasicEvent>> getMapFaultToBasicEvents() {
+	public Map<FaultTreeNode, List<FaultTreeNode>> getMapFaultToBasicEvents() {
 		return mapFaultToBasicEvents;
 	}
 	

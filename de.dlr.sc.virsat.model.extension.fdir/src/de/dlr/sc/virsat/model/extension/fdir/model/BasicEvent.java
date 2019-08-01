@@ -70,4 +70,15 @@ public  class BasicEvent extends ABasicEvent {
 	public FaultTreeNodeType getFaultTreeNodeType() {
 		return FaultTreeNodeType.BASIC_EVENT;
 	}
+	
+	@Override
+	public boolean hasSameProperties(FaultTreeNode other) {
+		if (!super.hasSameProperties(other)) {
+			return false;
+		}
+		
+		BasicEvent be = (BasicEvent) other;
+		return getHotFailureRateBean().getValueToBaseUnit() == be.getHotFailureRateBean().getValueToBaseUnit()
+				&& getColdFailureRateBean().getValueToBaseUnit() == be.getColdFailureRateBean().getValueToBaseUnit();
+	}
 }
