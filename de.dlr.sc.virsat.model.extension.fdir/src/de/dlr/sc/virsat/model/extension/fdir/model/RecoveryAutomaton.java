@@ -9,11 +9,17 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 
 // *****************************************************************
 // * Class Declaration
@@ -71,6 +77,22 @@ public class RecoveryAutomaton extends ARecoveryAutomaton {
 		
 		sb.append("}");
 		return sb.toString();
+	}
+
+	/**
+	 * 
+	 * @param editingDomain editing domain
+	 * @return command
+	 */
+	public Command performMinimize(TransactionalEditingDomain editingDomain) {
+		ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
+		return new RecordingCommand(editingDomain) {
+
+			@Override
+			protected void doExecute() {
+				minimizer.minimize(RecoveryAutomaton.this);
+			}
+		};
 	}
 
 }

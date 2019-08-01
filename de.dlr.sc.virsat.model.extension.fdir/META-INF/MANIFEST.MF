@@ -25,6 +25,7 @@ Export-Package: de.dlr.sc.virsat.model.extension.fdir,
  de.dlr.sc.virsat.model.extension.fdir.model,
  de.dlr.sc.virsat.model.extension.fdir.preferences,
  de.dlr.sc.virsat.model.extension.fdir.recovery,
+ de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer,
  de.dlr.sc.virsat.model.extension.fdir.synthesizer,
  de.dlr.sc.virsat.model.extension.fdir.util,
  de.dlr.sc.virsat.model.extension.fdir.validator
