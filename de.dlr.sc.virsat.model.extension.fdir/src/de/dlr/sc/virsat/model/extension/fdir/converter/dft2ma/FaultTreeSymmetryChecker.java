@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -111,13 +112,9 @@ public class FaultTreeSymmetryChecker {
 				}
 				
 				pairs.add(pair);
+				
 				for (Set<Entry<FaultTreeNode, FaultTreeNode>> childCandidatePairs : allSubCandidatePairs) {
-					boolean hasBeenGenerated = false;
-					for (Set<Entry<FaultTreeNode, FaultTreeNode>> generatedPair : generated) {
-						if (generatedPair.containsAll(childCandidatePairs)) {
-							hasBeenGenerated = true;	
-						}
-					}
+					boolean hasBeenGenerated = hasBeenGenerated(generated, childCandidatePairs);
 					
 					if (!hasBeenGenerated) {
 						for (Entry<FaultTreeNode, FaultTreeNode> childPair : childCandidatePairs) {
@@ -159,6 +156,22 @@ public class FaultTreeSymmetryChecker {
 		}
 		
 		return computeSymmetryReduction(pairs);
+	}
+	
+	/**
+	 * Checks if some pair set has already been generated
+	 * @param generated the set of all generated pair sets
+	 * @param pairs a set of pair sets
+	 * @return true iff the pairs have already been generated
+	 */
+	private boolean hasBeenGenerated(Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> generated, Collection<?> pairs) {
+		for (Set<Entry<FaultTreeNode, FaultTreeNode>> generatedPair : generated) {
+			if (generatedPair.containsAll(pairs)) {
+				return true;	
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
