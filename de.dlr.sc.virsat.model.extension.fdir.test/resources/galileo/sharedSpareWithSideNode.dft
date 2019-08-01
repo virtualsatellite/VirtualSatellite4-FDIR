@@ -1,0 +1,8 @@
+toplevel "root";
+"root" or "side node" "SPARE1" "SPARE2";
+"SPARE1" csp "A" "SHARED SPARE";
+"SPARE2" csp "B" "SHARED SPARE";
+"A" lambda=2;
+"B" lambda=2;
+"side node" lambda=2;
+"SHARED SPARE" lambda=2;

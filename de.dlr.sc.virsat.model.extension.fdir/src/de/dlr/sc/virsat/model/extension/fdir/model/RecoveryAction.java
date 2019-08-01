@@ -30,6 +30,8 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
  */
 public abstract class RecoveryAction extends ARecoveryAction {
 	
+	protected String actionLabel;
+	
 	/**
 	 * Constructor of Concept Class
 	 */
