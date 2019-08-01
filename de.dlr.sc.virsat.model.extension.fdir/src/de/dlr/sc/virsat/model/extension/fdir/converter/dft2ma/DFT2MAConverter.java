@@ -194,8 +194,10 @@ public class DFT2MAConverter {
 						
 						List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
 						for (FaultTreeNode node : symmetricNodes) {
-							if (!node.equals(event.getNode()) && !failedBasicEvents.contains(node) && isSymmetryReductionApplicable(state, node)) {
-								multiplier++;
+							if (!node.equals(event.getNode()) && !failedBasicEvents.contains(node)) {
+								if (isSymmetryReductionApplicable(state, node)) {
+									multiplier++;
+								}
 							}
 						}
 					}
