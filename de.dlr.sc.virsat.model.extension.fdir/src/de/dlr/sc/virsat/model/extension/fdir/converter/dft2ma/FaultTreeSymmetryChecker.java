@@ -134,7 +134,28 @@ public class FaultTreeSymmetryChecker {
 			candidatePairs.removeAll(incorrectPairs);
 			
 			// If the candidate set is empty, then we need to clean up the possible isomorphisms
-
+			if (candidatePairs.isEmpty()) {
+				// The parent pair of this pair is confirmed incorrect
+				Set<Entry<FaultTreeNode, FaultTreeNode>> parentPairs = mapChildPairToParentPairs.getOrDefault(incorrectPairs.iterator().next(), Collections.emptySet());
+				Queue<Entry<FaultTreeNode, FaultTreeNode>> worklist = new LinkedList<>();
+				worklist.addAll(parentPairs);
+				
+				while (!worklist.isEmpty()) {
+					Entry<FaultTreeNode, FaultTreeNode> parentPair = worklist.poll();
+					
+					Set<Entry<FaultTreeNode, FaultTreeNode>> parentPairSet = mapPairToPairSet.get(parentPair);
+					if (!parentPairSet.isEmpty()) {
+						parentPairSet.remove(parentPair);
+						pairs.remove(parentPair);
+						
+						// Check further upwards in the tree if new parent pairs became incorrect
+						if (parentPairSet.isEmpty()) {
+							parentPairs = mapChildPairToParentPairs.getOrDefault(parentPair, Collections.emptySet());
+							worklist.addAll(parentPairs);
+						}
+					}
+				}
+			}
 		}
 		
 		return computeSymmetryReduction(pairs);
