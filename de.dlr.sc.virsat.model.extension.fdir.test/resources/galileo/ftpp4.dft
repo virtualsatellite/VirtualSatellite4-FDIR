@@ -1,5 +1,5 @@
 toplevel "System";
-"System" or "triadA" "triadB" "triadC" "triadD" "fA" "fB" "fC" "fD";
+"System" or "triadA" "triadB" "triadC" "triadD";
 
 "triadA" 2of3 "aA" "bA" "cA";
 "aA" csp "TAA" "TAS";

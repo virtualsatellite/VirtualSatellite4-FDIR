@@ -901,7 +901,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	
 	@Test
 	public void testFTPP4() throws IOException {
-		final double EXPECTEDMTTF = 4182.3955631269;
+		final double EXPECTEDMTTF = 4595.0333844;
 		Fault fault = createDFT("/resources/galileo/ftpp4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
