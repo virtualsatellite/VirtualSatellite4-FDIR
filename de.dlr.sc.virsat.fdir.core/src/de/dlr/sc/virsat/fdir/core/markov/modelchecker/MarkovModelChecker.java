@@ -169,6 +169,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	
 	/* Results */
 	private ModelCheckingResult modelCheckingResult;
+	private ModelCheckingStatistics statistics;
 	
 	/**
 	 * 
@@ -188,6 +189,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 */
 	@Override
 	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics) {
+		statistics = new ModelCheckingStatistics();
+		statistics.time = System.currentTimeMillis();
+		
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
 		
@@ -195,7 +199,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			metric.accept(this);
 		}
 		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		
 		return modelCheckingResult;
+	}
+	
+	@Override
+	public ModelCheckingStatistics getStatistics() {
+		return statistics;
 	}
 
 	@Override
@@ -377,5 +388,5 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 		
 		return res;
-	}	
+	}
 }
