@@ -47,7 +47,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testRC11() throws Exception {
 		System.out.println("--------- Experiment: RC11 ------------");
-		Fault fault = createDFT("/resources/rise/2019/rc-1-1-sc.dft");
+		Fault fault = createDFT("/resources/rise2019/rc-1-1-sc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise/2019/rc/rc11");
 	}
@@ -57,7 +57,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testRC12() throws Exception {
 		System.out.println("--------- Experiment: RC12 ------------");
-		Fault fault = createDFT("/resources/rise/2019/rc-1-2-hc.dft");
+		Fault fault = createDFT("/resources/rise2019/rc-1-2-hc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise/2019/rc/rc11");
 	}
@@ -67,7 +67,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testRC101() throws Exception {
 		System.out.println("--------- Experiment: RC101 ------------");
-		Fault fault = createDFT("/resources/rise/2019/rc-10-1-sc.dft");
+		Fault fault = createDFT("/resources/rise2019/rc-10-1-sc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise/2019/rc/rc11");
 	}
@@ -77,7 +77,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testRC151() throws Exception {
 		System.out.println("--------- Experiment: RC151 ------------");
-		Fault fault = createDFT("/resources/rise/2019/rc-15-1-hc.dft");
+		Fault fault = createDFT("/resources/rise2019/rc-15-1-hc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise/2019/rc/rc11");
 	}
@@ -88,7 +88,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testRC201() throws Exception {
 		System.out.println("--------- Experiment: RC201 ------------");
-		Fault fault = createDFT("/resources/rise/2019/rc-20-1-hc.dft");
+		Fault fault = createDFT("/resources/rise2019/rc-20-1-hc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise2019/rc/rc201");
 	}
@@ -109,7 +109,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testEvaluateCM5() throws IOException {
 		System.out.println("--------- Experiment: CM5 ------------");
-		Fault fault = createDFT("/resources/rise/2019/cm5.dft");
+		Fault fault = createDFT("/resources/rise2019/cm5.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise2019/mcs/cm5");
 	} 
