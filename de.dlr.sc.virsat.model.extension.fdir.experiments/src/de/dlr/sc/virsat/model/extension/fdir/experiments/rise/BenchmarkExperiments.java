@@ -117,7 +117,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testEvaluateVGS1() throws IOException {
 		System.out.println("--------- Experiment: VGS1 ------------");
-		Fault fault = createDFT("/resources/rise/2019/vgs1.dft");
+		Fault fault = createDFT("/resources/rise2019/vgs1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise2019/vgs/vgs1");
 	} 
