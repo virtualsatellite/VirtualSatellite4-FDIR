@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 public abstract class ARecoveryAutomatonMinimizer {
 
+	protected MinimizationStatistics statistics;
 
 	/**
 	 * Main method to override and perform the actual minimization
@@ -34,5 +35,13 @@ public abstract class ARecoveryAutomatonMinimizer {
 	 */
 	public void minimize(RecoveryAutomaton ra) {
 		minimize(new RecoveryAutomatonHolder(ra));
+	}
+	
+	/**
+	 * Gets the internal statistics for the last minimization call
+	 * @return the statistics for the last minimization call
+	 */
+	public MinimizationStatistics getStatistics() {
+		return statistics;
 	}
 }
