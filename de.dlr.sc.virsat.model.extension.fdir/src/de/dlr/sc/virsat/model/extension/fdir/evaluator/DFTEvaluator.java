@@ -43,6 +43,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private RecoveryStrategy recoveryStrategy;
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
+	private DFTEvaluationStatistics statistics;
 
 	/**
 	 * Constructor using the passed recovery strategy
@@ -64,10 +65,27 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 
 	@Override
 	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+		statistics = new DFTEvaluationStatistics();
+		statistics.time = System.currentTimeMillis();
+		
 		dft2MAConverter.setSemantics(chooseSemantics(root));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		mc = dft2MAConverter.convert(root);
-		return markovModelChecker.checkModel(mc, metrics);
+		
+		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
+		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());
+		return result;
+	}
+	
+	/**
+	 * Gets the internal statistics of the last call to the evaluation method
+	 * @return the statistics of the last call of the evaluation method
+	 */
+	public DFTEvaluationStatistics getStatistics() {
+		return statistics;
 	}
 	
 	/**
