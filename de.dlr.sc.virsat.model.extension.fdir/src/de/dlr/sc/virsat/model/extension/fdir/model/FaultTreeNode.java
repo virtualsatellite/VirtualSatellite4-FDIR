@@ -82,4 +82,13 @@ public class FaultTreeNode extends AFaultTreeNode {
 	public Command delete(EditingDomain ed) {
 		return new CreateDeleteWithReferencingFDIRCategoryAssignmentsCommand().create(ed, ti);
 	}
+
+	/**
+	 * Checks if this node has the same properties as another node
+	 * @param other the other node
+	 * @return true iff the node has the same properties as the other passed node
+	 */
+	public boolean hasSameProperties(FaultTreeNode other) {
+		return getFaultTreeNodeType().equals(other.getFaultTreeNodeType());
+	}
 }

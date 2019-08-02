@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -50,6 +51,10 @@ public class DFT2MAConverter {
 	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToMarkovianDFTStates;
 	private FaultTreeHolder ftHolder;
 	private RecoveryStrategy recoveryStrategy;
+	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
+	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted;
+	
+	private boolean enableSymmetryReduction = false;
 	
 	/**
 	 * Converts a fault tree with the passed node as a root to a
@@ -86,6 +91,24 @@ public class DFT2MAConverter {
 		
 		if (recoveryStrategy != null) {
 			events.addAll(recoveryStrategy.createEventSet());
+		}
+		
+		if (enableSymmetryReduction) {
+			FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
+			symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+			symmetryReductionInverted = new HashMap<>();
+			for (FaultTreeNode node : ftHolder.getNodes()) {
+				symmetryReductionInverted.put(node, new HashSet<>());
+			}
+			for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
+				symmetryReductionInverted.put(be, new HashSet<>());
+			}
+			
+			for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
+				for (FaultTreeNode node : entry.getValue()) {
+					symmetryReductionInverted.get(node).add(entry.getKey());
+				}
+			}
 		}
 	}
 	
@@ -154,12 +177,35 @@ public class DFT2MAConverter {
 		while (!toProcess.isEmpty()) {
 			DFTState state = toProcess.poll();
 			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
+			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
 			for (IDFTEvent event : occurableEvents) {
+				int multiplier = 1;
+				
+				// Very simple symmetry reduction to get started
+				if (enableSymmetryReduction) {
+					if (event instanceof FaultEvent) {
+						boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
+						if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
+							continue;
+						}
+						
+						List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
+						for (FaultTreeNode node : symmetricNodes) {
+							if (!failedBasicEvents.contains(node)) {
+								if (isSymmetryReductionApplicable(state, node)) {
+									multiplier++;
+								}
+							}
+						}
+					}
+				}
+				
+				Double rate = event.getRate(state) * multiplier;
+				
 				DFTState baseSucc = dftSemantics.getStateGenerator().generateState(state);
 				baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
 				event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
-				Double rate = event.getRate(state);
 				
 				List<DFTState> succs = new ArrayList<>();
 				succs.add(baseSucc);
@@ -186,9 +232,16 @@ public class DFT2MAConverter {
 				
 				for (DFTState succ : succs) {
 					succ.failDontCares(changedNodes, orderDependentBasicEvents);
+					
 					DFTState equivalentState = getEquivalentState(succ);
 					
 					if (equivalentState == succ) {
+						if (enableSymmetryReduction) {
+							if (event instanceof FaultEvent) {
+								succ.createSymmetryRequirements(state, (BasicEvent) event.getNode(), symmetryReduction);
+							}
+						}
+						
 						ma.addState(succ);
 						toProcess.offer(succ);
 						
@@ -233,6 +286,28 @@ public class DFT2MAConverter {
 			}
 		}
 		return occurableEvents;
+	}
+	
+	/**
+	 * Checks if symmetry reduction is applicable for a given node
+	 * @param state the current state
+	 * @param node the node
+	 * @return true iff symmetry reduction is applicable
+	 */
+	private boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
+		Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements = state.getMapParentToSymmetryRequirements();
+		
+		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(node);
+		for (FaultTreeNode parent : allParents) {
+			Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.getOrDefault(parent, Collections.emptySet());
+			for (FaultTreeNode symmetryRequirement : symmetryRequirements) {
+				if (!state.hasFaultTreeNodeFailed(symmetryRequirement)) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -282,5 +357,13 @@ public class DFT2MAConverter {
 	 */
 	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		this.recoveryStrategy = recoveryStrategy;
+	}
+	
+	/**
+	 * Sets whether symmetry reduction should be enabled
+	 * @param enableSymmetryReduction set to true for symmetry reduction
+	 */
+	public void setEnableSymmetryReduction(boolean enableSymmetryReduction) {
+		this.enableSymmetryReduction = enableSymmetryReduction;
 	}
 }

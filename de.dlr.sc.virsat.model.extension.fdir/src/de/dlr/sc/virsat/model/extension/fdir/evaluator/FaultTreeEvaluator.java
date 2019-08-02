@@ -131,8 +131,9 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			DFTSemantics poSemantics = PONDDFTSemantics.createPONDDFTSemantics();
 			
 			IMarkovModelChecker markovModelChecker = preferences.equals(EngineExecutionPreference.Custom.toString()) ?  new MarkovModelChecker(delta, eps) : new StormModelChecker(delta, FaultTreePreferences.getStormExecutionEnvironmentPreference());
-			
-			return decorateFaultTreeEvaluator(new DFTEvaluator(defaultSemantics, poSemantics, markovModelChecker));
+			DFTEvaluator dftEvaluator = new DFTEvaluator(defaultSemantics, poSemantics, markovModelChecker);
+			dftEvaluator.getDft2MAConverter().setEnableSymmetryReduction(true);
+			return decorateFaultTreeEvaluator(dftEvaluator);
 		}
 	}
 	

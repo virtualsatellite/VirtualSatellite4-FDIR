@@ -50,6 +50,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentDirectEditFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata.MinimizeRAFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata.RecoveryAutomatonAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateCreateFeature;
@@ -208,16 +209,21 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 			State state = (State) object;
 			RecoveryAutomaton ra = state.getParentCaBeanOfClass(RecoveryAutomaton.class);
 			State initialState = ra.getInitial();
-			if (initialState == null ||  !(initialState.equals(state))) {
-				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this), new StateSetAsInitialStateFeature(this)};
+			if (initialState == null || !(initialState.equals(state))) {
+				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this),
+					new VirSatChangeColorFeature(this), new StateSetAsInitialStateFeature(this),
+					new MinimizeRAFeature(this) };
 			} else {
-				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this), new StateUnsetAsInitialStateFeature(this)};
+				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this),
+					new VirSatChangeColorFeature(this), new StateUnsetAsInitialStateFeature(this),
+					new MinimizeRAFeature(this) };
 			}
 		}
-		
-		return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this)};
-	} 
-	
+
+		return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this),
+			new VirSatChangeColorFeature(this) };
+	}
+
 	@Override
 	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());

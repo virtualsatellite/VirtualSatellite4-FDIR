@@ -42,6 +42,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private MarkovAutomaton<DFTState> mc;
 	private RecoveryStrategy recoveryStrategy;
 	private IMarkovModelChecker markovModelChecker;
+	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
 
 	/**
 	 * Constructor using the passed recovery strategy
@@ -63,7 +64,6 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 
 	@Override
 	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
-		DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
 		dft2MAConverter.setSemantics(chooseSemantics(root));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		mc = dft2MAConverter.convert(root);
@@ -119,5 +119,13 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 */
 	public MarkovAutomaton<?> getMc() {
 		return mc;
+	}
+	
+	/**
+	 * Gets the DFT2MA converter
+	 * @return the converter
+	 */
+	public DFT2MAConverter getDft2MAConverter() {
+		return dft2MAConverter;
 	}
 }

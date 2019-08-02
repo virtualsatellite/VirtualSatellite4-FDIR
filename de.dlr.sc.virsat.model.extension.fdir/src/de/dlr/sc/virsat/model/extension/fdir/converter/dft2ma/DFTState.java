@@ -15,8 +15,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -51,6 +53,8 @@ public class DFTState extends MarkovState {
 	private BitSet failedNodes;
 	private BitSet permanentNodes;
 	private BitSet failingNodes;
+	
+	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
 	
 	List<BasicEvent> orderedBes;
 	Set<BasicEvent> unorderedBes;
@@ -355,18 +359,18 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				Set<BasicEvent> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
+				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
 				if (basicEvents != null) {
-					for (BasicEvent be : basicEvents) {
+					for (FaultTreeNode be : basicEvents) {
 						int beID = ftHolder.getNodeIndex(be);
 						failedNodes.set(beID);
 						permanentNodes.set(beID);
 						if (orderDependentBasicEvents.contains(be)) {
 							if (!orderedBes.contains(be)) {
-								orderedBes.add(be);
+								orderedBes.add((BasicEvent) be);
 							}
 						} else {
-							unorderedBes.add(be);
+							unorderedBes.add((BasicEvent) be);
 						}
 					}
 				}
@@ -498,5 +502,65 @@ public class DFTState extends MarkovState {
 		}
 		
 		return false;
+	}
+	
+	
+	/**
+	 * Creates the symmetry requirements for this state
+	 * @param predecessor the predecessor state
+	 * @param basicEvent the basic event that has failed
+	 * @param symmetryReduction the symmetry reduction
+	 */
+	public void createSymmetryRequirements(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
+		if (mapParentToSymmetryRequirements == null) {
+			mapParentToSymmetryRequirements = new HashMap<>(predecessor.getMapParentToSymmetryRequirements());
+		} else {
+			mapParentToSymmetryRequirements.putAll(predecessor.getMapParentToSymmetryRequirements());
+		}
+		
+		Queue<FaultTreeNode> queue = new LinkedList<>();
+		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
+		queue.add(basicEvent);
+		
+		while (!queue.isEmpty()) {
+			FaultTreeNode node = queue.poll();
+			List<FaultTreeNode> biggerNodes = symmetryReduction.get(node);
+			if (biggerNodes != null && !biggerNodes.isEmpty()) {
+				List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
+				for (FaultTreeNode parent : parents) {
+					boolean continueToParent = hasFaultTreeNodeFailed(parent);
+					
+					if (!continueToParent) {
+						Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
+						for (FaultTreeNode biggerNode : biggerNodes) {
+							List<FaultTreeNode> biggerParents = ftHolder.getMapNodeToParents().get(biggerNode);
+							for (FaultTreeNode biggerParent : biggerParents) {
+								if (processedBiggerParents.add(biggerParent)) {
+									if (!allParents.contains(biggerParent)) {
+										Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, v -> new HashSet<>());
+										continueToParent |= symmetryRequirements.add(biggerNode);
+									}
+								}
+							}
+						}
+					}
+					
+					if (continueToParent) {
+						queue.add(parent);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gets the symmetry requirements from this state
+	 * @return the symmetry requirements
+	 */
+	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapParentToSymmetryRequirements() {
+		if (mapParentToSymmetryRequirements == null) {
+			mapParentToSymmetryRequirements = new HashMap<>();
+		}
+		return mapParentToSymmetryRequirements;
 	}
 }

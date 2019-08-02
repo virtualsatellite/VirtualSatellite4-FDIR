@@ -13,14 +13,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRParametersGetterTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionExtensionTest;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRParametersGetterTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPLTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverterTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryCheckerTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModularizerTest;
@@ -51,6 +52,7 @@ import junit.framework.JUnit4TestAdapter;
 @SuiteClasses({ 
 		DFT2BasicDFTConverterTest.class, 
 		DFT2MAConverterTest.class, 
+		FaultTreeSymmetryCheckerTest.class,
 		GalileoDFT2DFTTest.class,
 		BasicSynthesizerTest.class,
 		POSynthesizerTest.class,
