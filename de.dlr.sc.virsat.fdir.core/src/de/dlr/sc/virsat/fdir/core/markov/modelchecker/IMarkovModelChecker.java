@@ -27,4 +27,10 @@ public interface IMarkovModelChecker extends IMetricVisitor {
 	 * @return a model checking result with the contained metrics
 	 */
 	ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics);
+	
+	/**
+	 * Gets the internal statistics for the last model checking call
+	 * @return the model checking statistics of the last model checking call
+	 */
+	ModelCheckingStatistics getStatistics();
 }
