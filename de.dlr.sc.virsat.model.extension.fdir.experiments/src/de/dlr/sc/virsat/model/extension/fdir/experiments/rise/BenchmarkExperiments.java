@@ -90,7 +90,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		System.out.println("--------- Experiment: RC201 ------------");
 		Fault fault = createDFT("/resources/rise2019/rc-20-1-hc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise2019/rc/rc201");
+		saveRA(ra, "rise/2019/rc/rc201");
 	}
 	
 	
@@ -111,7 +111,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		System.out.println("--------- Experiment: CM5 ------------");
 		Fault fault = createDFT("/resources/rise2019/cm5.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise2019/mcs/cm5");
+		saveRA(ra, "rise/2019/mcs/cm5");
 	} 
 	
 	@Test
@@ -119,7 +119,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		System.out.println("--------- Experiment: VGS1 ------------");
 		Fault fault = createDFT("/resources/rise2019/vgs1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise2019/vgs/vgs1");
+		saveRA(ra, "rise/2019/vgs/vgs1");
 	} 
 	
 	/* 		No. BEs:	213
