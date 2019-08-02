@@ -11,6 +11,9 @@ package de.dlr.sc.virsat.model.extension.fdir.experiments.rise;
 
 
 
+import java.io.IOException;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,36 +37,49 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		synthesizer = new BasicSynthesizer();
 	}
 
+	@After
+	public void tearDown() {
+		System.out.println(synthesizer.getStatistics());
+	}
+	
 	/* 		No. BEs:	9
 	 * 		No. Gates:	6         */
 	@Test
 	public void testRC11() throws Exception {
+		System.out.println("--------- Experiment: RC11 ------------");
 		Fault fault = createDFT("/resources/rise2019/rc-1-1-sc.dft");
-		synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise/2019/rc/rc11");
 	}
 	
 	/* 		No. BEs:	24
 	 * 		No. Gates:	18        */
 	@Test
 	public void testRC12() throws Exception {
+		System.out.println("--------- Experiment: RC12 ------------");
 		Fault fault = createDFT("/resources/rise2019/rc-1-2-hc.dft");
-		synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise/2019/rc/rc11");
 	}
 	
 	/* 		No. BEs:	54
 	 * 		No. Gates:	25        */
 	@Test
 	public void testRC101() throws Exception {
+		System.out.println("--------- Experiment: RC101 ------------");
 		Fault fault = createDFT("/resources/rise2019/rc-10-1-sc.dft");
-		synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise/2019/rc/rc11");
 	}
 	
 	/* 		No. BEs:	91
 	 * 		No. Gates:	43        */
 	@Test
 	public void testRC151() throws Exception {
+		System.out.println("--------- Experiment: RC151 ------------");
 		Fault fault = createDFT("/resources/rise2019/rc-15-1-hc.dft");
-		synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise/2019/rc/rc11");
 	}
 	
 	
@@ -71,6 +87,7 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	 * 		No. Gates:	53        */
 	@Test
 	public void testRC201() throws Exception {
+		System.out.println("--------- Experiment: RC201 ------------");
 		Fault fault = createDFT("/resources/rise2019/rc-20-1-hc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise2019/rc/rc201");
@@ -79,10 +96,30 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	
 	/* 		No. BEs:	173
 	 * 		No. Gates:	111      */ 
+	/*
 	@Test
 	public void testRC2020() throws Exception {
+		System.out.println("--------- RC2020 ------------");
 		Fault fault = createDFT("/resources/rise2019/rc-20-20-hc.dft");
-		synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise2019/rc/rc201");
+	} 
+	*/
+	
+	@Test
+	public void testEvaluateCM5() throws IOException {
+		System.out.println("--------- Experiment: Cm5 ------------");
+		Fault fault = createDFT("/resources/rise2019/cm5.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise2019/mcs/cm5x");
+	} 
+	
+	@Test
+	public void testEvaluateVGS1() throws IOException {
+		System.out.println("--------- Experiment: VGS1 ------------");
+		Fault fault = createDFT("/resources/rise2019/vgs1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		saveRA(ra, "rise2019/vgs/vgs1");
 	} 
 	
 	/* 		No. BEs:	213
