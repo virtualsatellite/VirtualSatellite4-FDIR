@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package rise;
+package de.dlr.sc.virsat.model.extension.fdir.experiments.rise;
 
 
 
