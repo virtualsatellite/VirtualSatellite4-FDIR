@@ -34,7 +34,6 @@ import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -47,6 +46,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.NullObjectUpdateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentDirectEditFeature;
@@ -138,11 +138,19 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 		
 		Object object = getBusinessObjectForPictogramElement(pe);
 		
-		if (object instanceof State) {
+		if (Graphiti.getPeService().getPropertyValue(pe, StateAddFeature.IS_STATE_KEY) != null) {
+			if (object == null) {
+				return new NullObjectUpdateFeature(this);
+			}
+			
 			return new StateUpdateFeature(this);
 		}
 		
-		if (object instanceof Transition && context.getPictogramElement() instanceof Connection) {
+		if (Graphiti.getPeService().getPropertyValue(pe, TransitionAddFeature.IS_TRANSITION_KEY) != null) {
+			if (object == null) {
+				return new NullObjectUpdateFeature(this);
+			}
+			
 			return new TransitionUpdateFeature(this);
 		}
 				

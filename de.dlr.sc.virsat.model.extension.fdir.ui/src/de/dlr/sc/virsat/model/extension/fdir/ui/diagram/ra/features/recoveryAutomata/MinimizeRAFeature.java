@@ -9,6 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.elk.core.service.DiagramLayoutEngine;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
@@ -47,7 +50,7 @@ public class MinimizeRAFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return "Minimize RA";
+		return "Minimize";
 	}
 
 
@@ -61,7 +64,11 @@ public class MinimizeRAFeature extends AbstractCustomFeature {
 			RecoveryAutomaton ra = state.getParentCaBeanOfClass(RecoveryAutomaton.class);
 			ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
 			minimizer.minimize(ra);
-			updatePictogramElement(pe);
+			
+			List<PictogramElement> pes = new ArrayList<>(getDiagram().getChildren());
+			pes.addAll(getDiagram().getConnections());
+			pes.stream().forEach(diagramPe -> updatePictogramElement(diagramPe));
+			
 			IWorkbenchPart part = ((DiagramBehavior) getDiagramBehavior()).getDiagramContainer().getWorkbenchPart();
 	        DiagramLayoutEngine.invokeLayout(part, null, null);
 		}

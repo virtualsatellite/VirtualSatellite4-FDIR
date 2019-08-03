@@ -1,0 +1,6 @@
+digraph ra {
+q_0 [label=q_0]
+q_1 [label=q_1]
+q_0 -> q_1 [label="{F(mS_1)} : []"]
+q_0 -> q_1 [label="{F(mP_1)} : Claim(motors_1, mS_1) "]
+}
