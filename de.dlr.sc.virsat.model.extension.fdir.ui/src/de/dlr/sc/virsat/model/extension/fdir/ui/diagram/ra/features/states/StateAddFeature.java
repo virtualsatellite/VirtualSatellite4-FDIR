@@ -51,7 +51,9 @@ public class StateAddFeature extends VirSatAddShapeFeature {
 	
 	public static final int LINE_WIDTH = 2; 
 	public static final int DEFAULT_SIZE = 40;
-	public static final int IMAGE_WIDTH = 15;	
+	public static final int IMAGE_WIDTH = 15;
+	
+	public static final String IS_STATE_KEY = "is-state";
 	
 	/**
 	 * Default constructor
@@ -93,6 +95,7 @@ public class StateAddFeature extends VirSatAddShapeFeature {
 		ContainerShape containerShape = peCreateService.createContainerShape(cs, true);
 		gaService.createInvisibleRectangle(containerShape);
 		link(containerShape, addedState);
+		Graphiti.getPeService().setPropertyValue(containerShape, IS_STATE_KEY, "true");
 		
 		Font font = gaService.manageDefaultFont(getDiagram(), false, true);	
 		

@@ -9,7 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -56,24 +59,27 @@ public class StateUpdateFeature extends VirSatUpdateFeature {
 		
         // retrieve name from business model
         String businessName = bean.getName();
-		boolean updateNeeded = false;
+		List<String> neededUpdates = new ArrayList<>();
         
 		Shape textShape = ((ContainerShape) cs.getChildren().get(0)).getChildren().get(0);
         Text text = (Text) textShape.getGraphicsAlgorithm();
-        String pictogramName = text.getValue();
-        updateNeeded |= !Objects.equals(pictogramName, businessName);
+        if (!Objects.equals(text.getValue(), businessName)) {
+        	neededUpdates.add("Name out of date");
+        }
         
         Shape imageShape = cs.getChildren().get(1);
         RecoveryAutomaton ra = bean.getParentCaBeanOfClass(RecoveryAutomaton.class);
         boolean isInitialState = bean.equals(ra.getInitial());
-        updateNeeded |= !Objects.equals(imageShape.isVisible(), isInitialState);
+        if (!Objects.equals(imageShape.isVisible(), isInitialState)) {
+        	neededUpdates.add("Initial state out of date");
+        }
         
         // update needed, if changes have been found
         
-        if (updateNeeded) {
-            return Reason.createTrueReason("Out of date");
-        } else {
+        if (neededUpdates.isEmpty()) {
             return Reason.createFalseReason();
+        } else {
+            return Reason.createTrueReason(neededUpdates.stream().collect(Collectors.joining("\n")));
         }
 	}
 

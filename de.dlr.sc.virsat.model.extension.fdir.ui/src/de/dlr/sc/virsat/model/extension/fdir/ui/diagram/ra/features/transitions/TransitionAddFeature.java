@@ -43,6 +43,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 
 	private static final IColorConstant CONNECTION_FOREGROUND = new ColorConstant(98, 131, 167);
 	private static final double DECORATOR_LOCATION = 0.5;
+	public static final String IS_TRANSITION_KEY = "is-transition";
 	
 	/**
 	 * Default constructor.
@@ -113,6 +114,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 			polyline.setLineWidth(2);
 			polyline.setForeground(manageColor(CONNECTION_FOREGROUND));
 			link(connection, addedTransition);
+			Graphiti.getPeService().setPropertyValue(connection, IS_TRANSITION_KEY, "true");
 			
 			// Create the label
 			ConnectionDecorator textDecorator = peCreateService.createConnectionDecorator(connection, true, DECORATOR_LOCATION, true);
