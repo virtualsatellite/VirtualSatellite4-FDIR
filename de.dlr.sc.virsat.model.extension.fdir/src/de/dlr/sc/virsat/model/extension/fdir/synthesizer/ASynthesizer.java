@@ -52,9 +52,13 @@ public abstract class ASynthesizer implements ISynthesizer {
 	protected Modularizer modularizer = new Modularizer();
 	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected Concept concept;
+	protected SynthesisStatistics statistics;
 	
 	@Override
 	public RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements) {
+		statistics = new SynthesisStatistics();
+		statistics.time = System.currentTimeMillis();
+		
 		concept = fault.getConcept();
 		
 		DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
@@ -65,31 +69,46 @@ public abstract class ASynthesizer implements ISynthesizer {
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
 			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
-			trimmedModules.stream().forEach(module -> module.constructFaultTreeCopy());
+			trimmedModules.stream().forEach(Module::constructFaultTreeCopy);
 			trimmedModules = ftTrimmer.trimDeterministicNodes(trimmedModules);
+			
+			statistics.countModules = trimmedModules.size();
+			statistics.countTrimmedModules = modules.size() - statistics.countModules;
 			
 			Set<RecoveryAutomaton> ras = new HashSet<>();
 			for (Module module : trimmedModules) {
+				statistics.maxModuleSize = Math.max(statistics.maxModuleSize, module.getNodes().size());
+				
 				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
 				if (minimizer != null) {
 					minimizer.minimize(ra);
+					statistics.minimizationStatistics.compose(minimizer.getStatistics());
 				}
 				
 				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
 				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
 				ras.add(ra);
+				
+				statistics.maxModuleRaSize = Math.max(statistics.maxModuleRaSize, ra.getStates().size());
 			}
 			
 			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
+			statistics.countModules = 1;
+			statistics.maxModuleSize = conversionResult.getMapGeneratedToGenerator().values().size();
+			
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 			if (minimizer != null) {
 				minimizer.minimize(synthesizedRA);
+				statistics.minimizationStatistics.compose(minimizer.getStatistics());
 			}
+			
+			statistics.maxModuleRaSize = synthesizedRA.getStates().size();
 		}
 
+		statistics.time = System.currentTimeMillis() - statistics.time;
 		return synthesizedRA;
 	}
 	
@@ -234,6 +253,17 @@ public abstract class ASynthesizer implements ISynthesizer {
 		normalizeRates(ma, faultEvents);
 		
 		RecoveryAutomaton ra = computeMarkovAutomatonSchedule(ma, dft2ma.getInitial());
+		
+		statistics.stateSpaceGenerationStatistics.compose(dft2ma.getStatistics());
+		
 		return ra;
+	}
+	
+	/**
+	 * Gets the measured statistics
+	 * @return the statistics object
+	 */
+	public SynthesisStatistics getStatistics() {
+		return statistics;
 	}
 }

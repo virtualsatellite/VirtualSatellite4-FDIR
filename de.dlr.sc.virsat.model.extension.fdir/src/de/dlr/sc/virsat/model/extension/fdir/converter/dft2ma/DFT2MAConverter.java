@@ -56,6 +56,8 @@ public class DFT2MAConverter {
 	
 	private boolean enableSymmetryReduction = false;
 	
+	private DFT2MAConversionStatistics statistics = new DFT2MAConversionStatistics();
+	
 	/**
 	 * Converts a fault tree with the passed node as a root to a
 	 * Markov automaton.
@@ -63,11 +65,16 @@ public class DFT2MAConverter {
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
+		statistics.time = System.currentTimeMillis();
 		this.root = root;
 		
 		init();
 		staticAnalysis();
 		buildMA();
+		
+		statistics.maxStates = ma.getStates().size();
+		statistics.maxTransitions = ma.getTransitions().size();
+		statistics.time = System.currentTimeMillis() - statistics.time;
 		
 		return ma;
 	}
@@ -215,6 +222,8 @@ public class DFT2MAConverter {
 				
 				List<FaultTreeNode> changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(ftHolder, state, 
 						succs, mapStateToRecoveryActions, event);
+				
+				statistics.countGeneratedStates += succs.size();
 				
 				DFTState markovSucc = null;
 				if (succs.size() > 1) { 
@@ -365,5 +374,13 @@ public class DFT2MAConverter {
 	 */
 	public void setEnableSymmetryReduction(boolean enableSymmetryReduction) {
 		this.enableSymmetryReduction = enableSymmetryReduction;
+	}
+	
+	/**
+	 * Gets the internal statistics to the last call of the converter
+	 * @return the statistics of the last call of the converter
+	 */
+	public DFT2MAConversionStatistics getStatistics() {
+		return statistics;
 	}
 }
