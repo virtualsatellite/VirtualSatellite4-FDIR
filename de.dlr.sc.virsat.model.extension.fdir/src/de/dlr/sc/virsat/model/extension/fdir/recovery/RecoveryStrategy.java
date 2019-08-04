@@ -39,11 +39,15 @@ public class RecoveryStrategy {
 	private RecoveryAutomatonHolder raHolder;
 	
 	/**
-	 * Default constructor.
+	 * Standard constructor.
+	 * @param ras base recovery strategy
+	 * @param currentState the state of the strategy
+	 * @param recoveryActionsLabel the label of the recovery actions that should be taken
 	 */
-	
-	private RecoveryStrategy() {
-		
+	private RecoveryStrategy(RecoveryStrategy ras, State currentState, String recoveryActionsLabel) {
+		this.raHolder = ras.raHolder;
+		this.currentState = currentState;
+		this.recoveryActionsLabel = recoveryActionsLabel;
 	}
 	
 	/**
@@ -82,17 +86,17 @@ public class RecoveryStrategy {
 					Set<String> guardUUIDs = ((FaultEventTransition) transition).getGuards()
 							.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
 					if (guardUUIDs.equals(faultUUIDs)) {
-						RecoveryStrategy ras = new RecoveryStrategy();
-						ras.currentState = raHolder.getMapTransitionToTo().get(transition);
-						ras.recoveryActionsLabel = raHolder.getMapTransitionToActionLabels().get(transition);
-						ras.raHolder = raHolder;
+						RecoveryStrategy ras = new RecoveryStrategy(this,
+								raHolder.getMapTransitionToTo().get(transition), 
+								raHolder.getMapTransitionToActionLabels().get(transition));
 						return ras;
 					}
 				}
 			}
 		}
 		
-		return this;
+		RecoveryStrategy ras = new RecoveryStrategy(this, currentState, null);
+		return ras;
 	}
 
 	/**
@@ -106,17 +110,17 @@ public class RecoveryStrategy {
 				if (transition instanceof TimedTransition) {
 					TimedTransition timedTransition = (TimedTransition) transition;
 					if (timedTransition.getTimeBean().getValueToBaseUnit() == time) {
-						RecoveryStrategy ras = new RecoveryStrategy();
-						ras.currentState = raHolder.getMapTransitionToTo().get(transition);
-						ras.recoveryActionsLabel = raHolder.getMapTransitionToActionLabels().get(transition);
-						ras.raHolder = raHolder;
+						RecoveryStrategy ras = new RecoveryStrategy(this,
+								raHolder.getMapTransitionToTo().get(transition), 
+								raHolder.getMapTransitionToActionLabels().get(transition));
 						return ras;
 					}
 				}
 			}
 		}
 		
-		return this;
+		RecoveryStrategy ras = new RecoveryStrategy(this, currentState, null);
+		return ras;
 	}
 
 	/**
@@ -143,5 +147,14 @@ public class RecoveryStrategy {
 	 */
 	public String getRecoveryActionsLabel() {
 		return recoveryActionsLabel != null ? recoveryActionsLabel : "";
+	}
+
+	/**
+	 * Reset the recovery strategy
+	 * @return the recovery strategy in its initial state
+	 */
+	public RecoveryStrategy reset() {
+		RecoveryStrategy ras = new RecoveryStrategy(this, raHolder.getRa().getInitial(), null);
+		return ras;
 	}
 }
