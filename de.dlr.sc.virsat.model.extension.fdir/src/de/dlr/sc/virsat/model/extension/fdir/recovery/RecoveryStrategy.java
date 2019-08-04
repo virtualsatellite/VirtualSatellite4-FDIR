@@ -92,7 +92,11 @@ public class RecoveryStrategy {
 			}
 		}
 		
-		return this;
+		RecoveryStrategy ras = new RecoveryStrategy();
+		ras.currentState = currentState;
+		ras.recoveryActionsLabel = null;
+		ras.raHolder = raHolder;
+		return ras;
 	}
 
 	/**
@@ -116,7 +120,11 @@ public class RecoveryStrategy {
 			}
 		}
 		
-		return this;
+		RecoveryStrategy ras = new RecoveryStrategy();
+		ras.currentState = currentState;
+		ras.recoveryActionsLabel = null;
+		ras.raHolder = raHolder;
+		return ras;
 	}
 
 	/**
@@ -143,5 +151,17 @@ public class RecoveryStrategy {
 	 */
 	public String getRecoveryActionsLabel() {
 		return recoveryActionsLabel != null ? recoveryActionsLabel : "";
+	}
+
+	/**
+	 * Reset the recovery strategy
+	 * @return the recovery strategy in its initial state
+	 */
+	public RecoveryStrategy reset() {
+		RecoveryStrategy ras = new RecoveryStrategy();
+		ras.currentState = raHolder.getRa().getInitial();
+		ras.recoveryActionsLabel = null;
+		ras.raHolder = raHolder;
+		return ras;
 	}
 }

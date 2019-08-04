@@ -380,6 +380,10 @@ public class DFTState extends MarkovState {
 				}
 			}
 		}
+		
+		if (recoveryStrategy != null && isFaultTreeNodePermanent(ftHolder.getRoot())) {
+			recoveryStrategy = recoveryStrategy.reset();
+		}
 	}
 	
 	/**
@@ -487,7 +491,7 @@ public class DFTState extends MarkovState {
 	 */
 	public boolean isEquivalent(DFTState other) {
 		if (recoveryStrategy != null) {
-			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {
+			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
 				return false;
 			}
 		}
