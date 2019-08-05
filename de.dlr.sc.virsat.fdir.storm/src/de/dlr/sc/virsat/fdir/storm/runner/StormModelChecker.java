@@ -18,6 +18,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
@@ -37,6 +38,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	private int startIndex = 0;
 	 
 	private ModelCheckingResult modelCheckingResult;
+	private ModelCheckingStatistics statistics;
 	
 	/**
 	 * 
@@ -77,6 +79,9 @@ public class StormModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, IMetric... metrics) {
+		statistics = new ModelCheckingStatistics();
+		statistics.time = System.currentTimeMillis();
+		
 		Storm storm = new Storm(ma, delta, metrics);
 		StormRunner<Double> stormRunner = createStormRunner(storm);
 		
@@ -92,7 +97,14 @@ public class StormModelChecker implements IMarkovModelChecker {
 			e.printStackTrace();
 		}
 		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		
 		return modelCheckingResult;
+	}
+	
+	@Override
+	public ModelCheckingStatistics getStatistics() {
+		return statistics;
 	}
 	
 	/**

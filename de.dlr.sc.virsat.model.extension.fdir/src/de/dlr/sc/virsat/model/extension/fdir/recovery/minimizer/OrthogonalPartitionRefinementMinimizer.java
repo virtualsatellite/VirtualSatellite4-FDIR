@@ -48,6 +48,12 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	@Override
 	public void minimize(RecoveryAutomatonHolder raHolder) {
 		ra = raHolder.getRa();
+		
+		statistics = new MinimizationStatistics();
+		statistics.time = System.currentTimeMillis();
+		statistics.removedStates = ra.getStates().size();
+		statistics.removedTransitions = ra.getTransitions().size();
+		
 		raHelper = raHolder.getRaHelper();
 		
 		mapStateToIncomingTransitions = raHolder.getMapStateToIncomingTransitions();
@@ -63,6 +69,10 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
 		mergeBlocks(blocks);
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.removedStates = statistics.removedStates - ra.getStates().size();
+		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 	
 	/**
