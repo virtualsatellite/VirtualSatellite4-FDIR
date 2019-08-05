@@ -187,27 +187,17 @@ public class DFT2MAConverter {
 		while (!toProcess.isEmpty()) {
 			DFTState state = toProcess.poll();
 			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
-			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
 			for (IDFTEvent event : occurableEvents) {
 				int multiplier = 1;
 				
 				// Very simple symmetry reduction to get started
 				if (enableSymmetryReduction) {
-					if (event instanceof FaultEvent) {
-						boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
-						if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
-							continue;
-						}
-						
-						List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
-						for (FaultTreeNode node : symmetricNodes) {
-							if (!failedBasicEvents.contains(node)) {
-								if (isSymmetryReductionApplicable(state, node)) {
-									multiplier++;
-								}
-							}
-						}
+					int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
+					if (countBiggerSymmetricEvents == -1) {
+						continue;
+					} else {
+						multiplier += countBiggerSymmetricEvents;
 					}
 				}
 				
@@ -271,11 +261,7 @@ public class DFT2MAConverter {
 						
 						ma.addState(succ);
 						toProcess.offer(succ);
-						
-						if (succ.hasFaultTreeNodeFailed(root)) {
-							ma.getFinalStates().add(succ);
-							succ.setFailState(true);
-						}
+						checkFailState(succ);
 					}
 					
 					if (markovSucc != null) {
@@ -313,6 +299,47 @@ public class DFT2MAConverter {
 			}
 		}
 		return occurableEvents;
+	}
+	
+	/**
+	 * Checks if the state is a fail state and sets the associated flags
+	 * @param state the state to check
+	 */
+	private void checkFailState(DFTState state) {
+		if (state.hasFaultTreeNodeFailed(root)) {
+			ma.getFinalStates().add(state);
+			state.setFailState(true);
+		}
+	}
+	
+	/**
+	 * Computes the number of events symmetric to the passed one
+	 * @param event the event
+	 * @param state the current state
+	 * @return -1 if there exists a smaller symmetric event, otherwise the number of bigger symmetric events
+	 */
+	private int countBiggerSymmetricEvents(IDFTEvent event, DFTState state) {
+		int symmetryMultiplier = 0;
+		
+		if (event instanceof FaultEvent) {
+			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
+			
+			boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
+			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
+				return -1;
+			}
+			
+			List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
+			for (FaultTreeNode node : symmetricNodes) {
+				if (!failedBasicEvents.contains(node)) {
+					if (isSymmetryReductionApplicable(state, node)) {
+						symmetryMultiplier++;
+					}
+				}
+			}
+		}
+		
+		return symmetryMultiplier;
 	}
 	
 	/**
