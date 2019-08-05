@@ -16,10 +16,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateGenerator;
@@ -33,8 +31,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -224,7 +220,9 @@ public class DFTSemantics {
 	 */
 	public Set<FaultTreeNode> extractRecoveryActionInput(FaultTreeHolder ftHolder, DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
 		Set<FaultTreeNode> occuredBasicEvents = new HashSet<>();
-		occuredBasicEvents.add(event.getNode());
+		if (event.getNode() instanceof BasicEvent) {
+			occuredBasicEvents.add(event.getNode());
+		}
 		for (FaultTreeNode node : changedNodes) {
 			if (node instanceof BasicEvent) {
 				occuredBasicEvents.add(node);
@@ -234,36 +232,19 @@ public class DFTSemantics {
 	}
 	
 	/**
-	 * Determinizes the successor list by picking a sucessor according to the passed recovery strategy
-	 * @param ftHelper the fault tree helper
-	 * @param recoveryStrategy the recovery strategy
-	 * @param succs a list of generated successor nodes
-	 * @param recoveryActions  mapping for state to recovery action
-	 */
-	public void determinizeSuccs(FaultTreeHelper ftHelper, RecoveryStrategy recoveryStrategy, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions) {
-		String chosenRecoveryActionsLabel = recoveryStrategy.getRecoveryActionsLabel();
-		for (Entry<DFTState, List<RecoveryAction>> entry : recoveryActions.entrySet()) {
-			String entryLabel = entry.getValue().stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining());
-			if (entryLabel.equals(chosenRecoveryActionsLabel)) {
-				succs.clear();
-				entry.getKey().setRecoveryStrategy(recoveryStrategy);
-				succs.add(entry.getKey());
-				return;
-			}
-		}
-		
-		DFTState baseState = succs.get(0);
-		succs.clear();
-		baseState.setRecoveryStrategy(recoveryStrategy);
-		succs.add(baseState);
-	}
-	
-	/**
 	 * Gets the state generator
 	 * @return the state generator of this semantics
 	 */
 	public IStateGenerator getStateGenerator() {
 		return stateGenerator;
+	}
+	
+	/**
+	 * Gets the registered gate semantics
+	 * @return the mapping from node type to semantics
+	 */
+	public Map<FaultTreeNodeType, INodeSemantics> getMapTypeToSemantics() {
+		return mapTypeToSemantics;
 	}
 	
 	/**

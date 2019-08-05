@@ -22,13 +22,14 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -98,6 +99,26 @@ public class DFT2MAConverter {
 		
 		if (recoveryStrategy != null) {
 			events.addAll(recoveryStrategy.createEventSet());
+			INodeSemantics spareSemantics = dftSemantics.getMapTypeToSemantics().get(FaultTreeNodeType.SPARE);
+			if (spareSemantics instanceof NDSPARESemantics) {
+				((NDSPARESemantics) spareSemantics).setPropagateWithoutClaiming(true);
+			}
+		}
+	}
+	
+	/**
+	 * Perform a static analysis to obtain useful information for improving runtime performance
+	 */
+	private void staticAnalysis() {
+		for (IDFTEvent event : events) {
+			if (event instanceof FaultEvent) {
+				FaultEvent faultEvent = (FaultEvent) event;
+				if (!faultEvent.isRepair()) {
+					if (isOrderDependent(event)) {
+						orderDependentBasicEvents.add((BasicEvent) faultEvent.getNode());
+					}
+				}
+			}
 		}
 		
 		if (enableSymmetryReduction) {
@@ -114,22 +135,6 @@ public class DFT2MAConverter {
 			for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
 				for (FaultTreeNode node : entry.getValue()) {
 					symmetryReductionInverted.get(node).add(entry.getKey());
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Perform a static analysis to obtain useful information for improving runtime performance
-	 */
-	private void staticAnalysis() {
-		for (IDFTEvent event : events) {
-			if (event instanceof FaultEvent) {
-				FaultEvent faultEvent = (FaultEvent) event;
-				if (!faultEvent.isRepair()) {
-					if (isOrderDependent(event)) {
-						orderDependentBasicEvents.add((BasicEvent) faultEvent.getNode());
-					}
 				}
 			}
 		}
@@ -171,8 +176,6 @@ public class DFT2MAConverter {
 	 * Constructs the actual automaton
 	 */
 	private void buildMA() {
-		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
-		
 		ma = new MarkovAutomaton<DFTState>();
 		ma.getEvents().addAll(events);
 		
@@ -184,27 +187,17 @@ public class DFT2MAConverter {
 		while (!toProcess.isEmpty()) {
 			DFTState state = toProcess.poll();
 			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
-			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
 			for (IDFTEvent event : occurableEvents) {
 				int multiplier = 1;
 				
 				// Very simple symmetry reduction to get started
 				if (enableSymmetryReduction) {
-					if (event instanceof FaultEvent) {
-						boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
-						if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
-							continue;
-						}
-						
-						List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
-						for (FaultTreeNode node : symmetricNodes) {
-							if (!failedBasicEvents.contains(node)) {
-								if (isSymmetryReductionApplicable(state, node)) {
-									multiplier++;
-								}
-							}
-						}
+					int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
+					if (countBiggerSymmetricEvents == -1) {
+						continue;
+					} else {
+						multiplier += countBiggerSymmetricEvents;
 					}
 				}
 				
@@ -218,7 +211,7 @@ public class DFT2MAConverter {
 				succs.add(baseSucc);
 				
 				Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
-				mapStateToRecoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
+				mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());
 				
 				List<FaultTreeNode> changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(ftHolder, state, 
 						succs, mapStateToRecoveryActions, event);
@@ -226,19 +219,34 @@ public class DFT2MAConverter {
 				statistics.countGeneratedStates += succs.size();
 				
 				DFTState markovSucc = null;
-				if (succs.size() > 1) { 
-					if (recoveryStrategy != null) {
-						Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(ftHolder, baseSucc, event, changedNodes);
-						RecoveryStrategy recoveryStrategy = state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
-						dftSemantics.determinizeSuccs(ftHelper, recoveryStrategy, succs, mapStateToRecoveryActions);
+				if (recoveryStrategy != null) {
+					Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(ftHolder, baseSucc, event, changedNodes);
+					RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
+					
+					if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
+						baseSucc = dftSemantics.getStateGenerator().generateState(state);
+						baseSucc.setRecoveryStrategy(recoveryStrategy);
+						
+						event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
+						for (RecoveryAction ra : recoveryStrategy.getRecoveryActions()) {
+							ra.execute(baseSucc);
+						}
+						
+						succs.clear();
+						succs.add(baseSucc);
+						
+						changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(ftHolder, state, succs, mapStateToRecoveryActions, event);
+						
+						statistics.countGeneratedStates += succs.size();
 					} else {
-						markovSucc = dftSemantics.getStateGenerator().generateState(baseSucc);
-						ma.addState(markovSucc);
-						ma.addMarkovianTransition(event, state, markovSucc, rate);
+						baseSucc.setRecoveryStrategy(recoveryStrategy);
 					}
-				
+				} else if (succs.size() > 1) { 
+					markovSucc = dftSemantics.getStateGenerator().generateState(baseSucc);
+					ma.addState(markovSucc);
+					ma.addMarkovianTransition(event, state, markovSucc, rate);	
 				}
-				
+					
 				for (DFTState succ : succs) {
 					succ.failDontCares(changedNodes, orderDependentBasicEvents);
 					
@@ -253,11 +261,7 @@ public class DFT2MAConverter {
 						
 						ma.addState(succ);
 						toProcess.offer(succ);
-						
-						if (succ.hasFaultTreeNodeFailed(root)) {
-							ma.getFinalStates().add(succ);
-							succ.setFailState(true);
-						}
+						checkFailState(succ);
 					}
 					
 					if (markovSucc != null) {
@@ -295,6 +299,47 @@ public class DFT2MAConverter {
 			}
 		}
 		return occurableEvents;
+	}
+	
+	/**
+	 * Checks if the state is a fail state and sets the associated flags
+	 * @param state the state to check
+	 */
+	private void checkFailState(DFTState state) {
+		if (state.hasFaultTreeNodeFailed(root)) {
+			ma.getFinalStates().add(state);
+			state.setFailState(true);
+		}
+	}
+	
+	/**
+	 * Computes the number of events symmetric to the passed one
+	 * @param event the event
+	 * @param state the current state
+	 * @return -1 if there exists a smaller symmetric event, otherwise the number of bigger symmetric events
+	 */
+	private int countBiggerSymmetricEvents(IDFTEvent event, DFTState state) {
+		int symmetryMultiplier = 0;
+		
+		if (event instanceof FaultEvent) {
+			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
+			
+			boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
+			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
+				return -1;
+			}
+			
+			List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
+			for (FaultTreeNode node : symmetricNodes) {
+				if (!failedBasicEvents.contains(node)) {
+					if (isSymmetryReductionApplicable(state, node)) {
+						symmetryMultiplier++;
+					}
+				}
+			}
+		}
+		
+		return symmetryMultiplier;
 	}
 	
 	/**
