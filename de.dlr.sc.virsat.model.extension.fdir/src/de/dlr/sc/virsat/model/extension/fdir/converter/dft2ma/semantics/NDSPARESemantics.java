@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * This class implements the nondeterministic spare gate semantics
@@ -34,6 +35,8 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	
 	private Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction = new HashMap<>();
 	private IStateGenerator stateGenerator;
+	
+	protected boolean propagateWithoutClaiming = false;
 	
 	/**
 	 * Standard constructor
@@ -49,8 +52,14 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	}
 	
 	@Override
+	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
+		return !propagateWithoutClaiming && super.canClaim(pred, state, node, ftHolder);
+	}
+	
+	@Override
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state,
 			GenerationResult generationResult) {
+		
 		List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 		
 		ClaimAction ca = getOrCreateClaimAction(node, spare, mapNodeToNodeToClaimAction);
@@ -91,5 +100,13 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		}
 		
 		return ca;
+	}
+	
+	/**
+	 * Sets the propagation flag
+	 * @param propagateWithoutClaiming whether this gate should prevent the propagation or not
+	 */
+	public void setPropagateWithoutClaiming(boolean propagateWithoutClaiming) {
+		this.propagateWithoutClaiming = propagateWithoutClaiming;
 	}
 }

@@ -48,18 +48,17 @@ public class StandardSPARESemantics implements INodeSemantics {
 			if (!state.hasFaultTreeNodeFailed(spare)) {
 				FaultTreeNode spareGate = state.getMapSpareToClaimedSpares().get(spare);
 				if (spareGate != null && spareGate.equals(node)) {
-					return false;
+					return state.setFaultTreeNodeFailed(node, false);
 				}
 			} else {
 				state.getMapSpareToClaimedSpares().remove(spare);
 			}
 		}
 		
-		boolean childHasChanged = state.hasFailStateChanged(pred, children) || state.hasFailStateChanged(pred, spares);
+		boolean canClaim = canClaim(pred, state, node, ftHolder);
 		boolean foundSpare = false;
 		
-		// Only spares gates whose spares / children have changed their state are allowed to claim
-		if (childHasChanged) {
+		if (canClaim) {
 			for (FaultTreeNode spare : spares) {
 				if (!state.hasFaultTreeNodeFailed(spare) && !state.getMapSpareToClaimedSpares().containsKey(spare)) {
 					if (performClaim((SPARE) node, spare, state, generationResult)) {
@@ -71,13 +70,35 @@ public class StandardSPARESemantics implements INodeSemantics {
 		}
 		
 		if (hasFailed(foundSpare)) {
-			if (state.areFaultTreeNodesPermanent(children)) {
-				state.setFaultTreeNodePermanent(node, true);
-			}
+			updatePermanence(state, node, ftHolder);
 			return state.setFaultTreeNodeFailed(node, true);
 		} 
 		
 		return false;
+	}
+	
+	/**
+	 * Updates the permanence of the node in the current state
+	 * @param state the state
+	 * @param node the node
+	 * @param ftHolder the fault tree holder
+	 */
+	protected void updatePermanence(DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
+		if (state.areFaultTreeNodesPermanent(ftHolder.getMapNodeToChildren().get(node))) {
+			state.setFaultTreeNodePermanent(node, true);
+		}
+	}
+	
+	/**
+	 * Only spares gates whose spares / children have changed their state are allowed to claim
+	 * @param pred predecessor state
+	 * @param state current state
+	 * @param node the node that needs claiming
+	 * @param ftHolder the fault tree holder
+	 * @return true iff the node is allowed to perform a claim
+	 */
+	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
+		return state.hasFailStateChanged(pred, ftHolder.getMapNodeToSubNodes().get(node));
 	}
 	
 	/**
