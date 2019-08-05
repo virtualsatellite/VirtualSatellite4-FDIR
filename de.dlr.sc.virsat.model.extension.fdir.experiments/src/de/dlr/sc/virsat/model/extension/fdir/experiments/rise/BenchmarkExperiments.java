@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package rise;
+package de.dlr.sc.virsat.model.extension.fdir.experiments.rise;
 
 
 
@@ -34,72 +34,84 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		synthesizer = new BasicSynthesizer();
 	}
 
-	/* 		No. BEs:	9
-	 * 		No. Gates:	6         */
 	@Test
 	public void testRC11() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/rc-1-1-sc.dft");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
 		synthesizer.synthesize(fault);
 	}
 	
-	/* 		No. BEs:	24
-	 * 		No. Gates:	18        */
 	@Test
 	public void testRC12() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/rc-1-2-hc.dft");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-2-hc.dft");
 		synthesizer.synthesize(fault);
 	}
 	
-	/* 		No. BEs:	54
-	 * 		No. Gates:	25        */
 	@Test
-	public void testRC101() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/rc-10-1-sc.dft");
+	public void testRC101sc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-10-1-sc.dft");
 		synthesizer.synthesize(fault);
 	}
 	
-	/* 		No. BEs:	91
-	 * 		No. Gates:	43        */
 	@Test
 	public void testRC151() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/rc-15-1-hc.dft");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-15-1-hc.dft");
 		synthesizer.synthesize(fault);
 	}
 	
-	
-	/* 		No. BEs:	116
-	 * 		No. Gates:	53        */
 	@Test
 	public void testRC201() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/rc-20-1-hc.dft");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-20-1-hc.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		saveRA(ra, "rise2019/rc/rc201");
 	}
 	
-	
-	/* 		No. BEs:	173
-	 * 		No. Gates:	111      */ 
-	@Test
+	/*@Test
 	public void testRC2020() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/rc-20-20-hc.dft");
-		synthesizer.synthesize(fault);
-	} 
-	
-	/* 		No. BEs:	213
-	 * 		No. Gates:	136       
-	@Test
-	public void testBigTree213() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/bigTree_213BEs.dft");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-20-20-hc.dft");
 		synthesizer.synthesize(fault);
 	} */
-
 	
-	/* 		No. BEs:	253
-	 * 		No. Gates:	161       
+	
 	@Test
-	public void testBigTree253() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/bigTree_253BEs.dft");
+	public void testRC13() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-3-hc.dft");
 		synthesizer.synthesize(fault);
-	} */
+	}
+	
+	@Test
+	public void testRC14hc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-4-hc.dft");
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testRC14sc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-4-sc.dft");
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testRC15() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-5-hc.dft");
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testRC101hc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-10-1-hc.dft");
+		synthesizer.synthesize(fault);
+	}
+	
+	/*@Test
+	public void testRC1515() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-15-15-hc.dft");
+		synthesizer.synthesize(fault);
+	}*/
+	
+	@Test
+	public void testRC1010() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-10-10-hc.dft");
+		synthesizer.synthesize(fault);
+	}
 	
 }
