@@ -24,6 +24,8 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -43,6 +45,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private RecoveryStrategy recoveryStrategy;
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
+	private Modularizer modularizer = new Modularizer();
 	private DFTEvaluationStatistics statistics;
 
 	/**
@@ -70,6 +73,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		
 		dft2MAConverter.setSemantics(chooseSemantics(root));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
+		
+		if (modularizer != null) {
+			Set<Module> modules = modularizer.getModules(root.getFault().getFaultTree());
+		}
+		
 		mc = dft2MAConverter.convert(root);
 		
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
