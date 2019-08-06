@@ -133,7 +133,7 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 			FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 			ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 			ndDFTftEvaluator.evaluateFaultTree(tle);
-			int statesMc = ((DFTEvaluator) ndDFTftEvaluator.getEvaluator()).getMc().getStates().size();
+			int statesMc = ((DFTEvaluator) ndDFTftEvaluator.getEvaluator()).getStatistics().stateSpaceGenerationStatistics.maxStates;
 			int statesMinimizedRa = ra.getStates().size();
 			
 			System.out.println(i  + " " + statesMc + " " + statesMinimizedRa);
