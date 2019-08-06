@@ -74,8 +74,8 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 	protected void printStateStatistics(FaultTreeEvaluator ftEvaluator) {
 		if (ftEvaluator.getEvaluator() instanceof DFTEvaluator) {
 			DFTEvaluator dftEvaluator = (DFTEvaluator) ftEvaluator.getEvaluator();
-			System.out.println("MC #States: " + dftEvaluator.getMc().getStates().size());
-			System.out.println("MC #Transitions: " + dftEvaluator.getMc().getTransitions().size());
+			System.out.println("MC #States: " + dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxStates);
+			System.out.println("MC #Transitions: " + dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxTransitions);
 		}
 	}
 	

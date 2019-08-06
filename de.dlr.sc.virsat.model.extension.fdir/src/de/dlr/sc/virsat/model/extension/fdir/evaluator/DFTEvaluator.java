@@ -138,14 +138,6 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 
 		return minimumCutSets;
 	}
-	/**
-	 * Gets the markov chain
-	 * 
-	 * @return gets the markov chain
-	 */
-	public MarkovAutomaton<?> getMc() {
-		return mc;
-	}
 	
 	/**
 	 * Gets the DFT2MA converter
