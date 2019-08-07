@@ -70,9 +70,27 @@ public  class ClaimAction extends AClaimAction {
 		}
 	}
 
+	private FaultTreeNode claimSpare;
+	private FaultTreeNode spareGate;
+	
 	@Override
 	public void execute(DFTState state) {
-		state.getSpareClaims().put(getClaimSpare(), getSpareGate());
+		if (claimSpare == null) {
+			FaultTreeNode claimSpareOriginal = getClaimSpare();
+			claimSpare = state.getFTHolder().getNodes().stream()
+					.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
+					.findFirst().get();
+		}
+		
+		if (spareGate == null) {
+			SPARE spareGateOriginal = getSpareGate();
+			spareGate = state.getFTHolder().getNodes().stream()
+					.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
+					.findFirst().get();
+		}
+		
+		state.getSpareClaims().put(claimSpare, spareGate);
+		state.activateNode(claimSpare);
 	}
 	
 	@Override

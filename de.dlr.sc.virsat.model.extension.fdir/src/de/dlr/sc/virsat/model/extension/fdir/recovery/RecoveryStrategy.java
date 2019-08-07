@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -20,6 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.TimeEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
@@ -34,7 +36,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 public class RecoveryStrategy {
 	
-	private String recoveryActionsLabel;
+	private List<RecoveryAction> recoveryActions;
 	private State currentState;
 	private RecoveryAutomatonHolder raHolder;
 	
@@ -42,12 +44,12 @@ public class RecoveryStrategy {
 	 * Standard constructor.
 	 * @param ras base recovery strategy
 	 * @param currentState the state of the strategy
-	 * @param recoveryActionsLabel the label of the recovery actions that should be taken
+	 * @param recoveryActions the label of the recovery actions that should be taken
 	 */
-	private RecoveryStrategy(RecoveryStrategy ras, State currentState, String recoveryActionsLabel) {
+	private RecoveryStrategy(RecoveryStrategy ras, State currentState, List<RecoveryAction> recoveryActions) {
 		this.raHolder = ras.raHolder;
 		this.currentState = currentState;
-		this.recoveryActionsLabel = recoveryActionsLabel;
+		this.recoveryActions = recoveryActions;
 	}
 	
 	/**
@@ -88,7 +90,7 @@ public class RecoveryStrategy {
 					if (guardUUIDs.equals(faultUUIDs)) {
 						RecoveryStrategy ras = new RecoveryStrategy(this,
 								raHolder.getMapTransitionToTo().get(transition), 
-								raHolder.getMapTransitionToActionLabels().get(transition));
+								raHolder.getMapTransitionToRecoveryActions().get(transition));
 						return ras;
 					}
 				}
@@ -112,7 +114,7 @@ public class RecoveryStrategy {
 					if (timedTransition.getTimeBean().getValueToBaseUnit() == time) {
 						RecoveryStrategy ras = new RecoveryStrategy(this,
 								raHolder.getMapTransitionToTo().get(transition), 
-								raHolder.getMapTransitionToActionLabels().get(transition));
+								raHolder.getMapTransitionToRecoveryActions().get(transition));
 						return ras;
 					}
 				}
@@ -145,8 +147,8 @@ public class RecoveryStrategy {
 	 * Get the currently recommended recovery actions.
 	 * @return A list of recommened recovery actions.
 	 */
-	public String getRecoveryActionsLabel() {
-		return recoveryActionsLabel != null ? recoveryActionsLabel : "";
+	public List<RecoveryAction> getRecoveryActions() {
+		return recoveryActions != null ? recoveryActions : Collections.emptyList();
 	}
 
 	/**
@@ -154,7 +156,7 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy in its initial state
 	 */
 	public RecoveryStrategy reset() {
-		RecoveryStrategy ras = new RecoveryStrategy(this, raHolder.getRa().getInitial(), null);
+		RecoveryStrategy ras = new RecoveryStrategy(this, raHolder.getRa().getInitial(), Collections.emptyList());
 		return ras;
 	}
 }

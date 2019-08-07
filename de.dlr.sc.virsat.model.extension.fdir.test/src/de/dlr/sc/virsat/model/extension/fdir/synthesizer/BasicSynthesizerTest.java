@@ -31,12 +31,14 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 public class BasicSynthesizerTest extends ATestCase {
 
 	protected BasicSynthesizer synthesizer;
+	protected FaultTreeEvaluator ftEvaluator;
 	
 	@Before
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		synthesizer = new BasicSynthesizer();
+		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 	}
 	
 	@Test
@@ -52,7 +54,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		synthesizer.setModularizer(null);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	}
@@ -71,7 +73,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		synthesizer.setModularizer(null);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	}
@@ -108,7 +109,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		final int NUM_STATES = 4;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	}
@@ -124,7 +124,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	}
@@ -140,7 +139,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	}
@@ -156,7 +154,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	} 

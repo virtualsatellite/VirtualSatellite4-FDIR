@@ -22,6 +22,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DelaySemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.FaultSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.PORSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.VOTESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -103,7 +104,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 				}
 			}
 		} else {
-			((PONDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(true);
+			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(true);
 			changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, event);
 			for (DFTState state : succs) {
 				for (FaultTreeNode node : changedNodes) {
@@ -123,7 +124,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		}
 		
 		if (anyObservation) {
-			((PONDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(false);
+			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(false);
 			Queue<FaultTreeNode> spareGates = new LinkedList<>(possiblyFailedSpareGates);
 			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, spareGates);
 			
