@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
  de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.model.calculation,
  org.eclipse.elk.conn.graphiti,
- de.dlr.sc.virsat.fdir.storm
+ de.dlr.sc.virsat.fdir.storm,
+ de.dlr.sc.virsat.external.lib.commons.math
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true

@@ -867,7 +867,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 0.3634892;
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new Reliability(2));
 		
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);

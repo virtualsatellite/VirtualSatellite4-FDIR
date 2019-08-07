@@ -15,6 +15,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.integration.TrapezoidIntegrator;
+import org.apache.commons.math3.analysis.integration.UnivariateIntegrator;
+import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
@@ -186,6 +192,24 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			double composedFailRate = composeProbabilities(childFailRates, k);
 			composedResult.getFailRates().add(composedFailRate);
 		}
+		
+		double[] x = new double[composedResult.getFailRates().size()];
+		for (int i = 0; i < composedResult.getFailRates().size(); ++i) {
+			x[i] = i;
+		}
+		
+		double[] y = new double[composedResult.getFailRates().size()];
+		for (int i = 0; i < composedResult.getFailRates().size(); ++i) {
+			y[i] = 1 - composedResult.getFailRates().get(i);
+		}
+		
+		UnivariateInterpolator interpolator = new SplineInterpolator();
+		UnivariateFunction function = interpolator.interpolate(x, y);
+		
+		UnivariateIntegrator integrator = new TrapezoidIntegrator();
+		double integral = integrator.integrate(TrapezoidIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, anySubModuleResult.getFailRates().size() - 1);
+		double meanTimeToFailure = markovModelChecker.getDelta() * integral;
+		composedResult.setMeanTimeToFailure(meanTimeToFailure);
 		
 		return composedResult;
 	}

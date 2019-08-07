@@ -393,4 +393,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		return res;
 	}
+
+	@Override
+	public double getDelta() {
+		return delta;
+	}
 }
