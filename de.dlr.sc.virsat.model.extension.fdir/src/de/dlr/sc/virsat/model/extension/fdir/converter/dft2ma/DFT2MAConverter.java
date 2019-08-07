@@ -277,7 +277,10 @@ public class DFT2MAConverter {
 	private void createInitialState() {
 		initial = dftSemantics.getStateGenerator().generateState(ftHolder);
 		mapUnorderedBesToMarkovianDFTStates.put(initial.unorderedBes, new ArrayList<>(Collections.singletonList(initial)));
-		initial.activateNode(root);
+		initial.activateNode(root.getFault());
+		if (!root.equals(root.getFault())) {
+			initial.activateNode(root);
+		}
 		initial.setRecoveryStrategy(recoveryStrategy);
 		ma.addState(initial);
 	}

@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Container class for the results of a model checking call
@@ -71,5 +72,14 @@ public class ModelCheckingResult {
 	 */
 	public double getSteadyStateAvailability() {
 		return steadyStateAvailability;
+	}
+
+	/**
+	 * Limits all point wise metrics to the given number of entries
+	 * @param steps the number of points the metric should be limited to
+	 */
+	public void limitPointMetrics(int steps) {
+		failRates = failRates.stream().limit(steps).collect(Collectors.toList());
+		pointAvailability = pointAvailability.stream().limit(steps).collect(Collectors.toList());
 	}
 }

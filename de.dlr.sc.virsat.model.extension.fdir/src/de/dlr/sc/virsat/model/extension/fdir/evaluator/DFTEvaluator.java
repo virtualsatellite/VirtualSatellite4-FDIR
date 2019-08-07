@@ -10,12 +10,14 @@
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
 import org.apache.commons.math3.analysis.integration.TrapezoidIntegrator;
 import org.apache.commons.math3.analysis.integration.UnivariateIntegrator;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
@@ -26,6 +28,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
@@ -98,8 +101,14 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
 			
 			List<ModelCheckingResult> subModuleResults = new ArrayList<>();
-			for (Module module : modulesToModelCheck) {
-				subModuleResults.add(modelCheckModule(module, composableMetrics));
+			if (modulesToModelCheck.size() == 1) {
+				for (Module module : modulesToModelCheck) {
+					subModuleResults.add(modelCheckModule(module, metrics));
+				}
+			} else {
+				for (Module module : modulesToModelCheck) {
+					subModuleResults.add(modelCheckModule(module, composableMetrics));
+				}
 			}
 			
 			if (subModuleResults.size() == 1) {
@@ -123,7 +132,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	private Module getModule(Set<Module> modules, FaultTreeNode node) {
-		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().get();
+		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
 	}
 	
 	private Module getTopLevelModule(Fault rootFault, Set<Module> modules) {
@@ -132,7 +141,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			List<FaultTreeNodePlus> childrenPlus = topLevelModule.getModuleRoot().getChildren();
 			FaultTreeNode node = childrenPlus.get(0).getFaultTreeNode();
 			Module subModule = getModule(modules, node);
-			if (subModule.getModuleNodes().size() > 1) {
+			if (subModule == null || subModule.getModuleNodes().size() > 1) {
 				break;
 			} else {
 				topLevelModule = subModule;
@@ -146,16 +155,28 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		Set<Module> modulesToModelCheck = new HashSet<>();
 		for (FaultTreeNodePlus ftChildPlus : topLevelModule.getModuleRoot().getChildren()) {
 			Module subModule = getModule(modules, ftChildPlus.getFaultTreeNode());
-			modulesToModelCheck.add(subModule);
+			if (subModule != null) {
+				modulesToModelCheck.add(subModule);
+			} else {
+				modulesToModelCheck.add(topLevelModule);
+			}
 		}
+		
 		return modulesToModelCheck;
 	}
 	
 	private IMetric[] getComposableMetrics(IMetric[] metrics) {
+		List<IMetric> allMetrics = Arrays.asList(metrics);
 		List<IMetric> composableMetrics = new ArrayList<>();
 		for (IMetric metric : metrics) {
-			if (metric instanceof Reliability || metric instanceof PointAvailability) {
+			if (metric instanceof Reliability) {
+				if (!allMetrics.contains(MTTF.MTTF)) {
+					composableMetrics.add(metric);
+				}
+			} else if (metric instanceof PointAvailability) {
 				composableMetrics.add(metric);
+			} else if (metric instanceof MTTF) {
+				composableMetrics.add(new Reliability(Double.POSITIVE_INFINITY));
 			}
 		}
 		
@@ -175,18 +196,25 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	
 	private ModelCheckingResult composeMetrics(List<ModelCheckingResult> subModuleResults, Module topLevelModule) {
 		FaultTreeNode topLevelNode = topLevelModule.getRootNode();
-		List<FaultTreeNodePlus> childrenPlus = topLevelModule.getModuleNodes();
-		
-		ModelCheckingResult anySubModuleResult = subModuleResults.get(0);
+		List<FaultTreeNodePlus> childrenPlus = topLevelModule.getModuleRoot().getChildren();
 		
 		ModelCheckingResult composedResult = new ModelCheckingResult();	
 		long k = getK(topLevelNode, childrenPlus);
 		
-		for (int i = 0; i < anySubModuleResult.getFailRates().size(); ++i) {
-			List<Double> childFailRates = new ArrayList<>(anySubModuleResult.getFailRates().size());
+		int countFailRates = 0;
+		for (ModelCheckingResult subModuleResult : subModuleResults) {
+			countFailRates = Math.max(countFailRates, subModuleResult.getFailRates().size());
+		}
+		
+		for (int i = 0; i < countFailRates; ++i) {
+			List<Double> childFailRates = new ArrayList<>(countFailRates);
 			
 			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				childFailRates.add(subModuleResult.getFailRates().get(i));
+				if (i < subModuleResult.getFailRates().size()) {
+					childFailRates.add(subModuleResult.getFailRates().get(i));
+				} else {
+					childFailRates.add(1d);
+				}
 			}
 			
 			double composedFailRate = composeProbabilities(childFailRates, k);
@@ -206,10 +234,13 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		UnivariateInterpolator interpolator = new SplineInterpolator();
 		UnivariateFunction function = interpolator.interpolate(x, y);
 		
-		UnivariateIntegrator integrator = new TrapezoidIntegrator();
-		double integral = integrator.integrate(TrapezoidIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, anySubModuleResult.getFailRates().size() - 1);
+		UnivariateIntegrator integrator = new SimpsonIntegrator();
+		double integral = integrator.integrate(SimpsonIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, countFailRates - 1);
 		double meanTimeToFailure = markovModelChecker.getDelta() * integral;
 		composedResult.setMeanTimeToFailure(meanTimeToFailure);
+		
+		int steps = (int) (1 / markovModelChecker.getDelta());
+		composedResult.limitPointMetrics(steps);
 		
 		return composedResult;
 	}

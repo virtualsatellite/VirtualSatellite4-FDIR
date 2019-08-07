@@ -42,12 +42,17 @@ public class Modularizer implements IModularizer {
 	
 	private int maxDepth = 0;
 	
-	// CONSTRUCTORS
+	
+	/* ***********************************************************************
+	 * *********** PUBLIC METHODS ********************************************
+	 * **********************************************************************/
 	
 	/**
-	 * Default constructor
+	 * A method which modularizes a Fault Tree and returns the modules in a set.
+	 * @param ft the root node to the Fault Tree which is to be modularized
+	 * @return a set of modules
 	 */
-	public Modularizer() {
+	public Set<Module> getModules(FaultTree ft) {
 		/* create comparator for sorting FaultTreeNodePlus nodes */
 		Comparator<FaultTreeNodePlus> comparator = new Comparator<FaultTreeNodePlus>() {
 			
@@ -60,20 +65,7 @@ public class Modularizer implements IModularizer {
 		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(comparator);
 		this.table = new HashMap<FaultTreeNode, FaultTreeNodePlus>();
 		this.modules = new HashSet<Module>();
-	}
-	
-	
-	
-	/* ***********************************************************************
-	 * *********** PUBLIC METHODS ********************************************
-	 * **********************************************************************/
-	
-	/**
-	 * A method which modularizes a Fault Tree and returns the modules in a set.
-	 * @param ft the root node to the Fault Tree which is to be modularized
-	 * @return a set of modules
-	 */
-	public Set<Module> getModules(FaultTree ft) {
+		
 		this.faultTree = ft;
 		this.modularize();
 		return this.modules;

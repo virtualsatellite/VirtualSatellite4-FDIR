@@ -298,7 +298,7 @@ public class DFTState extends MarkovState {
 			}
 		}
 		
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().getOrDefault(node, Collections.emptyList());
 		for (FaultTreeNode child : children) {
 			if (node instanceof ADEP && ftHolder.getMapNodeToParents().get(child).size() > 1) {
 				continue;
@@ -306,7 +306,7 @@ public class DFTState extends MarkovState {
 			activateNode(child);
 		}
 		
-		List<OBSERVER> observers = ftHolder.getMapNodeToObservers().get(node);
+		List<OBSERVER> observers = ftHolder.getMapNodeToObservers().getOrDefault(node, Collections.emptyList());
 		for (OBSERVER observer : observers) {
 			activateNode(observer);
 		}
@@ -347,17 +347,16 @@ public class DFTState extends MarkovState {
 			}
 			
 			if (permanentNodes.get(nodeID)) {
-				List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().get(ftn);
-				if (subNodes != null) {
-					for (FaultTreeNode subNode : subNodes) {
-						if (!toProcess.contains(subNode)) {
-							int subNodeID = ftHolder.getNodeIndex(subNode);
-							if (!permanentNodes.get(subNodeID)) {
-								toProcess.push(subNode);
-							}
+				List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().getOrDefault(ftn, Collections.emptyList());
+				for (FaultTreeNode subNode : subNodes) {
+					if (!toProcess.contains(subNode)) {
+						int subNodeID = ftHolder.getNodeIndex(subNode);
+						if (!permanentNodes.get(subNodeID)) {
+							toProcess.push(subNode);
 						}
 					}
 				}
+				
 				
 				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
 				if (basicEvents != null) {
@@ -371,6 +370,16 @@ public class DFTState extends MarkovState {
 							}
 						} else {
 							unorderedBes.add((BasicEvent) be);
+						}
+						
+						List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+						for (FaultTreeNode dep : deps) {
+							if (!toProcess.contains(dep)) {
+								int depID = ftHolder.getNodeIndex(dep);
+								if (!permanentNodes.get(depID)) {
+									toProcess.push(dep);
+								}
+							}
 						}
 					}
 				}
