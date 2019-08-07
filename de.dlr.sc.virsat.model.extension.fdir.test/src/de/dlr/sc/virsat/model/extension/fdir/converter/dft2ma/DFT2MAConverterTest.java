@@ -19,6 +19,7 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
@@ -866,38 +867,46 @@ public class DFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 0.3634892;
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY);
 		
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
-	/*
 	@Test
 	public void testEvaluateCM4() throws IOException {
 		final double[] EXPECTED = {
-			3.79089e-05,
-			0.000151929,
-			0.000374514,
-			0.00079721
+			3.581002068280633E-5,
+			1.4251151037843218E-4,
+			3.202047837711682E-4,
+			5.73300404984077E-4
 		};
 		
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
 		assertIterationResultsEquals(result, EXPECTED);
 	}
-	*/
 	
-	/*
 	@Test
 	public void testEvaluateVGS1() throws IOException {
+		final double[] EXPECTED = {
+			9.20004021768462E-9,
+			1.840016087075697E-8,
+			2.7600361959244783E-8,
+			4.600100544257764E-8
+		};
+		
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY);
+		
+		System.out.println(result.getFailRates());
 		
 		final double EXPECTEDMTTF = 39595.24895;
+		final double TEST_EPSILON_SMALL = 1e-08;
+		assertIterationResultsEquals(result, EXPECTED, TEST_EPSILON_SMALL);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
-	*/
 	
 	@Test
 	public void testFTPP4() throws IOException {

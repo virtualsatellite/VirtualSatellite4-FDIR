@@ -192,6 +192,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
+		tm = null;
+		tmTerminal = null;
+		bellmanMatrix = null;
+		
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
 		

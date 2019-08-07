@@ -91,11 +91,27 @@ public class Module {
 	}
 	
 	/**
+	 * Gets the nodes of the modules with the associated meta-information such as visit times
+	 * @return the nodes of the modules with their meta-information
+	 */
+	public List<FaultTreeNodePlus> getModuleNodes() {
+		return moduleNodes;
+	}
+	
+	/**
 	 * Get the root node of the module
 	 * @return the root node
 	 */
 	public FaultTreeNode getRootNode() {
 		return this.moduleRoot.getFaultTreeNode();
+	}
+	
+	/**
+	 * Gets the root node with its meta information
+	 * @return the root node with its meta information
+	 */
+	public FaultTreeNodePlus getModuleRoot() {
+		return moduleRoot;
 	}
 	
 	/**
