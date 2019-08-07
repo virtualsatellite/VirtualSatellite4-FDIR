@@ -270,6 +270,17 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		saveStatistics(synthesizer.getStatistics(), "MAS2", "rise/2019/benchmarkStatistics");
 	}
 	
+	
+	/* ***************************************************************************
+	 * CM
+	 * **************************************************************************/
+	@Test
+	public void testCM5() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm5.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "CM5", "rise/2019/benchmarkStatistics");
+	}
+	
 	/**
 	 * Write statistic to a file
 	 * @param statistics the statistics

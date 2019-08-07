@@ -1,0 +1,38 @@
+RC-1-1
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		187
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		26
+	* Largest Module RA:		3
+State space generation Statistics: 
+	* Generation Time  :		15
+	* #Generated States:		221
+	* Max States       :		41
+	* Max Transitions  :		226
+Minimization Statistics: 
+	* Minimization Time  :		109
+	* #RemovedStates     :		33
+	* #RemovedTransitions:		198
+
+
+RC-1-1
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		239
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		26
+	* Largest Module RA:		3
+State space generation Statistics: 
+	* Generation Time  :		49
+	* #Generated States:		221
+	* Max States       :		41
+	* Max Transitions  :		226
+Minimization Statistics: 
+	* Minimization Time  :		119
+	* #RemovedStates     :		33
+	* #RemovedTransitions:		198
+
+
