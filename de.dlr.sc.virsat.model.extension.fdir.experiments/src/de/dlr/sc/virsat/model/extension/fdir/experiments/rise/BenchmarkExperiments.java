@@ -20,6 +20,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
@@ -32,6 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
  * @author jord_ad
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BenchmarkExperiments extends ASynthesizerExperiment {
 	
 	protected BasicSynthesizer synthesizer;
@@ -274,6 +277,25 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	/* ***************************************************************************
 	 * CM
 	 * **************************************************************************/
+	
+	@Test
+	public void testCMSimple() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
+		synthesizer.synthesize(fault);
+	}
+
+	@Test
+	public void testCM1() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testCM2() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
+		synthesizer.synthesize(fault);
+	}
+	
 	@Test
 	public void testCM5() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm5.dft");

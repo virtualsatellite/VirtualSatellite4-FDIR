@@ -20,7 +20,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -32,6 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
  * @author jord_ad
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BenchmarkExperimentsWithoutModularization extends ASynthesizerExperiment {
 	
 	protected BasicSynthesizer synthesizer;
@@ -52,68 +55,7 @@ public class BenchmarkExperimentsWithoutModularization extends ASynthesizerExper
 		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
 		synthesizer.setModularizer(null);
 		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "RC-1-1", "rise/2019/benchmarkStatisticsWithoutModularizationWithoutModularization");
-	}
-	
-	
-	/* ***************************************************************************
-	 * Vehicle Guidance Systems (VGS)
-	 * **************************************************************************/
-	
-	@Test
-	public void testVGS2() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/vgs/vgs2.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "VGS2", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	@Test
-	public void testVGS3() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/vgs/vgs3.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "VGS3", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	@Test
-	public void testVGS4() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/vgs/vgs4.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "VGS4", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	@Test
-	public void testVGS5() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/vgs/vgs5.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "VGS5", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	@Test
-	public void testVGS6() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/vgs/vgs6.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "VGS6", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	@Test
-	public void testVGS7() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/vgs/vgs7.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "VGS7", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	@Test
-	public void testVGS8() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/vgs/vgs8.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "VGS8", "rise/2019/benchmarkStatisticsWithoutModularization");
+		saveStatistics(synthesizer.getStatistics(), "RC-1-1", "rise/2019/benchmarkStatisticsWithoutModularization");
 	}
 	
 	/* ***************************************************************************
@@ -136,6 +78,30 @@ public class BenchmarkExperimentsWithoutModularization extends ASynthesizerExper
 		synthesizer.setModularizer(null);
 		synthesizer.synthesize(fault);
 		saveStatistics(synthesizer.getStatistics(), "HECS1", "rise/2019/benchmarkStatisticsWithoutModularization");
+	}
+	
+	/* ***************************************************************************
+	 * CM
+	 * **************************************************************************/
+	@Test
+	public void testCMSimple() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
+		synthesizer.setModularizer(null);
+		synthesizer.synthesize(fault);
+	}
+
+	@Test
+	public void testCM1() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
+		synthesizer.setModularizer(null);
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testCM2() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
+		synthesizer.setModularizer(null);
+		synthesizer.synthesize(fault);
 	}
 	
 	/**

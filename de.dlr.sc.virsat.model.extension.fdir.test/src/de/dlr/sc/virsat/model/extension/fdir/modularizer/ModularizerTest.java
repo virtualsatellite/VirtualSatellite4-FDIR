@@ -403,4 +403,22 @@ public class ModularizerTest extends ATestCase {
 		final int NUM_MODULES = 16;
 		assertEquals(NUM_MODULES, modules.size());
 	}
+	
+	@Test
+	public void testFTPP4() throws IOException {
+		Fault rootFTPP4 = createDFT("/resources/galileo/ftpp4.dft");
+		Set<Module> modules = modularizer.getModules(rootFTPP4.getFaultTree());
+		
+		final int NUM_MODULES = 2;
+		assertEquals(NUM_MODULES, modules.size());
+	}
+	
+	@Test
+	public void testAHRS2() throws IOException {
+		Fault rootAHRS2 = createDFT("/resources/galileo/ahrs2.dft");
+		Set<Module> modules = modularizer.getModules(rootAHRS2.getFaultTree());
+		
+		final int NUM_MODULES = 2;
+		assertEquals(NUM_MODULES, modules.size());
+	}
 }
