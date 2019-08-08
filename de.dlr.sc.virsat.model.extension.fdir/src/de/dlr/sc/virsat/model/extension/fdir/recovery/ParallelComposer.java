@@ -76,10 +76,11 @@ public class ParallelComposer {
 		Stack<State> dfsStack = new Stack<State>();
 		dfsStack.push(startState);
 
+		List<Transition> intermediateTransitions = new ArrayList<Transition>();
+		
 		while (!dfsStack.isEmpty()) {
 			State fromState = dfsStack.pop();
 			List<Integer> fromPos = mapStateToPos.get(fromState);
-			List<Transition> intermediateTransitions = new ArrayList<Transition>();
 			
 			int currRA = 0;
 			for (RecoveryAutomaton ra : ras) {
@@ -105,8 +106,10 @@ public class ParallelComposer {
 				}
 				currRA++;
 			}
-			resultTransitions.addAll(intermediateTransitions);
 		}
+		
+		resultTransitions.addAll(intermediateTransitions);
+		
 		return result;
 	}
 	
