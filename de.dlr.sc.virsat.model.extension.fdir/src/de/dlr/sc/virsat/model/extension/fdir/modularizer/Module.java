@@ -67,19 +67,24 @@ public class Module {
 	/**
 	 * Add a node to the module
 	 * @param node the node
+	 * @return true iff the node was not in the module nodes before
 	 */
-	void addNode(FaultTreeNodePlus node) {
+	boolean addNode(FaultTreeNodePlus node) {
+		if (this.moduleNodes.contains(node)) {
+			return false;
+		}
+		
 		if (this.moduleNodes.isEmpty()) {
 			this.moduleRoot = node;
 		}
 		
-		if (!this.moduleNodes.contains(node)) {
-			this.moduleNodes.add(node);
-		}
+		this.moduleNodes.add(node);
 		
 		if (node.isNondeterministic()) {
 			this.moduleType = ModuleType.NONDETERMINISTIC;
 		}
+		
+		return true;
 	}
 	
 	/**

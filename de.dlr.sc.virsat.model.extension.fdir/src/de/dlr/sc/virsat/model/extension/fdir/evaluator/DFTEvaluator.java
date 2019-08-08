@@ -141,7 +141,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			List<FaultTreeNodePlus> childrenPlus = topLevelModule.getModuleRoot().getChildren();
 			FaultTreeNode node = childrenPlus.get(0).getFaultTreeNode();
 			Module subModule = getModule(modules, node);
-			if (subModule == null || subModule.getModuleNodes().size() > 1) {
+			if (subModule == null || subModule.getModuleNodes().size() > 1 || topLevelModule.getModuleRoot().getFaultTreeNode() instanceof VOTE) {
 				break;
 			} else {
 				topLevelModule = subModule;

@@ -887,20 +887,19 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		assertIterationResultsEquals(result, EXPECTED);
 	}
+	
 	/*
 	@Test
 	public void testEvaluateVGS1() throws IOException {
 		final double[] EXPECTED = {
-			9.20004021768462E-9,
-			1.840016087075697E-8,
-			2.7600361959244783E-8,
-			4.600100544257764E-8
+			9.200036653791825E-9,
+			1.8400146615614586E-8,
+			2.760032988613919E-8,
+			3.6800586466036515E-8
 		};
 		
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY);
-		
-		System.out.println(result.getFailRates());
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		final double EXPECTEDMTTF = 39595.24895;
 		final double TEST_EPSILON_SMALL = 1e-08;
@@ -908,6 +907,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	*/
+	
 	@Test
 	public void testFTPP4() throws IOException {
 		final double EXPECTEDMTTF = 4595.0333844;

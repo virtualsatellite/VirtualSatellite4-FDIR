@@ -296,6 +296,12 @@ public class DFTState extends MarkovState {
 					}
 				}
 			}
+			
+			for (BasicEvent be : ((Fault) node).getBasicEvents()) {
+				for (FaultTreeNode trigger : ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList())) {
+					activateNode(trigger);
+				}
+			}
 		}
 		
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().getOrDefault(node, Collections.emptyList());
@@ -358,27 +364,25 @@ public class DFTState extends MarkovState {
 				}
 				
 				
-				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().get(ftn);
-				if (basicEvents != null) {
-					for (FaultTreeNode be : basicEvents) {
-						int beID = ftHolder.getNodeIndex(be);
-						failedNodes.set(beID);
-						permanentNodes.set(beID);
-						if (orderDependentBasicEvents.contains(be)) {
-							if (!orderedBes.contains(be)) {
-								orderedBes.add((BasicEvent) be);
-							}
-						} else {
-							unorderedBes.add((BasicEvent) be);
+				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(ftn, Collections.emptyList());
+				for (FaultTreeNode be : basicEvents) {
+					int beID = ftHolder.getNodeIndex(be);
+					failedNodes.set(beID);
+					permanentNodes.set(beID);
+					if (orderDependentBasicEvents.contains(be)) {
+						if (!orderedBes.contains(be)) {
+							orderedBes.add((BasicEvent) be);
 						}
-						
-						List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
-						for (FaultTreeNode dep : deps) {
-							if (!toProcess.contains(dep)) {
-								int depID = ftHolder.getNodeIndex(dep);
-								if (!permanentNodes.get(depID)) {
-									toProcess.push(dep);
-								}
+					} else {
+						unorderedBes.add((BasicEvent) be);
+					}
+					
+					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+					for (FaultTreeNode dep : deps) {
+						if (!toProcess.contains(dep)) {
+							int depID = ftHolder.getNodeIndex(dep);
+							if (!permanentNodes.get(depID)) {
+								toProcess.push(dep);
 							}
 						}
 					}
