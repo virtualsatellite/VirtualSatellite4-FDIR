@@ -43,6 +43,7 @@ public class Modularizer implements IModularizer {
 	private FaultTreeHolder ftHolder;
 	
 	private int maxDepth = 0;
+	private boolean beOptimizationOn = true;
 	
 	// CONSTRUCTORS
 	
@@ -89,6 +90,15 @@ public class Modularizer implements IModularizer {
 		this.faultTree = ft;
 		this.countTree();
 		return this.maxDepth;
+	}
+	
+	/**
+	 * Allows the user to choose if they would like to start searching for modules at the lowest level (basic events)
+	 * or past basic events.
+	 * @param beOptimizationOn true for optimization turned on, false for optimization turned off.
+	 */
+	public void setBEOptimization(boolean beOptimizationOn) {
+		this.beOptimizationOn = beOptimizationOn;
 	}
 	
 	
@@ -161,15 +171,20 @@ public class Modularizer implements IModularizer {
 	 */
 	private void modularize() {
 		this.countTree();
-		/* start looking for modules at maxDepth - 2 because deepest 2 levels are just faults and their basic events */
-		for (int i = this.maxDepth - 2; i >= 0; i--) {
+		/*	DEFAULT optimization
+		 *  start looking for modules at maxDepth - 2 because deepest 2 levels are just faults and their basic events */
+		int startingDepth = this.beOptimizationOn ? this.maxDepth - 2 : this.maxDepth - 1;
+		
+		for (int i = startingDepth; i >= 0; i--) {
 			int currDepth = i;
 			
 			for (FaultTreeNodePlus currNode : this.nodePlusTree) {				
 				/* detected a potential module */
-				if ((currNode.getDepth() == currDepth)
-						&& (currNode.getFirstVisit() + 2 < currNode.getLastVisit())
-						&& !currNode.isHarvested()) {
+				boolean moduleDetected = (currNode.getDepth() == currDepth) && !currNode.isHarvested();
+				moduleDetected = moduleDetected 
+						&& (this.beOptimizationOn ? (currNode.getFirstVisit() + 2 < currNode.getLastVisit())
+												: (currNode.getFirstVisit() + 1 < currNode.getLastVisit()));
+				if (moduleDetected) {
 					Module module = this.harvestModule(currNode.getFaultTreeNode());
 					
 					if (module != null) {

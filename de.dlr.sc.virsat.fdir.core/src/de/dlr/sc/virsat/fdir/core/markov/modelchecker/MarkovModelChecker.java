@@ -199,6 +199,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
 		
+		tm = null;
+		tmTerminal = null;
+		bellmanMatrix = null;
+		
 		for (IMetric metric : metrics) {
 			metric.accept(this);
 		}

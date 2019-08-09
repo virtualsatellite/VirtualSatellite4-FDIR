@@ -9,14 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
-import java.util.List;
-
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -29,8 +25,6 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class PONDSPARESemantics extends NDSPARESemantics {
 	
-	private boolean propagateWithoutClaiming = false;
-	
 	/**
 	 * Standard constructor
 	 * @param stateGenerator the state generator
@@ -40,53 +34,14 @@ public class PONDSPARESemantics extends NDSPARESemantics {
 	}
 	
 	@Override
-	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
-			FaultTreeHolder ftHolder, GenerationResult generationResult) {
-		
-		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(node);
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
-		
-		if (!propagateWithoutClaiming) {
-			for (FaultTreeNode spare : spares) {
-				if (!state.hasFaultTreeNodeFailed(spare) && !state.getMapSpareToClaimedSpares().containsKey(spare)) {
-					performClaim((SPARE) node, spare, state, generationResult);
-				}
-			}
-			
-			if (state.hasFaultTreeNodeFailed(node)) {
-				if (state.areFaultTreeNodesPermanent(children)) {
-					state.setFaultTreeNodePermanent(node, true);
-				}
-				
-				return true;
-			}
-			
-			return false;
+	protected void updatePermanence(DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
+		if (state.areFaultTreeNodesPermanent(ftHolder.getMapNodeToSubNodes().get(node))) {
+			state.setFaultTreeNodePermanent(node, true);
 		}
-
-		for (FaultTreeNode child : children) {
-			if (!state.hasFaultTreeNodeFailed(child)) {
-				return state.setFaultTreeNodeFailed(node, false);
-			}
-		}
-		
-		for (FaultTreeNode spare : spares) {
-			if (!state.hasFaultTreeNodeFailed(spare)) {
-				FaultTreeNode spareGate = state.getMapSpareToClaimedSpares().get(spare);
-				if (spareGate != null && spareGate.equals(node)) {
-					return false;
-				}
-			} 
-		}
-		
-		return state.setFaultTreeNodeFailed(node, true);
 	}
 	
-	/**
-	 * Sets the propagation flag
-	 * @param propagateWithoutClaiming whether this gate should prevent the propagation or not
-	 */
-	public void setPropagateWithoutClaiming(boolean propagateWithoutClaiming) {
-		this.propagateWithoutClaiming = propagateWithoutClaiming;
+	@Override
+	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
+		return !propagateWithoutClaiming;
 	}
 }
