@@ -79,7 +79,18 @@ public class ModelCheckingResult {
 	 * @param steps the number of points the metric should be limited to
 	 */
 	public void limitPointMetrics(int steps) {
-		failRates = failRates.stream().limit(steps).collect(Collectors.toList());
-		pointAvailability = pointAvailability.stream().limit(steps).collect(Collectors.toList());
+		if (!failRates.isEmpty()) {
+			failRates = failRates.stream().limit(steps).collect(Collectors.toList());
+			while (failRates.size() < steps) {
+				failRates.add(1d);
+			}
+		}
+		
+		if (!pointAvailability.isEmpty()) {
+			pointAvailability = pointAvailability.stream().limit(steps).collect(Collectors.toList());
+			while (pointAvailability.size() < steps) {
+				pointAvailability.add(1d);
+			}
+		}
 	}
 }

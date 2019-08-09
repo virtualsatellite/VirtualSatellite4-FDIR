@@ -243,7 +243,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				modelCheckingResult.failRates.add(newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
 				oldFailRate = newFailRate;
-				double relativeChange = change;
+				double relativeChange = change / newFailRate;
 				if (relativeChange < eps || !Double.isFinite(change)) {
 					convergence = true;
 				}

@@ -43,6 +43,16 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		return composedResult;
 	}
 	
+	public ModelCheckingResult compose(ModelCheckingResult composedResult, IMetric[] metrics) {
+		this.composedResult = composedResult;
+		
+		for (IMetric metric : metrics) {
+			metric.accept(this);
+		}
+		
+		return composedResult;
+	}
+	
 	private long getK(FaultTreeNode node, Collection<?> children) {
 		long k = children.size();
 		if (node instanceof Fault) {
@@ -54,7 +64,7 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		return k;
 	}
 	
-	private double composeProbabilities(List<Double> probabilities, long k) {
+	private double composeProbabilities(double[] probabilities, long k) {
 		double composedProbability = 1;
 		if (k == 1) {
 			for (double failRate : probabilities) {
@@ -77,18 +87,26 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		long k = getK(topLevelNode, childrenPlus);
 		
 		int countFailRates = 0;
-		for (ModelCheckingResult subModuleResult : subModuleResults) {
-			countFailRates = Math.max(countFailRates, subModuleResult.getFailRates().size());
+		if (k == 1) {
+			countFailRates = Integer.MAX_VALUE;
+			for (ModelCheckingResult subModuleResult : subModuleResults) {
+				countFailRates = Math.min(countFailRates, subModuleResult.getFailRates().size());
+			}
+		} else {
+			for (ModelCheckingResult subModuleResult : subModuleResults) {
+				countFailRates = Math.max(countFailRates, subModuleResult.getFailRates().size());
+			}
 		}
 		
+		double[] childFailRates = new double[subModuleResults.size()];
 		for (int i = 0; i < countFailRates; ++i) {
-			List<Double> childFailRates = new ArrayList<>(countFailRates);
 			
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
+			for (int j = 0; j < subModuleResults.size(); ++j) {
+				ModelCheckingResult subModuleResult = subModuleResults.get(j);
 				if (i < subModuleResult.getFailRates().size()) {
-					childFailRates.add(subModuleResult.getFailRates().get(i));
+					childFailRates[j] = subModuleResult.getFailRates().get(i);
 				} else {
-					childFailRates.add(1d);
+					childFailRates[j] = 1;
 				}
 			}
 			
@@ -131,14 +149,14 @@ public class DFTMetricsComposer implements IMetricVisitor {
 			countPoints = Math.max(countPoints, subModuleResult.getPointAvailability().size());
 		}
 		
+		double[] childPointAvailabilities = new double[subModuleResults.size()];
 		for (int i = 0; i < countPoints; ++i) {
-			List<Double> childPointAvailabilities = new ArrayList<>(countPoints);
-			
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
+			for (int j = 0; j < subModuleResults.size(); ++j) {
+				ModelCheckingResult subModuleResult = subModuleResults.get(j);
 				if (i < subModuleResult.getFailRates().size()) {
-					childPointAvailabilities.add(subModuleResult.getPointAvailability().get(i));
+					childPointAvailabilities[j] = subModuleResult.getFailRates().get(i);
 				} else {
-					childPointAvailabilities.add(1d);
+					childPointAvailabilities[j] = 1;
 				}
 			}
 			
@@ -151,10 +169,11 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
 		long k = getK(topLevelNode, childrenPlus);
 	
-		List<Double> childSteadyStateAvailabilities = new ArrayList<>();
+		double[] childSteadyStateAvailabilities = new double[subModuleResults.size()];
 		
-		for (ModelCheckingResult subModuleResult : subModuleResults) {
-			childSteadyStateAvailabilities.add(subModuleResult.getSteadyStateAvailability());
+		for (int j = 0; j < subModuleResults.size(); ++j) {
+			ModelCheckingResult subModuleResult = subModuleResults.get(j);
+			childSteadyStateAvailabilities[j] = subModuleResult.getSteadyStateAvailability();
 		}
 		
 		double composedSteadyStateAvailability = composeProbabilities(childSteadyStateAvailabilities, k);

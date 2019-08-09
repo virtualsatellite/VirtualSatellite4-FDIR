@@ -431,4 +431,8 @@ public class DFT2MAConverter {
 	public DFT2MAConversionStatistics getStatistics() {
 		return statistics;
 	}
+	
+	public DFTSemantics getDftSemantics() {
+		return dftSemantics;
+	}
 }

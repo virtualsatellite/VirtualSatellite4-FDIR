@@ -11,17 +11,15 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
-
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
-import org.apache.commons.math3.analysis.integration.TrapezoidIntegrator;
-import org.apache.commons.math3.analysis.integration.UnivariateIntegrator;
-import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
-import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
+import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -35,6 +33,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.model.AFault;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -44,6 +43,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import java.util.AbstractMap.SimpleEntry;
 
 /**
  * Evaluator for Dynamic Fault Trees, resolving non determinism using a recovery
@@ -91,37 +91,41 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		dft2MAConverter.setSemantics(chooseSemantics(root));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		
-		boolean canModularize = modularizer != null && root instanceof Fault;
+		boolean canModularize = modularizer != null 
+				&& root instanceof Fault
+				&& dft2MAConverter.getDftSemantics() != poSemantics;
 		
 		if (canModularize) {
 			Fault rootFault = (Fault) root;
 			Set<Module> modules = modularizer.getModules(rootFault.getFaultTree());
 			
-			IMetric[] composableMetrics = getComposableMetrics(metrics);
-			Module topLevelModule = getTopLevelModule(rootFault, modules);
+			Entry<IMetric[], IMetric[]> metricSplit = splitMetrics(metrics);
+			IMetric[] composableMetrics = metricSplit.getKey();
+			IMetric[] unComposableMetrics = metricSplit.getValue();
+			
+			Module topLevelModule = getModule(modules, rootFault);
 			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
 			
-			List<ModelCheckingResult> subModuleResults = new ArrayList<>();
+			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
 			if (modulesToModelCheck.size() == 1) {
 				for (Module module : modulesToModelCheck) {
-					subModuleResults.add(modelCheckModule(module, metrics));
+					mapModuleToResult.put(module, modelCheckModule(module, metrics));
 				}
 			} else {
 				for (Module module : modulesToModelCheck) {
-					subModuleResults.add(modelCheckModule(module, composableMetrics));
+					mapModuleToResult.put(module, modelCheckModule(module, composableMetrics));
 				}
 			}
 			
-			if (subModuleResults.size() == 1) {
-				statistics.time = System.currentTimeMillis() - statistics.time;
-				return subModuleResults.get(0);
+			composeModuleResults(topLevelModule, modules, composableMetrics, mapModuleToResult);
+			ModelCheckingResult result = mapModuleToResult.get(topLevelModule);
+			
+			if (modulesToModelCheck.size() > 1) {
+				composer.compose(result, unComposableMetrics);
+				result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
+				int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
+				result.limitPointMetrics(steps);
 			}
-			
-			ModelCheckingResult result = composer.compose(subModuleResults, metrics, topLevelModule);
-			
-			result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
-			int steps = (int) (1 / markovModelChecker.getDelta());
-			result.limitPointMetrics(steps);
 			
 			statistics.time = System.currentTimeMillis() - statistics.time;
 			return result;
@@ -137,43 +141,84 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return result;
 	}
 	
+	private void composeModuleResults(Module module, Set<Module> modules, IMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult) {
+		ModelCheckingResult result = mapModuleToResult.get(module);
+		if (result != null) {
+			return;
+		}
+		
+		List<FaultTreeNodePlus> children = module.getModuleRoot().getChildren();
+		List<Module> subModules = children.stream()
+				.map(child -> getModule(modules, child.getFaultTreeNode()))
+				.collect(Collectors.toList());
+		List<ModelCheckingResult> subModuleResults = new ArrayList<>();
+		for (Module subModule : subModules) {
+			ModelCheckingResult subModuleResult = mapModuleToResult.get(subModule);
+			if (subModuleResult == null) {
+				composeModuleResults(subModule, modules, metrics, mapModuleToResult);
+				subModuleResult = mapModuleToResult.get(subModule);
+			}
+			subModuleResults.add(subModuleResult);
+		}
+		
+		if (subModuleResults.size() > 1) {
+			result = composer.compose(subModuleResults, metrics, module);
+		} else {
+			result = subModuleResults.get(0);
+		}
+		
+		mapModuleToResult.put(module, result);
+		for (Module subModule : subModules) {
+			mapModuleToResult.remove(subModule);
+		}
+	}
+
 	private Module getModule(Set<Module> modules, FaultTreeNode node) {
 		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
 	}
 	
-	private Module getTopLevelModule(Fault rootFault, Set<Module> modules) {
-		Module topLevelModule = getModule(modules, rootFault);
-		while (topLevelModule.getModuleRoot().getChildren().size() <= 1) {
-			List<FaultTreeNodePlus> childrenPlus = topLevelModule.getModuleRoot().getChildren();
-			FaultTreeNode node = childrenPlus.get(0).getFaultTreeNode();
-			Module subModule = getModule(modules, node);
-			if (subModule == null || subModule.getModuleNodes().size() > 1 || topLevelModule.getModuleRoot().getFaultTreeNode() instanceof VOTE) {
-				break;
-			} else {
-				topLevelModule = subModule;
-			}
-		}
-		
-		return topLevelModule;
-	}
-	
 	private Set<Module> getModulesToModelCheck(Module topLevelModule, Set<Module> modules) {
-		Set<Module> modulesToModelCheck = new HashSet<>();
-		for (FaultTreeNodePlus ftChildPlus : topLevelModule.getModuleRoot().getChildren()) {
-			Module subModule = getModule(modules, ftChildPlus.getFaultTreeNode());
-			if (subModule != null) {
-				modulesToModelCheck.add(subModule);
+		Set<Module> modulesToModelCheck = new HashSet<>();		
+		
+		Queue<Module> toProcess = new LinkedList<>();
+		toProcess.add(topLevelModule);
+		
+		while (!toProcess.isEmpty()) {
+			Module module = toProcess.poll();
+			
+			boolean shouldModelCheck = module.getModuleNodes().size() > 1;
+			if (!shouldModelCheck) {
+				FaultTreeNode moduleRoot = module.getModuleNodes().get(0).getFaultTreeNode();
+				shouldModelCheck = !(moduleRoot instanceof Fault || moduleRoot instanceof VOTE);
+				
+				if (!shouldModelCheck) {
+					if (moduleRoot instanceof Fault) {
+						shouldModelCheck = !((Fault) moduleRoot).getBasicEvents().isEmpty();
+					} else if (moduleRoot instanceof VOTE) {
+						long votingThreshold = ((VOTE) moduleRoot).getVotingThreshold();
+						shouldModelCheck = votingThreshold != 1 && votingThreshold != module.getModuleRoot().getChildren().size();
+					}
+				}
+			}
+			
+			if (shouldModelCheck) {
+				modulesToModelCheck.add(module);
 			} else {
-				modulesToModelCheck.add(topLevelModule);
+				for (FaultTreeNodePlus ftChildPlus : module.getModuleRoot().getChildren()) {
+					Module subModule = getModule(modules, ftChildPlus.getFaultTreeNode());
+					toProcess.add(subModule);
+				}
 			}
 		}
 		
 		return modulesToModelCheck;
 	}
 	
-	private IMetric[] getComposableMetrics(IMetric[] metrics) {
+	private Entry<IMetric[], IMetric[]> splitMetrics(IMetric[] metrics) {
 		List<IMetric> allMetrics = Arrays.asList(metrics);
 		List<IMetric> composableMetrics = new ArrayList<>();
+		List<IMetric> unComposableMetrics = new ArrayList<>();
+		
 		for (IMetric metric : metrics) {
 			if (metric instanceof Reliability) {
 				if (!allMetrics.contains(MTTF.MTTF)) {
@@ -183,11 +228,15 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 				composableMetrics.add(metric);
 			} else if (metric instanceof MTTF) {
 				composableMetrics.add(new Reliability(Double.POSITIVE_INFINITY));
+				unComposableMetrics.add(metric);
+			} else {
+				unComposableMetrics.add(metric);
 			}
 		}
 		
 		IMetric[] composableMetricsArray = new IMetric[composableMetrics.size()];
-		return composableMetrics.toArray(composableMetricsArray);
+		IMetric[] unComposableMetricsArray = new IMetric[unComposableMetrics.size()];
+		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), unComposableMetrics.toArray(unComposableMetricsArray));
 	}
 	
 	private ModelCheckingResult modelCheckModule(Module module, IMetric[] metrics) {
@@ -195,8 +244,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
 			
 		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
-		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());			
-	
+		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());	
+		
 		return result;
 	}
 	
