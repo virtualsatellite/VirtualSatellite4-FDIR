@@ -144,6 +144,16 @@ public abstract class ASynthesizer implements ISynthesizer {
 	}
 	
 	/**
+	 * Sets the minimizer that will be used to synthesize the recovery automaton
+	 * @param beOptimizationOn true if optimization is on, false if off
+	 */
+	public void setBEOptimizationOn(boolean beOptimizationOn) {
+		if (this.modularizer != null) {
+			this.modularizer.setBEOptimization(beOptimizationOn);
+		}
+	}
+	
+	/**
 	 * Sets the modularizer that will be used to modularize the fault tree
 	 * @param modularizer the modularizer
 	 */
