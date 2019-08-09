@@ -62,6 +62,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
 	private Modularizer modularizer = new Modularizer();
+	private DFTMetricsComposer composer = new DFTMetricsComposer();
 	private DFTEvaluationStatistics statistics;
 	
 	/**
@@ -114,9 +115,14 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			if (subModuleResults.size() == 1) {
 				statistics.time = System.currentTimeMillis() - statistics.time;
 				return subModuleResults.get(0);
-			} 
+			}
 			
-			ModelCheckingResult result = composeMetrics(subModuleResults, topLevelModule);
+			ModelCheckingResult result = composer.compose(subModuleResults, metrics, topLevelModule);
+			
+			result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
+			int steps = (int) (1 / markovModelChecker.getDelta());
+			result.limitPointMetrics(steps);
+			
 			statistics.time = System.currentTimeMillis() - statistics.time;
 			return result;
 		} 
@@ -192,84 +198,6 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());			
 	
 		return result;
-	}
-	
-	private ModelCheckingResult composeMetrics(List<ModelCheckingResult> subModuleResults, Module topLevelModule) {
-		FaultTreeNode topLevelNode = topLevelModule.getRootNode();
-		List<FaultTreeNodePlus> childrenPlus = topLevelModule.getModuleRoot().getChildren();
-		
-		ModelCheckingResult composedResult = new ModelCheckingResult();	
-		long k = getK(topLevelNode, childrenPlus);
-		
-		int countFailRates = 0;
-		for (ModelCheckingResult subModuleResult : subModuleResults) {
-			countFailRates = Math.max(countFailRates, subModuleResult.getFailRates().size());
-		}
-		
-		for (int i = 0; i < countFailRates; ++i) {
-			List<Double> childFailRates = new ArrayList<>(countFailRates);
-			
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				if (i < subModuleResult.getFailRates().size()) {
-					childFailRates.add(subModuleResult.getFailRates().get(i));
-				} else {
-					childFailRates.add(1d);
-				}
-			}
-			
-			double composedFailRate = composeProbabilities(childFailRates, k);
-			composedResult.getFailRates().add(composedFailRate);
-		}
-		
-		double[] x = new double[composedResult.getFailRates().size()];
-		for (int i = 0; i < composedResult.getFailRates().size(); ++i) {
-			x[i] = i;
-		}
-		
-		double[] y = new double[composedResult.getFailRates().size()];
-		for (int i = 0; i < composedResult.getFailRates().size(); ++i) {
-			y[i] = 1 - composedResult.getFailRates().get(i);
-		}
-		
-		UnivariateInterpolator interpolator = new SplineInterpolator();
-		UnivariateFunction function = interpolator.interpolate(x, y);
-		
-		UnivariateIntegrator integrator = new SimpsonIntegrator();
-		double integral = integrator.integrate(SimpsonIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, countFailRates - 1);
-		double meanTimeToFailure = markovModelChecker.getDelta() * integral;
-		composedResult.setMeanTimeToFailure(meanTimeToFailure);
-		
-		int steps = (int) (1 / markovModelChecker.getDelta());
-		composedResult.limitPointMetrics(steps);
-		
-		return composedResult;
-	}
-	
-	private long getK(FaultTreeNode node, Collection<?> children) {
-		long k = children.size();
-		if (node instanceof Fault) {
-			k = 1;
-		} else if (node instanceof VOTE) {
-			k = ((VOTE) node).getVotingThreshold();
-		}
-		
-		return k;
-	}
-	
-	private double composeProbabilities(List<Double> probabilities, long k) {
-		double composedProbability = 1;
-		if (k == 1) {
-			for (double failRate : probabilities) {
-				composedProbability *= 1 - failRate;
-			}
-			composedProbability = 1 - composedProbability;
-		} else {
-			for (double failRate : probabilities) {
-				composedProbability *= failRate;
-			}
-		}
-		
-		return composedProbability;
 	}
 	
 	/**
