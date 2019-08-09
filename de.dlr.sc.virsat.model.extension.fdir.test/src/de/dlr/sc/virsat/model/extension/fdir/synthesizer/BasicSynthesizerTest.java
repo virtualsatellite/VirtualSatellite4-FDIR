@@ -87,6 +87,16 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateCsp2WithoutBEOptimization() throws IOException {
+		Fault fault = createDFT("/resources/galileo/csp2.dft");
+		synthesizer.setBEOptimizationOn(false);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+
+		final int NUM_STATES = 1;
+		assertEquals(NUM_STATES, ra.getStates().size());
+	}
+	
+	@Test
 	public void testEvaluateHECS11() throws IOException {
 		Fault fault = createDFT("/resources/galileo/hecs_1_1_0_np.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
