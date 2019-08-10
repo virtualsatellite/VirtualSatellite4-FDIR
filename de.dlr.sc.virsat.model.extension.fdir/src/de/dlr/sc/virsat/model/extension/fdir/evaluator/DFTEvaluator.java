@@ -53,6 +53,8 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  */
 public class DFTEvaluator implements IFaultTreeEvaluator {
 
+	public static final int MODULE_SPLIT_SIZE_BES = 20;
+	
 	private DFTSemantics defaultSemantics;
 	private DFTSemantics poSemantics;
 	
@@ -146,6 +148,14 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return result;
 	}
 	
+	/**
+	 * Composes the model checking results for the leaf modules into the model checking result
+	 * of the top level module
+	 * @param module the module we want to compute the metrics for
+	 * @param modules the sub modules
+	 * @param metrics the metrics we want to compute
+	 * @param mapModuleToResult a map from module to the already computed results
+	 */
 	private void composeModuleResults(Module module, Set<Module> modules, IMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult) {
 		ModelCheckingResult result = mapModuleToResult.get(module);
 		if (result != null) {
@@ -178,10 +188,23 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		}
 	}
 
+	/**
+	 * Gets the module for a given fault tree node
+	 * @param modules the modules
+	 * @param node a fault tree node
+	 * @return the module for the fault tree node, or null of no such module exists
+	 */
 	private Module getModule(Set<Module> modules, FaultTreeNode node) {
 		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
 	}
 	
+	/**
+	 * Counts the total number of basic events in a module
+	 * including all of its sub modules
+	 * @param modules all modules
+	 * @param module the module we wish to know the total be count for
+	 * @return the total number of basic events in a module including all of its sub modules
+	 */
 	private int getTotalCountBasicEvents(Set<Module> modules, Module module) {
 		Queue<Module> toProcess = new LinkedList<>();
 		toProcess.add(module);
@@ -207,6 +230,12 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return totalCountBEs;
 	}
 	
+	/**
+	 * Determines the leaf modules that we should model check
+	 * @param topLevelModule the top level module
+	 * @param modules all modules
+	 * @return a set of modules that should be model checked
+	 */
 	private Set<Module> getModulesToModelCheck(Module topLevelModule, Set<Module> modules) {
 		Set<Module> modulesToModelCheck = new HashSet<>();		
 		
@@ -231,7 +260,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			}
 			
 			if (!shouldModelCheck) {
-				shouldModelCheck = getTotalCountBasicEvents(modules, module) < 20;
+				shouldModelCheck = getTotalCountBasicEvents(modules, module) < MODULE_SPLIT_SIZE_BES;
 			}
 			
 			if (shouldModelCheck) {
@@ -247,6 +276,12 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return modulesToModelCheck;
 	}
 	
+	/**
+	 * Splits the given set of metrics into a set of composable and uncomposable metrics.
+	 * Also, if necessary, adds new metrics that are required to perform the composition.
+	 * @param metrics the original metrics
+	 * @return a pair of composable and uncomposable metric sets
+	 */
 	private Entry<IMetric[], IMetric[]> splitMetrics(IMetric[] metrics) {
 		List<IMetric> allMetrics = Arrays.asList(metrics);
 		List<IMetric> composableMetrics = new ArrayList<>();
@@ -272,6 +307,12 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), unComposableMetrics.toArray(unComposableMetricsArray));
 	}
 	
+	/**
+	 * Model checks an inidivudal module
+	 * @param module the module to model check
+	 * @param metrics the metrics to model check
+	 * @return the result object containing the metrics
+	 */
 	private ModelCheckingResult modelCheckModule(Module module, IMetric[] metrics) {
 		mc = dft2MAConverter.convert(module.getRootNode());
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
@@ -338,6 +379,10 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return dft2MAConverter;
 	}
 	
+	/**
+	 * Configures the modularizer
+	 * @param modularizer the modularizer
+	 */
 	public void setModularizer(Modularizer modularizer) {
 		this.modularizer = modularizer;
 	}

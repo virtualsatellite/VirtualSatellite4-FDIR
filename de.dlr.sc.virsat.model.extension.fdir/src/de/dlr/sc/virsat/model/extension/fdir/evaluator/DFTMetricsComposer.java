@@ -1,6 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,6 +31,12 @@ import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeNodePlus;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 
+/**
+ * Performs composition of metrics calculated for the sub modules of a module
+ * @author muel_s8
+ *
+ */
+
 public class DFTMetricsComposer implements IMetricVisitor {
 	
 	private ModelCheckingResult composedResult;
@@ -30,6 +44,13 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	private List<FaultTreeNodePlus> childrenPlus;
 	private List<ModelCheckingResult> subModuleResults;
 	
+	/**
+	 * Compose operation for composable metrics. Composes the results of the sub modules.
+	 * @param subModuleResults the results of the sub modules
+	 * @param metrics the metrics to compose
+	 * @param topLevelModule the module
+	 * @return the metrics for the module
+	 */
 	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, IMetric[] metrics, Module topLevelModule) {
 		this.topLevelNode = topLevelModule.getRootNode();
 		this.childrenPlus = topLevelModule.getModuleRoot().getChildren();
@@ -43,16 +64,28 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		return composedResult;
 	}
 	
-	public ModelCheckingResult compose(ModelCheckingResult composedResult, IMetric[] metrics) {
+	
+	/**
+	 * Compose operation of uncomposable metrics. Calculates the metrics from
+	 * already calculated metrics in the given result
+	 * @param composedResult the given result
+	 * @param metrics the metrics to compute
+	 * @return 
+	 */
+	public void compose(ModelCheckingResult composedResult, IMetric[] metrics) {
 		this.composedResult = composedResult;
 		
 		for (IMetric metric : metrics) {
 			metric.accept(this);
 		}
-		
-		return composedResult;
 	}
 	
+	/**
+	 * Gets the number of inputs that have to fail to fail the given node
+	 * @param node the node
+	 * @param children the children
+	 * @return the number of inputs that have to fail, for the node to fail
+	 */
 	private long getK(FaultTreeNode node, Collection<?> children) {
 		long k = children.size();
 		if (node instanceof Fault) {
@@ -64,6 +97,12 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		return k;
 	}
 	
+	/**
+	 * Computes accumulated poisson binomial probability mass function
+	 * @param probabilities the individual event probabilities
+	 * @param k the number of events that have to occur
+	 * @return the composed event probability
+	 */
 	private double composeProbabilities(double[] probabilities, long k) {
 		double composedProbability = 1;
 		if (k == 1) {

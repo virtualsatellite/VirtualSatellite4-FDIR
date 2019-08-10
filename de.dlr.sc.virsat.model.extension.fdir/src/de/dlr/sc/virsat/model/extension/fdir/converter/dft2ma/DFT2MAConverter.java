@@ -433,6 +433,10 @@ public class DFT2MAConverter {
 		return statistics;
 	}
 	
+	/**
+	 * Gets the internal semantics obeject
+	 * @return the internal semantics object
+	 */
 	public DFTSemantics getDftSemantics() {
 		return dftSemantics;
 	}
