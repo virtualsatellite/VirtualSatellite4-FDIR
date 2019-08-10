@@ -88,7 +88,8 @@ public class DFT2MAConverter {
 		mapUnorderedBesToMarkovianDFTStates = new HashMap<>();
 		transientNodes = new HashSet<>();
 		
-		ftHolder = new FaultTreeHolder(root);
+		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
+		ftHolder = new FaultTreeHolder(holderRoot);
 		
 		events = dftSemantics.createEventSet(ftHolder);
 		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {

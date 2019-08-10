@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +34,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
-import de.dlr.sc.virsat.model.extension.fdir.model.AFault;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -43,7 +43,6 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
-import java.util.AbstractMap.SimpleEntry;
 
 /**
  * Evaluator for Dynamic Fault Trees, resolving non determinism using a recovery
@@ -95,15 +94,19 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 				&& root instanceof Fault
 				&& dft2MAConverter.getDftSemantics() != poSemantics;
 		
+		Set<Module> modules = null;
 		if (canModularize) {
 			Fault rootFault = (Fault) root;
-			Set<Module> modules = modularizer.getModules(rootFault.getFaultTree());
-			
+			modules = modularizer.getModules(rootFault.getFaultTree());
+			canModularize = !modules.isEmpty();
+		}
+		
+		if (canModularize) {
 			Entry<IMetric[], IMetric[]> metricSplit = splitMetrics(metrics);
 			IMetric[] composableMetrics = metricSplit.getKey();
 			IMetric[] unComposableMetrics = metricSplit.getValue();
 			
-			Module topLevelModule = getModule(modules, rootFault);
+			Module topLevelModule = getModule(modules, root);
 			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
 			
 			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
@@ -249,10 +252,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return result;
 	}
 	
-	/**
-	 * Gets the internal statistics of the last call to the evaluation method
-	 * @return the statistics of the last call of the evaluation method
-	 */
+	@Override
 	public DFTEvaluationStatistics getStatistics() {
 		return statistics;
 	}
@@ -306,5 +306,9 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 */
 	public DFT2MAConverter getDft2MAConverter() {
 		return dft2MAConverter;
+	}
+	
+	public void setModularizer(Modularizer modularizer) {
+		this.modularizer = modularizer;
 	}
 }

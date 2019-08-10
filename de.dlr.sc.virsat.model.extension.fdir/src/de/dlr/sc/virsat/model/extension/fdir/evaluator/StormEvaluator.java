@@ -100,4 +100,10 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Object getStatistics() {
+		// TODO Actual statistics
+		return new Object();
+	}
 }

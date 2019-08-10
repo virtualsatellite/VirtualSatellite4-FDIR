@@ -54,8 +54,10 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 	public DFT2DFTConversionResult convert(FaultTreeNode root) {
 		this.concept = root.getConcept();
 
+		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
+		
 		ftHelper = new FaultTreeHelper(concept);
-		ftHolder = new FaultTreeHolder(root);
+		ftHolder = new FaultTreeHolder(holderRoot);
 		mapNodes = new HashMap<>();
 
 		for (FaultTreeNode node : ftHolder.getNodes()) {
