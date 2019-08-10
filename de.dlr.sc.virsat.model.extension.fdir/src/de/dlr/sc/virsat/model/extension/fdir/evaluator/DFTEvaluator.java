@@ -60,7 +60,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private RecoveryStrategy recoveryStrategy;
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
-	private Modularizer modularizer = new Modularizer();
+	private Modularizer modularizer;
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
 	private DFTEvaluationStatistics statistics;
 	
@@ -75,6 +75,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		this.defaultSemantics = defaultSemantics;
 		this.poSemantics = poSemantics;
 		this.markovModelChecker = markovModelChecker;
+		this.modularizer = new Modularizer();
+		this.modularizer.setBEOptimization(false);
 	}
 
 	@Override
@@ -180,6 +182,31 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
 	}
 	
+	private int getTotalCountBasicEvents(Set<Module> modules, Module module) {
+		Queue<Module> toProcess = new LinkedList<>();
+		toProcess.add(module);
+		
+		int totalCountBEs = 0;
+		
+		while (!toProcess.isEmpty()) {
+			Module subModule = toProcess.poll();
+			for (FaultTreeNodePlus nodePlus : subModule.getModuleNodes()) {
+				if (nodePlus.getFaultTreeNode() instanceof BasicEvent) {
+					totalCountBEs++;
+				}
+				
+				for (FaultTreeNodePlus childPlus : nodePlus.getChildren()) {
+					Module subSubModule = getModule(modules, childPlus.getFaultTreeNode());
+					if (subSubModule != null && subSubModule != subModule) {
+						toProcess.add(subSubModule);
+					}
+				}
+			}
+		}
+		
+		return totalCountBEs;
+	}
+	
 	private Set<Module> getModulesToModelCheck(Module topLevelModule, Set<Module> modules) {
 		Set<Module> modulesToModelCheck = new HashSet<>();		
 		
@@ -192,16 +219,19 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			boolean shouldModelCheck = module.getModuleNodes().size() > 1;
 			if (!shouldModelCheck) {
 				FaultTreeNode moduleRoot = module.getModuleNodes().get(0).getFaultTreeNode();
-				shouldModelCheck = !(moduleRoot instanceof Fault || moduleRoot instanceof VOTE);
 				
-				if (!shouldModelCheck) {
-					if (moduleRoot instanceof Fault) {
-						shouldModelCheck = !((Fault) moduleRoot).getBasicEvents().isEmpty();
-					} else if (moduleRoot instanceof VOTE) {
-						long votingThreshold = ((VOTE) moduleRoot).getVotingThreshold();
-						shouldModelCheck = votingThreshold != 1 && votingThreshold != module.getModuleRoot().getChildren().size();
-					}
+				if (moduleRoot instanceof Fault) {
+					shouldModelCheck = !((Fault) moduleRoot).getBasicEvents().isEmpty();
+				} else if (moduleRoot instanceof VOTE) {
+					long votingThreshold = ((VOTE) moduleRoot).getVotingThreshold();
+					shouldModelCheck = votingThreshold != 1 && votingThreshold != module.getModuleRoot().getChildren().size();
+				} else {
+					shouldModelCheck = false;
 				}
+			}
+			
+			if (!shouldModelCheck) {
+				shouldModelCheck = getTotalCountBasicEvents(modules, module) < 20;
 			}
 			
 			if (shouldModelCheck) {

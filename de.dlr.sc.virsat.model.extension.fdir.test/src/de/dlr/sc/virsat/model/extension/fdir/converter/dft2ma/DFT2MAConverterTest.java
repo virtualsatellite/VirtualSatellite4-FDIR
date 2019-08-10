@@ -19,7 +19,6 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
@@ -262,8 +261,8 @@ public class DFT2MAConverterTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2OrAnd2Symmetric() throws IOException {
 		final double EXPECTEDMTTF = 1.1388888;
-		final int EXPECTEDSTATES = 4;
-		final int EXPECTEDTRANSITIONS = 4;
+		final int EXPECTEDSTATES = 8;
+		final int EXPECTEDTRANSITIONS = 14;
 		
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2Symmetric.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -275,7 +274,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2OrAnd2OrAnd2Symmetric() throws IOException {
 		final double EXPECTEDMTTF = 0.822011322;
-		final int EXPECTEDSTATES = 4;
+		final int EXPECTEDSTATES = 20;
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2OrAnd2Symmetric.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -817,7 +816,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2And2Symmetric() throws IOException {
 		final double EXPECTEDMTTF = 0.26041666666;
-		final int EXPECTEDSTATES = 3;
+		final int EXPECTEDSTATES = 9;
 		
 		Fault fault = createDFT("/resources/galileo/and2and2Symmetric.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -883,6 +882,22 @@ public class DFT2MAConverterTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 0.38349537;
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateRC1() throws IOException {
+		final double[] EXPECTED = {
+			6.018566771498309E-4,
+			0.001207413434399935,
+			0.001816650399162764,
+			0.002429547750480854
+		};
+		final double EXPECTEDMTTF = 6.38093090;
+		Fault fault = createDFT("/resources/galileo/rc1.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		assertIterationResultsEquals(result, EXPECTED);
