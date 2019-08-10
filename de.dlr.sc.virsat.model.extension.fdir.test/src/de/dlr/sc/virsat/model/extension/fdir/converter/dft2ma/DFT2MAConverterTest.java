@@ -904,7 +904,6 @@ public class DFT2MAConverterTest extends ATestCase {
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
-	/*
 	@Test
 	public void testEvaluateVGS1() throws IOException {
 		final double[] EXPECTED = {
@@ -922,7 +921,6 @@ public class DFT2MAConverterTest extends ATestCase {
 		assertIterationResultsEquals(result, EXPECTED, TEST_EPSILON_SMALL);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
-	*/
 	
 	@Test
 	public void testFTPP4() throws IOException {

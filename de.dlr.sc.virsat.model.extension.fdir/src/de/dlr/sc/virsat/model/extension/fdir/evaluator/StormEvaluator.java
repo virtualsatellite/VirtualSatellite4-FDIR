@@ -63,8 +63,7 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 				storm.addMetric(metric);
 			}
 			
-			StormRunner<Double> stormRunner = createStormRunner(storm);
-			List<Double> result = stormRunner.run();
+			List<Double> result = createStormRunner(storm).run();
 			
 			modelCheckingResult.setMeanTimeToFailure(result.get(0));
 			
@@ -91,8 +90,7 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 
 	@Override
 	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
-		// TODO Auto-generated method stub
-		
+		// Storm doesnt work with recovery strategies
 	}
 
 	@Override

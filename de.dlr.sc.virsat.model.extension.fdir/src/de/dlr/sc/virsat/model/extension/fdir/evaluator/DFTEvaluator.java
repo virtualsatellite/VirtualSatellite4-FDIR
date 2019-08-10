@@ -113,15 +113,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			Module topLevelModule = getModule(modules, root);
 			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
 			
+			IMetric[] modelCheckerMetrics = modulesToModelCheck.size() == 1 ? metrics : composableMetrics;
 			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
-			if (modulesToModelCheck.size() == 1) {
-				for (Module module : modulesToModelCheck) {
-					mapModuleToResult.put(module, modelCheckModule(module, metrics));
-				}
-			} else {
-				for (Module module : modulesToModelCheck) {
-					mapModuleToResult.put(module, modelCheckModule(module, composableMetrics));
-				}
+		
+			for (Module module : modulesToModelCheck) {
+				mapModuleToResult.put(module, modelCheckModule(module, modelCheckerMetrics));
 			}
 			
 			composeModuleResults(topLevelModule, modules, composableMetrics, mapModuleToResult);
