@@ -258,6 +258,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
 		DFT2MAConverter dft2ma = createDFT2MAConverter();
+		dft2ma.setSymmetryChecker(null);
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		Set<Object> faultEvents = ma.getEvents();
 		normalizeRates(ma, faultEvents);

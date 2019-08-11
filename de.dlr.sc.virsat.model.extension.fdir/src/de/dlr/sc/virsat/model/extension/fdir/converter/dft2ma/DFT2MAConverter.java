@@ -39,6 +39,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFT2MAConverter {
 	private DFTSemantics dftSemantics = DFTSemantics.createNDDFTSemantics();
+	private FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
 	
 	private FaultTreeNode root;
 	
@@ -53,8 +54,6 @@ public class DFT2MAConverter {
 	private RecoveryStrategy recoveryStrategy;
 	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
 	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted;
-	
-	private boolean enableSymmetryReduction = false;
 	
 	private DFT2MAConversionStatistics statistics = new DFT2MAConversionStatistics();
 	
@@ -121,8 +120,7 @@ public class DFT2MAConverter {
 			}
 		}
 		
-		if (enableSymmetryReduction) {
-			FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
+		if (symmetryChecker != null) {
 			symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 			symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
 		}
@@ -180,7 +178,7 @@ public class DFT2MAConverter {
 				int multiplier = 1;
 				
 				// Very simple symmetry reduction to get started
-				if (enableSymmetryReduction) {
+				if (symmetryChecker != null) {
 					int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
 					if (countBiggerSymmetricEvents == -1) {
 						continue;
@@ -241,7 +239,7 @@ public class DFT2MAConverter {
 					DFTState equivalentState = getEquivalentState(succ);
 					
 					if (equivalentState == succ) {
-						if (enableSymmetryReduction) {
+						if (symmetryChecker != null) {
 							if (event instanceof FaultEvent) {
 								succ.createSymmetryRequirements(state, (BasicEvent) event.getNode(), symmetryReduction);
 							}
@@ -405,11 +403,11 @@ public class DFT2MAConverter {
 	}
 	
 	/**
-	 * Sets whether symmetry reduction should be enabled
-	 * @param enableSymmetryReduction set to true for symmetry reduction
+	 * Configures the symmetry checker
+	 * @param symmetryChecker the symmetry checker
 	 */
-	public void setEnableSymmetryReduction(boolean enableSymmetryReduction) {
-		this.enableSymmetryReduction = enableSymmetryReduction;
+	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
+		this.symmetryChecker = symmetryChecker;
 	}
 	
 	/**

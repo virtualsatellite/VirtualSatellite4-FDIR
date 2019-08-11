@@ -64,10 +64,9 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
 	private Modularizer modularizer;
+	private FaultTreeSymmetryChecker symmetryChecker;
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
 	private DFTEvaluationStatistics statistics;
-	
-	private boolean allowsSymmetryReduction = false;
 	
 	/**
 	 * Constructor using the passed recovery strategy
@@ -121,11 +120,10 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
 		
 			Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = null;
-			if (modulesToModelCheck.size() > 1 && allowsSymmetryReduction) {
+			if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
 				mapNodeToRepresentant = new HashMap<>();
-				FaultTreeSymmetryChecker ftSymmetryChecker = new FaultTreeSymmetryChecker();
-				Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-				Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = ftSymmetryChecker.invertSymmetryReduction(symmetryReduction);
+				Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+				Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
 						
 				for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
 					if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
@@ -424,5 +422,13 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 */
 	public void setModularizer(Modularizer modularizer) {
 		this.modularizer = modularizer;
+	}
+	
+	/**
+	 * Configures the symmetry checker
+	 * @param symmetryChecker the symmetry checker
+	 */
+	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
+		this.symmetryChecker = symmetryChecker;
 	}
 }

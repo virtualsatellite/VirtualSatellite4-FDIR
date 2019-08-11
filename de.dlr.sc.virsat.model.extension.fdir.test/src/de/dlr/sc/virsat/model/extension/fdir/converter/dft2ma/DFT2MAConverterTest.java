@@ -50,7 +50,6 @@ public class DFT2MAConverterTest extends ATestCase {
 	public void setup() {
 		raHelper = new RecoveryAutomatonHelper(concept);
 		dftEvaluator = new DFTEvaluator(DFTSemantics.createStandardDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON));
-		dftEvaluator.getDft2MAConverter().setEnableSymmetryReduction(true);
 		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(dftEvaluator);
 	}
 
