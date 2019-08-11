@@ -900,6 +900,10 @@ public class DFT2MAConverterTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/rc1.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
+		System.out.println(result.getFailRates());
+		System.out.println(result.getMeanTimeToFailure());
+		System.out.println(dftEvaluator.getStatistics());
+		
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}

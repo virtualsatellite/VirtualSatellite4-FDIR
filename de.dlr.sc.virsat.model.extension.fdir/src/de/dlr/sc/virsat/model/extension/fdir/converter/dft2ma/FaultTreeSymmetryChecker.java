@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 

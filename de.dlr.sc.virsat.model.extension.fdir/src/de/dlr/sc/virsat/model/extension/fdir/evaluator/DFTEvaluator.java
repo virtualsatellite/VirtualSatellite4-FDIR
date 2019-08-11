@@ -67,6 +67,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
 	private DFTEvaluationStatistics statistics;
 	
+	private boolean allowsSymmetryReduction = false;
+	
 	/**
 	 * Constructor using the passed recovery strategy
 	 * 
@@ -119,7 +121,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
 		
 			Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = null;
-			if (modulesToModelCheck.size() > 1) {
+			if (modulesToModelCheck.size() > 1 && allowsSymmetryReduction) {
 				mapNodeToRepresentant = new HashMap<>();
 				FaultTreeSymmetryChecker ftSymmetryChecker = new FaultTreeSymmetryChecker();
 				Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
@@ -150,7 +152,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 				}
 			}
 			
-			composeModuleResults(topLevelModule, modules, composableMetrics, mapModuleToResult);
+			composeModuleResults(topLevelModule, modules, composableMetrics, mapModuleToResult, mapNodeToRepresentant);
 			ModelCheckingResult result = mapModuleToResult.get(topLevelModule);
 			
 			if (modulesToModelCheck.size() > 1) {
@@ -181,8 +183,9 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @param modules the sub modules
 	 * @param metrics the metrics we want to compute
 	 * @param mapModuleToResult a map from module to the already computed results
+	 * @param mapNodeToRepresentant 
 	 */
-	private void composeModuleResults(Module module, Set<Module> modules, IMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult) {
+	private void composeModuleResults(Module module, Set<Module> modules, IMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult, Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant) {
 		ModelCheckingResult result = mapModuleToResult.get(module);
 		if (result != null) {
 			return;
@@ -194,9 +197,20 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 				.collect(Collectors.toList());
 		List<ModelCheckingResult> subModuleResults = new ArrayList<>();
 		for (Module subModule : subModules) {
+			if (mapNodeToRepresentant != null) {
+				FaultTreeNode representant = mapNodeToRepresentant.get(subModule.getRootNode());
+				Module representantSubModule = getModule(modules, representant);
+				ModelCheckingResult representantSubModuleResult = mapModuleToResult.get(subModule);
+				if (representantSubModuleResult == null) {
+					composeModuleResults(representantSubModule, modules, metrics, mapModuleToResult, mapNodeToRepresentant);
+					representantSubModuleResult = mapModuleToResult.get(subModule);
+				}
+				mapModuleToResult.put(subModule, representantSubModuleResult);
+			}
+			
 			ModelCheckingResult subModuleResult = mapModuleToResult.get(subModule);
 			if (subModuleResult == null) {
-				composeModuleResults(subModule, modules, metrics, mapModuleToResult);
+				composeModuleResults(subModule, modules, metrics, mapModuleToResult, mapNodeToRepresentant);
 				subModuleResult = mapModuleToResult.get(subModule);
 			}
 			subModuleResults.add(subModuleResult);
