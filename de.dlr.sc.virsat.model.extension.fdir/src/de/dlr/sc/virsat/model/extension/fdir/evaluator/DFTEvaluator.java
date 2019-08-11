@@ -32,6 +32,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -91,7 +92,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		statistics = new DFTEvaluationStatistics();
 		statistics.time = System.currentTimeMillis();
 		
-		dft2MAConverter.setSemantics(chooseSemantics(root));
+		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+		dft2MAConverter.setSemantics(chooseSemantics(ftHolder));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		
 		boolean canModularize = modularizer != null 
@@ -116,8 +118,36 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			IMetric[] modelCheckerMetrics = modulesToModelCheck.size() == 1 ? metrics : composableMetrics;
 			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
 		
+			Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = null;
+			if (modulesToModelCheck.size() > 1) {
+				mapNodeToRepresentant = new HashMap<>();
+				FaultTreeSymmetryChecker ftSymmetryChecker = new FaultTreeSymmetryChecker();
+				Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = ftSymmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+				Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = ftSymmetryChecker.invertSymmetryReduction(symmetryReduction);
+						
+				for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
+					if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
+						mapNodeToRepresentant.put(entry.getKey(), entry.getKey());
+						for (FaultTreeNode biggerNode : entry.getValue()) {
+							mapNodeToRepresentant.put(biggerNode, entry.getKey());
+						}
+					}
+				}
+			}
+			
 			for (Module module : modulesToModelCheck) {
-				mapModuleToResult.put(module, modelCheckModule(module, modelCheckerMetrics));
+				if (mapNodeToRepresentant != null) {
+					FaultTreeNode representant = mapNodeToRepresentant.get(module.getRootNode());
+					Module representantModule = getModule(modules, representant);
+					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
+					if (representantResult == null) {
+						representantResult = modelCheckModule(representantModule, modelCheckerMetrics);
+						mapModuleToResult.put(representantModule, representantResult);
+					}
+					mapModuleToResult.put(module, representantResult);
+				} else {
+					mapModuleToResult.put(module, modelCheckModule(module, modelCheckerMetrics));
+				}
 			}
 			
 			composeModuleResults(topLevelModule, modules, composableMetrics, mapModuleToResult);
@@ -326,11 +356,10 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	
 	/**
 	 * Chooses the semantics depending on the type of tree
-	 * @param root the root of the tree
+	 * @param ftHolder the tree
 	 * @return the semantics required based on the tree type
 	 */
-	private DFTSemantics chooseSemantics(FaultTreeNode root) {
-		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+	private DFTSemantics chooseSemantics(FaultTreeHolder ftHolder) {
 		if (ftHolder.isPartialObservable()) {
 			return poSemantics;
 		} else {

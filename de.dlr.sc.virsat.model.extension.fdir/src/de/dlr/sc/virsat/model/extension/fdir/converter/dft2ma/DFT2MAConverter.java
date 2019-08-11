@@ -125,19 +125,7 @@ public class DFT2MAConverter {
 		if (enableSymmetryReduction) {
 			FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
 			symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-			symmetryReductionInverted = new HashMap<>();
-			for (FaultTreeNode node : ftHolder.getNodes()) {
-				symmetryReductionInverted.put(node, new HashSet<>());
-			}
-			for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
-				symmetryReductionInverted.put(be, new HashSet<>());
-			}
-			
-			for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
-				for (FaultTreeNode node : entry.getValue()) {
-					symmetryReductionInverted.get(node).add(entry.getKey());
-				}
-			}
+			symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
 		}
 	}
 	

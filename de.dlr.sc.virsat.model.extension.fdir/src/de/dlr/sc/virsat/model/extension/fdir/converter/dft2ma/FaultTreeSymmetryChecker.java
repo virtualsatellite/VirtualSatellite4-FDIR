@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -260,5 +261,25 @@ public class FaultTreeSymmetryChecker {
 		}
 		
 		return mapNodeToNodePairs;
+	}
+	
+	/**
+	 * Computes the inverse mapping for a given symmetry reduction
+	 * @param symmetryReduction the symmetry reduction
+	 * @return the inverted symmetry reduction
+	 */
+	public Map<FaultTreeNode, Set<FaultTreeNode>> invertSymmetryReduction(Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
+		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = new HashMap<>();
+		for (FaultTreeNode node : symmetryReduction.keySet()) {
+			symmetryReductionInverted.put(node, new HashSet<>());
+		}
+		
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
+			for (FaultTreeNode node : entry.getValue()) {
+				symmetryReductionInverted.get(node).add(entry.getKey());
+			}
+		}
+		
+		return symmetryReductionInverted;
 	}
 }
