@@ -10,9 +10,14 @@
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -20,6 +25,7 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -85,5 +91,35 @@ public class MarkovModelCheckerTest {
 
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getPointAvailability()); 
+	}
+	
+	@Test 
+	public void testMinCutSet() {
+		MarkovModelChecker modelChecker = new MarkovModelChecker(DELTA, EPSILON * EPSILON);
+
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		
+		MarkovState init = new MarkovState();
+		MarkovState fail = new MarkovState();
+		MarkovState inter = new MarkovState();
+		
+		ma.getEvents().add("a");
+		ma.getEvents().add("b");
+		
+		ma.addState(init);
+		ma.addState(fail);
+		ma.addState(inter);
+		ma.getFinalStates().add(fail);
+		
+		ma.addMarkovianTransition("a", init, fail, 1);
+		ma.addMarkovianTransition("b", init, inter, 1);
+		ma.addMarkovianTransition("a", inter, fail, 1);
+		
+		ModelCheckingResult result = modelChecker.checkModel(ma, MinimumCutSet.MINCUTSET);
+		
+		final int COUNT_EXPECTED_MINCUT_SETS = 2;
+		assertEquals(COUNT_EXPECTED_MINCUT_SETS, result.getMinCutSets().size());
+		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("a")));
+		assertThat(result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList("a", "b"))));
 	}
 }

@@ -10,7 +10,9 @@
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +27,7 @@ public class ModelCheckingResult {
 	private double meanTimeToFailure;
 	protected List<Double> pointAvailability = new ArrayList<>();
 	private double steadyStateAvailability;
+	protected Set<Set<Object>> minCutSets = new HashSet<>();
 	
 	/**
 	 * Sets the mean time to failure
@@ -72,6 +75,10 @@ public class ModelCheckingResult {
 	 */
 	public double getSteadyStateAvailability() {
 		return steadyStateAvailability;
+	}
+	
+	public Set<Set<Object>> getMinCutSets() {
+		return minCutSets;
 	}
 
 	/**

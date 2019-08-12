@@ -40,4 +40,10 @@ public interface IMetricVisitor {
 	 * @param steadyStateAvailabilityMetric the steadyStateAvailabilityMetric
 	 */
 	void visit(SteadyStateAvailability steadyStateAvailabilityMetric);
+
+	/**
+	 * Handle the case of a minimum cut set metric
+	 * @param minimumCutSet the minimum cut set metric
+	 */
+	void visit(MinimumCutSet minimumCutSet);
 }

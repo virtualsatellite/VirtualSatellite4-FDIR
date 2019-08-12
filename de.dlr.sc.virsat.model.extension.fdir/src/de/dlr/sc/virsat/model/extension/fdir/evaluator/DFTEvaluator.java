@@ -375,29 +375,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 
 	@Override
 	public Set<Set<BasicEvent>> getMinimumCutSets() {
-		// Construct the minimum cut sets as follows:
-		// Get all states that are predecessors to a fail state
-		// Then take all the memorized basic events from the predecessor state
-		// and the basic event leading to the fail state
-
-		Set<Set<BasicEvent>> minimumCutSets = new HashSet<>();
-
-		Set<DFTState> failStates = mc.getFinalStates();
-		for (DFTState failState : failStates) {
-			List<MarkovTransition<DFTState>> predTransitions = mc.getPredTransitions(failState);
-			for (MarkovTransition<DFTState> predTransition : predTransitions) {
-				Set<BasicEvent> minimumCutSet = new HashSet<>();
-				DFTState predecessor = (DFTState) predTransition.getFrom();
-				Object event = predTransition.getEvent();
-
-				minimumCutSet.add((BasicEvent) ((IDFTEvent) event).getNode());
-				for (BasicEvent be : predecessor.getFailedBasicEvents()) {
-					minimumCutSet.add(be);
-				}
-
-				minimumCutSets.add(minimumCutSet);
-			}
-		}
+		
 
 		return minimumCutSets;
 	}
