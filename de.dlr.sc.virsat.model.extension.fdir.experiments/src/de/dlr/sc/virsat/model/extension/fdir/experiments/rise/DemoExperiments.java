@@ -35,28 +35,16 @@ public class DemoExperiments extends ASynthesizerExperiment {
 		super.setUp();
 		synthesizer = new BasicSynthesizer();
 	}
-
 	
 	/* ***************************************************************************
-	 * RAILWAY CROSSINGS
+	 * WITH MODULARIZATION
 	 * **************************************************************************/
-	
-	@Test
-	public void testRC11WithoutModularizer() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-	}
-	
 	@Test
 	public void testRC11() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
 		synthesizer.synthesize(fault);
 	}
 	
-	/* ***************************************************************************
-	 * Active Heat Rejection Systems (AHRS)
-	 * **************************************************************************/
 	@Test
 	public void testAHRS1() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/ahrs/ahrs1.dft");
@@ -64,25 +52,8 @@ public class DemoExperiments extends ASynthesizerExperiment {
 	}
 	
 	@Test
-	public void testAHRS1WithoutModularizer() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/ahrs/ahrs1.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-	}
-	
-	/* ***************************************************************************
-	 * CM
-	 * **************************************************************************/
-	@Test
 	public void testCMSimple() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
-		synthesizer.synthesize(fault);
-	}
-	
-	@Test
-	public void testCMSimpleWithoutModularizer() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
-		synthesizer.setModularizer(null);
 		synthesizer.synthesize(fault);
 	}
 
@@ -93,15 +64,40 @@ public class DemoExperiments extends ASynthesizerExperiment {
 	}
 	
 	@Test
-	public void testCM1WithoutModularizer() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
+	public void testCM2() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
+		synthesizer.synthesize(fault);
+	}
+	
+	/* ***************************************************************************
+	 * WITHOUT MODULARIZATION
+	 * **************************************************************************/
+	
+	@Test
+	public void testRC11WithoutModularizer() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
 		synthesizer.setModularizer(null);
 		synthesizer.synthesize(fault);
 	}
 	
 	@Test
-	public void testCM2() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
+	public void testAHRS1WithoutModularizer() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/ahrs/ahrs1.dft");
+		synthesizer.setModularizer(null);
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testCMSimpleWithoutModularizer() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
+		synthesizer.setModularizer(null);
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testCM1WithoutModularizer() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
+		synthesizer.setModularizer(null);
 		synthesizer.synthesize(fault);
 	}
 	
