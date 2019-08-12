@@ -25,5 +25,10 @@ public interface IMetric {
 	 */
 	void accept(IMetricVisitor visitor);
 	
+	/**
+	 * Either empty if the metric cannot be derived from other metrics,
+	 * or otherwise the list of metrics required to derive this metric
+	 * @return the metrics this metric is derived from
+	 */
 	List<IMetric> getDerivedFrom();
 }

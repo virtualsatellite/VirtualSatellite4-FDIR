@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 
+ * Metric representing time bounded availability
  * @author yoge_re
  *
  */
@@ -48,10 +48,5 @@ public class PointAvailability implements IQuantitativeMetric {
 	@Override
 	public List<IMetric> getDerivedFrom() {
 		return Collections.emptyList();
-	}
-
-	@Override
-	public boolean isProbability() {
-		return true;
 	}
 }

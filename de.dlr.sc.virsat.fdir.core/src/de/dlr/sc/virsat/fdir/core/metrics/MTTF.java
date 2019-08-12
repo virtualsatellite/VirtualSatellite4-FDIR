@@ -36,9 +36,4 @@ public class MTTF implements IQuantitativeMetric {
 	public List<IMetric> getDerivedFrom() {
 		return Collections.singletonList(Reliability.INF_RELIABILITY);
 	}
-
-	@Override
-	public boolean isProbability() {
-		return false;
-	}
 }

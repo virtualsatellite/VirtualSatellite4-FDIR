@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Enables storm-dft to compute reliability values
+ * Metric representing time bounded reliability
  * @author sascha
  *
  */
@@ -49,10 +49,5 @@ public class Reliability implements IQuantitativeMetric {
 	@Override
 	public List<IMetric> getDerivedFrom() {
 		return Collections.emptyList();
-	}
-
-	@Override
-	public boolean isProbability() {
-		return true;
 	}
 }

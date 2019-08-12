@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 
+ * Metric representing the covergent steady state probability
  * @author yoge_re
  *
  */
@@ -36,10 +36,4 @@ public class SteadyStateAvailability implements IQuantitativeMetric {
 	public List<IMetric> getDerivedFrom() {
 		return Collections.singletonList(PointAvailability.INF_POINTAVAILABILITY);
 	}
-
-	@Override
-	public boolean isProbability() {
-		return true;
-	}
-
 }
