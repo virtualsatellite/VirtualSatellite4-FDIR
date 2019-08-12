@@ -38,7 +38,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	/**
 	 * Creates an array of RAs for a benchmark run
 	 * @param ra the base RA to copy
-	 * @return tge array of benchmark RAs
+	 * @return the array of benchmark RAs
 	 */
 	private RecoveryAutomaton[] createBenchmarkRas(RecoveryAutomaton ra) {
 		RecoveryAutomaton[] benchmarkRas = new RecoveryAutomaton[BENCHMARK_RUNS];

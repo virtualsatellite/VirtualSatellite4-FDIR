@@ -1,0 +1,15 @@
+toplevel "System";
+"System" and "AFailure" "F3" "BFailure" "F1" "F2";
+"AFailure" csp "A1" "A2" "Spare";
+"F3" fdep "power3" "Spare";
+"BFailure" csp "B1" "B2" "Spare";
+"F1" fdep "power1" "A1" "B2";
+"F2" fdep "power2" "A2" "B1";
+"A1" lambda=0.0010 dorm=0;
+"A2" lambda=0.0050 dorm=0;
+"Spare" lambda=0.0050 dorm=0;
+"power3" lambda=0.0030 dorm=0;
+"B1" lambda=0.0020 dorm=0;
+"B2" lambda=0.0035 dorm=0;
+"power1" lambda=0.0030 dorm=0;
+"power2" lambda=0.0030 dorm=0;

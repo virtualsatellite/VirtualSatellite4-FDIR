@@ -48,7 +48,7 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 	
 	@Before
 	public void setUp() {
-		concept = loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
+		concept = loadConceptFromPlugin(PLUGIN_ID);
 		this.ftHelper = new FaultTreeHelper(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
 	}
@@ -68,7 +68,7 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 	
 	/**
 	 * Prints various relevant statistics regarding the state and transition count
-	 * for a given fault tree eveluation
+	 * for a given fault tree evaluation
 	 * @param ftEvaluator the fault tree evaluator
 	 */
 	protected void printStateStatistics(FaultTreeEvaluator ftEvaluator) {
@@ -80,7 +80,7 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 	}
 	
 	/**
-	 * Prints the evaluation results of a fault tree eveluator
+	 * Prints the evaluation results of a fault tree evaluator
 	 * @param result the results
 	 * @param evaluator the evaluator
 	 * @param delta the timestep
