@@ -12,21 +12,29 @@ package de.dlr.sc.virsat.model.extension.fdir.experiments.rise;
 
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
 
 /**
  * A test case for benchmarking experiments
  * @author jord_ad
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BenchmarkExperiments extends ASynthesizerExperiment {
 	
 	protected BasicSynthesizer synthesizer;
@@ -37,106 +45,282 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		synthesizer = new BasicSynthesizer();
 	}
 
-	@After
-	public void tearDown() {
-		System.out.println(synthesizer.getStatistics());
-	}
 	
-	/* 		No. BEs:	9
-	 * 		No. Gates:	6         */
+	/* ***************************************************************************
+	 * RAILWAY CROSSINGS
+	 * **************************************************************************/
+	
 	@Test
 	public void testRC11() throws Exception {
-		System.out.println("--------- Experiment: RC11 ------------");
-		Fault fault = createDFT("/resources/rise2019/rc-1-1-sc.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise/2019/rc/rc11");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-1-1", "rise/2019/benchmarkStatistics");
 	}
 	
-	/* 		No. BEs:	24
-	 * 		No. Gates:	18        */
 	@Test
 	public void testRC12() throws Exception {
-		System.out.println("--------- Experiment: RC12 ------------");
-		Fault fault = createDFT("/resources/rise2019/rc-1-2-hc.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise/2019/rc/rc12");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-2-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-1-2", "rise/2019/benchmarkStatistics");
 	}
 	
-	/* 		No. BEs:	54
-	 * 		No. Gates:	25        */
 	@Test
-	public void testRC101() throws Exception {
-		System.out.println("--------- Experiment: RC101 ------------");
-		Fault fault = createDFT("/resources/rise2019/rc-10-1-sc.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise/2019/rc/rc101");
+	public void testRC101sc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-10-1-sc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-10-1-sc", "rise/2019/benchmarkStatistics");
 	}
 	
-	/* 		No. BEs:	91
-	 * 		No. Gates:	43        */
 	@Test
 	public void testRC151() throws Exception {
-		System.out.println("--------- Experiment: RC151 ------------");
-		Fault fault = createDFT("/resources/rise2019/rc-15-1-hc.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise/2019/rc/rc151");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-15-1-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-15-1", "rise/2019/benchmarkStatistics");
 	}
 	
-	
-	/* 		No. BEs:	116
-	 * 		No. Gates:	53        */
 	@Test
 	public void testRC201() throws Exception {
-		System.out.println("--------- Experiment: RC201 ------------");
-		Fault fault = createDFT("/resources/rise2019/rc-20-1-hc.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise/2019/rc/rc201");
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-20-1-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-20-1", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testRC13() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-3-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-1-3", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testRC14hc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-4-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-1-4-hc", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testRC14sc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-4-sc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-1-4-sc", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testRC15() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-5-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-1-5", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testRC101hc() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-10-1-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-10-1-hc", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testRC1010() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/rc/rc-10-10-hc.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "RC-10-10", "rise/2019/benchmarkStatistics");
 	}
 	
 	
-	/* 		No. BEs:	173
-	 * 		No. Gates:	111      */ 
-	/*
+	/* ***************************************************************************
+	 * Vehicle Guidance Systems (VGS)
+	 * **************************************************************************/
 	@Test
-	public void testRC2020() throws Exception {
-		System.out.println("--------- RC2020 ------------");
-		Fault fault = createDFT("/resources/rise2019/rc-20-20-hc.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise2019/rc/rc201");
-	} 
-	*/
-	
-	@Test
-	public void testEvaluateCM5() throws IOException {
-		System.out.println("--------- Experiment: CM5 ------------");
-		Fault fault = createDFT("/resources/rise2019/cm5.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise/2019/mcs/cm5");
-	} 
-	
-	@Test
-	public void testEvaluateVGS1() throws IOException {
-		System.out.println("--------- Experiment: VGS1 ------------");
-		Fault fault = createDFT("/resources/rise2019/vgs1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		saveRA(ra, "rise/2019/vgs/vgs1");
-	} 
-	
-	/* 		No. BEs:	213
-	 * 		No. Gates:	136       
-	@Test
-	public void testBigTree213() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/bigTree_213BEs.dft");
+	public void testVGS1() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs1.dft");
 		synthesizer.synthesize(fault);
-	} */
+		saveStatistics(synthesizer.getStatistics(), "VGS1", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testVGS2() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs2.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "VGS2", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testVGS3() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs3.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "VGS3", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testVGS4() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs4.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "VGS4", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testVGS5() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs5.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "VGS5", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testVGS6() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs6.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "VGS6", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testVGS7() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs7.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "VGS7", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testVGS8() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/vgs/vgs8.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "VGS8", "rise/2019/benchmarkStatistics");
+	}
+	
+	/* ***************************************************************************
+	 * Active Heat Rejection Systems (AHRS)
+	 * **************************************************************************/
+	@Test
+	public void testAHRS1() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/ahrs/ahrs1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "AHRS1", "rise/2019/benchmarkStatistics");
+	}
+	
+	/* ***************************************************************************
+	 * Hypothetical Example Computer Systems (HECS)
+	 * **************************************************************************/
+	@Test
+	public void testHECS1() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs1-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS1", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testHECS2() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs2-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS2", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testHECS3() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs3-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS3", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testHECS4() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs4-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS4", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testHECS5() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs5-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS5", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testHECS6() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs6-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS6", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testHECS7() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs7-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS7", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testHECS8() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/hecs/hecs8-1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "HECS8", "rise/2019/benchmarkStatistics");
+	}
+	
+	/* ***************************************************************************
+	 * Mission Avionics Systems (MAS)
+	 * **************************************************************************/
+	@Test
+	public void testMAS1() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/mas/mas1.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "MAS1", "rise/2019/benchmarkStatistics");
+	}
+	
+	@Test
+	public void testMAS2() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/mas/mas2.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "MAS2", "rise/2019/benchmarkStatistics");
+	}
+	
+	
+	/* ***************************************************************************
+	 * CM
+	 * **************************************************************************/
+	
+	@Test
+	public void testCMSimple() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
+		synthesizer.synthesize(fault);
+	}
 
-	
-	/* 		No. BEs:	253
-	 * 		No. Gates:	161       
 	@Test
-	public void testBigTree253() throws Exception {
-		Fault fault = createDFT("/resources/rise2019/bigTree_253BEs.dft");
+	public void testCM1() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
 		synthesizer.synthesize(fault);
-	} */
+	}
 	
+	@Test
+	public void testCM2() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
+		synthesizer.synthesize(fault);
+	}
+	
+	@Test
+	public void testCM5() throws Exception {
+		Fault fault = createDFT("/resources/rise/2019/cm/cm5.dft");
+		synthesizer.synthesize(fault);
+		saveStatistics(synthesizer.getStatistics(), "CM5", "rise/2019/benchmarkStatistics");
+	}
+	
+	/**
+	 * Write statistic to a file
+	 * @param statistics the statistics
+	 * @param testName the name of the test
+	 * @param filePath the path
+	 * @throws IOException exception
+	 */
+	protected void saveStatistics(SynthesisStatistics statistics, String testName, String filePath) throws IOException {
+		Path path = Paths.get("resources/results/" + filePath + ".txt");
+		if (!Files.exists(path.getParent())) {
+			Files.createDirectories(path.getParent());
+		}
+		
+		OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		PrintStream writer = new PrintStream(outFile);
+		writer.println(testName);
+		writer.println("===============================================");
+		writer.println(statistics);
+		writer.println();
+	}
 }
