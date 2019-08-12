@@ -23,6 +23,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -194,5 +195,12 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		
 		double composedSteadyStateAvailability = IQuantitativeMetric.composeProbabilities(childSteadyStateAvailabilities, k);
 		composedResult.setSteadyStateAvailability(composedSteadyStateAvailability);
+	}
+
+
+	@Override
+	public void visit(MinimumCutSet minimumCutSet) {
+		// TODO Auto-generated method stub
+		
 	}
 }

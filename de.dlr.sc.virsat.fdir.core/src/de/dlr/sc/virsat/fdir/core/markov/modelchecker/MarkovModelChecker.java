@@ -338,13 +338,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void visit(MinimumCutSet minimumCutSet) {
-		// TODO Auto-generated method stub
-		
 		// Construct the minimum cut sets as follows:
-		// Get all states that are predecessors to a fail state
-		// Then take all the memorized basic events from the predecessor state
-		// and the basic event leading to the fail state
-
+		// MinCuts(s) = UNION_{(s, a, s')} ( {a} \cross MinCuts(s') )
+		// MinCuts(f) = \emptyset for any fail state f
 		
 		Set<? extends MarkovState> failStates = mc.getFinalStates();
 		Queue<MarkovState> toProcess = new LinkedList<>();
@@ -365,16 +361,25 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				MarkovState successor = transition.getTo();
 				Set<Set<Object>> succMinCuts = mapStateToMinCuts.getOrDefault(successor, Collections.emptySet());
 				
-				for (Set<Object> succMinCut : succMinCuts) {
-					Set<Object> minCut = new HashSet<>(succMinCut);
+				if (succMinCuts.isEmpty()) {
+					Set<Object> minCut = new HashSet<>();
 					minCut.add(transition.getEvent());
 					minCuts.add(minCut);
+				} else {
+					for (Set<Object> succMinCut : succMinCuts) {
+						if (succMinCut.size() < minimumCutSet.getMaxSize() || minimumCutSet.getMaxSize() == 0) {
+							Set<Object> minCut = new HashSet<>(succMinCut);
+							minCut.add(transition.getEvent());
+							minCuts.add(minCut);
+						}
+					}
 				}
 			}
 			
 			// Enqueue predecessors if necessary
 			if (!Objects.equals(oldMinCuts, minCuts)) {
 				mapStateToMinCuts.put(state, minCuts);
+				
 				List<?> predTransitions = mc.getPredTransitions(state);
 				for (Object predTransition : predTransitions) {
 					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) predTransition;

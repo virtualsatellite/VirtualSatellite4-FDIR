@@ -9,14 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-// *****************************************************************
-// * Import Statements
-// *****************************************************************
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,9 +20,17 @@ import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+// *****************************************************************
+// * Import Statements
+// *****************************************************************
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -111,12 +111,12 @@ public  class MCSAnalysis extends AMCSAnalysis {
 				subMonitor.setTaskName("Calculating MCS");
 				subMonitor.split(1);
 			}
-			ftEvaluator.evaluateFaultTree(fault);
+			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 			long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : -1;
 			
-			Set<Set<BasicEvent>> minimumCutSets = ftEvaluator.getMinimumCutSets();
-			List<Set<BasicEvent>> sortedMinimumCutSets = minimumCutSets.stream()
+			Set<Set<Object>> minimumCutSets = result.getMinCutSets();
+			List<Set<Object>> sortedMinimumCutSets = minimumCutSets.stream()
 						.filter(cutset -> maxMinimumCutSetSize == -1 ? true : maxMinimumCutSetSize >= cutset.size())
 						.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
 						.collect(Collectors.toList());
@@ -135,9 +135,11 @@ public  class MCSAnalysis extends AMCSAnalysis {
 					setFaultTolerance(faultTolerance);
 					
 					getMinimumCutSets().clear();
-					for (Set<BasicEvent> minimumCutSet : sortedMinimumCutSets) {
+					for (Set<Object> minimumCutSet : sortedMinimumCutSets) {
 						CutSet cutSet = new CutSet(getConcept());
-						cutSet.getBasicEvents().addAll(minimumCutSet);
+						for (Object object : minimumCutSet) {
+							cutSet.getBasicEvents().add((BasicEvent) object);
+						}
 						getMinimumCutSets().add(cutSet);
 					}
 				}

@@ -121,5 +121,11 @@ public class MarkovModelCheckerTest {
 		assertEquals(COUNT_EXPECTED_MINCUT_SETS, result.getMinCutSets().size());
 		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("a")));
 		assertThat(result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList("a", "b"))));
+		
+		result = modelChecker.checkModel(ma, new MinimumCutSet(1));
+		
+		final int COUNT_EXPECTED_MINCUT_SETS_RESTRICTED = 1;
+		assertEquals(COUNT_EXPECTED_MINCUT_SETS_RESTRICTED, result.getMinCutSets().size());
+		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("a")));
 	}
 }

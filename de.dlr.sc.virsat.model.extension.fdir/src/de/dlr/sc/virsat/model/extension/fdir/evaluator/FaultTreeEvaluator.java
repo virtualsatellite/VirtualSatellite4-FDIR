@@ -69,28 +69,32 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		return evaluator.evaluateFaultTree(convertedRoot, metrics);
+		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, metrics);
+		if (!result.getMinCutSets().isEmpty()) {
+			remapMinCutSets(result);
+		}
+		return result;
 	}
 	
 	/**
-	 * Gets the minimum cut sets from the fault tree
-	 * @return the minimum cut sets causing the top level event
+	 * Remaps the events of the computed mincut sets to the events of the original tree
+	 * @param result a model checking result
 	 */
-	public Set<Set<BasicEvent>> getMinimumCutSets() {
+	private void remapMinCutSets(ModelCheckingResult result) {
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = conversionResult.getMapGeneratedToGenerator();
-		Set<Set<BasicEvent>> minimumCutSets = evaluator.getMinimumCutSets();
-		Set<Set<BasicEvent>> originalMinimumCutSets = new HashSet<>();
+		Set<Set<Object>> originalMinimumCutSets = new HashSet<>();
 		
-		for (Set<BasicEvent> minimumCutSet : minimumCutSets) {
-			Set<BasicEvent> originalMiniumCutSet = new HashSet<>();
-			for (BasicEvent be : minimumCutSet) {
+		for (Set<Object> minimumCutSet : result.getMinCutSets()) {
+			Set<Object> originalMiniumCutSet = new HashSet<>();
+			for (Object be : minimumCutSet) {
 				BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(be);
 				originalMiniumCutSet.add(originalBe);
 			}
 			originalMinimumCutSets.add(originalMiniumCutSet);
 		}
 		
-		return originalMinimumCutSets;
+		result.getMinCutSets().clear();
+		result.getMinCutSets().addAll(originalMinimumCutSets);
 	}
 
 	@Override
