@@ -230,6 +230,15 @@ public class ModularizerTest extends ATestCase {
 		assertEquals(orGate, module.getRootNode());
 	}
 	
+	@Test
+	public void testModuleTypeOr2WithoutBEOptimization() throws IOException {
+		Fault rootOr2 = createDFT("/resources/galileo/or2.dft");
+		modularizer.setBEOptimization(false);
+		Set<Module> modules = modularizer.getModules(rootOr2.getFaultTree());
+		final int NUM_MODULES = 4;
+		assertEquals(NUM_MODULES, modules.size());
+	}
+	
 	
 	@Test
 	public void testModularizeCSP2() throws IOException {
