@@ -210,7 +210,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		}
 		
 		if (subModuleResults.size() > 1) {
-			result = composer.compose(subModuleResults, metrics, module);
+			long k = composer.getK(module.getRootNode(), module.getModuleRoot().getChildren());
+			result = composer.compose(subModuleResults, k, metrics);
 		} else {
 			result = subModuleResults.get(0);
 		}

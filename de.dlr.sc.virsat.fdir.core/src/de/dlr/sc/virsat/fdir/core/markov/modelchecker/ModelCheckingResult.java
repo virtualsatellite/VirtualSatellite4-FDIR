@@ -77,6 +77,10 @@ public class ModelCheckingResult {
 		return steadyStateAvailability;
 	}
 	
+	/**
+	 * Gets the computed mincut sets
+	 * @return the computed mincut sets
+	 */
 	public Set<Set<Object>> getMinCutSets() {
 		return minCutSets;
 	}
