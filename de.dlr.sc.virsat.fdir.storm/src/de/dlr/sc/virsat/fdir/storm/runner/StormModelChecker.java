@@ -115,4 +115,9 @@ public class StormModelChecker implements IMarkovModelChecker {
 	protected StormRunner<Double> createStormRunner(Storm storm) {
 		return new StormRunner<Double>(storm, stormExecutionEnvironment);
 	}
+
+	@Override
+	public double getDelta() {
+		return delta;
+	}
 }

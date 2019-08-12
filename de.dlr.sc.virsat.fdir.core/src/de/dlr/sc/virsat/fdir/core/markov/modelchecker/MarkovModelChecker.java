@@ -192,6 +192,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
+		tm = null;
+		tmTerminal = null;
+		bellmanMatrix = null;
+		
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
 		
@@ -219,15 +223,32 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			tmTerminal = createTransitionMatrix(true);
 		}
 		
-		int steps = (int) (reliabilityMetric.getTime() / delta);
-		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 		
-		for (int time = 0; time <= steps; ++time) {
-			modelCheckingResult.failRates.add(getFailRate());
-			iterate(tmTerminal);
-		}	
+		if (Double.isFinite(reliabilityMetric.getTime())) {
+			int steps = (int) (reliabilityMetric.getTime() / delta);
+			for (int time = 0; time <= steps; ++time) {
+				modelCheckingResult.failRates.add(getFailRate());
+				iterate(tmTerminal);
+			}
+		} else {
+			double oldFailRate = getFailRate();
+			modelCheckingResult.failRates.add(oldFailRate);
+			
+			boolean convergence = false;
+			while (!convergence) {
+				iterate(tmTerminal);
+				double newFailRate = getFailRate();
+				modelCheckingResult.failRates.add(newFailRate);
+				double change = Math.abs(newFailRate - oldFailRate);
+				oldFailRate = newFailRate;
+				double relativeChange = change / newFailRate;
+				if (relativeChange < eps || !Double.isFinite(change)) {
+					convergence = true;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -392,5 +413,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 		
 		return res;
+	}
+
+	@Override
+	public double getDelta() {
+		return delta;
 	}
 }

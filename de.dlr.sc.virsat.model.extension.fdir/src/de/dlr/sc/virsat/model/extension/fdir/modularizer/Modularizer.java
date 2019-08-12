@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 
 
@@ -39,6 +40,7 @@ public class Modularizer implements IModularizer {
 	
 	/* a reference to the entire fault tree */
 	private FaultTree faultTree;
+	private FaultTreeHolder ftHolder;
 	
 	private int maxDepth = 0;
 	private boolean beOptimizationOn = true;
@@ -60,10 +62,7 @@ public class Modularizer implements IModularizer {
 		
 		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(comparator);
 		this.table = new HashMap<FaultTreeNode, FaultTreeNodePlus>();
-		this.modules = new HashSet<Module>();
 	}
-	
-	
 	
 	/* ***********************************************************************
 	 * *********** PUBLIC METHODS ********************************************
@@ -75,6 +74,7 @@ public class Modularizer implements IModularizer {
 	 * @return a set of modules
 	 */
 	public Set<Module> getModules(FaultTree ft) {
+		this.modules = new HashSet<Module>();
 		this.faultTree = ft;
 		this.modularize();
 		return this.modules;
@@ -110,11 +110,15 @@ public class Modularizer implements IModularizer {
 	 * Number the fault tree and save a copy of the tree as our internal TreeSet.
 	 */
 	void countTree() {
+		table.clear();
+		nodePlusTree.clear();
 		
 		if (this.faultTree == null) {
 			this.maxDepth = -1;
 			return;
 		}
+		
+		this.ftHolder = new FaultTreeHolder(faultTree.getRoot());
 		
 		FaultTreeNodePlus root = new FaultTreeNodePlus(this.faultTree.getRoot(), 0);
 		
@@ -220,8 +224,9 @@ public class Modularizer implements IModularizer {
 	 * @return the list of children
 	 */
 	private List<FaultTreeNodePlus> getChildren(FaultTreeNodePlus node) {
-		FaultTreeHelper fthelper = new FaultTreeHelper(node.getFaultTreeNode().getConcept());
-		List<FaultTreeNode> children = fthelper.getAllChildren(node.getFaultTreeNode(), this.faultTree);
+		List<FaultTreeNode> children = new ArrayList<>(ftHolder.getMapNodeToSubNodes().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
+		children.addAll(ftHolder.getMapFaultToBasicEvents().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
+		children.addAll(ftHolder.getMapNodeToDEPTriggers().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
 		
 		return children.stream()
 					.map(ftNode -> getOrCreateFaultTreeNodePlus(ftNode, node.getDepth() + 1))
@@ -286,15 +291,16 @@ public class Modularizer implements IModularizer {
 		
 		while (!stack.isEmpty()) {
 			FaultTreeNodePlus curr = stack.pop();
-			module.addNode(curr);
-			List<FaultTreeNodePlus> children = curr.getChildren();
-			
-			for (FaultTreeNodePlus child : children) {
-				if (!child.isHarvested()) {
-					if (!child.isWithinBoundsOf(root)) {
-						return null;
+			if (module.addNode(curr)) {
+				List<FaultTreeNodePlus> children = curr.getChildren();
+				
+				for (FaultTreeNodePlus child : children) {
+					if (!child.isHarvested()) {
+						if (!child.isWithinBoundsOf(root)) {
+							return null;
+						}
+						stack.push(child);
 					}
-					stack.push(child);
 				}
 			}
 		}

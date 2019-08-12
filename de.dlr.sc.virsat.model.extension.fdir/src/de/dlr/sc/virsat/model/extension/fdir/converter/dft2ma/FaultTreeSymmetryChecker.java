@@ -83,12 +83,15 @@ public class FaultTreeSymmetryChecker {
 					continue;
 				}
 				
+				Set<Entry<FaultTreeNode, FaultTreeNode>> parentPairs = mapChildPairToParentPairs.get(pair);
+				
 				// For order dependent nodes we must have actual equality
 				Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> allSubCandidatePairs = new HashSet<>();
 				if (node1.getFaultTreeNodeType().isOrderDependent()) {
 					for (EdgeType edgeType : EdgeType.values()) {
 						Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>> lookup = mapEdgeTypeToLookUp.get(edgeType);
 						Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> allCandidatePairs = createMapNodeToPairsOrderDependent(
+								parentPairs,
 								lookup.getKey().getOrDefault(node1, Collections.emptyList()), 
 								lookup.getValue().getOrDefault(node2, Collections.emptyList()));
 						if (allCandidatePairs == null) {
@@ -101,6 +104,7 @@ public class FaultTreeSymmetryChecker {
 					for (EdgeType edgeType : EdgeType.values()) {
 						Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>> lookup = mapEdgeTypeToLookUp.get(edgeType);
 						Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> allCandidatePairs = createMapNodeToNodePairs(
+								parentPairs,
 								lookup.getKey().getOrDefault(node1, Collections.emptyList()), 
 								lookup.getValue().getOrDefault(node2, Collections.emptyList()));
 						if (allCandidatePairs == null) {
@@ -213,22 +217,47 @@ public class FaultTreeSymmetryChecker {
 	
 	/**
 	 * Helper method to create permutations between nodes of two given lists
+	 * @param parentPairs the parent pairs
 	 * @param nodes1 the first node list
 	 * @param nodes2 the second node list
 	 * @return null if the node lists dont have the same size, otherwise all permutations between the lists
 	 */
-	private Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> createMapNodeToNodePairs(List<? extends FaultTreeNode> nodes1, List<? extends FaultTreeNode> nodes2) {
+	private Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> createMapNodeToNodePairs(Set<Entry<FaultTreeNode, FaultTreeNode>> parentPairs, List<? extends FaultTreeNode> nodes1, List<? extends FaultTreeNode> nodes2) {
 		if (nodes1.size() != nodes2.size()) {
 			return null;
 		}
 		
 		Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> mapNodeToNodePairs = new HashSet<>();
 		for (FaultTreeNode child1 : nodes1) {
-			Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new HashSet<>();
-			mapNodeToNodePairs.add(candidatePairs);
+			boolean isParentPair = false;
+			if (parentPairs != null) {
+				for (Entry<FaultTreeNode, FaultTreeNode> parentPair : parentPairs) {
+					if (parentPair.getKey().equals(child1)) {
+						isParentPair = true;
+						break;
+					}
+				}
+			}
 			
-			for (FaultTreeNode child2 : nodes2) {
-				candidatePairs.add(new SimpleEntry<>(child1, child2));
+			if (!isParentPair) {
+				Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new HashSet<>();
+				mapNodeToNodePairs.add(candidatePairs);
+				
+				for (FaultTreeNode child2 : nodes2) {
+					isParentPair = false;
+					if (parentPairs != null) {
+						for (Entry<FaultTreeNode, FaultTreeNode> parentPair : parentPairs) {
+							if (parentPair.getValue().equals(child2)) {
+								isParentPair = true;
+								break;
+							}
+						}
+					}
+					
+					if (!isParentPair) {
+						candidatePairs.add(new SimpleEntry<>(child1, child2));
+					}
+				}
 			}
 		}
 		
@@ -238,11 +267,12 @@ public class FaultTreeSymmetryChecker {
 	/**
 	 * Helper method to create the ordered permutations between nodes of two given lists.
 	 * Since the lists are ordered, only the permutations of matching indexes are created.
+	 * @param parentPairs the parent pairs
 	 * @param nodes1 the first node list
 	 * @param nodes2 the second node list
 	 * @return null if the node lists dont have the same size, otherwise the permuntation of the matching indexes
 	 */
-	private Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> createMapNodeToPairsOrderDependent(List<? extends FaultTreeNode> nodes1, List<? extends FaultTreeNode> nodes2) {
+	private Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> createMapNodeToPairsOrderDependent(Set<Entry<FaultTreeNode, FaultTreeNode>> parentPairs, List<? extends FaultTreeNode> nodes1, List<? extends FaultTreeNode> nodes2) {
 		if (nodes1.size() != nodes2.size()) {
 			return null;
 		}
@@ -251,14 +281,45 @@ public class FaultTreeSymmetryChecker {
 		for (int i = 0; i < nodes1.size(); ++i) {
 			FaultTreeNode child1 = nodes1.get(i);
 			FaultTreeNode child2 = nodes2.get(i);
+	
+			boolean isParentPair = false;
+			if (parentPairs != null) {
+				for (Entry<FaultTreeNode, FaultTreeNode> parentPair : parentPairs) {
+					if (parentPair.getKey().equals(child1) || parentPair.getValue().equals(child2)) {
+						isParentPair = true;
+						break;
+					}
+				}
+			}
+			
 			Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new HashSet<>();
 			mapNodeToNodePairs.add(candidatePairs);
-	
-			if (child1.equals(child2)) {
+			
+			if (!isParentPair && child1.equals(child2)) {
 				candidatePairs.add(new SimpleEntry<>(child1, child2));
 			}
 		}
 		
 		return mapNodeToNodePairs;
+	}
+	
+	/**
+	 * Computes the inverse mapping for a given symmetry reduction
+	 * @param symmetryReduction the symmetry reduction
+	 * @return the inverted symmetry reduction
+	 */
+	public Map<FaultTreeNode, Set<FaultTreeNode>> invertSymmetryReduction(Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
+		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = new HashMap<>();
+		for (FaultTreeNode node : symmetryReduction.keySet()) {
+			symmetryReductionInverted.put(node, new HashSet<>());
+		}
+		
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
+			for (FaultTreeNode node : entry.getValue()) {
+				symmetryReductionInverted.get(node).add(entry.getKey());
+			}
+		}
+		
+		return symmetryReductionInverted;
 	}
 }

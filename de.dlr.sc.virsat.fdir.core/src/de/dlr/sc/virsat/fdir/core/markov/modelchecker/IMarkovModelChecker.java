@@ -33,4 +33,10 @@ public interface IMarkovModelChecker extends IMetricVisitor {
 	 * @return the model checking statistics of the last model checking call
 	 */
 	ModelCheckingStatistics getStatistics();
+	
+	/**
+	 * Returns the internally configured time step
+	 * @return the internal timestep
+	 */
+	double getDelta();
 }

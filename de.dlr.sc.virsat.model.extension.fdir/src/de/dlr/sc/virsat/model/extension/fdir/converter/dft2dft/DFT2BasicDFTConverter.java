@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,10 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 	public DFT2DFTConversionResult convert(FaultTreeNode root) {
 		this.concept = root.getConcept();
 
+		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
+		
 		ftHelper = new FaultTreeHelper(concept);
-		ftHolder = new FaultTreeHolder(root);
+		ftHolder = new FaultTreeHolder(holderRoot);
 		mapNodes = new HashMap<>();
 
 		for (FaultTreeNode node : ftHolder.getNodes()) {
@@ -106,14 +109,12 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			
 			if (node instanceof Fault) {
 				for (BasicEvent be : node.getFault().getBasicEvents()) {
-					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().get(be);
-					if (deps != null) {
-						for (int i = 0; i < deps.size(); ++i) {
-							FaultTreeNode dep = deps.get(i);
-							List<FaultTreeNode> newChildNodeList = mapNodes.get(dep);
-							FaultTreeNode newDepOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-							ftHelper.connectDep(fault, newDepOutputNode, mapNodes.get(be).get(0));
-						}
+					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+					for (int i = 0; i < deps.size(); ++i) {
+						FaultTreeNode dep = deps.get(i);
+						List<FaultTreeNode> newChildNodeList = mapNodes.get(dep);
+						FaultTreeNode newDepOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
+						ftHelper.connectDep(fault, newDepOutputNode, mapNodes.get(be).get(0));
 					}
 				}
 			}
@@ -127,7 +128,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			for (FaultTreeNode generated : generatedNodes) {
 				mapGeneratedToGenerators.put(generated, generator);
 			}
-		} 
+		}
 		
 		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newRoot, mapGeneratedToGenerators);
 		
