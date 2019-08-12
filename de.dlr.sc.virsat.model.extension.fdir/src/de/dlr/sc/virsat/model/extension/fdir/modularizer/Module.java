@@ -67,19 +67,24 @@ public class Module {
 	/**
 	 * Add a node to the module
 	 * @param node the node
+	 * @return true iff the node was not in the module nodes before
 	 */
-	void addNode(FaultTreeNodePlus node) {
+	boolean addNode(FaultTreeNodePlus node) {
+		if (this.moduleNodes.contains(node)) {
+			return false;
+		}
+		
 		if (this.moduleNodes.isEmpty()) {
 			this.moduleRoot = node;
 		}
 		
-		if (!this.moduleNodes.contains(node)) {
-			this.moduleNodes.add(node);
-		}
+		this.moduleNodes.add(node);
 		
 		if (node.isNondeterministic()) {
 			this.moduleType = ModuleType.NONDETERMINISTIC;
 		}
+		
+		return true;
 	}
 	
 	/**
@@ -91,11 +96,27 @@ public class Module {
 	}
 	
 	/**
+	 * Gets the nodes of the modules with the associated meta-information such as visit times
+	 * @return the nodes of the modules with their meta-information
+	 */
+	public List<FaultTreeNodePlus> getModuleNodes() {
+		return moduleNodes;
+	}
+	
+	/**
 	 * Get the root node of the module
 	 * @return the root node
 	 */
 	public FaultTreeNode getRootNode() {
 		return this.moduleRoot.getFaultTreeNode();
+	}
+	
+	/**
+	 * Gets the root node with its meta information
+	 * @return the root node with its meta information
+	 */
+	public FaultTreeNodePlus getModuleRoot() {
+		return moduleRoot;
 	}
 	
 	/**

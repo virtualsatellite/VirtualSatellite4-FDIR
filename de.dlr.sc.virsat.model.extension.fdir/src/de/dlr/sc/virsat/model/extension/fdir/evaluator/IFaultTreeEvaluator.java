@@ -44,4 +44,10 @@ public interface IFaultTreeEvaluator {
 	 * @return the minimum cut sets
 	 */
 	Set<Set<BasicEvent>> getMinimumCutSets();
+	
+	/**
+	 * Gets the internal statistics of the last call to the evaluation method
+	 * @return the statistics of the last call of the evaluation method
+	 */
+	Object getStatistics();
 }

@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -40,6 +39,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFT2MAConverter {
 	private DFTSemantics dftSemantics = DFTSemantics.createNDDFTSemantics();
+	private FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
 	
 	private FaultTreeNode root;
 	
@@ -54,8 +54,6 @@ public class DFT2MAConverter {
 	private RecoveryStrategy recoveryStrategy;
 	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
 	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted;
-	
-	private boolean enableSymmetryReduction = false;
 	
 	private DFT2MAConversionStatistics statistics = new DFT2MAConversionStatistics();
 	
@@ -88,7 +86,8 @@ public class DFT2MAConverter {
 		mapUnorderedBesToMarkovianDFTStates = new HashMap<>();
 		transientNodes = new HashSet<>();
 		
-		ftHolder = new FaultTreeHolder(root);
+		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
+		ftHolder = new FaultTreeHolder(holderRoot);
 		
 		events = dftSemantics.createEventSet(ftHolder);
 		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
@@ -121,22 +120,9 @@ public class DFT2MAConverter {
 			}
 		}
 		
-		if (enableSymmetryReduction) {
-			FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
+		if (symmetryChecker != null) {
 			symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-			symmetryReductionInverted = new HashMap<>();
-			for (FaultTreeNode node : ftHolder.getNodes()) {
-				symmetryReductionInverted.put(node, new HashSet<>());
-			}
-			for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
-				symmetryReductionInverted.put(be, new HashSet<>());
-			}
-			
-			for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
-				for (FaultTreeNode node : entry.getValue()) {
-					symmetryReductionInverted.get(node).add(entry.getKey());
-				}
-			}
+			symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
 		}
 	}
 	
@@ -192,7 +178,7 @@ public class DFT2MAConverter {
 				int multiplier = 1;
 				
 				// Very simple symmetry reduction to get started
-				if (enableSymmetryReduction) {
+				if (symmetryChecker != null) {
 					int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
 					if (countBiggerSymmetricEvents == -1) {
 						continue;
@@ -253,7 +239,7 @@ public class DFT2MAConverter {
 					DFTState equivalentState = getEquivalentState(succ);
 					
 					if (equivalentState == succ) {
-						if (enableSymmetryReduction) {
+						if (symmetryChecker != null) {
 							if (event instanceof FaultEvent) {
 								succ.createSymmetryRequirements(state, (BasicEvent) event.getNode(), symmetryReduction);
 							}
@@ -281,7 +267,10 @@ public class DFT2MAConverter {
 	private void createInitialState() {
 		initial = dftSemantics.getStateGenerator().generateState(ftHolder);
 		mapUnorderedBesToMarkovianDFTStates.put(initial.unorderedBes, new ArrayList<>(Collections.singletonList(initial)));
-		initial.activateNode(root);
+		initial.activateNode(root.getFault());
+		if (!root.equals(root.getFault())) {
+			initial.activateNode(root);
+		}
 		initial.setRecoveryStrategy(recoveryStrategy);
 		ma.addState(initial);
 	}
@@ -414,11 +403,11 @@ public class DFT2MAConverter {
 	}
 	
 	/**
-	 * Sets whether symmetry reduction should be enabled
-	 * @param enableSymmetryReduction set to true for symmetry reduction
+	 * Configures the symmetry checker
+	 * @param symmetryChecker the symmetry checker
 	 */
-	public void setEnableSymmetryReduction(boolean enableSymmetryReduction) {
-		this.enableSymmetryReduction = enableSymmetryReduction;
+	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
+		this.symmetryChecker = symmetryChecker;
 	}
 	
 	/**
@@ -427,5 +416,13 @@ public class DFT2MAConverter {
 	 */
 	public DFT2MAConversionStatistics getStatistics() {
 		return statistics;
+	}
+	
+	/**
+	 * Gets the internal semantics obeject
+	 * @return the internal semantics object
+	 */
+	public DFTSemantics getDftSemantics() {
+		return dftSemantics;
 	}
 }

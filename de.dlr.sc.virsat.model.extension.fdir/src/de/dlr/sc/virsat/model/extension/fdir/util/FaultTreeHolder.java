@@ -71,17 +71,14 @@ public class FaultTreeHolder {
 		initDataStructures();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
-		toProcess.offer(root.getFault());
+		toProcess.offer(root);
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
 			
-			if (nodes.contains(node)) {
+			if (!nodes.add(node)) {
 				continue;
-			} else {
-				nodes.add(node);
 			}
 			
-			nodes.add(node);
 			faultTrees.add(node.getFault().getFaultTree());
 			List<FaultTreeNode> children = ftHelper.getChildren(node, faultTrees);
 			List<FaultTreeNode> spares = ftHelper.getSpares(node, faultTrees);

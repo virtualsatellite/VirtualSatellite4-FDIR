@@ -91,7 +91,7 @@ public class FaultTreeNodePlus {
 	 * Get the first visit date
 	 * @return first visit date
 	 */
-	int getFirstVisit() {
+	public int getFirstVisit() {
 		return this.firstVisit;
 	}
 	
@@ -99,7 +99,7 @@ public class FaultTreeNodePlus {
 	 * Get the last visit date
 	 * @return last visit date
 	 */
-	int getLastVisit() {
+	public int getLastVisit() {
 		return this.lastVisit;
 	}
 	
@@ -107,7 +107,7 @@ public class FaultTreeNodePlus {
 	 * Get the reference FaultTreeNode
 	 * @return the reference FaultTreeNode
 	 */
-	FaultTreeNode getFaultTreeNode() {
+	public FaultTreeNode getFaultTreeNode() {
 		return this.node;
 	}
 	
@@ -171,7 +171,7 @@ public class FaultTreeNodePlus {
 	 * Get the children of a node
 	 * @return list of children
 	 */
-	List<FaultTreeNodePlus> getChildren() {
+	public List<FaultTreeNodePlus> getChildren() {
 		return this.children;
 	}
 	
