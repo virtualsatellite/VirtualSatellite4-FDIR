@@ -888,6 +888,23 @@ public class DFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateCM4WithDFTSymmetry() throws IOException {
+		final double[] EXPECTED = {
+			3.581002068280633E-5,
+			1.4251151037843218E-4,
+			3.202047837711682E-4,
+			5.73300404984077E-4
+		};
+		final double EXPECTEDMTTF = 0.38349537;
+		Fault fault = createDFT("/resources/galileo/cm4.dft");
+		dftEvaluator.setSymmetryChecker(new FaultTreeSymmetryChecker());
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
+		assertIterationResultsEquals(result, EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testEvaluateRC1() throws IOException {
 		final double[] EXPECTED = {
 			6.018566771498309E-4,
