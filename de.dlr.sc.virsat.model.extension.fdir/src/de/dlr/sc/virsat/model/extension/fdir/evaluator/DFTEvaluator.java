@@ -11,7 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,9 +27,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
-import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
@@ -111,7 +108,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		if (canModularize) {
 			Entry<IMetric[], IMetric[]> metricSplit = splitMetrics(metrics);
 			IMetric[] composableMetrics = metricSplit.getKey();
-			IMetric[] unComposableMetrics = metricSplit.getValue();
+			IMetric[] derivedMetrics = metricSplit.getValue();
 			
 			Module topLevelModule = getModule(modules, root);
 			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
@@ -154,7 +151,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			ModelCheckingResult result = mapModuleToResult.get(topLevelModule);
 			
 			if (modulesToModelCheck.size() > 1) {
-				composer.compose(result, unComposableMetrics);
+				composer.compose(result, derivedMetrics);
 				result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
 				int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
 				result.limitPointMetrics(steps);
@@ -321,28 +318,25 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @return a pair of composable and uncomposable metric sets
 	 */
 	private Entry<IMetric[], IMetric[]> splitMetrics(IMetric[] metrics) {
-		List<IMetric> allMetrics = Arrays.asList(metrics);
 		List<IMetric> composableMetrics = new ArrayList<>();
-		List<IMetric> unComposableMetrics = new ArrayList<>();
+		List<IMetric> derivedMetrics = new ArrayList<>();
 		
 		for (IMetric metric : metrics) {
-			if (metric instanceof Reliability) {
-				if (!allMetrics.contains(MTTF.MTTF)) {
-					composableMetrics.add(metric);
-				}
-			} else if (metric instanceof PointAvailability) {
+			Collection<IMetric> derivedFrom = metric.getDerivedFrom();
+			if (derivedFrom.isEmpty()) {
 				composableMetrics.add(metric);
-			} else if (metric instanceof MTTF) {
-				composableMetrics.add(new Reliability(Double.POSITIVE_INFINITY));
-				unComposableMetrics.add(metric);
 			} else {
-				unComposableMetrics.add(metric);
+				composableMetrics = composableMetrics.stream()
+					.filter(composableMetric -> !derivedFrom.stream().anyMatch(other -> other.getClass().equals(composableMetric.getClass())))
+					.collect(Collectors.toList());
+				composableMetrics.addAll(derivedFrom);
+				derivedMetrics.add(metric);
 			}
 		}
 		
 		IMetric[] composableMetricsArray = new IMetric[composableMetrics.size()];
-		IMetric[] unComposableMetricsArray = new IMetric[unComposableMetrics.size()];
-		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), unComposableMetrics.toArray(unComposableMetricsArray));
+		IMetric[] derivedMetricsArray = new IMetric[derivedMetrics.size()];
+		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), derivedMetrics.toArray(derivedMetricsArray));
 	}
 	
 	/**

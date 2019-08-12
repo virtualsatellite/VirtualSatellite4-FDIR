@@ -9,8 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.List;
+
 /**
- * Interface for STORM metrics arguments
+ * Interface for metrics
  * @author sascha
  *
  */
@@ -22,4 +24,6 @@ public interface IMetric {
 	 * @param visitor the visitor
 	 */
 	void accept(IMetricVisitor visitor);
+	
+	List<IMetric> getDerivedFrom();
 }

@@ -9,12 +9,15 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * 
  * @author yoge_re
  *
  */
-public class SteadyStateAvailability implements IMetric {
+public class SteadyStateAvailability implements IQuantitativeMetric {
 	public static final SteadyStateAvailability STEADY_STATE_AVAILABILITY = new SteadyStateAvailability();
 
 	/**
@@ -27,6 +30,16 @@ public class SteadyStateAvailability implements IMetric {
 	@Override
 	public void accept(IMetricVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	@Override
+	public List<IMetric> getDerivedFrom() {
+		return Collections.singletonList(PointAvailability.INF_POINTAVAILABILITY);
+	}
+
+	@Override
+	public boolean isProbability() {
+		return true;
 	}
 
 }

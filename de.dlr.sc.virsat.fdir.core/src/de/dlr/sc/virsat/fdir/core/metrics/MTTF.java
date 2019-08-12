@@ -9,12 +9,15 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Metric representing the Mean Time To Failure
  * @author sascha
  *
  */
-public class MTTF implements IMetric {
+public class MTTF implements IQuantitativeMetric {
 	public static final MTTF MTTF = new MTTF();
 	
 	/**
@@ -27,5 +30,15 @@ public class MTTF implements IMetric {
 	@Override
 	public void accept(IMetricVisitor visitor) {
 		visitor.visit(this);
+	}
+	
+	@Override
+	public List<IMetric> getDerivedFrom() {
+		return Collections.singletonList(Reliability.INF_RELIABILITY);
+	}
+
+	@Override
+	public boolean isProbability() {
+		return false;
 	}
 }

@@ -21,6 +21,7 @@ import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
@@ -97,30 +98,6 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		return k;
 	}
 	
-	/**
-	 * Computes accumulated poisson binomial probability mass function
-	 * @param probabilities the individual event probabilities
-	 * @param k the number of events that have to occur
-	 * @return the composed event probability
-	 */
-	private double composeProbabilities(double[] probabilities, long k) {
-		double composedProbability = 1;
-		if (k == 1) {
-			for (double failRate : probabilities) {
-				composedProbability *= 1 - failRate;
-			}
-			composedProbability = 1 - composedProbability;
-		} else {
-			for (double failRate : probabilities) {
-				composedProbability *= failRate;
-			}
-		} 
-		
-		// TODO: Else for general vote gates
-		
-		return composedProbability;
-	}
-	
 	@Override
 	public void visit(Reliability reliabilityMetric) {
 		long k = getK(topLevelNode, childrenPlus);
@@ -149,7 +126,7 @@ public class DFTMetricsComposer implements IMetricVisitor {
 				}
 			}
 			
-			double composedFailRate = composeProbabilities(childFailRates, k);
+			double composedFailRate = IQuantitativeMetric.composeProbabilities(childFailRates, k);
 			composedResult.getFailRates().add(composedFailRate);
 			
 			if (composedFailRate == 1) {
@@ -199,7 +176,7 @@ public class DFTMetricsComposer implements IMetricVisitor {
 				}
 			}
 			
-			double composedAvailability = composeProbabilities(childPointAvailabilities, k);
+			double composedAvailability = IQuantitativeMetric.composeProbabilities(childPointAvailabilities, k);
 			composedResult.getPointAvailability().add(composedAvailability);
 		}		
 	}
@@ -215,7 +192,7 @@ public class DFTMetricsComposer implements IMetricVisitor {
 			childSteadyStateAvailabilities[j] = subModuleResult.getSteadyStateAvailability();
 		}
 		
-		double composedSteadyStateAvailability = composeProbabilities(childSteadyStateAvailabilities, k);
+		double composedSteadyStateAvailability = IQuantitativeMetric.composeProbabilities(childSteadyStateAvailabilities, k);
 		composedResult.setSteadyStateAvailability(composedSteadyStateAvailability);
 	}
 }
