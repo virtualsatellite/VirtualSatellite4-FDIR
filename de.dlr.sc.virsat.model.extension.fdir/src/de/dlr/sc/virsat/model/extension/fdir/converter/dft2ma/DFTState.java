@@ -511,7 +511,7 @@ public class DFTState extends MarkovState {
 			
 		boolean sameClaims = other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares());	
 		if (sameClaims) {
-			boolean sameFms = orderedBes.equals(other.orderedBes);
+			boolean sameFms = orderedBes.size() == other.orderedBes.size() && orderedBes.equals(other.orderedBes);
 			if (sameFms) {
 				boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
 				return sameFailingNodes;
