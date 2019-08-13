@@ -1964,6 +1964,8 @@
 		</uiSnippet>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
+	
+<!-- Graphiti Diagrams -->	
 <extension
        point="org.eclipse.graphiti.ui.diagramTypes">
     <diagramType
@@ -2039,39 +2041,6 @@
   </editor>
    </extension>
 <extension
-      point="org.eclipse.ui.importWizards">
-   <wizard
-         category="de.dlr.sc.virsat.model.extension.ui.fdir"
-         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ImportGalileoDFTWizard"
-         id="de.dlr.sc.virsat.model.extension.fdir.ui.importGalileo"
-         name="Galileo DFT Import">
-   </wizard>
-   <category
-         id="de.dlr.sc.virsat.model.extension.ui.fdir"
-         name="FDIR">
-   </category>
-</extension>
-<extension
-      point="org.eclipse.ui.exportWizards">
-   <wizard
-         category="de.dlr.sc.virsat.model.extension.ui.fdir"
-         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ExportGalileoDFTWizard"
-         id="de.dlr.sc.virsat.model.extension.fdir.ui.exportGalileo"
-         name="Galileo DFT Export">
-   </wizard>
-   <category
-         id="de.dlr.sc.virsat.model.extension.ui.fdir"
-         name="FDIR">
-   </category>
-</extension>
-<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
-	      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
-	</uiSnippet>
-</extension>
-<extension
       point="org.eclipse.elk.core.service.layoutConnectors">
    <setup
          class="de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.RecoveryAutomatonLayoutSetup"
@@ -2081,30 +2050,6 @@
          class="de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.FaultTreeLayoutSetup"
          priority="2">
    </setup>
-</extension>
-<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysisReliabilityCurve"
-	      section="de.dlr.sc.virsat.uiengine.ui.editorSection.Others"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityAnalysisReliabilityCurve">
-	</uiSnippet>
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCutSetAnalysisMinimumCutSetsCutSet"
-	      section="de.dlr.sc.virsat.uiengine.ui.editorSection.Others"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCutSetAnalysisMinimumCutSetsCutSet">
-	</uiSnippet>
-</extension>
-<extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="de.dlr.sc.virsat.model.ui.preferencePage.virsat"
-            class="de.dlr.sc.virsat.model.extension.fdir.ui.preferences.FDIRWorkbenchPreferencePage"
-            id="de.dlr.sc.virsat.model.extension.fdir.ui.preferencePage.fdir"
-            name="FDIR">
-         <keywordReference
-               id="de.dlr.sc.virsat.model.ui.keyword.virsat">
-         </keywordReference>
-      </page>
 </extension>
 	<extension point="org.eclipse.ui.commands">
 		<command
@@ -2166,6 +2111,98 @@
 			</command>
 		</menuContribution>
 	</extension>
+	
+<!-- Wizards -->
+<extension
+      point="org.eclipse.ui.importWizards">
+   <wizard
+         category="de.dlr.sc.virsat.model.extension.ui.fdir"
+         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ImportGalileoDFTWizard"
+         id="de.dlr.sc.virsat.model.extension.fdir.ui.importGalileo"
+         name="Galileo DFT Import">
+   </wizard>
+   <category
+         id="de.dlr.sc.virsat.model.extension.ui.fdir"
+         name="FDIR">
+   </category>
+</extension>
+<extension
+      point="org.eclipse.ui.exportWizards">
+   <wizard
+         category="de.dlr.sc.virsat.model.extension.ui.fdir"
+         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ExportGalileoDFTWizard"
+         id="de.dlr.sc.virsat.model.extension.fdir.ui.exportGalileo"
+         name="Galileo DFT Export">
+   </wizard>
+   <category
+         id="de.dlr.sc.virsat.model.extension.ui.fdir"
+         name="FDIR">
+   </category>
+</extension>
+
+<!-- Custom Snippets -->
+<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
+	</uiSnippet>
+</extension>
+
+<!-- Snippet Ordering -->
+	<extension
+	       point="de.dlr.sc.virsat.uiengine.ui.EditorSection">
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	          topRanking="1100">
+	    </editorSection>
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.fault"
+	          topRanking="1090">
+	    </editorSection>
+	</extension>
+
+<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysisReliabilityCurve"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityAnalysisReliabilityCurve">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisReliabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.fault"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisReliabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisPointAvailabilityCurve"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisAvailabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.fault"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisAvailabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysisMinimumCutSetsCutSet"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMCSAnalysisMinimumCutSetsCutSet">
+	</uiSnippet>
+</extension>
+
+<!-- Preferences -->
+<extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="de.dlr.sc.virsat.model.ui.preferencePage.virsat"
+            class="de.dlr.sc.virsat.model.extension.fdir.ui.preferences.FDIRWorkbenchPreferencePage"
+            id="de.dlr.sc.virsat.model.extension.fdir.ui.preferencePage.fdir"
+            name="FDIR">
+         <keywordReference
+               id="de.dlr.sc.virsat.model.ui.keyword.virsat">
+         </keywordReference>
+      </page>
+</extension>
 <extension point="org.eclipse.core.expressions.propertyTesters">
 		<propertyTester
 			id="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.CaOfSpecificCategoryTester"

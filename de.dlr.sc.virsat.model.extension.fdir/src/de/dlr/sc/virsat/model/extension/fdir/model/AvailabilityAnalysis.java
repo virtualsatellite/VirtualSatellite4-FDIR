@@ -100,7 +100,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		double delta = getTimestepBean().getValueToBaseUnit();
 
 		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-				(StructuralElementInstance) getTypeInstance().eContainer());
+				(StructuralElementInstance) fault.getTypeInstance().eContainer());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
