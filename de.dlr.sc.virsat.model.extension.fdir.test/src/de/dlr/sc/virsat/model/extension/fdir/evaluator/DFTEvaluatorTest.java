@@ -54,7 +54,7 @@ public class DFTEvaluatorTest extends ATestCase {
 
 	@Before
 	public void setup() {
-		dftEvaluator = new DFTEvaluator(DFTSemantics.createStandardDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON));
+		dftEvaluator = new DFTEvaluator(DFTSemantics.createStandardDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON));
 		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(dftEvaluator);
 	}
 
@@ -859,7 +859,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			0.000374514,
 			0.00079721
 		};
-		final double EXPECTEDMTTF = 0.327981535;
+		final double EXPECTEDMTTF = 0.32798024839145234;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -875,7 +875,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			2.84423746211353E-6,
 			1.839713418160933E-5
 		};
-		final double EXPECTEDMTTF = 0.363489266;
+		final double EXPECTEDMTTF = 0.36348663707847634;
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
@@ -891,7 +891,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			3.202047837711682E-4,
 			5.73300404984077E-4
 		};
-		final double EXPECTEDMTTF = 0.3834953749;
+		final double EXPECTEDMTTF = 0.38349296618324935;
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
@@ -907,7 +907,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			3.202047837711682E-4,
 			5.73300404984077E-4
 		};
-		final double EXPECTEDMTTF = 0.38349537;
+		final double EXPECTEDMTTF = 0.38349296618324985;
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
 		dftEvaluator.setSymmetryChecker(new FaultTreeSymmetryChecker());
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -970,7 +970,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		};
 		
 		final double EXPECTEDMTTF = 2.9435483;
-		final double EXPECTEDSTEADYSTATE = 0.0909091135;
+		final double EXPECTEDSTEADYSTATE = 0.9999681976738133;
 		
 		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
 		
