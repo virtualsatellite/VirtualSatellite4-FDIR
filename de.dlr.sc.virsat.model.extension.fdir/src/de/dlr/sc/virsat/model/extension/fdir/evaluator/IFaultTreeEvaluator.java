@@ -9,11 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
-import java.util.Set;
-
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
@@ -38,12 +35,6 @@ public interface IFaultTreeEvaluator {
 	 * @param recoveryStrategy the recovery strategy
 	 */
 	void setRecoveryStrategy(RecoveryStrategy recoveryStrategy);
-	
-	/**
-	 * Computes the minimum cut sets
-	 * @return the minimum cut sets
-	 */
-	Set<Set<BasicEvent>> getMinimumCutSets();
 	
 	/**
 	 * Gets the internal statistics of the last call to the evaluation method

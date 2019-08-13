@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.fdir.storm.runner.StormModelChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.IDFT2DFTConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -69,28 +70,33 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		return evaluator.evaluateFaultTree(convertedRoot, metrics);
+		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, metrics);
+		if (!result.getMinCutSets().isEmpty()) {
+			remapMinCutSets(result);
+		}
+		return result;
 	}
 	
 	/**
-	 * Gets the minimum cut sets from the fault tree
-	 * @return the minimum cut sets causing the top level event
+	 * Remaps the events of the computed mincut sets to the events of the original tree
+	 * @param result a model checking result
 	 */
-	public Set<Set<BasicEvent>> getMinimumCutSets() {
+	private void remapMinCutSets(ModelCheckingResult result) {
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = conversionResult.getMapGeneratedToGenerator();
-		Set<Set<BasicEvent>> minimumCutSets = evaluator.getMinimumCutSets();
-		Set<Set<BasicEvent>> originalMinimumCutSets = new HashSet<>();
+		Set<Set<Object>> originalMinimumCutSets = new HashSet<>();
 		
-		for (Set<BasicEvent> minimumCutSet : minimumCutSets) {
-			Set<BasicEvent> originalMiniumCutSet = new HashSet<>();
-			for (BasicEvent be : minimumCutSet) {
-				BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(be);
+		for (Set<Object> minimumCutSet : result.getMinCutSets()) {
+			Set<Object> originalMiniumCutSet = new HashSet<>();
+			for (Object object : minimumCutSet) {
+				FaultEvent fe = (FaultEvent) object;
+				BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
 				originalMiniumCutSet.add(originalBe);
 			}
 			originalMinimumCutSets.add(originalMiniumCutSet);
 		}
 		
-		return originalMinimumCutSets;
+		result.getMinCutSets().clear();
+		result.getMinCutSets().addAll(originalMinimumCutSets);
 	}
 
 	@Override

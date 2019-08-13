@@ -9,13 +9,22 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -326,6 +335,66 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		modelCheckingResult.setSteadyStateAvailability(1 - getFailRate());		
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public void visit(MinimumCutSet minimumCutSet) {
+		// Construct the minimum cut sets as follows:
+		// MinCuts(s) = UNION_{(s, a, s')} ( {a} \cross MinCuts(s') )
+		// MinCuts(f) = \emptyset for any fail state f
+		
+		Set<? extends MarkovState> failStates = mc.getFinalStates();
+		Queue<MarkovState> toProcess = new LinkedList<>();
+		toProcess.addAll(failStates);
+		
+		Map<MarkovState, Set<Set<Object>>> mapStateToMinCuts = new HashMap<>();
+		
+		while (!toProcess.isEmpty()) {
+			MarkovState state = toProcess.poll();
+			
+			// Update the mincuts
+			Set<Set<Object>> oldMinCuts = mapStateToMinCuts.get(state);
+			Set<Set<Object>> minCuts = new HashSet<>();
+			
+			List<?> succTransitions = mc.getSuccTransitions(state);
+			for (Object succTransition : succTransitions) {
+				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) succTransition;
+				MarkovState successor = transition.getTo();
+				Set<Set<Object>> succMinCuts = mapStateToMinCuts.getOrDefault(successor, Collections.emptySet());
+				
+				if (succMinCuts.isEmpty()) {
+					Set<Object> minCut = new HashSet<>();
+					minCut.add(transition.getEvent());
+					minCuts.add(minCut);
+				} else {
+					for (Set<Object> succMinCut : succMinCuts) {
+						if (succMinCut.size() < minimumCutSet.getMaxSize() || minimumCutSet.getMaxSize() == 0) {
+							Set<Object> minCut = new HashSet<>(succMinCut);
+							minCut.add(transition.getEvent());
+							minCuts.add(minCut);
+						}
+					}
+				}
+			}
+			
+			// Enqueue predecessors if necessary
+			if (!Objects.equals(oldMinCuts, minCuts)) {
+				mapStateToMinCuts.put(state, minCuts);
+				
+				List<?> predTransitions = mc.getPredTransitions(state);
+				for (Object predTransition : predTransitions) {
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) predTransition;
+					MarkovState predecessor = transition.getFrom();
+					if (!toProcess.contains(predecessor)) {
+						toProcess.add(predecessor);
+					}
+				}
+			}
+		}
+		
+		Set<Set<Object>> minCuts = mapStateToMinCuts.getOrDefault(mc.getStates().get(0), Collections.emptySet());
+		modelCheckingResult.getMinCutSets().addAll(minCuts);
+	}
+	
 	/**
 	 * Gets the fail rate at the current iteration
 	 * @return the fail rate at the current iteration

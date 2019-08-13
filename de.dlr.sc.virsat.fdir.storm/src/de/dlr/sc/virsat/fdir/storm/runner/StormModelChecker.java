@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -73,6 +74,12 @@ public class StormModelChecker implements IMarkovModelChecker {
 	
 	@Override
 	public void visit(PointAvailability pointAvailabilityMetric) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void visit(MinimumCutSet minimumCutSet) {
 		// TODO Auto-generated method stub
 		
 	}

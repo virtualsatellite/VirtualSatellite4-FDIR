@@ -10,7 +10,9 @@
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
@@ -21,15 +23,15 @@ import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeNodePlus;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 
 /**
  * Performs composition of metrics calculated for the sub modules of a module
@@ -40,20 +42,18 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 public class DFTMetricsComposer implements IMetricVisitor {
 	
 	private ModelCheckingResult composedResult;
-	private FaultTreeNode topLevelNode;
-	private List<FaultTreeNodePlus> childrenPlus;
+	private long k;
 	private List<ModelCheckingResult> subModuleResults;
 	
 	/**
 	 * Compose operation for composable metrics. Composes the results of the sub modules.
 	 * @param subModuleResults the results of the sub modules
+	 * @param k the combinatorial threshold
 	 * @param metrics the metrics to compose
-	 * @param topLevelModule the module
-	 * @return the metrics for the module
+	 * @return the composed result
 	 */
-	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, IMetric[] metrics, Module topLevelModule) {
-		this.topLevelNode = topLevelModule.getRootNode();
-		this.childrenPlus = topLevelModule.getModuleRoot().getChildren();
+	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, long k, IMetric... metrics) {
+		this.k = k;
 		this.subModuleResults = subModuleResults;
 		this.composedResult = new ModelCheckingResult();
 		
@@ -86,7 +86,7 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	 * @param children the children
 	 * @return the number of inputs that have to fail, for the node to fail
 	 */
-	private long getK(FaultTreeNode node, Collection<?> children) {
+	public long getK(FaultTreeNode node, Collection<?> children) {
 		long k = children.size();
 		if (node instanceof Fault) {
 			k = 1;
@@ -97,34 +97,8 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		return k;
 	}
 	
-	/**
-	 * Computes accumulated poisson binomial probability mass function
-	 * @param probabilities the individual event probabilities
-	 * @param k the number of events that have to occur
-	 * @return the composed event probability
-	 */
-	private double composeProbabilities(double[] probabilities, long k) {
-		double composedProbability = 1;
-		if (k == 1) {
-			for (double failRate : probabilities) {
-				composedProbability *= 1 - failRate;
-			}
-			composedProbability = 1 - composedProbability;
-		} else {
-			for (double failRate : probabilities) {
-				composedProbability *= failRate;
-			}
-		} 
-		
-		// TODO: Else for general vote gates
-		
-		return composedProbability;
-	}
-	
 	@Override
 	public void visit(Reliability reliabilityMetric) {
-		long k = getK(topLevelNode, childrenPlus);
-		
 		int countFailRates = 0;
 		if (k == 1) {
 			countFailRates = Integer.MAX_VALUE;
@@ -149,7 +123,7 @@ public class DFTMetricsComposer implements IMetricVisitor {
 				}
 			}
 			
-			double composedFailRate = composeProbabilities(childFailRates, k);
+			double composedFailRate = IQuantitativeMetric.composeProbabilities(childFailRates, k);
 			composedResult.getFailRates().add(composedFailRate);
 			
 			if (composedFailRate == 1) {
@@ -181,8 +155,6 @@ public class DFTMetricsComposer implements IMetricVisitor {
 
 	@Override
 	public void visit(PointAvailability pointAvailabilityMetric) {
-		long k = getK(topLevelNode, childrenPlus);
-		
 		int countPoints = 0;
 		for (ModelCheckingResult subModuleResult : subModuleResults) {
 			countPoints = Math.max(countPoints, subModuleResult.getPointAvailability().size());
@@ -199,15 +171,13 @@ public class DFTMetricsComposer implements IMetricVisitor {
 				}
 			}
 			
-			double composedAvailability = composeProbabilities(childPointAvailabilities, k);
+			double composedAvailability = IQuantitativeMetric.composeProbabilities(childPointAvailabilities, k);
 			composedResult.getPointAvailability().add(composedAvailability);
 		}		
 	}
 
 	@Override
 	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
-		long k = getK(topLevelNode, childrenPlus);
-	
 		double[] childSteadyStateAvailabilities = new double[subModuleResults.size()];
 		
 		for (int j = 0; j < subModuleResults.size(); ++j) {
@@ -215,7 +185,26 @@ public class DFTMetricsComposer implements IMetricVisitor {
 			childSteadyStateAvailabilities[j] = subModuleResult.getSteadyStateAvailability();
 		}
 		
-		double composedSteadyStateAvailability = composeProbabilities(childSteadyStateAvailabilities, k);
+		double composedSteadyStateAvailability = IQuantitativeMetric.composeProbabilities(childSteadyStateAvailabilities, k);
 		composedResult.setSteadyStateAvailability(composedSteadyStateAvailability);
+	}
+
+
+	@Override
+	public void visit(MinimumCutSet minimumCutSet) {
+		if (k == 1) {
+			for (ModelCheckingResult subModuleResult : subModuleResults) {
+				composedResult.getMinCutSets().addAll(subModuleResult.getMinCutSets());
+			}
+		} else {
+			@SuppressWarnings("unchecked")
+			Set<Set<Object>>[] allMinCuts = new HashSet[subModuleResults.size()];
+			for (int i = 0; i < subModuleResults.size(); ++i) {
+				allMinCuts[i] = subModuleResults.get(i).getMinCutSets();
+			}
+			
+			Set<Set<Object>> productMinCutSets = minimumCutSet.cartesianComposition(allMinCuts);
+			composedResult.getMinCutSets().addAll(productMinCutSets);
+		}	
 	}
 }

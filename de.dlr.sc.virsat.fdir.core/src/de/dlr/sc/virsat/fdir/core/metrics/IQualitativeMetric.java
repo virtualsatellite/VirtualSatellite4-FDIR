@@ -9,26 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
-import java.util.List;
-
 /**
- * Interface for metrics
- * @author sascha
+ * Interface for qualitative metrics
+ * @author muel_s8
  *
  */
 
-public interface IMetric {
-	
-	/**
-	 * Accept a visitor
-	 * @param visitor the visitor
-	 */
-	void accept(IMetricVisitor visitor);
-	
-	/**
-	 * Either empty if the metric cannot be derived from other metrics,
-	 * or otherwise the list of metrics required to derive this metric
-	 * @return the metrics this metric is derived from
-	 */
-	List<IMetric> getDerivedFrom();
+public interface IQualitativeMetric extends IMetric {
+
 }

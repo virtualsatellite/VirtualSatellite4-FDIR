@@ -13,7 +13,6 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
@@ -22,7 +21,6 @@ import de.dlr.sc.virsat.fdir.storm.runner.IStormProgram;
 import de.dlr.sc.virsat.fdir.storm.runner.StormDFT;
 import de.dlr.sc.virsat.fdir.storm.runner.StormRunner;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFT;
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
@@ -91,12 +89,6 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 	@Override
 	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		// Storm doesnt work with recovery strategies
-	}
-
-	@Override
-	public Set<Set<BasicEvent>> getMinimumCutSets() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

@@ -9,13 +9,17 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * 
+ * Metric representing time bounded availability
  * @author yoge_re
  *
  */
-public class PointAvailability implements IMetric {
+public class PointAvailability implements IQuantitativeMetric {
 	public static final PointAvailability UNIT_POINTAVAILABILITY = new PointAvailability(1);
+	public static final PointAvailability INF_POINTAVAILABILITY = new PointAvailability(Double.POSITIVE_INFINITY);
 
 	private double time;
 
@@ -39,6 +43,10 @@ public class PointAvailability implements IMetric {
 	@Override
 	public void accept(IMetricVisitor visitor) {
 		visitor.visit(this);
-
+	}
+	
+	@Override
+	public List<IMetric> getDerivedFrom() {
+		return Collections.emptyList();
 	}
 }

@@ -11,7 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,17 +23,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
-import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -111,7 +106,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		if (canModularize) {
 			Entry<IMetric[], IMetric[]> metricSplit = splitMetrics(metrics);
 			IMetric[] composableMetrics = metricSplit.getKey();
-			IMetric[] unComposableMetrics = metricSplit.getValue();
+			IMetric[] derivedMetrics = metricSplit.getValue();
 			
 			Module topLevelModule = getModule(modules, root);
 			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
@@ -154,7 +149,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			ModelCheckingResult result = mapModuleToResult.get(topLevelModule);
 			
 			if (modulesToModelCheck.size() > 1) {
-				composer.compose(result, unComposableMetrics);
+				composer.compose(result, derivedMetrics);
 				result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
 				int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
 				result.limitPointMetrics(steps);
@@ -215,7 +210,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		}
 		
 		if (subModuleResults.size() > 1) {
-			result = composer.compose(subModuleResults, metrics, module);
+			long k = composer.getK(module.getRootNode(), module.getModuleRoot().getChildren());
+			result = composer.compose(subModuleResults, k, metrics);
 		} else {
 			result = subModuleResults.get(0);
 		}
@@ -321,28 +317,25 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @return a pair of composable and uncomposable metric sets
 	 */
 	private Entry<IMetric[], IMetric[]> splitMetrics(IMetric[] metrics) {
-		List<IMetric> allMetrics = Arrays.asList(metrics);
 		List<IMetric> composableMetrics = new ArrayList<>();
-		List<IMetric> unComposableMetrics = new ArrayList<>();
+		List<IMetric> derivedMetrics = new ArrayList<>();
 		
 		for (IMetric metric : metrics) {
-			if (metric instanceof Reliability) {
-				if (!allMetrics.contains(MTTF.MTTF)) {
-					composableMetrics.add(metric);
-				}
-			} else if (metric instanceof PointAvailability) {
+			Collection<IMetric> derivedFrom = metric.getDerivedFrom();
+			if (derivedFrom.isEmpty()) {
 				composableMetrics.add(metric);
-			} else if (metric instanceof MTTF) {
-				composableMetrics.add(new Reliability(Double.POSITIVE_INFINITY));
-				unComposableMetrics.add(metric);
 			} else {
-				unComposableMetrics.add(metric);
+				composableMetrics = composableMetrics.stream()
+					.filter(composableMetric -> !derivedFrom.stream().anyMatch(other -> other.getClass().equals(composableMetric.getClass())))
+					.collect(Collectors.toList());
+				composableMetrics.addAll(derivedFrom);
+				derivedMetrics.add(metric);
 			}
 		}
 		
 		IMetric[] composableMetricsArray = new IMetric[composableMetrics.size()];
-		IMetric[] unComposableMetricsArray = new IMetric[unComposableMetrics.size()];
-		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), unComposableMetrics.toArray(unComposableMetricsArray));
+		IMetric[] derivedMetricsArray = new IMetric[derivedMetrics.size()];
+		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), derivedMetrics.toArray(derivedMetricsArray));
 	}
 	
 	/**
@@ -377,35 +370,6 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		} else {
 			return defaultSemantics;
 		}
-	}
-
-	@Override
-	public Set<Set<BasicEvent>> getMinimumCutSets() {
-		// Construct the minimum cut sets as follows:
-		// Get all states that are predecessors to a fail state
-		// Then take all the memorized basic events from the predecessor state
-		// and the basic event leading to the fail state
-
-		Set<Set<BasicEvent>> minimumCutSets = new HashSet<>();
-
-		Set<DFTState> failStates = mc.getFinalStates();
-		for (DFTState failState : failStates) {
-			List<MarkovTransition<DFTState>> predTransitions = mc.getPredTransitions(failState);
-			for (MarkovTransition<DFTState> predTransition : predTransitions) {
-				Set<BasicEvent> minimumCutSet = new HashSet<>();
-				DFTState predecessor = (DFTState) predTransition.getFrom();
-				Object event = predTransition.getEvent();
-
-				minimumCutSet.add((BasicEvent) ((IDFTEvent) event).getNode());
-				for (BasicEvent be : predecessor.getFailedBasicEvents()) {
-					minimumCutSet.add(be);
-				}
-
-				minimumCutSets.add(minimumCutSet);
-			}
-		}
-
-		return minimumCutSets;
 	}
 	
 	/**
