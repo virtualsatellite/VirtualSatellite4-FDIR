@@ -124,10 +124,6 @@
 		pathToImage="resources/icons/FMECAEntry.gif">
 	</conceptImage>
 	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FaultAnalysis"
-		pathToImage="resources/icons/FaultAnalysis.gif">
-	</conceptImage>
-	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
 		pathToImage="resources/icons/ReliabilityAnalysis.gif">
 	</conceptImage>
@@ -1713,14 +1709,14 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisReliabilityAnalysis"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisReliabilityAnalysis">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultReliabilityAnalysisReliabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisAvailabilityAnalysis"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAvailabilityAnalysisAvailabilityAnalysis"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisAvailabilityAnalysis">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEvent"
@@ -2139,38 +2135,84 @@
    </category>
 </extension>
 
-<!-- Custom Snippets -->
-<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
-	      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
-	</uiSnippet>
-</extension>
-
-<!-- Snippet Ordering -->
+<!-- Snippets -->
 	<extension
 	       point="de.dlr.sc.virsat.uiengine.ui.EditorSection">
 	    <editorSection
-	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
-	          topRanking="1100">
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	          topRanking="1010">
 	    </editorSection>
 	    <editorSection
-	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.fault"
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	          topRanking="1020">
+	    </editorSection>
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
 	          topRanking="1090">
+	    </editorSection>
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	          topRanking="1100">
 	    </editorSection>
 	</extension>
 
 <extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
 	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultBasicEventsBasicEvent"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultBasicEventsBasicEvent"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParameters"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParameters">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFault"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFault">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomaton"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomaton">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
+	</uiSnippet>
+
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAvailabilityAnalysisAvailabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultReliabilityAnalysisReliabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECA"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECA">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMCSAnalysis">
+	</uiSnippet>
+	
+	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysisReliabilityCurve"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityAnalysisReliabilityCurve">
-	</uiSnippet>
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisReliabilityAnalysis"
-	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.fault"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisReliabilityAnalysis">
 	</uiSnippet>
 	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisPointAvailabilityCurve"
@@ -2178,14 +2220,14 @@
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve">
 	</uiSnippet>
 	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisAvailabilityAnalysis"
-	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.fault"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisAvailabilityAnalysis">
-	</uiSnippet>
-	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysisMinimumCutSetsCutSet"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMCSAnalysisMinimumCutSetsCutSet">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntriesFMECAEntry"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntriesFMECAEntry">
 	</uiSnippet>
 </extension>
 

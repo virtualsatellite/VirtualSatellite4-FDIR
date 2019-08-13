@@ -114,7 +114,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		] default Minor quantityKind "Dimensionless" unit "No Unit" description "Severity Level according to ECSS-Q-ST-30-02C";
 	
 		Type faultTree of Category FaultTree description "The Fault Tree explaining the indirect causes of this Fault";
-		Type analysis[] of Category FaultAnalysis description "Analysis information for this single fault";
+		Type reliabilityAnalysis[] of Category ReliabilityAnalysis description "Optional reliability analysis information for this single fault";
+		Type availabilityAnalysis[] of Category AvailabilityAnalysis description "Optional reliability analysis information for this single fault";
 	}
 	
 	Category BasicEvent extends FaultEvent {
@@ -170,30 +171,26 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		// Criticality Level Computation according to ECSS-Q-ST-30-02C
 		Ref: criticality = severity * probability * detection;
 	}
-		
-	Category FaultAnalysis {
-		IsAbstract;
-	}
 	
-	Category ReliabilityAnalysis extends FaultAnalysis {
+	Category ReliabilityAnalysis {
 		Cardinality 1;
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty reliability quantityKind "Dimensionless" unit "Percent";
 		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour";
 		FloatProperty reliabilityCurve[] quantityKind "Dimensionless" unit "Percent";
-
+		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
 		Ref: timestep = FDIRParameters.timestep;
 	}	
 	
-	Category AvailabilityAnalysis extends FaultAnalysis {
+	Category AvailabilityAnalysis {
 		Cardinality 1;
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent";
-		FloatProperty pointAvailabilityCurve[] quantityKind "Dimensionless" unit "Percent";//PointAvailability
-
+		FloatProperty pointAvailabilityCurve[] quantityKind "Dimensionless" unit "Percent";
+		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
 		Ref: timestep = FDIRParameters.timestep;
 	}

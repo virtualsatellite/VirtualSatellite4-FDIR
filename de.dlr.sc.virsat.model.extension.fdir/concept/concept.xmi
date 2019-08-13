@@ -62,7 +62,10 @@
       <values name="Minor" value="1"/>
     </properties>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
-    <properties xsi:type="dvlm_cppd:ComposedProperty" name="analysis" description="Analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultAnalysis">
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="reliabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="availabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
@@ -140,8 +143,7 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="FaultAnalysis" isAbstract="true"/>
-  <categories name="ReliabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultAnalysis">
+  <categories name="ReliabilityAnalysis" cardinality="1">
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis.remainingMissionTime"/>
@@ -158,7 +160,7 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="AvailabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultAnalysis">
+  <categories name="AvailabilityAnalysis" cardinality="1">
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis.remainingMissionTime"/>

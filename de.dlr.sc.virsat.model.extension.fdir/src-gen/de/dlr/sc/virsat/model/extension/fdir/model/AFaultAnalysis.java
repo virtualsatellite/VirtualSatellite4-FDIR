@@ -14,9 +14,13 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import org.eclipse.emf.common.command.Command;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 
@@ -46,6 +50,8 @@ public abstract class AFaultAnalysis extends ABeanCategoryAssignment implements 
 	}
 	
 	// property name constants
+	public static final String PROPERTY_REMAININGMISSIONTIME = "remainingMissionTime";
+	public static final String PROPERTY_TIMESTEP = "timestep";
 	
 	
 	
@@ -66,6 +72,78 @@ public abstract class AFaultAnalysis extends ABeanCategoryAssignment implements 
 		setTypeInstance(categoryAssignement);
 	}
 	
+	
+	// *****************************************************************
+	// * Attribute: remainingMissionTime
+	// *****************************************************************
+	private BeanPropertyFloat remainingMissionTime = new BeanPropertyFloat();
+	
+	private void safeAccessRemainingMissionTime() {
+		if (remainingMissionTime.getTypeInstance() == null) {
+			remainingMissionTime.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("remainingMissionTime"));
+		}
+	}
+	
+	public Command setRemainingMissionTime(EditingDomain ed, double value) {
+		safeAccessRemainingMissionTime();
+		return this.remainingMissionTime.setValue(ed, value);
+	}
+	
+	public void setRemainingMissionTime(double value) {
+		safeAccessRemainingMissionTime();
+		this.remainingMissionTime.setValue(value);
+	}
+	
+	public double getRemainingMissionTime() {
+		safeAccessRemainingMissionTime();
+		return remainingMissionTime.getValue();
+	}
+	
+	public boolean isSetRemainingMissionTime() {
+		safeAccessRemainingMissionTime();
+		return remainingMissionTime.isSet();
+	}
+	
+	public BeanPropertyFloat getRemainingMissionTimeBean() {
+		safeAccessRemainingMissionTime();
+		return remainingMissionTime;
+	}
+	
+	// *****************************************************************
+	// * Attribute: timestep
+	// *****************************************************************
+	private BeanPropertyFloat timestep = new BeanPropertyFloat();
+	
+	private void safeAccessTimestep() {
+		if (timestep.getTypeInstance() == null) {
+			timestep.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("timestep"));
+		}
+	}
+	
+	public Command setTimestep(EditingDomain ed, double value) {
+		safeAccessTimestep();
+		return this.timestep.setValue(ed, value);
+	}
+	
+	public void setTimestep(double value) {
+		safeAccessTimestep();
+		this.timestep.setValue(value);
+	}
+	
+	public double getTimestep() {
+		safeAccessTimestep();
+		return timestep.getValue();
+	}
+	
+	public boolean isSetTimestep() {
+		safeAccessTimestep();
+		return timestep.isSet();
+	}
+	
+	public BeanPropertyFloat getTimestepBean() {
+		safeAccessTimestep();
+		return timestep;
+	}
 	
 	
 }

@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -22,11 +24,17 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  * This class is generated once, do your changes here
  * 
- * Analysis information for this single fault
+ * Optional reliability analysis information for this single fault
  * 
  */
-public class UiSnippetTableFaultAnalysisReliabilityAnalysis extends AUiSnippetTableFaultAnalysisReliabilityAnalysis implements IUiSnippet {
+public class UiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis extends AUiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis implements IUiSnippet {
 	public static final int SINGLE_LINE_TABLE_HEIGHT = 35;
+	
+	@Override
+	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
+		hideNameColumn = true;
+		super.createSwt(toolkit, editingDomain, composite, initModel);
+	}
 	
 	@Override
 	protected Table createDefaultTable(FormToolkit toolkit, Composite sectionBody) {

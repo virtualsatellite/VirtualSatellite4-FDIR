@@ -15,8 +15,9 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
+import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
@@ -63,7 +64,8 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	public static final String PROPERTY_BASICEVENTS = "basicEvents";
 	public static final String PROPERTY_SEVERITY = "severity";
 	public static final String PROPERTY_FAULTTREE = "faultTree";
-	public static final String PROPERTY_ANALYSIS = "analysis";
+	public static final String PROPERTY_RELIABILITYANALYSIS = "reliabilityAnalysis";
+	public static final String PROPERTY_AVAILABILITYANALYSIS = "availabilityAnalysis";
 	
 	// Severity enumeration value names
 	public static final String SEVERITY_Catastrophic_NAME = "Catastrophic";
@@ -196,19 +198,35 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	}
 	
 	// *****************************************************************
-	// * Array Attribute: analysis
+	// * Array Attribute: reliabilityAnalysis
 	// *****************************************************************
-	private IBeanList<FaultAnalysis> analysis = new TypeSafeComposedPropertyInstanceList<>(FaultAnalysis.class);
+	private IBeanList<ReliabilityAnalysis> reliabilityAnalysis = new TypeSafeComposedPropertyInstanceList<>(ReliabilityAnalysis.class);
 	
-	private void safeAccessAnalysis() {
-		if (analysis.getArrayInstance() == null) {
-			analysis.setArrayInstance((ArrayInstance) helper.getPropertyInstance("analysis"));
+	private void safeAccessReliabilityAnalysis() {
+		if (reliabilityAnalysis.getArrayInstance() == null) {
+			reliabilityAnalysis.setArrayInstance((ArrayInstance) helper.getPropertyInstance("reliabilityAnalysis"));
 		}
 	}
 	
-	public IBeanList<FaultAnalysis> getAnalysis() {
-		safeAccessAnalysis();
-		return analysis;
+	public IBeanList<ReliabilityAnalysis> getReliabilityAnalysis() {
+		safeAccessReliabilityAnalysis();
+		return reliabilityAnalysis;
+	}
+	
+	// *****************************************************************
+	// * Array Attribute: availabilityAnalysis
+	// *****************************************************************
+	private IBeanList<AvailabilityAnalysis> availabilityAnalysis = new TypeSafeComposedPropertyInstanceList<>(AvailabilityAnalysis.class);
+	
+	private void safeAccessAvailabilityAnalysis() {
+		if (availabilityAnalysis.getArrayInstance() == null) {
+			availabilityAnalysis.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityAnalysis"));
+		}
+	}
+	
+	public IBeanList<AvailabilityAnalysis> getAvailabilityAnalysis() {
+		safeAccessAvailabilityAnalysis();
+		return availabilityAnalysis;
 	}
 	
 	
