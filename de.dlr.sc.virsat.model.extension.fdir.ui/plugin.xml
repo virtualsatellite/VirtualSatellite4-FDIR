@@ -1964,7 +1964,6 @@
 		</uiSnippet>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
-	
 <!-- Graphiti Diagrams -->	
 <extension
        point="org.eclipse.graphiti.ui.diagramTypes">
