@@ -859,7 +859,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			0.000374514,
 			0.00079721
 		};
-		final double EXPECTEDMTTF = 0.32798;
+		final double EXPECTEDMTTF = 0.327981535;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -875,7 +875,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			2.84423746211353E-6,
 			1.839713418160933E-5
 		};
-		final double EXPECTEDMTTF = 0.3634866;
+		final double EXPECTEDMTTF = 0.363489266;
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
@@ -891,7 +891,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			3.202047837711682E-4,
 			5.73300404984077E-4
 		};
-		final double EXPECTEDMTTF = 0.3834929;
+		final double EXPECTEDMTTF = 0.3834953749;
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
@@ -970,7 +970,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		};
 		
 		final double EXPECTEDMTTF = 2.9435483;
-		final double EXPECTEDSTEADYSTATE = 0.999968;
+		final double EXPECTEDSTEADYSTATE = 0.0909091135;
 		
 		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
 		

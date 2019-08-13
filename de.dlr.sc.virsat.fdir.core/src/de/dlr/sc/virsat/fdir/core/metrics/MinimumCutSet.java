@@ -25,13 +25,13 @@ public class MinimumCutSet implements IQualitativeMetric {
 
 	public static final MinimumCutSet MINCUTSET = new MinimumCutSet(0);
 	
-	private int maxSize;
+	private long maxSize;
 	
 	/**
 	 * Standard constructor
 	 * @param maxSize the maximum mincut set
 	 */
-	public MinimumCutSet(int maxSize) {
+	public MinimumCutSet(long maxSize) {
 		this.maxSize = maxSize;
 	}
 	
@@ -49,7 +49,7 @@ public class MinimumCutSet implements IQualitativeMetric {
 	 * The maximum mincut set
 	 * @return the maximum mincut set
 	 */
-	public int getMaxSize() {
+	public long getMaxSize() {
 		return maxSize;
 	}
 	

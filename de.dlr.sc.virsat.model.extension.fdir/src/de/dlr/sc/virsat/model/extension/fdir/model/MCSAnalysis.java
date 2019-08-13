@@ -21,6 +21,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
@@ -91,7 +92,7 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		if (fault != null) {
 			SubMonitor subMonitor = null;
 			if (monitor != null) {
-				monitor.setTaskName("Availability Analysis");
+				monitor.setTaskName("MCS Analysis");
 				final int COUNT_TASKS = 3;
 				subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 				subMonitor.setTaskName("Creating Data Model");
@@ -111,13 +112,13 @@ public  class MCSAnalysis extends AMCSAnalysis {
 				subMonitor.setTaskName("Calculating MCS");
 				subMonitor.split(1);
 			}
-			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		
-			long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : -1;
+			
+			long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
+			
+			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new MinimumCutSet(maxMinimumCutSetSize));
 			
 			Set<Set<Object>> minimumCutSets = result.getMinCutSets();
 			List<Set<Object>> sortedMinimumCutSets = minimumCutSets.stream()
-						.filter(cutset -> maxMinimumCutSetSize == -1 ? true : maxMinimumCutSetSize >= cutset.size())
 						.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
 						.collect(Collectors.toList());
 			
