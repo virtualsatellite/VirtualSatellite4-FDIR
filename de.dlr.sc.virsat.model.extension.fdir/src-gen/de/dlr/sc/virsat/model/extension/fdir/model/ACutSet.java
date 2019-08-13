@@ -12,17 +12,25 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyInstanceList;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
+import org.eclipse.core.runtime.CoreException;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
+import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyInstanceList;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.edit.command.SetCommand;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 
 
 // *****************************************************************
@@ -50,6 +58,7 @@ public abstract class ACutSet extends ABeanCategoryAssignment implements IBeanCa
 	}
 	
 	// property name constants
+	public static final String PROPERTY_FAILURE = "failure";
 	public static final String PROPERTY_BASICEVENTS = "basicEvents";
 	
 	
@@ -71,6 +80,54 @@ public abstract class ACutSet extends ABeanCategoryAssignment implements IBeanCa
 		setTypeInstance(categoryAssignement);
 	}
 	
+	
+	// *****************************************************************
+	// * Attribute: failure
+	// *****************************************************************
+	private Fault failure;
+	
+	private void safeAccessFailure() {
+		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
+		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
+		
+		if (ca != null) {
+			if (failure == null) {
+				createFailure(ca);
+			}
+			failure.setTypeInstance(ca);
+		} else {
+			failure = null;
+		}
+	}
+	
+	private void createFailure(CategoryAssignment ca) {
+		try {
+			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
+			failure = (Fault) beanFactory.getInstanceFor(ca);
+		} catch (CoreException e) {
+			
+		}
+	}
+					
+	public Fault getFailure() {
+		safeAccessFailure();
+		return failure;
+	}
+	
+	public Command setFailure(EditingDomain ed, Fault value) {
+		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
+		CategoryAssignment ca = value.getTypeInstance();
+		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+	}
+	
+	public void setFailure(Fault value) {
+		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
+		if (value != null) {
+			propertyInstance.setReference(value.getTypeInstance());
+		} else {
+			propertyInstance.setReference(null);
+		}
+	}
 	
 	// *****************************************************************
 	// * Array Attribute: basicEvents

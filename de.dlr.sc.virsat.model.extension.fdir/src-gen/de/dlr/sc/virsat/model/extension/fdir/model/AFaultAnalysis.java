@@ -14,15 +14,11 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.concept.list.IBeanList;
-import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 
 
 // *****************************************************************
@@ -37,9 +33,9 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
  * 
  * 
  */	
-public abstract class AFMECA extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class AFaultAnalysis extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
 
-	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.FMECA";
+	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.FaultAnalysis";
 	
 	/**
  	* Call this method to get the full qualified name of the underlying category
@@ -50,7 +46,6 @@ public abstract class AFMECA extends ABeanCategoryAssignment implements IBeanCat
 	}
 	
 	// property name constants
-	public static final String PROPERTY_ENTRIES = "entries";
 	
 	
 	
@@ -58,35 +53,19 @@ public abstract class AFMECA extends ABeanCategoryAssignment implements IBeanCat
 	// * Class Constructors
 	// *****************************************************************
 	
-	public AFMECA() {
+	public AFaultAnalysis() {
 	}
 	
-	public AFMECA(Concept concept) {
-		Category categoryFromActiveCategories = ActiveConceptHelper.getCategory(concept, "FMECA");
-		CategoryAssignment categoryAssignement = new CategoryInstantiator().generateInstance(categoryFromActiveCategories, "FMECA");
+	public AFaultAnalysis(Concept concept) {
+		Category categoryFromActiveCategories = ActiveConceptHelper.getCategory(concept, "FaultAnalysis");
+		CategoryAssignment categoryAssignement = new CategoryInstantiator().generateInstance(categoryFromActiveCategories, "FaultAnalysis");
 		setTypeInstance(categoryAssignement);
 	}
 	
-	public AFMECA(CategoryAssignment categoryAssignement) {
+	public AFaultAnalysis(CategoryAssignment categoryAssignement) {
 		setTypeInstance(categoryAssignement);
 	}
 	
-	
-	// *****************************************************************
-	// * Array Attribute: entries
-	// *****************************************************************
-	private IBeanList<FMECAEntry> entries = new TypeSafeComposedPropertyInstanceList<>(FMECAEntry.class);
-	
-	private void safeAccessEntries() {
-		if (entries.getArrayInstance() == null) {
-			entries.setArrayInstance((ArrayInstance) helper.getPropertyInstance("entries"));
-		}
-	}
-	
-	public IBeanList<FMECAEntry> getEntries() {
-		safeAccessEntries();
-		return entries;
-	}
 	
 	
 }

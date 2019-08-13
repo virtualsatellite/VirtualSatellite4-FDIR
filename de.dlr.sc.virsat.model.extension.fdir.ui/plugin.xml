@@ -116,16 +116,16 @@
 		pathToImage="resources/icons/FDIRParameters.gif">
 	</conceptImage>
 	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis"
-		pathToImage="resources/icons/FDIRAnalysis.gif">
-	</conceptImage>
-	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECA"
 		pathToImage="resources/icons/FMECA.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry"
 		pathToImage="resources/icons/FMECAEntry.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FaultAnalysis"
+		pathToImage="resources/icons/FaultAnalysis.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
@@ -1711,6 +1711,16 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultBasicEventsBasicEvent"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisReliabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisReliabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAnalysisAvailabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAnalysisAvailabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEvent"

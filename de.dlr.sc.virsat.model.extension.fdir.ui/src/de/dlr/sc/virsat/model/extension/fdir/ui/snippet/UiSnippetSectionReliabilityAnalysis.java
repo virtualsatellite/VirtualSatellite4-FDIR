@@ -238,7 +238,7 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 		@Override
 		public String getSeries(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
-			Fault fault = relAnalysis.getFault();
+			Fault fault = relAnalysis.getParentCaBeanOfClass(Fault.class);
 			if (fault != null) {
 				return "Reliability of " + fault.getName();
 			} else {

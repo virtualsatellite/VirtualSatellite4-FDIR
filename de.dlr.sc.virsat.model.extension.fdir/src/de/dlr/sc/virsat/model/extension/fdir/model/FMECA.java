@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -187,8 +188,18 @@ public  class FMECA extends AFMECA {
 		
 		entry.getFailureEffects().addAll(entry.getFailure().getFaultTree().getAffectedFaults());
 		
+		Set<String> proposedRecoveryActions = new HashSet<>();
+		proposedRecoveryActions.addAll(entry.getFailure().getFaultTree().getPotentialRecoveryActions());
+		if (entry.getFailureMode() != null) {
+			proposedRecoveryActions.addAll(entry.getFailureMode().getFault().getFaultTree().getPotentialRecoveryActions());
+		}
+		if (entry.getFailureCause() != null) {
+			proposedRecoveryActions.addAll(entry.getFailureCause().getFault().getFaultTree().getPotentialRecoveryActions());
+		}
+		
+		
 		CategoryInstantiator ci = new CategoryInstantiator();
-		for (String proposedRecoveryAction : entry.getFailure().getFaultTree().getPotentialRecoveryActions()) {
+		for (String proposedRecoveryAction : proposedRecoveryActions) {
 			APropertyInstance pi = ci.generateInstance(entry.getProposedRecovery().getArrayInstance());
 			BeanPropertyString newBeanProperty = new BeanPropertyString();
 			newBeanProperty.setTypeInstance((ValuePropertyInstance) pi);

@@ -208,7 +208,7 @@ public class UiSnippetSectionAvailabilityAnalysis extends AUiSnippetSectionAvail
 		@Override
 		public String getSeries(Object object) {
 			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			Fault fault = availAnalysis.getFault();
+			Fault fault = availAnalysis.getParentCaBeanOfClass(Fault.class);
 			if (fault != null) {
 				return "Availability of " + fault.getName();
 			} else {

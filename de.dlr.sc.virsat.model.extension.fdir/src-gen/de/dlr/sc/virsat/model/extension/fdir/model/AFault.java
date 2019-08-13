@@ -15,6 +15,7 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
@@ -62,6 +63,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	public static final String PROPERTY_BASICEVENTS = "basicEvents";
 	public static final String PROPERTY_SEVERITY = "severity";
 	public static final String PROPERTY_FAULTTREE = "faultTree";
+	public static final String PROPERTY_ANALYSIS = "analysis";
 	
 	// Severity enumeration value names
 	public static final String SEVERITY_Catastrophic_NAME = "Catastrophic";
@@ -191,6 +193,22 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	public FaultTree getFaultTree () {
 		safeAccessFaultTree();
 		return faultTree;
+	}
+	
+	// *****************************************************************
+	// * Array Attribute: analysis
+	// *****************************************************************
+	private IBeanList<FaultAnalysis> analysis = new TypeSafeComposedPropertyInstanceList<>(FaultAnalysis.class);
+	
+	private void safeAccessAnalysis() {
+		if (analysis.getArrayInstance() == null) {
+			analysis.setArrayInstance((ArrayInstance) helper.getPropertyInstance("analysis"));
+		}
+	}
+	
+	public IBeanList<FaultAnalysis> getAnalysis() {
+		safeAccessAnalysis();
+		return analysis;
 	}
 	
 	

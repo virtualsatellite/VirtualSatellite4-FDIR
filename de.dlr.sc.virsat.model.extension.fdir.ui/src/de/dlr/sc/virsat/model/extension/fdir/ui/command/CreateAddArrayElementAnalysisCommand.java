@@ -7,21 +7,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
+package de.dlr.sc.virsat.model.extension.fdir.ui.command;
 
-
-// *****************************************************************
-// * Class Declaration
-// *****************************************************************
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
  * 
  * This class is generated once, do your changes here
  * 
- * 
+ * Analysis information for this single fault
  * 
  */
-public class UiSnippetTableCutSet extends AUiSnippetTableCutSet {
-	
+public class CreateAddArrayElementAnalysisCommand extends ACreateAddArrayElementAnalysisCommand {
 }
