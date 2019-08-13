@@ -9,12 +9,15 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * 
+ * Metric representing the covergent steady state probability
  * @author yoge_re
  *
  */
-public class SteadyStateAvailability implements IMetric {
+public class SteadyStateAvailability implements IQuantitativeMetric {
 	public static final SteadyStateAvailability STEADY_STATE_AVAILABILITY = new SteadyStateAvailability();
 
 	/**
@@ -29,4 +32,8 @@ public class SteadyStateAvailability implements IMetric {
 		visitor.visit(this);
 	}
 
+	@Override
+	public List<IMetric> getDerivedFrom() {
+		return Collections.singletonList(PointAvailability.INF_POINTAVAILABILITY);
+	}
 }

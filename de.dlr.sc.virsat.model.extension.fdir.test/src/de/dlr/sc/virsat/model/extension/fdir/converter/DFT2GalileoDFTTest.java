@@ -11,24 +11,20 @@ package de.dlr.sc.virsat.model.extension.fdir.converter;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.concept.unittest.util.test.AConceptTestCase;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElement;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralFactory;
 import de.dlr.sc.virsat.model.dvlm.structural.util.StructuralInstantiator;
-import de.dlr.sc.virsat.model.extension.fdir.Activator;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
  * This class tests the conversion from a fault model in the FDIR concept to 
@@ -37,14 +33,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
  *
  */
 
-public class DFT2GalileoDFTTest extends AConceptTestCase {
-
-	private Concept conceptFdir;
-	
-	@Before
-	public void setup() {
-		conceptFdir = loadConceptFromPlugin(Activator.getPluginId());
-	}
+public class DFT2GalileoDFTTest extends ATestCase {
 	
 	@Test
 	public void testConvert() {
@@ -54,13 +43,11 @@ public class DFT2GalileoDFTTest extends AConceptTestCase {
 		StructuralElementInstance sei = new StructuralInstantiator().generateInstance(se, "FUNCTION");
 		BeanStructuralElementInstance function = new BeanStructuralElementInstance(sei);
 		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(conceptFdir);
-		
-		Fault tle = new Fault(conceptFdir);
+		Fault tle = new Fault(concept);
 		tle.setName("TLE");
 		function.add(tle);
 		
-		BasicEvent be1 = new BasicEvent(conceptFdir);
+		BasicEvent be1 = new BasicEvent(concept);
 		be1.setName("BE1");
 		be1.setHotFailureRate(1);
 		be1.setRepairRate(1);
@@ -68,11 +55,11 @@ public class DFT2GalileoDFTTest extends AConceptTestCase {
 		
 		Gate gate = ftHelper.createGate(tle, FaultTreeNodeType.AND);
 		
-		Fault fault = new Fault(conceptFdir);
+		Fault fault = new Fault(concept);
 		fault.setName("FAULT");
 		function.add(fault);
 		
-		BasicEvent be2 = new BasicEvent(conceptFdir);
+		BasicEvent be2 = new BasicEvent(concept);
 		be2.setName("BE2");
 		be2.setHotFailureRate(2);
 		fault.getBasicEvents().add(be2);

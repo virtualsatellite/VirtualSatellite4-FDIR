@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.AND;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
@@ -337,19 +338,6 @@ public class FaultTreeHelper {
 	 * 
 	 * @param name
 	 *            The name of the basic fault event
-	 * @param failureRate
-	 *            The failure rate of the basic fault event
-	 * @return The fault tree node for the basic fault event
-	 */
-	public Fault createBasicFault(String name, double failureRate) {
-		return createBasicFault(name, failureRate, 0);
-	}
-
-	/**
-	 * Creates a fault tree node for a basic fault event
-	 * 
-	 * @param name
-	 *            The name of the basic fault event
 	 * @param failureRateHot
 	 *            The hot failure rate of the basic fault event
 	 * @param failureRateCold
@@ -367,6 +355,57 @@ public class FaultTreeHelper {
 
 		return fault;
 	}
+	
+	/**
+	 * Copy a fault tree node no matter what type it is
+	 * @param ftnode the original fault tree node
+	 * @param fault the fault that is associated with the fault tree you want to add the node to
+	 * @return the copy
+	 */
+	public FaultTreeNode copyFaultTreeNode(FaultTreeNode ftnode, Fault fault) {
+		if (fault == null) {
+			return copyFault(ftnode.getFault());
+		} else {
+			FaultTreeNodeType type = ftnode.getFaultTreeNodeType();
+			switch (type) {
+				case FAULT:
+				case BASIC_EVENT:
+					return copyFault(ftnode.getFault());
+				default:
+					FaultTreeNode gateCopy = createGate(fault, type);
+					if (type.equals(FaultTreeNodeType.VOTE)) {
+						VOTE gateCopyAsVote = (VOTE) gateCopy;
+						VOTE originalGateAsVote = (VOTE) ftnode;
+						gateCopyAsVote.setVotingThreshold(originalGateAsVote.getVotingThreshold());
+					}
+					gateCopy.setName(ftnode.getName());
+					return gateCopy;
+			}
+		}
+	}
+	
+	
+	/**
+	 * Copy a fault tree node no matter what type it is
+	 * @param fault the connection to the fault tree
+	 * @param from node which we are connecting from
+	 * @param to the node which we are connecting to
+	 * @return the created edge
+	 */
+	public FaultTreeEdge createFaultTreeEdge(Fault fault, FaultTreeNode from, FaultTreeNode to) {
+		FaultTreeNodeType typeTo = to.getFaultTreeNodeType();
+		switch (typeTo) {
+			case FDEP:
+			case RDEP:
+			case PDEP:
+				return connectDep(fault, from, to);
+			case OBSERVER:
+				return connectObserver(fault, from, to);
+			default:
+				return connect(fault, from, to);
+		}
+	}
+
 
 	/**
 	 * Copy the fault
@@ -444,10 +483,43 @@ public class FaultTreeHelper {
 				return new PDEP(concept);
 			case OBSERVER:
 				return new OBSERVER(concept);
+			case DELAY:
+				return new DELAY(concept);
 			default:
 				throw new RuntimeException("Cannot create FaultTree Gate: Unknown type " + type); 
 		}
 	}
+	
+	
+	/**
+	 * Get ALL children of a node (events, spares, dependencies, observations, faults)
+	 * @param node the node you want to find the children of
+	 * @param ft the fault tree
+	 * @return the list of children
+	 */
+	public List<FaultTreeNode> getAllChildren(FaultTreeNode node, FaultTree ft) {
+		List<FaultTreeNode> children = new ArrayList<FaultTreeNode>();
+		/* get children, spares, and dependencies and compile one big list */
+			
+		List<FaultTreeEdge> allEdges = new ArrayList<FaultTreeEdge>(ft.getPropagations());
+		allEdges.addAll(ft.getDeps());
+		allEdges.addAll(ft.getSpares());
+		allEdges.addAll(ft.getObservations());
+		
+		for (FaultTreeEdge edge : allEdges) {
+			if (edge.getTo().equals(node)) {
+				children.add(edge.getFrom());
+			}
+		}
+		
+		if (node instanceof Fault) {
+			children.addAll(((Fault) node).getBasicEvents());
+		}
+		
+		return children;
+	}
+	
+	
 
 	/**
 	 * Get the children of a node
@@ -535,6 +607,17 @@ public class FaultTreeHelper {
 			}
 		}
 		return children;
+	}
+	
+	/**
+	 * Get the dependencies of a node
+	 * 
+	 * @param node
+	 *            the node want to know the dependencies of
+	 * @return a list of dependencies
+	 */
+	public List<FaultTreeNode> getDeps(FaultTreeNode node) {
+		return getDeps(node, Collections.singleton(node.getFault().getFaultTree()));
 	}
 	
 	/**
@@ -650,7 +733,7 @@ public class FaultTreeHelper {
 	 * Gets all the propagations in the fault tree of the passed fault
 	 * including all propagations in sub trees
 	 * @param fault the root fault of a fault tree
-	 * @return all propagatiosn in the entire fault tree
+	 * @return all propagations in the entire fault tree
 	 */
 	public List<FaultTreeEdge> getAllPropagations(Fault fault) {
 		List<FaultTreeNode> allNodes = getAllNodes(fault);
@@ -684,6 +767,17 @@ public class FaultTreeHelper {
 		});
 		
 		return allSpares;
+	}
+	
+	/**
+	 * get all spare NODES in the fault tree
+	 * @param fault the fault containing the fault tree
+	 * @return a list of all the spare nodes in the tree
+	 */
+	public List<FaultTreeNode> getAllSpareNodes(Fault fault) {
+		List<FaultTreeNode> spareNodes = new ArrayList<FaultTreeNode>();
+		this.getAllSpares(fault).stream().forEach(edge -> spareNodes.add(edge.getFrom()));
+		return spareNodes;
 	}
 	
 	/**
@@ -750,6 +844,20 @@ public class FaultTreeHelper {
 	public boolean hasEquivalentRecoveryActions(List<RecoveryAction> recoveryActions1, List<RecoveryAction> recoveryActions2) {
 		return recoveryActions1.stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining())
 				.equals(recoveryActions2.stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining()));
+	}
+	
+	/**
+	 * Remove an edge from the fault tree
+	 * @param edge the edge
+	 * @param ft the fault tree
+	 * @return true if edge removed, false otherwise
+	 */
+	public boolean removeEdgeFromFaultTree(FaultTreeEdge edge, FaultTree ft) {
+		if (ft.getPropagations().contains(edge)) {
+			ft.getPropagations().remove(edge);
+			return true;
+		}
+		return false;
 	}
 	
 	/**

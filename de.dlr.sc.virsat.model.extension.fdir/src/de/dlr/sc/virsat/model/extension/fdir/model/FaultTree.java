@@ -10,12 +10,15 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
@@ -96,6 +99,19 @@ public  class FaultTree extends AFaultTree {
 	}
 	
 	/**
+	 * Gets all failure modes for the root event.
+	 * An event is a failure mode iff 
+	 * - its a direct child fault
+	 * - its a basic event attached to the root event
+	 * @return all failure modes for the root event
+	 */
+	public Set<FaultEvent> getFailureModes() {
+		Set<FaultEvent> failureModes = new HashSet<>(getChildFaults());
+		failureModes.addAll(getRoot().getBasicEvents());
+		return failureModes;
+	}
+	
+	/**
 	 * Gets all child spares of this fault tree
 	 * @return the set of child spares
 	 */
@@ -118,7 +134,13 @@ public  class FaultTree extends AFaultTree {
 	public Set<Fault> getAffectedFaults() {
 		Set<Fault> affectedFaults = new HashSet<>();
 		Fault root = getRoot();
-		ResourceSet rs = getTypeInstance().eResource().getResourceSet();
+		Resource resource = getTypeInstance().eResource();
+		
+		if (resource == null) {
+			return Collections.emptySet();
+		}
+		
+		ResourceSet rs = resource.getResourceSet();
 		EcoreUtil.UsageCrossReferencer.find(root.getTypeInstance(), rs).forEach(setting -> {
 			EObject eObject = setting.getEObject();
 			if (eObject instanceof ReferencePropertyInstance && eObject.eContainer() instanceof CategoryAssignment) {
@@ -144,7 +166,13 @@ public  class FaultTree extends AFaultTree {
 	public List<String> getPotentialRecoveryActions() {
 		List<String> potentialRecoveryActions = new ArrayList<>();
 		
-		for (BasicEvent be : getRoot().getBasicEvents()) {
+		List<BasicEvent> basicEvents = getChildFaults().stream()
+				.flatMap(fault -> fault.getBasicEvents().stream())
+				.collect(Collectors.toList());
+		
+		basicEvents.addAll(getRoot().getBasicEvents());
+		
+		for (BasicEvent be : basicEvents) {
 			String repairAction = be.getRepairAction();
 			if (repairAction != null && !repairAction.equals("")) {
 				potentialRecoveryActions.add(repairAction);
@@ -154,7 +182,7 @@ public  class FaultTree extends AFaultTree {
 		for (FaultTreeEdge spareEdge : getSpares()) {
 			FaultTreeNode from = spareEdge.getFrom();
 			if (from != null) {
-				String recoveryAction = "Switch to redundancy " + (from.getParent() != null ? from.getParent().getName() + "." : "") + from.getName();
+				String recoveryAction = "Switch to " + (from.getParent() != null ? from.getParent().getName() + "." : "") + from.getName();
 				potentialRecoveryActions.add(recoveryAction);
 			}
 		}

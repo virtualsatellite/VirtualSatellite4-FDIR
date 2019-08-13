@@ -27,10 +27,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ComposedPropertyInstance;
 
@@ -62,44 +60,19 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	// property name constants
 	public static final String PROPERTY_DETAIL = "detail";
 	public static final String PROPERTY_BASICEVENTS = "basicEvents";
-	public static final String PROPERTY_MEANTIMETOFAILURE = "meanTimeToFailure";
-	public static final String PROPERTY_SEVERITYLEVEL = "severityLevel";
-	public static final String PROPERTY_PROBABILITYLEVEL = "probabilityLevel";
-	public static final String PROPERTY_DETECTIONLEVEL = "detectionLevel";
-	public static final String PROPERTY_CRITICALITYLEVEL = "criticalityLevel";
-	public static final String PROPERTY_FAILURERATE = "failureRate";
+	public static final String PROPERTY_SEVERITY = "severity";
 	public static final String PROPERTY_FAULTTREE = "faultTree";
 	
-	// SeverityLevel enumeration value names
-	public static final String SEVERITYLEVEL_Catastrophic_NAME = "Catastrophic";
-	public static final String SEVERITYLEVEL_Critical_NAME = "Critical";
-	public static final String SEVERITYLEVEL_Major_NAME = "Major";
-	public static final String SEVERITYLEVEL_Minor_NAME = "Minor";
-	// SeverityLevel enumeration values
-	public static final String SEVERITYLEVEL_Catastrophic_VALUE = "4";
-	public static final String SEVERITYLEVEL_Critical_VALUE = "3";
-	public static final String SEVERITYLEVEL_Major_VALUE = "2";
-	public static final String SEVERITYLEVEL_Minor_VALUE = "1";
-	// ProbabilityLevel enumeration value names
-	public static final String PROBABILITYLEVEL_ExtremelyRemote_NAME = "ExtremelyRemote";
-	public static final String PROBABILITYLEVEL_Remote_NAME = "Remote";
-	public static final String PROBABILITYLEVEL_Occasional_NAME = "Occasional";
-	public static final String PROBABILITYLEVEL_Probable_NAME = "Probable";
-	// ProbabilityLevel enumeration values
-	public static final String PROBABILITYLEVEL_ExtremelyRemote_VALUE = "1";
-	public static final String PROBABILITYLEVEL_Remote_VALUE = "2";
-	public static final String PROBABILITYLEVEL_Occasional_VALUE = "3";
-	public static final String PROBABILITYLEVEL_Probable_VALUE = "4";
-	// DetectionLevel enumeration value names
-	public static final String DETECTIONLEVEL_ExtremelyUnlikely_NAME = "ExtremelyUnlikely";
-	public static final String DETECTIONLEVEL_Unlikely_NAME = "Unlikely";
-	public static final String DETECTIONLEVEL_Likely_NAME = "Likely";
-	public static final String DETECTIONLEVEL_VeryLikely_NAME = "VeryLikely";
-	// DetectionLevel enumeration values
-	public static final String DETECTIONLEVEL_ExtremelyUnlikely_VALUE = "4";
-	public static final String DETECTIONLEVEL_Unlikely_VALUE = "3";
-	public static final String DETECTIONLEVEL_Likely_VALUE = "2";
-	public static final String DETECTIONLEVEL_VeryLikely_VALUE = "1";
+	// Severity enumeration value names
+	public static final String SEVERITY_Catastrophic_NAME = "Catastrophic";
+	public static final String SEVERITY_Critical_NAME = "Critical";
+	public static final String SEVERITY_Major_NAME = "Major";
+	public static final String SEVERITY_Minor_NAME = "Minor";
+	// Severity enumeration values
+	public static final String SEVERITY_Catastrophic_VALUE = "4";
+	public static final String SEVERITY_Critical_VALUE = "3";
+	public static final String SEVERITY_Major_VALUE = "2";
+	public static final String SEVERITY_Minor_VALUE = "1";
 	
 	
 	// *****************************************************************
@@ -168,219 +141,39 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	}
 	
 	// *****************************************************************
-	// * Attribute: meanTimeToFailure
+	// * Attribute: severity
 	// *****************************************************************
-	private BeanPropertyFloat meanTimeToFailure = new BeanPropertyFloat();
+	private BeanPropertyEnum severity = new BeanPropertyEnum();
 	
-	private void safeAccessMeanTimeToFailure() {
-		if (meanTimeToFailure.getTypeInstance() == null) {
-			meanTimeToFailure.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("meanTimeToFailure"));
+	private void safeAccessSeverity() {
+		if (severity.getTypeInstance() == null) {
+			severity.setTypeInstance((EnumUnitPropertyInstance) helper.getPropertyInstance("severity"));
 		}
 	}
 	
-	public Command setMeanTimeToFailure(EditingDomain ed, double value) {
-		safeAccessMeanTimeToFailure();
-		return this.meanTimeToFailure.setValue(ed, value);
+	public Command setSeverity(EditingDomain ed, String value) {
+		safeAccessSeverity();
+		return this.severity.setValue(ed, value);
 	}
 	
-	public void setMeanTimeToFailure(double value) {
-		safeAccessMeanTimeToFailure();
-		this.meanTimeToFailure.setValue(value);
+	public void setSeverity(String value) {
+		safeAccessSeverity();
+		this.severity.setValue(value);
 	}
 	
-	public double getMeanTimeToFailure() {
-		safeAccessMeanTimeToFailure();
-		return meanTimeToFailure.getValue();
+	public String getSeverity() {
+		safeAccessSeverity();
+		return severity.getValue();
 	}
 	
-	public boolean isSetMeanTimeToFailure() {
-		safeAccessMeanTimeToFailure();
-		return meanTimeToFailure.isSet();
+	public double getSeverityEnum() {
+		safeAccessSeverity();
+		return severity.getEnumValue();
 	}
 	
-	public BeanPropertyFloat getMeanTimeToFailureBean() {
-		safeAccessMeanTimeToFailure();
-		return meanTimeToFailure;
-	}
-	
-	// *****************************************************************
-	// * Attribute: severityLevel
-	// *****************************************************************
-	private BeanPropertyEnum severityLevel = new BeanPropertyEnum();
-	
-	private void safeAccessSeverityLevel() {
-		if (severityLevel.getTypeInstance() == null) {
-			severityLevel.setTypeInstance((EnumUnitPropertyInstance) helper.getPropertyInstance("severityLevel"));
-		}
-	}
-	
-	public Command setSeverityLevel(EditingDomain ed, String value) {
-		safeAccessSeverityLevel();
-		return this.severityLevel.setValue(ed, value);
-	}
-	
-	public void setSeverityLevel(String value) {
-		safeAccessSeverityLevel();
-		this.severityLevel.setValue(value);
-	}
-	
-	public String getSeverityLevel() {
-		safeAccessSeverityLevel();
-		return severityLevel.getValue();
-	}
-	
-	public double getSeverityLevelEnum() {
-		safeAccessSeverityLevel();
-		return severityLevel.getEnumValue();
-	}
-	
-	public BeanPropertyEnum getSeverityLevelBean() {
-		safeAccessSeverityLevel();
-		return severityLevel;
-	}
-	
-	// *****************************************************************
-	// * Attribute: probabilityLevel
-	// *****************************************************************
-	private BeanPropertyEnum probabilityLevel = new BeanPropertyEnum();
-	
-	private void safeAccessProbabilityLevel() {
-		if (probabilityLevel.getTypeInstance() == null) {
-			probabilityLevel.setTypeInstance((EnumUnitPropertyInstance) helper.getPropertyInstance("probabilityLevel"));
-		}
-	}
-	
-	public Command setProbabilityLevel(EditingDomain ed, String value) {
-		safeAccessProbabilityLevel();
-		return this.probabilityLevel.setValue(ed, value);
-	}
-	
-	public void setProbabilityLevel(String value) {
-		safeAccessProbabilityLevel();
-		this.probabilityLevel.setValue(value);
-	}
-	
-	public String getProbabilityLevel() {
-		safeAccessProbabilityLevel();
-		return probabilityLevel.getValue();
-	}
-	
-	public double getProbabilityLevelEnum() {
-		safeAccessProbabilityLevel();
-		return probabilityLevel.getEnumValue();
-	}
-	
-	public BeanPropertyEnum getProbabilityLevelBean() {
-		safeAccessProbabilityLevel();
-		return probabilityLevel;
-	}
-	
-	// *****************************************************************
-	// * Attribute: detectionLevel
-	// *****************************************************************
-	private BeanPropertyEnum detectionLevel = new BeanPropertyEnum();
-	
-	private void safeAccessDetectionLevel() {
-		if (detectionLevel.getTypeInstance() == null) {
-			detectionLevel.setTypeInstance((EnumUnitPropertyInstance) helper.getPropertyInstance("detectionLevel"));
-		}
-	}
-	
-	public Command setDetectionLevel(EditingDomain ed, String value) {
-		safeAccessDetectionLevel();
-		return this.detectionLevel.setValue(ed, value);
-	}
-	
-	public void setDetectionLevel(String value) {
-		safeAccessDetectionLevel();
-		this.detectionLevel.setValue(value);
-	}
-	
-	public String getDetectionLevel() {
-		safeAccessDetectionLevel();
-		return detectionLevel.getValue();
-	}
-	
-	public double getDetectionLevelEnum() {
-		safeAccessDetectionLevel();
-		return detectionLevel.getEnumValue();
-	}
-	
-	public BeanPropertyEnum getDetectionLevelBean() {
-		safeAccessDetectionLevel();
-		return detectionLevel;
-	}
-	
-	// *****************************************************************
-	// * Attribute: criticalityLevel
-	// *****************************************************************
-	private BeanPropertyFloat criticalityLevel = new BeanPropertyFloat();
-	
-	private void safeAccessCriticalityLevel() {
-		if (criticalityLevel.getTypeInstance() == null) {
-			criticalityLevel.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("criticalityLevel"));
-		}
-	}
-	
-	public Command setCriticalityLevel(EditingDomain ed, double value) {
-		safeAccessCriticalityLevel();
-		return this.criticalityLevel.setValue(ed, value);
-	}
-	
-	public void setCriticalityLevel(double value) {
-		safeAccessCriticalityLevel();
-		this.criticalityLevel.setValue(value);
-	}
-	
-	public double getCriticalityLevel() {
-		safeAccessCriticalityLevel();
-		return criticalityLevel.getValue();
-	}
-	
-	public boolean isSetCriticalityLevel() {
-		safeAccessCriticalityLevel();
-		return criticalityLevel.isSet();
-	}
-	
-	public BeanPropertyFloat getCriticalityLevelBean() {
-		safeAccessCriticalityLevel();
-		return criticalityLevel;
-	}
-	
-	// *****************************************************************
-	// * Attribute: failureRate
-	// *****************************************************************
-	private BeanPropertyFloat failureRate = new BeanPropertyFloat();
-	
-	private void safeAccessFailureRate() {
-		if (failureRate.getTypeInstance() == null) {
-			failureRate.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("failureRate"));
-		}
-	}
-	
-	public Command setFailureRate(EditingDomain ed, double value) {
-		safeAccessFailureRate();
-		return this.failureRate.setValue(ed, value);
-	}
-	
-	public void setFailureRate(double value) {
-		safeAccessFailureRate();
-		this.failureRate.setValue(value);
-	}
-	
-	public double getFailureRate() {
-		safeAccessFailureRate();
-		return failureRate.getValue();
-	}
-	
-	public boolean isSetFailureRate() {
-		safeAccessFailureRate();
-		return failureRate.isSet();
-	}
-	
-	public BeanPropertyFloat getFailureRateBean() {
-		safeAccessFailureRate();
-		return failureRate;
+	public BeanPropertyEnum getSeverityBean() {
+		safeAccessSeverity();
+		return severity;
 	}
 	
 	// *****************************************************************

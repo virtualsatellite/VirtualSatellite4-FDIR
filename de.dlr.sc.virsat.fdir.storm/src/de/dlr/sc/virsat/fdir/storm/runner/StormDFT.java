@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -164,6 +165,12 @@ public class StormDFT implements IStormProgram<Double> {
 
 		@Override
 		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void visit(MinimumCutSet minimumCutSet) {
 			// TODO Auto-generated method stub
 			
 		}

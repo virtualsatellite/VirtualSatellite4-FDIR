@@ -83,10 +83,20 @@ public class StormRunner<S> {
 	 * @throws IOException 
 	 */
 	private List<S> runStormLocally(String[] commandWithArgs) throws IOException {
-		Process process = Runtime.getRuntime().exec(commandWithArgs);
-		InputStream resultStream = process.getInputStream();
+		InputStream resultStream = executeCommand(commandWithArgs);
 		List<S> results = stormProgram.extractResult(readResult(resultStream));
 		return results;
+	}
+	
+	/**
+	 * Overwriteable method for simplifying testing
+	 * @param commandWithArgs the command to execute
+	 * @return the runtime to execute a command line command
+	 * @throws IOException 
+	 */
+	protected InputStream executeCommand(String[] commandWithArgs) throws IOException {
+		Process process = Runtime.getRuntime().exec(commandWithArgs);
+		return process.getInputStream();
 	}
 
 	/**

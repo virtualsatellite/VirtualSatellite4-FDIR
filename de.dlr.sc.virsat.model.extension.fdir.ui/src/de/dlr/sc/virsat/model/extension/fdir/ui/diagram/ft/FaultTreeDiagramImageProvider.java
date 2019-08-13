@@ -18,6 +18,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageAND;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageBasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageDELAY;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageFDEP;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageFault;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageFaultTreeEdge;
@@ -57,6 +58,7 @@ public class FaultTreeDiagramImageProvider extends AbstractImageProvider {
 		addImageFilePath(FaultTreeNodeType.RDEP.toString(), ConceptImageRDEP.PATHTOIMAGE);
 		addImageFilePath(FaultTreeNodeType.PDEP.toString(), ConceptImagePDEP.PATHTOIMAGE);
 		addImageFilePath(FaultTreeNodeType.OBSERVER.toString(), ConceptImageOBSERVER.PATHTOIMAGE);
+		addImageFilePath(FaultTreeNodeType.DELAY.toString(), ConceptImageDELAY.PATHTOIMAGE);
 		
 		addImageFilePath(BasicEvent.FULL_QUALIFIED_CATEGORY_NAME, ConceptImageBasicEvent.PATHTOIMAGE);
 		addImageFilePath(FaultTreeEdge.FULL_QUALIFIED_CATEGORY_NAME, ConceptImageFaultTreeEdge.PATHTOIMAGE);

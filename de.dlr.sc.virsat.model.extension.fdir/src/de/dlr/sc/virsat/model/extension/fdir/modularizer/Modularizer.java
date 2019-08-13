@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,10 +21,9 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 
 
@@ -40,8 +40,10 @@ public class Modularizer implements IModularizer {
 	
 	/* a reference to the entire fault tree */
 	private FaultTree faultTree;
+	private FaultTreeHolder ftHolder;
 	
 	private int maxDepth = 0;
+	private boolean beOptimizationOn = true;
 	
 	// CONSTRUCTORS
 	
@@ -60,10 +62,7 @@ public class Modularizer implements IModularizer {
 		
 		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(comparator);
 		this.table = new HashMap<FaultTreeNode, FaultTreeNodePlus>();
-		this.modules = new HashSet<Module>();
 	}
-	
-	
 	
 	/* ***********************************************************************
 	 * *********** PUBLIC METHODS ********************************************
@@ -75,6 +74,7 @@ public class Modularizer implements IModularizer {
 	 * @return a set of modules
 	 */
 	public Set<Module> getModules(FaultTree ft) {
+		this.modules = new HashSet<Module>();
 		this.faultTree = ft;
 		this.modularize();
 		return this.modules;
@@ -92,6 +92,15 @@ public class Modularizer implements IModularizer {
 		return this.maxDepth;
 	}
 	
+	/**
+	 * Allows the user to choose if they would like to start searching for modules at the lowest level (basic events)
+	 * or past basic events.
+	 * @param beOptimizationOn true for optimization turned on, false for optimization turned off.
+	 */
+	public void setBEOptimization(boolean beOptimizationOn) {
+		this.beOptimizationOn = beOptimizationOn;
+	}
+	
 	
 	/* ***********************************************************************
 	 * *********** PRIVATE METHODS ********************************************
@@ -101,11 +110,15 @@ public class Modularizer implements IModularizer {
 	 * Number the fault tree and save a copy of the tree as our internal TreeSet.
 	 */
 	void countTree() {
+		table.clear();
+		nodePlusTree.clear();
 		
 		if (this.faultTree == null) {
 			this.maxDepth = -1;
 			return;
 		}
+		
+		this.ftHolder = new FaultTreeHolder(faultTree.getRoot());
 		
 		FaultTreeNodePlus root = new FaultTreeNodePlus(this.faultTree.getRoot(), 0);
 		
@@ -117,25 +130,38 @@ public class Modularizer implements IModularizer {
 		
 		while (!dfsStack.isEmpty()) {
 			FaultTreeNodePlus curr = dfsStack.peek();
-		
+			
 			curr.visit(++count);
 			
 			this.addNodeToInternalTree(curr);
 
-			List<FaultTreeNodePlus> children = this.getChildrenInReverseOrder(curr);
+			List<FaultTreeNodePlus> children = curr.getChildren().size() == 0 ? this.getChildrenInReverseOrder(curr) : curr.getChildren();
+			
 			int numChildrenAddedToStack = 0;
 			
 			for (FaultTreeNodePlus child : children) {
-				if (!child.visitedBeforeFromNode(curr) && !child.isHarvested()) {
-					
+				if (!child.isHarvested() && !child.visitedBeforeFromNode(curr)) {
+					curr.addChild(child);
 					child.addVisitedFrom(curr);
 					dfsStack.push(child);
 					numChildrenAddedToStack++;
+					
+					if (curr.isPriority() || curr.hasPriorityAbove()) {
+						child.setHasPriorityAbove();
+					}
+					
+					if (curr.isNondeterministic() || curr.hasSpareAbove()) {
+						child.setHasSpareAbove();
+					}
 				}
 			}
 			
 			if (numChildrenAddedToStack == 0) {
-				dfsStack.pop();
+				FaultTreeNodePlus nodePopped = dfsStack.pop();
+				
+				if (nodePopped.hasSpareBelow() || nodePopped.isNondeterministic()) {
+					nodePopped.getSetFrom().stream().forEach(n -> n.setHasSpareBelow());
+				}
 			}
 		}
 	}
@@ -145,24 +171,28 @@ public class Modularizer implements IModularizer {
 	 */
 	private void modularize() {
 		this.countTree();
-		/* start looking for modules at maxDepth - 2 because deepest 2 levels are just faults and their basic events */
-		for (int i = this.maxDepth - 2; i >= 0; i--) {
+		/*	DEFAULT optimization
+		 *  start looking for modules at maxDepth - 2 because deepest 2 levels are just faults and their basic events */
+		int startingDepth = this.beOptimizationOn ? this.maxDepth - 2 : this.maxDepth - 1;
+		
+		for (int i = startingDepth; i >= 0; i--) {
 			int currDepth = i;
 			
 			for (FaultTreeNodePlus currNode : this.nodePlusTree) {				
 				/* detected a potential module */
-				if ((currNode.getFirstVisit() + 2 < currNode.getLastVisit())
-						&& (currNode.getDepth() == currDepth)
-						&& !currNode.isHarvested()) {
-					Module module = this.harvestModule(currNode);
+				boolean moduleDetected = (currNode.getDepth() == currDepth) && !currNode.isHarvested();
+				moduleDetected = moduleDetected 
+						&& (this.beOptimizationOn ? (currNode.getFirstVisit() + 2 < currNode.getLastVisit())
+												: (currNode.getFirstVisit() + 1 < currNode.getLastVisit()));
+				if (moduleDetected) {
+					Module module = this.harvestModule(currNode.getFaultTreeNode());
 					
 					if (module != null) {
 						this.modules.add(module);
-						module.harvestFromFaultTree();
 					}
 				}
-			} 
-		} 
+			}
+		}
 	}
 	
 	
@@ -194,16 +224,9 @@ public class Modularizer implements IModularizer {
 	 * @return the list of children
 	 */
 	private List<FaultTreeNodePlus> getChildren(FaultTreeNodePlus node) {
-		FaultTreeHelper fthelper = new FaultTreeHelper(node.getFaultTreeNode().getConcept());
-		
-		/* get children, spares, and dependencies and compile one big list */
-		List<FaultTreeNode> children = fthelper.getChildren(node.getFaultTreeNode(), getTreeAsSet(this.faultTree));
-		children.addAll(fthelper.getSpares(node.getFaultTreeNode(), getTreeAsSet(this.faultTree)));
-		children.addAll(fthelper.getDeps(node.getFaultTreeNode(), getTreeAsSet(this.faultTree)));
-		
-		if (node.getFaultTreeNode() instanceof Fault) {
-			children.addAll(((Fault) node.getFaultTreeNode()).getBasicEvents()); 
-		}
+		List<FaultTreeNode> children = new ArrayList<>(ftHolder.getMapNodeToSubNodes().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
+		children.addAll(ftHolder.getMapFaultToBasicEvents().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
+		children.addAll(ftHolder.getMapNodeToDEPTriggers().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
 		
 		return children.stream()
 					.map(ftNode -> getOrCreateFaultTreeNodePlus(ftNode, node.getDepth() + 1))
@@ -248,102 +271,55 @@ public class Modularizer implements IModularizer {
 		return this.table;
 	}
 	
-	/**
-	 * Get a fault tree as a Set<FaultTree>. Needed for ftHelper.getChildren and .getSpares
-	 * @param ft the fault tree
-	 * @return a set containing the fault tree
-	 */
-	private static Set<FaultTree> getTreeAsSet(FaultTree ft) {
-		return Collections.singleton(ft);
-	}
-	
 	/** 
-	 * Determine if a node is the root of a module
+	 * Collect a suspected module
 	 * @param root the root node of suspected module
-	 * @return false if not a module, true otherwise
-	 */
-	private boolean isModule(FaultTreeNodePlus root) {
-		if (root.determineIfHasPriorityAbove()) {
-			return false;
-		} else if (root.determineIfIsDEPDescendant()) {
-			return false;
-		} else if (root.isDependency() || root.determineIfIsDEPDescendant()) {
-			return false;
-		}
-		
-		List<FaultTreeNodePlus> children = this.getChildren(root);
-		
-		for (FaultTreeNodePlus child : children) {
-			if (!child.isHarvested()) {
-				if (!child.isWithinBoundsOf(root) || !this.allChildrenWithinBounds(child, root)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * Determine if all child nodes are within bounds of the root
-	 * @param child a child node in the original suspected module
-	 * @param root the original module root
-	 * @return false if not within bounds, true otherwise
-	 */
-	private boolean allChildrenWithinBounds(FaultTreeNodePlus child, FaultTreeNodePlus root) {
-		List<FaultTreeNodePlus> children = this.getChildren(child);
-		
-		for (FaultTreeNodePlus childOfChild : children) {
-			if (!childOfChild.isHarvested()) {
-				if (!childOfChild.isWithinBoundsOf(root) || !this.allChildrenWithinBounds(childOfChild, root)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	
-	/**
-	 * Collect the module ONLY AFTER it has been determined that it is a module
-	 * @param root the root of the module
-	 * @return the module
+	 * @return module containing modules nodes. Null if not a module.
 	 */
 	private Module collectModule(FaultTreeNodePlus root) {
 		Module module = new Module();
+
+		if (root == null
+				|| (root.isNondeterministic() && root.hasPriorityAbove())
+				|| root.hasSpareAbove()
+				|| (root.hasSpareBelow() && root.hasPriorityAbove())) {
+			return null;
+		}
 		
-		for (FaultTreeNodePlus curr : this.nodePlusTree) {
-			if ((curr.getFirstVisit() >= root.getFirstVisit())
-					&& (curr.getLastVisit() <= root.getLastVisit())
-					&& !curr.isHarvested()) {
-				module.addNode(curr);
+		Stack<FaultTreeNodePlus> stack = new Stack<FaultTreeNodePlus>();
+		stack.push(root);
+		
+		while (!stack.isEmpty()) {
+			FaultTreeNodePlus curr = stack.pop();
+			if (module.addNode(curr)) {
+				List<FaultTreeNodePlus> children = curr.getChildren();
+				
+				for (FaultTreeNodePlus child : children) {
+					if (!child.isHarvested()) {
+						if (!child.isWithinBoundsOf(root)) {
+							return null;
+						}
+						stack.push(child);
+					}
+				}
 			}
 		}
 		return module;
 	}
 
 	/**
-	 * Collect the module. Automatically checks if the module is a module. Returns null if not a module.
-	 * @param root the root of the module
-	 * @return the module
-	 */
-	private Module harvestModule(FaultTreeNodePlus root) {
-		if ((root != null) && isModule(root)) {
-			Module mod = collectModule(root);
-			mod.harvestFromFaultTree();
-			return mod;
-		}
-		return null;
-	}
-	
-	
-	/**
-	 * Collect the module. Automatically checks if the module is a module. Returns null if not a module.
-	 * Uses FaultTreeNode (for testing only)
+	 * Collect the module. Returns null if not a module.
 	 * @param root the root of the module
 	 * @return the module
 	 */
 	Module harvestModule(FaultTreeNode root) {
 		FaultTreeNodePlus rootPlus = this.table.get(root);
-		return harvestModule(rootPlus);
+		
+		Module mod = collectModule(rootPlus);
+		if (mod != null) {
+			mod.harvestFromFaultTree();
+			mod.setTable(table);
+		}
+		return mod;
 	}
 }

@@ -38,6 +38,7 @@ public class RecoveryAutomatonHolder {
 	private Map<State, List<Transition>> mapStateToIncomingTransitions;
 	private Map<Transition, Set<FaultTreeNode>> mapTransitionToGuards;
 	private Map<Transition, String> mapTransitionToActionLabels;
+	private Map<Transition, List<RecoveryAction>> mapTransitionToRecoveryActions;
 	private Map<Transition, State> mapTransitionToTo;
 	private Map<State, Map<Set<FaultTreeNode>, String>> mapStateToGuardProfile;
 	private List<Transition> transitions;
@@ -94,6 +95,24 @@ public class RecoveryAutomatonHolder {
 			}
 		}
 		return mapTransitionToActionLabels;
+	}
+	
+	/**
+	 * Gets a map from a transition to its action labels
+	 * @return a mapping from a transition to its action labels
+	 */
+	public Map<Transition, List<RecoveryAction>> getMapTransitionToRecoveryActions() {
+		if (mapTransitionToRecoveryActions == null) {
+			mapTransitionToRecoveryActions = new HashMap<>();
+			for (Transition transition : getTransitions()) {
+				List<RecoveryAction> recoveryActions = new ArrayList<>();
+				for (RecoveryAction recoveryAction : transition.getRecoveryActions()) {
+					recoveryActions.add(recoveryAction);
+				}
+				mapTransitionToRecoveryActions.put(transition, recoveryActions);
+			}
+		}
+		return mapTransitionToRecoveryActions;
 	}
 	
 	/**

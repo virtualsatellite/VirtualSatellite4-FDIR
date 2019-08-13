@@ -11,16 +11,14 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.TimeEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.TimeEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -28,6 +26,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 /**
  * Wrapper turning a recovery automaton into an actual recovery strategy.
@@ -37,17 +36,20 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 public class RecoveryStrategy {
 	
-	private List<RecoveryAction> recoveryAction;
-	private RecoveryAutomaton ra;
+	private List<RecoveryAction> recoveryActions;
 	private State currentState;
-	private Map<State, Set<Transition>> mapStateToOutTransitions;
+	private RecoveryAutomatonHolder raHolder;
 	
 	/**
-	 * Default constructor.
+	 * Standard constructor.
+	 * @param ras base recovery strategy
+	 * @param currentState the state of the strategy
+	 * @param recoveryActions the label of the recovery actions that should be taken
 	 */
-	
-	private RecoveryStrategy() {
-		
+	private RecoveryStrategy(RecoveryStrategy ras, State currentState, List<RecoveryAction> recoveryActions) {
+		this.raHolder = ras.raHolder;
+		this.currentState = currentState;
+		this.recoveryActions = recoveryActions;
 	}
 	
 	/**
@@ -56,20 +58,8 @@ public class RecoveryStrategy {
 	 */
 	
 	public RecoveryStrategy(RecoveryAutomaton ra) {
-		this.ra = ra;
-		
-		mapStateToOutTransitions = new HashMap<>();
-		
-		for (State state : ra.getStates()) {
-			mapStateToOutTransitions.put(state, new HashSet<>());
-		}
-		
-		for (Transition transition : ra.getTransitions()) {
-			mapStateToOutTransitions.get(transition.getFrom()).add(transition);
-		}
-		
+		raHolder = new RecoveryAutomatonHolder(ra);
 		currentState = ra.getInitial();
-		recoveryAction = new ArrayList<>();
 	}
 	
 	/**
@@ -91,25 +81,24 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy after reading the fault
 	 */
 	public RecoveryStrategy onFaultsOccured(Collection<FaultTreeNode> faults) {
-		if (mapStateToOutTransitions.get(currentState) != null) {
+		if (raHolder.getMapStateToOutgoingTransitions().get(currentState) != null) {
 			Set<String> faultUUIDs = faults.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
-			for (Transition transition : mapStateToOutTransitions.get(currentState)) {
+			for (Transition transition : raHolder.getMapStateToOutgoingTransitions().get(currentState)) {
 				if (transition instanceof FaultEventTransition) {
 					Set<String> guardUUIDs = ((FaultEventTransition) transition).getGuards()
 							.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
 					if (guardUUIDs.equals(faultUUIDs)) {
-						RecoveryStrategy ras = new RecoveryStrategy();
-						ras.ra = ra;
-						ras.currentState = transition.getTo();
-						ras.recoveryAction = transition.getRecoveryActions();
-						ras.mapStateToOutTransitions = mapStateToOutTransitions;
+						RecoveryStrategy ras = new RecoveryStrategy(this,
+								raHolder.getMapTransitionToTo().get(transition), 
+								raHolder.getMapTransitionToRecoveryActions().get(transition));
 						return ras;
 					}
 				}
 			}
 		}
 		
-		return this;
+		RecoveryStrategy ras = new RecoveryStrategy(this, currentState, null);
+		return ras;
 	}
 
 	/**
@@ -118,23 +107,22 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy after reading the time event
 	 */
 	public RecoveryStrategy onTime(double time) {
-		if (mapStateToOutTransitions.get(currentState) != null) {
-			for (Transition transition : mapStateToOutTransitions.get(currentState)) {
+		if (raHolder.getMapStateToOutgoingTransitions().get(currentState) != null) {
+			for (Transition transition : raHolder.getMapStateToOutgoingTransitions().get(currentState)) {
 				if (transition instanceof TimedTransition) {
 					TimedTransition timedTransition = (TimedTransition) transition;
 					if (timedTransition.getTimeBean().getValueToBaseUnit() == time) {
-						RecoveryStrategy ras = new RecoveryStrategy();
-						ras.ra = ra;
-						ras.currentState = transition.getTo();
-						ras.recoveryAction = transition.getRecoveryActions();
-						ras.mapStateToOutTransitions = mapStateToOutTransitions;
+						RecoveryStrategy ras = new RecoveryStrategy(this,
+								raHolder.getMapTransitionToTo().get(transition), 
+								raHolder.getMapTransitionToRecoveryActions().get(transition));
 						return ras;
 					}
 				}
 			}
 		}
 		
-		return this;
+		RecoveryStrategy ras = new RecoveryStrategy(this, currentState, null);
+		return ras;
 	}
 
 	/**
@@ -143,7 +131,7 @@ public class RecoveryStrategy {
 	 */
 	public List<IDFTEvent> createEventSet() {
 		List<IDFTEvent> timeEvents = new ArrayList<>();
-		for (Entry<State, Set<Transition>> entry : mapStateToOutTransitions.entrySet()) {
+		for (Entry<State, List<Transition>> entry : raHolder.getMapStateToOutgoingTransitions().entrySet()) {
 			for (Transition transition : entry.getValue()) {
 				if (transition instanceof TimedTransition) {
 					TimedTransition timedTranstion = (TimedTransition) transition;
@@ -160,6 +148,15 @@ public class RecoveryStrategy {
 	 * @return A list of recommened recovery actions.
 	 */
 	public List<RecoveryAction> getRecoveryActions() {
-		return recoveryAction;
+		return recoveryActions != null ? recoveryActions : Collections.emptyList();
+	}
+
+	/**
+	 * Reset the recovery strategy
+	 * @return the recovery strategy in its initial state
+	 */
+	public RecoveryStrategy reset() {
+		RecoveryStrategy ras = new RecoveryStrategy(this, raHolder.getRa().getInitial(), Collections.emptyList());
+		return ras;
 	}
 }

@@ -45,6 +45,11 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 	public void minimize(RecoveryAutomatonHolder raHolder) {
 		ra = raHolder.getRa();
 		
+		statistics = new MinimizationStatistics();
+		statistics.time = System.currentTimeMillis();
+		statistics.removedStates = ra.getStates().size();
+		statistics.removedTransitions = ra.getTransitions().size();
+		
 		mapStateToIncomingTransitions = raHolder.getMapStateToIncomingTransitions();
 		mapStateToOutgoingTransitions = raHolder.getMapStateToOutgoingTransitions();
 		mapTransitionToActionLabels = raHolder.getMapTransitionToActionLabels();
@@ -55,6 +60,10 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
 		mergeBlocks(blocks);
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.removedStates = statistics.removedStates - ra.getStates().size();
+		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 	
 	/**
