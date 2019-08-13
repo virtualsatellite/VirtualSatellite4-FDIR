@@ -31,6 +31,12 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 	@Override
 	public void minimize(RecoveryAutomatonHolder raHolder) {
 		RecoveryAutomaton ra = raHolder.getRa();
+		
+		statistics = new MinimizationStatistics();
+		statistics.time = System.currentTimeMillis();
+		statistics.removedStates = ra.getStates().size();
+		statistics.removedTransitions = ra.getTransitions().size();
+		
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		
 		Map<State, List<Transition>> mapStateToPredecessors = raHelper.getPreviousTransitions(ra);
@@ -88,5 +94,9 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 				}
 			}
 		}
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.removedStates = statistics.removedStates - ra.getStates().size();
+		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 }

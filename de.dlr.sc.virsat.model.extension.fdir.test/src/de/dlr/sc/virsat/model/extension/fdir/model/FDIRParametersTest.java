@@ -9,6 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import static org.junit.Assert.assertArrayEquals;
+
+import org.junit.Test;
+
+import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL;
+
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
@@ -28,5 +34,14 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
  * 
  */	
 public class FDIRParametersTest extends AFDIRParametersTest {
-
+	@Test
+	public void testSetDefaultProbabilityLevels() {
+		FDIRParameters fdirParameters = new FDIRParameters(concept);
+		fdirParameters.setDefaultProbablityThresholds();
+		
+		Object[] plTresholds = fdirParameters.getProbabilityLevels()
+				.stream().map(pl -> pl.getValue()).toArray();
+		
+		assertArrayEquals(OpClassifyPL.DEFAULT_PL_THRESHOLDS, plTresholds);
+	}
 }

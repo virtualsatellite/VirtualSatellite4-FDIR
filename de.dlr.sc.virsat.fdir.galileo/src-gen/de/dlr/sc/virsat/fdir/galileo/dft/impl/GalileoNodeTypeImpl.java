@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.util.EObjectResolvingEList;
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoNodeTypeImpl#getObservables <em>Observables</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoNodeTypeImpl#getObservationRate <em>Observation Rate</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoNodeTypeImpl#getRateFactor <em>Rate Factor</em>}</li>
+ *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoNodeTypeImpl#getTime <em>Time</em>}</li>
  * </ul>
  *
  * @generated
@@ -107,6 +108,26 @@ public class GalileoNodeTypeImpl extends MinimalEObjectImpl.Container implements
    * @ordered
    */
   protected String rateFactor = RATE_FACTOR_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #getTime() <em>Time</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getTime()
+   * @generated
+   * @ordered
+   */
+  protected static final String TIME_EDEFAULT = null;
+
+  /**
+   * The cached value of the '{@link #getTime() <em>Time</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getTime()
+   * @generated
+   * @ordered
+   */
+  protected String time = TIME_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -217,6 +238,29 @@ public class GalileoNodeTypeImpl extends MinimalEObjectImpl.Container implements
    * <!-- end-user-doc -->
    * @generated
    */
+  public String getTime()
+  {
+    return time;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setTime(String newTime)
+  {
+    String oldTime = time;
+    time = newTime;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, DftPackage.GALILEO_NODE_TYPE__TIME, oldTime, time));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   @Override
   public Object eGet(int featureID, boolean resolve, boolean coreType)
   {
@@ -230,6 +274,8 @@ public class GalileoNodeTypeImpl extends MinimalEObjectImpl.Container implements
         return getObservationRate();
       case DftPackage.GALILEO_NODE_TYPE__RATE_FACTOR:
         return getRateFactor();
+      case DftPackage.GALILEO_NODE_TYPE__TIME:
+        return getTime();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -258,6 +304,9 @@ public class GalileoNodeTypeImpl extends MinimalEObjectImpl.Container implements
       case DftPackage.GALILEO_NODE_TYPE__RATE_FACTOR:
         setRateFactor((String)newValue);
         return;
+      case DftPackage.GALILEO_NODE_TYPE__TIME:
+        setTime((String)newValue);
+        return;
     }
     super.eSet(featureID, newValue);
   }
@@ -284,6 +333,9 @@ public class GalileoNodeTypeImpl extends MinimalEObjectImpl.Container implements
       case DftPackage.GALILEO_NODE_TYPE__RATE_FACTOR:
         setRateFactor(RATE_FACTOR_EDEFAULT);
         return;
+      case DftPackage.GALILEO_NODE_TYPE__TIME:
+        setTime(TIME_EDEFAULT);
+        return;
     }
     super.eUnset(featureID);
   }
@@ -306,6 +358,8 @@ public class GalileoNodeTypeImpl extends MinimalEObjectImpl.Container implements
         return OBSERVATION_RATE_EDEFAULT == null ? observationRate != null : !OBSERVATION_RATE_EDEFAULT.equals(observationRate);
       case DftPackage.GALILEO_NODE_TYPE__RATE_FACTOR:
         return RATE_FACTOR_EDEFAULT == null ? rateFactor != null : !RATE_FACTOR_EDEFAULT.equals(rateFactor);
+      case DftPackage.GALILEO_NODE_TYPE__TIME:
+        return TIME_EDEFAULT == null ? time != null : !TIME_EDEFAULT.equals(time);
     }
     return super.eIsSet(featureID);
   }
@@ -327,6 +381,8 @@ public class GalileoNodeTypeImpl extends MinimalEObjectImpl.Container implements
     result.append(observationRate);
     result.append(", rateFactor: ");
     result.append(rateFactor);
+    result.append(", time: ");
+    result.append(time);
     result.append(')');
     return result.toString();
   }

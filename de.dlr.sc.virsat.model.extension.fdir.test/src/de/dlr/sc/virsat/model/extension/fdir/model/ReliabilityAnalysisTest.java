@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.junit.After;
@@ -73,14 +73,13 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 	public void testPerform() {
 		StructuralElement se = StructuralFactory.eINSTANCE.createStructuralElement();
 		StructuralElementInstance sei = new StructuralInstantiator().generateInstance(se, "System");
-		IProgressMonitor monitor = null;
 		ReliabilityAnalysis reliabilityAnalysis = new ReliabilityAnalysis(concept);
 		reliabilityAnalysis.setRemainingMissionTime(1);
 		final double TEST_DELTA = 0.1;
 		reliabilityAnalysis.setTimestep(TEST_DELTA);
 		sei.getCategoryAssignments().add(reliabilityAnalysis.getTypeInstance());
 
-		Command unexecutableCommand = reliabilityAnalysis.perform(ed, monitor);
+		Command unexecutableCommand = reliabilityAnalysis.perform(ed, new NullProgressMonitor());
 
 		assertEquals(UnexecutableCommand.INSTANCE, unexecutableCommand);
 
@@ -90,7 +89,7 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 		fault.getBasicEvents().add(be);
 		sei.getCategoryAssignments().add(fault.getTypeInstance());
 
-		Command analysisCommand = reliabilityAnalysis.perform(ed, monitor);
+		Command analysisCommand = reliabilityAnalysis.perform(ed, new NullProgressMonitor());
 
 		assertTrue(analysisCommand.canExecute());
 

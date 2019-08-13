@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType#getObservables <em>Observables</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType#getObservationRate <em>Observation Rate</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType#getRateFactor <em>Rate Factor</em>}</li>
+ *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType#getTime <em>Time</em>}</li>
  * </ul>
  *
  * @see de.dlr.sc.virsat.fdir.galileo.dft.DftPackage#getGalileoNodeType()
@@ -121,5 +122,31 @@ public interface GalileoNodeType extends EObject
    * @generated
    */
   void setRateFactor(String value);
+
+  /**
+   * Returns the value of the '<em><b>Time</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Time</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Time</em>' attribute.
+   * @see #setTime(String)
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.DftPackage#getGalileoNodeType_Time()
+   * @model
+   * @generated
+   */
+  String getTime();
+
+  /**
+   * Sets the value of the '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType#getTime <em>Time</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Time</em>' attribute.
+   * @see #getTime()
+   * @generated
+   */
+  void setTime(String value);
 
 } // GalileoNodeType

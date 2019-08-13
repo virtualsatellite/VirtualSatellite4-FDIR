@@ -30,8 +30,10 @@ import com.google.common.base.Objects;
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatAddShapeFeature;
 import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil.AnchorType;
@@ -52,6 +54,8 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	public static final int INDEX_NAME_TEXT_SHAPE = 1;
 	public static final int INDEX_SPARE_RECT_SHAPE = 0;
 	public static final int INDEX_VOTE_TRESHOLD_SHAPE = 1;
+	public static final int INDEX_DELAY_SHAPE = 1;
+	public static final int INDEX_OBSERVATION_RATE_SHAPE = 1;
 	
 	public static final String FAULT_TREE_NODE_TYPE_KEY = "fault-tree-node-type";
 	public static final String COUNT_BASE_SUB_SHAPES_KEY = "count-base-sub-shapes";
@@ -116,15 +120,14 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 		
 		// Create Shape with Name Label
 		if (addedNode instanceof Fault) {
-			String name = addedNode.getParent().getName() + "." + addedNode.getName();
-			Shape nameShape = createLabel(name, containerShape);
-			link(nameShape, addedNode);
+			decorateFault((Fault) addedNode, containerShape);
 		} else if (addedNode instanceof VOTE) {
-			VOTE vote = (VOTE) addedNode;
-			String votingThreshold = String.valueOf(vote.getVotingThreshold());
-			Shape votingTresholdShape = createLabel("\u2265" + votingThreshold, containerShape);
-			link(votingTresholdShape, vote);
-		} 
+			decorateVOTE((VOTE) addedNode, containerShape);
+		} else if (addedNode instanceof DELAY) {
+			decorateDELAY((DELAY) addedNode, containerShape);
+		} else if (addedNode instanceof OBSERVER) {
+			decorateOBSERVER((OBSERVER) addedNode, containerShape);
+		}
 		
 		Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
 		link(outputAnchor, addedNode);
@@ -139,6 +142,50 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 		getFeatureProvider().getMoveShapeFeature(moveContext).execute(moveContext);
 		
 		return containerShape;
+	}
+	
+	/**
+	 * Creates additional decoration for faults
+	 * @param fault the fault
+	 * @param containerShape the container shape
+	 */
+	private void decorateFault(Fault fault, ContainerShape containerShape) {
+		String name = fault.getParent().getName() + "." + fault.getName();
+		Shape nameShape = createLabel(name, containerShape);
+		link(nameShape, fault);
+	}
+	
+	/**
+	 * Creates additional decoration for vote gates
+	 * @param vote the vote gate
+	 * @param containerShape the container shape
+	 */
+	private void decorateVOTE(VOTE vote, ContainerShape containerShape) {
+		String votingThreshold = String.valueOf(vote.getVotingThreshold());
+		Shape votingTresholdShape = createLabel("\u2265" + votingThreshold, containerShape);
+		link(votingTresholdShape, vote);
+	}
+	
+	/**
+	 * Creates additional decoration for delay gates
+	 * @param delayNode the delay gate
+	 * @param containerShape the container shape
+	 */
+	private void decorateDELAY(DELAY delayNode, ContainerShape containerShape) {
+		String delay = String.valueOf(delayNode.getTime());
+		Shape delayShape = createLabel(delay, containerShape);
+		link(delayShape, delayNode);
+	}
+	
+	/**
+	 * Creates additional decoration for observer gates
+	 * @param observer Node the observer gate
+	 * @param containerShape the container shape
+	 */
+	private void decorateOBSERVER(OBSERVER observer, ContainerShape containerShape) {
+		String observationRate = String.valueOf(observer.getObservationRate());
+		Shape observationRateShape = createLabel(observationRate, containerShape);
+		link(observationRateShape, observer);
 	}
 	
 	/**

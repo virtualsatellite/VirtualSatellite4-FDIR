@@ -14,15 +14,15 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import de.dlr.sc.virsat.model.extension.fdir.model.FDIRAnalysis;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 
 
 // *****************************************************************
@@ -37,7 +37,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
  * 
  * 
  */	
-public abstract class AFMECA extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class AFMECA extends FDIRAnalysis implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.FMECA";
 	
@@ -50,7 +50,8 @@ public abstract class AFMECA extends ABeanCategoryAssignment implements IBeanCat
 	}
 	
 	// property name constants
-	public static final String PROPERTY_FAULTS = "faults";
+	public static final String PROPERTY_ENTRIES = "entries";
+	
 	
 	
 	// *****************************************************************
@@ -72,19 +73,19 @@ public abstract class AFMECA extends ABeanCategoryAssignment implements IBeanCat
 	
 	
 	// *****************************************************************
-	// * Array Attribute: faults
+	// * Array Attribute: entries
 	// *****************************************************************
-	private IBeanList<Fault> faults = new TypeSafeComposedPropertyInstanceList<>(Fault.class);
+	private IBeanList<FMECAEntry> entries = new TypeSafeComposedPropertyInstanceList<>(FMECAEntry.class);
 	
-	private void safeAccessFaults() {
-		if (faults.getArrayInstance() == null) {
-			faults.setArrayInstance((ArrayInstance) helper.getPropertyInstance("faults"));
+	private void safeAccessEntries() {
+		if (entries.getArrayInstance() == null) {
+			entries.setArrayInstance((ArrayInstance) helper.getPropertyInstance("entries"));
 		}
 	}
 	
-	public IBeanList<Fault> getFaults() {
-		safeAccessFaults();
-		return faults;
+	public IBeanList<FMECAEntry> getEntries() {
+		safeAccessEntries();
+		return entries;
 	}
 	
 	

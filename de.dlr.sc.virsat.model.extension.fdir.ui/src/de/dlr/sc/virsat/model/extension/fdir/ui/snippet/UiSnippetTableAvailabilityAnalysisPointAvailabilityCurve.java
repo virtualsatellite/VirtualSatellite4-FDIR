@@ -151,7 +151,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 	 */
 	private class AvailabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
-
+		public static final int COUNT_AVAILABILITY_POINTS = 100;
 		/**
 		 * default constructor
 		 * 
@@ -177,7 +177,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 		public Double[] getValuesX(Object object) {
 			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
 			double maxTime = availAnalysis.getRemainingMissionTime();
-			double delta = maxTime / AvailabilityAnalysis.COUNT_AVAILABILITY_POINTS;
+			double delta = maxTime / COUNT_AVAILABILITY_POINTS;
 			int steps = (int) (maxTime / delta);
 			Double[] timeSteps = new Double[steps + 1];
 			for (int time = 0; time <= steps; ++time) {

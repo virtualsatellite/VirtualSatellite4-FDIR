@@ -13,6 +13,8 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 
 // *****************************************************************
@@ -51,5 +53,15 @@ public  class FDIRParameters extends AFDIRParameters {
 	 */
 	public FDIRParameters(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
+	}
+	
+	/**
+	 * Sets the probability level thresholds to the default ones
+	 */
+	public void setDefaultProbablityThresholds() {
+		for (int i = 0; i < OpClassifyPL.DEFAULT_PL_THRESHOLDS.length; ++i) {
+			BeanPropertyFloat beanFloat = getProbabilityLevels().get(i);
+			beanFloat.setValueAsBaseUnit(OpClassifyPL.DEFAULT_PL_THRESHOLDS[i]);
+		}
 	}
 }

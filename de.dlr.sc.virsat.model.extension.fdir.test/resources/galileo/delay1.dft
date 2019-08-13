@@ -1,0 +1,3 @@
+toplevel "tle";
+"tle" delay time=1 "A";
+"A" lambda=0.1;

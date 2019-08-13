@@ -273,6 +273,16 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getGalileoNodeType_Time()
+  {
+    return (EAttribute)galileoNodeTypeEClass.getEStructuralFeatures().get(4);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public DftFactory getDftFactory()
   {
     return (DftFactory)getEFactoryInstance();
@@ -316,6 +326,7 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     createEReference(galileoNodeTypeEClass, GALILEO_NODE_TYPE__OBSERVABLES);
     createEAttribute(galileoNodeTypeEClass, GALILEO_NODE_TYPE__OBSERVATION_RATE);
     createEAttribute(galileoNodeTypeEClass, GALILEO_NODE_TYPE__RATE_FACTOR);
+    createEAttribute(galileoNodeTypeEClass, GALILEO_NODE_TYPE__TIME);
   }
 
   /**
@@ -367,6 +378,7 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     initEReference(getGalileoNodeType_Observables(), this.getGalileoFaultTreeNode(), null, "observables", null, 0, -1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getGalileoNodeType_ObservationRate(), ecorePackage.getEString(), "observationRate", null, 0, 1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getGalileoNodeType_RateFactor(), ecorePackage.getEString(), "rateFactor", null, 0, 1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getGalileoNodeType_Time(), ecorePackage.getEString(), "time", null, 0, 1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Create resource
     createResource(eNS_URI);

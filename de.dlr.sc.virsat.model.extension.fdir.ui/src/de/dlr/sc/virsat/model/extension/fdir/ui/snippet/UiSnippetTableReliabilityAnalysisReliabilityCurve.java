@@ -153,7 +153,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 	 */
 	private class ReliabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
-
+		public static final int COUNT_RELIABILITY_POINTS = 100;
 		/**
 		 * Default constructor
 		 * 
@@ -177,7 +177,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 		public Double[] getValuesX(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			double maxTime = relAnalysis.getRemainingMissionTime();
-			double delta = maxTime / ReliabilityAnalysis.COUNT_RELIABILITY_POINTS;
+			double delta = maxTime / COUNT_RELIABILITY_POINTS;
 			int steps = (int) (maxTime / delta);
 			Double[] timeSteps = new Double[steps + 1];
 			for (int time = 0; time <= steps; ++time) {

@@ -11,19 +11,18 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
@@ -38,6 +37,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 
 /**
  * Abstract class providing some default implementations for the ISynthesizer interface.
@@ -48,11 +48,17 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimize
 public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
+	protected ARecoveryAutomatonMinimizer endMinimizer = ComposedMinimizer.createEndMinimizer();
 	protected Modularizer modularizer = new Modularizer();
+	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected Concept concept;
+	protected SynthesisStatistics statistics;
 	
 	@Override
 	public RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements) {
+		statistics = new SynthesisStatistics();
+		statistics.time = System.currentTimeMillis();
+		
 		concept = fault.getConcept();
 		
 		DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
@@ -62,27 +68,47 @@ public abstract class ASynthesizer implements ISynthesizer {
 		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-			Set<Module> trimmedModules = trimStaticModules(modules);
+			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
+			trimmedModules.stream().forEach(Module::constructFaultTreeCopy);
+			trimmedModules = ftTrimmer.trimDeterministicNodes(trimmedModules);
 			
-			Set<RecoveryAutomaton> ras = trimmedModules.stream()
-						.map(module -> convertToRecoveryAutomaton(module))
-						.collect(Collectors.toSet());
+			statistics.countModules = trimmedModules.size();
+			statistics.countTrimmedModules = modules.size() - statistics.countModules;
 			
-			if (minimizer != null) {
-				ras.forEach(ra -> minimizer.minimize(ra));
+			Set<RecoveryAutomaton> ras = new HashSet<>();
+			for (Module module : trimmedModules) {
+				statistics.maxModuleSize = Math.max(statistics.maxModuleSize, module.getNodes().size());
+				
+				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
+				if (minimizer != null) {
+					minimizer.minimize(ra);
+					statistics.minimizationStatistics.compose(minimizer.getStatistics());
+				}
+				
+				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
+				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
+				ras.add(ra);
+				
+				statistics.maxModuleRaSize = Math.max(statistics.maxModuleRaSize, ra.getStates().size());
 			}
-			ras.stream().forEach(ra -> remapToGeneratorNodes(ra, conversionResult.getMapGeneratedToGenerator()));
 			
 			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
+			statistics.countModules = 1;
+			statistics.maxModuleSize = conversionResult.getMapGeneratedToGenerator().values().size();
+			
 			synthesizedRA = convertToRecoveryAutomaton(fault);
+			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 			if (minimizer != null) {
 				minimizer.minimize(synthesizedRA);
+				statistics.minimizationStatistics.compose(minimizer.getStatistics());
 			}
-			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
+			
+			statistics.maxModuleRaSize = synthesizedRA.getStates().size();
 		}
-		
+
+		statistics.time = System.currentTimeMillis() - statistics.time;
 		return synthesizedRA;
 	}
 	
@@ -90,7 +116,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * Creates the state space generator
 	 * @return the state space generator
 	 */
-	protected abstract ExplicitDFT2MAConverter createDFT2MAConverter();
+	protected abstract DFT2MAConverter createDFT2MAConverter();
 
 	/**
 	 * Performs the actual synthesis of the recovery automaton by optimizing the ma scheduler
@@ -100,20 +126,64 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	protected abstract RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initial);
 
-	@Override
+	/**
+	 * Synthesies a recovery automaton.
+	 * @param fault the fault
+	 * @return the synthesized recovery automaton
+	 */
 	public RecoveryAutomaton synthesize(Fault fault) {
 		return synthesize(fault, Collections.emptyMap());
 	}
 
-	@Override
+	/**
+	 * Sets the minimizer that will be used to synthesize the recovery automaton
+	 * @param minimizer the minimizer
+	 */
 	public void setMinimizer(ARecoveryAutomatonMinimizer minimizer) {
 		this.minimizer = minimizer;
 	}
 	
-	@Override
+	/**
+	 * Sets the minimizer that will be used to synthesize the recovery automaton
+	 * @param beOptimizationOn true if optimization is on, false if off
+	 */
+	public void setBEOptimizationOn(boolean beOptimizationOn) {
+		if (this.modularizer != null) {
+			this.modularizer.setBEOptimization(beOptimizationOn);
+		}
+	}
+	
+	/**
+	 * Sets the modularizer that will be used to modularize the fault tree
+	 * @param modularizer the modularizer
+	 */
 	public void setModularizer(Modularizer modularizer) {
 		this.modularizer = modularizer;
 	}
+	
+	/**
+	 * Set the fault tree trimmer. If null, no trimmer will be used and fault tree will not be trimmed.
+	 * @param ftTrimmer the trimmer
+	 */
+	public void setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
+		this.ftTrimmer = ftTrimmer;
+	}
+	
+	/**
+	 * Maps all references from generated nodes to references of the generator nodes
+	 * @param mapNewToOriginal map provided by the dft to dft conversion
+	 * @param mapNewToCopy map provided by the module
+	 * @return the map from copy to original fault tree nodes
+	 */
+	protected Map<FaultTreeNode, FaultTreeNode> createCopyToOriginalNodesMap(Map<FaultTreeNode, FaultTreeNode> mapNewToOriginal, Map<FaultTreeNode, FaultTreeNode> mapNewToCopy) {
+		Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
+		for (FaultTreeNode node : mapNewToCopy.keySet()) {
+			mapCopyToOriginal.put(mapNewToCopy.get(node), mapNewToOriginal.get(node));
+		}
+		return mapCopyToOriginal;
+	}
+	
+	
 	
 	/**
 	 * Maps all references from generated nodes to references of the generator nodes
@@ -132,7 +202,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 				for (FaultTreeNode guard : fet.getGuards()) {
 					generatorGuards.add(mapGeneratedToGenerator.get(guard));
 				}
-			
 				fet.getGuards().clear();
 				fet.getGuards().addAll(generatorGuards);
 			}
@@ -147,17 +216,19 @@ public abstract class ASynthesizer implements ISynthesizer {
 		}
 	}
 	
+	protected double normalizationRate;
+	
 	/**
 	 * Normalizes the transition rates in the given markov automaton
 	 * @param ma the markov automaton
 	 * @param faultEvents the fault events
 	 */
 	protected void normalizeRates(MarkovAutomaton<DFTState> ma, Set<Object> faultEvents) {
-		float totalRate = 0;
+		normalizationRate = 0;
 		for (Object event : faultEvents) {
 			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
 				if (transition.isMarkovian()) {
-					totalRate += transition.getRate();
+					normalizationRate += transition.getRate();
 				}
 			}
 		}
@@ -165,25 +236,10 @@ public abstract class ASynthesizer implements ISynthesizer {
 		for (Object event : faultEvents) {
 			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
 				if (transition.isMarkovian()) {
-					transition.setRate(transition.getRate() / totalRate);
+					transition.setRate(transition.getRate() / normalizationRate);
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Trim the static modules out of a set of modules
-	 * @param modules the original set of modules
-	 * @return the set of modules without static modules
-	 */
-	private static Set<Module> trimStaticModules(Set<Module> modules) {
-		Set<Module> result = new HashSet<Module>();
-		for (Module module : modules) {
-			if (module.isDynamic()) {
-				result.add(module);
-			}
-		}
-		return result;
 	}
 	
 	/**
@@ -192,7 +248,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(Module module) {
-		return convertToRecoveryAutomaton(module.getRootNode());
+		return convertToRecoveryAutomaton(module.getRootNodeCopy());
 	}
 	
 	/**
@@ -201,12 +257,24 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
-		ExplicitDFT2MAConverter dft2ma = createDFT2MAConverter();
+		DFT2MAConverter dft2ma = createDFT2MAConverter();
+		dft2ma.setSymmetryChecker(null);
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		Set<Object> faultEvents = ma.getEvents();
 		normalizeRates(ma, faultEvents);
 		
 		RecoveryAutomaton ra = computeMarkovAutomatonSchedule(ma, dft2ma.getInitial());
+		
+		statistics.stateSpaceGenerationStatistics.compose(dft2ma.getStatistics());
+		
 		return ra;
+	}
+	
+	/**
+	 * Gets the measured statistics
+	 * @return the statistics object
+	 */
+	public SynthesisStatistics getStatistics() {
+		return statistics;
 	}
 }

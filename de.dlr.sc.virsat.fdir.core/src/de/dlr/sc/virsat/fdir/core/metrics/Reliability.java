@@ -9,15 +9,19 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * Enables storm-dft to compute reliability values
+ * Metric representing time bounded reliability
  * @author sascha
  *
  */
 
-public class Reliability implements IMetric {
+public class Reliability implements IQuantitativeMetric {
 	
 	public static final Reliability UNIT_RELIABILITY = new Reliability(1);
+	public static final Reliability INF_RELIABILITY = new Reliability(Double.POSITIVE_INFINITY);
 	
 	private double time;
 	
@@ -40,5 +44,10 @@ public class Reliability implements IMetric {
 	@Override
 	public void accept(IMetricVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	@Override
+	public List<IMetric> getDerivedFrom() {
+		return Collections.emptyList();
 	}
 }

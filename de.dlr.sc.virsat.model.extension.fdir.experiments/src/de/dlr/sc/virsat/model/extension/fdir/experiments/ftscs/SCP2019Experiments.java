@@ -38,7 +38,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	/**
 	 * Creates an array of RAs for a benchmark run
 	 * @param ra the base RA to copy
-	 * @return tge array of benchmark RAs
+	 * @return the array of benchmark RAs
 	 */
 	private RecoveryAutomaton[] createBenchmarkRas(RecoveryAutomaton ra) {
 		RecoveryAutomaton[] benchmarkRas = new RecoveryAutomaton[BENCHMARK_RUNS];
@@ -51,7 +51,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMultiProcessorSystemBenchmark() throws Exception {
 		System.out.println("--------------------- Experiment: MCS Benchmark  ---------------------");
-		Fault fault = createGalileoDFT("/resources/ftscs/cm1.dft");
+		Fault fault = createDFT("/resources/ftscs/cm1.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -103,7 +103,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMultiProcessorSystemNested() throws Exception {
 		System.out.println("--------------------- Experiment: MCS Nested  ---------------------");
-		Fault fault = createGalileoDFT("/resources/scp/cm1Nested.dft");
+		Fault fault = createDFT("/resources/scp/cm1Nested.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -166,7 +166,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMultiProcessorSystemNestedBenchmark() throws Exception {
 		System.out.println("--------------------- Experiment: MCS Nested Benchmark  ---------------------");
-		Fault fault = createGalileoDFT("/resources/scp/cm1Nested.dft");
+		Fault fault = createDFT("/resources/scp/cm1Nested.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -226,8 +226,8 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 		FaultTreeNode spare2 = ftHelper.createGate(tle, FaultTreeNodeType.SPARE);
 		spare2.setName("SPARE2");
 		final float FAILURE_RATE = 1f;
-		Fault memory1 = ftHelper.createBasicFault("B1", FAILURE_RATE);
-		Fault memory2 = ftHelper.createBasicFault("B2", FAILURE_RATE);
+		Fault memory1 = ftHelper.createBasicFault("B1", FAILURE_RATE, 0);
+		Fault memory2 = ftHelper.createBasicFault("B2", FAILURE_RATE, 0);
 		
 		ftHelper.connect(tle, or, tle);
 		ftHelper.connect(tle, spare1, or);
@@ -250,7 +250,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 		ComposedMinimizer improvedMinimizer = ComposedMinimizer.createDefaultMinimizer();
 		
 		for (int i = 1; i <= MAX_BACKUPS; ++i) {
-			Fault backup = ftHelper.createBasicFault("B" + (i + 2), FAILURE_RATE);
+			Fault backup = ftHelper.createBasicFault("B" + (i + 2), FAILURE_RATE, 0);
 			ftHelper.connectSpare(tle, backup, spare1);
 			ftHelper.connectSpare(tle, backup, spare2);
 			
