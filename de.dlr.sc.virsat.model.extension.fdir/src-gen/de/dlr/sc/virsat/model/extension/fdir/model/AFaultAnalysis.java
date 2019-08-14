@@ -12,20 +12,17 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
-import de.dlr.sc.virsat.model.concept.list.TypeSafeArrayInstanceList;
-import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.concept.list.IBeanList;
-import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.dvlm.categories.Category;
 
 
 // *****************************************************************
@@ -40,9 +37,9 @@ import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
  * 
  * 
  */	
-public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class AFaultAnalysis extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
 
-	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis";
+	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.FaultAnalysis";
 	
 	/**
  	* Call this method to get the full qualified name of the underlying category
@@ -55,8 +52,6 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	// property name constants
 	public static final String PROPERTY_REMAININGMISSIONTIME = "remainingMissionTime";
 	public static final String PROPERTY_TIMESTEP = "timestep";
-	public static final String PROPERTY_STEADYSTATEAVAILABILITY = "steadyStateAvailability";
-	public static final String PROPERTY_POINTAVAILABILITYCURVE = "pointAvailabilityCurve";
 	
 	
 	
@@ -64,16 +59,16 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	// * Class Constructors
 	// *****************************************************************
 	
-	public AAvailabilityAnalysis() {
+	public AFaultAnalysis() {
 	}
 	
-	public AAvailabilityAnalysis(Concept concept) {
-		Category categoryFromActiveCategories = ActiveConceptHelper.getCategory(concept, "AvailabilityAnalysis");
-		CategoryAssignment categoryAssignement = new CategoryInstantiator().generateInstance(categoryFromActiveCategories, "AvailabilityAnalysis");
+	public AFaultAnalysis(Concept concept) {
+		Category categoryFromActiveCategories = ActiveConceptHelper.getCategory(concept, "FaultAnalysis");
+		CategoryAssignment categoryAssignement = new CategoryInstantiator().generateInstance(categoryFromActiveCategories, "FaultAnalysis");
 		setTypeInstance(categoryAssignement);
 	}
 	
-	public AAvailabilityAnalysis(CategoryAssignment categoryAssignement) {
+	public AFaultAnalysis(CategoryAssignment categoryAssignement) {
 		setTypeInstance(categoryAssignement);
 	}
 	
@@ -148,58 +143,6 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	public BeanPropertyFloat getTimestepBean() {
 		safeAccessTimestep();
 		return timestep;
-	}
-	
-	// *****************************************************************
-	// * Attribute: steadyStateAvailability
-	// *****************************************************************
-	private BeanPropertyFloat steadyStateAvailability = new BeanPropertyFloat();
-	
-	private void safeAccessSteadyStateAvailability() {
-		if (steadyStateAvailability.getTypeInstance() == null) {
-			steadyStateAvailability.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("steadyStateAvailability"));
-		}
-	}
-	
-	public Command setSteadyStateAvailability(EditingDomain ed, double value) {
-		safeAccessSteadyStateAvailability();
-		return this.steadyStateAvailability.setValue(ed, value);
-	}
-	
-	public void setSteadyStateAvailability(double value) {
-		safeAccessSteadyStateAvailability();
-		this.steadyStateAvailability.setValue(value);
-	}
-	
-	public double getSteadyStateAvailability() {
-		safeAccessSteadyStateAvailability();
-		return steadyStateAvailability.getValue();
-	}
-	
-	public boolean isSetSteadyStateAvailability() {
-		safeAccessSteadyStateAvailability();
-		return steadyStateAvailability.isSet();
-	}
-	
-	public BeanPropertyFloat getSteadyStateAvailabilityBean() {
-		safeAccessSteadyStateAvailability();
-		return steadyStateAvailability;
-	}
-	
-	// *****************************************************************
-	// * Array Attribute: pointAvailabilityCurve
-	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> pointAvailabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
-	
-	private void safeAccessPointAvailabilityCurve() {
-		if (pointAvailabilityCurve.getArrayInstance() == null) {
-			pointAvailabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("pointAvailabilityCurve"));
-		}
-	}
-		
-	public IBeanList<BeanPropertyFloat> getPointAvailabilityCurve() {
-		safeAccessPointAvailabilityCurve();
-		return pointAvailabilityCurve;
 	}
 	
 	

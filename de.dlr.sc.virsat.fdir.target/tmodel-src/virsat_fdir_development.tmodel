@@ -2,14 +2,6 @@ Target virsat_fdir_development extends virsat {
 	Import core_development 
 	Import fdir_dependencies
 	
-	ExcludeLocation virsat.Nebula {
-		all;
-	}
-	
-	RepositoryLocation Nebula url "https://download.eclipse.org/nebula/releases/2.1.0/"{
-		Unit org.eclipse.nebula.widgets.gallery.feature.feature.group version 1.0.0.201812241324;
-	}
-	
 	RepositoryLocation VirSat4CoreDevelopment url "https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/development/"{	
 		Unit de.dlr.sc.virsat.target.feature.feature.group version newest;
 	}

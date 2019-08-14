@@ -82,17 +82,6 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 	}
 
 	/**
-	 * Gets the first fault attached to the same structural element instance
-	 * 
-	 * @return the top level fault to be analysed
-	 */
-	public Fault getFault() {
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-				(StructuralElementInstance) getTypeInstance().eContainer());
-		return parent.getFirst(Fault.class);
-	}
-
-	/**
 	 * Performs a reliability analysis on the top level fault of the attached
 	 * structural element instance
 	 * 
@@ -103,10 +92,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 	 * @return a command that sets the analysis results
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
-		FaultTreeNode fault = getFault();
-		if (fault == null) {
-			return UnexecutableCommand.INSTANCE;
-		}
+		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
 		monitor.setTaskName("Reliability Analysis");
 		final int COUNT_TASKS = 3;
@@ -115,7 +101,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		subMonitor.setTaskName("Creating Data Model");
 		
 		double delta = getTimestepBean().getValueToBaseUnit();
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
+		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) fault.getTypeInstance().eContainer());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
 		if (ra != null) {
