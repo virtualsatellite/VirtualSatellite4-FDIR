@@ -111,7 +111,7 @@ public class MarkovModelCheckerTest {
 		ma.addState(inter);
 		ma.getFinalStates().add(fail);
 		
-		ma.addMarkovianTransition("a", init, fail, 1);
+		ma.addMarkovianTransition("c", init, fail, 1);
 		ma.addMarkovianTransition("b", init, inter, 1);
 		ma.addMarkovianTransition("a", inter, fail, 1);
 		
@@ -119,13 +119,13 @@ public class MarkovModelCheckerTest {
 		
 		final int COUNT_EXPECTED_MINCUT_SETS = 2;
 		assertEquals(COUNT_EXPECTED_MINCUT_SETS, result.getMinCutSets().size());
-		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("a")));
+		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("c")));
 		assertThat(result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList("a", "b"))));
 		
 		result = modelChecker.checkModel(ma, new MinimumCutSet(1));
 		
 		final int COUNT_EXPECTED_MINCUT_SETS_RESTRICTED = 1;
 		assertEquals(COUNT_EXPECTED_MINCUT_SETS_RESTRICTED, result.getMinCutSets().size());
-		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("a")));
+		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("c")));
 	}
 }

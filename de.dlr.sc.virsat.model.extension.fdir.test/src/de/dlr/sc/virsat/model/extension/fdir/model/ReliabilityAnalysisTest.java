@@ -17,7 +17,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,11 +76,6 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 		reliabilityAnalysis.setRemainingMissionTime(1);
 		final double TEST_DELTA = 0.1;
 		reliabilityAnalysis.setTimestep(TEST_DELTA);
-		sei.getCategoryAssignments().add(reliabilityAnalysis.getTypeInstance());
-
-		Command unexecutableCommand = reliabilityAnalysis.perform(ed, new NullProgressMonitor());
-
-		assertEquals(UnexecutableCommand.INSTANCE, unexecutableCommand);
 
 		Fault fault = new Fault(concept);
 		fault.getReliabilityAnalysis().add(reliabilityAnalysis);
