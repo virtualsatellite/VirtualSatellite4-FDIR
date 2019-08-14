@@ -84,6 +84,7 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 		assertEquals(UnexecutableCommand.INSTANCE, unexecutableCommand);
 
 		Fault fault = new Fault(concept);
+		fault.getReliabilityAnalysis().add(reliabilityAnalysis);
 		BasicEvent be = new BasicEvent(concept);
 		be.setHotFailureRate(1);
 		fault.getBasicEvents().add(be);
