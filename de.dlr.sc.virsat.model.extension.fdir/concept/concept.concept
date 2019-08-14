@@ -114,6 +114,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		] default Minor quantityKind "Dimensionless" unit "No Unit" description "Severity Level according to ECSS-Q-ST-30-02C";
 	
 		Type faultTree of Category FaultTree description "The Fault Tree explaining the indirect causes of this Fault";
+		Type reliabilityAnalysis[] of Category ReliabilityAnalysis description "Optional reliability analysis information for this single fault";
+		Type availabilityAnalysis[] of Category AvailabilityAnalysis description "Optional reliability analysis information for this single fault";
 	}
 	
 	Category BasicEvent extends FaultEvent {
@@ -124,6 +126,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 	
 	Category CutSet {
+		Reference failure of Type Fault description "The failure that occurs if the basic events occur";
 		Reference basicEvents [] of Type BasicEvent description "Set of events leading to a top level failure";
 	}
 	
@@ -136,12 +139,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		//FloatProperty detectionLevels[] quantityKind "Dimensionless" unit "Percent";
 	}
 	
-	Category FDIRAnalysis {
-		IsAbstract;
+	Category FMECA {
 		Applicable For All;
-	}
-	
-	Category FMECA extends FDIRAnalysis {
 		Cardinality 1;
 		Type entries[] of Category FMECAEntry;
 	}
@@ -173,32 +172,33 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Ref: criticality = severity * probability * detection;
 	}
 	
-	Category ReliabilityAnalysis extends FDIRAnalysis {
+	Category ReliabilityAnalysis {
 		Cardinality 1;
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty reliability quantityKind "Dimensionless" unit "Percent";
 		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour";
 		FloatProperty reliabilityCurve[] quantityKind "Dimensionless" unit "Percent";
-
+		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
 		Ref: timestep = FDIRParameters.timestep;
 	}	
 	
-	Category AvailabilityAnalysis extends FDIRAnalysis {
+	Category AvailabilityAnalysis {
 		Cardinality 1;
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent";
-		FloatProperty pointAvailabilityCurve[] quantityKind "Dimensionless" unit "Percent";//PointAvailability
-
+		FloatProperty pointAvailabilityCurve[] quantityKind "Dimensionless" unit "Percent";
+		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
 		Ref: timestep = FDIRParameters.timestep;
 	}
 	
-	Category MCSAnalysis extends FDIRAnalysis {
+	Category MCSAnalysis {
+		Applicable For All;
 		Cardinality 1;
-		IntProperty maxMinimumCutSetSize unit "No Unit";
+		IntProperty maxMinimumCutSetSize default 0 unit "No Unit";
 		IntProperty faultTolerance unit "No Unit";
 		Type minimumCutSets [] of Category CutSet;
 	}

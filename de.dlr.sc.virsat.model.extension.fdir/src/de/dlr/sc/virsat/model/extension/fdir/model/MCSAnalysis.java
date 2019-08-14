@@ -9,7 +9,11 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -87,18 +91,32 @@ public  class MCSAnalysis extends AMCSAnalysis {
 	 * @return a command that sets the results of this analysis
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
-		Fault fault = getFault();
+		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
+		List<Fault> faults = parent.getAll(Fault.class);
 		
-		if (fault != null) {
-			SubMonitor subMonitor = null;
+		if (faults.isEmpty()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		
+		SubMonitor subMonitor = null;
+		final int COUNT_TASKS = 1 + 2 * faults.size();
+		if (monitor != null) {
+			monitor.setTaskName("MCS Analysis");
+			subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
+
+		}
+		
+		long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
+		List<Long> faultTolerances = new ArrayList<>();
+		Set<Set<Object>> minimumCutSets = new HashSet<>();
+		Map<Set<Object>, List<Fault>> mapCutSetToFaults = new HashMap<>();
+		
+		for (Fault fault : faults) {
 			if (monitor != null) {
-				monitor.setTaskName("MCS Analysis");
-				final int COUNT_TASKS = 3;
-				subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
-				subMonitor.setTaskName("Creating Data Model");
+				subMonitor.setTaskName("Analysing fault " + fault.getName());
 				subMonitor.split(1);
 			}
-			IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
+			
 			RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 			
 			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
@@ -113,40 +131,45 @@ public  class MCSAnalysis extends AMCSAnalysis {
 				subMonitor.split(1);
 			}
 			
-			long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
-			
 			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new MinimumCutSet(maxMinimumCutSetSize));
-			
-			Set<Set<Object>> minimumCutSets = result.getMinCutSets();
-			List<Set<Object>> sortedMinimumCutSets = minimumCutSets.stream()
-						.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
-						.collect(Collectors.toList());
-			
-			int faultTolerance = minimumCutSets.stream().mapToInt(cutSet -> cutSet.size()).min().orElse(0);
-			if (monitor != null) {
-				if (monitor.isCanceled()) {
-					return UnexecutableCommand.INSTANCE;
-				}
-				subMonitor.setTaskName("Updating Results");
-				subMonitor.split(1);
+			for (Set<Object> minCutSet : result.getMinCutSets()) {
+				mapCutSetToFaults.computeIfAbsent(minCutSet, v -> new ArrayList<>()).add(fault);
 			}
-			return new RecordingCommand(ed, "MCS Analysis") {
-				@Override
-				protected void doExecute() {
-					setFaultTolerance(faultTolerance);
-					
-					getMinimumCutSets().clear();
-					for (Set<Object> minimumCutSet : sortedMinimumCutSets) {
+			minimumCutSets.addAll(result.getMinCutSets());
+			faultTolerances.add(minimumCutSets.stream().mapToLong(cutSet -> cutSet.size()).min().orElse(Integer.MAX_VALUE));
+		}
+		
+		if (monitor != null) {
+			if (monitor.isCanceled()) {
+				return UnexecutableCommand.INSTANCE;
+			}
+			subMonitor.setTaskName("Updating Results");
+			subMonitor.split(1);
+		}
+		
+		long faultTolerance = faultTolerances.stream().mapToLong(tolerance -> tolerance).min().orElse(1) - 1;
+		List<Set<Object>> sortedMinimumCutSets = minimumCutSets.stream()
+				.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
+				.collect(Collectors.toList());
+		
+		return new RecordingCommand(ed, "MCS Analysis") {
+			@Override
+			protected void doExecute() {
+				setFaultTolerance(faultTolerance);
+				
+				getMinimumCutSets().clear();
+				for (Set<Object> minimumCutSet : sortedMinimumCutSets) {
+					List<Fault> failures = mapCutSetToFaults.get(minimumCutSet);
+					for (Fault failure : failures) {
 						CutSet cutSet = new CutSet(getConcept());
 						for (Object object : minimumCutSet) {
 							cutSet.getBasicEvents().add((BasicEvent) object);
 						}
 						getMinimumCutSets().add(cutSet);
+						cutSet.setFailure(failure);
 					}
 				}
-			};
-		} else {
-			return UnexecutableCommand.INSTANCE;
-		}
+			}
+		};
 	}
 }

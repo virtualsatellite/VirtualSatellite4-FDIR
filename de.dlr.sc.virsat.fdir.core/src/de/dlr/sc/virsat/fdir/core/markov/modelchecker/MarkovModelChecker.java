@@ -374,6 +374,17 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 						}
 					}
 				}
+				
+				// Make sure all cuts are mincuts
+				Set<Set<Object>> subsumedMinCuts = new HashSet<>();
+				for (Set<Object> minCut : minCuts) {
+					for (Set<Object> minCutOther : minCuts) {
+						if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
+							subsumedMinCuts.add(minCut);
+						}
+					}
+				}
+				minCuts.removeAll(subsumedMinCuts);
 			}
 			
 			// Enqueue predecessors if necessary

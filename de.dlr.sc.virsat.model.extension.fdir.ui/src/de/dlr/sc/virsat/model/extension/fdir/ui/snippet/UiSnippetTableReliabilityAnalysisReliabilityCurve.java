@@ -13,38 +13,31 @@ import java.awt.Color;
 import java.awt.Font;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.Marker;
-import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.ui.Layer;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.TextAnchor;
 
 import de.dlr.sc.virsat.commons.ui.jface.viewer.ISeriesXYValueLabelProvider;
 import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatTransactionalAdapterFactoryContentProvider;
 import de.dlr.sc.virsat.project.ui.labelProvider.VirSatTransactionalAdapterFactoryLabelProvider;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
-
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
@@ -54,33 +47,26 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  * 
  */
-public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippetTableReliabilityAnalysisReliabilityCurve implements IUiSnippet {
-	private static final int DEFAULT_CHART_HEIGHT = 300;
+public class UiSnippetTableReliabilityAnalysisReliabilityCurve
+		extends AUiSnippetTableReliabilityAnalysisReliabilityCurve implements IUiSnippet {
+
 	private static final int FONT_SIZE = 12;
 	private JFreeChart chart;
 	private ChartComposite chartComposite;
 	private XYSplineChartViewer xyPlotChartViewer;
 
 	private XYSeriesCollection dataset;
+
 	@Override
-	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
-
-		Composite subSection = toolkit.createComposite(composite);
-		GridLayout layout = new GridLayout(2, true);
-		subSection.setLayout(layout);
-		super.createSwt(toolkit, editingDomain, subSection, initModel);
-		GridData gridDataReliabilityChart = createDefaultGridData();
-		gridDataReliabilityChart.horizontalSpan = 1;
-		gridDataReliabilityChart.minimumHeight = DEFAULT_CHART_HEIGHT;
-		gridDataReliabilityChart.heightHint = DEFAULT_CHART_HEIGHT;
-		subSection.setLayoutData(gridDataReliabilityChart);
-
+	protected void setUpTableViewer(EditingDomain editingDomain, FormToolkit toolkit) {
 		// make a chart
 		chart = createChart();
 		chart.setBorderVisible(false);
 
-		chartComposite = new ChartComposite(subSection, SWT.NONE, chart, true);
-		chartComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		chartComposite = new ChartComposite(sectionBody, SWT.NONE, chart, true);
+		GridData chartLayout = new GridData(SWT.FILL, SWT.FILL, true, true);
+		chartLayout.verticalSpan = 2;
+		chartComposite.setLayoutData(chartLayout);
 
 		xyPlotChartViewer = new XYSplineChartViewer(dataset, chartComposite);
 		xyPlotChartViewer.setContentProvider(new VirSatFilteredWrappedTreeContentProvider(
@@ -95,9 +81,15 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 		xyPlotChartViewer.setLabelProvider(new ReliabilityChartLabelProvider(adapterFactory));
 		xyPlotChartViewer.setInput(model);
 		
+		super.setUpTableViewer(editingDomain, toolkit);
+	}
 	
-
-
+	@Override
+	public Composite createSectionBody(FormToolkit toolkit, String sectionHeading, String sectionDescription,
+			int numberColumns) {
+		// Add an additional column for the plot
+		Composite composite = super.createSectionBody(toolkit, sectionHeading, sectionDescription, numberColumns + 1);
+		return composite;
 	}
 	
 	/**
@@ -107,7 +99,9 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 	public XYSplineChartViewer getXyPlotChartViewer() {
 		return xyPlotChartViewer;
 	}
+
 	private static final double TO_PERCENT = 100;
+
 	/**
 	 * Creates the line chart
 	 * 
@@ -145,6 +139,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 
 		return chart;
 	}
+
 	/**
 	 * Provides the reliabilty data to the chart
 	 * 
@@ -153,7 +148,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 	 */
 	private class ReliabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
-		public static final int COUNT_RELIABILITY_POINTS = 100;
+
 		/**
 		 * Default constructor
 		 * 
@@ -177,7 +172,9 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 		public Double[] getValuesX(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			double maxTime = relAnalysis.getRemainingMissionTime();
-			double delta = maxTime / COUNT_RELIABILITY_POINTS;
+			double timestep = relAnalysis.getTimestepBean().getValueToBaseUnit();
+			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(
+					relAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
 			int steps = (int) (maxTime / delta);
 			Double[] timeSteps = new Double[steps + 1];
 			for (int time = 0; time <= steps; ++time) {
@@ -185,16 +182,6 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 			}
 
 			XYPlot plot = chart.getXYPlot();
-
-			double mttf = relAnalysis.getMeanTimeToFailure();
-
-			final Marker mttfMarker = new ValueMarker(mttf);
-			mttfMarker.setPaint(Color.red);
-			mttfMarker.setLabel("MTTF = " + mttf);
-			mttfMarker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-			mttfMarker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-
-			plot.addDomainMarker(mttfMarker, Layer.BACKGROUND);
 			plot.getDomainAxis().setUpperBound(maxTime);
 
 			return timeSteps;
@@ -203,7 +190,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippe
 		@Override
 		public String getSeries(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
-			Fault fault = relAnalysis.getFault();
+			Fault fault = relAnalysis.getParentCaBeanOfClass(Fault.class);
 			if (fault != null) {
 				return "Reliability of " + fault.getName();
 			} else {

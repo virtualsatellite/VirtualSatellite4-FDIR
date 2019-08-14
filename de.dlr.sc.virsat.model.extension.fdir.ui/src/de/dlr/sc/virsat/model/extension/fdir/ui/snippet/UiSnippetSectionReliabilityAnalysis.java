@@ -76,11 +76,7 @@ public class UiSnippetSectionReliabilityAnalysis extends AUiSnippetSectionReliab
 
 				job.setUser(true);
 				job.schedule();
-				new UiSnippetTableReliabilityAnalysisReliabilityCurve().getXyPlotChartViewer().refresh();
 			}
 		});
-
 	}
-
-	
 }

@@ -74,10 +74,7 @@ public class UiSnippetSectionAvailabilityAnalysis extends AUiSnippetSectionAvail
 				};
 				job.setUser(true);
 				job.schedule();
-				new UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve().getXyPlotChartViewer().refresh();
 			}
 		});
 	}
-
-	
 }

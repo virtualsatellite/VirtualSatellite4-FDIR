@@ -81,17 +81,6 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	}
 
 	/**
-	 * Gets the first fault attached to the same structural element instance
-	 * 
-	 * @return the top level fault to be analysed
-	 */
-	public Fault getFault() {
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-				(StructuralElementInstance) getTypeInstance().eContainer());
-		return parent.getFirst(Fault.class);
-	}
-
-	/**
 	 * 
 	 * @param ed
 	 *            the editing domain
@@ -100,11 +89,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 * @return a command that sets the availability analysis
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
-		FaultTreeNode fault = getFault();
-		
-		if (fault == null) {
-			return UnexecutableCommand.INSTANCE;
-		}
+		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
 		monitor.setTaskName("Availability Analysis");
 		final int COUNT_TASKS = 3;
@@ -115,7 +100,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		double delta = getTimestepBean().getValueToBaseUnit();
 
 		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-				(StructuralElementInstance) getTypeInstance().eContainer());
+				(StructuralElementInstance) fault.getTypeInstance().eContainer());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);

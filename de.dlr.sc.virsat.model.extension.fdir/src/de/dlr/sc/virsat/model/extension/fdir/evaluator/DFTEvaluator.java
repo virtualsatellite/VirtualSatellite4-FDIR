@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
@@ -91,6 +92,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
 		dft2MAConverter.setSemantics(chooseSemantics(ftHolder));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
+		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
 		
 		boolean canModularize = modularizer != null 
 				&& root instanceof Fault
@@ -167,6 +169,21 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		statistics.time = System.currentTimeMillis() - statistics.time;
 		
 		return result;
+	}
+	
+	/**
+	 * Checks if there is a qualitative metric
+	 * @param metrics the metrics
+	 * @return true iff at least one metric is qualitative
+	 */
+	private boolean hasQualitativeMetric(IMetric[] metrics) {
+		for (IMetric metric : metrics) {
+			if (metric instanceof IQualitativeMetric) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**

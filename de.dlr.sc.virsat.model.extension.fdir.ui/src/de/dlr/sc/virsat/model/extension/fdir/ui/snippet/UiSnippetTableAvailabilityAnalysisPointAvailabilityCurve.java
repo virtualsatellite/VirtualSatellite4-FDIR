@@ -18,8 +18,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -34,13 +32,13 @@ import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatTransactionalAdapterFactoryContentProvider;
 import de.dlr.sc.virsat.project.ui.labelProvider.VirSatTransactionalAdapterFactoryLabelProvider;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
-
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
@@ -50,31 +48,20 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  * 
  */
-public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AUiSnippetTableAvailabilityAnalysisPointAvailabilityCurve implements IUiSnippet {
-	private static final int DEFAULT_CHART_HEIGHT = 320;
+public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
+		extends AUiSnippetTableAvailabilityAnalysisPointAvailabilityCurve implements IUiSnippet {
+
 	private static final int FONT_SIZE = 12;
 	private JFreeChart chart;
 	private ChartComposite chartComposite;
 	private XYSplineChartViewer xyPlotChartViewer;
 
 	private XYSeriesCollection dataset;
+
 	@Override
-	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
-
-		Composite subSection = toolkit.createComposite(composite);
-		GridLayout layout = new GridLayout(2, true);
-		subSection.setLayout(layout);
-		GridData gridDataReliabilityChart = createDefaultGridData();
-		gridDataReliabilityChart.horizontalSpan = 1;
-		gridDataReliabilityChart.minimumHeight = DEFAULT_CHART_HEIGHT;
-		gridDataReliabilityChart.heightHint = DEFAULT_CHART_HEIGHT;
-		super.createSwt(toolkit, editingDomain, subSection, initModel);
-
-		subSection.setLayoutData(gridDataReliabilityChart);
-		// make a chart
+	protected void setUpTableViewer(EditingDomain editingDomain, FormToolkit toolkit) {
 		chart = createChart();
-		chart.setBorderVisible(false);
-		chartComposite = new ChartComposite(subSection, SWT.NONE, chart, true);
+		chartComposite = new ChartComposite(sectionBody, SWT.NONE, chart, true);
 		chartComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		xyPlotChartViewer = new XYSplineChartViewer(dataset, chartComposite);
@@ -89,7 +76,10 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 
 		xyPlotChartViewer.setLabelProvider(new AvailabilityChartLabelProvider(adapterFactory));
 		xyPlotChartViewer.setInput(model);
+		
+		super.setUpTableViewer(editingDomain, toolkit);
 	}
+	
 	/**
 	 * 
 	 * @return chartViewer
@@ -97,7 +87,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 	public XYSplineChartViewer getXyPlotChartViewer() {
 		return xyPlotChartViewer;
 	}
-	
+
 	private static final double TO_PERCENT = 100;
 
 	/**
@@ -122,7 +112,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 		plot.setDomainGridlinePaint(Color.GRAY);
 		plot.setRangeGridlinePaint(Color.GRAY);
 		chart.setAntiAlias(true);
-		chart.setBorderVisible(true);
+		chart.setBorderVisible(false);
 		chart.setBackgroundPaint(Color.white);
 		plot.getRangeAxis().setRange(0, TO_PERCENT);
 
@@ -151,7 +141,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 	 */
 	private class AvailabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
-		public static final int COUNT_AVAILABILITY_POINTS = 100;
+
 		/**
 		 * default constructor
 		 * 
@@ -165,7 +155,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 		@Override
 		public String getSeries(Object object) {
 			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			Fault fault = availAnalysis.getFault();
+			Fault fault = availAnalysis.getParentCaBeanOfClass(Fault.class);
 			if (fault != null) {
 				return "Availability of " + fault.getName();
 			} else {
@@ -176,8 +166,10 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 		@Override
 		public Double[] getValuesX(Object object) {
 			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
+			double timestep = availAnalysis.getTimestepBean().getValueToBaseUnit();
 			double maxTime = availAnalysis.getRemainingMissionTime();
-			double delta = maxTime / COUNT_AVAILABILITY_POINTS;
+			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(
+					availAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
 			int steps = (int) (maxTime / delta);
 			Double[] timeSteps = new Double[steps + 1];
 			for (int time = 0; time <= steps; ++time) {
@@ -185,7 +177,6 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AU
 			}
 
 			XYPlot plot = chart.getXYPlot();
-
 			plot.getDomainAxis().setUpperBound(maxTime);
 
 			return timeSteps;

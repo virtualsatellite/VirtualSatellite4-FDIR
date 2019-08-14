@@ -62,6 +62,12 @@
       <values name="Minor" value="1"/>
     </properties>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="reliabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="availabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
   </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
@@ -70,6 +76,7 @@
     <properties xsi:type="dvlm_cppd:StringProperty" name="repairAction" description="Description of the action(s) needed to be performed for the repair."/>
   </categories>
   <categories name="CutSet">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failure" description="The failure that occurs if the basic events occur" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault"/>
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="basicEvents" description="Set of events leading to a top level failure" referenceType="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
@@ -81,8 +88,7 @@
       <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
     </properties>
   </categories>
-  <categories name="FDIRAnalysis" isApplicableForAll="true" isAbstract="true"/>
-  <categories name="FMECA" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
+  <categories name="FMECA" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="entries" type="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
@@ -125,7 +131,7 @@
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.27/@properties.6/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.26/@properties.6/@values.3">
       <values name="ExtremelyUnlikely" value="4"/>
       <values name="Unlikely" value="3"/>
       <values name="Likely" value="2"/>
@@ -137,7 +143,7 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="ReliabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
+  <categories name="ReliabilityAnalysis" cardinality="1">
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis.remainingMissionTime"/>
@@ -154,7 +160,7 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="AvailabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
+  <categories name="AvailabilityAnalysis" cardinality="1">
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis.remainingMissionTime"/>
@@ -170,8 +176,8 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="MCSAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
-    <properties xsi:type="dvlm_cppd:IntProperty" name="maxMinimumCutSetSize" unitName="No Unit"/>
+  <categories name="MCSAnalysis" isApplicableForAll="true" cardinality="1">
+    <properties xsi:type="dvlm_cppd:IntProperty" name="maxMinimumCutSetSize" unitName="No Unit" defaultValue="0"/>
     <properties xsi:type="dvlm_cppd:IntProperty" name="faultTolerance" unitName="No Unit"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="minimumCutSets" type="de.dlr.sc.virsat.model.extension.fdir.CutSet">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>

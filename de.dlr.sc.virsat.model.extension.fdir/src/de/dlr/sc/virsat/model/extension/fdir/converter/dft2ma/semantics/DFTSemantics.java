@@ -44,6 +44,15 @@ public class DFTSemantics {
 	
 	protected Map<FaultTreeNodeType, INodeSemantics> mapTypeToSemantics = new EnumMap<>(FaultTreeNodeType.class);
 	protected IStateGenerator stateGenerator;
+	protected boolean allowsRepairEvents = true;
+	
+	/**
+	 * Configures whether the semantics should create repair events
+	 * @param allowsRepairEvents whether the semantics considers repair events
+	 */
+	public void setAllowsRepairEvents(boolean allowsRepairEvents) {
+		this.allowsRepairEvents = allowsRepairEvents;
+	}
 	
 	/**
 	 * Creates the set of occurable events
@@ -54,7 +63,7 @@ public class DFTSemantics {
 		Set<IDFTEvent> faultEvents = new HashSet<>();
 		
 		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
-			if (be.isSetRepairRate() && be.getRepairRate() > 0) {
+			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() > 0) {
 				faultEvents.add(new FaultEvent(be, true, ftHolder));					
 			}
 			
