@@ -189,7 +189,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent";
-		FloatProperty pointAvailabilityCurve[] quantityKind "Dimensionless" unit "Percent";
+		FloatProperty availabilityCurve[] quantityKind "Dimensionless" unit "Percent";
 		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
 		Ref: timestep = FDIRParameters.timestep;

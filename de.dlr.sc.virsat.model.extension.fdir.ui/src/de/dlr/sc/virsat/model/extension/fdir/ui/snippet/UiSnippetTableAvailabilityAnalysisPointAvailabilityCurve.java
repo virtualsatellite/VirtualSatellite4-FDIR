@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -62,7 +63,9 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 	protected void setUpTableViewer(EditingDomain editingDomain, FormToolkit toolkit) {
 		chart = createChart();
 		chartComposite = new ChartComposite(sectionBody, SWT.NONE, chart, true);
-		chartComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		GridData chartLayout = new GridData(SWT.FILL, SWT.FILL, true, true);
+		chartLayout.verticalSpan = 2;
+		chartComposite.setLayoutData(chartLayout);
 
 		xyPlotChartViewer = new XYSplineChartViewer(dataset, chartComposite);
 		xyPlotChartViewer.setContentProvider(new VirSatFilteredWrappedTreeContentProvider(
@@ -78,6 +81,14 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 		xyPlotChartViewer.setInput(model);
 		
 		super.setUpTableViewer(editingDomain, toolkit);
+	}
+	
+	@Override
+	public Composite createSectionBody(FormToolkit toolkit, String sectionHeading, String sectionDescription,
+			int numberColumns) {
+		// Add an additional column for the plot
+		Composite composite = super.createSectionBody(toolkit, sectionHeading, sectionDescription, numberColumns + 1);
+		return composite;
 	}
 	
 	/**
