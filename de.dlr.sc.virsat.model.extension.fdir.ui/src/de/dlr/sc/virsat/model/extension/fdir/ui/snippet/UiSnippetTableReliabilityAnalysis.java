@@ -32,10 +32,9 @@ public class UiSnippetTableReliabilityAnalysis extends AUiSnippetTableReliabilit
 	@Override
 	protected Table createDefaultTable(FormToolkit toolkit, Composite sectionBody) {
 		Table table = super.createDefaultTable(toolkit, sectionBody);
-	
+
 		GridData gridDataTable = (GridData) table.getLayoutData();
 		gridDataTable.heightHint = SINGLE_LINE_TABLE_HEIGHT;
-		
 		table.setLayoutData(gridDataTable);
 		return table;
 	}

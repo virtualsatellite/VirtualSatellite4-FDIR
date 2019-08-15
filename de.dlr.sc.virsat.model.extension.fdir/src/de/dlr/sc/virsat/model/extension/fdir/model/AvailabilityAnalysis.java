@@ -130,7 +130,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 			protected void doExecute() {
 				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
 				if (result.getPointAvailability() != null) {
-					getPointAvailabilityCurve().clear();
+					getAvailabilityCurve().clear();
 					for (int i = 0; i < result.getPointAvailability().size(); ++i) {
 						createNewAvailabilityCurveEntry(result.getPointAvailability().get(i));
 					}
@@ -147,10 +147,10 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 */
 	private void createNewAvailabilityCurveEntry(double value) {
 		CategoryInstantiator ci = new CategoryInstantiator();
-		APropertyInstance pi = ci.generateInstance(getPointAvailabilityCurve().getArrayInstance());
+		APropertyInstance pi = ci.generateInstance(getAvailabilityCurve().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
 		newBeanProperty.setValueAsBaseUnit(value);
-		getPointAvailabilityCurve().add(newBeanProperty);
+		getAvailabilityCurve().add(newBeanProperty);
 	}
 }
