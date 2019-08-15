@@ -196,7 +196,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 		@Override
 		public Double[] getValuesY(Object object) {
 			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> availabilityCurve = availAnalysis.getPointAvailabilityCurve();
+			IBeanList<BeanPropertyFloat> availabilityCurve = availAnalysis.getAvailabilityCurve();
 			Double[] availabilityValues = availabilityCurve.stream().mapToDouble(beanFloat -> beanFloat.getValue())
 					.boxed().toArray(Double[]::new);
 			return availabilityValues;
