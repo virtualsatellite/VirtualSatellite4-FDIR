@@ -34,7 +34,6 @@ import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
@@ -72,8 +71,8 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 				new VirSatTransactionalAdapterFactoryContentProvider(adapterFactory).setUpdateCaContainerLabels(true)) {
 			@Override
 			public Object[] getElements(Object inputElement) {
-				AvailabilityAnalysis availAnalysis = new AvailabilityAnalysis((CategoryAssignment) inputElement);
-				return new Object[] { availAnalysis };
+				DetectabilityAnalysis detectAnalysis = new DetectabilityAnalysis((CategoryAssignment) inputElement);
+				return new Object[] { detectAnalysis };
 			}
 		});
 
@@ -129,6 +128,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true);
 		plot.setRenderer(renderer);
+		renderer.setSeriesPaint(0, Color.GREEN);
 		renderer.setBaseShapesVisible(false);
 
 		// set the title

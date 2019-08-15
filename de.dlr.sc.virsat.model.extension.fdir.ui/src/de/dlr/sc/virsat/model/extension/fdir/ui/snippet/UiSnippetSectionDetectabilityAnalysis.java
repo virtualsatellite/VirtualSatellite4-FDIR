@@ -27,6 +27,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 
@@ -61,8 +62,8 @@ public class UiSnippetSectionDetectabilityAnalysis extends AUiSnippetSectionDete
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						monitor.setTaskName("Detectability Analysis");
-						AvailabilityAnalysis availAnalysis = new AvailabilityAnalysis((CategoryAssignment) model);
-						Command availabilityAnalysisCommand = availAnalysis
+						DetectabilityAnalysis detectAnalysis = new DetectabilityAnalysis((CategoryAssignment) model);
+						Command availabilityAnalysisCommand = detectAnalysis
 								.perform((TransactionalEditingDomain) editingDomain, monitor);
 						if (monitor.isCanceled()) {
 							return Status.CANCEL_STATUS;

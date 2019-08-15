@@ -76,13 +76,24 @@ public abstract class ATestCase {
 	/**
 	 * Test helper for setting up the fault tree data
 	 * @param resourcePath the fault tree to load
+	 * @param concept the concept to use
+	 * @return loaded fault tree
+	 * @throws IOException 
+	 */
+	public static Fault createDFT(String resourcePath, Concept concept) throws IOException {
+		InputStream is = TestActivator.getResourceContentAsString(resourcePath);
+		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
+		return converter.convert();
+	}
+
+	/**
+	 * Test helper for setting up the fault tree data
+	 * @param resourcePath the fault tree to load
 	 * @return loaded fault tree
 	 * @throws IOException 
 	 */
 	public Fault createDFT(String resourcePath) throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString(resourcePath);
-		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
-		return converter.convert();
+		return createDFT(resourcePath, concept);
 	}
 	
 	/**

@@ -41,7 +41,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  *
  */
 
-public class FaultTreeEvaluator implements IFaultTreeEvaluator {
+public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	
 	public static final float DEFAULT_EPS = 0.001f;
 	public static final float DEFAULT_DELTA = 0.1f;
@@ -58,7 +58,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailLabelProvider failLabelProvider, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -166,5 +166,4 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	public Object getStatistics() {
 		return evaluator.getStatistics();
 	}
-
 }

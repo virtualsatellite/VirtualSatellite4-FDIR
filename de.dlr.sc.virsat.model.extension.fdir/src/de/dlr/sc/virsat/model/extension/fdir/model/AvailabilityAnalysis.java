@@ -129,11 +129,9 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 			@Override
 			protected void doExecute() {
 				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
-				if (result.getPointAvailability() != null) {
-					getAvailabilityCurve().clear();
-					for (int i = 0; i < result.getPointAvailability().size(); ++i) {
-						createNewAvailabilityCurveEntry(result.getPointAvailability().get(i));
-					}
+				getAvailabilityCurve().clear();
+				for (int i = 0; i < result.getPointAvailability().size(); ++i) {
+					createNewAvailabilityCurveEntry(result.getPointAvailability().get(i));
 				}
 			}
 		};

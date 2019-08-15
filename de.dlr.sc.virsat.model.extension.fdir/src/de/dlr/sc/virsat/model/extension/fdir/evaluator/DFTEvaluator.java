@@ -48,7 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  * @author muel_s8
  *
  */
-public class DFTEvaluator implements IFaultTreeEvaluator {
+public class DFTEvaluator extends AFaultTreeEvaluator {
 
 	public static final int MODULE_SPLIT_SIZE_BES = 20;
 	
@@ -85,7 +85,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailLabelProvider failLabelProvider, IMetric... metrics) {
 		statistics = new DFTEvaluationStatistics();
 		statistics.time = System.currentTimeMillis();
 		
