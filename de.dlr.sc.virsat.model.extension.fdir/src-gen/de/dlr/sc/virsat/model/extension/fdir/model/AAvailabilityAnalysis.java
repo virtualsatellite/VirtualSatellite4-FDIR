@@ -56,7 +56,7 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	public static final String PROPERTY_REMAININGMISSIONTIME = "remainingMissionTime";
 	public static final String PROPERTY_TIMESTEP = "timestep";
 	public static final String PROPERTY_STEADYSTATEAVAILABILITY = "steadyStateAvailability";
-	public static final String PROPERTY_POINTAVAILABILITYCURVE = "pointAvailabilityCurve";
+	public static final String PROPERTY_AVAILABILITYCURVE = "availabilityCurve";
 	
 	
 	
@@ -187,19 +187,19 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	}
 	
 	// *****************************************************************
-	// * Array Attribute: pointAvailabilityCurve
+	// * Array Attribute: availabilityCurve
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> pointAvailabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> availabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessPointAvailabilityCurve() {
-		if (pointAvailabilityCurve.getArrayInstance() == null) {
-			pointAvailabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("pointAvailabilityCurve"));
+	private void safeAccessAvailabilityCurve() {
+		if (availabilityCurve.getArrayInstance() == null) {
+			availabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityCurve"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getPointAvailabilityCurve() {
-		safeAccessPointAvailabilityCurve();
-		return pointAvailabilityCurve;
+	public IBeanList<BeanPropertyFloat> getAvailabilityCurve() {
+		safeAccessAvailabilityCurve();
+		return availabilityCurve;
 	}
 	
 	
