@@ -118,6 +118,10 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.MCSAnalysis"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysis">
 		</CategoryAssignmentBean>

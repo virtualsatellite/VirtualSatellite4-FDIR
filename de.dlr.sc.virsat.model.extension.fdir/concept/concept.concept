@@ -115,7 +115,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	
 		Type faultTree of Category FaultTree description "The Fault Tree explaining the indirect causes of this Fault";
 		Type reliabilityAnalysis[] of Category ReliabilityAnalysis description "Optional reliability analysis information for this single fault";
-		Type availabilityAnalysis[] of Category AvailabilityAnalysis description "Optional reliability analysis information for this single fault";
+		Type availabilityAnalysis[] of Category AvailabilityAnalysis description "Optional availability analysis information for this single fault";
+		Type detectabilityAnalysis[] of Category DetectabilityAnalysis description "Optional detectability analysis information for this single fault";
 	}
 	
 	Category BasicEvent extends FaultEvent {
@@ -190,6 +191,19 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent";
 		FloatProperty availabilityCurve[] quantityKind "Dimensionless" unit "Percent";
+		
+		Ref: remainingMissionTime = FDIRParameters.missionTime;
+		Ref: timestep = FDIRParameters.timestep;
+	}
+	
+	Category DetectabilityAnalysis {
+		Cardinality 1;
+		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
+		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
+		FloatProperty detectability quantityKind "Dimensionless" unit "Percent";
+		FloatProperty steadyStateDetectability quantityKind "Dimensionless" unit "Percent";
+		FloatProperty meanTimeToDetection quantityKind "Time" unit "Hour";
+		FloatProperty detectabilityCurve[] quantityKind "Dimensionless" unit "Percent";
 		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
 		Ref: timestep = FDIRParameters.timestep;

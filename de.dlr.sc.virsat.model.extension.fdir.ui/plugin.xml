@@ -132,6 +132,10 @@
 		pathToImage="resources/icons/AvailabilityAnalysis.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis"
+		pathToImage="resources/icons/DetectabilityAnalysis.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.MCSAnalysis"
 		pathToImage="resources/icons/MCSAnalysis.gif">
 	</conceptImage>
@@ -280,6 +284,10 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddAvailabilityAnalysis"
 		name="Add AvailabilityAnalysis">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis"
+		name="Add DetectabilityAnalysis">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis"
@@ -445,6 +453,11 @@
 	      icon="resources/icons/AvailabilityAnalysis.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis"
+	      disabledIcon="resources/icons/DetectabilityAnalysis_disabled.gif"
+	      icon="resources/icons/DetectabilityAnalysis.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis"
 	      disabledIcon="resources/icons/MCSAnalysis_disabled.gif"
 	      icon="resources/icons/MCSAnalysis.gif">
@@ -590,6 +603,10 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddAvailabilityAnalysisHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddAvailabilityAnalysis">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddDetectabilityAnalysisHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMCSAnalysisHandler"
@@ -1223,6 +1240,28 @@
 			</visibleWhen>
 		</command>
 		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis"
 			style="push">
 			<visibleWhen
@@ -1719,6 +1758,11 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultDetectabilityAnalysisDetectabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultDetectabilityAnalysisDetectabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEvent"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableBasicEvent">
@@ -1822,6 +1866,21 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisAvailabilityCurve"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisAvailabilityCurve">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDetectabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDetectabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetDetectabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionDetectabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDetectabilityAnalysisDetectabilityCurve"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDetectabilityAnalysisDetectabilityCurve">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysis"
