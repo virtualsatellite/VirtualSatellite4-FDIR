@@ -192,7 +192,7 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 		int spareRectX = width / 2;
 		int spareRectY = height + SPARE_RECT_POS_Y;
 		int spareRectWidth = spareRectX;
-		int spareRectHeight = height - spareRectY;
+		int spareRectHeight = containerShape.getGraphicsAlgorithm().getHeight() - spareRectY;
 	
 		List<Anchor> spareAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.SPARE);
 		for (int i = 0; i < spareAnchors.size(); ++i) {
