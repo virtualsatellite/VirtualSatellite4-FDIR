@@ -142,9 +142,30 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];
 		
+		Queue<MarkovState> toProcess = new LinkedList<>();
+		toProcess.addAll(mc.getFinalStates());
+		Set<MarkovState> failableStates = new HashSet<>();
+		
+		while (!toProcess.isEmpty()) {
+			MarkovState state = toProcess.poll();
+			if (failableStates.add(state)) {
+				List<?> transitions = mc.getPredTransitions(state);
+				for (int j = 0; j < transitions.size(); ++j) {
+					@SuppressWarnings("unchecked")
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+					toProcess.add(transition.getFrom());
+				}
+			}
+		}
+		
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = mc.getStates().get(i);
 			if (!mc.getFinalStates().contains(state)) {
+				if (!failableStates.contains(state)) {
+					inititalVector[i] = Double.POSITIVE_INFINITY;
+					continue;
+				}
+				
 				List<?> transitions = mc.getSuccTransitions(state);
 				double exitRate = 0;
 				for (int j = 0; j < transitions.size(); ++j) {
@@ -282,6 +303,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			double change = Math.abs(res[0] - resultBuffer[0]);
 			
 			if (change < eps || Double.isNaN(change)) {
+				if (Double.isInfinite(res[0])) {
+					resultBuffer[0] = Double.POSITIVE_INFINITY;
+				}
 				probabilityDistribution = resultBuffer;
 				convergence = true;
 			} else {
@@ -327,7 +351,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			iterate(tm);
 			double newUnavailability = getFailRate();
 			difference = Math.abs(newUnavailability - oldUnavailability);
-			if (difference < (eps / delta) || Double.isNaN(difference)) {
+			
+			if (difference < eps / Math.max(1, delta) || Double.isNaN(difference)) {
 				convergence = true;
 			}
 			oldUnavailability = newUnavailability;

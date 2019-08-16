@@ -24,7 +24,7 @@ public abstract class AFaultTreeEvaluator implements IFaultTreeEvaluator {
 
 	@Override
 	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
-		return evaluateFaultTree(root, new FailLabelProvider(root), metrics);
+		return evaluateFaultTree(root, null, metrics);
 	}
 
 	@Override

@@ -2274,9 +2274,9 @@
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityAnalysisReliabilityCurve">
 	</uiSnippet>
 	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisPointAvailabilityCurve"
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisAvailabilityCurve"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve">
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisAvailabilityCurve">
 	</uiSnippet>
 	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysisMinimumCutSetsCutSet"

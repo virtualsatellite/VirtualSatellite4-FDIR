@@ -9,14 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-// *****************************************************************
-// * Import Statements
-// *****************************************************************
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
@@ -35,6 +27,15 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+// *****************************************************************
+// * Import Statements
+// *****************************************************************
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -49,7 +50,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
  * 
  */
 public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
-	private static final double EPS = 0.0001;
+	private static final double EPS = 0.000001;
 	
 	/**
 	 * Constructor of Concept Class
@@ -75,6 +76,12 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		super(categoryAssignment);
 	}
 
+	/**
+	 * Performs a detectability analysis
+	 * @param editingDomain the editing domain
+	 * @param monitor the montior
+	 * @return the command for executing the detectability analysis
+	 */
 	public Command perform(TransactionalEditingDomain editingDomain, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
@@ -102,8 +109,24 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		subMonitor.split(1);
 		subMonitor.setTaskName("Performing Model Checking");
 		
-		ModelCheckingResult result = ftEvaluator
-				.evaluateFaultTree(fault, new PointAvailability(maxTime));
+		FailLabelProvider failLabelProvider = new FailLabelProvider(fault);
+		//failLabelProvider.getFailLabels().get(fault).add(FailLabel.UNOBSERVED);
+
+		ModelCheckingResult resultUnobservedFailure = ftEvaluator
+				.evaluateFaultTree(fault, failLabelProvider, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
+		
+		double steadyStateUnavailability = 1 - resultUnobservedFailure.getSteadyStateAvailability();
+		double meanTimeToUndetectedFailure = resultUnobservedFailure.getMeanTimeToFailure();
+		
+		failLabelProvider.getFailLabels().get(fault).add(FailLabel.OBSERVED);
+		
+		ModelCheckingResult resultObservedFailure = ftEvaluator
+				.evaluateFaultTree(fault, failLabelProvider, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
+		double meanTimeToDetectedFailure = resultObservedFailure.getMeanTimeToFailure();
+		double steadyStateObservedUnavailability = 1 - resultObservedFailure.getSteadyStateAvailability();
+		
+		double meanTimeToDetection = Double.isInfinite(meanTimeToDetectedFailure) ? Double.POSITIVE_INFINITY : meanTimeToDetectedFailure - meanTimeToUndetectedFailure;
+		double steadyStateDetectability = steadyStateObservedUnavailability / steadyStateUnavailability;
 		
 		if (monitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
@@ -111,14 +134,18 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		subMonitor.split(1);
 		subMonitor.setTaskName("Updating Results");
 		
-		double steadyStateDetectability = result.getSteadyStateAvailability();
 		return new RecordingCommand(editingDomain, "Detectability Analysis") {
 			@Override
 			protected void doExecute() {
 				getSteadyStateDetectabilityBean().setValueAsBaseUnit(steadyStateDetectability);
+				double detectability = (1 - resultObservedFailure.getPointAvailability().get(resultUnobservedFailure.getPointAvailability().size() - 1)) 
+						/ (1 - resultUnobservedFailure.getPointAvailability().get(resultUnobservedFailure.getPointAvailability().size() - 1));
+				getDetectabilityBean().setValueAsBaseUnit(detectability);
+				getMeanTimeToDetectionBean().setValueAsBaseUnit(meanTimeToDetection);
 				getDetectabilityCurve().clear();
-				for (int i = 0; i < result.getPointAvailability().size(); ++i) {
-					createNewDetectabilityCurveEntry(result.getPointAvailability().get(i));
+				for (int i = 0; i < resultUnobservedFailure.getPointAvailability().size(); ++i) {
+					detectability = (1 - resultObservedFailure.getPointAvailability().get(i)) / (1 - resultUnobservedFailure.getPointAvailability().get(i));
+					createNewDetectabilityCurveEntry(detectability);
 				}
 			}
 		};

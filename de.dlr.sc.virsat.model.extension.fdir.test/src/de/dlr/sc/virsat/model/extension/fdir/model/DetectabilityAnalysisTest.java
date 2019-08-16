@@ -53,6 +53,8 @@ import de.dlr.sc.virsat.project.resources.VirSatResourceSet;
 public class DetectabilityAnalysisTest extends ADetectabilityAnalysisTest {
 	private IProject project;
 	private VirSatTransactionalEditingDomain ed;
+	private StructuralElementInstance sei;
+	private DetectabilityAnalysis detectabilityAnalysis;
 
 	@Before
 	public void setup() throws CoreException {
@@ -64,6 +66,13 @@ public class DetectabilityAnalysisTest extends ADetectabilityAnalysisTest {
 
 		VirSatResourceSet rs = VirSatResourceSet.getResourceSet(project, false);
 		ed = VirSatEditingDomainRegistry.INSTANCE.getEd(rs);
+		
+		StructuralElement se = StructuralFactory.eINSTANCE.createStructuralElement();
+		sei = new StructuralInstantiator().generateInstance(se, "System");
+		detectabilityAnalysis = new DetectabilityAnalysis(concept);
+		detectabilityAnalysis.setRemainingMissionTime(1);
+		final double TEST_DELTA = 0.01;
+		detectabilityAnalysis.setTimestep(TEST_DELTA);
 	}
 
 	@After
@@ -75,14 +84,8 @@ public class DetectabilityAnalysisTest extends ADetectabilityAnalysisTest {
 
 	@Test
 	public void testPerform() throws IOException {
-		StructuralElement se = StructuralFactory.eINSTANCE.createStructuralElement();
-		StructuralElementInstance sei = new StructuralInstantiator().generateInstance(se, "System");
-		DetectabilityAnalysis detectabilityAnalysis = new DetectabilityAnalysis(concept);
-		detectabilityAnalysis.setRemainingMissionTime(1);
-		final double TEST_DELTA = 0.1;
-		detectabilityAnalysis.setTimestep(TEST_DELTA);
-
-		Fault fault = ATestCase.createDFT("/resources/galileoObs/obsOr2ObsBeUnreliabilityObsBE.dft", concept);
+		Fault fault = ATestCase.createDFT("/resources/galileoObs/obsOr2ObsBe2.dft", concept);
+		fault.getDetectabilityAnalysis().add(detectabilityAnalysis);
 		sei.getCategoryAssignments().add(fault.getTypeInstance());
 		
 		Command analysisCommand = detectabilityAnalysis.perform(ed, new NullProgressMonitor());
@@ -91,11 +94,35 @@ public class DetectabilityAnalysisTest extends ADetectabilityAnalysisTest {
 
 		analysisCommand.execute();
 
-		final long EXPECTED_NUMBER_OF_RELIABILITY_VALUES = 11;
-		assertEquals(EXPECTED_NUMBER_OF_RELIABILITY_VALUES, detectabilityAnalysis.getDetectabilityCurve().size());
+		final long EXPECTED_NUMBER_OF_DETECTABILITY_VALUES = 101;
+		assertEquals(EXPECTED_NUMBER_OF_DETECTABILITY_VALUES, detectabilityAnalysis.getDetectabilityCurve().size());
 		final double EPS = 0.001;
-		assertEquals(1, detectabilityAnalysis.getMeanTimeToDetection(), EPS);
-		assertEquals(0.5, detectabilityAnalysis.getDetectability(), EPS);
-		assertEquals(0.5, detectabilityAnalysis.getSteadyStateDetectability(), EPS);
+		
+		final double EXPECTED_MEAN_TIME_TO_DETECTION = 0;
+		assertEquals(EXPECTED_MEAN_TIME_TO_DETECTION, detectabilityAnalysis.getMeanTimeToDetection(), EPS);
+		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
+		assertEquals(EXPECTED_STEADY_STATE_DETECTABILITY, detectabilityAnalysis.getSteadyStateDetectability(), EPS);
+	}
+	
+	@Test
+	public void testPerformObsOr2ObsBe2Delayed() throws IOException {
+		Fault fault = ATestCase.createDFT("/resources/galileoObs/obsOr2ObsBe2Delayed.dft", concept);
+		fault.getDetectabilityAnalysis().add(detectabilityAnalysis);
+		sei.getCategoryAssignments().add(fault.getTypeInstance());
+		
+		Command analysisCommand = detectabilityAnalysis.perform(ed, new NullProgressMonitor());
+
+		assertTrue(analysisCommand.canExecute());
+
+		analysisCommand.execute();
+
+		final long EXPECTED_NUMBER_OF_DETECTABILITY_VALUES = 101;
+		assertEquals(EXPECTED_NUMBER_OF_DETECTABILITY_VALUES, detectabilityAnalysis.getDetectabilityCurve().size());
+		final double EPS = 0.001;
+		
+		final double EXPECTED_MEAN_TIME_TO_DETECTION = 0.75;
+		assertEquals(EXPECTED_MEAN_TIME_TO_DETECTION, detectabilityAnalysis.getMeanTimeToDetection(), EPS);
+		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
+		assertEquals(EXPECTED_STEADY_STATE_DETECTABILITY, detectabilityAnalysis.getSteadyStateDetectability(), EPS);
 	}
 }

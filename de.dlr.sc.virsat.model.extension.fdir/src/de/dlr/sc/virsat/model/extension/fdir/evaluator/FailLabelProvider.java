@@ -9,8 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,17 +31,16 @@ public class FailLabelProvider {
 	 *
 	 */
 	public enum FailLabel {
-		FAILED, OBSERVED, PERMANENT
+		FAILED, OBSERVED, UNOBSERVED, PERMANENT
 	}
 
 	private Map<FaultTreeNode, Set<FailLabel>> failLabels;
 
 	/**
 	 * Standard constructor
-	 * @param failLabels the fail labels
 	 */
-	public FailLabelProvider(Map<FaultTreeNode, Set<FailLabel>> failLabels) {
-		this.failLabels = failLabels;
+	public FailLabelProvider() {
+		this.failLabels = new HashMap<>();
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class FailLabelProvider {
 	 */
 	public FailLabelProvider(FaultTreeNode root) {
 		this.failLabels = new HashMap<>();
-		this.failLabels.put(root, Collections.singleton(FailLabel.FAILED));
+		this.failLabels.put(root, new HashSet<>(Arrays.asList(FailLabel.FAILED)));
 	}
 	
 	/**

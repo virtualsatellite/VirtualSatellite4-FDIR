@@ -45,6 +45,8 @@ public class DFT2MAConverter {
 	private FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
 	private FailLabelProvider failLabelProvider;
 	
+	private boolean allowsDontCareFailing = true;
+	
 	private FaultTreeNode root;
 	
 	private MarkovAutomaton<DFTState> ma;
@@ -71,7 +73,7 @@ public class DFT2MAConverter {
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailLabelProvider failLabelProvider) {
 		statistics.time = System.currentTimeMillis();
 		this.root = root;
-		this.failLabelProvider = failLabelProvider;
+		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : new FailLabelProvider(root);
 		
 		init();
 		staticAnalysis();
@@ -85,13 +87,12 @@ public class DFT2MAConverter {
 	}
 	
 	/**
-	 * Same as {@link DFT2MAConverter#convert(FaultTreeNode, FailLabelProvider)} with the root node
-	 * forming the fail criterion. 
+	 * Same as {@link DFT2MAConverter#convert(FaultTreeNode, FailLabelProvider)} with a null fail criterion
 	 * @param root a fault tree node used as a root node for the conversion
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
-		return convert(root, new FailLabelProvider(root));
+		return convert(root, null);
 	}
 	
 	/**
@@ -250,7 +251,9 @@ public class DFT2MAConverter {
 				}
 					
 				for (DFTState succ : succs) {
-					succ.failDontCares(changedNodes, orderDependentBasicEvents);
+					if (allowsDontCareFailing) {
+						succ.failDontCares(changedNodes, orderDependentBasicEvents);
+					}
 					
 					DFTState equivalentState = getEquivalentState(succ);
 					
@@ -325,6 +328,11 @@ public class DFT2MAConverter {
 							return;
 						}
 						break;
+					case UNOBSERVED:
+						if (!(state instanceof PODFTState) || ((PODFTState) state).isNodeFailObserved(node)) {
+							return;
+						}
+						break;
 					case PERMANENT:
 						if (!state.isFaultTreeNodePermanent(node)) {
 							return;
@@ -353,7 +361,7 @@ public class DFT2MAConverter {
 			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
 			boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
-			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
+			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.getOrDefault(event.getNode(), Collections.emptySet()))) {
 				return -1;
 			}
 			
@@ -447,6 +455,14 @@ public class DFT2MAConverter {
 	 */
 	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
 		this.symmetryChecker = symmetryChecker;
+	}
+	
+	/**
+	 * Configugres the propertey whether dont care failing is allowed
+	 * @param allowsDontCareFailing set to true to enable dont care failing of states
+	 */
+	public void setAllowsDontCareFailing(boolean allowsDontCareFailing) {
+		this.allowsDontCareFailing = allowsDontCareFailing;
 	}
 	
 	/**

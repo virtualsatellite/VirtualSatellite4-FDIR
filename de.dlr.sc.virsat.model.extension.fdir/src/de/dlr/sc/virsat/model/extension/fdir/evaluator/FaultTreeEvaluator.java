@@ -70,13 +70,13 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, metrics);
+		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failLabelProvider, metrics);
 		if (!result.getMinCutSets().isEmpty()) {
 			remapMinCutSets(result);
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Remaps the events of the computed mincut sets to the events of the original tree
 	 * @param result a model checking result
