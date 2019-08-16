@@ -47,6 +47,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.SPARETest;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAYTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirementTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.StateTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysisTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORTest;
@@ -87,6 +88,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	FMECAEntryTest.class,
 	ReliabilityAnalysisTest.class,
 	AvailabilityAnalysisTest.class,
+	DetectabilityAnalysisTest.class,
 	MCSAnalysisTest.class,
 	ReliabilityRequirementTest.class,
 	FaultToleranceRequirementTest.class,

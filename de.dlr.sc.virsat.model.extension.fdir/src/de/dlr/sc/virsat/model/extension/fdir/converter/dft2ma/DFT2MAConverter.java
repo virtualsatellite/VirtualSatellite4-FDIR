@@ -16,13 +16,16 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -40,6 +43,9 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class DFT2MAConverter {
 	private DFTSemantics dftSemantics = DFTSemantics.createNDDFTSemantics();
 	private FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
+	private FailLabelProvider failLabelProvider;
+	
+	private boolean allowsDontCareFailing = true;
 	
 	private FaultTreeNode root;
 	
@@ -61,11 +67,13 @@ public class DFT2MAConverter {
 	 * Converts a fault tree with the passed node as a root to a
 	 * Markov automaton.
 	 * @param root a fault tree node used as a root node for the conversion
+	 * @param failLabelProvider the fail criterion
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
-	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
+	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailLabelProvider failLabelProvider) {
 		statistics.time = System.currentTimeMillis();
 		this.root = root;
+		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : new FailLabelProvider(root);
 		
 		init();
 		staticAnalysis();
@@ -76,6 +84,15 @@ public class DFT2MAConverter {
 		statistics.time = System.currentTimeMillis() - statistics.time;
 		
 		return ma;
+	}
+	
+	/**
+	 * Same as {@link DFT2MAConverter#convert(FaultTreeNode, FailLabelProvider)} with a null fail criterion
+	 * @param root a fault tree node used as a root node for the conversion
+	 * @return the generated Markov automaton resulting from the conversion
+	 */
+	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
+		return convert(root, null);
 	}
 	
 	/**
@@ -234,7 +251,9 @@ public class DFT2MAConverter {
 				}
 					
 				for (DFTState succ : succs) {
-					succ.failDontCares(changedNodes, orderDependentBasicEvents);
+					if (allowsDontCareFailing) {
+						succ.failDontCares(changedNodes, orderDependentBasicEvents);
+					}
 					
 					DFTState equivalentState = getEquivalentState(succ);
 					
@@ -295,10 +314,38 @@ public class DFT2MAConverter {
 	 * @param state the state to check
 	 */
 	private void checkFailState(DFTState state) {
-		if (state.hasFaultTreeNodeFailed(root)) {
-			ma.getFinalStates().add(state);
-			state.setFailState(true);
+		for (Entry<FaultTreeNode, Set<FailLabelProvider.FailLabel>> failLabels : failLabelProvider.getFailLabels().entrySet()) {
+			FaultTreeNode node = failLabels.getKey();
+			for (FailLabelProvider.FailLabel failLabel : failLabels.getValue()) {
+				switch (failLabel) {
+					case FAILED:
+						if (!state.hasFaultTreeNodeFailed(node)) {
+							return;
+						}
+						break;
+					case OBSERVED:
+						if (!(state instanceof PODFTState) || !((PODFTState) state).isNodeFailObserved(node)) {
+							return;
+						}
+						break;
+					case UNOBSERVED:
+						if (!(state instanceof PODFTState) || ((PODFTState) state).isNodeFailObserved(node)) {
+							return;
+						}
+						break;
+					case PERMANENT:
+						if (!state.isFaultTreeNodePermanent(node)) {
+							return;
+						}
+						break;
+					default:
+						break;
+				}
+			}
 		}
+		
+		ma.getFinalStates().add(state);
+		state.setFailState(true);
 	}
 	
 	/**
@@ -314,7 +361,7 @@ public class DFT2MAConverter {
 			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
 			boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
-			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.get(event.getNode()))) {
+			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.getOrDefault(event.getNode(), Collections.emptySet()))) {
 				return -1;
 			}
 			
@@ -408,6 +455,14 @@ public class DFT2MAConverter {
 	 */
 	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
 		this.symmetryChecker = symmetryChecker;
+	}
+	
+	/**
+	 * Configugres the propertey whether dont care failing is allowed
+	 * @param allowsDontCareFailing set to true to enable dont care failing of states
+	 */
+	public void setAllowsDontCareFailing(boolean allowsDontCareFailing) {
+		this.allowsDontCareFailing = allowsDontCareFailing;
 	}
 	
 	/**

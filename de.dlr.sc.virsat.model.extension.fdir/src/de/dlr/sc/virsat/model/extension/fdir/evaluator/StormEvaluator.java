@@ -24,7 +24,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFT;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Fault Tree Evaluator using the STORM Engine.
@@ -32,7 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  *
  */
 
-public class StormEvaluator implements IFaultTreeEvaluator {
+public class StormEvaluator extends AFaultTreeEvaluator {
 	
 	private final double delta;
 	private ModelCheckingResult modelCheckingResult;
@@ -46,7 +45,7 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailLabelProvider failLabelProvider, IMetric... metrics) {
 		
 		DFT2GalileoDFT converter = new DFT2GalileoDFT(false);
 		GalileoDft dft = converter.convert((Fault) root);
@@ -84,16 +83,5 @@ public class StormEvaluator implements IFaultTreeEvaluator {
 	 */
 	protected StormRunner<Double> createStormRunner(IStormProgram<Double> storm) {
 		return new StormRunner<>(storm, FaultTreePreferences.getStormExecutionEnvironmentPreference());
-	}
-
-	@Override
-	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
-		// Storm doesnt work with recovery strategies
-	}
-
-	@Override
-	public Object getStatistics() {
-		// TODO Actual statistics
-		return new Object();
 	}
 }

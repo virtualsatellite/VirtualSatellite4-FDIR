@@ -145,7 +145,7 @@ public class FMECATest extends AFMECATest {
 		FMECAEntry entry = entries.get(0);
 		assertEquals(fault, entry.getFailure());
 		assertEquals(fm, entry.getFailureMode());
-		assertEquals(Double.NaN, entry.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(Double.POSITIVE_INFINITY, entry.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test

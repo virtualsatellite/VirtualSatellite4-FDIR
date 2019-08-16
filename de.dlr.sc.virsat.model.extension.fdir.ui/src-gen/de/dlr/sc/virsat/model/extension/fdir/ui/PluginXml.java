@@ -648,10 +648,10 @@ public class PluginXml {
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
 			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionAvailabilityAnalysis";
 		}	
-		public static class UiSnippetTableUiSnippetAvailabilityAnalysisPointAvailabilityCurve {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisPointAvailabilityCurve";
+		public static class UiSnippetTableUiSnippetAvailabilityAnalysisAvailabilityCurve {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisAvailabilityCurve";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
-			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisAvailabilityCurve";
 		}	
 		public static class UiSnippetTableUiSnippetMCSAnalysis {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysis";

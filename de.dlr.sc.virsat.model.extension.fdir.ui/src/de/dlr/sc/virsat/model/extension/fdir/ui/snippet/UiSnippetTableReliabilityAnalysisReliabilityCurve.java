@@ -130,10 +130,11 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true);
 		plot.setRenderer(renderer);
+		renderer.setSeriesVisibleInLegend(0, false);
 		renderer.setBaseShapesVisible(false);
 
 		// set the title
-		TextTitle myChartTitel = new TextTitle("Reliability / Mission Success [%]",
+		TextTitle myChartTitel = new TextTitle("",
 				new Font("SansSerif", Font.BOLD, FONT_SIZE));
 		chart.setTitle(myChartTitel);
 
@@ -191,11 +192,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 		public String getSeries(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			Fault fault = relAnalysis.getParentCaBeanOfClass(Fault.class);
-			if (fault != null) {
-				return "Reliability of " + fault.getName();
-			} else {
-				return "Please add a fault";
-			}
+			return "Reliability of " + fault.getName();
 		}
 	}
 }

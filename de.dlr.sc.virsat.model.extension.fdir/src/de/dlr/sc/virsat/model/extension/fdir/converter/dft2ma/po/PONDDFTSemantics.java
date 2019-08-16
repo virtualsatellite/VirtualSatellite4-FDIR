@@ -67,7 +67,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			if (observers != null) {
 				double observationRate = 0;
 				for (OBSERVER observer : observers) {
-					observationRate += observer.getObservationRate();
+					observationRate += observer.getObservationRateBean().getValueToBaseUnit();
 				}
 				
 				if (observationRate > 0) {
@@ -97,6 +97,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 			for (DFTState state : succs) {
 				PODFTState poState = (PODFTState) state;
 				poState.setNodeFailObserved(observedNode, state.hasFaultTreeNodeFailed(observedNode));
+				for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(observedNode)) {
+					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(observedNode));
+				}
+				
 				for (FaultTreeNode child : ftHelper.getAllNodes(observedNode.getFault())) {
 					if (child instanceof SPARE) {
 						possiblyFailedSpareGates.add(child);
@@ -113,6 +117,11 @@ public class PONDDFTSemantics extends DFTSemantics {
 						anyObservation = true;
 						PODFTState poState = (PODFTState) state;
 						poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
+						
+						for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
+							poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
+						}
+						
 						for (FaultTreeNode child : ftHelper.getAllNodes(node.getFault())) {
 							if (child instanceof SPARE) {
 								possiblyFailedSpareGates.add(child);

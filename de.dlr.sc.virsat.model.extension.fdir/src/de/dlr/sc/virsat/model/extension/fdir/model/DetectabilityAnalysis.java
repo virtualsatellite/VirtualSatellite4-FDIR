@@ -17,6 +17,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
@@ -31,6 +32,8 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
@@ -46,49 +49,40 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  * 
  * 
  */
-public class AvailabilityAnalysis extends AAvailabilityAnalysis {
-	private static final double EPS = 0.0001;
-
+public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
+	private static final double EPS = 0.000001;
+	
 	/**
 	 * Constructor of Concept Class
 	 */
-	public AvailabilityAnalysis() {
+	public DetectabilityAnalysis() {
 		super();
 	}
 
 	/**
-	 * Constructor of Concept Class which will instantiate a CategoryAssignment in
-	 * the background from the given concept
-	 * 
-	 * @param concept
-	 *            the concept where it will find the correct Category to instantiate
-	 *            from
+	 * Constructor of Concept Class which will instantiate 
+	 * a CategoryAssignment in the background from the given concept
+	 * @param concept the concept where it will find the correct Category to instantiate from
 	 */
-	public AvailabilityAnalysis(Concept concept) {
+	public DetectabilityAnalysis(Concept concept) {
 		super(concept);
-	}
+	}	
 
 	/**
-	 * Constructor of Concept Class that can be initialized manually by a given
-	 * Category Assignment
-	 * 
-	 * @param categoryAssignment
-	 *            The category Assignment to be used for background initialization
-	 *            of the Category bean
+	 * Constructor of Concept Class that can be initialized manually by a given Category Assignment
+	 * @param categoryAssignment The category Assignment to be used for background initialization of the Category bean
 	 */
-	public AvailabilityAnalysis(CategoryAssignment categoryAssignment) {
+	public DetectabilityAnalysis(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
 	}
 
 	/**
-	 * 
-	 * @param ed
-	 *            the editing domain
-	 * @param monitor
-	 *            the progress monitor
-	 * @return a command that sets the availability analysis
+	 * Performs a detectability analysis
+	 * @param editingDomain the editing domain
+	 * @param monitor the montior
+	 * @return the command for executing the detectability analysis
 	 */
-	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
+	public Command perform(TransactionalEditingDomain editingDomain, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
 		monitor.setTaskName("Availability Analysis");
@@ -115,8 +109,24 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		subMonitor.split(1);
 		subMonitor.setTaskName("Performing Model Checking");
 		
-		ModelCheckingResult result = ftEvaluator
-				.evaluateFaultTree(fault, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		FailLabelProvider failLabelProvider = new FailLabelProvider(fault);
+		//failLabelProvider.getFailLabels().get(fault).add(FailLabel.UNOBSERVED);
+
+		ModelCheckingResult resultUnobservedFailure = ftEvaluator
+				.evaluateFaultTree(fault, failLabelProvider, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
+		
+		double steadyStateUnavailability = 1 - resultUnobservedFailure.getSteadyStateAvailability();
+		double meanTimeToUndetectedFailure = resultUnobservedFailure.getMeanTimeToFailure();
+		
+		failLabelProvider.getFailLabels().get(fault).add(FailLabel.OBSERVED);
+		
+		ModelCheckingResult resultObservedFailure = ftEvaluator
+				.evaluateFaultTree(fault, failLabelProvider, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
+		double meanTimeToDetectedFailure = resultObservedFailure.getMeanTimeToFailure();
+		double steadyStateObservedUnavailability = 1 - resultObservedFailure.getSteadyStateAvailability();
+		
+		double meanTimeToDetection = Double.isInfinite(meanTimeToDetectedFailure) ? Double.POSITIVE_INFINITY : meanTimeToDetectedFailure - meanTimeToUndetectedFailure;
+		double steadyStateDetectability = steadyStateObservedUnavailability / steadyStateUnavailability;
 		
 		if (monitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
@@ -124,14 +134,18 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		subMonitor.split(1);
 		subMonitor.setTaskName("Updating Results");
 		
-		double steadyStateAvailability = result.getSteadyStateAvailability();
-		return new RecordingCommand(ed, "Availability Analysis") {
+		return new RecordingCommand(editingDomain, "Detectability Analysis") {
 			@Override
 			protected void doExecute() {
-				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
-				getAvailabilityCurve().clear();
-				for (int i = 0; i < result.getPointAvailability().size(); ++i) {
-					createNewAvailabilityCurveEntry(result.getPointAvailability().get(i));
+				getSteadyStateDetectabilityBean().setValueAsBaseUnit(steadyStateDetectability);
+				double detectability = (1 - resultObservedFailure.getPointAvailability().get(resultUnobservedFailure.getPointAvailability().size() - 1)) 
+						/ (1 - resultUnobservedFailure.getPointAvailability().get(resultUnobservedFailure.getPointAvailability().size() - 1));
+				getDetectabilityBean().setValueAsBaseUnit(detectability);
+				getMeanTimeToDetectionBean().setValueAsBaseUnit(meanTimeToDetection);
+				getDetectabilityCurve().clear();
+				for (int i = 0; i < resultUnobservedFailure.getPointAvailability().size(); ++i) {
+					detectability = (1 - resultObservedFailure.getPointAvailability().get(i)) / (1 - resultUnobservedFailure.getPointAvailability().get(i));
+					createNewDetectabilityCurveEntry(detectability);
 				}
 			}
 		};
@@ -143,12 +157,12 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 * @param value
 	 *            the new entry in the reliability curve
 	 */
-	private void createNewAvailabilityCurveEntry(double value) {
+	private void createNewDetectabilityCurveEntry(double value) {
 		CategoryInstantiator ci = new CategoryInstantiator();
-		APropertyInstance pi = ci.generateInstance(getAvailabilityCurve().getArrayInstance());
+		APropertyInstance pi = ci.generateInstance(getDetectabilityCurve().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
 		newBeanProperty.setValueAsBaseUnit(value);
-		getAvailabilityCurve().add(newBeanProperty);
+		getDetectabilityCurve().add(newBeanProperty);
 	}
 }

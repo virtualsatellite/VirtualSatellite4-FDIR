@@ -48,7 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  * @author muel_s8
  *
  */
-public class DFTEvaluator implements IFaultTreeEvaluator {
+public class DFTEvaluator extends AFaultTreeEvaluator {
 
 	public static final int MODULE_SPLIT_SIZE_BES = 20;
 	
@@ -85,7 +85,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailLabelProvider failLabelProvider, IMetric... metrics) {
 		statistics = new DFTEvaluationStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -94,9 +94,18 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
 		
+		if (dft2MAConverter.getDftSemantics() == poSemantics) {
+			dft2MAConverter.setSymmetryChecker(null);
+			dft2MAConverter.setAllowsDontCareFailing(false);
+		} else {
+			dft2MAConverter.setSymmetryChecker(new FaultTreeSymmetryChecker());
+			dft2MAConverter.setAllowsDontCareFailing(true);
+		}
+		
 		boolean canModularize = modularizer != null 
 				&& root instanceof Fault
-				&& dft2MAConverter.getDftSemantics() != poSemantics;
+				&& dft2MAConverter.getDftSemantics() != poSemantics
+				&& failLabelProvider == null;
 		
 		Set<Module> modules = null;
 		if (canModularize) {
@@ -138,12 +147,12 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 					Module representantModule = getModule(modules, representant);
 					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
 					if (representantResult == null) {
-						representantResult = modelCheckModule(representantModule, modelCheckerMetrics);
+						representantResult = modelCheckModule(representantModule, modelCheckerMetrics, failLabelProvider);
 						mapModuleToResult.put(representantModule, representantResult);
 					}
 					mapModuleToResult.put(module, representantResult);
 				} else {
-					mapModuleToResult.put(module, modelCheckModule(module, modelCheckerMetrics));
+					mapModuleToResult.put(module, modelCheckModule(module, modelCheckerMetrics, failLabelProvider));
 				}
 			}
 			
@@ -161,7 +170,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			return result;
 		} 
 		
-		mc = dft2MAConverter.convert(root);
+		mc = dft2MAConverter.convert(root, failLabelProvider);
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
 			
 		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
@@ -359,10 +368,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * Model checks an inidivudal module
 	 * @param module the module to model check
 	 * @param metrics the metrics to model check
+	 * @param failLabelProvider 
 	 * @return the result object containing the metrics
 	 */
-	private ModelCheckingResult modelCheckModule(Module module, IMetric[] metrics) {
-		mc = dft2MAConverter.convert(module.getRootNode());
+	private ModelCheckingResult modelCheckModule(Module module, IMetric[] metrics, FailLabelProvider failLabelProvider) {
+		mc = dft2MAConverter.convert(module.getRootNode(), failLabelProvider);
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
 			
 		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());

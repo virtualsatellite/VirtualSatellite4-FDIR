@@ -255,11 +255,11 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			if (gate instanceof VOTE) {
 				((VOTE) gate).setVotingThreshold(((VOTE) oldGate).getVotingThreshold());
 			} else if (gate instanceof OBSERVER) {
-				((OBSERVER) gate).setObservationRate(((OBSERVER) oldGate).getObservationRate());
+				((OBSERVER) gate).setObservationRate(((OBSERVER) oldGate).getObservationRateBean().getValueToBaseUnit());
 			} else if (gate instanceof RDEP) {
-				((RDEP) gate).setRateChange(((RDEP) oldGate).getRateChange());
+				((RDEP) gate).setRateChange(((RDEP) oldGate).getRateChangeBean().getValueToBaseUnit());
 			} else if (gate instanceof DELAY) {
-				((DELAY) gate).setTime(((DELAY) oldGate).getTime());
+				((DELAY) gate).setTime(((DELAY) oldGate).getTimeBean().getValueToBaseUnit());
 			}
 			
 			gate.setName(oldGate.getName());

@@ -11,11 +11,12 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddArrayElementPointAvailabilityCurveCommand;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
-import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetArrayInstancePropertyTable;
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetGenericCategoryAssignmentTable;
+import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddDetectabilityAnalysisCommand;
 
+;
 
 /**
  * Auto Generated Abstract Generator Gap Class
@@ -25,17 +26,16 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetArrayInstancePrope
  * 
  * 
  */	
-public abstract class AUiSnippetTableAvailabilityAnalysisPointAvailabilityCurve extends AUiSnippetArrayInstancePropertyTable implements IUiSnippet {
-
-	public AUiSnippetTableAvailabilityAnalysisPointAvailabilityCurve() {
+public abstract class AUiSnippetTableDetectabilityAnalysis extends AUiSnippetGenericCategoryAssignmentTable implements IUiSnippet {
+	public AUiSnippetTableDetectabilityAnalysis() {
 		super("de.dlr.sc.virsat.model.extension.fdir",
-			"pointAvailabilityCurve",
-			"AvailabilityAnalysis",
+			"DetectabilityAnalysis",
+			"de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis",
 			STYLE_ADD_BUTTON | STYLE_REMOVE_BUTTON | STYLE_EDITOR_BUTTON);
 	}
 
 	@Override
 	protected Command createAddCommand(EditingDomain editingDomain, Concept activeConcept) {
-		return new CreateAddArrayElementPointAvailabilityCurveCommand().create(editingDomain, getArrayInstance(model), null);
+		return new CreateAddDetectabilityAnalysisCommand().create(editingDomain, model, activeConcept);
 	}
 }

@@ -65,7 +65,10 @@
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="reliabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:ComposedProperty" name="availabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis">
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="availabilityAnalysis" description="Optional availability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="detectabilityAnalysis" description="Optional detectability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
@@ -173,6 +176,24 @@
     <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateAvailability" quantityKindName="Dimensionless" unitName="Percent"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="availabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+  </categories>
+  <categories name="DetectabilityAnalysis" cardinality="1">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis.remainingMissionTime"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.timestep"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis.timestep"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="remainingMissionTime" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToDetection" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>

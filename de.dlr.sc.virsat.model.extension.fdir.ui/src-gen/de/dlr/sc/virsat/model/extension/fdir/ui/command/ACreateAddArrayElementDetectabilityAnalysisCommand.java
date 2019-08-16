@@ -24,10 +24,10 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
  * 
  * Don't Manually modify this class
  * 
- * 
+ * Optional detectability analysis information for this single fault
  * 
  */	
-public abstract class ACreateAddArrayElementPointAvailabilityCurveCommand {
+public abstract class ACreateAddArrayElementDetectabilityAnalysisCommand {
 	
 	public Command create(EditingDomain editingDomain, ArrayInstance arrayInstance, Category type) {
 		ATypeInstance ati = new CategoryInstantiator().generateInstance(arrayInstance, type);

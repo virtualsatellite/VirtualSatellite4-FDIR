@@ -34,12 +34,13 @@ import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatTransactionalAdapterFactoryContentProvider;
 import de.dlr.sc.virsat.project.ui.labelProvider.VirSatTransactionalAdapterFactoryLabelProvider;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
+
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
@@ -49,9 +50,7 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  * 
  */
-public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
-		extends AUiSnippetTableAvailabilityAnalysisPointAvailabilityCurve implements IUiSnippet {
-
+public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSnippetTableDetectabilityAnalysisDetectabilityCurve implements IUiSnippet {
 	private static final int FONT_SIZE = 12;
 	private JFreeChart chart;
 	private ChartComposite chartComposite;
@@ -72,12 +71,12 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 				new VirSatTransactionalAdapterFactoryContentProvider(adapterFactory).setUpdateCaContainerLabels(true)) {
 			@Override
 			public Object[] getElements(Object inputElement) {
-				AvailabilityAnalysis availAnalysis = new AvailabilityAnalysis((CategoryAssignment) inputElement);
-				return new Object[] { availAnalysis };
+				DetectabilityAnalysis detectAnalysis = new DetectabilityAnalysis((CategoryAssignment) inputElement);
+				return new Object[] { detectAnalysis };
 			}
 		});
 
-		xyPlotChartViewer.setLabelProvider(new AvailabilityChartLabelProvider(adapterFactory));
+		xyPlotChartViewer.setLabelProvider(new DetectabilityChartLabelProvider(adapterFactory));
 		xyPlotChartViewer.setInput(model);
 		
 		super.setUpTableViewer(editingDomain, toolkit);
@@ -107,13 +106,13 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 	 * @return a configured line chart using the passed data set
 	 */
 	private JFreeChart createChart() {
-		AvailabilityAnalysis availabilityAnalysis = new AvailabilityAnalysis((CategoryAssignment) model);
-		String missionTimeUnit = availabilityAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit()
+		DetectabilityAnalysis detectabilityAnalysis = new DetectabilityAnalysis((CategoryAssignment) model);
+		String missionTimeUnit = detectabilityAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit()
 				.getSymbol();
 
 		dataset = new XYSeriesCollection();
 		JFreeChart chart = ChartFactory.createXYLineChart(null, "Mission Time [" + missionTimeUnit + "]",
-				"Availability [%]", dataset);
+				"Detectability [%]", dataset);
 
 		XYPlot plot = chart.getXYPlot();
 		plot.setNoDataMessage("No data available");
@@ -129,10 +128,12 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true);
 		plot.setRenderer(renderer);
+		renderer.setSeriesVisibleInLegend(0, false);
+		renderer.setSeriesPaint(0, Color.GREEN);
 		renderer.setBaseShapesVisible(false);
 
 		// set the title
-		TextTitle myChartTitel = new TextTitle("Availability / Mission Success [%]",
+		TextTitle myChartTitel = new TextTitle("",
 				new Font("SansSerif", Font.BOLD, FONT_SIZE));
 		chart.setTitle(myChartTitel);
 
@@ -150,7 +151,7 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 	 * @author yoge_re
 	 *
 	 */
-	private class AvailabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
+	private class DetectabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
 
 		/**
@@ -159,28 +160,24 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 		 * @param adapterFactory
 		 *            the adapter Factory
 		 */
-		AvailabilityChartLabelProvider(AdapterFactory adapterFactory) {
+		DetectabilityChartLabelProvider(AdapterFactory adapterFactory) {
 			super(adapterFactory);
 		}
 
 		@Override
 		public String getSeries(Object object) {
-			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			Fault fault = availAnalysis.getParentCaBeanOfClass(Fault.class);
-			if (fault != null) {
-				return "Availability of " + fault.getName();
-			} else {
-				return "Please add a fault";
-			}
+			DetectabilityAnalysis detectAnalysis = (DetectabilityAnalysis) object;
+			Fault fault = detectAnalysis.getParentCaBeanOfClass(Fault.class);
+			return "Detectability of " + fault.getName();
 		}
 
 		@Override
 		public Double[] getValuesX(Object object) {
-			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			double timestep = availAnalysis.getTimestepBean().getValueToBaseUnit();
-			double maxTime = availAnalysis.getRemainingMissionTime();
+			DetectabilityAnalysis detectAnalysis = (DetectabilityAnalysis) object;
+			double timestep = detectAnalysis.getTimestepBean().getValueToBaseUnit();
+			double maxTime = detectAnalysis.getRemainingMissionTime();
 			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(
-					availAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
+					detectAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
 			int steps = (int) (maxTime / delta);
 			Double[] timeSteps = new Double[steps + 1];
 			for (int time = 0; time <= steps; ++time) {
@@ -195,11 +192,11 @@ public class UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve
 
 		@Override
 		public Double[] getValuesY(Object object) {
-			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> availabilityCurve = availAnalysis.getAvailabilityCurve();
-			Double[] availabilityValues = availabilityCurve.stream().mapToDouble(beanFloat -> beanFloat.getValue())
+			DetectabilityAnalysis detectAnalysis = (DetectabilityAnalysis) object;
+			IBeanList<BeanPropertyFloat> detectCurve = detectAnalysis.getDetectabilityCurve();
+			Double[] detectValues = detectCurve.stream().mapToDouble(beanFloat -> beanFloat.getValue())
 					.boxed().toArray(Double[]::new);
-			return availabilityValues;
+			return detectValues;
 		}
 
 	}

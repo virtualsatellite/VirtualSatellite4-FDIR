@@ -9,28 +9,29 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.command;
 
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoriesPackage;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import de.dlr.sc.virsat.model.dvlm.categories.ATypeInstance;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
-import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import org.eclipse.emf.ecore.EObject;
 
+
+import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis;
 
 /**
  * Auto Generated Abstract Generator Gap Class
  * 
  * Don't Manually modify this class
  * 
- * Optional availability analysis information for this single fault
+ * 
  * 
  */	
-public abstract class ACreateAddArrayElementAvailabilityAnalysisCommand {
-	
-	public Command create(EditingDomain editingDomain, ArrayInstance arrayInstance, Category type) {
-		ATypeInstance ati = new CategoryInstantiator().generateInstance(arrayInstance, type);
-		return AddCommand.create(editingDomain, arrayInstance, PropertyinstancesPackage.Literals.ARRAY_INSTANCE__ARRAY_INSTANCES, ati);
+public abstract class ACreateAddDetectabilityAnalysisCommand {
+	public Command create(EditingDomain editingDomain, EObject owner, Concept activeConcept) {
+		DetectabilityAnalysis conceptObject = new DetectabilityAnalysis(activeConcept);
+		CategoryAssignment ca = conceptObject.getTypeInstance();
+		return AddCommand.create(editingDomain, owner, CategoriesPackage.Literals.ICATEGORY_ASSIGNMENT_CONTAINER__CATEGORY_ASSIGNMENTS, ca);
 	}
 }
