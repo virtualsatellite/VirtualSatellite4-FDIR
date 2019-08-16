@@ -104,7 +104,8 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		
 		boolean canModularize = modularizer != null 
 				&& root instanceof Fault
-				&& dft2MAConverter.getDftSemantics() != poSemantics;
+				&& dft2MAConverter.getDftSemantics() != poSemantics
+				&& failLabelProvider == null;
 		
 		Set<Module> modules = null;
 		if (canModularize) {

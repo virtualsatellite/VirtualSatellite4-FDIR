@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 

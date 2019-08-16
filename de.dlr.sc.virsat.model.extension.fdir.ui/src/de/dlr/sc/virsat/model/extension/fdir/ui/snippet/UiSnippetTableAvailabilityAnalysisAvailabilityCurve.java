@@ -128,10 +128,11 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true);
 		plot.setRenderer(renderer);
+		renderer.setSeriesVisibleInLegend(0, false);
 		renderer.setBaseShapesVisible(false);
 
 		// set the title
-		TextTitle myChartTitel = new TextTitle("Availability / Mission Success [%]",
+		TextTitle myChartTitel = new TextTitle("",
 				new Font("SansSerif", Font.BOLD, FONT_SIZE));
 		chart.setTitle(myChartTitel);
 
@@ -166,11 +167,7 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 		public String getSeries(Object object) {
 			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
 			Fault fault = availAnalysis.getParentCaBeanOfClass(Fault.class);
-			if (fault != null) {
-				return "Availability of " + fault.getName();
-			} else {
-				return "Please add a fault";
-			}
+			return "Availability of " + fault.getName();
 		}
 
 		@Override

@@ -2248,14 +2248,19 @@
 	</uiSnippet>
 
 	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultReliabilityAnalysisReliabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAvailabilityAnalysisAvailabilityAnalysis"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis">
 	</uiSnippet>
 	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultDetectabilityAnalysisDetectabilityAnalysis"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultReliabilityAnalysisReliabilityAnalysis">
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultDetectabilityAnalysisDetectabilityAnalysis">
 	</uiSnippet>
 	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECA"

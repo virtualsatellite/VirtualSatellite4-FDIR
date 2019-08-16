@@ -128,11 +128,12 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true);
 		plot.setRenderer(renderer);
+		renderer.setSeriesVisibleInLegend(0, false);
 		renderer.setSeriesPaint(0, Color.GREEN);
 		renderer.setBaseShapesVisible(false);
 
 		// set the title
-		TextTitle myChartTitel = new TextTitle("Detectability [%]",
+		TextTitle myChartTitel = new TextTitle("",
 				new Font("SansSerif", Font.BOLD, FONT_SIZE));
 		chart.setTitle(myChartTitel);
 
@@ -167,11 +168,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 		public String getSeries(Object object) {
 			DetectabilityAnalysis detectAnalysis = (DetectabilityAnalysis) object;
 			Fault fault = detectAnalysis.getParentCaBeanOfClass(Fault.class);
-			if (fault != null) {
-				return "Detectability of " + fault.getName();
-			} else {
-				return "Please add a fault";
-			}
+			return "Detectability of " + fault.getName();
 		}
 
 		@Override
