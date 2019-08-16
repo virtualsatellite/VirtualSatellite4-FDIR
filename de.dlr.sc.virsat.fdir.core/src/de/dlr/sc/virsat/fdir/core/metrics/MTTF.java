@@ -17,7 +17,7 @@ import java.util.List;
  * @author sascha
  *
  */
-public class MTTF implements IQuantitativeMetric {
+public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	public static final MTTF MTTF = new MTTF();
 	
 	/**
@@ -28,8 +28,14 @@ public class MTTF implements IQuantitativeMetric {
 	}
 	
 	@Override
-	public void accept(IMetricVisitor visitor) {
+	public void accept(IBaseMetricVisitor visitor) {
 		visitor.visit(this);
+	}
+	
+	@Override
+	public void accept(IDerivedMetricVisitor visitor) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	@Override

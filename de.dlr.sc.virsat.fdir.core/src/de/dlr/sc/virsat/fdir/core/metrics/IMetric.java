@@ -18,17 +18,5 @@ import java.util.List;
  */
 
 public interface IMetric {
-	
-	/**
-	 * Accept a visitor
-	 * @param visitor the visitor
-	 */
-	void accept(IMetricVisitor visitor);
-	
-	/**
-	 * Either empty if the metric cannot be derived from other metrics,
-	 * or otherwise the list of metrics required to derive this metric
-	 * @return the metrics this metric is derived from
-	 */
-	List<IMetric> getDerivedFrom();
+
 }

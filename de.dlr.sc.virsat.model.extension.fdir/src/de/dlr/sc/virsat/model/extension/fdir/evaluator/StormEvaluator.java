@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.storm.runner.IStormProgram;
@@ -57,7 +58,9 @@ public class StormEvaluator extends AFaultTreeEvaluator {
 			storm.setDelta(delta);
 			
 			for (IMetric metric : metrics) {
-				storm.addMetric(metric);
+				if (metric instanceof IBaseMetric) {
+					storm.addMetric((IBaseMetric) metric);
+				}
 			}
 			
 			List<Double> result = createStormRunner(storm).run();

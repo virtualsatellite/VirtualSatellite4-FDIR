@@ -22,11 +22,14 @@ import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -39,7 +42,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
  *
  */
 
-public class DFTMetricsComposer implements IMetricVisitor {
+public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVisitor {
 	
 	private ModelCheckingResult composedResult;
 	private long k;
@@ -52,12 +55,12 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	 * @param metrics the metrics to compose
 	 * @return the composed result
 	 */
-	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, long k, IMetric... metrics) {
+	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, long k, IBaseMetric... metrics) {
 		this.k = k;
 		this.subModuleResults = subModuleResults;
 		this.composedResult = new ModelCheckingResult();
 		
-		for (IMetric metric : metrics) {
+		for (IBaseMetric metric : metrics) {
 			metric.accept(this);
 		}
 		
@@ -72,10 +75,10 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	 * @param metrics the metrics to compute
 	 * @return 
 	 */
-	public void compose(ModelCheckingResult composedResult, IMetric[] metrics) {
+	public void derive(ModelCheckingResult composedResult, IDerivedMetric... metrics) {
 		this.composedResult = composedResult;
 		
-		for (IMetric metric : metrics) {
+		for (IDerivedMetric metric : metrics) {
 			metric.accept(this);
 		}
 	}
@@ -154,7 +157,7 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	}
 
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
+	public void visit(Availability pointAvailabilityMetric) {
 		int countPoints = 0;
 		for (ModelCheckingResult subModuleResult : subModuleResults) {
 			countPoints = Math.max(countPoints, subModuleResult.getPointAvailability().size());

@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
@@ -115,9 +118,9 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		}
 		
 		if (canModularize) {
-			Entry<IMetric[], IMetric[]> metricSplit = splitMetrics(metrics);
-			IMetric[] composableMetrics = metricSplit.getKey();
-			IMetric[] derivedMetrics = metricSplit.getValue();
+			Entry<IBaseMetric[], IDerivedMetric[]> metricSplit = splitMetrics(metrics);
+			IBaseMetric[] composableMetrics = metricSplit.getKey();
+			IDerivedMetric[] derivedMetrics = metricSplit.getValue();
 			
 			Module topLevelModule = getModule(modules, root);
 			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
@@ -160,7 +163,7 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 			ModelCheckingResult result = mapModuleToResult.get(topLevelModule);
 			
 			if (modulesToModelCheck.size() > 1) {
-				composer.compose(result, derivedMetrics);
+				composer.derive(result, derivedMetrics);
 				result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
 				int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
 				result.limitPointMetrics(steps);
@@ -342,25 +345,29 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 	 * @param metrics the original metrics
 	 * @return a pair of composable and uncomposable metric sets
 	 */
-	private Entry<IMetric[], IMetric[]> splitMetrics(IMetric[] metrics) {
-		List<IMetric> composableMetrics = new ArrayList<>();
-		List<IMetric> derivedMetrics = new ArrayList<>();
+	private Entry<IBaseMetric[], IDerivedMetric[]> splitMetrics(IMetric[] metrics) {
+		List<IBaseMetric> composableMetrics = new ArrayList<>();
+		List<IDerivedMetric> derivedMetrics = new ArrayList<>();
 		
-		for (IMetric metric : metrics) {
-			Collection<IMetric> derivedFrom = metric.getDerivedFrom();
-			if (derivedFrom.isEmpty()) {
-				composableMetrics.add(metric);
-			} else {
+		Queue<IMetric> toProcess = new LinkedList<>(Arrays.asList(metrics));
+		
+		while (!toProcess.isEmpty()) {
+			IMetric metric = toProcess.poll();
+			if (metric instanceof IDerivedMetric) {
+				IDerivedMetric derivedMetric = (IDerivedMetric) metric;
+				toProcess.addAll(derivedMetric.getDerivedFrom());
+				derivedMetrics.add(derivedMetric);
+				
 				composableMetrics = composableMetrics.stream()
-					.filter(composableMetric -> !derivedFrom.stream().anyMatch(other -> other.getClass().equals(composableMetric.getClass())))
-					.collect(Collectors.toList());
-				composableMetrics.addAll(derivedFrom);
-				derivedMetrics.add(metric);
+						.filter(composableMetric -> !derivedMetric.getDerivedFrom().stream().anyMatch(other -> other.getClass().equals(composableMetric.getClass())))
+						.collect(Collectors.toList());
+			} else if (metric instanceof IBaseMetric) {
+				composableMetrics.add((IBaseMetric) metric);
 			}
 		}
 		
-		IMetric[] composableMetricsArray = new IMetric[composableMetrics.size()];
-		IMetric[] derivedMetricsArray = new IMetric[derivedMetrics.size()];
+		IBaseMetric[] composableMetricsArray = new IBaseMetric[composableMetrics.size()];
+		IDerivedMetric[] derivedMetricsArray = new IDerivedMetric[derivedMetrics.size()];
 		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), derivedMetrics.toArray(derivedMetricsArray));
 	}
 	
@@ -371,7 +378,7 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 	 * @param failLabelProvider 
 	 * @return the result object containing the metrics
 	 */
-	private ModelCheckingResult modelCheckModule(Module module, IMetric[] metrics, FailLabelProvider failLabelProvider) {
+	private ModelCheckingResult modelCheckModule(Module module, IBaseMetric[] metrics, FailLabelProvider failLabelProvider) {
 		mc = dft2MAConverter.convert(module.getRootNode(), failLabelProvider);
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
 			

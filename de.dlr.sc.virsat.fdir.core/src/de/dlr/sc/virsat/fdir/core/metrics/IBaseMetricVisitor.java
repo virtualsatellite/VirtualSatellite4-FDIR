@@ -15,7 +15,7 @@ package de.dlr.sc.virsat.fdir.core.metrics;
  *
  */
 
-public interface IMetricVisitor {
+public interface IBaseMetricVisitor {
 	
 	/**
 	 * Handle the case of a reliability metric
@@ -33,7 +33,7 @@ public interface IMetricVisitor {
 	 * Handle the case of a point availability metric
 	 * @param pointAvailabilityMetric the point availabilityMetric
 	 */
-	void visit(PointAvailability pointAvailabilityMetric);
+	void visit(Availability pointAvailabilityMetric);
 	
 	/**
 	 * Handle the case of a steadyStateAvailabilityMetric metric

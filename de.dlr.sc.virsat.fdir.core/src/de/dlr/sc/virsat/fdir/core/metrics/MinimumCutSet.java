@@ -21,7 +21,7 @@ import java.util.Set;
  *
  */
 
-public class MinimumCutSet implements IQualitativeMetric {
+public class MinimumCutSet implements IQualitativeMetric, IBaseMetric {
 
 	public static final MinimumCutSet MINCUTSET = new MinimumCutSet(0);
 	
@@ -36,13 +36,8 @@ public class MinimumCutSet implements IQualitativeMetric {
 	}
 	
 	@Override
-	public void accept(IMetricVisitor visitor) {
+	public void accept(IBaseMetricVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	@Override
-	public List<IMetric> getDerivedFrom() {
-		return Collections.emptyList();
 	}
 	
 	/**

@@ -26,7 +26,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -86,7 +86,7 @@ public class MarkovModelCheckerTest {
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 
-		ModelCheckingResult result = modelChecker.checkModel(ma, PointAvailability.UNIT_POINTAVAILABILITY,
+		ModelCheckingResult result = modelChecker.checkModel(ma, Availability.UNIT_POINTAVAILABILITY,
 				SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);

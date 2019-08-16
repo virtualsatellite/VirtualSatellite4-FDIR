@@ -17,7 +17,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
@@ -116,7 +116,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		subMonitor.setTaskName("Performing Model Checking");
 		
 		ModelCheckingResult result = ftEvaluator
-				.evaluateFaultTree(fault, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+				.evaluateFaultTree(fault, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
 		if (monitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
