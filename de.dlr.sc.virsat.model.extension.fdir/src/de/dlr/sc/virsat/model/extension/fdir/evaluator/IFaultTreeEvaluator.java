@@ -25,15 +25,15 @@ public interface IFaultTreeEvaluator {
 	/**
 	 * Main evaluation function evaluating a fault tree identified by its root.
 	 * @param root the root of the fault tree to be evaluated.
-	 * @param failLabelProvider the fail criteria
+	 * @param failNodeProvider the fail criteria
 	 * @param metrics the evaluation metrics
 	 * @return the result of the evaluation
 	 */
-	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailLabelProvider failLabelProvider, IMetric... metrics);
+	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailNodeProvider failNodeProvider, IMetric... metrics);
 
 	/**
-	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailLabelProvider, IMetric...)} but with a default
-	 * failLabelProvider.
+	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailNodeProvider, IMetric...)} but with a default
+	 * failNodeProvider.
 	 * @param root the root of the fault tree to be evaluated
 	 * @param metrics the evaluation metrics
 	 * @return the result of the evaluation

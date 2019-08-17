@@ -27,4 +27,10 @@ public interface IDerivedMetricVisitor {
 	 * @param steadyStateAvailabilityMetric the steadyStateAvailability metric
 	 */
 	void visit(SteadyStateAvailability steadyStateAvailabilityMetric);
+	
+	void visit(Detectability detectabilityMetrc);
+	
+	void visit(MeanTimeToDetection meanTimeToDetectionMetric);
+	
+	void visit(SteadyStateDetectability steadyStateDetectability);
 }

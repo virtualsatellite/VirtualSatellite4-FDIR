@@ -46,7 +46,7 @@ public class StormEvaluator extends AFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailLabelProvider failLabelProvider, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailNodeProvider failNodeProvider, IMetric... metrics) {
 		
 		DFT2GalileoDFT converter = new DFT2GalileoDFT(false);
 		GalileoDft dft = converter.convert((Fault) root);

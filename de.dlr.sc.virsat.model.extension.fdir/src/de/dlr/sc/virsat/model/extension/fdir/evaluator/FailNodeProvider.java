@@ -12,46 +12,38 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+
 /**
- * This class gives the criterion which labels a state should have to be considered failed
+ * A provider  for nodes that need to fail for a fault tree to be considered failed
  * @author muel_s8
  *
  */
 
-public class FailLabelProvider {
+public class FailNodeProvider {
+	private Set<FaultTreeNode> failNodes;
 	
 	/**
-	 * This enum lists the relevant fail labels
-	 * @author muel_s8
-	 *
+	 * Default constructor for empty fail set
 	 */
-	public enum FailLabel {
-		FAILED, OBSERVED, UNOBSERVED, PERMANENT
+	public FailNodeProvider() {
+		this.failNodes = new HashSet<>();
 	}
-
-	private Set<FailLabel> failLabels;
-
+	
 	/**
 	 * Standard constructor
+	 * @param root the fault tree node
 	 */
-	public FailLabelProvider() {
-		this.failLabels = new HashSet<>();
-	}
-
-	/**
-	 * Fail label provider for failure criteria
-	 * @param failLabel the fail label
-	 */
-	public FailLabelProvider(FailLabel failLabel) {
+	public FailNodeProvider(FaultTreeNode root) {
 		this();
-		this.failLabels.add(failLabel);
+		this.failNodes.add(root);
 	}
 	
 	/**
-	 * Gets the encapsulated fail labels
-	 * @return the fail labels
+	 * Gets the fail nodes
+	 * @return the fail nodes
 	 */
-	public Set<FailLabel> getFailLabels() {
-		return failLabels;
+	public Set<FaultTreeNode> getFailNodes() {
+		return failNodes;
 	}
 }

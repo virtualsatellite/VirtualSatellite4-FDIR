@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -26,6 +25,8 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSeman
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailNodeProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -44,6 +45,7 @@ public class DFT2MAConverter {
 	private DFTSemantics dftSemantics = DFTSemantics.createNDDFTSemantics();
 	private FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
 	private FailLabelProvider failLabelProvider;
+	private FailNodeProvider failNodeProvider;
 	
 	private boolean allowsDontCareFailing = true;
 	
@@ -67,13 +69,15 @@ public class DFT2MAConverter {
 	 * Converts a fault tree with the passed node as a root to a
 	 * Markov automaton.
 	 * @param root a fault tree node used as a root node for the conversion
-	 * @param failLabelProvider the fail criterion
+	 * @param failNodeProvider the nodes that need to fail
+	 * @param failLabelProvider the fail label criterion
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
-	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailLabelProvider failLabelProvider) {
+	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailNodeProvider failNodeProvider, FailLabelProvider failLabelProvider) {
 		statistics.time = System.currentTimeMillis();
 		this.root = root;
-		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : new FailLabelProvider(root);
+		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : new FailLabelProvider(FailLabel.FAILED);
+		this.failNodeProvider = failNodeProvider != null ? failNodeProvider : new FailNodeProvider(root);
 		
 		init();
 		staticAnalysis();
@@ -92,7 +96,7 @@ public class DFT2MAConverter {
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
-		return convert(root, null);
+		return convert(root, null, null);
 	}
 	
 	/**
@@ -314,9 +318,8 @@ public class DFT2MAConverter {
 	 * @param state the state to check
 	 */
 	private void checkFailState(DFTState state) {
-		for (Entry<FaultTreeNode, Set<FailLabelProvider.FailLabel>> failLabels : failLabelProvider.getFailLabels().entrySet()) {
-			FaultTreeNode node = failLabels.getKey();
-			for (FailLabelProvider.FailLabel failLabel : failLabels.getValue()) {
+		for (FailLabel failLabel : failLabelProvider.getFailLabels()) {
+			for (FaultTreeNode node : failNodeProvider.getFailNodes()) {
 				switch (failLabel) {
 					case FAILED:
 						if (!state.hasFaultTreeNodeFailed(node)) {

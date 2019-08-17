@@ -25,9 +25,12 @@ public class ModelCheckingResult {
 
 	protected List<Double> failRates = new ArrayList<>();
 	private double meanTimeToFailure;
-	protected List<Double> pointAvailability = new ArrayList<>();
+	protected List<Double> availability = new ArrayList<>();
 	private double steadyStateAvailability;
 	protected Set<Set<Object>> minCutSets = new HashSet<>();
+	private double meanTimeToDetection;
+	private double steadyStateDetectability;
+	protected List<Double> detectabiity = new ArrayList<>();
 	
 	/**
 	 * Sets the mean time to failure
@@ -43,6 +46,14 @@ public class ModelCheckingResult {
 	 */
 	public void setSteadyStateAvailability(double steadyStateAvailability) {
 		this.steadyStateAvailability = steadyStateAvailability;
+	}
+	
+	public void setMeanTimeToDetection(double meanTimeToDetection) {
+		this.meanTimeToDetection = meanTimeToDetection;
+	}
+	
+	public void setSteadyStateDetectability(double steadyStateDetectability) {
+		this.steadyStateDetectability = steadyStateDetectability;
 	}
 	
 	/**
@@ -66,7 +77,7 @@ public class ModelCheckingResult {
 	 * @return the point availability
 	 */
 	public List<Double> getAvailability() {
-		return pointAvailability;
+		return availability;
 	}
 
 	/**
@@ -84,6 +95,18 @@ public class ModelCheckingResult {
 	public Set<Set<Object>> getMinCutSets() {
 		return minCutSets;
 	}
+	
+	public double getMeanTimeToDetection() {
+		return meanTimeToDetection;
+	}
+	
+	public double getSteadyStateDetectability() {
+		return steadyStateDetectability;
+	}
+	
+	public List<Double> getDetectabiity() {
+		return detectabiity;
+	}
 
 	/**
 	 * Limits all point wise metrics to the given number of entries
@@ -97,10 +120,10 @@ public class ModelCheckingResult {
 			}
 		}
 		
-		if (!pointAvailability.isEmpty()) {
-			pointAvailability = pointAvailability.stream().limit(steps).collect(Collectors.toList());
-			while (pointAvailability.size() < steps) {
-				pointAvailability.add(1d);
+		if (!availability.isEmpty()) {
+			availability = availability.stream().limit(steps).collect(Collectors.toList());
+			while (availability.size() < steps) {
+				availability.add(1d);
 			}
 		}
 	}

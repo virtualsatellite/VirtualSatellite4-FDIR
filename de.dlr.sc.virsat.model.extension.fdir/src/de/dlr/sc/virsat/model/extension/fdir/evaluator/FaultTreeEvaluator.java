@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
@@ -29,7 +28,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.IDFT2DFTConverter
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.EngineExecutionPreference;
@@ -60,7 +58,7 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailLabelProvider failLabelProvider, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailNodeProvider failNodeProvider, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -72,9 +70,9 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		FailLabelProvider failLabelProviderRemapped = failLabelProvider != null ? remapFailLabelProvider(failLabelProvider) : failLabelProvider;
+		FailNodeProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
 		
-		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failLabelProviderRemapped, metrics);
+		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, metrics);
 		if (!result.getMinCutSets().isEmpty()) {
 			remapMinCutSets(result);
 		}
@@ -83,19 +81,18 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	
 	/**
 	 * Maps the nodes in the given failLabelProvider to the nodes of the transformed tree
-	 * @param failLabelProvider the failable provider
+	 * @param failNodeProvider the failable provider
 	 * @return the failable provider with remapped nodes
 	 */
-	private FailLabelProvider remapFailLabelProvider(FailLabelProvider failLabelProvider) {
-		FailLabelProvider failLabelProviderRemapped = new FailLabelProvider();
-		for (Entry<FaultTreeNode, Set<FailLabel>> failLabels : failLabelProvider.getFailLabels().entrySet()) {
-			FaultTreeNode node = failLabels.getKey();
+	private FailNodeProvider remapFailLabelProvider(FailNodeProvider failNodeProvider) {
+		FailNodeProvider failNodeProviderRemapped = new FailNodeProvider();
+		for (FaultTreeNode node : failNodeProvider.getFailNodes()) {
 			FaultTreeNode remappedNode = conversionResult.getMapGeneratedToGenerator().keySet().stream()
 					.filter(generated -> generated.getUuid().equals(node.getUuid()))
 					.findFirst().get();
-			failLabelProviderRemapped.getFailLabels().put(remappedNode, failLabels.getValue());
+			failNodeProviderRemapped.getFailNodes().add(remappedNode);
 		}
-		return failLabelProviderRemapped;
+		return failNodeProviderRemapped;
 	}
 
 	/**

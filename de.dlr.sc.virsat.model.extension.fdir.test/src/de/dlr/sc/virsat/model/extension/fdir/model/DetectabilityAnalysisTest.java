@@ -103,26 +103,4 @@ public class DetectabilityAnalysisTest extends ADetectabilityAnalysisTest {
 		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
 		assertEquals(EXPECTED_STEADY_STATE_DETECTABILITY, detectabilityAnalysis.getSteadyStateDetectability(), EPS);
 	}
-	
-	@Test
-	public void testPerformObsOr2ObsBe2Delayed() throws IOException {
-		Fault fault = ATestCase.createDFT("/resources/galileoObs/obsOr2ObsBe2Delayed.dft", concept);
-		fault.getDetectabilityAnalysis().add(detectabilityAnalysis);
-		sei.getCategoryAssignments().add(fault.getTypeInstance());
-		
-		Command analysisCommand = detectabilityAnalysis.perform(ed, new NullProgressMonitor());
-
-		assertTrue(analysisCommand.canExecute());
-
-		analysisCommand.execute();
-
-		final long EXPECTED_NUMBER_OF_DETECTABILITY_VALUES = 101;
-		assertEquals(EXPECTED_NUMBER_OF_DETECTABILITY_VALUES, detectabilityAnalysis.getDetectabilityCurve().size());
-		final double EPS = 0.001;
-		
-		final double EXPECTED_MEAN_TIME_TO_DETECTION = 0.75;
-		assertEquals(EXPECTED_MEAN_TIME_TO_DETECTION, detectabilityAnalysis.getMeanTimeToDetection(), EPS);
-		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
-		assertEquals(EXPECTED_STEADY_STATE_DETECTABILITY, detectabilityAnalysis.getSteadyStateDetectability(), EPS);
-	}
 }

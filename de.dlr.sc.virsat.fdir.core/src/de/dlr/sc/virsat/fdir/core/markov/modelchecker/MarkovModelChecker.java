@@ -327,12 +327,12 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
 			for (int time = 0; time <= steps; ++time) {
-				modelCheckingResult.pointAvailability.add(1 - getFailRate());
+				modelCheckingResult.availability.add(1 - getFailRate());
 				iterate(tm);
 			}
 		} else {
 			double oldFailRate = getFailRate();
-			modelCheckingResult.pointAvailability.add(oldFailRate);
+			modelCheckingResult.availability.add(oldFailRate);
 			
 			boolean convergence = false;
 			while (!convergence) {
