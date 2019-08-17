@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -256,21 +257,24 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 		
+		List<Double> reliabilityCurve = new ArrayList<>();
+		modelCheckingResult.addMetricValue(reliabilityMetric, reliabilityCurve);
+		
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
 			for (int time = 0; time <= steps; ++time) {
-				modelCheckingResult.failRates.add(getFailRate());
+				reliabilityCurve.add(getFailRate());
 				iterate(tmTerminal);
 			}
 		} else {
 			double oldFailRate = getFailRate();
-			modelCheckingResult.failRates.add(oldFailRate);
+			reliabilityCurve.add(oldFailRate);
 			
 			boolean convergence = false;
 			while (!convergence) {
 				iterate(tmTerminal);
 				double newFailRate = getFailRate();
-				modelCheckingResult.failRates.add(newFailRate);
+				reliabilityCurve.add(newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
 				oldFailRate = newFailRate;
 				double relativeChange = change / newFailRate;
@@ -315,7 +319,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 		
-		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);
+		modelCheckingResult.addMetricValue(mttfMetric, probabilityDistribution[0]);
 	}
 
 	
@@ -328,21 +332,24 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 
+		List<Double> availabilityCurve = new ArrayList<>();
+		modelCheckingResult.addMetricValue(availabilityMetric, availabilityCurve);
+		
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
 			for (int time = 0; time <= steps; ++time) {
-				modelCheckingResult.pointAvailability.add(1 - getFailRate());
+				availabilityCurve.add(1 - getFailRate());
 				iterate(tm);
 			}
 		} else {
 			double oldFailRate = getFailRate();
-			modelCheckingResult.pointAvailability.add(oldFailRate);
+			availabilityCurve.add(oldFailRate);
 			
 			boolean convergence = false;
 			while (!convergence) {
 				iterate(tm);
 				double newFailRate = getFailRate();
-				modelCheckingResult.failRates.add(1 - newFailRate);
+				availabilityCurve.add(1 - newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
 				oldFailRate = newFailRate;
 				double relativeChange = change / newFailRate;
@@ -374,7 +381,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 			oldUnavailability = newUnavailability;
 		}
-		modelCheckingResult.setSteadyStateAvailability(1 - getFailRate());		
+		
+		modelCheckingResult.addMetricValue(steadyStateAvailabilityMetric, 1 - getFailRate());		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -445,7 +453,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 		
 		Set<Set<Object>> minCuts = mapStateToMinCuts.getOrDefault(mc.getStates().get(0), Collections.emptySet());
-		modelCheckingResult.getMinCutSets().addAll(minCuts);
+		modelCheckingResult.addMetricValue(minimumCutSet, minCuts);
 	}
 	
 	/**

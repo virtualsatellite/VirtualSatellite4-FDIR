@@ -59,8 +59,8 @@ public class MarkovModelCheckerTest {
 		ModelCheckingResult result = modelChecker.checkModel(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF);
 		
 		int timepoint = (int) (1 / DELTA) - 1;
-		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), EPSILON);
-		assertEquals(EXPECTED_FAIL_RATE, result.getFailRates().get(timepoint), EPSILON);
+		assertEquals(EXPECTED_MTTF, result.getDouble(MTTF.MTTF), EPSILON);
+		assertEquals(EXPECTED_FAIL_RATE, result.getDoubleCurve(Reliability.UNIT_RELIABILITY).get(timepoint), EPSILON);
 	}
 
 	@Test
@@ -89,8 +89,8 @@ public class MarkovModelCheckerTest {
 		ModelCheckingResult result = modelChecker.checkModel(ma, Availability.UNIT_AVAILABILITY,
 				SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 
-		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
-		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getAvailability()); 
+		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getDouble(SteadyStateAvailability.STEADY_STATE_AVAILABILITY), EPSILON);
+		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getDoubleCurve(Availability.UNIT_AVAILABILITY)); 
 	}
 	
 	@Test 
@@ -118,8 +118,8 @@ public class MarkovModelCheckerTest {
 		ModelCheckingResult result = modelChecker.checkModel(ma, MinimumCutSet.MINCUTSET);
 		
 		final int COUNT_EXPECTED_MINCUT_SETS = 2;
-		assertEquals(COUNT_EXPECTED_MINCUT_SETS, result.getMinCutSets().size());
-		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("c")));
+		assertEquals(COUNT_EXPECTED_MINCUT_SETS, result.getSetOfSets(MinimumCutSet.MINCUTSET).size());
+		assertThat(result.getCollection(MinimumCutSet.MINCUTSET), hasItem(Collections.singleton("c")));
 		assertThat(result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList("a", "b"))));
 		
 		result = modelChecker.checkModel(ma, new MinimumCutSet(1));
