@@ -17,9 +17,9 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.Availability;
-import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Detectability;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
@@ -32,8 +32,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
@@ -85,7 +83,7 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 	public Command perform(TransactionalEditingDomain editingDomain, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
-		monitor.setTaskName("Availability Analysis");
+		monitor.setTaskName("Detectability Analysis");
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 		subMonitor.split(1);
@@ -108,23 +106,12 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		}
 		subMonitor.split(1);
 		subMonitor.setTaskName("Performing Model Checking");
-		/*
-		FailLabelProvider failLabelProvider = new FailLabelProvider(fault);
-		ModelCheckingResult resultUnobservedFailure = ftEvaluator
-				.evaluateFaultTree(fault, failLabelProvider, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
-		
-		double steadyStateUnavailability = 1 - resultUnobservedFailure.getSteadyStateAvailability();
-		double meanTimeToUndetectedFailure = resultUnobservedFailure.getMeanTimeToFailure();
-		
-		failLabelProvider.getFailLabels().get(fault).add(FailLabel.OBSERVED);
-		
-		ModelCheckingResult resultObservedFailure = ftEvaluator
-				.evaluateFaultTree(fault, failLabelProvider, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
-		double meanTimeToDetectedFailure = resultObservedFailure.getMeanTimeToFailure();
-		double steadyStateObservedUnavailability = 1 - resultObservedFailure.getSteadyStateAvailability();
-		
-		double meanTimeToDetection = Double.isInfinite(meanTimeToDetectedFailure) ? Double.POSITIVE_INFINITY : meanTimeToDetectedFailure - meanTimeToUndetectedFailure;
-		double steadyStateDetectability = steadyStateObservedUnavailability / steadyStateUnavailability;
+
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault,
+				new Detectability(maxTime), SteadyStateDetectability.STEADY_STATE_DETECTABILITY, MeanTimeToDetection.MTTD);
+	
+		double meanTimeToDetection = result.getMeanTimeToDetection();
+		double steadyStateDetectability = result.getSteadyStateDetectability();
 		
 		if (monitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
@@ -136,20 +123,15 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 			@Override
 			protected void doExecute() {
 				getSteadyStateDetectabilityBean().setValueAsBaseUnit(steadyStateDetectability);
-				double detectability = (1 - resultObservedFailure.getAvailability().get(resultUnobservedFailure.getAvailability().size() - 1)) 
-						/ (1 - resultUnobservedFailure.getAvailability().get(resultUnobservedFailure.getAvailability().size() - 1));
+				double detectability = result.getDetectabiity().get(result.getDetectabiity().size() - 1);
 				getDetectabilityBean().setValueAsBaseUnit(detectability);
 				getMeanTimeToDetectionBean().setValueAsBaseUnit(meanTimeToDetection);
 				getDetectabilityCurve().clear();
-				for (int i = 0; i < resultUnobservedFailure.getAvailability().size(); ++i) {
-					detectability = (1 - resultObservedFailure.getAvailability().get(i)) / (1 - resultUnobservedFailure.getAvailability().get(i));
-					createNewDetectabilityCurveEntry(detectability);
+				for (int i = 0; i < result.getDetectabiity().size(); ++i) {
+					createNewDetectabilityCurveEntry(result.getDetectabiity().get(i));
 				}
 			}
 		};
-		*/
-		
-		return null;
 	}
 
 	/**

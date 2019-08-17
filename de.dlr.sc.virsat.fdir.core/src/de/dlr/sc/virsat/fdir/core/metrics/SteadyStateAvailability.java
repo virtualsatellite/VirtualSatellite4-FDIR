@@ -10,7 +10,10 @@
 package de.dlr.sc.virsat.fdir.core.metrics;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * Metric representing the covergent steady state probability
@@ -38,7 +41,7 @@ public class SteadyStateAvailability implements IQuantitativeMetric, IDerivedMet
 	}
 	
 	@Override
-	public List<IMetric> getDerivedFrom() {
-		return Collections.singletonList(Availability.INF_POINTAVAILABILITY);
+	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
+		return Collections.singletonMap(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(Availability.INF_AVAILABILITY));
 	}
 }

@@ -20,12 +20,12 @@ import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailNodeProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;

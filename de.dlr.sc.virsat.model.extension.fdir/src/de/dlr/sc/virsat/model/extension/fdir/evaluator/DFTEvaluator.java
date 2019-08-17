@@ -11,10 +11,12 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
@@ -81,12 +83,19 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		
 		DFTModularization modularization = getModularization(ftHolder, failNodeProvider);
 		
-		Map<Class<?>, IMetric[]> partitionedMetrics = IMetric.partitionMetrics(metrics, modularization != null);
-		IBaseMetric[] baseMetrics = (IBaseMetric[]) partitionedMetrics.get(IBaseMetric.class);
-		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitionedMetrics.get(IDerivedMetric.class);
-		ModelCheckingResult result = evaluateFaultTree(ftHolder, failNodeProvider, null, modularization, baseMetrics);
+		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(metrics, modularization != null);
+	
+		Map<FailLabelProvider, ModelCheckingResult> baseResults = new HashMap<>();
+		for (Entry<FailLabelProvider, IMetric[]> metricPartition : partitioning.entrySet()) {
+			if (!metricPartition.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
+				IBaseMetric[] baseMetrics = (IBaseMetric[]) metricPartition.getValue();
+				ModelCheckingResult result = evaluateFaultTree(ftHolder, failNodeProvider, metricPartition.getKey(), modularization, baseMetrics);
+				baseResults.put(metricPartition.getKey(), result);
+			}
+		}
 		
-		composer.derive(result, markovModelChecker.getDelta(), derivedMetrics);
+		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitioning.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
+		ModelCheckingResult result = composer.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
 		int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
 		result.limitPointMetrics(steps);
 		

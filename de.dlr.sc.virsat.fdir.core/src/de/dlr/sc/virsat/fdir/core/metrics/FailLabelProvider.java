@@ -7,8 +7,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.evaluator;
+package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +20,8 @@ import java.util.Set;
  */
 
 public class FailLabelProvider {
+	
+	public static final FailLabelProvider EMPTY_FAIL_LABEL_PROVIDER = new FailLabelProvider();
 	
 	/**
 	 * This enum lists the relevant fail labels
@@ -40,11 +43,11 @@ public class FailLabelProvider {
 
 	/**
 	 * Fail label provider for failure criteria
-	 * @param failLabel the fail label
+	 * @param failLabels the fail labels
 	 */
-	public FailLabelProvider(FailLabel failLabel) {
+	public FailLabelProvider(FailLabel... failLabels) {
 		this();
-		this.failLabels.add(failLabel);
+		this.failLabels.addAll(Arrays.asList(failLabels));
 	}
 	
 	/**
@@ -53,5 +56,18 @@ public class FailLabelProvider {
 	 */
 	public Set<FailLabel> getFailLabels() {
 		return failLabels;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FailLabelProvider) {
+			return failLabels.equals(((FailLabelProvider) obj).failLabels);
+		}
+		return super.equals(obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return failLabels.hashCode();
 	}
 }

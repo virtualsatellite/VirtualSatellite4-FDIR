@@ -48,10 +48,18 @@ public class ModelCheckingResult {
 		this.steadyStateAvailability = steadyStateAvailability;
 	}
 	
+	/**
+	 * Sets the mean time to detection
+	 * @param meanTimeToDetection the mean time to detection
+	 */
 	public void setMeanTimeToDetection(double meanTimeToDetection) {
 		this.meanTimeToDetection = meanTimeToDetection;
 	}
 	
+	/**
+	 * Sets the steady state detectability
+	 * @param steadyStateDetectability the steady state detectability
+	 */
 	public void setSteadyStateDetectability(double steadyStateDetectability) {
 		this.steadyStateDetectability = steadyStateDetectability;
 	}
@@ -96,14 +104,26 @@ public class ModelCheckingResult {
 		return minCutSets;
 	}
 	
+	/**
+	 * Gets the mean time to detection
+	 * @return the mean time to detection
+	 */
 	public double getMeanTimeToDetection() {
 		return meanTimeToDetection;
 	}
 	
+	/**
+	 * Gets the steady state detectability
+	 * @return the steady state detectability
+	 */
 	public double getSteadyStateDetectability() {
 		return steadyStateDetectability;
 	}
 	
+	/**
+	 * Gets the detectability curve
+	 * @return the detectability curve
+	 */
 	public List<Double> getDetectabiity() {
 		return detectabiity;
 	}

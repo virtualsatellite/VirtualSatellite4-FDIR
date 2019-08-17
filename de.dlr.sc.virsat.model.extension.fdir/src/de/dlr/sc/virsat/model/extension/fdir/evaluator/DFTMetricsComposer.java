@@ -26,6 +26,8 @@ import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.Detectability;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
@@ -52,6 +54,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVisitor {
 	
 	private ModelCheckingResult composedResult;
+	private Map<FailLabelProvider, ModelCheckingResult> baseResults;
 	private long k;
 	private List<ModelCheckingResult> subModuleResults;
 	private double delta;
@@ -79,18 +82,21 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	/**
 	 * Derivation operation of deriavable metrics. Calculates the metrics from
 	 * already calculated metrics in the given result
-	 * @param composedResult the given result
+	 * @param baseResults the given results
 	 * @param metrics the metrics to derive
-	 * @param delta 
-	 * @return 
+	 * @param delta the model checking delta
+	 * @return the derived results
 	 */
-	public void derive(ModelCheckingResult composedResult, double delta, IDerivedMetric... metrics) {
-		this.composedResult = composedResult;
+	public ModelCheckingResult derive(Map<FailLabelProvider, ModelCheckingResult> baseResults, double delta, IDerivedMetric... metrics) {
+		this.composedResult = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+		this.baseResults = baseResults;
 		this.delta = delta;
 		
 		for (IDerivedMetric metric : metrics) {
 			metric.accept(this);
 		}
+		
+		return composedResult;
 	}
 	
 	/**
@@ -177,23 +183,28 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 
 
 	@Override
-	public void visit(Detectability detectabiityMetrc) {
-		// TODO Auto-generated method stub
-		
+	public void visit(Detectability detectabilityMetrc) {
+		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED));
+		detectabilityMetrc.derive(resultUnobservedFailure.getAvailability(), resultObservedFailure.getAvailability(), composedResult.getDetectabiity());
 	}
 
 
 	@Override
 	public void visit(MeanTimeToDetection meanTimeToDetectionMetric) {
-		// TODO Auto-generated method stub
-		
+		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED));
+		double derivedMTTD = meanTimeToDetectionMetric.derive(resultUnobservedFailure.getMeanTimeToFailure(), resultObservedFailure.getMeanTimeToFailure());
+		composedResult.setMeanTimeToDetection(derivedMTTD);
 	}
 
 
 	@Override
 	public void visit(SteadyStateDetectability steadyStateDetectability) {
-		// TODO Auto-generated method stub
-		
+		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED));
+		double derivedSteadyStateDetectability = steadyStateDetectability.derive(resultUnobservedFailure.getSteadyStateAvailability(), resultObservedFailure.getSteadyStateAvailability());
+		composedResult.setSteadyStateDetectability(derivedSteadyStateDetectability);
 	}
 	
 	/**

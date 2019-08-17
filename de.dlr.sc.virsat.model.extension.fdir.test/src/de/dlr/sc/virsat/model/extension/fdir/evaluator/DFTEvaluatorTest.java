@@ -990,12 +990,13 @@ public class DFTEvaluatorTest extends ATestCase {
 	public void testEvaluateObsOr2ObsBe2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2ObsBe2Delayed.dft");
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Detectability.UNIT_DETECTABILITY, MeanTimeToDetection.MTTD, 
-				SteadyStateDetectability.STEADY_STATE_DETECTABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, 
+				Detectability.UNIT_DETECTABILITY, MeanTimeToDetection.MTTD, SteadyStateDetectability.STEADY_STATE_DETECTABILITY);
 		
 		final double EXPECTED_MTTD = 0.75;
 		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
 		assertEquals("MTTD has correct value", EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
-		assertEquals("Steady State Detectability has correct value", EXPECTED_STEADY_STATE_DETECTABILITY, result.getSteadyStateAvailability(), TEST_EPSILON);
+		final double TEST_EPSILON = 0.00001;
+		assertEquals("Steady State Detectability has correct value", EXPECTED_STEADY_STATE_DETECTABILITY, result.getSteadyStateDetectability(), TEST_EPSILON);
 	}
 }

@@ -23,14 +23,26 @@ public interface IDerivedMetricVisitor {
 	void visit(MTTF mttfMetric);
 	
 	/**
-	 * Handle the case of a mean time to steady state availability metric
+	 * Handle the case of a steady state availability metric
 	 * @param steadyStateAvailabilityMetric the steadyStateAvailability metric
 	 */
 	void visit(SteadyStateAvailability steadyStateAvailabilityMetric);
 	
-	void visit(Detectability detectabilityMetrc);
+	/**
+	 * Handle the case of a detectability metric
+	 * @param detectabilityMetric the detectability metric
+	 */
+	void visit(Detectability detectabilityMetric);
 	
+	/**
+	 * Handle the case of a mean time to detection metric
+	 * @param meanTimeToDetectionMetric the mean time to detection metric
+	 */
 	void visit(MeanTimeToDetection meanTimeToDetectionMetric);
 	
+	/**
+	 * Handle the case of a steady state detectability metric
+	 * @param steadyStateDetectability the mean time to detection metric
+	 */
 	void visit(SteadyStateDetectability steadyStateDetectability);
 }
