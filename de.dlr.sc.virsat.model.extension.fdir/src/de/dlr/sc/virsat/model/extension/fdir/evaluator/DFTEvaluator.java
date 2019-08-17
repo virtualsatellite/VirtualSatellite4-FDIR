@@ -153,23 +153,20 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 					Module representantModule = getModule(modules, representant);
 					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
 					if (representantResult == null) {
-						representantResult = modelCheckModule(representantModule, baseMetrics, failLabelProvider);
+						representantResult = modelCheck(representantModule.getRootNode(), baseMetrics, failLabelProvider);
 						mapModuleToResult.put(representantModule, representantResult);
 					}
 					mapModuleToResult.put(module, representantResult);
 				} else {
-					mapModuleToResult.put(module, modelCheckModule(module, baseMetrics, failLabelProvider));
+					ModelCheckingResult moduleResult = modelCheck(module.getRootNode(), baseMetrics, failLabelProvider);
+					mapModuleToResult.put(module, moduleResult);
 				}
 			}
 			
 			composeModuleResults(topLevelModule, modules, baseMetrics, mapModuleToResult, mapNodeToRepresentant);
 			result = mapModuleToResult.get(topLevelModule);
 		} else {
-			mc = dft2MAConverter.convert(root, failLabelProvider);
-			result = markovModelChecker.checkModel(mc, baseMetrics);
-				
-			statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
-			statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());
+			result = modelCheck(root, baseMetrics, failLabelProvider);
 		}
 		
 		composer.derive(result, markovModelChecker.getDelta(), derivedMetrics);
@@ -338,13 +335,13 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 	
 	/**
 	 * Model checks an inidivudal module
-	 * @param module the module to model check
+	 * @param root the root of the tree
 	 * @param metrics the metrics to model check
 	 * @param failLabelProvider 
 	 * @return the result object containing the metrics
 	 */
-	private ModelCheckingResult modelCheckModule(Module module, IBaseMetric[] metrics, FailLabelProvider failLabelProvider) {
-		mc = dft2MAConverter.convert(module.getRootNode(), failLabelProvider);
+	private ModelCheckingResult modelCheck(FaultTreeNode root, IBaseMetric[] metrics, FailLabelProvider failLabelProvider) {
+		mc = dft2MAConverter.convert(root, failLabelProvider);
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
 			
 		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());

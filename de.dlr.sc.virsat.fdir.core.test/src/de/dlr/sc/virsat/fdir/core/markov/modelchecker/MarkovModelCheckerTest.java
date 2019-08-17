@@ -90,7 +90,7 @@ public class MarkovModelCheckerTest {
 				SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
-		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getPointAvailability()); 
+		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getAvailability()); 
 	}
 	
 	@Test 

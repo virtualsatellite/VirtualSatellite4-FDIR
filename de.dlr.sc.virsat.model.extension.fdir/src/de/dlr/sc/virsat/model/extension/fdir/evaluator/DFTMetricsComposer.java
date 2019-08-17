@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
@@ -104,37 +105,8 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	
 	@Override
 	public void visit(Reliability reliabilityMetric) {
-		int countFailRates = 0;
-		if (k == 1) {
-			countFailRates = Integer.MAX_VALUE;
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				countFailRates = Math.min(countFailRates, subModuleResult.getFailRates().size());
-			}
-		} else {
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				countFailRates = Math.max(countFailRates, subModuleResult.getFailRates().size());
-			}
-		}
-		
-		double[] childFailRates = new double[subModuleResults.size()];
-		for (int i = 0; i < countFailRates; ++i) {
-			
-			for (int j = 0; j < subModuleResults.size(); ++j) {
-				ModelCheckingResult subModuleResult = subModuleResults.get(j);
-				if (i < subModuleResult.getFailRates().size()) {
-					childFailRates[j] = subModuleResult.getFailRates().get(i);
-				} else {
-					childFailRates[j] = 1;
-				}
-			}
-			
-			double composedFailRate = IQuantitativeMetric.composeProbabilities(childFailRates, k);
-			composedResult.getFailRates().add(composedFailRate);
-			
-			if (composedFailRate == 1) {
-				break;
-			}
-		}
+		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
+		IQuantitativeMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
 	}
 
 	@Override
@@ -160,25 +132,8 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 
 	@Override
 	public void visit(Availability pointAvailabilityMetric) {
-		int countPoints = 0;
-		for (ModelCheckingResult subModuleResult : subModuleResults) {
-			countPoints = Math.max(countPoints, subModuleResult.getPointAvailability().size());
-		}
-		
-		double[] childPointAvailabilities = new double[subModuleResults.size()];
-		for (int i = 0; i < countPoints; ++i) {
-			for (int j = 0; j < subModuleResults.size(); ++j) {
-				ModelCheckingResult subModuleResult = subModuleResults.get(j);
-				if (i < subModuleResult.getFailRates().size()) {
-					childPointAvailabilities[j] = subModuleResult.getFailRates().get(i);
-				} else {
-					childPointAvailabilities[j] = 1;
-				}
-			}
-			
-			double composedAvailability = IQuantitativeMetric.composeProbabilities(childPointAvailabilities, k);
-			composedResult.getPointAvailability().add(composedAvailability);
-		}		
+		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
+		IQuantitativeMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, -1);
 	}
 
 	@Override

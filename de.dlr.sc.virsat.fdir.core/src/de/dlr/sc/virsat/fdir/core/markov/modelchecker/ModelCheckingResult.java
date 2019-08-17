@@ -65,7 +65,7 @@ public class ModelCheckingResult {
 	 * Gets the computed point availability
 	 * @return the point availability
 	 */
-	public List<Double> getPointAvailability() {
+	public List<Double> getAvailability() {
 		return pointAvailability;
 	}
 
