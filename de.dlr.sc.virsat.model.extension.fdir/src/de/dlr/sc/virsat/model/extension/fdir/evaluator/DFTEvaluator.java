@@ -9,10 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -111,21 +108,27 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 				&& failLabelProvider == null;
 		
 		Set<Module> modules = null;
+		
 		if (canModularize) {
 			Fault rootFault = (Fault) root;
 			modules = modularizer.getModules(rootFault.getFaultTree());
 			canModularize = !modules.isEmpty();
 		}
 		
+		Module topLevelModule = null;
+		Set<Module> modulesToModelCheck = null;
+		
 		if (canModularize) {
-			Entry<IBaseMetric[], IDerivedMetric[]> metricSplit = splitMetrics(metrics);
-			IBaseMetric[] composableMetrics = metricSplit.getKey();
-			IDerivedMetric[] derivedMetrics = metricSplit.getValue();
-			
-			Module topLevelModule = getModule(modules, root);
-			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
-			
-			IMetric[] modelCheckerMetrics = modulesToModelCheck.size() == 1 ? metrics : composableMetrics;
+			topLevelModule = getModule(modules, root);
+			modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
+		}
+		
+		Map<Class<?>, IMetric[]> partitionedMetrics = IMetric.partitionMetrics(metrics, canModularize && modulesToModelCheck.size() > 1);
+		IBaseMetric[] baseMetrics = (IBaseMetric[]) partitionedMetrics.get(IBaseMetric.class);
+		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitionedMetrics.get(IDerivedMetric.class);
+		ModelCheckingResult result = null;
+		
+		if (canModularize) {
 			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
 		
 			Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = null;
@@ -150,36 +153,30 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 					Module representantModule = getModule(modules, representant);
 					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
 					if (representantResult == null) {
-						representantResult = modelCheckModule(representantModule, modelCheckerMetrics, failLabelProvider);
+						representantResult = modelCheckModule(representantModule, baseMetrics, failLabelProvider);
 						mapModuleToResult.put(representantModule, representantResult);
 					}
 					mapModuleToResult.put(module, representantResult);
 				} else {
-					mapModuleToResult.put(module, modelCheckModule(module, modelCheckerMetrics, failLabelProvider));
+					mapModuleToResult.put(module, modelCheckModule(module, baseMetrics, failLabelProvider));
 				}
 			}
 			
-			composeModuleResults(topLevelModule, modules, composableMetrics, mapModuleToResult, mapNodeToRepresentant);
-			ModelCheckingResult result = mapModuleToResult.get(topLevelModule);
-			
-			if (modulesToModelCheck.size() > 1) {
-				composer.derive(result, derivedMetrics);
-				result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
-				int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
-				result.limitPointMetrics(steps);
-			}
-			
-			statistics.time = System.currentTimeMillis() - statistics.time;
-			return result;
-		} 
+			composeModuleResults(topLevelModule, modules, baseMetrics, mapModuleToResult, mapNodeToRepresentant);
+			result = mapModuleToResult.get(topLevelModule);
+		} else {
+			mc = dft2MAConverter.convert(root, failLabelProvider);
+			result = markovModelChecker.checkModel(mc, baseMetrics);
+				
+			statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
+			statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());
+		}
 		
-		mc = dft2MAConverter.convert(root, failLabelProvider);
-		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
-			
-		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
-		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());
+		composer.derive(result, markovModelChecker.getDelta(), derivedMetrics);
+		int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
+		result.limitPointMetrics(steps);
+		
 		statistics.time = System.currentTimeMillis() - statistics.time;
-		
 		return result;
 	}
 	
@@ -207,7 +204,7 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 	 * @param mapModuleToResult a map from module to the already computed results
 	 * @param mapNodeToRepresentant 
 	 */
-	private void composeModuleResults(Module module, Set<Module> modules, IMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult, Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant) {
+	private void composeModuleResults(Module module, Set<Module> modules, IBaseMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult, Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant) {
 		ModelCheckingResult result = mapModuleToResult.get(module);
 		if (result != null) {
 			return;
@@ -337,38 +334,6 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		}
 		
 		return modulesToModelCheck;
-	}
-	
-	/**
-	 * Splits the given set of metrics into a set of composable and uncomposable metrics.
-	 * Also, if necessary, adds new metrics that are required to perform the composition.
-	 * @param metrics the original metrics
-	 * @return a pair of composable and uncomposable metric sets
-	 */
-	private Entry<IBaseMetric[], IDerivedMetric[]> splitMetrics(IMetric[] metrics) {
-		List<IBaseMetric> composableMetrics = new ArrayList<>();
-		List<IDerivedMetric> derivedMetrics = new ArrayList<>();
-		
-		Queue<IMetric> toProcess = new LinkedList<>(Arrays.asList(metrics));
-		
-		while (!toProcess.isEmpty()) {
-			IMetric metric = toProcess.poll();
-			if (metric instanceof IDerivedMetric) {
-				IDerivedMetric derivedMetric = (IDerivedMetric) metric;
-				toProcess.addAll(derivedMetric.getDerivedFrom());
-				derivedMetrics.add(derivedMetric);
-				
-				composableMetrics = composableMetrics.stream()
-						.filter(composableMetric -> !derivedMetric.getDerivedFrom().stream().anyMatch(other -> other.getClass().equals(composableMetric.getClass())))
-						.collect(Collectors.toList());
-			} else if (metric instanceof IBaseMetric) {
-				composableMetrics.add((IBaseMetric) metric);
-			}
-		}
-		
-		IBaseMetric[] composableMetricsArray = new IBaseMetric[composableMetrics.size()];
-		IDerivedMetric[] derivedMetricsArray = new IDerivedMetric[derivedMetrics.size()];
-		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), derivedMetrics.toArray(derivedMetricsArray));
 	}
 	
 	/**

@@ -34,8 +34,7 @@ public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	
 	@Override
 	public void accept(IDerivedMetricVisitor visitor) {
-		// TODO Auto-generated method stub
-		
+		visitor.visit(this);
 	}
 	
 	@Override

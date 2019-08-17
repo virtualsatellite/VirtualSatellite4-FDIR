@@ -21,15 +21,14 @@ import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.Availability;
-import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -47,6 +46,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	private ModelCheckingResult composedResult;
 	private long k;
 	private List<ModelCheckingResult> subModuleResults;
+	private double delta;
 	
 	/**
 	 * Compose operation for composable metrics. Composes the results of the sub modules.
@@ -69,14 +69,16 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	
 	
 	/**
-	 * Compose operation of uncomposable metrics. Calculates the metrics from
+	 * Derivation operation of deriavable metrics. Calculates the metrics from
 	 * already calculated metrics in the given result
 	 * @param composedResult the given result
-	 * @param metrics the metrics to compute
+	 * @param metrics the metrics to derive
+	 * @param delta 
 	 * @return 
 	 */
-	public void derive(ModelCheckingResult composedResult, IDerivedMetric... metrics) {
+	public void derive(ModelCheckingResult composedResult, double delta, IDerivedMetric... metrics) {
 		this.composedResult = composedResult;
+		this.delta = delta;
 		
 		for (IDerivedMetric metric : metrics) {
 			metric.accept(this);
@@ -153,7 +155,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 		
 		UnivariateIntegrator integrator = new SimpsonIntegrator();
 		double integral = integrator.integrate(SimpsonIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, countFailRates - 1);
-		composedResult.setMeanTimeToFailure(integral);
+		composedResult.setMeanTimeToFailure(integral * delta);
 	}
 
 	@Override

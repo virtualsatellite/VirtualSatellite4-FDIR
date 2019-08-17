@@ -9,9 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Metric representing time bounded reliability
  * @author sascha

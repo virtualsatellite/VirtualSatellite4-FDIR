@@ -22,11 +22,10 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -333,7 +332,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			int steps = (int) (availabilityMetric.getTime() / delta);
 			for (int time = 0; time <= steps; ++time) {
 				modelCheckingResult.pointAvailability.add(1 - getFailRate());
-				iterate(tmTerminal);
+				iterate(tm);
 			}
 		} else {
 			double oldFailRate = getFailRate();
@@ -341,7 +340,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			
 			boolean convergence = false;
 			while (!convergence) {
-				iterate(tmTerminal);
+				iterate(tm);
 				double newFailRate = getFailRate();
 				modelCheckingResult.failRates.add(1 - newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);

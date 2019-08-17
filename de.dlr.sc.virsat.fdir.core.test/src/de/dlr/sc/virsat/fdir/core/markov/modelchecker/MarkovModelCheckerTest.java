@@ -86,7 +86,7 @@ public class MarkovModelCheckerTest {
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 
-		ModelCheckingResult result = modelChecker.checkModel(ma, Availability.UNIT_POINTAVAILABILITY,
+		ModelCheckingResult result = modelChecker.checkModel(ma, Availability.UNIT_AVAILABILITY,
 				SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
