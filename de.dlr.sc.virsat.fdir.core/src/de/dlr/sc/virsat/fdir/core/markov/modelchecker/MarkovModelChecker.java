@@ -22,10 +22,10 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -218,7 +218,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 * 
 	 */
 	@Override
-	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IBaseMetric... metrics) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -229,11 +229,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
 		
-		tm = null;
-		tmTerminal = null;
-		bellmanMatrix = null;
-		
-		for (IMetric metric : metrics) {
+		for (IBaseMetric metric : metrics) {
 			metric.accept(this);
 		}
 		
@@ -320,19 +316,36 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
+	public void visit(Availability availabilityMetric) {
 		if (tm == null) {
 			tm = createTransitionMatrix(false);
 		}
-		
-		int steps = (int) (pointAvailabilityMetric.getTime() / delta);
 
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 
-		for (int time = 0; time <= steps; ++time) {
-			modelCheckingResult.pointAvailability.add(1 - getFailRate());
-			iterate(tm);
+		if (Double.isFinite(availabilityMetric.getTime())) {
+			int steps = (int) (availabilityMetric.getTime() / delta);
+			for (int time = 0; time <= steps; ++time) {
+				modelCheckingResult.pointAvailability.add(1 - getFailRate());
+				iterate(tm);
+			}
+		} else {
+			double oldFailRate = getFailRate();
+			modelCheckingResult.pointAvailability.add(oldFailRate);
+			
+			boolean convergence = false;
+			while (!convergence) {
+				iterate(tm);
+				double newFailRate = getFailRate();
+				modelCheckingResult.failRates.add(1 - newFailRate);
+				double change = Math.abs(newFailRate - oldFailRate);
+				oldFailRate = newFailRate;
+				double relativeChange = change / newFailRate;
+				if (relativeChange < eps || !Double.isFinite(change)) {
+					convergence = true;
+				}
+			}
 		}
 	}
 

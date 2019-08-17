@@ -10,19 +10,12 @@
 package de.dlr.sc.virsat.fdir.core.metrics;
 
 /**
- * Interface for visiting a metric
+ * A visitor for all derived metrics
  * @author muel_s8
  *
  */
 
-public interface IMetricVisitor {
-	
-	/**
-	 * Handle the case of a reliability metric
-	 * @param reliabilityMetric the reliabilitymetric
-	 */
-	void visit(Reliability reliabilityMetric);
-	
+public interface IDerivedMetricVisitor {	
 	/**
 	 * Handle the case of a mean time to failure metric
 	 * @param mttfMetric the mttf metric
@@ -30,20 +23,8 @@ public interface IMetricVisitor {
 	void visit(MTTF mttfMetric);
 	
 	/**
-	 * Handle the case of a point availability metric
-	 * @param pointAvailabilityMetric the point availabilityMetric
-	 */
-	void visit(PointAvailability pointAvailabilityMetric);
-	
-	/**
-	 * Handle the case of a steadyStateAvailabilityMetric metric
-	 * @param steadyStateAvailabilityMetric the steadyStateAvailabilityMetric
+	 * Handle the case of a mean time to steady state availability metric
+	 * @param steadyStateAvailabilityMetric the steadyStateAvailability metric
 	 */
 	void visit(SteadyStateAvailability steadyStateAvailabilityMetric);
-
-	/**
-	 * Handle the case of a minimum cut set metric
-	 * @param minimumCutSet the minimum cut set metric
-	 */
-	void visit(MinimumCutSet minimumCutSet);
 }

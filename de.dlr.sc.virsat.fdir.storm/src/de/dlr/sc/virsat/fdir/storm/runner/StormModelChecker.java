@@ -19,10 +19,10 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -73,7 +73,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 	
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
+	public void visit(Availability pointAvailabilityMetric) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -85,7 +85,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, IMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, IBaseMetric... metrics) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -96,7 +96,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 		
 		try {
 			resultExtracted  = stormRunner.run();
-			for (IMetric metric : metrics) {
+			for (IBaseMetric metric : metrics) {
 				metric.accept(this);
 			}
 

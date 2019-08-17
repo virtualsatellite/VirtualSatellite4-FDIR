@@ -16,7 +16,7 @@ import java.util.StringTokenizer;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.storm.files.ExplicitDRNFileWriter;
 import de.dlr.sc.virsat.fdir.storm.files.ExplicitPropertiesWriter;
 import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
@@ -27,7 +27,7 @@ import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
  */
 public class Storm implements IStormProgram<Double> {
 
-	private IMetric[] metrics;
+	private IBaseMetric[] metrics;
 	private MarkovAutomaton<? extends MarkovState> ma;
 	private double delta;
 	
@@ -37,7 +37,7 @@ public class Storm implements IStormProgram<Double> {
 	 * @param ma Markov Automaton
 	 * @param delta timeslice
 	 */
-	public Storm(MarkovAutomaton<? extends MarkovState> ma, double delta,  IMetric... metrics) {
+	public Storm(MarkovAutomaton<? extends MarkovState> ma, double delta,  IBaseMetric... metrics) {
 		this.metrics = metrics;
 		this.ma = ma;
 		this.delta = delta;

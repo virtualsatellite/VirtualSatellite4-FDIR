@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.fdir.galileo.GalileoDFTWriter;
@@ -36,7 +36,7 @@ public class StormDFT implements IStormProgram<Double> {
 
 	public static final String FILE_TYPE = "dft";
 
-	private List<IMetric> metrics = new ArrayList<>();
+	private List<IBaseMetric> metrics = new ArrayList<>();
 
 	private GalileoDft dft;
 	private double delta;
@@ -47,7 +47,7 @@ public class StormDFT implements IStormProgram<Double> {
 	 * @param metric
 	 *            the metric to compute
 	 */
-	public void addMetric(IMetric metric) {
+	public void addMetric(IBaseMetric metric) {
 		metrics.add(metric);
 	}
 
@@ -128,7 +128,7 @@ public class StormDFT implements IStormProgram<Double> {
 	 * @author muel_s8
 	 *
 	 */
-	private class MetricToStormArguments implements IMetricVisitor {
+	private class MetricToStormArguments implements IBaseMetricVisitor {
 		private List<String> stormArguments;
 
 		/**
@@ -138,7 +138,7 @@ public class StormDFT implements IStormProgram<Double> {
 		 *            the metric
 		 * @return the command line arguments to compute the metric via storm
 		 */
-		public List<String> toArguments(IMetric metric) {
+		public List<String> toArguments(IBaseMetric metric) {
 			stormArguments = new ArrayList<>();
 			metric.accept(this);
 			return stormArguments;
@@ -158,7 +158,7 @@ public class StormDFT implements IStormProgram<Double> {
 		}
 
 		@Override
-		public void visit(PointAvailability pointAvailabilityMetric) {
+		public void visit(Availability pointAvailabilityMetric) {
 			// TODO Auto-generated method stub
 
 		}

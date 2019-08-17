@@ -18,7 +18,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
@@ -110,10 +110,8 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		subMonitor.setTaskName("Performing Model Checking");
 		
 		FailLabelProvider failLabelProvider = new FailLabelProvider(fault);
-		//failLabelProvider.getFailLabels().get(fault).add(FailLabel.UNOBSERVED);
-
 		ModelCheckingResult resultUnobservedFailure = ftEvaluator
-				.evaluateFaultTree(fault, failLabelProvider, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
+				.evaluateFaultTree(fault, failLabelProvider, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
 		
 		double steadyStateUnavailability = 1 - resultUnobservedFailure.getSteadyStateAvailability();
 		double meanTimeToUndetectedFailure = resultUnobservedFailure.getMeanTimeToFailure();
@@ -121,7 +119,7 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		failLabelProvider.getFailLabels().get(fault).add(FailLabel.OBSERVED);
 		
 		ModelCheckingResult resultObservedFailure = ftEvaluator
-				.evaluateFaultTree(fault, failLabelProvider, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
+				.evaluateFaultTree(fault, failLabelProvider, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
 		double meanTimeToDetectedFailure = resultObservedFailure.getMeanTimeToFailure();
 		double steadyStateObservedUnavailability = 1 - resultObservedFailure.getSteadyStateAvailability();
 		
@@ -138,13 +136,13 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 			@Override
 			protected void doExecute() {
 				getSteadyStateDetectabilityBean().setValueAsBaseUnit(steadyStateDetectability);
-				double detectability = (1 - resultObservedFailure.getPointAvailability().get(resultUnobservedFailure.getPointAvailability().size() - 1)) 
-						/ (1 - resultUnobservedFailure.getPointAvailability().get(resultUnobservedFailure.getPointAvailability().size() - 1));
+				double detectability = (1 - resultObservedFailure.getAvailability().get(resultUnobservedFailure.getAvailability().size() - 1)) 
+						/ (1 - resultUnobservedFailure.getAvailability().get(resultUnobservedFailure.getAvailability().size() - 1));
 				getDetectabilityBean().setValueAsBaseUnit(detectability);
 				getMeanTimeToDetectionBean().setValueAsBaseUnit(meanTimeToDetection);
 				getDetectabilityCurve().clear();
-				for (int i = 0; i < resultUnobservedFailure.getPointAvailability().size(); ++i) {
-					detectability = (1 - resultObservedFailure.getPointAvailability().get(i)) / (1 - resultUnobservedFailure.getPointAvailability().get(i));
+				for (int i = 0; i < resultUnobservedFailure.getAvailability().size(); ++i) {
+					detectability = (1 - resultObservedFailure.getAvailability().get(i)) / (1 - resultUnobservedFailure.getAvailability().get(i));
 					createNewDetectabilityCurveEntry(detectability);
 				}
 			}

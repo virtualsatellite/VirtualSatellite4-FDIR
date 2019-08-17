@@ -9,16 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Metric representing time bounded reliability
  * @author sascha
  *
  */
 
-public class Reliability implements IQuantitativeMetric {
+public class Reliability implements IQuantitativeMetric, IBaseMetric {
 	
 	public static final Reliability UNIT_RELIABILITY = new Reliability(1);
 	public static final Reliability INF_RELIABILITY = new Reliability(Double.POSITIVE_INFINITY);
@@ -42,12 +39,7 @@ public class Reliability implements IQuantitativeMetric {
 	}
 
 	@Override
-	public void accept(IMetricVisitor visitor) {
+	public void accept(IBaseMetricVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	@Override
-	public List<IMetric> getDerivedFrom() {
-		return Collections.emptyList();
 	}
 }

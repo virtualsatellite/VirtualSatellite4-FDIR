@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
@@ -21,12 +22,14 @@ import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -39,11 +42,12 @@ import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
  *
  */
 
-public class DFTMetricsComposer implements IMetricVisitor {
+public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVisitor {
 	
 	private ModelCheckingResult composedResult;
 	private long k;
 	private List<ModelCheckingResult> subModuleResults;
+	private double delta;
 	
 	/**
 	 * Compose operation for composable metrics. Composes the results of the sub modules.
@@ -52,12 +56,12 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	 * @param metrics the metrics to compose
 	 * @return the composed result
 	 */
-	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, long k, IMetric... metrics) {
+	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, long k, IBaseMetric... metrics) {
 		this.k = k;
 		this.subModuleResults = subModuleResults;
 		this.composedResult = new ModelCheckingResult();
 		
-		for (IMetric metric : metrics) {
+		for (IBaseMetric metric : metrics) {
 			metric.accept(this);
 		}
 		
@@ -66,16 +70,18 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	
 	
 	/**
-	 * Compose operation of uncomposable metrics. Calculates the metrics from
+	 * Derivation operation of deriavable metrics. Calculates the metrics from
 	 * already calculated metrics in the given result
 	 * @param composedResult the given result
-	 * @param metrics the metrics to compute
+	 * @param metrics the metrics to derive
+	 * @param delta 
 	 * @return 
 	 */
-	public void compose(ModelCheckingResult composedResult, IMetric[] metrics) {
+	public void derive(ModelCheckingResult composedResult, double delta, IDerivedMetric... metrics) {
 		this.composedResult = composedResult;
+		this.delta = delta;
 		
-		for (IMetric metric : metrics) {
+		for (IDerivedMetric metric : metrics) {
 			metric.accept(this);
 		}
 	}
@@ -99,37 +105,8 @@ public class DFTMetricsComposer implements IMetricVisitor {
 	
 	@Override
 	public void visit(Reliability reliabilityMetric) {
-		int countFailRates = 0;
-		if (k == 1) {
-			countFailRates = Integer.MAX_VALUE;
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				countFailRates = Math.min(countFailRates, subModuleResult.getFailRates().size());
-			}
-		} else {
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				countFailRates = Math.max(countFailRates, subModuleResult.getFailRates().size());
-			}
-		}
-		
-		double[] childFailRates = new double[subModuleResults.size()];
-		for (int i = 0; i < countFailRates; ++i) {
-			
-			for (int j = 0; j < subModuleResults.size(); ++j) {
-				ModelCheckingResult subModuleResult = subModuleResults.get(j);
-				if (i < subModuleResult.getFailRates().size()) {
-					childFailRates[j] = subModuleResult.getFailRates().get(i);
-				} else {
-					childFailRates[j] = 1;
-				}
-			}
-			
-			double composedFailRate = IQuantitativeMetric.composeProbabilities(childFailRates, k);
-			composedResult.getFailRates().add(composedFailRate);
-			
-			if (composedFailRate == 1) {
-				break;
-			}
-		}
+		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
+		IQuantitativeMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
 	}
 
 	@Override
@@ -150,30 +127,13 @@ public class DFTMetricsComposer implements IMetricVisitor {
 		
 		UnivariateIntegrator integrator = new SimpsonIntegrator();
 		double integral = integrator.integrate(SimpsonIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, countFailRates - 1);
-		composedResult.setMeanTimeToFailure(integral);
+		composedResult.setMeanTimeToFailure(integral * delta);
 	}
 
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
-		int countPoints = 0;
-		for (ModelCheckingResult subModuleResult : subModuleResults) {
-			countPoints = Math.max(countPoints, subModuleResult.getPointAvailability().size());
-		}
-		
-		double[] childPointAvailabilities = new double[subModuleResults.size()];
-		for (int i = 0; i < countPoints; ++i) {
-			for (int j = 0; j < subModuleResults.size(); ++j) {
-				ModelCheckingResult subModuleResult = subModuleResults.get(j);
-				if (i < subModuleResult.getFailRates().size()) {
-					childPointAvailabilities[j] = subModuleResult.getFailRates().get(i);
-				} else {
-					childPointAvailabilities[j] = 1;
-				}
-			}
-			
-			double composedAvailability = IQuantitativeMetric.composeProbabilities(childPointAvailabilities, k);
-			composedResult.getPointAvailability().add(composedAvailability);
-		}		
+	public void visit(Availability pointAvailabilityMetric) {
+		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
+		IQuantitativeMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, -1);
 	}
 
 	@Override

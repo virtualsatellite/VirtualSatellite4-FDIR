@@ -9,9 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -25,6 +23,8 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
@@ -90,6 +90,78 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		statistics.time = System.currentTimeMillis();
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+		configureDFT2MAConverter(ftHolder, metrics);
+		
+		boolean canModularize = modularizer != null 
+				&& root instanceof Fault
+				&& dft2MAConverter.getDftSemantics() != poSemantics
+				&& failLabelProvider == null;
+		
+		Set<Module> modules = null;
+		
+		if (canModularize) {
+			Fault rootFault = (Fault) root;
+			modules = modularizer.getModules(rootFault.getFaultTree());
+			canModularize = !modules.isEmpty();
+		}
+		
+		Module topLevelModule = null;
+		Set<Module> modulesToModelCheck = null;
+		
+		if (canModularize) {
+			topLevelModule = getModule(modules, root);
+			modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
+		}
+		
+		Map<Class<?>, IMetric[]> partitionedMetrics = IMetric.partitionMetrics(metrics, canModularize && modulesToModelCheck.size() > 1);
+		IBaseMetric[] baseMetrics = (IBaseMetric[]) partitionedMetrics.get(IBaseMetric.class);
+		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitionedMetrics.get(IDerivedMetric.class);
+		ModelCheckingResult result = null;
+		
+		if (canModularize) {
+			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
+		
+			Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = null;
+			if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
+				mapNodeToRepresentant = createMapNodeToRepresentant(ftHolder);
+			}
+			
+			for (Module module : modulesToModelCheck) {
+				if (mapNodeToRepresentant != null) {
+					FaultTreeNode representant = mapNodeToRepresentant.get(module.getRootNode());
+					Module representantModule = getModule(modules, representant);
+					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
+					if (representantResult == null) {
+						representantResult = modelCheck(representantModule.getRootNode(), baseMetrics, failLabelProvider);
+						mapModuleToResult.put(representantModule, representantResult);
+					}
+					mapModuleToResult.put(module, representantResult);
+				} else {
+					ModelCheckingResult moduleResult = modelCheck(module.getRootNode(), baseMetrics, failLabelProvider);
+					mapModuleToResult.put(module, moduleResult);
+				}
+			}
+			
+			composeModuleResults(topLevelModule, modules, baseMetrics, mapModuleToResult, mapNodeToRepresentant);
+			result = mapModuleToResult.get(topLevelModule);
+		} else {
+			result = modelCheck(root, baseMetrics, failLabelProvider);
+		}
+		
+		composer.derive(result, markovModelChecker.getDelta(), derivedMetrics);
+		int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
+		result.limitPointMetrics(steps);
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		return result;
+	}
+	
+	/**
+	 * Configures the state space generator
+	 * @param ftHolder the fault ree to convert
+	 * @param metrics the metrics to evaluate
+	 */
+	private void configureDFT2MAConverter(FaultTreeHolder ftHolder, IMetric[] metrics) {
 		dft2MAConverter.setSemantics(chooseSemantics(ftHolder));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
@@ -101,83 +173,6 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 			dft2MAConverter.setSymmetryChecker(new FaultTreeSymmetryChecker());
 			dft2MAConverter.setAllowsDontCareFailing(true);
 		}
-		
-		boolean canModularize = modularizer != null 
-				&& root instanceof Fault
-				&& dft2MAConverter.getDftSemantics() != poSemantics
-				&& failLabelProvider == null;
-		
-		Set<Module> modules = null;
-		if (canModularize) {
-			Fault rootFault = (Fault) root;
-			modules = modularizer.getModules(rootFault.getFaultTree());
-			canModularize = !modules.isEmpty();
-		}
-		
-		if (canModularize) {
-			Entry<IMetric[], IMetric[]> metricSplit = splitMetrics(metrics);
-			IMetric[] composableMetrics = metricSplit.getKey();
-			IMetric[] derivedMetrics = metricSplit.getValue();
-			
-			Module topLevelModule = getModule(modules, root);
-			Set<Module> modulesToModelCheck = getModulesToModelCheck(topLevelModule, modules);
-			
-			IMetric[] modelCheckerMetrics = modulesToModelCheck.size() == 1 ? metrics : composableMetrics;
-			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
-		
-			Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = null;
-			if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
-				mapNodeToRepresentant = new HashMap<>();
-				Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-				Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
-						
-				for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
-					if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
-						mapNodeToRepresentant.put(entry.getKey(), entry.getKey());
-						for (FaultTreeNode biggerNode : entry.getValue()) {
-							mapNodeToRepresentant.put(biggerNode, entry.getKey());
-						}
-					}
-				}
-			}
-			
-			for (Module module : modulesToModelCheck) {
-				if (mapNodeToRepresentant != null) {
-					FaultTreeNode representant = mapNodeToRepresentant.get(module.getRootNode());
-					Module representantModule = getModule(modules, representant);
-					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
-					if (representantResult == null) {
-						representantResult = modelCheckModule(representantModule, modelCheckerMetrics, failLabelProvider);
-						mapModuleToResult.put(representantModule, representantResult);
-					}
-					mapModuleToResult.put(module, representantResult);
-				} else {
-					mapModuleToResult.put(module, modelCheckModule(module, modelCheckerMetrics, failLabelProvider));
-				}
-			}
-			
-			composeModuleResults(topLevelModule, modules, composableMetrics, mapModuleToResult, mapNodeToRepresentant);
-			ModelCheckingResult result = mapModuleToResult.get(topLevelModule);
-			
-			if (modulesToModelCheck.size() > 1) {
-				composer.compose(result, derivedMetrics);
-				result.setMeanTimeToFailure(result.getMeanTimeToFailure() * markovModelChecker.getDelta());
-				int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
-				result.limitPointMetrics(steps);
-			}
-			
-			statistics.time = System.currentTimeMillis() - statistics.time;
-			return result;
-		} 
-		
-		mc = dft2MAConverter.convert(root, failLabelProvider);
-		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
-			
-		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
-		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		
-		return result;
 	}
 	
 	/**
@@ -204,7 +199,7 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 	 * @param mapModuleToResult a map from module to the already computed results
 	 * @param mapNodeToRepresentant 
 	 */
-	private void composeModuleResults(Module module, Set<Module> modules, IMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult, Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant) {
+	private void composeModuleResults(Module module, Set<Module> modules, IBaseMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult, Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant) {
 		ModelCheckingResult result = mapModuleToResult.get(module);
 		if (result != null) {
 			return;
@@ -248,6 +243,28 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		}
 	}
 
+	/**
+	 * Creates a mapping from a node to a representant from its symmetry equivalence class
+	 * @param ftHolder the fault tree holder
+	 * @return a mapping from a node to the symmetric representant
+	 */
+	private Map<FaultTreeNode, FaultTreeNode> createMapNodeToRepresentant(FaultTreeHolder ftHolder) {
+		Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = new HashMap<>();
+		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
+				
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
+			if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
+				mapNodeToRepresentant.put(entry.getKey(), entry.getKey());
+				for (FaultTreeNode biggerNode : entry.getValue()) {
+					mapNodeToRepresentant.put(biggerNode, entry.getKey());
+				}
+			}
+		}
+		
+		return mapNodeToRepresentant;
+	}
+	
 	/**
 	 * Gets the module for a given fault tree node
 	 * @param modules the modules
@@ -337,42 +354,14 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 	}
 	
 	/**
-	 * Splits the given set of metrics into a set of composable and uncomposable metrics.
-	 * Also, if necessary, adds new metrics that are required to perform the composition.
-	 * @param metrics the original metrics
-	 * @return a pair of composable and uncomposable metric sets
-	 */
-	private Entry<IMetric[], IMetric[]> splitMetrics(IMetric[] metrics) {
-		List<IMetric> composableMetrics = new ArrayList<>();
-		List<IMetric> derivedMetrics = new ArrayList<>();
-		
-		for (IMetric metric : metrics) {
-			Collection<IMetric> derivedFrom = metric.getDerivedFrom();
-			if (derivedFrom.isEmpty()) {
-				composableMetrics.add(metric);
-			} else {
-				composableMetrics = composableMetrics.stream()
-					.filter(composableMetric -> !derivedFrom.stream().anyMatch(other -> other.getClass().equals(composableMetric.getClass())))
-					.collect(Collectors.toList());
-				composableMetrics.addAll(derivedFrom);
-				derivedMetrics.add(metric);
-			}
-		}
-		
-		IMetric[] composableMetricsArray = new IMetric[composableMetrics.size()];
-		IMetric[] derivedMetricsArray = new IMetric[derivedMetrics.size()];
-		return new SimpleEntry<>(composableMetrics.toArray(composableMetricsArray), derivedMetrics.toArray(derivedMetricsArray));
-	}
-	
-	/**
 	 * Model checks an inidivudal module
-	 * @param module the module to model check
+	 * @param root the root of the tree
 	 * @param metrics the metrics to model check
 	 * @param failLabelProvider 
 	 * @return the result object containing the metrics
 	 */
-	private ModelCheckingResult modelCheckModule(Module module, IMetric[] metrics, FailLabelProvider failLabelProvider) {
-		mc = dft2MAConverter.convert(module.getRootNode(), failLabelProvider);
+	private ModelCheckingResult modelCheck(FaultTreeNode root, IBaseMetric[] metrics, FailLabelProvider failLabelProvider) {
+		mc = dft2MAConverter.convert(root, failLabelProvider);
 		ModelCheckingResult result = markovModelChecker.checkModel(mc, metrics);
 			
 		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());

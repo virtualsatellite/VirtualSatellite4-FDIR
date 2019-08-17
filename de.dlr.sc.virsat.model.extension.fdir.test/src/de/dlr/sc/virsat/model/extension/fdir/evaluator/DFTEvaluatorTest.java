@@ -25,7 +25,7 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
@@ -975,7 +975,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, 
-				PointAvailability.UNIT_POINTAVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+				Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);

@@ -11,14 +11,14 @@ package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 /**
  * Interface for model checkers
  * @author yoge_re
  *
  */
-public interface IMarkovModelChecker extends IMetricVisitor {
+public interface IMarkovModelChecker extends IBaseMetricVisitor {
 
 	/**
 	 * Checks the markov chain model for the given metrics
@@ -26,7 +26,7 @@ public interface IMarkovModelChecker extends IMetricVisitor {
 	 * @param metrics metrics
 	 * @return a model checking result with the contained metrics
 	 */
-	ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics);
+	ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IBaseMetric... metrics);
 	
 	/**
 	 * Gets the internal statistics for the last model checking call

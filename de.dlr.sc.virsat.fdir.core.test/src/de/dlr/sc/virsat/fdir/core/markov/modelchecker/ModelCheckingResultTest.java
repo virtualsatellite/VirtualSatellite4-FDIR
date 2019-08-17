@@ -29,21 +29,21 @@ public class ModelCheckingResultTest {
 		result.limitPointMetrics(1);
 		
 		assertTrue(result.getFailRates().isEmpty());
-		assertTrue(result.getPointAvailability().isEmpty());
+		assertTrue(result.getAvailability().isEmpty());
 		
 		result.getFailRates().add(1d);
-		result.getPointAvailability().add(1d);
+		result.getAvailability().add(1d);
 		
 		final int EXPECTED_POINTS = 2;
 		result.limitPointMetrics(EXPECTED_POINTS);
 		
 		assertEquals(EXPECTED_POINTS, result.getFailRates().size());
-		assertEquals(EXPECTED_POINTS, result.getPointAvailability().size());
+		assertEquals(EXPECTED_POINTS, result.getAvailability().size());
 		
 		result.limitPointMetrics(0);
 		
 		assertTrue(result.getFailRates().isEmpty());
-		assertTrue(result.getPointAvailability().isEmpty());
+		assertTrue(result.getAvailability().isEmpty());
 	}
 
 }

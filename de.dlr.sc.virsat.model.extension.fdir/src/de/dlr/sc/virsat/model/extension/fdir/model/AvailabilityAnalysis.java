@@ -17,7 +17,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
@@ -116,7 +116,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		subMonitor.setTaskName("Performing Model Checking");
 		
 		ModelCheckingResult result = ftEvaluator
-				.evaluateFaultTree(fault, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+				.evaluateFaultTree(fault, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
 		if (monitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
@@ -130,8 +130,8 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 			protected void doExecute() {
 				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
 				getAvailabilityCurve().clear();
-				for (int i = 0; i < result.getPointAvailability().size(); ++i) {
-					createNewAvailabilityCurveEntry(result.getPointAvailability().get(i));
+				for (int i = 0; i < result.getAvailability().size(); ++i) {
+					createNewAvailabilityCurveEntry(result.getAvailability().get(i));
 				}
 			}
 		};

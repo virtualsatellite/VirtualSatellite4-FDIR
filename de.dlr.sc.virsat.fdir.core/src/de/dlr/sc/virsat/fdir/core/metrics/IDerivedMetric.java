@@ -9,36 +9,25 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Metric representing the Mean Time To Failure
- * @author sascha
+ * A derived metric is computed from a set of other metrics.
+ * @author muel_s8
  *
  */
-public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
-	public static final MTTF MTTF = new MTTF();
+
+public interface IDerivedMetric extends IMetric {
+	/**
+	 * Either empty if the metric cannot be derived from other metrics,
+	 * or otherwise the list of metrics required to derive this metric
+	 * @return the metrics this metric is derived from
+	 */
+	List<IMetric> getDerivedFrom();
 	
 	/**
-	 * Hidden constructor
+	 * Accept a visitor
+	 * @param visitor the visitor
 	 */
-	private MTTF() {
-		
-	}
-	
-	@Override
-	public void accept(IBaseMetricVisitor visitor) {
-		visitor.visit(this);
-	}
-	
-	@Override
-	public void accept(IDerivedMetricVisitor visitor) {
-		visitor.visit(this);
-	}
-	
-	@Override
-	public List<IMetric> getDerivedFrom() {
-		return Collections.singletonList(Reliability.INF_RELIABILITY);
-	}
+	void accept(IDerivedMetricVisitor visitor);
 }

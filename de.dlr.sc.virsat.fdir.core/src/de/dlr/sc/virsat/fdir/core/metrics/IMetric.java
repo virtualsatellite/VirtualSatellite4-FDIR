@@ -9,7 +9,14 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
 /**
  * Interface for metrics
@@ -18,17 +25,48 @@ import java.util.List;
  */
 
 public interface IMetric {
-	
+
 	/**
-	 * Accept a visitor
-	 * @param visitor the visitor
+	 * Splits the given set of metrics into a set of basic and derived metrics.
+	 * Also, if necessary, adds new metrics that are required to perform the composition.
+	 * @param metrics the original metrics
+	 * @param deriveIfPossible if a metric is both a base metric and a derived metric, then this flag
+	 * will prioritize derivation. If set to false, the metric will be considered a base metric.
+	 * @return a map with the partitioned metrics
 	 */
-	void accept(IMetricVisitor visitor);
+	static Map<Class<?>, IMetric[]> partitionMetrics(IMetric[] metrics, boolean deriveIfPossible) {
+		List<IBaseMetric> baseMetrics = new ArrayList<>();
+		List<IDerivedMetric> derivedMetrics = new ArrayList<>();
+		
+		Queue<IMetric> toProcess = new LinkedList<>(Arrays.asList(metrics));
+		
+		while (!toProcess.isEmpty()) {
+			IMetric metric = toProcess.poll();
+			if (metric instanceof IDerivedMetric) {
+				if (metric instanceof IBaseMetric && !deriveIfPossible) {
+					baseMetrics.add((IBaseMetric) metric);
+				} else {
+					IDerivedMetric derivedMetric = (IDerivedMetric) metric;
+					toProcess.addAll(derivedMetric.getDerivedFrom());
+					derivedMetrics.add(derivedMetric);
+					
+					baseMetrics = baseMetrics.stream()
+							.filter(composableMetric -> !derivedMetric.getDerivedFrom().stream().anyMatch(other -> other.getClass().equals(composableMetric.getClass())))
+							.collect(Collectors.toList());
+				}
+			} else if (metric instanceof IBaseMetric) {
+				baseMetrics.add((IBaseMetric) metric);
+			}
+		}
+		
+		IBaseMetric[] baseMetricsArray = new IBaseMetric[baseMetrics.size()];
+		IDerivedMetric[] derivedMetricsArray = new IDerivedMetric[derivedMetrics.size()];
 	
-	/**
-	 * Either empty if the metric cannot be derived from other metrics,
-	 * or otherwise the list of metrics required to derive this metric
-	 * @return the metrics this metric is derived from
-	 */
-	List<IMetric> getDerivedFrom();
+		Map<Class<?>, IMetric[]> partitionedMetrics = new HashMap<>();
+		partitionedMetrics.put(IBaseMetric.class, baseMetrics.toArray(baseMetricsArray));
+		partitionedMetrics.put(IDerivedMetric.class, derivedMetrics.toArray(derivedMetricsArray));
+		
+		return partitionedMetrics;
+	}
+	
 }
