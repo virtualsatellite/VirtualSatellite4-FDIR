@@ -53,11 +53,14 @@ public class DFTModularization {
 	public DFTModularization(Modularizer modularizer, FaultTreeHolder ftHolder, FaultTreeSymmetryChecker symmetryChecker) {
 		Fault rootFault = (Fault) ftHolder.getRoot();
 		modules = modularizer.getModules(rootFault.getFaultTree());
-		topLevelModule = getModule(rootFault);
-		modulesToModelCheck = computeModulesToModelCheck();
 		
-		if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
-			mapNodeToRepresentant = createMapNodeToRepresentant(ftHolder, symmetryChecker);
+		if (!modules.isEmpty()) {
+			topLevelModule = getModule(rootFault);
+			modulesToModelCheck = computeModulesToModelCheck();
+			
+			if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
+				mapNodeToRepresentant = createMapNodeToRepresentant(ftHolder, symmetryChecker);
+			}
 		}
 	}
 	

@@ -149,7 +149,7 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		
 		DFTModularization modularization = new DFTModularization(modularizer, ftHolder, symmetryChecker);
 		
-		if (modularization.getModulesToModelCheck().size() > 1) {
+		if (modularization.getTopLevelModule() != null && modularization.getModulesToModelCheck().size() > 1) {
 			return modularization;
 		} else {
 			return null;

@@ -32,7 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
  *
  */
 
-public class StormEvaluator extends AFaultTreeEvaluator {
+public class StormDFTEvaluator extends AFaultTreeEvaluator {
 	
 	private final double delta;
 	private ModelCheckingResult modelCheckingResult;
@@ -41,7 +41,7 @@ public class StormEvaluator extends AFaultTreeEvaluator {
 	 * Constructor for computing reliability and mean time to failure
 	 * @param delta the timestep slice
 	 */
-	public StormEvaluator(double delta) {
+	public StormDFTEvaluator(double delta) {
 		this.delta = delta;
 	}
 	

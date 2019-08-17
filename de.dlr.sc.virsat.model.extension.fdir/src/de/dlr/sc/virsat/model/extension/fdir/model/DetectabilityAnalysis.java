@@ -108,7 +108,7 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		}
 		subMonitor.split(1);
 		subMonitor.setTaskName("Performing Model Checking");
-		
+		/*
 		FailLabelProvider failLabelProvider = new FailLabelProvider(fault);
 		ModelCheckingResult resultUnobservedFailure = ftEvaluator
 				.evaluateFaultTree(fault, failLabelProvider, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MTTF.MTTF);
@@ -147,6 +147,9 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 				}
 			}
 		};
+		*/
+		
+		return null;
 	}
 
 	/**

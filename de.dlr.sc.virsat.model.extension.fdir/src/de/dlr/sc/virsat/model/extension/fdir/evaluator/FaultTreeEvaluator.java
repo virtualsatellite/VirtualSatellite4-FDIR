@@ -149,7 +149,7 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic, double delta, double eps) {
 		String preferences = FaultTreePreferences.getEnginePreference();
 		if (preferences.equals(EngineExecutionPreference.StormDFT.toString())) {
-			return decorateFaultTreeEvaluator(new StormEvaluator(delta));
+			return decorateFaultTreeEvaluator(new StormDFTEvaluator(delta));
 		} else {
 			DFTSemantics defaultSemantics = isNondeterministic ? DFTSemantics.createNDDFTSemantics() : DFTSemantics.createStandardDFTSemantics();
 			DFTSemantics poSemantics = PONDDFTSemantics.createPONDDFTSemantics();
