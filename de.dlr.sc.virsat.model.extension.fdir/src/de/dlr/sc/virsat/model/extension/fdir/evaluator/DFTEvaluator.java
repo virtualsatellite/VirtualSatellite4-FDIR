@@ -90,17 +90,7 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		statistics.time = System.currentTimeMillis();
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
-		dft2MAConverter.setSemantics(chooseSemantics(ftHolder));
-		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
-		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
-		
-		if (dft2MAConverter.getDftSemantics() == poSemantics) {
-			dft2MAConverter.setSymmetryChecker(null);
-			dft2MAConverter.setAllowsDontCareFailing(false);
-		} else {
-			dft2MAConverter.setSymmetryChecker(new FaultTreeSymmetryChecker());
-			dft2MAConverter.setAllowsDontCareFailing(true);
-		}
+		configureDFT2MAConverter(ftHolder, metrics);
 		
 		boolean canModularize = modularizer != null 
 				&& root instanceof Fault
@@ -133,18 +123,7 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		
 			Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = null;
 			if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
-				mapNodeToRepresentant = new HashMap<>();
-				Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-				Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
-						
-				for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
-					if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
-						mapNodeToRepresentant.put(entry.getKey(), entry.getKey());
-						for (FaultTreeNode biggerNode : entry.getValue()) {
-							mapNodeToRepresentant.put(biggerNode, entry.getKey());
-						}
-					}
-				}
+				mapNodeToRepresentant = createMapNodeToRepresentant(ftHolder);
 			}
 			
 			for (Module module : modulesToModelCheck) {
@@ -175,6 +154,25 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		
 		statistics.time = System.currentTimeMillis() - statistics.time;
 		return result;
+	}
+	
+	/**
+	 * Configures the state space generator
+	 * @param ftHolder the fault ree to convert
+	 * @param metrics the metrics to evaluate
+	 */
+	private void configureDFT2MAConverter(FaultTreeHolder ftHolder, IMetric[] metrics) {
+		dft2MAConverter.setSemantics(chooseSemantics(ftHolder));
+		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
+		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
+		
+		if (dft2MAConverter.getDftSemantics() == poSemantics) {
+			dft2MAConverter.setSymmetryChecker(null);
+			dft2MAConverter.setAllowsDontCareFailing(false);
+		} else {
+			dft2MAConverter.setSymmetryChecker(new FaultTreeSymmetryChecker());
+			dft2MAConverter.setAllowsDontCareFailing(true);
+		}
 	}
 	
 	/**
@@ -245,6 +243,28 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		}
 	}
 
+	/**
+	 * Creates a mapping from a node to a representant from its symmetry equivalence class
+	 * @param ftHolder the fault tree holder
+	 * @return a mapping from a node to the symmetric representant
+	 */
+	private Map<FaultTreeNode, FaultTreeNode> createMapNodeToRepresentant(FaultTreeHolder ftHolder) {
+		Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = new HashMap<>();
+		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
+				
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
+			if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
+				mapNodeToRepresentant.put(entry.getKey(), entry.getKey());
+				for (FaultTreeNode biggerNode : entry.getValue()) {
+					mapNodeToRepresentant.put(biggerNode, entry.getKey());
+				}
+			}
+		}
+		
+		return mapNodeToRepresentant;
+	}
+	
 	/**
 	 * Gets the module for a given fault tree node
 	 * @param modules the modules
