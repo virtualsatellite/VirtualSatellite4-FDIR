@@ -51,7 +51,7 @@ public class ObservationEvent implements IDFTEvent {
 		List<OBSERVER> observers = state.getFTHolder().getMapNodeToObservers().get(node);
 		for (OBSERVER observer : observers) {
 			if (!state.hasFaultTreeNodeFailed(observer)) {
-				rate += observer.getObservationRate();
+				rate += observer.getObservationRateBean().getValueToBaseUnit();
 			}
 		}
 		return rate;

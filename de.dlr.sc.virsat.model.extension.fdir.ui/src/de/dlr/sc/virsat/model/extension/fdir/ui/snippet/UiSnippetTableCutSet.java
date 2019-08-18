@@ -23,4 +23,5 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
  * 
  */
 public class UiSnippetTableCutSet extends AUiSnippetTableCutSet {
+	
 }

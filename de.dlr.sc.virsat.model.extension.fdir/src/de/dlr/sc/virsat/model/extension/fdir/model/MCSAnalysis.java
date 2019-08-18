@@ -9,7 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,11 +20,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
@@ -30,7 +37,10 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
@@ -72,81 +82,145 @@ public  class MCSAnalysis extends AMCSAnalysis {
 	}
 	
 	/**
-	 * Gets the first fault attached to the same structural element instance
-	 * @return the top level fault to be analysed
-	 */
-	public Fault getFault() {
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
-		return parent.getFirst(Fault.class);
-	}
-	
-	/**
 	 * Peforms a minimum cut set analysis on the top level fault this analysis has been attached to
 	 * @param ed the editing domain
 	 * @param monitor 
 	 * @return a command that sets the results of this analysis
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
-		Fault fault = getFault();
+		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
+		List<Fault> faults = parent.getAll(Fault.class);
 		
-		if (fault != null) {
-			SubMonitor subMonitor = null;
-			if (monitor != null) {
-				monitor.setTaskName("MCS Analysis");
-				final int COUNT_TASKS = 3;
-				subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
-				subMonitor.setTaskName("Creating Data Model");
-				subMonitor.split(1);
+		final int COUNT_TASKS = 2 + faults.size();
+		if (monitor != null) {
+			monitor.setTaskName("MCS Analysis");
+		}
+		
+		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
+		
+		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
+		if (ra != null) {
+			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		}
+		
+		Map<Set<Object>, List<Fault>> mapCutSetToFaults = gatherMinimumCutSets(faults, ftEvaluator, subMonitor);
+		
+		if (subMonitor.isCanceled()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		subMonitor.setTaskName("Computing MCS metrics");
+		subMonitor.split(1);
+		
+		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = computeMinimumCutSetsMetrics(mapCutSetToFaults, ftEvaluator);
+		
+		if (subMonitor.isCanceled()) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		subMonitor.setTaskName("Updating Results");
+		subMonitor.split(1);
+		
+		long faultTolerance = mapCutSetToFaults.keySet().stream().mapToLong(cutSet -> cutSet.size()).min().orElse(1) - 1;
+		
+		return new RecordingCommand(ed, "MCS Analysis") {
+			@Override
+			protected void doExecute() {
+				setFaultTolerance(faultTolerance);
+				
+				getMinimumCutSets().clear();
+				getMinimumCutSets().addAll(generateEntries(mapCutSetToFaults, mapMcsToResult));
 			}
-			IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) getTypeInstance().eContainer());
-			RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
-			
-			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
-			if (ra != null) {
-				ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-			}
+		};
+	}
+	
+	/**
+	 * Collects all Minimum Cut Sets that can cause the given faults to occur
+	 * @param faults the faults
+	 * @param ftEvaluator the fault tree evaluator
+	 * @param monitor the monitor
+	 * @return a mapping from cut set to faults that are caused by them
+	 */
+	private Map<Set<Object>, List<Fault>> gatherMinimumCutSets(List<Fault> faults, IFaultTreeEvaluator ftEvaluator, SubMonitor monitor) {
+		Map<Set<Object>, List<Fault>> mapCutSetToFaults = new HashMap<>();
+		long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
+		
+		for (Fault fault : faults) {
 			if (monitor != null) {
 				if (monitor.isCanceled()) {
-					return UnexecutableCommand.INSTANCE;
+					return null;
 				}
-				subMonitor.setTaskName("Calculating MCS");
-				subMonitor.split(1);
+				
+				monitor.setTaskName("Analysing fault " + fault.getName());
+				monitor.split(1);
 			}
-			
-			long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
 			
 			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new MinimumCutSet(maxMinimumCutSetSize));
 			
-			Set<Set<Object>> minimumCutSets = result.getMinCutSets();
-			List<Set<Object>> sortedMinimumCutSets = minimumCutSets.stream()
-						.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
-						.collect(Collectors.toList());
-			
-			int faultTolerance = minimumCutSets.stream().mapToInt(cutSet -> cutSet.size()).min().orElse(0);
-			if (monitor != null) {
-				if (monitor.isCanceled()) {
-					return UnexecutableCommand.INSTANCE;
-				}
-				subMonitor.setTaskName("Updating Results");
-				subMonitor.split(1);
+			for (Set<Object> minCutSet : result.getMinCutSets()) {
+				mapCutSetToFaults.computeIfAbsent(minCutSet, v -> new ArrayList<>()).add(fault);
 			}
-			return new RecordingCommand(ed, "MCS Analysis") {
-				@Override
-				protected void doExecute() {
-					setFaultTolerance(faultTolerance);
-					
-					getMinimumCutSets().clear();
-					for (Set<Object> minimumCutSet : sortedMinimumCutSets) {
-						CutSet cutSet = new CutSet(getConcept());
-						for (Object object : minimumCutSet) {
-							cutSet.getBasicEvents().add((BasicEvent) object);
-						}
-						getMinimumCutSets().add(cutSet);
-					}
-				}
-			};
-		} else {
-			return UnexecutableCommand.INSTANCE;
 		}
+		
+		return mapCutSetToFaults;
+	}
+	
+	/**
+	 * Computes for each Minimum Cut Set its associated metrics
+	 * @param mapCutSetToFaults the mapping from cut set to fault
+	 * @param ftEvaluator the fault tree evaluator
+	 * @return the model checking result
+	 */
+	private Map<Set<Object>, ModelCheckingResult> computeMinimumCutSetsMetrics(Map<Set<Object>, List<Fault>> mapCutSetToFaults, IFaultTreeEvaluator ftEvaluator) {
+		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = new HashMap<>();
+		for (Set<Object> minCutSet : mapCutSetToFaults.keySet()) {
+			List<Fault> failures = mapCutSetToFaults.get(minCutSet);
+			Fault failure = failures.get(0);
+			FailableBasicEventsProvider failNodeProvider = new FailableBasicEventsProvider();
+			for (Object obj : minCutSet) {
+				failNodeProvider.getBasicEvents().add((BasicEvent) obj);
+			}
+			
+			ModelCheckingResult mcsResult = ftEvaluator.evaluateFaultTree(failure, failNodeProvider,
+					MTTF.MTTF, SteadyStateDetectability.STEADY_STATE_DETECTABILITY, MeanTimeToDetection.MTTD);
+			
+			mapMcsToResult.put(minCutSet, mcsResult);
+		}
+		
+		return mapMcsToResult;
+	}
+	
+	/**
+	 * Generates the Minimum Cut Set entries from the analysis results
+	 * @param mapCutSetToFaults the generated minimum cut sets
+	 * @param mapMcsToResult the associated metrics
+	 * @return the generated cut sets
+	 */
+	private List<CutSet> generateEntries(Map<Set<Object>, List<Fault>> mapCutSetToFaults, Map<Set<Object>, ModelCheckingResult> mapMcsToResult) {
+		List<Set<Object>> sortedMinimumCutSets = mapCutSetToFaults.keySet().stream()
+				.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
+				.collect(Collectors.toList());
+		
+		FDIRParameters fdirParameters = null;
+		EObject root = VirSatEcoreUtil.getRootContainer(getTypeInstance().eContainer());
+		if (root != null) {
+			BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance((StructuralElementInstance) root);
+			fdirParameters = beanSei.getFirst(FDIRParameters.class);
+		}
+
+		List<CutSet> generatedEntries = new ArrayList<>();
+		for (Set<Object> minimumCutSet : sortedMinimumCutSets) {
+			List<Fault> failures = mapCutSetToFaults.get(minimumCutSet);
+			ModelCheckingResult mcsResult = mapMcsToResult.get(minimumCutSet);
+			for (Fault failure : failures) {
+				CutSet cutSet = new CutSet(getConcept());
+				for (Object object : minimumCutSet) {
+					cutSet.getBasicEvents().add((BasicEvent) object);
+				}
+				getMinimumCutSets().add(cutSet);
+				cutSet.setFailure(failure);
+				cutSet.fill(mcsResult, fdirParameters);
+			}
+		}
+		return generatedEntries;
 	}
 }

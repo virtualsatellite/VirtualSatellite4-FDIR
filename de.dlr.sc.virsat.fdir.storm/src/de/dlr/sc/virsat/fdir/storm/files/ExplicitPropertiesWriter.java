@@ -13,11 +13,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -26,10 +26,10 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
  * @author yoge_re
  *
  */
-public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVisitor {
+public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetricVisitor {
 	private double delta;
 	private String instancePath;
-	private IMetric[] metrics;
+	private IBaseMetric[] metrics;
 	private PrintWriter printWriter;
 
 	/**
@@ -41,7 +41,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 	 * @param metrics
 	 *            the metrics
 	 */
-	public ExplicitPropertiesWriter(double delta, String instancePath, IMetric[] metrics) {
+	public ExplicitPropertiesWriter(double delta, String instancePath, IBaseMetric[] metrics) {
 		this.delta = delta;
 		this.instancePath = instancePath;
 		this.metrics = metrics;
@@ -52,7 +52,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 		try {
 			FileWriter fileWriter = new FileWriter(instancePath);
 			printWriter = new PrintWriter(fileWriter);
-			for (IMetric metric : metrics) {
+			for (IBaseMetric metric : metrics) {
 				metric.accept(this);
 			}
 			printWriter.close();
@@ -82,7 +82,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 	}
 
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
+	public void visit(Availability pointAvailabilityMetric) {
 		// TODO Auto-generated method stub
 	}
 

@@ -26,7 +26,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -86,11 +86,11 @@ public class MarkovModelCheckerTest {
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 
-		ModelCheckingResult result = modelChecker.checkModel(ma, PointAvailability.UNIT_POINTAVAILABILITY,
+		ModelCheckingResult result = modelChecker.checkModel(ma, Availability.UNIT_AVAILABILITY,
 				SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
-		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getPointAvailability()); 
+		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getAvailability()); 
 	}
 	
 	@Test 
@@ -111,7 +111,7 @@ public class MarkovModelCheckerTest {
 		ma.addState(inter);
 		ma.getFinalStates().add(fail);
 		
-		ma.addMarkovianTransition("a", init, fail, 1);
+		ma.addMarkovianTransition("c", init, fail, 1);
 		ma.addMarkovianTransition("b", init, inter, 1);
 		ma.addMarkovianTransition("a", inter, fail, 1);
 		
@@ -119,13 +119,13 @@ public class MarkovModelCheckerTest {
 		
 		final int COUNT_EXPECTED_MINCUT_SETS = 2;
 		assertEquals(COUNT_EXPECTED_MINCUT_SETS, result.getMinCutSets().size());
-		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("a")));
+		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("c")));
 		assertThat(result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList("a", "b"))));
 		
 		result = modelChecker.checkModel(ma, new MinimumCutSet(1));
 		
 		final int COUNT_EXPECTED_MINCUT_SETS_RESTRICTED = 1;
 		assertEquals(COUNT_EXPECTED_MINCUT_SETS_RESTRICTED, result.getMinCutSets().size());
-		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("a")));
+		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("c")));
 	}
 }

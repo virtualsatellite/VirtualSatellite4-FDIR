@@ -17,7 +17,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
@@ -81,17 +81,6 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	}
 
 	/**
-	 * Gets the first fault attached to the same structural element instance
-	 * 
-	 * @return the top level fault to be analysed
-	 */
-	public Fault getFault() {
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-				(StructuralElementInstance) getTypeInstance().eContainer());
-		return parent.getFirst(Fault.class);
-	}
-
-	/**
 	 * 
 	 * @param ed
 	 *            the editing domain
@@ -100,13 +89,12 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 * @return a command that sets the availability analysis
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
-		FaultTreeNode fault = getFault();
+		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
-		if (fault == null) {
-			return UnexecutableCommand.INSTANCE;
+		if (monitor != null) {
+			monitor.setTaskName("Availability Analysis");
 		}
 		
-		monitor.setTaskName("Availability Analysis");
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 		subMonitor.split(1);
@@ -115,7 +103,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		double delta = getTimestepBean().getValueToBaseUnit();
 
 		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-				(StructuralElementInstance) getTypeInstance().eContainer());
+				(StructuralElementInstance) fault.getTypeInstance().eContainer());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
@@ -124,16 +112,16 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		}
 		
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);
 		subMonitor.setTaskName("Performing Model Checking");
 		
 		ModelCheckingResult result = ftEvaluator
-				.evaluateFaultTree(fault, new PointAvailability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+				.evaluateFaultTree(fault, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);
@@ -144,11 +132,10 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 			@Override
 			protected void doExecute() {
 				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
-				if (result.getPointAvailability() != null) {
-					getPointAvailabilityCurve().clear();
-					for (int i = 0; i < result.getPointAvailability().size(); ++i) {
-						createNewAvailabilityCurveEntry(result.getPointAvailability().get(i));
-					}
+				getAvailabilityBean().setValueAsBaseUnit(result.getAvailability().get(result.getAvailability().size() - 1));
+				getAvailabilityCurve().clear();
+				for (int i = 0; i < result.getAvailability().size(); ++i) {
+					createNewAvailabilityCurveEntry(result.getAvailability().get(i));
 				}
 			}
 		};
@@ -162,10 +149,10 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 */
 	private void createNewAvailabilityCurveEntry(double value) {
 		CategoryInstantiator ci = new CategoryInstantiator();
-		APropertyInstance pi = ci.generateInstance(getPointAvailabilityCurve().getArrayInstance());
+		APropertyInstance pi = ci.generateInstance(getAvailabilityCurve().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
 		newBeanProperty.setValueAsBaseUnit(value);
-		getPointAvailabilityCurve().add(newBeanProperty);
+		getAvailabilityCurve().add(newBeanProperty);
 	}
 }

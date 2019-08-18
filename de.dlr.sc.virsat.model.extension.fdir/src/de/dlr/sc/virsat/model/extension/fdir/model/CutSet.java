@@ -9,11 +9,16 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
+import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
+import de.dlr.sc.virsat.model.dvlm.calculation.Equation;
+import de.dlr.sc.virsat.model.dvlm.calculation.ReferencedInput;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 
 // *****************************************************************
 // * Class Declaration
@@ -51,5 +56,25 @@ public  class CutSet extends ACutSet {
 	 */
 	public CutSet(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
+	}
+
+	/**
+	 * FIlls out the Cut Set metrics with the given model checking result
+	 * @param mcsResult the model checking result for this mcs
+	 * @param fdirParameters the fdir parameter set
+	 */
+	public void fill(ModelCheckingResult mcsResult, FDIRParameters fdirParameters) {
+		setSeverity(getFailure().getSeverity());
+		getMeanTimeToFailureBean().setValueAsBaseUnit(mcsResult.getMeanTimeToFailure());
+		getMeanTimeToDetectionBean().setValueAsBaseUnit(mcsResult.getMeanTimeToDetection());
+		getSteadyStateDetectabilityBean().setValueAsBaseUnit(mcsResult.getSteadyStateDetectability());
+
+		if (fdirParameters != null) {
+			Equation equation = getTypeInstance().getEquationSection().getEquations().get(0);
+			AdvancedFunction opClassifyPL = (AdvancedFunction) equation.getExpression();
+			ReferencedInput ri = CalculationFactory.eINSTANCE.createReferencedInput();
+			ri.setReference(fdirParameters.getTypeInstance());
+			opClassifyPL.getInputs().add(ri);
+		}
 	}
 }

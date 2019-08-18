@@ -22,9 +22,9 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
-import de.dlr.sc.virsat.model.extension.fdir.model.FDIRAnalysis;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 
 
@@ -40,7 +40,7 @@ import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
  * 
  * 
  */	
-public abstract class AAvailabilityAnalysis extends FDIRAnalysis implements IBeanCategoryAssignment {
+public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis";
 	
@@ -55,8 +55,9 @@ public abstract class AAvailabilityAnalysis extends FDIRAnalysis implements IBea
 	// property name constants
 	public static final String PROPERTY_REMAININGMISSIONTIME = "remainingMissionTime";
 	public static final String PROPERTY_TIMESTEP = "timestep";
+	public static final String PROPERTY_AVAILABILITY = "availability";
 	public static final String PROPERTY_STEADYSTATEAVAILABILITY = "steadyStateAvailability";
-	public static final String PROPERTY_POINTAVAILABILITYCURVE = "pointAvailabilityCurve";
+	public static final String PROPERTY_AVAILABILITYCURVE = "availabilityCurve";
 	
 	
 	
@@ -151,6 +152,42 @@ public abstract class AAvailabilityAnalysis extends FDIRAnalysis implements IBea
 	}
 	
 	// *****************************************************************
+	// * Attribute: availability
+	// *****************************************************************
+	private BeanPropertyFloat availability = new BeanPropertyFloat();
+	
+	private void safeAccessAvailability() {
+		if (availability.getTypeInstance() == null) {
+			availability.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("availability"));
+		}
+	}
+	
+	public Command setAvailability(EditingDomain ed, double value) {
+		safeAccessAvailability();
+		return this.availability.setValue(ed, value);
+	}
+	
+	public void setAvailability(double value) {
+		safeAccessAvailability();
+		this.availability.setValue(value);
+	}
+	
+	public double getAvailability() {
+		safeAccessAvailability();
+		return availability.getValue();
+	}
+	
+	public boolean isSetAvailability() {
+		safeAccessAvailability();
+		return availability.isSet();
+	}
+	
+	public BeanPropertyFloat getAvailabilityBean() {
+		safeAccessAvailability();
+		return availability;
+	}
+	
+	// *****************************************************************
 	// * Attribute: steadyStateAvailability
 	// *****************************************************************
 	private BeanPropertyFloat steadyStateAvailability = new BeanPropertyFloat();
@@ -187,19 +224,19 @@ public abstract class AAvailabilityAnalysis extends FDIRAnalysis implements IBea
 	}
 	
 	// *****************************************************************
-	// * Array Attribute: pointAvailabilityCurve
+	// * Array Attribute: availabilityCurve
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> pointAvailabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> availabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessPointAvailabilityCurve() {
-		if (pointAvailabilityCurve.getArrayInstance() == null) {
-			pointAvailabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("pointAvailabilityCurve"));
+	private void safeAccessAvailabilityCurve() {
+		if (availabilityCurve.getArrayInstance() == null) {
+			availabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityCurve"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getPointAvailabilityCurve() {
-		safeAccessPointAvailabilityCurve();
-		return pointAvailabilityCurve;
+	public IBeanList<BeanPropertyFloat> getAvailabilityCurve() {
+		safeAccessAvailabilityCurve();
+		return availabilityCurve;
 	}
 	
 	

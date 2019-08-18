@@ -59,13 +59,13 @@ public class UiSnippetSectionMCSAnalysis extends AUiSnippetSectionMCSAnalysis im
 
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
-						MCSAnalysis relAnalysis = new MCSAnalysis((CategoryAssignment) model);
-						Command reliabilityAnalysisCommand = relAnalysis
+						MCSAnalysis mcsAnalysis = new MCSAnalysis((CategoryAssignment) model);
+						Command mcsyAnalysisCommand = mcsAnalysis
 								.perform((TransactionalEditingDomain) editingDomain, monitor);
 						if (monitor.isCanceled()) {
 							return Status.OK_STATUS;
 						}
-						editingDomain.getCommandStack().execute(reliabilityAnalysisCommand);
+						editingDomain.getCommandStack().execute(mcsyAnalysisCommand);
 						return Status.OK_STATUS;
 					}
 

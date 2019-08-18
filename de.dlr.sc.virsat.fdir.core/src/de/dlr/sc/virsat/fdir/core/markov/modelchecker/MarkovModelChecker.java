@@ -22,10 +22,10 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -142,9 +142,30 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];
 		
+		Queue<MarkovState> toProcess = new LinkedList<>();
+		toProcess.addAll(mc.getFinalStates());
+		Set<MarkovState> failableStates = new HashSet<>();
+		
+		while (!toProcess.isEmpty()) {
+			MarkovState state = toProcess.poll();
+			if (failableStates.add(state)) {
+				List<?> transitions = mc.getPredTransitions(state);
+				for (int j = 0; j < transitions.size(); ++j) {
+					@SuppressWarnings("unchecked")
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+					toProcess.add(transition.getFrom());
+				}
+			}
+		}
+		
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = mc.getStates().get(i);
 			if (!mc.getFinalStates().contains(state)) {
+				if (!failableStates.contains(state)) {
+					inititalVector[i] = Double.POSITIVE_INFINITY;
+					continue;
+				}
+				
 				List<?> transitions = mc.getSuccTransitions(state);
 				double exitRate = 0;
 				for (int j = 0; j < transitions.size(); ++j) {
@@ -197,7 +218,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 * 
 	 */
 	@Override
-	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IBaseMetric... metrics) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -208,11 +229,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
 		
-		tm = null;
-		tmTerminal = null;
-		bellmanMatrix = null;
-		
-		for (IMetric metric : metrics) {
+		for (IBaseMetric metric : metrics) {
 			metric.accept(this);
 		}
 		
@@ -282,6 +299,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			double change = Math.abs(res[0] - resultBuffer[0]);
 			
 			if (change < eps || Double.isNaN(change)) {
+				if (Double.isInfinite(res[0])) {
+					resultBuffer[0] = Double.POSITIVE_INFINITY;
+				}
 				probabilityDistribution = resultBuffer;
 				convergence = true;
 			} else {
@@ -296,19 +316,36 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
+	public void visit(Availability availabilityMetric) {
 		if (tm == null) {
 			tm = createTransitionMatrix(false);
 		}
-		
-		int steps = (int) (pointAvailabilityMetric.getTime() / delta);
 
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 
-		for (int time = 0; time <= steps; ++time) {
-			modelCheckingResult.pointAvailability.add(1 - getFailRate());
-			iterate(tm);
+		if (Double.isFinite(availabilityMetric.getTime())) {
+			int steps = (int) (availabilityMetric.getTime() / delta);
+			for (int time = 0; time <= steps; ++time) {
+				modelCheckingResult.availability.add(1 - getFailRate());
+				iterate(tm);
+			}
+		} else {
+			double oldFailRate = getFailRate();
+			modelCheckingResult.availability.add(oldFailRate);
+			
+			boolean convergence = false;
+			while (!convergence) {
+				iterate(tm);
+				double newFailRate = getFailRate();
+				modelCheckingResult.availability.add(1 - newFailRate);
+				double change = Math.abs(newFailRate - oldFailRate);
+				oldFailRate = newFailRate;
+				double relativeChange = change / newFailRate;
+				if (relativeChange < eps || !Double.isFinite(change)) {
+					convergence = true;
+				}
+			}
 		}
 	}
 
@@ -327,7 +364,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			iterate(tm);
 			double newUnavailability = getFailRate();
 			difference = Math.abs(newUnavailability - oldUnavailability);
-			if (difference < (eps / delta) || Double.isNaN(difference)) {
+			
+			if (difference < eps / Math.max(1, delta) || Double.isNaN(difference)) {
 				convergence = true;
 			}
 			oldUnavailability = newUnavailability;
@@ -351,40 +389,59 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		while (!toProcess.isEmpty()) {
 			MarkovState state = toProcess.poll();
 			
-			// Update the mincuts
-			Set<Set<Object>> oldMinCuts = mapStateToMinCuts.get(state);
-			Set<Set<Object>> minCuts = new HashSet<>();
-			
-			List<?> succTransitions = mc.getSuccTransitions(state);
-			for (Object succTransition : succTransitions) {
-				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) succTransition;
-				MarkovState successor = transition.getTo();
-				Set<Set<Object>> succMinCuts = mapStateToMinCuts.getOrDefault(successor, Collections.emptySet());
+			boolean shouldEnqueuePredecessors = false;
+			if (!mc.getFinalStates().contains(state)) {
+				// Update the mincuts
+				Set<Set<Object>> oldMinCuts = mapStateToMinCuts.get(state);
+				Set<Set<Object>> minCuts = new HashSet<>();
 				
-				if (succMinCuts.isEmpty()) {
-					Set<Object> minCut = new HashSet<>();
-					minCut.add(transition.getEvent());
-					minCuts.add(minCut);
-				} else {
-					for (Set<Object> succMinCut : succMinCuts) {
-						if (succMinCut.size() < minimumCutSet.getMaxSize() || minimumCutSet.getMaxSize() == 0) {
-							Set<Object> minCut = new HashSet<>(succMinCut);
-							minCut.add(transition.getEvent());
-							minCuts.add(minCut);
+				List<?> succTransitions = mc.getSuccTransitions(state);
+				for (Object succTransition : succTransitions) {
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) succTransition;
+					MarkovState successor = transition.getTo();
+					Set<Set<Object>> succMinCuts = mapStateToMinCuts.getOrDefault(successor, Collections.emptySet());
+					
+					if (succMinCuts.isEmpty()) {
+						Set<Object> minCut = new HashSet<>();
+						minCut.add(transition.getEvent());
+						minCuts.add(minCut);
+					} else {
+						for (Set<Object> succMinCut : succMinCuts) {
+							if (succMinCut.size() < minimumCutSet.getMaxSize() || minimumCutSet.getMaxSize() == 0) {
+								Set<Object> minCut = new HashSet<>(succMinCut);
+								minCut.add(transition.getEvent());
+								minCuts.add(minCut);
+							}
 						}
 					}
+					
+					// Make sure all cuts are mincuts
+					Set<Set<Object>> subsumedMinCuts = new HashSet<>();
+					for (Set<Object> minCut : minCuts) {
+						for (Set<Object> minCutOther : minCuts) {
+							if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
+								subsumedMinCuts.add(minCut);
+							}
+						}
+					}
+					minCuts.removeAll(subsumedMinCuts);
 				}
+				
+				if (!Objects.equals(oldMinCuts, minCuts)) {
+					shouldEnqueuePredecessors = true;
+					mapStateToMinCuts.put(state, minCuts);
+				}
+			} else {
+				shouldEnqueuePredecessors = true;
 			}
 			
 			// Enqueue predecessors if necessary
-			if (!Objects.equals(oldMinCuts, minCuts)) {
-				mapStateToMinCuts.put(state, minCuts);
-				
+			if (shouldEnqueuePredecessors) {
 				List<?> predTransitions = mc.getPredTransitions(state);
 				for (Object predTransition : predTransitions) {
 					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) predTransition;
 					MarkovState predecessor = transition.getFrom();
-					if (!toProcess.contains(predecessor)) {
+					if (!toProcess.contains(predecessor) && !mc.getFinalStates().contains(predecessor)) {
 						toProcess.add(predecessor);
 					}
 				}

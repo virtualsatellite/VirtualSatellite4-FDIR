@@ -62,6 +62,15 @@
       <values name="Minor" value="1"/>
     </properties>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="reliabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="availabilityAnalysis" description="Optional availability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="detectabilityAnalysis" description="Optional detectability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
   </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
@@ -70,9 +79,51 @@
     <properties xsi:type="dvlm_cppd:StringProperty" name="repairAction" description="Description of the action(s) needed to be performed for the repair."/>
   </categories>
   <categories name="CutSet">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
+        <inputs xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
+          <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.meanTimeToFailure"/>
+        </inputs>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.probability"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+        <left xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+          <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.severity"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.probability"/>
+        </left>
+        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.detection"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.criticality"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failure" description="The failure that occurs if the basic events occur" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault"/>
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="basicEvents" description="Set of events leading to a top level failure" referenceType="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Catastrophic" value="4"/>
+      <values name="Critical" value="3"/>
+      <values name="Major" value="2"/>
+      <values name="Minor" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="probability" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="ExtremelyRemote" value="1"/>
+      <values name="Remote" value="2"/>
+      <values name="Occasional" value="3"/>
+      <values name="Probable" value="4"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.23/@properties.4/@values.3">
+      <values name="ExtremelyUnlikely" value="4"/>
+      <values name="Unlikely" value="3"/>
+      <values name="Likely" value="2"/>
+      <values name="VeryLikely" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" description="Steady State Detectability obtained from the Fault Tree Analysis" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToDetection" description="Mean Time To Detection obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
   </categories>
   <categories name="FDIRParameters" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="missionTime" quantityKindName="Time" unitName="Hour"/>
@@ -81,8 +132,7 @@
       <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
     </properties>
   </categories>
-  <categories name="FDIRAnalysis" isApplicableForAll="true" isAbstract="true"/>
-  <categories name="FMECA" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
+  <categories name="FMECA" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="entries" type="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
@@ -125,7 +175,7 @@
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.27/@properties.6/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.26/@properties.6/@values.3">
       <values name="ExtremelyUnlikely" value="4"/>
       <values name="Unlikely" value="3"/>
       <values name="Likely" value="2"/>
@@ -137,7 +187,7 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="ReliabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
+  <categories name="ReliabilityAnalysis" cardinality="1">
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis.remainingMissionTime"/>
@@ -154,7 +204,7 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="AvailabilityAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
+  <categories name="AvailabilityAnalysis" cardinality="1">
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis.remainingMissionTime"/>
@@ -165,13 +215,32 @@
     </equationDefinitions>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="remainingMissionTime" quantityKindName="Time" unitName="Hour"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="availability" quantityKindName="Dimensionless" unitName="Percent"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateAvailability" quantityKindName="Dimensionless" unitName="Percent"/>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="pointAvailabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="availabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="MCSAnalysis" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis">
-    <properties xsi:type="dvlm_cppd:IntProperty" name="maxMinimumCutSetSize" unitName="No Unit"/>
+  <categories name="DetectabilityAnalysis" cardinality="1">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis.remainingMissionTime"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.timestep"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis.timestep"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="remainingMissionTime" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToDetection" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+  </categories>
+  <categories name="MCSAnalysis" isApplicableForAll="true" cardinality="1">
+    <properties xsi:type="dvlm_cppd:IntProperty" name="maxMinimumCutSetSize" unitName="No Unit" defaultValue="0"/>
     <properties xsi:type="dvlm_cppd:IntProperty" name="faultTolerance" unitName="No Unit"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="minimumCutSets" type="de.dlr.sc.virsat.model.extension.fdir.CutSet">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>

@@ -145,7 +145,7 @@ public class FMECATest extends AFMECATest {
 		FMECAEntry entry = entries.get(0);
 		assertEquals(fault, entry.getFailure());
 		assertEquals(fm, entry.getFailureMode());
-		assertEquals(Double.NaN, entry.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(Double.POSITIVE_INFINITY, entry.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
@@ -219,7 +219,7 @@ public class FMECATest extends AFMECATest {
 		
 		FMECAEntry entry = entries.get(0);
 		assertEquals(2, entry.getProposedRecovery().size());
-		assertEquals(cause.getRepairAction(), entry.getProposedRecovery().get(0).getValue());
-		assertEquals("Switch to Redundancy", entry.getProposedRecovery().get(1).getValue());
+		assertEquals(cause.getRepairAction(), entry.getProposedRecovery().get(1).getValue());
+		assertEquals("Switch to Redundancy", entry.getProposedRecovery().get(0).getValue());
 	}
 }

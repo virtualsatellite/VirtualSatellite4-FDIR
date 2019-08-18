@@ -20,19 +20,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
-import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
-import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
-import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
-import de.dlr.sc.virsat.model.dvlm.calculation.Equation;
-import de.dlr.sc.virsat.model.dvlm.calculation.ReferencedInput;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
-import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
@@ -139,8 +129,22 @@ public  class FMECA extends AFMECA {
 		monitor.worked(1);
 		
 		monitor.beginTask("Filling out FMECA entries", entries.size());
+		
+		RecoveryAutomaton ra = getParent().getFirst(RecoveryAutomaton.class);
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
+		if (ra != null) {
+			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		}
+		
+		FDIRParameters fdirParameters  = null;
+		EObject root = VirSatEcoreUtil.getRootContainer(getTypeInstance().eContainer());
+		if (root != null) {
+			BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance((StructuralElementInstance) root);
+			fdirParameters = beanSei.getFirst(FDIRParameters.class);
+		}
+		
 		for (FMECAEntry entry : entries) {
-			fillEntry(entry);
+			entry.fill(ftEvaluator, fdirParameters);
 			monitor.worked(1);
 		}
 		
@@ -161,53 +165,5 @@ public  class FMECA extends AFMECA {
 		entry.setFailureMode(failureMode);
 		entry.setFailureCause(failureCause);
 		return entry;
-	}
-	
-	/**
-	 * Fills out an FMECA entry as much as possible
-	 * @param entry the fmeca entry
-	 */
-	private void fillEntry(FMECAEntry entry) {
-		entry.setSeverity(entry.getFailure().getSeverity());
-		
-		FaultTreeNode analysisNode = entry.getFailureCause() != null ? entry.getFailureCause() : entry.getFailureMode();
-		
-		if (analysisNode != null) {
-			RecoveryAutomaton ra = getParent().getFirst(RecoveryAutomaton.class);
-			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
-			if (ra != null) {
-				ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-			}
-			
-			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(analysisNode, MTTF.MTTF);
-			entry.getMeanTimeToFailureBean().setValueAsBaseUnit(result.getMeanTimeToFailure());
-		} else {
-			entry.setMeanTimeToFailure(Double.NaN);
-		}
-		
-		entry.getFailureEffects().addAll(entry.getFailure().getFaultTree().getAffectedFaults());
-		
-		CategoryInstantiator ci = new CategoryInstantiator();
-		for (String proposedRecoveryAction : entry.getFailure().getFaultTree().getPotentialRecoveryActions()) {
-			APropertyInstance pi = ci.generateInstance(entry.getProposedRecovery().getArrayInstance());
-			BeanPropertyString newBeanProperty = new BeanPropertyString();
-			newBeanProperty.setTypeInstance((ValuePropertyInstance) pi);
-			newBeanProperty.setValue(proposedRecoveryAction);
-			entry.getProposedRecovery().add(newBeanProperty);
-		}
-		
-		EObject root = VirSatEcoreUtil.getRootContainer(getTypeInstance().eContainer());
-		if (root != null) {
-			BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance((StructuralElementInstance) root);
-			FDIRParameters fdirParameters = beanSei.getFirst(FDIRParameters.class);
-			
-			if (fdirParameters != null) {
-				Equation equation = entry.getTypeInstance().getEquationSection().getEquations().get(0);
-				AdvancedFunction opClassifyPL = (AdvancedFunction) equation.getExpression();
-				ReferencedInput ri = CalculationFactory.eINSTANCE.createReferencedInput();
-				ri.setReference(fdirParameters.getTypeInstance());
-				opClassifyPL.getInputs().add(ri);
-			}
-		}
 	}
 }

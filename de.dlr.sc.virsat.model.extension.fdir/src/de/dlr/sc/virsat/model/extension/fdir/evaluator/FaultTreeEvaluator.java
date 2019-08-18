@@ -41,7 +41,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  *
  */
 
-public class FaultTreeEvaluator implements IFaultTreeEvaluator {
+public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	
 	public static final float DEFAULT_EPS = 0.001f;
 	public static final float DEFAULT_DELTA = 0.1f;
@@ -58,7 +58,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -70,13 +70,31 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, metrics);
+		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
+		
+		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, metrics);
 		if (!result.getMinCutSets().isEmpty()) {
 			remapMinCutSets(result);
 		}
 		return result;
 	}
 	
+	/**
+	 * Maps the nodes in the given failLabelProvider to the nodes of the transformed tree
+	 * @param failNodeProvider the failable provider
+	 * @return the failable provider with remapped nodes
+	 */
+	private FailableBasicEventsProvider remapFailLabelProvider(FailableBasicEventsProvider failNodeProvider) {
+		FailableBasicEventsProvider failNodeProviderRemapped = new FailableBasicEventsProvider();
+		for (BasicEvent be : failNodeProvider.getBasicEvents()) {
+			FaultTreeNode remappedNode = conversionResult.getMapGeneratedToGenerator().keySet().stream()
+					.filter(generated -> generated.getUuid().equals(be.getUuid()))
+					.findFirst().get();
+			failNodeProviderRemapped.getBasicEvents().add((BasicEvent) remappedNode);
+		}
+		return failNodeProviderRemapped;
+	}
+
 	/**
 	 * Remaps the events of the computed mincut sets to the events of the original tree
 	 * @param result a model checking result
@@ -88,12 +106,25 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 		for (Set<Object> minimumCutSet : result.getMinCutSets()) {
 			Set<Object> originalMiniumCutSet = new HashSet<>();
 			for (Object object : minimumCutSet) {
-				FaultEvent fe = (FaultEvent) object;
-				BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
-				originalMiniumCutSet.add(originalBe);
+				if (object instanceof FaultEvent) {
+					FaultEvent fe = (FaultEvent) object;
+					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
+					originalMiniumCutSet.add(originalBe);
+				}
 			}
 			originalMinimumCutSets.add(originalMiniumCutSet);
 		}
+		
+		// Make sure all cuts are mincuts
+		Set<Set<Object>> subsumedMinCuts = new HashSet<>();
+		for (Set<Object> minCut : originalMinimumCutSets) {
+			for (Set<Object> minCutOther : originalMinimumCutSets) {
+				if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
+					subsumedMinCuts.add(minCut);
+				}
+			}
+		}
+		originalMinimumCutSets.removeAll(subsumedMinCuts);
 		
 		result.getMinCutSets().clear();
 		result.getMinCutSets().addAll(originalMinimumCutSets);
@@ -131,7 +162,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic, double delta, double eps) {
 		String preferences = FaultTreePreferences.getEnginePreference();
 		if (preferences.equals(EngineExecutionPreference.StormDFT.toString())) {
-			return decorateFaultTreeEvaluator(new StormEvaluator(delta));
+			return decorateFaultTreeEvaluator(new StormDFTEvaluator(delta));
 		} else {
 			DFTSemantics defaultSemantics = isNondeterministic ? DFTSemantics.createNDDFTSemantics() : DFTSemantics.createStandardDFTSemantics();
 			DFTSemantics poSemantics = PONDDFTSemantics.createPONDDFTSemantics();
@@ -166,5 +197,4 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	public Object getStatistics() {
 		return evaluator.getStatistics();
 	}
-
 }

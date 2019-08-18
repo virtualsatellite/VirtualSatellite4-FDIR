@@ -19,6 +19,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -33,6 +34,7 @@ public class FaultTreeNodeGraphicsFactory {
 	
 	public static final IColorConstant FTN_FOREGROUND = IColorConstant.GRAY;
 	public static final IColorConstant FTN_BACKGROUND = IColorConstant.LIGHT_ORANGE;
+	public static final IColorConstant OBSERVER_BACKGROUND = new ColorConstant(144, 238, 144);
 	
 	public static final int CORNER_WIDTH = 5;
 	public static final int CORNER_HEIGHT = 5;
@@ -103,6 +105,7 @@ public class FaultTreeNodeGraphicsFactory {
 	private Diagram diagram;
 	private Color colorFg;
 	private Color colorBg;
+	private Color observerColorBg;
 	
 	/**
 	 * Sets up the factory
@@ -114,6 +117,7 @@ public class FaultTreeNodeGraphicsFactory {
 		this.diagram = Graphiti.getPeService().getDiagramForShape(containerShape);
 		this.colorFg = Graphiti.getGaService().manageColor(diagram, FTN_FOREGROUND);
 		this.colorBg = Graphiti.getGaService().manageColor(diagram, FTN_BACKGROUND);
+		this.observerColorBg = Graphiti.getGaService().manageColor(diagram, OBSERVER_BACKGROUND);
 	}
 	
 	/**
@@ -140,11 +144,13 @@ public class FaultTreeNodeGraphicsFactory {
 			case PDEP:
 			case RDEP:
 				return createFDEPGa();
+			case OBSERVER:
+				return createObserverGateGa();
 			default:
 				return createDefaultGa();
 		}
 	}
-	
+
 	/**
 	 * Creates the default box shaped graphics algorithm
 	 * @return the created graphics algorithm
@@ -215,5 +221,15 @@ public class FaultTreeNodeGraphicsFactory {
 		andPolygon.setWidth(GATE_WIDTH);
 		andPolygon.setHeight(GATE_HEIGHT);
 		return andPolygon;
+	}
+	
+	/**
+	 * Creates the OBSERVER graphics algorithm
+	 * @return the OBSERVER graphics algorithm
+	 */
+	private GraphicsAlgorithm createObserverGateGa() {
+		GraphicsAlgorithm observerGa = createDefaultGa();
+		observerGa.setBackground(observerColorBg);
+		return observerGa;
 	}
 }

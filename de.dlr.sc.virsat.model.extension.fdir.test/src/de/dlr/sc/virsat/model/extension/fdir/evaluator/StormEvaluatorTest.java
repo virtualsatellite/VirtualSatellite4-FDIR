@@ -36,7 +36,7 @@ public class StormEvaluatorTest extends ATestCase {
 
 	@Test
 	public void testEvaluateFaultTree() {
-		StormEvaluator stormEvaluator = new StormEvaluator(1) {
+		StormDFTEvaluator stormEvaluator = new StormDFTEvaluator(1) {
 			// Mock the creation of the StormRunner to simulate the Storm program returning some values
 			@Override
 			protected StormRunner<Double> createStormRunner(IStormProgram<Double> storm) {

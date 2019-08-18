@@ -25,9 +25,12 @@ public class ModelCheckingResult {
 
 	protected List<Double> failRates = new ArrayList<>();
 	private double meanTimeToFailure;
-	protected List<Double> pointAvailability = new ArrayList<>();
+	protected List<Double> availability = new ArrayList<>();
 	private double steadyStateAvailability;
 	protected Set<Set<Object>> minCutSets = new HashSet<>();
+	private double meanTimeToDetection;
+	private double steadyStateDetectability;
+	protected List<Double> detectabiity = new ArrayList<>();
 	
 	/**
 	 * Sets the mean time to failure
@@ -43,6 +46,22 @@ public class ModelCheckingResult {
 	 */
 	public void setSteadyStateAvailability(double steadyStateAvailability) {
 		this.steadyStateAvailability = steadyStateAvailability;
+	}
+	
+	/**
+	 * Sets the mean time to detection
+	 * @param meanTimeToDetection the mean time to detection
+	 */
+	public void setMeanTimeToDetection(double meanTimeToDetection) {
+		this.meanTimeToDetection = meanTimeToDetection;
+	}
+	
+	/**
+	 * Sets the steady state detectability
+	 * @param steadyStateDetectability the steady state detectability
+	 */
+	public void setSteadyStateDetectability(double steadyStateDetectability) {
+		this.steadyStateDetectability = steadyStateDetectability;
 	}
 	
 	/**
@@ -65,8 +84,8 @@ public class ModelCheckingResult {
 	 * Gets the computed point availability
 	 * @return the point availability
 	 */
-	public List<Double> getPointAvailability() {
-		return pointAvailability;
+	public List<Double> getAvailability() {
+		return availability;
 	}
 
 	/**
@@ -84,6 +103,30 @@ public class ModelCheckingResult {
 	public Set<Set<Object>> getMinCutSets() {
 		return minCutSets;
 	}
+	
+	/**
+	 * Gets the mean time to detection
+	 * @return the mean time to detection
+	 */
+	public double getMeanTimeToDetection() {
+		return meanTimeToDetection;
+	}
+	
+	/**
+	 * Gets the steady state detectability
+	 * @return the steady state detectability
+	 */
+	public double getSteadyStateDetectability() {
+		return steadyStateDetectability;
+	}
+	
+	/**
+	 * Gets the detectability curve
+	 * @return the detectability curve
+	 */
+	public List<Double> getDetectabiity() {
+		return detectabiity;
+	}
 
 	/**
 	 * Limits all point wise metrics to the given number of entries
@@ -97,10 +140,10 @@ public class ModelCheckingResult {
 			}
 		}
 		
-		if (!pointAvailability.isEmpty()) {
-			pointAvailability = pointAvailability.stream().limit(steps).collect(Collectors.toList());
-			while (pointAvailability.size() < steps) {
-				pointAvailability.add(1d);
+		if (!availability.isEmpty()) {
+			availability = availability.stream().limit(steps).collect(Collectors.toList());
+			while (availability.size() < steps) {
+				availability.add(1d);
 			}
 		}
 	}

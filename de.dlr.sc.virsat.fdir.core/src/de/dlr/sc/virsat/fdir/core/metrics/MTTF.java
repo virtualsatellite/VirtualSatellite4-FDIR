@@ -10,14 +10,17 @@
 package de.dlr.sc.virsat.fdir.core.metrics;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * Metric representing the Mean Time To Failure
  * @author sascha
  *
  */
-public class MTTF implements IQuantitativeMetric {
+public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	public static final MTTF MTTF = new MTTF();
 	
 	/**
@@ -28,12 +31,17 @@ public class MTTF implements IQuantitativeMetric {
 	}
 	
 	@Override
-	public void accept(IMetricVisitor visitor) {
+	public void accept(IBaseMetricVisitor visitor) {
 		visitor.visit(this);
 	}
 	
 	@Override
-	public List<IMetric> getDerivedFrom() {
-		return Collections.singletonList(Reliability.INF_RELIABILITY);
+	public void accept(IDerivedMetricVisitor visitor) {
+		visitor.visit(this);
+	}
+	
+	@Override
+	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
+		return Collections.singletonMap(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(Reliability.INF_RELIABILITY));
 	}
 }
