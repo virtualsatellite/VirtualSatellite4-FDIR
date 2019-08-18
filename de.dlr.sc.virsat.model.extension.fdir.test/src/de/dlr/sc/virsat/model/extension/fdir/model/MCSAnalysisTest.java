@@ -17,7 +17,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +46,7 @@ import de.dlr.sc.virsat.project.resources.VirSatResourceSet;
  * 
  */
 public class MCSAnalysisTest extends AMCSAnalysisTest {
+	private static final double EPS = 0.00001;
 	private IProject project;
 	private VirSatTransactionalEditingDomain ed;
 
@@ -77,11 +77,8 @@ public class MCSAnalysisTest extends AMCSAnalysisTest {
 		MCSAnalysis mcsAnalysis = new MCSAnalysis(concept);
 		sei.getCategoryAssignments().add(mcsAnalysis.getTypeInstance());
 
-		Command unexecutableCommand = mcsAnalysis.perform(ed, monitor);
-
-		assertEquals(UnexecutableCommand.INSTANCE, unexecutableCommand);
-
 		Fault fault = new Fault(concept);
+		fault.setSeverity(Fault.SEVERITY_Critical_NAME);
 		BasicEvent be = new BasicEvent(concept);
 		be.setHotFailureRate(1);
 		fault.getBasicEvents().add(be);
@@ -95,6 +92,8 @@ public class MCSAnalysisTest extends AMCSAnalysisTest {
 
 		assertEquals(0, mcsAnalysis.getFaultTolerance());
 		assertEquals(1, mcsAnalysis.getMinimumCutSets().size());
-		assertEquals(be, mcsAnalysis.getMinimumCutSets().get(0).getBasicEvents().get(0));
+		CutSet cutSet = mcsAnalysis.getMinimumCutSets().get(0);
+		assertEquals(be, cutSet.getBasicEvents().get(0));
+		assertEquals(1, cutSet.getMeanTimeToFailure(), EPS);
 	}
 }

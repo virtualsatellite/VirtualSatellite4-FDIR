@@ -91,7 +91,10 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
-		monitor.setTaskName("Availability Analysis");
+		if (monitor != null) {
+			monitor.setTaskName("Availability Analysis");
+		}
+		
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 		subMonitor.split(1);

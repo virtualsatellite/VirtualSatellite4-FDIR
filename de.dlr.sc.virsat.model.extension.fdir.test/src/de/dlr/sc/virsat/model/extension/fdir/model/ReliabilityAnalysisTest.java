@@ -84,7 +84,7 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 		fault.getBasicEvents().add(be);
 		sei.getCategoryAssignments().add(fault.getTypeInstance());
 
-		Command analysisCommand = reliabilityAnalysis.perform(ed, new NullProgressMonitor());
+		Command analysisCommand = reliabilityAnalysis.perform(ed, null);
 
 		assertTrue(analysisCommand.canExecute());
 

@@ -106,12 +106,25 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 		for (Set<Object> minimumCutSet : result.getMinCutSets()) {
 			Set<Object> originalMiniumCutSet = new HashSet<>();
 			for (Object object : minimumCutSet) {
-				FaultEvent fe = (FaultEvent) object;
-				BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
-				originalMiniumCutSet.add(originalBe);
+				if (object instanceof FaultEvent) {
+					FaultEvent fe = (FaultEvent) object;
+					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
+					originalMiniumCutSet.add(originalBe);
+				}
 			}
 			originalMinimumCutSets.add(originalMiniumCutSet);
 		}
+		
+		// Make sure all cuts are mincuts
+		Set<Set<Object>> subsumedMinCuts = new HashSet<>();
+		for (Set<Object> minCut : originalMinimumCutSets) {
+			for (Set<Object> minCutOther : originalMinimumCutSets) {
+				if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
+					subsumedMinCuts.add(minCut);
+				}
+			}
+		}
+		originalMinimumCutSets.removeAll(subsumedMinCuts);
 		
 		result.getMinCutSets().clear();
 		result.getMinCutSets().addAll(originalMinimumCutSets);

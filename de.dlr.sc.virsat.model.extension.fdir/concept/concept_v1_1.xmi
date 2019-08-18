@@ -79,8 +79,52 @@
     <properties xsi:type="dvlm_cppd:StringProperty" name="repairAction" description="Description of the action(s) needed to be performed for the repair."/>
   </categories>
   <categories name="CutSet">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
+        <inputs xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
+          <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.meanTimeToFailure"/>
+        </inputs>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.probability"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+        <left xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+          <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.severity"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.probability"/>
+        </left>
+        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.detection"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.criticality"/>
+    </equationDefinitions>
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failure" description="The failure that occurs if the basic events occur" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault"/>
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="basicEvents" description="Set of events leading to a top level failure" referenceType="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Catastrophic" value="4"/>
+      <values name="Critical" value="3"/>
+      <values name="Major" value="2"/>
+      <values name="Minor" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="probability" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="ExtremelyRemote" value="1"/>
+      <values name="Remote" value="2"/>
+      <values name="Occasional" value="3"/>
+      <values name="Probable" value="4"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.23/@properties.4/@values.3">
+      <values name="ExtremelyUnlikely" value="4"/>
+      <values name="Unlikely" value="3"/>
+      <values name="Likely" value="2"/>
+      <values name="VeryLikely" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" description="Steady State Detectability obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToDetection" description="Mean Time To Detection obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="detectionMeans" description="Means for detecting this cut set" referenceType="de.dlr.sc.virsat.model.extension.fdir.OBSERVER">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
