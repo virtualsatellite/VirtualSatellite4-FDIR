@@ -49,12 +49,18 @@ public class SteadyStateDetectability implements IDerivedMetric {
 
 	/**
 	 * Derives the steady state detectability from the steady state availability values
-	 * @param unobservedSteadyStateAvailability the steady state availability of the unobserved failure
+	 * @param steadyStateAvailability the steady state availability of the unobserved failure
 	 * @param observedSteadyStateAvailability the steady state availability of the observed failure
 	 * @return the steady state detectability
 	 */
-	public double derive(double unobservedSteadyStateAvailability, double observedSteadyStateAvailability) {
-		Double steadyStateDetectability = (1 - unobservedSteadyStateAvailability) / (1 - observedSteadyStateAvailability);
+	public double derive(double steadyStateAvailability, double observedSteadyStateAvailability) {
+		double observedUnavailability = 1 - observedSteadyStateAvailability;
+		if (observedUnavailability == 0) {
+			return 1;
+		}
+		
+		double unavailability = 1 - steadyStateAvailability;
+		double steadyStateDetectability = unavailability / observedUnavailability;
 		return steadyStateDetectability;
 	}
 }

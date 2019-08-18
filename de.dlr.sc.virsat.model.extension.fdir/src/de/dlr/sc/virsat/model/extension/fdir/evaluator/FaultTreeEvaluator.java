@@ -58,7 +58,7 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailNodeProvider failNodeProvider, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -70,7 +70,7 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		FailNodeProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
+		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
 		
 		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, metrics);
 		if (!result.getMinCutSets().isEmpty()) {
@@ -84,13 +84,13 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	 * @param failNodeProvider the failable provider
 	 * @return the failable provider with remapped nodes
 	 */
-	private FailNodeProvider remapFailLabelProvider(FailNodeProvider failNodeProvider) {
-		FailNodeProvider failNodeProviderRemapped = new FailNodeProvider();
-		for (FaultTreeNode node : failNodeProvider.getFailNodes()) {
+	private FailableBasicEventsProvider remapFailLabelProvider(FailableBasicEventsProvider failNodeProvider) {
+		FailableBasicEventsProvider failNodeProviderRemapped = new FailableBasicEventsProvider();
+		for (BasicEvent be : failNodeProvider.getBasicEvents()) {
 			FaultTreeNode remappedNode = conversionResult.getMapGeneratedToGenerator().keySet().stream()
-					.filter(generated -> generated.getUuid().equals(node.getUuid()))
+					.filter(generated -> generated.getUuid().equals(be.getUuid()))
 					.findFirst().get();
-			failNodeProviderRemapped.getFailNodes().add(remappedNode);
+			failNodeProviderRemapped.getBasicEvents().add((BasicEvent) remappedNode);
 		}
 		return failNodeProviderRemapped;
 	}
@@ -106,12 +106,25 @@ public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 		for (Set<Object> minimumCutSet : result.getMinCutSets()) {
 			Set<Object> originalMiniumCutSet = new HashSet<>();
 			for (Object object : minimumCutSet) {
-				FaultEvent fe = (FaultEvent) object;
-				BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
-				originalMiniumCutSet.add(originalBe);
+				if (object instanceof FaultEvent) {
+					FaultEvent fe = (FaultEvent) object;
+					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
+					originalMiniumCutSet.add(originalBe);
+				}
 			}
 			originalMinimumCutSets.add(originalMiniumCutSet);
 		}
+		
+		// Make sure all cuts are mincuts
+		Set<Set<Object>> subsumedMinCuts = new HashSet<>();
+		for (Set<Object> minCut : originalMinimumCutSets) {
+			for (Set<Object> minCutOther : originalMinimumCutSets) {
+				if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
+					subsumedMinCuts.add(minCut);
+				}
+			}
+		}
+		originalMinimumCutSets.removeAll(subsumedMinCuts);
 		
 		result.getMinCutSets().clear();
 		result.getMinCutSets().addAll(originalMinimumCutSets);

@@ -338,7 +338,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			while (!convergence) {
 				iterate(tm);
 				double newFailRate = getFailRate();
-				modelCheckingResult.failRates.add(1 - newFailRate);
+				modelCheckingResult.availability.add(1 - newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
 				oldFailRate = newFailRate;
 				double relativeChange = change / newFailRate;
@@ -389,51 +389,59 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		while (!toProcess.isEmpty()) {
 			MarkovState state = toProcess.poll();
 			
-			// Update the mincuts
-			Set<Set<Object>> oldMinCuts = mapStateToMinCuts.get(state);
-			Set<Set<Object>> minCuts = new HashSet<>();
-			
-			List<?> succTransitions = mc.getSuccTransitions(state);
-			for (Object succTransition : succTransitions) {
-				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) succTransition;
-				MarkovState successor = transition.getTo();
-				Set<Set<Object>> succMinCuts = mapStateToMinCuts.getOrDefault(successor, Collections.emptySet());
+			boolean shouldEnqueuePredecessors = false;
+			if (!mc.getFinalStates().contains(state)) {
+				// Update the mincuts
+				Set<Set<Object>> oldMinCuts = mapStateToMinCuts.get(state);
+				Set<Set<Object>> minCuts = new HashSet<>();
 				
-				if (succMinCuts.isEmpty()) {
-					Set<Object> minCut = new HashSet<>();
-					minCut.add(transition.getEvent());
-					minCuts.add(minCut);
-				} else {
-					for (Set<Object> succMinCut : succMinCuts) {
-						if (succMinCut.size() < minimumCutSet.getMaxSize() || minimumCutSet.getMaxSize() == 0) {
-							Set<Object> minCut = new HashSet<>(succMinCut);
-							minCut.add(transition.getEvent());
-							minCuts.add(minCut);
+				List<?> succTransitions = mc.getSuccTransitions(state);
+				for (Object succTransition : succTransitions) {
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) succTransition;
+					MarkovState successor = transition.getTo();
+					Set<Set<Object>> succMinCuts = mapStateToMinCuts.getOrDefault(successor, Collections.emptySet());
+					
+					if (succMinCuts.isEmpty()) {
+						Set<Object> minCut = new HashSet<>();
+						minCut.add(transition.getEvent());
+						minCuts.add(minCut);
+					} else {
+						for (Set<Object> succMinCut : succMinCuts) {
+							if (succMinCut.size() < minimumCutSet.getMaxSize() || minimumCutSet.getMaxSize() == 0) {
+								Set<Object> minCut = new HashSet<>(succMinCut);
+								minCut.add(transition.getEvent());
+								minCuts.add(minCut);
+							}
 						}
 					}
-				}
-				
-				// Make sure all cuts are mincuts
-				Set<Set<Object>> subsumedMinCuts = new HashSet<>();
-				for (Set<Object> minCut : minCuts) {
-					for (Set<Object> minCutOther : minCuts) {
-						if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
-							subsumedMinCuts.add(minCut);
+					
+					// Make sure all cuts are mincuts
+					Set<Set<Object>> subsumedMinCuts = new HashSet<>();
+					for (Set<Object> minCut : minCuts) {
+						for (Set<Object> minCutOther : minCuts) {
+							if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
+								subsumedMinCuts.add(minCut);
+							}
 						}
 					}
+					minCuts.removeAll(subsumedMinCuts);
 				}
-				minCuts.removeAll(subsumedMinCuts);
+				
+				if (!Objects.equals(oldMinCuts, minCuts)) {
+					shouldEnqueuePredecessors = true;
+					mapStateToMinCuts.put(state, minCuts);
+				}
+			} else {
+				shouldEnqueuePredecessors = true;
 			}
 			
 			// Enqueue predecessors if necessary
-			if (!Objects.equals(oldMinCuts, minCuts)) {
-				mapStateToMinCuts.put(state, minCuts);
-				
+			if (shouldEnqueuePredecessors) {
 				List<?> predTransitions = mc.getPredTransitions(state);
 				for (Object predTransition : predTransitions) {
 					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) predTransition;
 					MarkovState predecessor = transition.getFrom();
-					if (!toProcess.contains(predecessor)) {
+					if (!toProcess.contains(predecessor) && !mc.getFinalStates().contains(predecessor)) {
 						toProcess.add(predecessor);
 					}
 				}

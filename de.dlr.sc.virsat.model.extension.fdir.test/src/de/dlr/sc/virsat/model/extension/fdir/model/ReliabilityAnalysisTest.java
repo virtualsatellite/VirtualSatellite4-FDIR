@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.command.Command;
 import org.junit.After;
 import org.junit.Before;
@@ -84,7 +83,7 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 		fault.getBasicEvents().add(be);
 		sei.getCategoryAssignments().add(fault.getTypeInstance());
 
-		Command analysisCommand = reliabilityAnalysis.perform(ed, new NullProgressMonitor());
+		Command analysisCommand = reliabilityAnalysis.perform(ed, null);
 
 		assertTrue(analysisCommand.canExecute());
 

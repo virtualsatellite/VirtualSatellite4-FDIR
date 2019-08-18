@@ -895,12 +895,16 @@ public class DFTEvaluatorTest extends ATestCase {
 			3.202047837711682E-4,
 			5.73300404984077E-4
 		};
+		
 		final double EXPECTEDMTTF = 0.38349296618324935;
+		final double EXPECTEDSSA = 0;
+		
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
 		assertIterationResultsEquals(result, EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("SSA has correct value", EXPECTEDSSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
 	
 	@Test

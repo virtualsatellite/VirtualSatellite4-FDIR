@@ -55,6 +55,7 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	// property name constants
 	public static final String PROPERTY_REMAININGMISSIONTIME = "remainingMissionTime";
 	public static final String PROPERTY_TIMESTEP = "timestep";
+	public static final String PROPERTY_AVAILABILITY = "availability";
 	public static final String PROPERTY_STEADYSTATEAVAILABILITY = "steadyStateAvailability";
 	public static final String PROPERTY_AVAILABILITYCURVE = "availabilityCurve";
 	
@@ -148,6 +149,42 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	public BeanPropertyFloat getTimestepBean() {
 		safeAccessTimestep();
 		return timestep;
+	}
+	
+	// *****************************************************************
+	// * Attribute: availability
+	// *****************************************************************
+	private BeanPropertyFloat availability = new BeanPropertyFloat();
+	
+	private void safeAccessAvailability() {
+		if (availability.getTypeInstance() == null) {
+			availability.setTypeInstance((UnitValuePropertyInstance) helper.getPropertyInstance("availability"));
+		}
+	}
+	
+	public Command setAvailability(EditingDomain ed, double value) {
+		safeAccessAvailability();
+		return this.availability.setValue(ed, value);
+	}
+	
+	public void setAvailability(double value) {
+		safeAccessAvailability();
+		this.availability.setValue(value);
+	}
+	
+	public double getAvailability() {
+		safeAccessAvailability();
+		return availability.getValue();
+	}
+	
+	public boolean isSetAvailability() {
+		safeAccessAvailability();
+		return availability.isSet();
+	}
+	
+	public BeanPropertyFloat getAvailabilityBean() {
+		safeAccessAvailability();
+		return availability;
 	}
 	
 	// *****************************************************************

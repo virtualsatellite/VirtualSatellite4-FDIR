@@ -129,6 +129,27 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	Category CutSet {
 		Reference failure of Type Fault description "The failure that occurs if the basic events occur";
 		Reference basicEvents [] of Type BasicEvent description "Set of events leading to a top level failure";
+		
+		EnumProperty severity values [
+			Catastrophic=4, Critical=3, Major=2, Minor=1
+		] quantityKind "Dimensionless" unit "No Unit" description "Severity Level according to ECSS-Q-ST-30-02C";
+		EnumProperty probability values [
+			ExtremelyRemote=1, Remote=2, Occasional=3, Probable=4
+		] quantityKind "Dimensionless" unit "No Unit" description "Probability Level according to ECSS-Q-ST-30-02C";
+		EnumProperty detection values [
+			ExtremelyUnlikely=4, Unlikely=3, Likely=2, VeryLikely=1
+		] default VeryLikely quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
+		FloatProperty criticality default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
+		
+		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
+		FloatProperty steadyStateDetectability quantityKind "Dimensionless" unit "Percent"  description "Steady State Detectability obtained from the Fault Tree Analysis";
+		FloatProperty meanTimeToDetection quantityKind "Time" unit "Hour" description "Mean Time To Detection obtained from the Fault Tree Analysis";
+	
+		// Approximate the failure rate to a constant failure rate
+		Ref: probability = classifyPL(1 / meanTimeToFailure);
+		
+		// Criticality Level Computation according to ECSS-Q-ST-30-02C
+		Ref: criticality = severity * probability * detection;
 	}
 	
 	Category FDIRParameters {
@@ -189,6 +210,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Cardinality 1;
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
+		FloatProperty availability quantityKind "Dimensionless" unit "Percent";
 		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent";
 		FloatProperty availabilityCurve[] quantityKind "Dimensionless" unit "Percent";
 		

@@ -94,7 +94,10 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
-		monitor.setTaskName("Reliability Analysis");
+		if (monitor != null) {
+			monitor.setTaskName("Reliability Analysis");
+		}
+		
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 		subMonitor.split(1);
@@ -109,7 +112,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		}
 
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);
@@ -117,7 +120,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new Reliability(maxTime), MTTF.MTTF);
 		
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);

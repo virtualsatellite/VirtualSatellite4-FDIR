@@ -12,7 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 
 /**
  * A provider  for nodes that need to fail for a fault tree to be considered failed
@@ -20,30 +20,29 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
  *
  */
 
-public class FailNodeProvider {
-	private Set<FaultTreeNode> failNodes;
+public class FailableBasicEventsProvider {
+	private Set<BasicEvent> basicEvents;
 	
 	/**
-	 * Default constructor for empty fail set
+	 * Default constructor for empty f set
 	 */
-	public FailNodeProvider() {
-		this.failNodes = new HashSet<>();
+	public FailableBasicEventsProvider() {
+		this.basicEvents = new HashSet<>();
 	}
 	
 	/**
 	 * Standard constructor
-	 * @param root the fault tree node
+	 * @param basicEvents the failable basic events
 	 */
-	public FailNodeProvider(FaultTreeNode root) {
-		this();
-		this.failNodes.add(root);
+	public FailableBasicEventsProvider(Set<BasicEvent> basicEvents) {
+		this.basicEvents = basicEvents;
 	}
 	
 	/**
 	 * Gets the fail nodes
 	 * @return the fail nodes
 	 */
-	public Set<FaultTreeNode> getFailNodes() {
-		return failNodes;
+	public Set<BasicEvent> getBasicEvents() {
+		return basicEvents;
 	}
 }

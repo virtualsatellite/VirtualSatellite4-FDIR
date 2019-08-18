@@ -91,7 +91,10 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 		
-		monitor.setTaskName("Availability Analysis");
+		if (monitor != null) {
+			monitor.setTaskName("Availability Analysis");
+		}
+		
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 		subMonitor.split(1);
@@ -109,7 +112,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		}
 		
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);
@@ -118,7 +121,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		ModelCheckingResult result = ftEvaluator
 				.evaluateFaultTree(fault, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);
@@ -129,6 +132,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 			@Override
 			protected void doExecute() {
 				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
+				getAvailabilityBean().setValueAsBaseUnit(result.getAvailability().get(result.getAvailability().size() - 1));
 				getAvailabilityCurve().clear();
 				for (int i = 0; i < result.getAvailability().size(); ++i) {
 					createNewAvailabilityCurveEntry(result.getAvailability().get(i));

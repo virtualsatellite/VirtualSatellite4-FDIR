@@ -15,27 +15,17 @@ package de.dlr.sc.virsat.fdir.core.metrics;
  *
  */
 
-public class Reliability implements IQuantitativeMetric, IBaseMetric {
+public class Reliability extends AProbabilityCurve implements IBaseMetric {
 	
 	public static final Reliability UNIT_RELIABILITY = new Reliability(1);
 	public static final Reliability INF_RELIABILITY = new Reliability(Double.POSITIVE_INFINITY);
-	
-	private double time;
 	
 	/**
 	 * Default constructor
 	 * @param time the end time
 	 */
 	public Reliability(double time) {
-		this.time = time;
-	}
-	
-	/**
-	 * Gets the time horizon
-	 * @return the time horizon
-	 */
-	public double getTime() {
-		return time;
+		super(time);
 	}
 
 	@Override

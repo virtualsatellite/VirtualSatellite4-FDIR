@@ -29,10 +29,10 @@ public interface IFaultTreeEvaluator {
 	 * @param metrics the evaluation metrics
 	 * @return the result of the evaluation
 	 */
-	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailNodeProvider failNodeProvider, IMetric... metrics);
+	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, IMetric... metrics);
 
 	/**
-	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailNodeProvider, IMetric...)} but with a default
+	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailableBasicEventsProvider, IMetric...)} but with a default
 	 * failNodeProvider.
 	 * @param root the root of the fault tree to be evaluated
 	 * @param metrics the evaluation metrics

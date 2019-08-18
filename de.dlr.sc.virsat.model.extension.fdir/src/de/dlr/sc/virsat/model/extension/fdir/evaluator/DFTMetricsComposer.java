@@ -119,7 +119,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	@Override
 	public void visit(Reliability reliabilityMetric) {
 		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
-		IQuantitativeMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
+		reliabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
 	}
 
 	@Override
@@ -144,9 +144,9 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	}
 
 	@Override
-	public void visit(Availability pointAvailabilityMetric) {
+	public void visit(Availability availabilityMetric) {
 		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
-		IQuantitativeMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, -1);
+		availabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getAvailability(), k, -1);
 	}
 
 	@Override
