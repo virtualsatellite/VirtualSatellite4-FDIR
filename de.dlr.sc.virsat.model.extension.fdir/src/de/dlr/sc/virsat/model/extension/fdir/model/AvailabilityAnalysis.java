@@ -112,7 +112,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		}
 		
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);
@@ -121,7 +121,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		ModelCheckingResult result = ftEvaluator
 				.evaluateFaultTree(fault, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		if (monitor.isCanceled()) {
+		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		subMonitor.split(1);
