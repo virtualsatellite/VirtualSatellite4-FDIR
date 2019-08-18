@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.AProbabilityCurve;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
@@ -96,7 +97,13 @@ public class DFTEvaluator extends AFaultTreeEvaluator {
 		
 		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitioning.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
 		ModelCheckingResult result = composer.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
-		int steps = (int) (1 / markovModelChecker.getDelta()) + 1;
+		int steps = 0;
+		for (IMetric metric : metrics) {
+			if (metric instanceof AProbabilityCurve) {
+				double time = ((AProbabilityCurve) metric).getTime();
+				steps = Math.max(steps, (int) (time / markovModelChecker.getDelta()) + 1);
+			}
+		}
 		result.limitPointMetrics(steps);
 		
 		statistics.time = System.currentTimeMillis() - statistics.time;

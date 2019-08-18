@@ -24,18 +24,16 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
  *
  */
 
-public class Detectability implements IDerivedMetric {
+public class Detectability extends AProbabilityCurve implements IDerivedMetric {
 
 	public static final Detectability UNIT_DETECTABILITY = new Detectability(1);
-	
-	private double time;
-	
+
 	/**
 	 * Standard constructor
 	 * @param time the time bound
 	 */
 	public Detectability(double time) {
-		this.time = time;
+		super(time);
 	}
 	
 	@Override

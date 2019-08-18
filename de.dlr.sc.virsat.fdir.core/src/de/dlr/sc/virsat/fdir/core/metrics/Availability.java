@@ -14,11 +14,9 @@ package de.dlr.sc.virsat.fdir.core.metrics;
  * @author yoge_re
  *
  */
-public class Availability implements IQuantitativeMetric, IBaseMetric {
+public class Availability extends AProbabilityCurve implements IBaseMetric {
 	public static final Availability UNIT_AVAILABILITY = new Availability(1);
 	public static final Availability INF_AVAILABILITY = new Availability(Double.POSITIVE_INFINITY);
-
-	private double time;
 
 	/**
 	 * 
@@ -26,15 +24,7 @@ public class Availability implements IQuantitativeMetric, IBaseMetric {
 	 *            the end time
 	 */
 	public Availability(double time) {
-		this.time = time;
-	}
-
-	/**
-	 * 
-	 * @return the time horizon
-	 */
-	public double getTime() {
-		return time;
+		super(time);
 	}
 
 	@Override

@@ -338,7 +338,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			while (!convergence) {
 				iterate(tm);
 				double newFailRate = getFailRate();
-				modelCheckingResult.failRates.add(1 - newFailRate);
+				modelCheckingResult.availability.add(1 - newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
 				oldFailRate = newFailRate;
 				double relativeChange = change / newFailRate;

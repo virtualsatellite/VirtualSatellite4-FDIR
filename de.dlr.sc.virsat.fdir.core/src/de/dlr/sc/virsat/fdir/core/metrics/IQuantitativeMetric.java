@@ -9,8 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
-import java.util.List;
-
 /**
  * Interface for quantitative metrics
  * @author muel_s8
@@ -41,47 +39,5 @@ public interface IQuantitativeMetric extends IMetric {
 		// TODO: Else for general k
 		
 		return composedProbability;
-	}
-	
-	/**
-	 * Composes a list of probability curves into a combined probability curve.
-	 * The individual probabilities are combines point wise
-	 * @param probabilityCurves the probability curves
-	 * @param resultCurve the holder of the result curve
-	 * @param k the distribution parameter
-	 * @param stopValue if this stop value is hit, the probability curve will be cut off here
-	 */
-	static void composeProbabilityCurve(List<List<Double>> probabilityCurves, List<Double> resultCurve, long k, double stopValue) {
-		int countProbabilites = 0;
-		if (k == 1) {
-			countProbabilites = Integer.MAX_VALUE;
-			for (List<Double> probabilityCurve : probabilityCurves) {
-				countProbabilites = Math.min(countProbabilites, probabilityCurve.size());
-			}
-		} else {
-			for (List<Double> probabilityCurve : probabilityCurves) {
-				countProbabilites = Math.max(countProbabilites, probabilityCurve.size());
-			}
-		}
-		
-		double[] childProbabilities = new double[probabilityCurves.size()];
-		for (int i = 0; i < countProbabilites; ++i) {
-			
-			for (int j = 0; j < probabilityCurves.size(); ++j) {
-				List<Double> probabilityCurve = probabilityCurves.get(j);
-				if (i < probabilityCurve.size()) {
-					childProbabilities[j] = probabilityCurve.get(i);
-				} else {
-					childProbabilities[j] = 1;
-				}
-			}
-			
-			double composedProbability = IQuantitativeMetric.composeProbabilities(childProbabilities, k);
-			resultCurve.add(composedProbability);
-			
-			if (composedProbability == stopValue) {
-				break;
-			}
-		}
 	}
 }

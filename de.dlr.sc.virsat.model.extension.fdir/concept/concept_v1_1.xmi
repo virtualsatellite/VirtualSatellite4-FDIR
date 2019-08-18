@@ -215,6 +215,7 @@
     </equationDefinitions>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="remainingMissionTime" quantityKindName="Time" unitName="Hour"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="availability" quantityKindName="Dimensionless" unitName="Percent"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateAvailability" quantityKindName="Dimensionless" unitName="Percent"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="availabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
