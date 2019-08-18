@@ -9,24 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-// *****************************************************************
-// * Import Statements
-// *****************************************************************
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
-
 import java.util.HashSet;
 import java.util.Set;
-
-import org.eclipse.emf.ecore.EObject;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
-import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
 import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
 import de.dlr.sc.virsat.model.dvlm.calculation.Equation;
@@ -35,6 +23,11 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+// *****************************************************************
+// * Import Statements
+// *****************************************************************
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 
 // *****************************************************************
 // * Class Declaration
@@ -76,7 +69,8 @@ public  class FMECAEntry extends AFMECAEntry {
 	
 	/**
 	 * Fills out an FMECA entry as much as possible
-	 * @param fdirParameters2 
+	 * @param ftEvaluator the fault tree evaluator
+	 * @param fdirParameters the fdir parameters
 	 */
 	public void fill(FaultTreeEvaluator ftEvaluator, FDIRParameters fdirParameters) {
 		setSeverity(getFailure().getSeverity());

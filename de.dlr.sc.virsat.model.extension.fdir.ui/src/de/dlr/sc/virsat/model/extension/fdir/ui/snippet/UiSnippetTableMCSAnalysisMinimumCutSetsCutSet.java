@@ -56,14 +56,16 @@ public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTab
 	@Override
 	protected ITableLabelProvider getTableLabelProvider() {
 		ITableLabelProvider tableLabelProvider = super.getTableLabelProvider();
-		return new VirSatTransactionalAdapterFactoryLabelProvider(adapterFactory) {
+		VirSatTransactionalAdapterFactoryLabelProvider localTableLabelProvider = new VirSatTransactionalAdapterFactoryLabelProvider(adapterFactory) {
 			
 			@Override
 			public String getColumnText(Object object, int columnIndex) {
+				ComposedPropertyInstance cpi = (ComposedPropertyInstance) object;
+				CategoryAssignment ca = cpi.getTypeInstance();
+				CutSet cutSet = new CutSet(ca);
+				redirectNotification(cutSet, object, true);
+				
 				if (columnIndex == 2) {
-					ComposedPropertyInstance cpi = (ComposedPropertyInstance) object;
-					CategoryAssignment ca = cpi.getTypeInstance();
-					CutSet cutSet = new CutSet(ca);
 					return cutSet.getBasicEvents().stream().map(be -> be.getParent().getName() + "." + be.getName()).collect(Collectors.joining(","));
 				} else {
 					return tableLabelProvider.getColumnText(object, columnIndex);
@@ -75,5 +77,7 @@ public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTab
 				return tableLabelProvider.getColumnImage(object, columnIndex);
 			}
 		};
+		
+		return localTableLabelProvider;
 	}
 }

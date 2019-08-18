@@ -142,9 +142,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty criticality default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
 		
 		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
-		FloatProperty steadyStateDetectability quantityKind "Time" unit "Hour" description "Steady State Detectability obtained from the Fault Tree Analysis";
+		FloatProperty steadyStateDetectability quantityKind "Dimensionless" unit "Percent"  description "Steady State Detectability obtained from the Fault Tree Analysis";
 		FloatProperty meanTimeToDetection quantityKind "Time" unit "Hour" description "Mean Time To Detection obtained from the Fault Tree Analysis";
-		Reference detectionMeans[] of Type OBSERVER description "Means for detecting this cut set";
 	
 		// Approximate the failure rate to a constant failure rate
 		Ref: probability = classifyPL(1 / meanTimeToFailure);

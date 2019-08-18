@@ -122,11 +122,8 @@
     </properties>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" description="Steady State Detectability obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" description="Steady State Detectability obtained from the Fault Tree Analysis" quantityKindName="Dimensionless" unitName="Percent"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToDetection" description="Mean Time To Detection obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
-    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="detectionMeans" description="Means for detecting this cut set" referenceType="de.dlr.sc.virsat.model.extension.fdir.OBSERVER">
-      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
-    </properties>
   </categories>
   <categories name="FDIRParameters" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="missionTime" quantityKindName="Time" unitName="Hour"/>

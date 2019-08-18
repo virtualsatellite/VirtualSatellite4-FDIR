@@ -23,7 +23,6 @@ import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
@@ -72,7 +71,6 @@ public abstract class ACutSet extends ABeanCategoryAssignment implements IBeanCa
 	public static final String PROPERTY_MEANTIMETOFAILURE = "meanTimeToFailure";
 	public static final String PROPERTY_STEADYSTATEDETECTABILITY = "steadyStateDetectability";
 	public static final String PROPERTY_MEANTIMETODETECTION = "meanTimeToDetection";
-	public static final String PROPERTY_DETECTIONMEANS = "detectionMeans";
 	
 	// Severity enumeration value names
 	public static final String SEVERITY_Catastrophic_NAME = "Catastrophic";
@@ -439,22 +437,6 @@ public abstract class ACutSet extends ABeanCategoryAssignment implements IBeanCa
 		safeAccessMeanTimeToDetection();
 		return meanTimeToDetection;
 	}
-	
-	// *****************************************************************
-	// * Array Attribute: detectionMeans
-	// *****************************************************************
-		private IBeanList<OBSERVER> detectionMeans = new TypeSafeReferencePropertyInstanceList<>(OBSERVER.class);
-	
-		private void safeAccessDetectionMeans() {
-			if (detectionMeans.getArrayInstance() == null) {
-				detectionMeans.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectionMeans"));
-			}
-		}
-	
-		public IBeanList<OBSERVER> getDetectionMeans() {
-			safeAccessDetectionMeans();
-			return detectionMeans;
-		}
 	
 	
 }

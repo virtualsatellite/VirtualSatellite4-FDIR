@@ -9,10 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import org.eclipse.emf.ecore.EObject;
-
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
 import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
 import de.dlr.sc.virsat.model.dvlm.calculation.Equation;
@@ -22,8 +19,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 
 // *****************************************************************
 // * Class Declaration
@@ -63,6 +58,11 @@ public  class CutSet extends ACutSet {
 		super(categoryAssignment);
 	}
 
+	/**
+	 * FIlls out the Cut Set metrics with the given model checking result
+	 * @param mcsResult the model checking result for this mcs
+	 * @param fdirParameters the fdir parameter set
+	 */
 	public void fill(ModelCheckingResult mcsResult, FDIRParameters fdirParameters) {
 		setSeverity(getFailure().getSeverity());
 		getMeanTimeToFailureBean().setValueAsBaseUnit(mcsResult.getMeanTimeToFailure());

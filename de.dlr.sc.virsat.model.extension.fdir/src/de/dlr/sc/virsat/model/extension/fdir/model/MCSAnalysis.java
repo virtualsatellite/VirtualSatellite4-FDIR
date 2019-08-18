@@ -38,7 +38,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailNodeProvider;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
@@ -133,6 +133,13 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		};
 	}
 	
+	/**
+	 * Collects all Minimum Cut Sets that can cause the given faults to occur
+	 * @param faults the faults
+	 * @param ftEvaluator the fault tree evaluator
+	 * @param monitor the monitor
+	 * @return a mapping from cut set to faults that are caused by them
+	 */
 	private Map<Set<Object>, List<Fault>> gatherMinimumCutSets(List<Fault> faults, IFaultTreeEvaluator ftEvaluator, SubMonitor monitor) {
 		Map<Set<Object>, List<Fault>> mapCutSetToFaults = new HashMap<>();
 		long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
@@ -157,14 +164,20 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		return mapCutSetToFaults;
 	}
 	
+	/**
+	 * Computes for each Minimum Cut Set its associated metrics
+	 * @param mapCutSetToFaults the mapping from cut set to fault
+	 * @param ftEvaluator the fault tree evaluator
+	 * @return the model checking result
+	 */
 	private Map<Set<Object>, ModelCheckingResult> computeMinimumCutSetsMetrics(Map<Set<Object>, List<Fault>> mapCutSetToFaults, IFaultTreeEvaluator ftEvaluator) {
 		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = new HashMap<>();
 		for (Set<Object> minCutSet : mapCutSetToFaults.keySet()) {
 			List<Fault> failures = mapCutSetToFaults.get(minCutSet);
 			Fault failure = failures.get(0);
-			FailNodeProvider failNodeProvider = new FailNodeProvider();
+			FailableBasicEventsProvider failNodeProvider = new FailableBasicEventsProvider();
 			for (Object obj : minCutSet) {
-				failNodeProvider.getFailNodes().add((BasicEvent) obj);
+				failNodeProvider.getBasicEvents().add((BasicEvent) obj);
 			}
 			
 			ModelCheckingResult mcsResult = ftEvaluator.evaluateFaultTree(failure, failNodeProvider,
@@ -176,6 +189,12 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		return mapMcsToResult;
 	}
 	
+	/**
+	 * Generates the Minimum Cut Set entries from the analysis results
+	 * @param mapCutSetToFaults the generated minimum cut sets
+	 * @param mapMcsToResult the associated metrics
+	 * @return the generated cut sets
+	 */
 	private List<CutSet> generateEntries(Map<Set<Object>, List<Fault>> mapCutSetToFaults, Map<Set<Object>, ModelCheckingResult> mapMcsToResult) {
 		List<Set<Object>> sortedMinimumCutSets = mapCutSetToFaults.keySet().stream()
 				.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
@@ -187,8 +206,7 @@ public  class MCSAnalysis extends AMCSAnalysis {
 			BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance((StructuralElementInstance) root);
 			fdirParameters = beanSei.getFirst(FDIRParameters.class);
 		}
-			
-		
+
 		List<CutSet> generatedEntries = new ArrayList<>();
 		for (Set<Object> minimumCutSet : sortedMinimumCutSets) {
 			List<Fault> failures = mapCutSetToFaults.get(minimumCutSet);

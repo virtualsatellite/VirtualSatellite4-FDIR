@@ -279,9 +279,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public void visit(MTTF mttfMetric) {
-		
-		System.out.println(mc.toDot());
-		
 		if (bellmanMatrix == null) {
 			bellmanMatrix = createBellmanMatrix();
 		}

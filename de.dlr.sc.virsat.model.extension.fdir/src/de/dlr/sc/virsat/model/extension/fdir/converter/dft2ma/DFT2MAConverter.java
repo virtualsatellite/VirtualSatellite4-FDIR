@@ -26,7 +26,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailNodeProvider;
+import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -45,7 +45,7 @@ public class DFT2MAConverter {
 	private DFTSemantics dftSemantics = DFTSemantics.createNDDFTSemantics();
 	private FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
 	private FailLabelProvider failLabelProvider;
-	private FailNodeProvider failNodeProvider;
+	private FailableBasicEventsProvider failableBasicEventsProvider;
 	
 	private boolean allowsDontCareFailing = true;
 	
@@ -69,15 +69,15 @@ public class DFT2MAConverter {
 	 * Converts a fault tree with the passed node as a root to a
 	 * Markov automaton.
 	 * @param root a fault tree node used as a root node for the conversion
-	 * @param failNodeProvider the nodes that need to fail
+	 * @param failableBasicEventsProvider the nodes that need to fail
 	 * @param failLabelProvider the fail label criterion
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
-	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailNodeProvider failNodeProvider, FailLabelProvider failLabelProvider) {
+	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, FailLabelProvider failLabelProvider) {
 		statistics.time = System.currentTimeMillis();
 		this.root = root;
 		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : new FailLabelProvider(FailLabel.FAILED);
-		this.failNodeProvider = failNodeProvider != null ? failNodeProvider : new FailNodeProvider(root);
+		this.failableBasicEventsProvider = failableBasicEventsProvider;
 		
 		init();
 		staticAnalysis();
@@ -111,6 +111,18 @@ public class DFT2MAConverter {
 		ftHolder = new FaultTreeHolder(holderRoot);
 		
 		events = dftSemantics.createEventSet(ftHolder);
+		
+		Set<IDFTEvent> unoccurableEvents = new HashSet<>();
+		for (IDFTEvent event : events) {
+			if (event.getNode() instanceof BasicEvent && failableBasicEventsProvider != null) {
+				BasicEvent be = (BasicEvent) event.getNode();
+				if (!failableBasicEventsProvider.getBasicEvents().contains(be)) {
+					unoccurableEvents.add(event);
+				}
+			}
+		}
+		events.removeAll(unoccurableEvents);
+		
 		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
 			if (be.isSetRepairRate() && be.getRepairRate() > 0) {
 				transientNodes.add(be);			
@@ -319,31 +331,30 @@ public class DFT2MAConverter {
 	 */
 	private void checkFailState(DFTState state) {
 		for (FailLabel failLabel : failLabelProvider.getFailLabels()) {
-			for (FaultTreeNode node : failNodeProvider.getFailNodes()) {
-				switch (failLabel) {
-					case FAILED:
-						if (!state.hasFaultTreeNodeFailed(node)) {
-							return;
-						}
-						break;
-					case OBSERVED:
-						if (!(state instanceof PODFTState) || !((PODFTState) state).isNodeFailObserved(node)) {
-							return;
-						}
-						break;
-					case UNOBSERVED:
-						if (!(state instanceof PODFTState) || ((PODFTState) state).isNodeFailObserved(node)) {
-							return;
-						}
-						break;
-					case PERMANENT:
-						if (!state.isFaultTreeNodePermanent(node)) {
-							return;
-						}
-						break;
-					default:
-						break;
-				}
+			FaultTreeNode root = ftHolder.getRoot();
+			switch (failLabel) {
+				case FAILED:
+					if (!state.hasFaultTreeNodeFailed(root)) {
+						return;
+					}
+					break;
+				case OBSERVED:
+					if (!(state instanceof PODFTState) || !((PODFTState) state).isNodeFailObserved(root)) {
+						return;
+					}
+					break;
+				case UNOBSERVED:
+					if (!(state instanceof PODFTState) || ((PODFTState) state).isNodeFailObserved(root)) {
+						return;
+					}
+					break;
+				case PERMANENT:
+					if (!state.isFaultTreeNodePermanent(root)) {
+						return;
+					}
+					break;
+				default:
+					break;
 			}
 		}
 		
