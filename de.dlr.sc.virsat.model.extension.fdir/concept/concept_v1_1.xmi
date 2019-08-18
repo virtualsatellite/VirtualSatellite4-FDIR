@@ -60,6 +60,7 @@
       <values name="Critical" value="3"/>
       <values name="Major" value="2"/>
       <values name="Minor" value="1"/>
+      <values name="Unknown" value="0"/>
     </properties>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="reliabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis">
@@ -113,14 +114,17 @@
       <values name="Critical" value="3"/>
       <values name="Major" value="2"/>
       <values name="Minor" value="1"/>
+      <values name="Unknown" value="0"/>
     </properties>
     <properties xsi:type="dvlm_cppd:EnumProperty" name="probability" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Unknown" value="0"/>
       <values name="ExtremelyRemote" value="1"/>
       <values name="Remote" value="2"/>
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.23/@properties.4/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.23/@properties.4/@values.4">
+      <values name="Unknown" value="0"/>
       <values name="ExtremelyUnlikely" value="4"/>
       <values name="Unlikely" value="3"/>
       <values name="Likely" value="2"/>
@@ -174,8 +178,10 @@
       <values name="Critical" value="3"/>
       <values name="Major" value="2"/>
       <values name="Minor" value="1"/>
+      <values name="Unknown" value="0"/>
     </properties>
     <properties xsi:type="dvlm_cppd:EnumProperty" name="probability" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Unknown" value="0"/>
       <values name="ExtremelyRemote" value="1"/>
       <values name="Remote" value="2"/>
       <values name="Occasional" value="3"/>

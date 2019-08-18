@@ -40,13 +40,13 @@ public class OpClassifyDLTest {
 	@Test
 	public void testClassifyNoInputs() {
 		double result = op.apply(new double[] {});
-		assertEquals(Double.NaN, result, TEST_EPS);
+		assertEquals(OpClassifyDL.DL_UNKNOWN, result, TEST_EPS);
 	}
 
 	@Test
 	public void testClassifyTooManyInputs() {
 		double result = op.apply(new double[] {0, 1, 0, 1, 0, 1});
-		assertEquals(Double.NaN, result, TEST_EPS);
+		assertEquals(OpClassifyDL.DL_UNKNOWN, result, TEST_EPS);
 	}
 	
 	@Test
@@ -67,7 +67,7 @@ public class OpClassifyDLTest {
 	public void testClassifyNaN() {
 		inputs.add(0, Double.NaN);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(Double.NaN, result, TEST_EPS);
+		assertEquals(OpClassifyDL.DL_UNKNOWN, result, TEST_EPS);
 	}
 	
 	@Test
