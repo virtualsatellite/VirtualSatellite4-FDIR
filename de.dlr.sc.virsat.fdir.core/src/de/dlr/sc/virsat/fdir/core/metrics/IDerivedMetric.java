@@ -9,7 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A derived metric is computed from a set of other metrics.
@@ -23,7 +24,7 @@ public interface IDerivedMetric extends IMetric {
 	 * or otherwise the list of metrics required to derive this metric
 	 * @return the metrics this metric is derived from
 	 */
-	List<IMetric> getDerivedFrom();
+	Map<FailLabelProvider, Set<IMetric>> getDerivedFrom();
 	
 	/**
 	 * Accept a visitor

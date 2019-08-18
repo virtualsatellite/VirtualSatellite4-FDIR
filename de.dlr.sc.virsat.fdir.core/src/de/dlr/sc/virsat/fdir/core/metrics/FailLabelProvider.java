@@ -7,15 +7,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.evaluator;
+package de.dlr.sc.virsat.fdir.core.metrics;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 /**
  * This class gives the criterion which labels a state should have to be considered failed
@@ -24,6 +20,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
  */
 
 public class FailLabelProvider {
+	
+	public static final FailLabelProvider EMPTY_FAIL_LABEL_PROVIDER = new FailLabelProvider();
 	
 	/**
 	 * This enum lists the relevant fail labels
@@ -34,29 +32,42 @@ public class FailLabelProvider {
 		FAILED, OBSERVED, UNOBSERVED, PERMANENT
 	}
 
-	private Map<FaultTreeNode, Set<FailLabel>> failLabels;
+	private Set<FailLabel> failLabels;
 
 	/**
 	 * Standard constructor
 	 */
 	public FailLabelProvider() {
-		this.failLabels = new HashMap<>();
+		this.failLabels = new HashSet<>();
 	}
 
 	/**
-	 * Fail label provider for considering top level event occurence
-	 * @param root the root of the fault tree
+	 * Fail label provider for failure criteria
+	 * @param failLabels the fail labels
 	 */
-	public FailLabelProvider(FaultTreeNode root) {
-		this.failLabels = new HashMap<>();
-		this.failLabels.put(root, new HashSet<>(Arrays.asList(FailLabel.FAILED)));
+	public FailLabelProvider(FailLabel... failLabels) {
+		this();
+		this.failLabels.addAll(Arrays.asList(failLabels));
 	}
 	
 	/**
 	 * Gets the encapsulated fail labels
 	 * @return the fail labels
 	 */
-	public Map<FaultTreeNode, Set<FailLabel>> getFailLabels() {
+	public Set<FailLabel> getFailLabels() {
 		return failLabels;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FailLabelProvider) {
+			return failLabels.equals(((FailLabelProvider) obj).failLabels);
+		}
+		return super.equals(obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return failLabels.hashCode();
 	}
 }

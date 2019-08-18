@@ -16,7 +16,7 @@ package de.dlr.sc.virsat.fdir.core.metrics;
  */
 public class Availability implements IQuantitativeMetric, IBaseMetric {
 	public static final Availability UNIT_AVAILABILITY = new Availability(1);
-	public static final Availability INF_POINTAVAILABILITY = new Availability(Double.POSITIVE_INFINITY);
+	public static final Availability INF_AVAILABILITY = new Availability(Double.POSITIVE_INFINITY);
 
 	private double time;
 
