@@ -89,6 +89,12 @@
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.probability"/>
     </equationDefinitions>
     <equationDefinitions>
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyDL">
+        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.steadyStateDetectability"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.detection"/>
+    </equationDefinitions>
+    <equationDefinitions>
       <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
         <left xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
           <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.severity"/>
@@ -131,6 +137,9 @@
     <properties xsi:type="dvlm_cppd:FloatProperty" name="probabilityLevels" quantityKindName="Frequency" unitName="Per Hour">
       <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
     </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectionLevels" quantityKindName="Dimensionless" unitName="Percent">
+      <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
+    </properties>
   </categories>
   <categories name="FMECA" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="entries" type="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry">
@@ -149,11 +158,8 @@
     </equationDefinitions>
     <equationDefinitions>
       <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
-        <left xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
-          <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.severity"/>
-          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
-        </left>
-        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.detection"/>
+        <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.severity"/>
+        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
       </expression>
       <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.criticality"/>
     </equationDefinitions>
@@ -174,12 +180,6 @@
       <values name="Remote" value="2"/>
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
-    </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.26/@properties.6/@values.3">
-      <values name="ExtremelyUnlikely" value="4"/>
-      <values name="Unlikely" value="3"/>
-      <values name="Likely" value="2"/>
-      <values name="VeryLikely" value="1"/>
     </properties>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>

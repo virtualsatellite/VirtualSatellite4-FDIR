@@ -20,15 +20,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * This class tests the OpClassifyPL class.
+ * This class tests the OpClassifyDL class.
  * @author muel_s8
  *
  */
-public class OpClassifyPLTest {
+public class OpClassifyDLTest {
 
 	private static final double TEST_EPS = 0;
 	private List<Double> inputs;
-	private OpClassifyPL op = new OpClassifyPL();
+	private OpClassifyDL op = new OpClassifyDL();
 	
 	@Before
 	public void setUp() {
@@ -45,7 +45,7 @@ public class OpClassifyPLTest {
 
 	@Test
 	public void testClassifyTooManyInputs() {
-		double result = op.apply(new double[] {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1});
+		double result = op.apply(new double[] {0, 1, 0, 1, 0, 1});
 		assertEquals(Double.NaN, result, TEST_EPS);
 	}
 	
@@ -53,14 +53,14 @@ public class OpClassifyPLTest {
 	public void testClassify0() {
 		inputs.add(0, 0d);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyPL.PL_EXTREMELY_REMOTE, result, TEST_EPS);
+		assertEquals(OpClassifyDL.DL_EXTREMELY_UNLIKELY, result, TEST_EPS);
 	}
 	
 	@Test
 	public void testClassify1() {
 		inputs.add(0, 1d);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyPL.PL_PROBABLE, result, TEST_EPS);
+		assertEquals(OpClassifyDL.DL_VERY_LIKELY, result, TEST_EPS);
 	}
 	
 	@Test

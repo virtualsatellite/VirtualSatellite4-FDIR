@@ -40,6 +40,7 @@ public class CreateAddFDIRParametersCommand extends ACreateAddFDIRParametersComm
 				CategoryAssignment ca = (CategoryAssignment) createCommand.getResult().iterator().next();
 				FDIRParameters fdirParameters = new FDIRParameters(ca);
 				fdirParameters.setDefaultProbablityThresholds();
+				fdirParameters.setDefaultDetectabilityThresholds();
 			}
 		});
 		

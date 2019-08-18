@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.calculation;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -50,10 +49,6 @@ public class FDIRParametersGetterTest extends ATestCase {
 		
 		ArrayResult arrayResult = (ArrayResult) result;
 		
-		assertEquals(OpClassifyPL.PL_LEVELS.length, arrayResult.getResults().size());
-		Object[] plTresholds = arrayResult.getResults().stream()
-				.map(nlr -> Double.valueOf(nlr.getNumberLiteral().getValue()))
-				.toArray();
-		assertArrayEquals(OpClassifyPL.DEFAULT_PL_THRESHOLDS, plTresholds);
+		assertEquals(OpClassifyPL.PL_LEVELS.length + OpClassifyDL.DL_LEVELS.length, arrayResult.getResults().size());
 	}
 }

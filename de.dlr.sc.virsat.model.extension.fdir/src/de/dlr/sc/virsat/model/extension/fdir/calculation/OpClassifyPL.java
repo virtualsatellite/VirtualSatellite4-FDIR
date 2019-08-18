@@ -42,13 +42,13 @@ public class OpClassifyPL extends AAdvancedFunctionOp {
 	
 	@Override
 	public double apply(double[] inputs) {
-		if (inputs.length != PL_LEVELS.length + 1) {
+		if (inputs.length != PL_LEVELS.length + OpClassifyDL.DL_LEVELS.length + 1) {
 			return Double.NaN;
 		}
 		
 		double failureRate = inputs[0];
 		
-		for (int i = 1; i < inputs.length; ++i) {
+		for (int i = 1; i < inputs.length - OpClassifyDL.DL_LEVELS.length; ++i) {
 			if (failureRate >= inputs[i]) {
 				return PL_LEVELS[i - 1];
 			}

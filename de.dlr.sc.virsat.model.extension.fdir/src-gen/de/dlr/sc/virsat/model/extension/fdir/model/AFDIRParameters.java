@@ -56,6 +56,7 @@ public abstract class AFDIRParameters extends ABeanCategoryAssignment implements
 	public static final String PROPERTY_MISSIONTIME = "missionTime";
 	public static final String PROPERTY_TIMESTEP = "timestep";
 	public static final String PROPERTY_PROBABILITYLEVELS = "probabilityLevels";
+	public static final String PROPERTY_DETECTIONLEVELS = "detectionLevels";
 	
 	
 	
@@ -163,6 +164,22 @@ public abstract class AFDIRParameters extends ABeanCategoryAssignment implements
 	public IBeanList<BeanPropertyFloat> getProbabilityLevels() {
 		safeAccessProbabilityLevels();
 		return probabilityLevels;
+	}
+	
+	// *****************************************************************
+	// * Array Attribute: detectionLevels
+	// *****************************************************************
+	private IBeanList<BeanPropertyFloat> detectionLevels = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	
+	private void safeAccessDetectionLevels() {
+		if (detectionLevels.getArrayInstance() == null) {
+			detectionLevels.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectionLevels"));
+		}
+	}
+		
+	public IBeanList<BeanPropertyFloat> getDetectionLevels() {
+		safeAccessDetectionLevels();
+		return detectionLevels;
 	}
 	
 	

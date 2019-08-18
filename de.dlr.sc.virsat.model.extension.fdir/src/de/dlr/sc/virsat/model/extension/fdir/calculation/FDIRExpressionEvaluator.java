@@ -40,6 +40,16 @@ public class FDIRExpressionEvaluator implements IExpressionEvaluator {
 			
 			NumberLiteralSetFunctionHelper setHelper = new NumberLiteralSetFunctionHelper(inputs);
 			return setHelper.applySetOperator(advancedFunction);
+		} else if (advancedFunction.getOperator().equals("classifyDL")) {
+			NumberLiteralResult failureRate = (NumberLiteralResult) set.get(0);
+			ArrayResult thresholds = (ArrayResult) set.get(1);
+			
+			List<NumberLiteralResult> inputs = new ArrayList<>();
+			inputs.add(failureRate);
+			inputs.addAll(thresholds.getResults());
+			
+			NumberLiteralSetFunctionHelper setHelper = new NumberLiteralSetFunctionHelper(inputs);
+			return setHelper.applySetOperator(advancedFunction);
 		}
 		
 		return null;
