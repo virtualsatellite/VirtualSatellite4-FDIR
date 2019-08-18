@@ -70,7 +70,6 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public static final String PROPERTY_FAILUREEFFECTS = "failureEffects";
 	public static final String PROPERTY_SEVERITY = "severity";
 	public static final String PROPERTY_PROBABILITY = "probability";
-	public static final String PROPERTY_DETECTION = "detection";
 	public static final String PROPERTY_CRITICALITY = "criticality";
 	public static final String PROPERTY_MEANTIMETOFAILURE = "meanTimeToFailure";
 	public static final String PROPERTY_PROPOSEDRECOVERY = "proposedRecovery";
@@ -95,16 +94,6 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public static final String PROBABILITY_Remote_VALUE = "2";
 	public static final String PROBABILITY_Occasional_VALUE = "3";
 	public static final String PROBABILITY_Probable_VALUE = "4";
-	// Detection enumeration value names
-	public static final String DETECTION_ExtremelyUnlikely_NAME = "ExtremelyUnlikely";
-	public static final String DETECTION_Unlikely_NAME = "Unlikely";
-	public static final String DETECTION_Likely_NAME = "Likely";
-	public static final String DETECTION_VeryLikely_NAME = "VeryLikely";
-	// Detection enumeration values
-	public static final String DETECTION_ExtremelyUnlikely_VALUE = "4";
-	public static final String DETECTION_Unlikely_VALUE = "3";
-	public static final String DETECTION_Likely_VALUE = "2";
-	public static final String DETECTION_VeryLikely_VALUE = "1";
 	
 	
 	// *****************************************************************
@@ -355,42 +344,6 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public BeanPropertyEnum getProbabilityBean() {
 		safeAccessProbability();
 		return probability;
-	}
-	
-	// *****************************************************************
-	// * Attribute: detection
-	// *****************************************************************
-	private BeanPropertyEnum detection = new BeanPropertyEnum();
-	
-	private void safeAccessDetection() {
-		if (detection.getTypeInstance() == null) {
-			detection.setTypeInstance((EnumUnitPropertyInstance) helper.getPropertyInstance("detection"));
-		}
-	}
-	
-	public Command setDetection(EditingDomain ed, String value) {
-		safeAccessDetection();
-		return this.detection.setValue(ed, value);
-	}
-	
-	public void setDetection(String value) {
-		safeAccessDetection();
-		this.detection.setValue(value);
-	}
-	
-	public String getDetection() {
-		safeAccessDetection();
-		return detection.getValue();
-	}
-	
-	public double getDetectionEnum() {
-		safeAccessDetection();
-		return detection.getEnumValue();
-	}
-	
-	public BeanPropertyEnum getDetectionBean() {
-		safeAccessDetection();
-		return detection;
 	}
 	
 	// *****************************************************************

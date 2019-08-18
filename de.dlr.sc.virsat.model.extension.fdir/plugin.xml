@@ -185,6 +185,10 @@
       		name="classifyPL"
             class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL">
       </setFunction>
+      <setFunction
+      		name="classifyDL"
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyDL">
+      </setFunction>
    </extension>
     <extension
          id="fdirExpressionExtender"

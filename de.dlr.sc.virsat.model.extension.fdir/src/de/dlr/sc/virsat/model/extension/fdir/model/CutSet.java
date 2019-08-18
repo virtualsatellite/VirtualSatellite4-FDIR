@@ -70,11 +70,16 @@ public  class CutSet extends ACutSet {
 		getSteadyStateDetectabilityBean().setValueAsBaseUnit(mcsResult.getSteadyStateDetectability());
 
 		if (fdirParameters != null) {
-			Equation equation = getTypeInstance().getEquationSection().getEquations().get(0);
-			AdvancedFunction opClassifyPL = (AdvancedFunction) equation.getExpression();
-			ReferencedInput ri = CalculationFactory.eINSTANCE.createReferencedInput();
-			ri.setReference(fdirParameters.getTypeInstance());
-			opClassifyPL.getInputs().add(ri);
+			Equation equation0 = getTypeInstance().getEquationSection().getEquations().get(0);
+			Equation equation1 = getTypeInstance().getEquationSection().getEquations().get(1);
+			AdvancedFunction opClassifyPL = (AdvancedFunction) equation0.getExpression();
+			AdvancedFunction opClassifyDL = (AdvancedFunction) equation1.getExpression();
+			ReferencedInput ri0 = CalculationFactory.eINSTANCE.createReferencedInput();
+			ri0.setReference(fdirParameters.getTypeInstance());
+			opClassifyPL.getInputs().add(ri0);
+			ReferencedInput ri1 = CalculationFactory.eINSTANCE.createReferencedInput();
+			ri1.setReference(fdirParameters.getTypeInstance());
+			opClassifyDL.getInputs().add(ri1);
 		}
 	}
 }

@@ -147,6 +147,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	
 		// Approximate the failure rate to a constant failure rate
 		Ref: probability = classifyPL(1 / meanTimeToFailure);
+		Ref: detection = classifyDL(steadyStateDetectability);
 		
 		// Criticality Level Computation according to ECSS-Q-ST-30-02C
 		Ref: criticality = severity * probability * detection;
@@ -158,7 +159,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty missionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty probabilityLevels[4] quantityKind "Frequency" unit "Per Hour";
-		//FloatProperty detectionLevels[] quantityKind "Dimensionless" unit "Percent";
+		FloatProperty detectionLevels[4] quantityKind "Dimensionless" unit "Percent";
 	}
 	
 	Category FMECA {
@@ -179,9 +180,6 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		EnumProperty probability values [
 			ExtremelyRemote=1, Remote=2, Occasional=3, Probable=4
 		] quantityKind "Dimensionless" unit "No Unit" description "Probability Level according to ECSS-Q-ST-30-02C";
-		EnumProperty detection values [
-			ExtremelyUnlikely=4, Unlikely=3, Likely=2, VeryLikely=1
-		] default VeryLikely quantityKind "Dimensionless" unit "No Unit" description "Detection Level for probability of detection according to ECSS-Q-ST-30-02C";
 		FloatProperty criticality default 0 quantityKind "Dimensionless" unit "No Unit" description "Criticality Level according to ECSS-Q-ST-30-02C";
 	
 		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" description "Mean Time To Failure obtained from the Fault Tree Analysis";
@@ -191,7 +189,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Ref: probability = classifyPL(1 / meanTimeToFailure);
 		
 		// Criticality Level Computation according to ECSS-Q-ST-30-02C
-		Ref: criticality = severity * probability * detection;
+		Ref: criticality = severity * probability;
 	}
 	
 	Category ReliabilityAnalysis {

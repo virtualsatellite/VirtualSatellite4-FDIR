@@ -13,6 +13,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyDL;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL;
 
 // *****************************************************************
@@ -43,5 +44,16 @@ public class FDIRParametersTest extends AFDIRParametersTest {
 				.stream().map(pl -> pl.getValue()).toArray();
 		
 		assertArrayEquals(OpClassifyPL.DEFAULT_PL_THRESHOLDS, plTresholds);
+	}
+	
+	@Test
+	public void testSetDefaultDetectabilityLevels() {
+		FDIRParameters fdirParameters = new FDIRParameters(concept);
+		fdirParameters.setDefaultDetectabilityThresholds();
+		
+		Object[] dlTresholds = fdirParameters.getDetectionLevels()
+				.stream().map(dl -> dl.getValue()).toArray();
+		
+		assertArrayEquals(OpClassifyDL.DEFAULT_DL_THRESHOLDS, dlTresholds);
 	}
 }
