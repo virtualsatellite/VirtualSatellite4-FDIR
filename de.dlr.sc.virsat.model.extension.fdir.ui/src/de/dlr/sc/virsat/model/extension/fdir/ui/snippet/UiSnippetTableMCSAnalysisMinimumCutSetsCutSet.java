@@ -37,6 +37,10 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  */
 public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTableMCSAnalysisMinimumCutSetsCutSet implements IUiSnippet {
+	
+	public static final int CUT_SET_COLUMN = 2;
+	public static final int CRITICALITY_COLUMN = 6;
+	
 	@Override
 	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
 		hideNameColumn = true;
@@ -65,8 +69,14 @@ public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTab
 				CutSet cutSet = new CutSet(ca);
 				redirectNotification(cutSet, object, true);
 				
-				if (columnIndex == 2) {
+				if (columnIndex == CUT_SET_COLUMN) {
 					return cutSet.getBasicEvents().stream().map(be -> be.getParent().getName() + "." + be.getName()).collect(Collectors.joining(","));
+				} else if (columnIndex == CRITICALITY_COLUMN) {
+					if (cutSet.getCriticality() == 0) {
+						return CutSet.SEVERITY_Unknown_NAME;
+					} else {
+						return tableLabelProvider.getColumnText(object, columnIndex);
+					}
 				} else {
 					return tableLabelProvider.getColumnText(object, columnIndex);
 				}

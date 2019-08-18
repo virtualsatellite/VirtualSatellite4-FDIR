@@ -31,6 +31,7 @@ public class OpClassifyDL extends AAdvancedFunctionOp {
 	public static final double LIMIT_UNLIKELY = 0.25;
 	public static final double LIMIT_EXTREMELY_UNLIKELY = 0;
 	
+	public static final int DL_UNKNOWN = Integer.valueOf(CutSet.DETECTION_Unknown_VALUE);
 	public static final int DL_VERY_LIKELY = Integer.valueOf(CutSet.DETECTION_VeryLikely_VALUE);
 	public static final int DL_LIKELY = Integer.valueOf(CutSet.DETECTION_Likely_VALUE);
 	public static final int DL_UNLIKELY = Integer.valueOf(CutSet.DETECTION_Unlikely_VALUE);
@@ -42,7 +43,7 @@ public class OpClassifyDL extends AAdvancedFunctionOp {
 	@Override
 	public double apply(double[] inputs) {
 		if (inputs.length != OpClassifyPL.PL_LEVELS.length + DL_LEVELS.length + 1) {
-			return Double.NaN;
+			return DL_UNKNOWN;
 		}
 		
 		double steadyStateDetectability = inputs[0];
@@ -54,7 +55,7 @@ public class OpClassifyDL extends AAdvancedFunctionOp {
 			}
 		}
 		
-		return Double.NaN;
+		return DL_UNKNOWN;
 	}
 	
 	@Override

@@ -77,27 +77,33 @@ public abstract class ACutSet extends ABeanCategoryAssignment implements IBeanCa
 	public static final String SEVERITY_Critical_NAME = "Critical";
 	public static final String SEVERITY_Major_NAME = "Major";
 	public static final String SEVERITY_Minor_NAME = "Minor";
+	public static final String SEVERITY_Unknown_NAME = "Unknown";
 	// Severity enumeration values
 	public static final String SEVERITY_Catastrophic_VALUE = "4";
 	public static final String SEVERITY_Critical_VALUE = "3";
 	public static final String SEVERITY_Major_VALUE = "2";
 	public static final String SEVERITY_Minor_VALUE = "1";
+	public static final String SEVERITY_Unknown_VALUE = "0";
 	// Probability enumeration value names
+	public static final String PROBABILITY_Unknown_NAME = "Unknown";
 	public static final String PROBABILITY_ExtremelyRemote_NAME = "ExtremelyRemote";
 	public static final String PROBABILITY_Remote_NAME = "Remote";
 	public static final String PROBABILITY_Occasional_NAME = "Occasional";
 	public static final String PROBABILITY_Probable_NAME = "Probable";
 	// Probability enumeration values
+	public static final String PROBABILITY_Unknown_VALUE = "0";
 	public static final String PROBABILITY_ExtremelyRemote_VALUE = "1";
 	public static final String PROBABILITY_Remote_VALUE = "2";
 	public static final String PROBABILITY_Occasional_VALUE = "3";
 	public static final String PROBABILITY_Probable_VALUE = "4";
 	// Detection enumeration value names
+	public static final String DETECTION_Unknown_NAME = "Unknown";
 	public static final String DETECTION_ExtremelyUnlikely_NAME = "ExtremelyUnlikely";
 	public static final String DETECTION_Unlikely_NAME = "Unlikely";
 	public static final String DETECTION_Likely_NAME = "Likely";
 	public static final String DETECTION_VeryLikely_NAME = "VeryLikely";
 	// Detection enumeration values
+	public static final String DETECTION_Unknown_VALUE = "0";
 	public static final String DETECTION_ExtremelyUnlikely_VALUE = "4";
 	public static final String DETECTION_Unlikely_VALUE = "3";
 	public static final String DETECTION_Likely_VALUE = "2";
