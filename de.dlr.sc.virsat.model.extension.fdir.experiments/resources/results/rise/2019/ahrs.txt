@@ -1,0 +1,19 @@
+ahrs1.dft
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		422
+	* #Modules         :		1
+	* #Trimmed         :		1
+	* Largest Module   :		19
+	* Largest Module RA:		4
+State space generation Statistics: 
+	* Generation Time  :		31
+	* #Generated States:		12
+	* Max States       :		9
+	* Max Transitions  :		16
+Minimization Statistics: 
+	* Minimization Time  :		16
+	* #RemovedStates     :		1
+	* #RemovedTransitions:		2
+
+

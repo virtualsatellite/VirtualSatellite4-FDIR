@@ -50,11 +50,11 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 		this.testFolder(folder, "/resources/rise/2019/hecs");
 	}
 	
-	/*@Test
+	@Test
 	public void testFolderMAS() throws Exception {
 		final File folder = new File("./resources/rise/2019/mas");
 		this.testFolder(folder, "/resources/rise/2019/mas");
-	}*/
+	}
 	
 	@Test
 	public void testFolderRC() throws Exception {

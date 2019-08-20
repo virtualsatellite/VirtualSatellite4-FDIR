@@ -1,0 +1,57 @@
+AHRS1
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		152
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		18
+	* Largest Module RA:		4
+State space generation Statistics: 
+	* Generation Time  :		40
+	* #Generated States:		20
+	* Max States       :		9
+	* Max Transitions  :		24
+Minimization Statistics: 
+	* Minimization Time  :		30
+	* #RemovedStates     :		1
+	* #RemovedTransitions:		4
+
+
+HECS1
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		5970
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		32
+	* Largest Module RA:		16
+State space generation Statistics: 
+	* Generation Time  :		130
+	* #Generated States:		3693
+	* Max States       :		625
+	* Max Transitions  :		3885
+Minimization Statistics: 
+	* Minimization Time  :		5440
+	* #RemovedStates     :		225
+	* #RemovedTransitions:		1753
+
+
+RC-1-1
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		254
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		26
+	* Largest Module RA:		3
+State space generation Statistics: 
+	* Generation Time  :		30
+	* #Generated States:		217
+	* Max States       :		38
+	* Max Transitions  :		222
+Minimization Statistics: 
+	* Minimization Time  :		173
+	* #RemovedStates     :		30
+	* #RemovedTransitions:		194
+
+

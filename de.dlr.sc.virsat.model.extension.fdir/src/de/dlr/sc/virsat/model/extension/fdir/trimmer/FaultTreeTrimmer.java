@@ -74,7 +74,10 @@ public class FaultTreeTrimmer {
 	 * @return the set of trimmed modules
 	 */
 	public Set<Module> trimDeterministicNodes(Set<Module> modules) {
-		FaultTreeHelper fthelp = new FaultTreeHelper(modules.iterator().next().getRootNode().getConcept());
+		FaultTreeHelper fthelp = null;
+		if (!modules.isEmpty()) {
+			fthelp = new FaultTreeHelper(modules.iterator().next().getRootNode().getConcept());
+		}
 		
 		for (Module module : modules) {
 			for (FaultTreeEdge edge : fthelp.getAllEdges(module.getRootNodeCopy().getFault())) {
