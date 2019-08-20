@@ -26,6 +26,8 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropert
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrix;
 
 
 // *****************************************************************
@@ -57,6 +59,7 @@ public abstract class AFDIRParameters extends ABeanCategoryAssignment implements
 	public static final String PROPERTY_TIMESTEP = "timestep";
 	public static final String PROPERTY_PROBABILITYLEVELS = "probabilityLevels";
 	public static final String PROPERTY_DETECTIONLEVELS = "detectionLevels";
+	public static final String PROPERTY_CRITICALITYMATRICES = "criticalityMatrices";
 	
 	
 	
@@ -180,6 +183,22 @@ public abstract class AFDIRParameters extends ABeanCategoryAssignment implements
 	public IBeanList<BeanPropertyFloat> getDetectionLevels() {
 		safeAccessDetectionLevels();
 		return detectionLevels;
+	}
+	
+	// *****************************************************************
+	// * Array Attribute: criticalityMatrices
+	// *****************************************************************
+	private IBeanList<CriticalityMatrix> criticalityMatrices = new TypeSafeComposedPropertyInstanceList<>(CriticalityMatrix.class);
+	
+	private void safeAccessCriticalityMatrices() {
+		if (criticalityMatrices.getArrayInstance() == null) {
+			criticalityMatrices.setArrayInstance((ArrayInstance) helper.getPropertyInstance("criticalityMatrices"));
+		}
+	}
+	
+	public IBeanList<CriticalityMatrix> getCriticalityMatrices() {
+		safeAccessCriticalityMatrices();
+		return criticalityMatrices;
 	}
 	
 	

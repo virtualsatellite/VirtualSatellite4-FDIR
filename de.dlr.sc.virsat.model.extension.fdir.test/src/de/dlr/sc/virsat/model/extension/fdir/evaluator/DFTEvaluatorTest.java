@@ -978,7 +978,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		};
 		
 		final double EXPECTEDMTTF = 2.9435483;
-		final double EXPECTEDSTEADYSTATE = 0.09113563429425975;
+		final double EXPECTEDSTEADYSTATE = 0.09111471531361703;
 		
 		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
 		
