@@ -2335,6 +2335,12 @@
 
 <extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
 	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFDIRParameters"
+	      section="de.dlr.sc.virsat.uiengine.ui.editorSection.General"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFDIRParameters">
+	</uiSnippet>
+	
+	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultBasicEventsBasicEvent"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
@@ -2349,6 +2355,7 @@
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParameters">
 	</uiSnippet>
+	
 	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFault"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"

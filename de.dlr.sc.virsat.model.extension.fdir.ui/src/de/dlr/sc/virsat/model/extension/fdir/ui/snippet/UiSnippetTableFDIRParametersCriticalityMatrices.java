@@ -46,7 +46,7 @@ public class UiSnippetTableFDIRParametersCriticalityMatrices extends AUiSnippetT
 			UiSnippetTableCriticalityMatrixCriticalityMatrix criticalityMatrixSnippet = new UiSnippetTableCriticalityMatrixCriticalityMatrix();
 			criticalityMatrixSnippet.createSwt(toolkit, editingDomain, composite, cm.getTypeInstance());
 			int detectionLevel = i + 1;
-			criticalityMatrixSnippet.getSection().setText("Section for: Criticality Matrix - Detection Level " + detectionLevel + " - " + DL_NAMES[i]);
+			criticalityMatrixSnippet.getSection().setText("Section for: Criticality Matrix - Detection Level - " + detectionLevel + " - " + DL_NAMES[i]);
 		}
 	}
 }
