@@ -60,7 +60,7 @@ Germany
    </plugins>
 
    <features>
-      <feature id="de.dlr.sc.virsat.svn.feature"/>
+      <feature id="de.dlr.sc.virsat.team.feature"/>
       <feature id="de.dlr.sc.virsat.model.feature"/>
       <feature id="de.dlr.sc.virsat.project.feature"/>
       <feature id="de.dlr.sc.virsat.branding.feature"/>
