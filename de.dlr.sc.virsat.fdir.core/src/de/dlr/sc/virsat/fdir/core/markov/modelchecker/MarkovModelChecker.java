@@ -363,7 +363,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		while (!convergence) {
 			iterate(tm);
 			double newUnavailability = getFailRate();
-			difference = Math.abs(newUnavailability - oldUnavailability);
+			difference = Math.abs(newUnavailability - oldUnavailability) / newUnavailability;
 			
 			if (difference < eps / Math.max(1, delta) || Double.isNaN(difference)) {
 				convergence = true;

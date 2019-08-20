@@ -55,12 +55,13 @@ public class SteadyStateDetectability implements IDerivedMetric {
 	 */
 	public double derive(double steadyStateAvailability, double observedSteadyStateAvailability) {
 		double observedUnavailability = 1 - observedSteadyStateAvailability;
-		if (observedUnavailability == 0) {
+		double unavailability = 1 - steadyStateAvailability;
+		
+		if (observedUnavailability == 0 && unavailability == 0) {
 			return 1;
 		}
 		
-		double unavailability = 1 - steadyStateAvailability;
-		double steadyStateDetectability = unavailability / observedUnavailability;
+		double steadyStateDetectability = observedUnavailability / unavailability;
 		return steadyStateDetectability;
 	}
 }

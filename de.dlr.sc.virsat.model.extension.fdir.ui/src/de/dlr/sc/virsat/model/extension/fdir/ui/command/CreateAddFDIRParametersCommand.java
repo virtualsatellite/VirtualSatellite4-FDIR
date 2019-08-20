@@ -41,6 +41,7 @@ public class CreateAddFDIRParametersCommand extends ACreateAddFDIRParametersComm
 				FDIRParameters fdirParameters = new FDIRParameters(ca);
 				fdirParameters.setDefaultProbablityThresholds();
 				fdirParameters.setDefaultDetectabilityThresholds();
+				fdirParameters.setDefaultCriticalityMatrix();
 			}
 		});
 		

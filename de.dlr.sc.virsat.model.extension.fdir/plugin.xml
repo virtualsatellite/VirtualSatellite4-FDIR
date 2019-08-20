@@ -98,6 +98,14 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.CutSet">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.CriticalityVector"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVector">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.CriticalityMatrix"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrix">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters">
 		</CategoryAssignmentBean>
