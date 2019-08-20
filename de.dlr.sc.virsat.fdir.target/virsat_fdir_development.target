@@ -22,7 +22,7 @@
 		<unit id="de.dlr.sc.virsat.model.extension.mechanical.feature.feature.group" version="0.0.0"/>
 		<unit id="de.dlr.sc.virsat.model.feature.feature.group" version="0.0.0"/>
 		<unit id="de.dlr.sc.virsat.project.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.svn.feature.feature.group" version="0.0.0"/>
+		<unit id="de.dlr.sc.virsat.team.feature.feature.group" version="0.0.0"/>
 		<unit id="de.dlr.sc.virsat.test.feature.feature.group" version="0.0.0"/>
 		<unit id="de.dlr.sc.virsat.uiengine.feature.feature.group" version="0.0.0"/>
 		<repository location="https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/development/"/>
@@ -51,6 +51,7 @@
 		<unit id="org.eclipse.swtbot.feature.group" version="2.6.0.201706141832"/>
 		<unit id="org.eclipse.xtext.sdk.feature.group" version="2.12.0.v20170519-1412"/>
 		<unit id="org.eclipse.gef.feature.group" version="3.11.0.201606061308"/>
+		<unit id="org.eclipse.egit.feature.group" version="4.9.2.201712150930-r"/>
 		<unit id="org.eclipse.linuxtools.docker.feature.feature.group" version="3.2.1.201803061555"/>
 		<repository location="http://download.eclipse.org/releases/oxygen/"/>
 		</location>              

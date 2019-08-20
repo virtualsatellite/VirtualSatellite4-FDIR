@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEventTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrixTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVERTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTETest;
@@ -40,6 +41,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirementTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVectorTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FMECATest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
@@ -83,6 +85,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	FaultTest.class,
 	BasicEventTest.class,
 	CutSetTest.class,
+	CriticalityVectorTest.class,
+	CriticalityMatrixTest.class,
 	FDIRParametersTest.class,
 	FMECATest.class,
 	FMECAEntryTest.class,

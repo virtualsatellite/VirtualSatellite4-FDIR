@@ -112,6 +112,14 @@
 		pathToImage="resources/icons/CutSet.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.CriticalityVector"
+		pathToImage="resources/icons/CriticalityVector.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.CriticalityMatrix"
+		pathToImage="resources/icons/CriticalityMatrix.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters"
 		pathToImage="resources/icons/FDIRParameters.gif">
 	</conceptImage>
@@ -264,6 +272,14 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCutSet"
 		name="Add CutSet">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector"
+		name="Add CriticalityVector">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix"
+		name="Add CriticalityMatrix">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
@@ -428,6 +444,16 @@
 	      icon="resources/icons/CutSet.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector"
+	      disabledIcon="resources/icons/CriticalityVector_disabled.gif"
+	      icon="resources/icons/CriticalityVector.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix"
+	      disabledIcon="resources/icons/CriticalityMatrix_disabled.gif"
+	      icon="resources/icons/CriticalityMatrix.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
 	      disabledIcon="resources/icons/FDIRParameters_disabled.gif"
 	      icon="resources/icons/FDIRParameters.gif">
@@ -583,6 +609,14 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddCutSetHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCutSet">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddCriticalityVectorHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddCriticalityMatrixHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDIRParametersHandler"
@@ -1109,6 +1143,50 @@
 		</command>
 		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCutSet"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1788,6 +1866,36 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCutSetBasicEvents">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityVector"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityVector">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetCriticalityVector"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionCriticalityVector">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityVectorIsCritical"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityVectorIsCritical">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityMatrix"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityMatrix">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetCriticalityMatrix"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionCriticalityMatrix">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityMatrixCriticalityMatrix"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityMatrixCriticalityMatrix">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParameters"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParameters">
@@ -1806,6 +1914,11 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParametersDetectionLevels"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParametersDetectionLevels">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParametersCriticalityMatrices"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParametersCriticalityMatrices">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECA"
@@ -2222,6 +2335,12 @@
 
 <extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
 	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFDIRParameters"
+	      section="de.dlr.sc.virsat.uiengine.ui.editorSection.General"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFDIRParameters">
+	</uiSnippet>
+	
+	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultBasicEventsBasicEvent"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
@@ -2236,6 +2355,7 @@
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParameters">
 	</uiSnippet>
+	
 	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFault"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"

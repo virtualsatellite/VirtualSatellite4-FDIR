@@ -10,6 +10,8 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -55,5 +57,23 @@ public class FDIRParametersTest extends AFDIRParametersTest {
 				.stream().map(dl -> dl.getValue()).toArray();
 		
 		assertArrayEquals(OpClassifyDL.DEFAULT_DL_THRESHOLDS, dlTresholds);
+	}
+	
+	@Test
+	public void testSetIsCritical() {
+		FDIRParameters fdirParameters = new FDIRParameters(concept);
+		fdirParameters.setDefaultCriticalityMatrix();
+		
+		assertFalse(fdirParameters.isDefaultCritical(
+			Integer.valueOf(CutSet.DETECTION_VeryLikely_VALUE), 
+			Integer.valueOf(CutSet.SEVERITY_Minor_VALUE), 
+			Integer.valueOf(CutSet.PROBABILITY_ExtremelyRemote_VALUE))
+		);
+		
+		assertTrue(fdirParameters.isDefaultCritical(
+			Integer.valueOf(CutSet.DETECTION_VeryLikely_VALUE), 
+			Integer.valueOf(CutSet.SEVERITY_Catastrophic_VALUE), 
+			Integer.valueOf(CutSet.PROBABILITY_ExtremelyRemote_VALUE))
+		);
 	}
 }

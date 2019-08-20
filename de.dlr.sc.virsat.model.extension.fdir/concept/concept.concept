@@ -153,6 +153,14 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Ref: criticality = severity * probability * detection;
 	}
 	
+	Category CriticalityVector {
+		BooleanProperty isCritical[4] default false;
+	}
+	
+	Category CriticalityMatrix {
+		Type criticalityMatrix[4] of Category CriticalityVector;
+	}
+	
 	Category FDIRParameters {
 		Applicable For All;
 		Cardinality 1;
@@ -160,6 +168,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty probabilityLevels[4] quantityKind "Frequency" unit "Per Hour";
 		FloatProperty detectionLevels[4] quantityKind "Dimensionless" unit "Percent";
+		
+		Type criticalityMatrices[4] of Category CriticalityMatrix;
 	}
 	
 	Category FMECA {

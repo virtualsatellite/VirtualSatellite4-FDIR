@@ -339,12 +339,12 @@ public class DFT2MAConverter {
 					}
 					break;
 				case OBSERVED:
-					if (!(state instanceof PODFTState) || !((PODFTState) state).isNodeFailObserved(root)) {
+					if (state instanceof PODFTState && !((PODFTState) state).isNodeFailObserved(root)) {
 						return;
 					}
 					break;
 				case UNOBSERVED:
-					if (!(state instanceof PODFTState) || ((PODFTState) state).isNodeFailObserved(root)) {
+					if (state instanceof PODFTState && ((PODFTState) state).isNodeFailObserved(root)) {
 						return;
 					}
 					break;

@@ -11,6 +11,10 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
 import de.dlr.sc.virsat.model.extension.fdir.model.CutSet;
@@ -35,6 +39,16 @@ public class UiSnippetTableFDIRParametersDetectionLevels extends AUiSnippetTable
 		CutSet.DETECTION_ExtremelyUnlikely_NAME 
 	};
 
+	public static final int TABLE_HEIGHT = 21 * 4;
+	
+	@Override
+	protected Table createDefaultTable(FormToolkit toolkit, Composite sectionBody) {
+		Table table = super.createDefaultTable(toolkit, sectionBody);
+		GridData gridDataTable = (GridData) table.getLayoutData();
+		gridDataTable.heightHint = TABLE_HEIGHT;
+		return table;
+	}
+	
 	@Override
 	protected ITableLabelProvider getTableLabelProvider() {
 		ITableLabelProvider superLabelProvider = super.getTableLabelProvider();
