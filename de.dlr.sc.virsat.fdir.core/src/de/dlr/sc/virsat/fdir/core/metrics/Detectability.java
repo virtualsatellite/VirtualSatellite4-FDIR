@@ -59,7 +59,7 @@ public class Detectability extends AProbabilityCurve implements IDerivedMetric {
 		for (int i = 0; i < unobservedAvailabilityCurve.size(); ++i) {
 			Double unobservedAvailability = unobservedAvailabilityCurve.get(i);
 			Double observedAvailability = observedAvailabilityCurve.get(i);
-			Double detectability = (1 - unobservedAvailability) / (1 - observedAvailability);
+			Double detectability = (1 - observedAvailability) / (1 - unobservedAvailability);
 			detectabiityCurve.add(detectability);
 		}
 	}

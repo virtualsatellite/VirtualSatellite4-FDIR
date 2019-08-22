@@ -43,7 +43,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 public class FaultTreeEvaluator extends AFaultTreeEvaluator {
 	
-	public static final float DEFAULT_EPS = 0.001f;
+	public static final float DEFAULT_EPS = 0.00001f;
 	public static final float DEFAULT_DELTA = 0.1f;
 	
 	private IFaultTreeEvaluator evaluator;

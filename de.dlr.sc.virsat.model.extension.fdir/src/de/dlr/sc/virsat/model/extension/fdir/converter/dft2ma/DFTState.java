@@ -299,7 +299,9 @@ public class DFTState extends MarkovState {
 			
 			for (BasicEvent be : ((Fault) node).getBasicEvents()) {
 				for (FaultTreeNode trigger : ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList())) {
-					activateNode(trigger);
+					if (!activeFaults.contains(trigger)) {
+						activateNode(trigger);
+					}
 				}
 			}
 		}
@@ -309,7 +311,9 @@ public class DFTState extends MarkovState {
 			if (node instanceof ADEP && ftHolder.getMapNodeToParents().get(child).size() > 1) {
 				continue;
 			}
-			activateNode(child);
+			if (!activeFaults.contains(child)) {
+				activateNode(child);
+			}
 		}
 		
 		List<OBSERVER> observers = ftHolder.getMapNodeToObservers().getOrDefault(node, Collections.emptyList());

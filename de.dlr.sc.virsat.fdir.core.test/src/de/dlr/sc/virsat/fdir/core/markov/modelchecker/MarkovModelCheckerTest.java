@@ -69,7 +69,7 @@ public class MarkovModelCheckerTest {
 		final double AVAIL_RATE = 0.5453268543142235;
 		EXPECTED_POINT_AVAILABILITY.add((double) 1);
 		EXPECTED_POINT_AVAILABILITY.add(AVAIL_RATE);
-		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.5453;
+		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.4365424;
 		MarkovModelChecker modelChecker = new MarkovModelChecker(1, 1);
 
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
