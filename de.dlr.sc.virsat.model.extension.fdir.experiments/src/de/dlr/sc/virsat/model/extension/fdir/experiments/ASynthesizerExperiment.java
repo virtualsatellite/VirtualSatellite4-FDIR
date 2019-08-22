@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.experiments;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -103,6 +104,40 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 				System.out.println(fault.getFaultTree().toDot());
 				synthesizer.synthesize(fault);
 				saveStatistics(synthesizer.getStatistics(), file.getName(), "rise/2019/" + folder.getName());
+			}
+		}
+	}
+	
+	/**
+	 * Tests all of the .dft benchmarks in the given folder
+	 * @param file the file with all the dft names
+	 * @param filePath the path to the file
+	 * @param saveFileName the name of the file you wish to save the results to
+	 * @param synthesizer the synthesizer
+	 * @throws IOException exception
+	 */
+	protected void testFile(final File file, String filePath, String saveFileName, BasicSynthesizer synthesizer) throws IOException {
+		
+		String entireFile = new String(Files.readAllBytes(file.toPath()));
+		
+		for (String filename : entireFile.split("\\r?\\n")) {
+			File parentFolder = file.getParentFile();
+			
+			for (File childFolder : parentFolder.listFiles()) {
+				if (childFolder.isDirectory()) {
+					File[] matchingFiles = childFolder.listFiles(new FilenameFilter() {
+						public boolean accept(File dir, String name) {
+							return name.equals(filename);
+						}
+					});
+				
+					if (matchingFiles.length != 0) {
+						File benchmarkFile = matchingFiles[0];
+						Fault fault = createDFT(filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName());
+						synthesizer.synthesize(fault);
+						saveStatistics(synthesizer.getStatistics(), benchmarkFile.getName(), saveFileName);
+					}
+				}
 			}
 		}
 	}

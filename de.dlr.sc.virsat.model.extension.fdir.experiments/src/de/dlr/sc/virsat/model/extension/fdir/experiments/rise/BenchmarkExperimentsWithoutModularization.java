@@ -11,13 +11,14 @@ package de.dlr.sc.virsat.model.extension.fdir.experiments.rise;
 
 
 
+import java.io.File;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
 
 /**
@@ -32,64 +33,12 @@ public class BenchmarkExperimentsWithoutModularization extends ASynthesizerExper
 	public void setUp() {
 		super.setUp();
 		synthesizer = new BasicSynthesizer();
-	}
-
-	
-	/* ***************************************************************************
-	 * RAILWAY CROSSINGS
-	 * **************************************************************************/
-	
-	@Test
-	public void testRC11() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
 		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "RC-1-1", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	/* ***************************************************************************
-	 * Active Heat Rejection Systems (AHRS)
-	 * **************************************************************************/
-	@Test
-	public void testAHRS1() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/ahrs/ahrs1.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "AHRS1", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	/* ***************************************************************************
-	 * Hypothetical Example Computer Systems (HECS)
-	 * **************************************************************************/
-	@Test
-	public void testHECS1() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/hecs/hecs1-1.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-		saveStatistics(synthesizer.getStatistics(), "HECS1", "rise/2019/benchmarkStatisticsWithoutModularization");
-	}
-	
-	/* ***************************************************************************
-	 * CM
-	 * **************************************************************************/
-	@Test
-	public void testCMSimple() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
-	}
-
-	@Test
-	public void testCM1() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
 	}
 	
 	@Test
-	public void testCM2() throws Exception {
-		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
-		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
+	public void testExperimentSet() throws Exception {
+		final File experimentSet = new File("./resources/rise/2019/experimentSetWM");
+		this.testFile(experimentSet, "/resources/rise/2019", "rise/2019/benchmarkExperimentsStatisticsWM", this.synthesizer);
 	}
 }

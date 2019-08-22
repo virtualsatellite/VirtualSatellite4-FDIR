@@ -33,39 +33,9 @@ public class BenchmarkExperiments extends ASynthesizerExperiment {
 	}
 	
 	@Test
-	public void testFolderCM() throws Exception {
-		final File folder = new File("./resources/rise/2019/cm");
-		this.testFolder(folder, "/resources/rise/2019/cm");
-	}
-	
-	@Test
-	public void testFolderAHRS() throws Exception {
-		final File folder = new File("./resources/rise/2019/ahrs");
-		this.testFolder(folder, "/resources/rise/2019/ahrs");
-	}
-	
-	@Test
-	public void testFolderHECS() throws Exception {
-		final File folder = new File("./resources/rise/2019/hecs");
-		this.testFolder(folder, "/resources/rise/2019/hecs");
-	}
-	
-	@Test
-	public void testFolderMAS() throws Exception {
-		final File folder = new File("./resources/rise/2019/mas");
-		this.testFolder(folder, "/resources/rise/2019/mas");
-	}
-	
-	@Test
-	public void testFolderRC() throws Exception {
-		final File folder = new File("./resources/rise/2019/rc");
-		this.testFolder(folder, "/resources/rise/2019/rc");
-	}
-	
-	@Test
-	public void testFolderVGS() throws Exception {
-		final File folder = new File("./resources/rise/2019/vgs");
-		this.testFolder(folder, "/resources/rise/2019/vgs");
+	public void testExperimentSet() throws Exception {
+		final File experimentSet = new File("./resources/rise/2019/experimentSet");
+		this.testFile(experimentSet, "/resources/rise/2019", "rise/2019/benchmarkExperimentsStatistics", this.synthesizer);
 	}
 
 }
