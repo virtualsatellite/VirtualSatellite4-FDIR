@@ -61,6 +61,18 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testDeterministicTree() throws IOException {
+		Fault rootDeterministic = createDFT("/resources/galileo/and2or.dft");
+		Modularizer modularizer = new Modularizer();
+		Set<Module> modules = modularizer.getModules(rootDeterministic.getFaultTree());
+		modules.forEach(module -> module.constructFaultTreeCopy());
+		modules = fttrim.trimModulesAll(modules);
+		
+		final int NUM_NONDET_MODULES = 0;
+		assertEquals(NUM_NONDET_MODULES, modules.size());
+	}
+	
+	@Test
 	public void testTrimNondeterministicModules() throws IOException {
 		Fault rootNestedComplex = createDFT("/resources/galileo/nestedPand2.dft");
 		Modularizer modularizer = new Modularizer();
