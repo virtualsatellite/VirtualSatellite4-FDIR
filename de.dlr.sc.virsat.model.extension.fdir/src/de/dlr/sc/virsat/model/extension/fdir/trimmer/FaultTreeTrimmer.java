@@ -74,17 +74,19 @@ public class FaultTreeTrimmer {
 	 * @return the set of trimmed modules
 	 */
 	public Set<Module> trimDeterministicNodes(Set<Module> modules) {
-		FaultTreeHelper fthelp = new FaultTreeHelper(modules.iterator().next().getRootNode().getConcept());
+		if (!modules.isEmpty()) {
+			FaultTreeHelper fthelp = new FaultTreeHelper(modules.iterator().next().getRootNode().getConcept());
 		
-		for (Module module : modules) {
-			for (FaultTreeEdge edge : fthelp.getAllEdges(module.getRootNodeCopy().getFault())) {
-				FaultTreeNode from = edge.getFrom();
-				
-				if (!module.hasPriorityAbove(from)
-						&& !module.hasSpareBelow(from)
-						&& !module.hasSpareAbove(from)
-						&& !from.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE)) {
-					fthelp.removeEdgeFromFaultTree(edge, module.getRootNodeCopy().getFault().getFaultTree());
+			for (Module module : modules) {
+				for (FaultTreeEdge edge : fthelp.getAllEdges(module.getRootNodeCopy().getFault())) {
+					FaultTreeNode from = edge.getFrom();
+					
+					if (!module.hasPriorityAbove(from)
+							&& !module.hasSpareBelow(from)
+							&& !module.hasSpareAbove(from)
+							&& !from.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE)) {
+						fthelp.removeEdgeFromFaultTree(edge, module.getRootNodeCopy().getFault().getFaultTree());
+					}
 				}
 			}
 		}
