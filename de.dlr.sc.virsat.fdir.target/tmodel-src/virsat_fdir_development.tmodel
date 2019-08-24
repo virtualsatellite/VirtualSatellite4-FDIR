@@ -6,19 +6,62 @@ Target virsat_fdir_development extends virsat {
 		Unit de.dlr.sc.virsat.target.feature.feature.group version newest;
 	}
 	
+	/* 
 	RepositoryLocation EclipseOxygen url "http://download.eclipse.org/releases/oxygen/" {
 		Unit org.eclipse.linuxtools.docker.feature.feature.group version 3.2.1.201803061555;
 		Unit org.eclipse.birt.feature.group version 4.7.0.v201706222054;
 		Unit org.eclipse.birt.osgi.runtime.feature.group version 4.7.0.v201706222054;
+		Unit org.eclipse.birt.chart.cshelp.feature.group version 4.7.0.v201706222054;
+		Unit org.eclipse.birt.report.designer.editor.xml.wtp.feature.group version 4.7.0.v201706222054;
 		Unit org.eclipse.datatools.enablement.feature.feature.group version 1.14.1.201712071719;
 		Unit org.eclipse.datatools.connectivity.feature.feature.group version 1.14.1.201712071719;
-	} 
-	
+		Unit org.eclipse.jst.enterprise_ui.feature.feature.group version 3.9.3.v201803221418;
+		Unit org.eclipse.wst.jsdt.feature.feature.group version 2.1.1.v201803202007;
+		Unit org.eclipse.jst.web_ui.feature.feature.group version 3.9.0.v201803221834;
+	}
+	 
 	RepositoryLocation Gemini url "http://download.eclipse.org/gemini/updates/web/3.0.4" {
 		Unit org.eclipse.gemini.web.feature.feature.group version 3.0.4.RELEASE;
+		Unit org.apache.jasper version 8.5.35;
 	}
 	
 	RepositoryLocation Jetty url "https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/" {
 		Unit org.eclipse.jetty.bundles.f.feature.group version 9.4.5.201705032012;
 	}
+	*/
+
+	RepositoryLocation EclipseOxygen url "http://download.eclipse.org/releases/oxygen/" {
+		Unit org.eclipse.linuxtools.docker.feature.feature.group version 3.2.1.201803061555;
+	} 
+	
+	RepositoryLocation EclipsePhoton url "http://download.eclipse.org/birt/update-site/photon-interim/" {
+		Unit org.eclipse.birt.feature.group version 4.8.0.v201905101549;
+		Unit org.eclipse.birt.osgi.runtime.feature.group version 4.8.0.v201905101549;
+		Unit org.eclipse.birt.chart.cshelp.feature.group version 4.8.0.v201905101549;
+		Unit org.eclipse.birt.report.designer.editor.xml.wtp.feature.group version 4.8.0.v201905101549;
+	} 
+	
+	RepositoryLocation Jetty url "https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/" {
+		Unit org.eclipse.jetty.bundles.f.feature.group version 9.4.10.201805070144;
+	}
+	
+	RepositoryLocation Gemini url "http://download.eclipse.org/gemini/updates/web/3.0.4" {
+		Unit org.eclipse.gemini.web.feature.feature.group version 3.0.4.RELEASE;
+	}
+	
+	RepositoryLocation OrbitPhoton url "https://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository/" {
+		Unit org.apache.lucene.core version 7.1.0.v20171214-1510;
+	}
+	
+	/* 
+	RepositoryLocation EclipseOxygen url "http://download.eclipse.org/releases/oxygen/" {
+		Unit org.eclipse.linuxtools.docker.feature.feature.group version 3.2.1.201803061555;
+	} 
+	
+	RepositoryLocation EclipseNeon url "http://download.eclipse.org/releases/neon/" {
+		Unit org.eclipse.birt.feature.group version 4.6.0.v201606072122;
+		Unit org.eclipse.birt.osgi.runtime.feature.group version 4.6.0.v201606072122;
+		Unit org.eclipse.birt.report.designer.editor.xml.wtp.feature.group version 4.6.0.v201606072122;
+	} 
+	*/
 }

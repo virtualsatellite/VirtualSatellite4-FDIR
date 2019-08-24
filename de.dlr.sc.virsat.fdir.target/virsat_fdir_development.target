@@ -1,85 +1,124 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-		<?pde version="3.8"?><target name="virsat_fdir_development" sequenceNumber="1">
-		<locations>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="de.dlr.sc.virsat.target.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.apps.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.branding.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.build.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.commons.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.dependencies.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.docs.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.external.lib.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.graphiti.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.javadoc.api.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.license.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.calculation.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.extension.budget.mass.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.extension.maturity.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.extension.ps.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.extension.tests.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.extension.visualisation.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.extension.mechanical.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.model.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.project.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.team.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.test.feature.feature.group" version="0.0.0"/>
-		<unit id="de.dlr.sc.virsat.uiengine.feature.feature.group" version="0.0.0"/>
-		<repository location="https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/development/"/>
-		</location>              
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.linuxtools.docker.feature.feature.group" version="3.2.1.201803061555"/>
-		<unit id="org.eclipse.birt.feature.group" version="4.7.0.v201706222054"/>
-		<unit id="org.eclipse.birt.osgi.runtime.feature.group" version="4.7.0.v201706222054"/>
-		<unit id="org.eclipse.datatools.enablement.feature.feature.group" version="1.14.1.201712071719"/>
-		<unit id="org.eclipse.datatools.connectivity.feature.feature.group" version="1.14.1.201712071719"/>
-		<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.3.2.201709090201"/>
-		<unit id="org.eclipse.emf.edapt.runtime.feature.feature.group" version="1.3.0.201801260923"/>
-		<unit id="org.eclipse.emf.sdk.feature.group" version="2.13.0.v20170609-0928"/>
-		<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.11.0.201706061339"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.7.2.v20171108-1834"/>
-		<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.14.0.201705161212"/>
-		<unit id="org.eclipse.jdt.source.feature.group" version="3.13.4.v20180330-0919"/>
-		<unit id="org.eclipse.ocl.all.sdk.feature.group" version="5.3.0.v20170607-1133"/>
-		<unit id="org.eclipse.pde.source.feature.group" version="3.13.4.v20180330-0640"/>
-		<unit id="org.eclipse.platform.sdk" version="4.7.3.M20180330-0640"/>
-		<unit id="org.eclipse.team.svn.feature.group" version="4.0.5.I20170425-1700"/>
-		<unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.6.0.201706141832"/>
-		<unit id="org.eclipse.swtbot.feature.group" version="2.6.0.201706141832"/>
-		<unit id="org.eclipse.xtext.sdk.feature.group" version="2.12.0.v20170519-1412"/>
-		<unit id="org.eclipse.gef.feature.group" version="3.11.0.201606061308"/>
-		<unit id="org.eclipse.egit.feature.group" version="4.9.2.201712150930-r"/>
-		<repository location="http://download.eclipse.org/releases/oxygen/"/>
-		</location>              
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.gemini.web.feature.feature.group" version="3.0.4.RELEASE"/>
-		<repository location="http://download.eclipse.org/gemini/updates/web/3.0.4"/>
-		</location>              
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.4.5.201705032012"/>
-		<repository location="https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/"/>
-		</location>              
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.nebula.widgets.gallery.feature.feature.group" version="1.0.0.201812241324"/>
-		<repository location="https://download.eclipse.org/nebula/releases/2.1.0/"/>
-		</location>              
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.antlr.runtime" version="4.3.0.v201502022030"/>
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
-		</location>              
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.elk.feature.feature.group" version="0.4.0"/>
-		<unit id="org.eclipse.elk.graphiti.feature.feature.group" version="0.4.0"/>
-		<unit id="org.eclipse.elk.sdk.feature.feature.group" version="0.4.0"/>
-		<unit id="org.eclipse.elk.ui.feature.feature.group" version="0.4.0"/>
-		<repository location="http://download.eclipse.org/elk/updates/releases/0.4.0/"/>
-		</location>              
-		</locations>
-		<environment>
-		<os>win32</os>
-		<ws>win32</ws>
-		<arch>x86_64</arch>
-		<nl>de_DE</nl> 
-		</environment>
-		<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-		</target>
+<?pde version="3.8"?><target name="virsat_fdir_development" sequenceNumber="2">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="de.dlr.sc.virsat.apps.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.branding.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.build.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.commons.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.dependencies.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.docs.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.external.lib.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.graphiti.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.javadoc.api.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.license.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.calculation.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.extension.budget.mass.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.extension.maturity.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.extension.mechanical.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.extension.ps.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.extension.tests.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.extension.visualisation.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.model.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.project.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.target.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.team.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.test.feature.feature.group" version="0.0.0"/>
+<unit id="de.dlr.sc.virsat.uiengine.feature.feature.group" version="0.0.0"/>
+<repository location="https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/development/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.birt.chart.cshelp.feature.group" version="4.8.0.v201905101549"/>
+<unit id="org.eclipse.birt.feature.group" version="4.8.0.v201905101549"/>
+<unit id="org.eclipse.birt.osgi.runtime.feature.group" version="4.8.0.v201905101549"/>
+<unit id="org.eclipse.birt.report.designer.editor.xml.wtp.feature.group" version="4.8.0.v201905101549"/>
+<repository location="http://download.eclipse.org/birt/update-site/photon-interim/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.4.10.201805070144"/>
+<repository location="https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.gemini.web.feature.feature.group" version="3.0.4.RELEASE"/>
+<repository location="http://download.eclipse.org/gemini/updates/web/3.0.4"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.lucene.core" version="7.1.0.v20171214-1510"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.gallery.feature.feature.group" version="1.0.0.201812241324"/>
+<repository location="https://download.eclipse.org/nebula/releases/2.1.0/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.antlr.runtime" version="4.3.0.v201502022030"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.elk.feature.feature.group" version="0.4.0"/>
+<unit id="org.eclipse.elk.graphiti.feature.feature.group" version="0.4.0"/>
+<unit id="org.eclipse.elk.sdk.feature.feature.group" version="0.4.0"/>
+<unit id="org.eclipse.elk.ui.feature.feature.group" version="0.4.0"/>
+<repository location="http://download.eclipse.org/elk/updates/releases/0.4.0/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.egit.feature.group" version="4.9.2.201712150930-r"/>
+<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.3.2.201709090201"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.13.0.v20170609-0928"/>
+<unit id="org.eclipse.emf.transaction.sdk.feature.group" version="1.11.0.201706061339"/>
+<unit id="org.eclipse.graphiti.sdk.feature.feature.group" version="0.14.0.201705161212"/>
+<unit id="org.eclipse.jpt.dbws.eclipselink.feature.feature.group" version="1.2.201.v201803161350"/>
+<unit id="org.eclipse.jpt.jaxb.eclipselink.feature.feature.group" version="1.4.201.v201803161350"/>
+<unit id="org.eclipse.jpt.jaxb.feature.feature.group" version="1.5.100.v201803012210"/>
+<unit id="org.eclipse.jpt.jpa.eclipselink.feature.feature.group" version="3.4.101.v201803161350"/>
+<unit id="org.eclipse.jpt.jpa.feature.feature.group" version="3.5.101.v201803161350"/>
+<unit id="org.eclipse.jpt.jpadiagrameditor.feature.feature.group" version="1.2.300.v201803012210"/>
+<unit id="org.eclipse.jsf.feature.feature.group" version="3.10.0.v201803271721"/>
+<unit id="org.eclipse.jst.common.fproj.enablement.jdt.feature.group" version="3.10.0.v201803211504"/>
+<unit id="org.eclipse.jst.enterprise_ui.feature.feature.group" version="3.9.3.v201803221418"/>
+<unit id="org.eclipse.jst.jsf.apache.trinidad.tagsupport.feature.feature.group" version="2.6.1.v201802231403"/>
+<unit id="org.eclipse.jst.server_adapters.ext.feature.feature.group" version="3.3.601.v201711301708"/>
+<unit id="org.eclipse.jst.server_adapters.feature.feature.group" version="3.2.400.v201711301708"/>
+<unit id="org.eclipse.jst.server_ui.feature.feature.group" version="3.4.300.v201709251835"/>
+<unit id="org.eclipse.jst.web_ui.feature.feature.group" version="3.9.0.v201803221834"/>
+<unit id="org.eclipse.jst.webpageeditor.feature.feature.group" version="2.9.0.v201803271721"/>
+<unit id="org.eclipse.jst.ws.axis2tools.feature.feature.group" version="1.1.301.v201410160332"/>
+<unit id="org.eclipse.jst.ws.cxf.feature.feature.group" version="1.1.300.v201701262158"/>
+<unit id="org.eclipse.jst.ws.jaxws.dom.feature.feature.group" version="1.0.302.v201504272154"/>
+<unit id="org.eclipse.jst.ws.jaxws.feature.feature.group" version="1.2.300.v201701262158"/>
+<unit id="org.eclipse.libra.facet.feature.feature.group" version="0.3.1.201609011955"/>
+<unit id="org.eclipse.libra.framework.editor.feature.feature.group" version="0.3.1.201609011955"/>
+<unit id="org.eclipse.libra.framework.feature.feature.group" version="0.3.1.201609011955"/>
+<unit id="org.eclipse.libra.warproducts.feature.feature.group" version="0.3.1.201609011955"/>
+<unit id="org.eclipse.linuxtools.docker.feature.feature.group" version="3.2.1.201803061555"/>
+<unit id="org.eclipse.m2e.wtp.feature.feature.group" version="1.3.3.20170823-1905"/>
+<unit id="org.eclipse.m2e.wtp.jaxrs.feature.feature.group" version="1.3.3.20170823-1905"/>
+<unit id="org.eclipse.m2e.wtp.jpa.feature.feature.group" version="1.3.3.20170823-1905"/>
+<unit id="org.eclipse.m2e.wtp.jsf.feature.feature.group" version="1.3.3.20170823-1905"/>
+<unit id="org.eclipse.ocl.all.sdk.feature.group" version="5.3.0.v20170607-1133"/>
+<unit id="org.eclipse.php.composer.feature.group" version="5.3.0.201803070838"/>
+<unit id="org.eclipse.php.feature.group" version="5.3.0.201803070838"/>
+<unit id="org.eclipse.rap.tools.feature.feature.group" version="3.4.2.20180404-1636"/>
+<unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.6.0.201706141832"/>
+<unit id="org.eclipse.swtbot.feature.group" version="2.6.0.201706141832"/>
+<unit id="org.eclipse.team.svn.feature.group" version="4.0.5.I20170425-1700"/>
+<unit id="org.eclipse.wst.common.fproj.feature.group" version="3.7.1.v201707201954"/>
+<unit id="org.eclipse.wst.jsdt.chromium.debug.feature.feature.group" version="0.6.0.v201705091354"/>
+<unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.1.1.v201803202007"/>
+<unit id="org.eclipse.wst.server_adapters.feature.feature.group" version="3.2.601.v201711302104"/>
+<unit id="org.eclipse.wst.web_ui.feature.feature.group" version="3.9.2.v201803221834"/>
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.9.2.v201803221834"/>
+<unit id="org.eclipse.wst.xsl.feature.feature.group" version="1.3.401.v201509231858"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.12.0.v20170519-1412"/>
+<unit id="org.sonatype.m2e.mavenarchiver.feature.feature.group" version="0.17.2.201606141937-signed-20160830073346"/>
+<repository location="http://download.eclipse.org/releases/oxygen/"/>
+</location>
+</locations>
+<environment>
+<os>win32</os>
+<ws>win32</ws>
+<arch>x86_64</arch>
+<nl>de_DE</nl>
+</environment>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+</target>
