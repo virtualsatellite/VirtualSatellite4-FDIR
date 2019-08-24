@@ -5,9 +5,4 @@ TargetLibrary fdir_dependencies {
 		Unit org.eclipse.elk.sdk.feature.feature.group version 0.4.0;
 		Unit org.eclipse.elk.ui.feature.feature.group version 0.4.0;
 	}
-	
-	RepositoryLocation EclipseOxygen url "http://download.eclipse.org/releases/oxygen/"{
-		Unit org.eclipse.linuxtools.docker.feature.feature.group version 3.2.1.201803061555;
-		Unit org.eclipse.birt.feature.group version 4.7.0.v201706222054;
-	} 
 }
