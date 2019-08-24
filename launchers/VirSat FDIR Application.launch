@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.pde.ui.RuntimeWorkbench">
-<setAttribute key="additional_plugins"/>
+<setAttribute key="additional_plugins">
+<setEntry value="org.apache.batik.css:1.7.0.v201011041433:default:true"/>
+<setEntry value="org.apache.batik.util.gui:1.7.0.v200903091627:default:true"/>
+<setEntry value="org.apache.batik.util:1.7.0.v201011041433:default:true"/>
+</setAttribute>
 <booleanAttribute key="append.args" value="true"/>
 <booleanAttribute key="askclear" value="true"/>
 <booleanAttribute key="automaticAdd" value="false"/>
