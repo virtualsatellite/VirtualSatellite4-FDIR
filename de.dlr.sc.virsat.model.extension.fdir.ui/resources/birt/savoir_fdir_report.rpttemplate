@@ -36,10 +36,21 @@ modelBundle = Platform.getBundle("de.dlr.sc.virsat.model.edit");
 // load classes
 modelAPIClass = appBundle.loadClass("de.dlr.sc.virsat.apps.api.external.ModelAPI");
 beanClass = modelBundle.loadClass("de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance");
-/// setup model api
 
+// set the correct user dir
+path = reportContext.getDesignHandle().getSystemId().toString();
+// we get back a path of the format file:/myDrive:/.../projectName/apps/ cut off file:/ and apps/
+path = path.substring(6, path.length() - 6);
+System.setProperty("user.dir", path);
+
+// extract project name
+splitPath = path.split("/");
+projectName = splitPath[splitPath.length - 1];
+
+// setup model api
 modelAPI = modelAPIClass.newInstance();
 
+// get the appropriate root element and the child elements
 configuration = params["configuration"];
 
 trees = modelAPI.getRootSeis(beanClass);
@@ -74,6 +85,11 @@ elements.addAll(rootElement.getDeepChildren(beanClass));]]></method>
                     <property name="name">system</property>
                     <property name="dataType">string</property>
                 </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">project</property>
+                    <property name="dataType">string</property>
+                </structure>
             </list-property>
             <list-property name="columnHints">
                 <structure>
@@ -87,6 +103,10 @@ elements.addAll(rootElement.getDeepChildren(beanClass));]]></method>
                 <structure>
                     <property name="columnName">system</property>
                     <text-property name="displayName">System</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">project</property>
+                    <text-property name="displayName">Project</text-property>
                 </structure>
             </list-property>
             <structure name="cachedMetaData">
@@ -106,6 +126,11 @@ elements.addAll(rootElement.getDeepChildren(beanClass));]]></method>
                         <property name="name">system</property>
                         <property name="dataType">string</property>
                     </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">project</property>
+                        <property name="dataType">string</property>
+                    </structure>
                 </list-property>
             </structure>
             <property name="dataSource">virsat</property>
@@ -117,6 +142,7 @@ elements.addAll(rootElement.getDeepChildren(beanClass));]]></method>
 row["timestamp"] = new Date();
 row["generatedBy"] = System.getProperty("user.name");
 row["system"] = rootElement.getName();
+row["project"] = projectName;
 
 fetched = true;
 
@@ -178,7 +204,16 @@ return true;]]></method>
             <method name="fetch"><![CDATA[if (count < elements.size()) {
 	element = elements.get(count);
 	row["id"] = element.getUuid();
-	row["name"] = element.getName();
+	
+	// Create some +++ symbols to indicate the level of nesting
+	prefix = "";
+	parent = element.getParentSeiBean();
+	while (parent != null) {
+		prefix += "+";
+		parent = parent.getParentSeiBean();
+	}
+	
+	row["name"] = prefix + element.getName();
 	row["responsible"] = element.getStructuralElementInstance().getAssignedDiscipline().getName();
 	count++;
 			
@@ -188,8 +223,54 @@ return true;]]></method>
 return false;]]></method>
         </script-data-set>
     </data-sets>
+    <styles>
+        <style name="dlr-title" id="370">
+            <property name="fontFamily">"Frutiger 45 Light"</property>
+            <property name="fontSize">24pt</property>
+            <property name="fontWeight">bold</property>
+            <property name="color">#454545</property>
+            <property name="paddingBottom">29pt</property>
+        </style>
+        <style name="dlr-sub-title" id="371">
+            <property name="fontFamily">"Frutiger 45 Light"</property>
+            <property name="fontSize">17pt</property>
+            <property name="color">#454545</property>
+            <property name="paddingBottom">21pt</property>
+        </style>
+        <style name="dlr-text" id="372">
+            <property name="fontFamily">"Frutiger 45 Light"</property>
+            <property name="fontSize">11pt</property>
+        </style>
+        <style name="dlr-chapter" id="373">
+            <property name="fontSize">24pt</property>
+            <property name="color">#454545</property>
+            <property name="paddingBottom">29pt</property>
+        </style>
+        <style name="dlr-table-header" id="375">
+            <property name="backgroundColor">#C0C0C0</property>
+            <property name="fontFamily">"Frutiger 45 Light"</property>
+            <property name="fontSize">11pt</property>
+            <property name="fontWeight">bold</property>
+            <property name="color">#454545</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="paddingLeft">0pt</property>
+            <property name="paddingRight">0pt</property>
+        </style>
+        <style name="dlr-table-footer" id="384">
+            <property name="borderBottomStyle">solid</property>
+        </style>
+    </styles>
     <page-setup>
-        <simple-master-page name="Simple MasterPage" id="2">
+        <simple-master-page name="Main" id="2">
+            <property name="leftMargin">1in</property>
+            <property name="rightMargin">1in</property>
+            <page-header>
+                <text id="422">
+                    <property name="style">dlr-text</property>
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<viewtime-value-of>pageNumber</viewtime-value-of>]]></text-property>
+                </text>
+            </page-header>
             <page-footer>
                 <text id="3">
                     <property name="contentType">html</property>
@@ -197,38 +278,56 @@ return false;]]></method>
                 </text>
             </page-footer>
         </simple-master-page>
+        <simple-master-page name="Title" id="420">
+            <property name="topMargin">15pt</property>
+            <property name="leftMargin">1in</property>
+            <property name="bottomMargin">15pt</property>
+            <property name="rightMargin">1in</property>
+        </simple-master-page>
     </page-setup>
     <body>
         <label id="296">
+            <property name="style">dlr-title</property>
             <property name="fontSize">xx-large</property>
             <property name="fontWeight">bold</property>
-            <property name="textAlign">center</property>
+            <property name="paddingTop">50%</property>
+            <property name="paddingLeft">2in</property>
+            <property name="textAlign">left</property>
+            <property name="masterPage">Title</property>
             <property name="pageBreakAfter">auto</property>
             <property name="pageBreakBefore">auto</property>
             <text-property name="text">FDIR Report</text-property>
         </label>
-        <data id="368">
-            <property name="textAlign">center</property>
+        <data id="418">
+            <property name="style">dlr-sub-title</property>
+            <property name="paddingTop">1pt</property>
+            <property name="paddingLeft">2in</property>
+            <property name="pageBreakAfter">auto</property>
             <property name="dataSet">metadata</property>
             <list-property name="boundDataColumns">
                 <structure>
-                    <property name="name">system</property>
-                    <text-property name="displayName">System</text-property>
-                    <expression name="expression" type="javascript">dataSetRow["system"]</expression>
+                    <property name="name">project</property>
+                    <text-property name="displayName">Project - System</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["project"] + " - " + dataSetRow["system"]</expression>
                     <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
                 </structure>
             </list-property>
-            <property name="resultSetColumn">system</property>
+            <property name="resultSetColumn">project</property>
         </data>
         <label id="319">
+            <property name="style">dlr-chapter</property>
+            <property name="fontFamily">"Frutiger 45 Light"</property>
             <property name="fontSize">x-large</property>
             <property name="fontWeight">bold</property>
-            <property name="textAlign">center</property>
+            <property name="textAlign">left</property>
+            <property name="masterPage">Main</property>
             <property name="pageBreakBefore">always</property>
             <structure name="toc"/>
-            <text-property name="text">Metadata</text-property>
+            <text-property name="text">Document Identification</text-property>
         </label>
         <table id="320">
+            <property name="width">6.479166666666667in</property>
             <property name="dataSet">metadata</property>
             <list-property name="boundDataColumns">
                 <structure>
@@ -243,32 +342,74 @@ return false;]]></method>
                     <expression name="expression" type="javascript">dataSetRow["timestamp"]</expression>
                     <property name="dataType">date-time</property>
                 </structure>
+                <structure>
+                    <property name="name">project</property>
+                    <text-property name="displayName">Project</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["project"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
             </list-property>
-            <column id="330"/>
-            <column id="331"/>
+            <column id="330">
+                <property name="width">3.1666666666666665in</property>
+            </column>
+            <column id="331">
+                <property name="width">3.2083333333333335in</property>
+            </column>
             <header>
                 <row id="321">
                     <cell id="322">
-                        <label id="332">
-                            <text-property name="text">Timestamp</text-property>
+                        <label id="382">
+                            <property name="style">dlr-text</property>
+                            <property name="fontWeight">bold</property>
+                            <property name="textAlign">left</property>
+                            <property name="pageBreakBefore">always</property>
+                            <text-property name="text">Document Identification</text-property>
                         </label>
                     </cell>
-                    <cell id="323">
-                        <label id="333">
-                            <text-property name="text">Generated By</text-property>
-                        </label>
-                    </cell>
+                    <cell id="323"/>
                 </row>
             </header>
             <detail>
-                <row id="324">
-                    <cell id="325">
+                <row id="388">
+                    <cell id="389">
+                        <label id="391">
+                            <property name="style">dlr-text</property>
+                            <text-property name="text">Project ..............................................................</text-property>
+                        </label>
+                    </cell>
+                    <cell id="390">
+                        <data id="395">
+                            <property name="style">dlr-text</property>
+                            <property name="resultSetColumn">project</property>
+                        </data>
+                    </cell>
+                </row>
+                <row id="379">
+                    <cell id="380">
+                        <label id="332">
+                            <property name="style">dlr-text</property>
+                            <property name="textAlign">left</property>
+                            <text-property name="text">Timestamp .......................................................</text-property>
+                        </label>
+                    </cell>
+                    <cell id="381">
                         <data id="338">
+                            <property name="style">dlr-text</property>
+                            <property name="textAlign">left</property>
                             <property name="resultSetColumn">timestamp</property>
                         </data>
                     </cell>
+                </row>
+                <row id="324">
+                    <cell id="325">
+                        <label id="333">
+                            <property name="style">dlr-text</property>
+                            <text-property name="text">Generated By ...................................................</text-property>
+                        </label>
+                    </cell>
                     <cell id="326">
                         <data id="337">
+                            <property name="style">dlr-text</property>
                             <property name="resultSetColumn">generatedBy</property>
                         </data>
                     </cell>
@@ -282,14 +423,20 @@ return false;]]></method>
             </footer>
         </table>
         <label id="245">
-            <property name="fontFamily">sans-serif</property>
+            <property name="style">dlr-chapter</property>
+            <property name="fontFamily">"Frutiger 45 Light"</property>
             <property name="fontSize">x-large</property>
             <property name="fontWeight">bold</property>
-            <property name="textAlign">center</property>
+            <property name="textAlign">left</property>
+            <property name="masterPage">Main</property>
             <property name="pageBreakBefore">always</property>
-            <text-property name="text">System Configuration</text-property>
+            <structure name="toc">
+                <expression name="expressionValue" type="javascript">"System Configuration"</expression>
+            </structure>
+            <text-property name="text">1 System Configuration</text-property>
         </label>
         <table id="339">
+            <property name="width">6.458333333333333in</property>
             <property name="dataSet">system</property>
             <list-property name="boundDataColumns">
                 <structure>
@@ -311,11 +458,18 @@ return false;]]></method>
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
-            <column id="358"/>
-            <column id="359"/>
-            <column id="360"/>
+            <column id="358">
+                <property name="width">47%</property>
+            </column>
+            <column id="359">
+                <property name="width">37%</property>
+            </column>
+            <column id="360">
+                <property name="width">15%</property>
+            </column>
             <header>
                 <row id="340">
+                    <property name="style">dlr-table-header</property>
                     <cell id="341">
                         <label id="342">
                             <text-property name="text">ID</text-property>
@@ -337,16 +491,19 @@ return false;]]></method>
                 <row id="347">
                     <cell id="348">
                         <data id="349">
+                            <property name="style">dlr-text</property>
                             <property name="resultSetColumn">id</property>
                         </data>
                     </cell>
                     <cell id="350">
                         <data id="351">
+                            <property name="style">dlr-text</property>
                             <property name="resultSetColumn">name</property>
                         </data>
                     </cell>
                     <cell id="352">
                         <data id="353">
+                            <property name="style">dlr-text</property>
                             <property name="resultSetColumn">responsible</property>
                         </data>
                     </cell>
@@ -354,19 +511,38 @@ return false;]]></method>
             </detail>
             <footer>
                 <row id="354">
+                    <property name="style">dlr-table-footer</property>
                     <cell id="355"/>
                     <cell id="356"/>
                     <cell id="357"/>
                 </row>
             </footer>
         </table>
-        <label id="361">
+        <label id="419">
+            <property name="style">dlr-chapter</property>
+            <property name="fontFamily">"Frutiger 45 Light"</property>
             <property name="fontSize">x-large</property>
             <property name="fontWeight">bold</property>
-            <property name="textAlign">center</property>
+            <property name="textAlign">left</property>
+            <property name="masterPage">Main</property>
             <property name="pageBreakBefore">always</property>
-            <structure name="toc"/>
-            <text-property name="text">FMECA Report</text-property>
+            <structure name="toc">
+                <expression name="expressionValue" type="javascript">"System Configuration"</expression>
+            </structure>
+            <text-property name="text">2 FDIR Configuration</text-property>
+        </label>
+        <label id="361">
+            <property name="style">dlr-chapter</property>
+            <property name="fontFamily">"Frutiger 45 Light"</property>
+            <property name="fontSize">x-large</property>
+            <property name="fontWeight">bold</property>
+            <property name="textAlign">left</property>
+            <property name="masterPage">Main</property>
+            <property name="pageBreakBefore">always</property>
+            <structure name="toc">
+                <expression name="expressionValue" type="javascript">"FMECA Report"</expression>
+            </structure>
+            <text-property name="text">3 FMECA Report</text-property>
         </label>
     </body>
 </report>
