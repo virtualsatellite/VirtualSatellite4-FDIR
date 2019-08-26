@@ -10,12 +10,6 @@ Require-Bundle: org.junit,
  de.dlr.sc.virsat.model,
  de.dlr.sc.virsat.project,
  de.dlr.sc.virsat.concept.unittest.util,
- de.dlr.sc.virsat.model.extension.tests,
- org.apache.batik.util;bundle-version="1.8.0";visibility:=reexport,
- org.apache.batik.constants;bundle-version="1.9.1";visibility:=reexport,
- org.apache.lucene.analyzers-common;bundle-version="7.5.0";visibility:=reexport,
- org.apache.lucene.core;bundle-version="7.1.0";visibility:=reexport,
- org.apache.batik.i18n;bundle-version="1.9.1";visibility:=reexport,
- org.objectweb.asm.tree;bundle-version="6.1.1";visibility:=reexport
+ de.dlr.sc.virsat.model.extension.tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: de.dlr.sc.virsat.model.extension.fdir.test
