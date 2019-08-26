@@ -30,9 +30,12 @@
 importPackage(Packages.java.lang);
 importPackage(Packages.java.util);
 importPackage(Packages.org.eclipse.core.runtime);
+
 // load bundles
 appBundle = Platform.getBundle("de.dlr.sc.virsat.apps");
 modelBundle = Platform.getBundle("de.dlr.sc.virsat.model.edit");
+fdirBundle = Platform.getBundle("de.dlr.sc.virsat.model.extension.fdir");
+
 // load classes
 modelAPIClass = appBundle.loadClass("de.dlr.sc.virsat.apps.api.external.ModelAPI");
 beanClass = modelBundle.loadClass("de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance");
@@ -64,7 +67,17 @@ for (i = 0; i < trees.size(); ++i) {
 
 elements = new ArrayList();
 elements.add(rootElement);
-elements.addAll(rootElement.getDeepChildren(beanClass));]]></method>
+elements.addAll(rootElement.getDeepChildren(beanClass));
+
+// load FDIR data
+fdirParametersClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters");
+fdirParameters = null;
+for (i = 0; i < elements.size(); ++i) {
+	fdirParameters = elements.get(i).getFirst(fdirParametersClass);
+	if (fdirParameters != null) {
+		break;
+	}
+}]]></method>
         </script-data-source>
     </data-sources>
     <data-sets>
@@ -213,12 +226,202 @@ return true;]]></method>
 		parent = parent.getParentSeiBean();
 	}
 	
+	if (prefix != "") {
+		prefix += " ";
+	}
+	
 	row["name"] = prefix + element.getName();
 	row["responsible"] = element.getStructuralElementInstance().getAssignedDiscipline().getName();
 	count++;
 			
 	return true;
 }
+
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="severity" id="424">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">0</property>
+                    <property name="name">severity</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">sn</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">severity</property>
+                    <text-property name="displayName">Severity</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">sn</property>
+                    <text-property name="displayName">SN</text-property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">severity</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">sn</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">virsat</property>
+            <method name="open"><![CDATA[count = 0;
+
+fmecaClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry");
+snNames = fmecaClass.getField("SL_NAMES").get(null);
+sn = fmecaClass.getField("SL_LEVELS").get(null);]]></method>
+            <method name="fetch"><![CDATA[if (count < snNames.length) {
+	row["severity"] = snNames[count];
+	row["sn"] = sn[count];
+	count++;
+	return true;
+} 
+
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="probability" id="441">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">probability</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">pn</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">failureRate</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">probability</property>
+                    <text-property name="displayName">Probability</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">pn</property>
+                    <text-property name="displayName">PN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">failureRate</property>
+                    <text-property name="displayName">Failure Rate [Per Hour]</text-property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">probability</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">pn</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">failureRate</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">virsat</property>
+            <method name="open"><![CDATA[count = 0;
+
+fmecaClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry");
+pnNames = fmecaClass.getField("PL_NAMES").get(null);
+pn = fmecaClass.getField("PL_LEVELS").get(null);]]></method>
+            <method name="fetch"><![CDATA[if (count < pnNames.length) {
+	row["probability"] = pnNames[pn.length - count - 1];
+	row["pn"] = pn[count];
+	row["failureRate"] = fdirParameters.getProbabilityLevels().get(count).getTypeInstance().getValue();
+	count++;
+	return true;
+} 
+
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="detection" id="464">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">0</property>
+                    <property name="name">detection</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">dn</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">probability</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">detection</property>
+                    <text-property name="displayName">Detection</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">dn</property>
+                    <text-property name="displayName">DN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">probability</property>
+                    <text-property name="displayName">Probability [%]</text-property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">detection</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">dn</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">probability</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">virsat</property>
+            <method name="open"><![CDATA[count = 0;
+
+cutSetClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.CutSet");
+dnNames = cutSetClass.getField("DL_NAMES").get(null);
+dn = cutSetClass.getField("DL_LEVELS").get(null);]]></method>
+            <method name="fetch"><![CDATA[if (count < dnNames.length) {
+	row["detection"] = dnNames[dn.length - count - 1];
+	row["dn"] = dn[count];
+	row["probability"] = fdirParameters.getDetectionLevels().get(count).getTypeInstance().getValue();
+	count++;
+	return true;
+} 
 
 return false;]]></method>
         </script-data-set>
@@ -244,6 +447,7 @@ return false;]]></method>
         <style name="dlr-chapter" id="373">
             <property name="fontSize">24pt</property>
             <property name="color">#454545</property>
+            <property name="paddingTop">1in</property>
             <property name="paddingBottom">29pt</property>
         </style>
         <style name="dlr-table-header" id="375">
@@ -262,11 +466,14 @@ return false;]]></method>
     </styles>
     <page-setup>
         <simple-master-page name="Main" id="2">
+            <property name="topMargin">1in</property>
             <property name="leftMargin">1in</property>
             <property name="rightMargin">1in</property>
             <page-header>
                 <text id="422">
                     <property name="style">dlr-text</property>
+                    <property name="borderBottomStyle">solid</property>
+                    <property name="borderBottomWidth">thin</property>
                     <property name="contentType">html</property>
                     <text-property name="content"><![CDATA[<viewtime-value-of>pageNumber</viewtime-value-of>]]></text-property>
                 </text>
@@ -531,6 +738,216 @@ return false;]]></method>
             </structure>
             <text-property name="text">2 FDIR Configuration</text-property>
         </label>
+        <table id="425">
+            <property name="dataSet">severity</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">severity</property>
+                    <text-property name="displayName">Severity</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["severity"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">sn</property>
+                    <text-property name="displayName">SN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["sn"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="439">
+                <property name="width">50%</property>
+            </column>
+            <column id="440"/>
+            <header>
+                <row id="426">
+                    <property name="style">dlr-table-header</property>
+                    <cell id="427">
+                        <label id="428">
+                            <text-property name="text">Severity</text-property>
+                        </label>
+                    </cell>
+                    <cell id="429">
+                        <label id="430">
+                            <text-property name="text">SN</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="431">
+                    <property name="style">dlr-text</property>
+                    <cell id="432">
+                        <data id="433">
+                            <property name="resultSetColumn">severity</property>
+                        </data>
+                    </cell>
+                    <cell id="434">
+                        <data id="435">
+                            <property name="resultSetColumn">sn</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="436">
+                    <property name="style">dlr-table-footer</property>
+                    <cell id="437"/>
+                    <cell id="438"/>
+                </row>
+            </footer>
+        </table>
+        <table id="442">
+            <property name="dataSet">probability</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">probability</property>
+                    <text-property name="displayName">Probability</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["probability"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">pn</property>
+                    <text-property name="displayName">PN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["pn"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">failureRate</property>
+                    <text-property name="displayName">Failure Rate</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["failureRate"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="461">
+                <property name="width">50%</property>
+            </column>
+            <column id="462"/>
+            <column id="463"/>
+            <header>
+                <row id="443">
+                    <property name="style">dlr-table-header</property>
+                    <cell id="444">
+                        <label id="445">
+                            <text-property name="text">Probability</text-property>
+                        </label>
+                    </cell>
+                    <cell id="446">
+                        <label id="447">
+                            <text-property name="text">PN</text-property>
+                        </label>
+                    </cell>
+                    <cell id="448">
+                        <label id="449">
+                            <text-property name="text">Failure Rate [h^-1]</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="450">
+                    <property name="style">dlr-text</property>
+                    <cell id="451">
+                        <data id="452">
+                            <property name="resultSetColumn">probability</property>
+                        </data>
+                    </cell>
+                    <cell id="453">
+                        <data id="454">
+                            <property name="resultSetColumn">pn</property>
+                        </data>
+                    </cell>
+                    <cell id="455">
+                        <data id="456">
+                            <property name="resultSetColumn">failureRate</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="457">
+                    <property name="style">dlr-table-footer</property>
+                    <cell id="458"/>
+                    <cell id="459"/>
+                    <cell id="460"/>
+                </row>
+            </footer>
+        </table>
+        <table id="465">
+            <property name="dataSet">detection</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">detection</property>
+                    <text-property name="displayName">Detection</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["detection"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">dn</property>
+                    <text-property name="displayName">DN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["dn"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">probability</property>
+                    <text-property name="displayName">Probability [%]</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["probability"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="484">
+                <property name="width">50%</property>
+            </column>
+            <column id="485"/>
+            <column id="486"/>
+            <header>
+                <row id="466">
+                    <property name="style">dlr-table-header</property>
+                    <cell id="467">
+                        <label id="468">
+                            <text-property name="text">Detection</text-property>
+                        </label>
+                    </cell>
+                    <cell id="469">
+                        <label id="470">
+                            <text-property name="text">DN</text-property>
+                        </label>
+                    </cell>
+                    <cell id="471">
+                        <label id="472">
+                            <text-property name="text">Probability [%]</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="473">
+                    <property name="style">dlr-text</property>
+                    <cell id="474">
+                        <data id="475">
+                            <property name="resultSetColumn">detection</property>
+                        </data>
+                    </cell>
+                    <cell id="476">
+                        <data id="477">
+                            <property name="resultSetColumn">dn</property>
+                        </data>
+                    </cell>
+                    <cell id="478">
+                        <data id="479">
+                            <property name="resultSetColumn">probability</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="480">
+                    <property name="style">dlr-table-footer</property>
+                    <cell id="481"/>
+                    <cell id="482"/>
+                    <cell id="483"/>
+                </row>
+            </footer>
+        </table>
         <label id="361">
             <property name="style">dlr-chapter</property>
             <property name="fontFamily">"Frutiger 45 Light"</property>

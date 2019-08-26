@@ -17,14 +17,6 @@ import org.eclipse.xtext.formatting.impl.AbstractDeclarativeFormatter;
 import org.eclipse.xtext.formatting.impl.FormattingConfig;
 import org.eclipse.xtext.xbase.lib.Extension;
 
-/**
- * This class contains custom formatting declarations.
- * 
- * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#formatting
- * on how and when to use it.
- * 
- * Also see {@link org.eclipse.xtext.xtext.XtextFormattingTokenSerializer} as an example
- */
 @SuppressWarnings("all")
 public class DftFormatter extends AbstractDeclarativeFormatter {
   @Inject

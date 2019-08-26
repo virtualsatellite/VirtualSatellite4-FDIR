@@ -16,6 +16,7 @@ import de.dlr.sc.virsat.model.calculation.compute.AAdvancedFunctionOp;
 import de.dlr.sc.virsat.model.dvlm.calculation.AAdvancedFunction;
 import de.dlr.sc.virsat.model.dvlm.qudv.AQuantityKind;
 import de.dlr.sc.virsat.model.extension.fdir.model.CutSet;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
 
 /**
  * Operation that classifies a quantitative failure rate in terms of
@@ -31,31 +32,24 @@ public class OpClassifyDL extends AAdvancedFunctionOp {
 	public static final double LIMIT_UNLIKELY = 0.25;
 	public static final double LIMIT_EXTREMELY_UNLIKELY = 0;
 	
-	public static final int DL_UNKNOWN = Integer.valueOf(CutSet.DETECTION_Unknown_VALUE);
-	public static final int DL_VERY_LIKELY = Integer.valueOf(CutSet.DETECTION_VeryLikely_VALUE);
-	public static final int DL_LIKELY = Integer.valueOf(CutSet.DETECTION_Likely_VALUE);
-	public static final int DL_UNLIKELY = Integer.valueOf(CutSet.DETECTION_Unlikely_VALUE);
-	public static final int DL_EXTREMELY_UNLIKELY = Integer.valueOf(CutSet.DETECTION_ExtremelyUnlikely_VALUE);
-	
-	public static final int[] DL_LEVELS = new int[] { DL_VERY_LIKELY, DL_LIKELY, DL_UNLIKELY, DL_EXTREMELY_UNLIKELY};
 	public static final Double[] DEFAULT_DL_THRESHOLDS = new Double[] { LIMIT_VERY_LIKELY, LIMIT_LIKELY, LIMIT_UNLIKELY, LIMIT_EXTREMELY_UNLIKELY };
 	
 	@Override
 	public double apply(double[] inputs) {
-		if (inputs.length != OpClassifyPL.PL_LEVELS.length + DL_LEVELS.length + 1) {
-			return DL_UNKNOWN;
+		if (inputs.length != FMECAEntry.PL_LEVELS.length + CutSet.DL_LEVELS.length + 1) {
+			return CutSet.DL_UNKNOWN;
 		}
 		
 		double steadyStateDetectability = inputs[0];
 		
-		for (int i = OpClassifyPL.PL_LEVELS.length + 1; i < inputs.length; ++i) {
+		for (int i = FMECAEntry.PL_LEVELS.length + 1; i < inputs.length; ++i) {
 			if (steadyStateDetectability >= inputs[i]) {
-				int j = i - OpClassifyPL.PL_LEVELS.length;
-				return DL_LEVELS[j - 1];
+				int j = i - FMECAEntry.PL_LEVELS.length;
+				return CutSet.DL_LEVELS[j - 1];
 			}
 		}
 		
-		return DL_UNKNOWN;
+		return CutSet.DL_UNKNOWN;
 	}
 	
 	@Override

@@ -2468,7 +2468,5 @@
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport">
 		</handler>
 	</extension>
-
-
 	<!-- Plugin.XML Protected Region End -->
 </plugin>

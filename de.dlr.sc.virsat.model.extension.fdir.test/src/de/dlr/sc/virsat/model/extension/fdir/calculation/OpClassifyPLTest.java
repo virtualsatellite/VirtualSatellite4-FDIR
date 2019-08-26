@@ -19,6 +19,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
+
 /**
  * This class tests the OpClassifyPL class.
  * @author muel_s8
@@ -40,34 +42,34 @@ public class OpClassifyPLTest {
 	@Test
 	public void testClassifyNoInputs() {
 		double result = op.apply(new double[] {});
-		assertEquals(OpClassifyPL.PL_UNKNOWN, result, TEST_EPS);
+		assertEquals(FMECAEntry.PL_UNKNOWN, result, TEST_EPS);
 	}
 
 	@Test
 	public void testClassifyTooManyInputs() {
 		double result = op.apply(new double[] {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1});
-		assertEquals(OpClassifyPL.PL_UNKNOWN, result, TEST_EPS);
+		assertEquals(FMECAEntry.PL_UNKNOWN, result, TEST_EPS);
 	}
 	
 	@Test
 	public void testClassify0() {
 		inputs.add(0, 0d);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyPL.PL_EXTREMELY_REMOTE, result, TEST_EPS);
+		assertEquals(FMECAEntry.PL_EXTREMELY_REMOTE, result, TEST_EPS);
 	}
 	
 	@Test
 	public void testClassify1() {
 		inputs.add(0, 1d);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyPL.PL_PROBABLE, result, TEST_EPS);
+		assertEquals(FMECAEntry.PL_PROBABLE, result, TEST_EPS);
 	}
 	
 	@Test
 	public void testClassifyNaN() {
 		inputs.add(0, Double.NaN);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyPL.PL_UNKNOWN, result, TEST_EPS);
+		assertEquals(FMECAEntry.PL_UNKNOWN, result, TEST_EPS);
 	}
 	
 	@Test

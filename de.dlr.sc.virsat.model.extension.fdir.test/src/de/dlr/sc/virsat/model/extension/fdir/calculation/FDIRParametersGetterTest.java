@@ -17,7 +17,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.calculation.compute.IExpressionResult;
+import de.dlr.sc.virsat.model.extension.fdir.model.CutSet;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
@@ -49,6 +51,6 @@ public class FDIRParametersGetterTest extends ATestCase {
 		
 		ArrayResult arrayResult = (ArrayResult) result;
 		
-		assertEquals(OpClassifyPL.PL_LEVELS.length + OpClassifyDL.DL_LEVELS.length, arrayResult.getResults().size());
+		assertEquals(FMECAEntry.PL_LEVELS.length + CutSet.DL_LEVELS.length, arrayResult.getResults().size());
 	}
 }

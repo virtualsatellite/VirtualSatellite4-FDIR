@@ -43,6 +43,36 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
  */
 public  class FMECAEntry extends AFMECAEntry {
 	
+	public static final String[] SL_NAMES = { 
+		SEVERITY_Catastrophic_NAME,   
+		SEVERITY_Critical_NAME,
+		SEVERITY_Major_NAME,
+		SEVERITY_Minor_NAME
+	}; 
+	
+	public static final String[] PL_NAMES = { 
+		PROBABILITY_ExtremelyRemote_NAME,   
+		PROBABILITY_Remote_NAME,
+		PROBABILITY_Occasional_NAME,
+		PROBABILITY_Probable_NAME
+	};
+	
+	public static final int PL_UNKNOWN = Integer.valueOf(FMECAEntry.PROBABILITY_Unknown_VALUE);
+	public static final int PL_PROBABLE = Integer.valueOf(FMECAEntry.PROBABILITY_Probable_VALUE);
+	public static final int PL_OCCASIONAL = Integer.valueOf(FMECAEntry.PROBABILITY_Occasional_VALUE);
+	public static final int PL_REMOTE = Integer.valueOf(FMECAEntry.PROBABILITY_Remote_VALUE);
+	public static final int PL_EXTREMELY_REMOTE = Integer.valueOf(FMECAEntry.PROBABILITY_ExtremelyRemote_VALUE);
+	
+	public static final int[] PL_LEVELS = new int[] { PL_PROBABLE, PL_OCCASIONAL, PL_REMOTE, PL_EXTREMELY_REMOTE};
+	
+	public static final int SL_UNKNOWN = Integer.valueOf(FMECAEntry.SEVERITY_Unknown_VALUE);
+	public static final int SL_CATASTROPHIC = Integer.valueOf(FMECAEntry.SEVERITY_Catastrophic_VALUE);
+	public static final int SL_CRITICAL = Integer.valueOf(FMECAEntry.SEVERITY_Critical_VALUE);
+	public static final int SL_MAJOR = Integer.valueOf(FMECAEntry.SEVERITY_Major_VALUE);
+	public static final int SL_MINOR = Integer.valueOf(FMECAEntry.SEVERITY_Minor_VALUE);
+	
+	public static final int[] SL_LEVELS = new int[] { SL_CATASTROPHIC, SL_CRITICAL, SL_MAJOR, SL_MINOR};
+	
 	/**
 	 * Constructor of Concept Class
 	 */
