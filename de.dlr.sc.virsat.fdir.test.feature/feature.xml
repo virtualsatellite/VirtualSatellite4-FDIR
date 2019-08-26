@@ -33,7 +33,6 @@ by German Aerospace Center (DLR e.V.)
       <import feature="de.dlr.sc.virsat.uiengine.feature" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="de.dlr.sc.virsat.model" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="de.dlr.sc.virsat.project" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.batik.util"/>
    </requires>
 
    <plugin
@@ -49,42 +48,6 @@ by German Aerospace Center (DLR e.V.)
          install-size="0"
          version="0.0.0"
          fragment="true"
-         unpack="false"/>
-
-
-   <plugin
-         id="org.apache.batik.constants"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.lucene.analyzers-common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.lucene.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.batik.i18n"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.objectweb.asm.tree"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
          unpack="false"/>
 
 </feature>
