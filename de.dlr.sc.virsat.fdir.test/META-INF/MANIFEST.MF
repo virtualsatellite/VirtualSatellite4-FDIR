@@ -11,13 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  de.dlr.sc.virsat.fdir.galileo.tests,
  de.dlr.sc.virsat.test,
  de.dlr.sc.virsat.fdir.core,
- de.dlr.sc.virsat.fdir.storm,
- org.apache.batik.util;bundle-version="1.8.0";visibility:=reexport,
- org.apache.batik.constants;bundle-version="1.9.1";visibility:=reexport,
- org.apache.lucene.analyzers-common;bundle-version="7.5.0";visibility:=reexport,
- org.apache.lucene.core;bundle-version="7.1.0";visibility:=reexport,
- org.apache.batik.i18n;bundle-version="1.9.1";visibility:=reexport,
- org.objectweb.asm.tree;bundle-version="6.1.1";visibility:=reexport
+ de.dlr.sc.virsat.fdir.storm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: de.dlr.sc.virsat.model.extension.fdir.test,
