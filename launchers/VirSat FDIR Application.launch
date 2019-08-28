@@ -3,7 +3,8 @@
 <setAttribute key="additional_plugins">
 <setEntry value="org.apache.batik.constants:1.9.1.v20180227-1645:default:true"/>
 <setEntry value="org.apache.batik.i18n:1.9.1.v20180227-1645:default:true"/>
-<setEntry value="org.apache.lucene.core:7.1.0.v20171214-1510:default:true"/>
+<setEntry value="org.apache.lucene.analyzers-common:7.5.0.v20181003-1532:default:true"/>
+<setEntry value="org.apache.lucene.core:7.5.0.v20181003-1532:default:true"/>
 </setAttribute>
 <booleanAttribute key="append.args" value="true"/>
 <booleanAttribute key="askclear" value="true"/>
@@ -70,8 +71,7 @@
 <setEntry value="org.eclipse.ecf.core.feature:default"/>
 <setEntry value="org.eclipse.ecf.core.ssl.feature:default"/>
 <setEntry value="org.eclipse.ecf.filetransfer.feature:default"/>
-<setEntry value="org.eclipse.ecf.filetransfer.httpclient4.feature:default"/>
-<setEntry value="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature:default"/>
+<setEntry value="org.eclipse.ecf.filetransfer.httpclient45.feature:default"/>
 <setEntry value="org.eclipse.ecf.filetransfer.ssl.feature:default"/>
 <setEntry value="org.eclipse.egit:default"/>
 <setEntry value="org.eclipse.elk.algorithms.feature.source:default"/>
@@ -112,27 +112,11 @@
 <setEntry value="org.eclipse.equinox.p2.rcp.feature:default"/>
 <setEntry value="org.eclipse.equinox.p2.user.ui:default"/>
 <setEntry value="org.eclipse.gef:default"/>
-<setEntry value="org.eclipse.gemini.web.feature:default"/>
 <setEntry value="org.eclipse.graphiti.feature:default"/>
 <setEntry value="org.eclipse.help:default"/>
 <setEntry value="org.eclipse.jdt:default"/>
-<setEntry value="org.eclipse.jetty.bundles.f:default"/>
+<setEntry value="org.eclipse.jgit.ssh.apache:default"/>
 <setEntry value="org.eclipse.jgit:default"/>
-<setEntry value="org.eclipse.jsf.feature:default"/>
-<setEntry value="org.eclipse.jst.enterprise_core.feature:default"/>
-<setEntry value="org.eclipse.jst.enterprise_ui.feature:default"/>
-<setEntry value="org.eclipse.jst.enterprise_userdoc.feature:default"/>
-<setEntry value="org.eclipse.jst.jsf.apache.trinidad.tagsupport.feature:default"/>
-<setEntry value="org.eclipse.jst.server_adapters.ext.feature:default"/>
-<setEntry value="org.eclipse.jst.server_adapters.feature:default"/>
-<setEntry value="org.eclipse.jst.server_core.feature:default"/>
-<setEntry value="org.eclipse.jst.server_ui.feature:default"/>
-<setEntry value="org.eclipse.jst.server_userdoc.feature:default"/>
-<setEntry value="org.eclipse.jst.web_core.feature:default"/>
-<setEntry value="org.eclipse.jst.web_ui.feature:default"/>
-<setEntry value="org.eclipse.jst.web_userdoc.feature:default"/>
-<setEntry value="org.eclipse.jst.webpageeditor.feature:default"/>
-<setEntry value="org.eclipse.linuxtools.docker.feature:default"/>
 <setEntry value="org.eclipse.ocl:default"/>
 <setEntry value="org.eclipse.pde:default"/>
 <setEntry value="org.eclipse.platform:default"/>
@@ -140,10 +124,6 @@
 <setEntry value="org.eclipse.team.svn:default"/>
 <setEntry value="org.eclipse.wst.common_core.feature:default"/>
 <setEntry value="org.eclipse.wst.common_ui.feature:default"/>
-<setEntry value="org.eclipse.wst.ws_core.feature:default"/>
-<setEntry value="org.eclipse.wst.ws_ui.feature:default"/>
-<setEntry value="org.eclipse.wst.ws_userdoc.feature:default"/>
-<setEntry value="org.eclipse.wst.ws_wsdl15.feature:default"/>
 <setEntry value="org.eclipse.wst.xml_core.feature:default"/>
 <setEntry value="org.eclipse.wst.xml_ui.feature:default"/>
 <setEntry value="org.eclipse.wst.xml_userdoc.feature:default"/>

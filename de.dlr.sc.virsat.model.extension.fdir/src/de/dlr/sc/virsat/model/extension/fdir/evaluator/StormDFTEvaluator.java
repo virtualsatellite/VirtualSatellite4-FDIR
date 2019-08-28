@@ -32,7 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
  *
  */
 
-public class StormDFTEvaluator extends AFaultTreeEvaluator {
+public class StormDFTEvaluator implements IFaultTreeEvaluator {
 	
 	private final double delta;
 	private ModelCheckingResult modelCheckingResult;
