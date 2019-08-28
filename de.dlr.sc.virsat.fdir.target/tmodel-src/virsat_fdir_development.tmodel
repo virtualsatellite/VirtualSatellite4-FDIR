@@ -36,8 +36,4 @@ Target virsat_fdir_development extends virsat {
 	RepositoryLocation OrbitPhoton url "https://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository/" {
 		Unit org.apache.lucene.core version 7.1.0.v20171214-1510;
 	}
-	
-	RepositoryLocation OrbitOxygen3a url "https://download.eclipse.org/tools/orbit/downloads/drops/R20180330011457/repository/" {
-		Unit org.apache.batik.util version 1.8.0.v20170214-1941;
-	}
 }

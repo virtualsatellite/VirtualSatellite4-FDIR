@@ -425,6 +425,328 @@ dn = cutSetClass.getField("DL_LEVELS").get(null);]]></method>
 
 return false;]]></method>
         </script-data-set>
+        <script-data-set name="fmeca" id="487">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">item</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">failure</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">failureMode</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">cause</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">failureEffects</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">sn</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">pn</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">cn</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">compensation</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">isCritical</property>
+                    <property name="dataType">boolean</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">item</property>
+                    <text-property name="displayName">Item</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">failure</property>
+                    <text-property name="displayName">Failure</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">failureMode</property>
+                    <text-property name="displayName">Failure Mode</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">cause</property>
+                    <text-property name="displayName">Cause</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">failureEffects</property>
+                    <text-property name="displayName">Failure Effects</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">sn</property>
+                    <text-property name="displayName">SN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">pn</property>
+                    <text-property name="displayName">PN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">cn</property>
+                    <text-property name="displayName">CN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">compensation</property>
+                    <text-property name="displayName">Compensation</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">isCritical</property>
+                    <text-property name="displayName">Is Critical</text-property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">item</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">failure</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">failureMode</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">cause</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">failureEffects</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">sn</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">pn</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">cn</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">compensation</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">isCritical</property>
+                        <property name="dataType">boolean</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">virsat</property>
+            <method name="open"><![CDATA[fmecaClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.FMECA");
+count = 0;
+wrapLength = 13;
+
+fmecaEntries = new ArrayList();
+for (i = 0; i < elements.size(); ++i) {
+	fmeca = elements.get(i).getFirst(fmecaClass);
+	if (fmeca != null) {
+		fmecaEntries.addAll(fmeca.getEntries());
+	}
+}]]></method>
+            <method name="fetch"><![CDATA[// utility functions
+function wrap(longStr, width) { 
+	length = longStr.length(); 
+ 	if (length <= width) {
+ 		return longStr; 
+ 	}
+ 	return longStr.substring(0, width) + "\n" + wrap(longStr.substring(width, length), width);
+} 
+
+if (count < fmecaEntries.size()) {
+	entry = fmecaEntries.get(count);
+	row["item"] = entry.getParent().getStructuralElementInstance().getFullQualifiedInstanceName();
+	row["failure"] = wrap(entry.getFailure().getName(), wrapLength);
+	failureMode = new String(entry.getFailureMode().getParent().getName() + "." + entry.getFailureMode().getName());
+	row["failureMode"] = wrap(failureMode, wrapLength);
+	row["cause"] = wrap(entry.getFailureCause().getName(), wrapLength);
+	row["sn"] = entry.getSeverityEnum();
+	row["pn"] = entry.getProbabilityEnum();
+	row["cn"] = entry.getCriticality();
+	
+	compensation = "";
+	for (i = 0; i < entry.getProposedRecovery().size(); ++i) {
+		compensation += entry.getProposedRecovery().get(i).getValue();
+		if (i < entry.getProposedRecovery().size()) {
+			compensation += ", ";
+		}
+	}
+	
+	row["compensation"] = compensation;
+	
+	effects =  "";
+	for (i = 0; i < entry.getFailureEffects().size(); ++i) {
+		effects += entry.getFailureEffects().get(i).getName();
+		if (i < entry.getFailureEffects().size() - 1) {
+			effects += ", ";
+		}
+	}
+	
+	row["failureEffects"] = effects;
+	
+	row["isCritical"] = fdirParameters.isCritical(1, entry.getSeverityEnum(), entry.getProbabilityEnum());
+	
+	count++;
+	return true;
+}
+
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="criticality" id="567">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">pn</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">sn</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">dn</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">cn</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">isCritical</property>
+                    <property name="dataType">boolean</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">pn</property>
+                    <text-property name="displayName">PN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">sn</property>
+                    <text-property name="displayName">SN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">dn</property>
+                    <text-property name="displayName">DN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">cn</property>
+                    <text-property name="displayName">CN</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">isCritical</property>
+                    <text-property name="displayName">Is Critical</text-property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">pn</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">sn</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">dn</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">cn</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">isCritical</property>
+                        <property name="dataType">boolean</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">virsat</property>
+            <method name="open"><![CDATA[cutSetClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.CutSet");
+fmecaClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.FMECEntry");
+
+countPn = 0;
+pnNames = fmecaClass.getField("PL_NAMES").get(null);
+pn = fmecaClass.getField("PL_LEVELS").get(null);
+
+countSn = 0;
+snNames = fmecaClass.getField("SL_NAMES").get(null);
+sn = fmecaClass.getField("SL_LEVELS").get(null);
+
+countDn = 0;
+dnNames = cutSetClass.getField("DL_NAMES").get(null);
+dn = cutSetClass.getField("DL_LEVELS").get(null);]]></method>
+            <method name="fetch"><![CDATA[if (countPn < pnNames.length) {
+	countPn++;
+} else if (countSn < snNames.length) {
+	countSn++;
+	countPn = 0;
+} else if (countDn< dnNames.length) {
+	countDn++;
+	countPn = 0;
+	countSn = 0;
+} else {
+	return false;
+}
+
+
+return true;
+
+
+]]></method>
+        </script-data-set>
     </data-sets>
     <styles>
         <style name="dlr-title" id="370">
@@ -961,5 +1283,214 @@ return false;]]></method>
             </structure>
             <text-property name="text">3 FMECA Report</text-property>
         </label>
+        <table id="488">
+            <property name="dataSet">fmeca</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">failure</property>
+                    <text-property name="displayName">Failure</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["failure"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">failureMode</property>
+                    <text-property name="displayName">Failure Mode</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["failureMode"];</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">cause</property>
+                    <text-property name="displayName">Cause</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["cause"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">failureEffects</property>
+                    <text-property name="displayName">Failure Effects</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["failureEffects"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">sn</property>
+                    <text-property name="displayName">SN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["sn"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">pn</property>
+                    <text-property name="displayName">PN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["pn"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">cn</property>
+                    <text-property name="displayName">CN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["cn"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">compensation</property>
+                    <text-property name="displayName">Compensation</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["compensation"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">item</property>
+                    <text-property name="displayName">Item</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["item"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="532"/>
+            <column id="533"/>
+            <column id="534"/>
+            <column id="535"/>
+            <column id="536">
+                <property name="width">5%</property>
+            </column>
+            <column id="537">
+                <property name="width">5%</property>
+            </column>
+            <column id="538">
+                <property name="width">5%</property>
+            </column>
+            <column id="539">
+                <property name="width">20%</property>
+            </column>
+            <header>
+                <row id="489">
+                    <property name="style">dlr-table-header</property>
+                    <cell id="490">
+                        <label id="491">
+                            <text-property name="text">Failure</text-property>
+                        </label>
+                    </cell>
+                    <cell id="492">
+                        <label id="493">
+                            <text-property name="text">Failure Mode</text-property>
+                        </label>
+                    </cell>
+                    <cell id="494">
+                        <label id="495">
+                            <text-property name="text">Cause</text-property>
+                        </label>
+                    </cell>
+                    <cell id="496">
+                        <label id="497">
+                            <text-property name="text">Failure Effects</text-property>
+                        </label>
+                    </cell>
+                    <cell id="498">
+                        <label id="499">
+                            <text-property name="text">SN</text-property>
+                        </label>
+                    </cell>
+                    <cell id="500">
+                        <label id="501">
+                            <text-property name="text">PN</text-property>
+                        </label>
+                    </cell>
+                    <cell id="502">
+                        <label id="503">
+                            <text-property name="text">CN</text-property>
+                        </label>
+                    </cell>
+                    <cell id="504">
+                        <label id="505">
+                            <text-property name="text">Compensation</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <group id="540">
+                <property name="groupName">item_group</property>
+                <expression name="keyExpr" type="javascript">row["item"]</expression>
+                <property name="hideDetail">false</property>
+                <header>
+                    <row id="541">
+                        <property name="style">dlr-table-header</property>
+                        <cell id="542">
+                            <property name="colSpan">8</property>
+                            <property name="rowSpan">1</property>
+                            <data id="560">
+                                <property name="style">dlr-text</property>
+                                <property name="resultSetColumn">item</property>
+                            </data>
+                        </cell>
+                    </row>
+                </header>
+                <footer>
+                    <row id="550">
+                        <cell id="551"/>
+                        <cell id="552"/>
+                        <cell id="553"/>
+                        <cell id="554"/>
+                        <cell id="555"/>
+                        <cell id="556"/>
+                        <cell id="557"/>
+                        <cell id="558"/>
+                    </row>
+                </footer>
+            </group>
+            <detail>
+                <row id="506">
+                    <property name="style">dlr-text</property>
+                    <cell id="507">
+                        <data id="508">
+                            <property name="resultSetColumn">failure</property>
+                        </data>
+                    </cell>
+                    <cell id="509">
+                        <data id="510">
+                            <property name="resultSetColumn">failureMode</property>
+                        </data>
+                    </cell>
+                    <cell id="511">
+                        <data id="512">
+                            <property name="resultSetColumn">cause</property>
+                        </data>
+                    </cell>
+                    <cell id="513">
+                        <data id="514">
+                            <property name="resultSetColumn">failureEffects</property>
+                        </data>
+                    </cell>
+                    <cell id="515">
+                        <data id="516">
+                            <property name="resultSetColumn">sn</property>
+                        </data>
+                    </cell>
+                    <cell id="517">
+                        <data id="518">
+                            <property name="resultSetColumn">pn</property>
+                        </data>
+                    </cell>
+                    <cell id="519">
+                        <data id="520">
+                            <property name="resultSetColumn">cn</property>
+                        </data>
+                    </cell>
+                    <cell id="521">
+                        <data id="522">
+                            <property name="resultSetColumn">compensation</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="523">
+                    <property name="style">dlr-table-footer</property>
+                    <cell id="524"/>
+                    <cell id="525"/>
+                    <cell id="526"/>
+                    <cell id="527"/>
+                    <cell id="528"/>
+                    <cell id="529"/>
+                    <cell id="530"/>
+                    <cell id="531"/>
+                </row>
+            </footer>
+        </table>
     </body>
 </report>
