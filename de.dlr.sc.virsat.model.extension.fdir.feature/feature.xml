@@ -81,27 +81,6 @@ by German Aerospace Center (DLR e.V.)
          unpack="false"/>
 
    <plugin
-         id="org.apache.batik.css"
-         download-size="0"
-         install-size="0"
-         version="1.7.0.v201011041433"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.batik.util"
-         download-size="0"
-         install-size="0"
-         version="1.7.0.v201011041433"
-         unpack="false"/>
-         
-   <plugin
-         id="org.apache.batik.util.gui"
-         download-size="0"
-         install-size="0"
-         version="1.7.0.v200903091627"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.lucene.analyzers-common"
          download-size="0"
          install-size="0"
@@ -116,52 +95,16 @@ by German Aerospace Center (DLR e.V.)
          unpack="false"/>
          
    <plugin
-         id="org.eclipse.jetty.deploy"
+         id="org.apache.batik.constants"
          download-size="0"
          install-size="0"
-         version="9.4.5.v20170502"
+         version="1.9.1.v20180227-1645"
          unpack="false"/>
          
    <plugin
-         id="org.eclipse.jetty.http"
+         id="org.apache.batik.i18n"
          download-size="0"
          install-size="0"
-         version="9.4.5.v20170502"
+         version="1.9.1.v20180227-1645"
          unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jetty.io"
-         download-size="0"
-         install-size="0"
-         version="9.4.5.v20170502"
-         unpack="false"/>
-         
-   <plugin
-         id="org.eclipse.jetty.security"
-         download-size="0"
-         install-size="0"
-         version="9.4.5.v20170502"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jetty.server"
-         download-size="0"
-         install-size="0"
-         version="9.4.5.v20170502"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jetty.servlet"
-         download-size="0"
-         install-size="0"
-         version="9.4.5.v20170502"
-         unpack="false"/>
-         
-   <plugin
-         id="org.eclipse.jetty.util"
-         download-size="0"
-         install-size="0"
-         version="9.4.5.v20170502"
-         unpack="false"/>
-
 </feature>

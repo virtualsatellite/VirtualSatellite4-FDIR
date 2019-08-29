@@ -33,8 +33,6 @@
 		</location>              
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.linuxtools.docker.feature.feature.group" version="4.3.0.201906121603"/>
-		<unit id="org.eclipse.birt.feature.group" version="4.7.0.v201706222054"/>
-		<unit id="org.eclipse.birt.report.designer.editor.xml.wtp.feature.group" version="4.7.0.v201706222054"/>
 		<unit id="org.eclipse.datatools.sqldevtools.sqlbuilder.feature.feature.group" version="1.14.102.201905112017"/>
 		<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.3.7.201905300200"/>
 		<unit id="org.eclipse.emf.edapt.runtime.feature.feature.group" version="1.4.0.201902190757"/>
@@ -58,6 +56,11 @@
 		<unit id="org.eclipse.datatools.modelbase.feature.feature.group" version="1.14.1.201712071719"/>
 		<unit id="org.eclipse.datatools.common.doc.user.feature.group" version="1.14.1.201712071719"/>
 		<repository location="https://download.eclipse.org/datatools/1.14.1.201712071719/repository"/>
+		</location>              
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<unit id="org.eclipse.birt.feature.group" version="4.9.0.v201905231911"/>
+		<unit id="org.eclipse.birt.report.designer.editor.xml.wtp.feature.group" version="4.9.0.v201905231911"/>
+		<repository location="https://download.eclipse.org/birt/update-site/2018-09-interim/"/>
 		</location>              
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.nebula.widgets.gallery.feature.feature.group" version="1.0.0.201907151344"/>
