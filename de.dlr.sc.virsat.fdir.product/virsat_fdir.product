@@ -80,9 +80,7 @@ Germany
       <feature id="de.dlr.sc.virsat.fdir.branding.feature"/>
       <feature id="de.dlr.sc.virsat.fdir.docs.feature"/>
       <feature id="de.dlr.sc.virsat.fdir.license.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.help"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.team.svn"/>
       <feature id="org.eclipse.emf.common.ui"/>
       <feature id="org.eclipse.jdt"/>
@@ -116,10 +114,6 @@ Germany
       <feature id="org.eclipse.emf.validation"/>
       <feature id="org.eclipse.ocl"/>
       <feature id="org.eclipse.linuxtools.docker.feature"/>
-      <feature id="org.eclipse.birt" version="4.8.0.v201905101549"/>
-      <feature id="org.eclipse.birt.chart.cshelp" version="4.8.0.v201905101549"/>
-      <feature id="org.eclipse.birt.osgi.runtime" version="4.8.0.v201905101549"/>
-      <feature id="org.eclipse.birt.report.designer.editor.xml.wtp" version="4.8.0.v201905101549"/>
       <feature id="org.eclipse.emf.mapping.ecore"/>
       <feature id="org.eclipse.emf.codegen"/>
       <feature id="org.eclipse.wst.xml_ui.feature"/>
@@ -147,30 +141,17 @@ Germany
       <feature id="org.eclipse.datatools.enablement.feature"/>
       <feature id="org.eclipse.datatools.connectivity.feature"/>
       <feature id="org.eclipse.emf.ecore.edit"/>
-      <feature id="org.eclipse.jsf.feature" version="3.10.0.v201803271721"/>
-      <feature id="org.eclipse.jst.enterprise_core.feature" version="3.9.0.v201711022131"/>
-      <feature id="org.eclipse.jst.enterprise_ui.feature" version="3.9.3.v201803221418"/>
-      <feature id="org.eclipse.jst.enterprise_userdoc.feature" version="3.6.0.v201612121628"/>
-      <feature id="org.eclipse.jst.jsf.apache.trinidad.tagsupport.feature" version="2.6.1.v201802231403"/>
-      <feature id="org.eclipse.jst.server_adapters.ext.feature" version="3.3.601.v201711301708"/>
-      <feature id="org.eclipse.jst.server_adapters.feature" version="3.2.400.v201711301708"/>
-      <feature id="org.eclipse.jst.server_core.feature" version="3.4.300.v201606081655"/>
-      <feature id="org.eclipse.jst.server_ui.feature" version="3.4.300.v201709251835"/>
-      <feature id="org.eclipse.jst.server_userdoc.feature" version="3.3.300.v201503102136"/>
-      <feature id="org.eclipse.jst.web_core.feature" version="3.9.1.v201802152012"/>
-      <feature id="org.eclipse.jst.web_ui.feature" version="3.9.0.v201803221834"/>
-      <feature id="org.eclipse.jst.web_userdoc.feature" version="3.6.0.v201712131442"/>
-      <feature id="org.eclipse.jst.webpageeditor.feature" version="2.9.0.v201803271721"/>
-      <feature id="org.eclipse.wst.ws_wsdl15.feature"/>
-      <feature id="org.eclipse.wst.ws_core.feature"/>
-      <feature id="org.eclipse.wst.ws_userdoc.feature"/>
-      <feature id="org.eclipse.wst.ws_ui.feature"/>
-      <feature id="org.eclipse.egit" version="4.9.2.201712150930-r"/>
       <feature id="org.eclipse.jgit"/>
       <feature id="org.eclipse.elk.algorithms.feature" version="0.4.0"/>
       <feature id="org.eclipse.elk.feature" version="0.4.0"/>
       <feature id="org.eclipse.elk.graphiti.feature" version="0.4.0"/>
       <feature id="org.eclipse.elk.ui.feature" version="0.4.0"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature" installMode="root"/>
+      <feature id="org.eclipse.egit" installMode="root"/>
+      <feature id="org.eclipse.birt" installMode="root"/>
+      <feature id="org.eclipse.birt.report.designer.editor.xml.wtp" installMode="root"/>
+      <feature id="org.eclipse.jetty.bundles.f" installMode="root"/>
+      <feature id="org.eclipse.gemini.web.feature" installMode="root"/>
    </features>
 
    <configurations>
