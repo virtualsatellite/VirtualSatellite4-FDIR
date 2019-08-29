@@ -23,8 +23,17 @@ Target virsat_fdir_development extends virsat {
 	RepositoryLocation Eclipse url "http://download.eclipse.org/releases/2019-06/" {
 		Unit org.eclipse.linuxtools.docker.feature.feature.group version 4.3.0.201906121603;
 		Unit org.eclipse.birt.feature.group version 4.7.0.v201706222054;
+		Unit org.eclipse.birt.report.designer.editor.xml.wtp.feature.group version 4.7.0.v201706222054;
+		Unit org.eclipse.datatools.sqldevtools.sqlbuilder.feature.feature.group version 1.14.102.201905112017;
 	}
 	
+	RepositoryLocation DataTools url "https://download.eclipse.org/datatools/1.14.1.201712071719/repository" {
+		Unit org.eclipse.datatools.enablement.feature.feature.group version 1.14.1.201712071719;
+		Unit org.eclipse.datatools.modelbase.feature.feature.group version 1.14.1.201712071719;
+		Unit org.eclipse.datatools.common.doc.user.feature.group version 1.14.1.201712071719;
+	}
+	
+	/*
 	RepositoryLocation Jetty url "https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/" {
 		Unit org.eclipse.jetty.bundles.f.feature.group version 9.4.5.201705032012;
 	}
@@ -36,6 +45,7 @@ Target virsat_fdir_development extends virsat {
 	RepositoryLocation OrbitNeon url "https://download.eclipse.org/tools/orbit/R-builds/R20170307180635/repository/" {
 		
 	}
+	*/
 	
 	/* 
 	RepositoryLocation EclipseOrbit url "https://download.eclipse.org/tools/orbit/downloads/drops/R20190602212107/repository/"{

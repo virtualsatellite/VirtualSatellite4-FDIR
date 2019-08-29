@@ -150,8 +150,6 @@ Germany
       <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.birt" installMode="root"/>
       <feature id="org.eclipse.birt.report.designer.editor.xml.wtp" installMode="root"/>
-      <feature id="org.eclipse.jetty.bundles.f" installMode="root"/>
-      <feature id="org.eclipse.gemini.web.feature" installMode="root"/>
    </features>
 
    <configurations>
