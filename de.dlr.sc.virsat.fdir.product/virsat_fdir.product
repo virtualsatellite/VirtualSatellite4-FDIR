@@ -150,24 +150,7 @@ Germany
       <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.birt" installMode="root"/>
       <feature id="org.eclipse.birt.report.designer.editor.xml.wtp" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.sqlite.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.oda.designer.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.postgresql.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.connectivity.oda.designer.core.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.sybase.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.sqldevtools.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.oda.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.jdt.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.mysql.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.msft.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.ingres.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.connectivity.oda.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.sqldevtools.ddlgen.feature" installMode="root"/>
       <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
-      <feature id="org.eclipse.datatools.connectivity.oda.designer.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.ibm.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.oracle.feature" installMode="root"/>
-      <feature id="org.eclipse.datatools.enablement.sap.feature" installMode="root"/>
       <feature id="de.dlr.sc.virsat.excel.feature" installMode="root"/>
    </features>
 
