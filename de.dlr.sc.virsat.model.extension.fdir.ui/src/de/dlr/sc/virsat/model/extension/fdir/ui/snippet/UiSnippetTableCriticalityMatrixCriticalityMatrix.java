@@ -212,6 +212,13 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 	
 	@Override
 	protected void createButtons(FormToolkit toolkit, EditingDomain editingDomain, Composite sectionBody) {
-
+	}
+	
+	@Override
+	protected void createWrappingActions(EditingDomain editingDomain) {
+	}
+	
+	@Override
+	protected void updateActionEnabledState(EditingDomain editingDomain) {
 	}
 }
