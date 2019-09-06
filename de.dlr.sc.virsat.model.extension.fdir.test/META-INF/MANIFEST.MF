@@ -5,7 +5,22 @@ Bundle-SymbolicName: de.dlr.sc.virsat.model.extension.fdir.test
 Bundle-Version: 4.9.0.qualifier
 Bundle-Vendor: DLR (German Aerospace Center)
 Fragment-Host: de.dlr.sc.virsat.model.extension.fdir
-Export-Package: de.dlr.sc.virsat.model.extension.fdir.test
+Export-Package: de.dlr.sc.virsat.model.extension.fdir.calculation,
+ de.dlr.sc.virsat.model.extension.fdir.converter,
+ de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft,
+ de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma,
+ de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po,
+ de.dlr.sc.virsat.model.extension.fdir.evaluator,
+ de.dlr.sc.virsat.model.extension.fdir.migrator,
+ de.dlr.sc.virsat.model.extension.fdir.model,
+ de.dlr.sc.virsat.model.extension.fdir.modularizer,
+ de.dlr.sc.virsat.model.extension.fdir.preferences,
+ de.dlr.sc.virsat.model.extension.fdir.recovery,
+ de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer,
+ de.dlr.sc.virsat.model.extension.fdir.synthesizer,
+ de.dlr.sc.virsat.model.extension.fdir.test,
+ de.dlr.sc.virsat.model.extension.fdir.trimmer,
+ de.dlr.sc.virsat.model.extension.fdir.util
 Require-Bundle: org.junit,
  de.dlr.sc.virsat.concept.unittest.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

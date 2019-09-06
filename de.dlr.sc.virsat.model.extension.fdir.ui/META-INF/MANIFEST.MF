@@ -34,3 +34,21 @@ Bundle-ActivationPolicy: lazy
 Bundle-Vendor: German Aerospace Center (DLR)
 Bundle-Activator: de.dlr.sc.virsat.model.extension.fdir.ui.Activator
 Automatic-Module-Name: de.dlr.sc.virsat.model.extension.fdir.ui
+Export-Package: de.dlr.sc.virsat.model.extension.fdir.propertyTester,
+ de.dlr.sc.virsat.model.extension.fdir.ui,
+ de.dlr.sc.virsat.model.extension.fdir.ui.command,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.basicEvents,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.connections,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states,
+ de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions,
+ de.dlr.sc.virsat.model.extension.fdir.ui.handler,
+ de.dlr.sc.virsat.model.extension.fdir.ui.preferences,
+ de.dlr.sc.virsat.model.extension.fdir.ui.snippet,
+ de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom,
+ de.dlr.sc.virsat.model.extension.fdir.ui.wizards

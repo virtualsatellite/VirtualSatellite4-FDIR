@@ -15,3 +15,6 @@ Require-Bundle: org.eclipse.ui.workbench,
  org.eclipse.ui,
  de.dlr.sc.virsat.model.extension.fdir.ui
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.branding.ui
+Export-Package: de.dlr.sc.virsat.fdir.branding.ui,
+ de.dlr.sc.virsat.fdir.branding.ui.intro,
+ de.dlr.sc.virsat.fdir.branding.ui.perspective

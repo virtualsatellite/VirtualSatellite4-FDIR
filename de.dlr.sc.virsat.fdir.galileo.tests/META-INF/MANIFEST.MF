@@ -14,7 +14,8 @@ Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
  org.eclipse.xtext.testing,
  org.eclipse.xtext.xbase.testing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.dlr.sc.virsat.fdir.galileo.tests;x-internal=true
+Export-Package: de.dlr.sc.virsat.fdir.galileo,
+ de.dlr.sc.virsat.fdir.galileo.tests;x-internal=true
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.galileo.tests
 Import-Package: org.hamcrest.core,
  org.junit;version="4.5.0",
