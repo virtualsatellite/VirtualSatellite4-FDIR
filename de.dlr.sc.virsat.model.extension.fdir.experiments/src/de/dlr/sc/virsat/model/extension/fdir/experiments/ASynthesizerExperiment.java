@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.experiments;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-
 import org.junit.Before;
 
 import de.dlr.sc.virsat.concept.unittest.util.test.AConceptTestCase;
@@ -29,6 +30,8 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -41,6 +44,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 public class ASynthesizerExperiment extends AConceptTestCase {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
+	protected BasicSynthesizer synthesizer;
 	
 	protected Concept concept;
 	protected FaultTreeHelper ftHelper;
@@ -51,6 +55,7 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 		concept = loadConceptFromPlugin(PLUGIN_ID);
 		this.ftHelper = new FaultTreeHelper(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
+		this.synthesizer = new BasicSynthesizer();
 	}
 	
 	/**
@@ -76,6 +81,64 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 			DFTEvaluator dftEvaluator = (DFTEvaluator) ftEvaluator.getEvaluator();
 			System.out.println("MC #States: " + dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxStates);
 			System.out.println("MC #Transitions: " + dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxTransitions);
+		}
+	}
+	
+	/**
+	 * Tests all of the .dft benchmarks in the given folder
+	 * @param folder the folder
+	 * @param folderPath the path to the folder
+	 * @throws IOException exception
+	 */
+	protected void testFolder(final File folder, String folderPath) throws IOException {
+		
+		if (!folder.isDirectory()) {
+			System.out.println("Not a directory: " + folder.getAbsolutePath());
+		}
+		
+		for (final File file : folder.listFiles()) {
+			if (file.isDirectory()) {
+				testFolder(file, folderPath + "/" + file.getName());
+			} else {
+				Fault fault = createDFT(folderPath + "/" + file.getName());
+				System.out.println(fault.getFaultTree().toDot());
+				synthesizer.synthesize(fault);
+				saveStatistics(synthesizer.getStatistics(), file.getName(), "rise/2019/" + folder.getName());
+			}
+		}
+	}
+	
+	/**
+	 * Tests all of the .dft benchmarks in the given folder
+	 * @param file the file with all the dft names
+	 * @param filePath the path to the file
+	 * @param saveFileName the name of the file you wish to save the results to
+	 * @param synthesizer the synthesizer
+	 * @throws IOException exception
+	 */
+	protected void testFile(final File file, String filePath, String saveFileName, BasicSynthesizer synthesizer) throws IOException {
+		
+		String entireFile = new String(Files.readAllBytes(file.toPath()));
+		
+		for (String filename : entireFile.split("\\r?\\n")) {
+			File parentFolder = file.getParentFile();
+			
+			for (File childFolder : parentFolder.listFiles()) {
+				if (childFolder.isDirectory()) {
+					File[] matchingFiles = childFolder.listFiles(new FilenameFilter() {
+						public boolean accept(File dir, String name) {
+							return name.equals(filename);
+						}
+					});
+				
+					if (matchingFiles.length != 0) {
+						File benchmarkFile = matchingFiles[0];
+						Fault fault = createDFT(filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName());
+						synthesizer.synthesize(fault);
+						saveStatistics(synthesizer.getStatistics(), benchmarkFile.getName(), saveFileName);
+					}
+				}
+			}
 		}
 	}
 	
@@ -111,5 +174,27 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 		OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
 		PrintStream writer = new PrintStream(outFile);
 		writer.println(ra.toDot());
+	}
+	
+	
+	/**
+	 * Write statistic to a file
+	 * @param statistics the statistics
+	 * @param testName the name of the test
+	 * @param filePath the path
+	 * @throws IOException exception
+	 */
+	protected static void saveStatistics(SynthesisStatistics statistics, String testName, String filePath) throws IOException {
+		Path path = Paths.get("resources/results/" + filePath + ".txt");
+		if (!Files.exists(path.getParent())) {
+			Files.createDirectories(path.getParent());
+		}
+		
+		OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		PrintStream writer = new PrintStream(outFile);
+		writer.println(testName);
+		writer.println("===============================================");
+		writer.println(statistics);
+		writer.println();
 	}
 }

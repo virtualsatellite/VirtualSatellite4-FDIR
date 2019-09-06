@@ -17,5 +17,5 @@
 	<artifactId>de.dlr.sc.virsat.fdir.test</artifactId>
 	<name>de.dlr.sc.virsat.fdir.test</name>
 
-	<packaging>eclipse-test-plugin</packaging>
+	<packaging>eclipse-plugin</packaging>
 </project>

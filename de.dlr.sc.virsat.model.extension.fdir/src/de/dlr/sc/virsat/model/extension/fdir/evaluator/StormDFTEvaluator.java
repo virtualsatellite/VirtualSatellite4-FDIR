@@ -18,9 +18,8 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
-import de.dlr.sc.virsat.fdir.storm.runner.IStormProgram;
 import de.dlr.sc.virsat.fdir.storm.runner.StormDFT;
-import de.dlr.sc.virsat.fdir.storm.runner.StormRunner;
+import de.dlr.sc.virsat.fdir.storm.runner.StormRunnerFactory;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFT;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -36,6 +35,7 @@ public class StormDFTEvaluator implements IFaultTreeEvaluator {
 	
 	private final double delta;
 	private ModelCheckingResult modelCheckingResult;
+	private StormRunnerFactory<Double> stormRunnerFactory = new StormRunnerFactory<>();
 	
 	/**
 	 * Constructor for computing reliability and mean time to failure
@@ -63,7 +63,7 @@ public class StormDFTEvaluator implements IFaultTreeEvaluator {
 				}
 			}
 			
-			List<Double> result = createStormRunner(storm).run();
+			List<Double> result = stormRunnerFactory.create(storm, FaultTreePreferences.getStormExecutionEnvironmentPreference()).run();
 			
 			modelCheckingResult.setMeanTimeToFailure(result.get(0));
 			
@@ -79,12 +79,10 @@ public class StormDFTEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	/**
-	 * Creates the storm runner for the evaluator.
-	 * Overwrite this method to mock a storm runner in the test cases
-	 * @param storm the storm program to run
-	 * @return a new storm runner
+	 * Sets the internal storm runner factory
+	 * @param stormRunnerFactory the storm runner factory
 	 */
-	protected StormRunner<Double> createStormRunner(IStormProgram<Double> storm) {
-		return new StormRunner<>(storm, FaultTreePreferences.getStormExecutionEnvironmentPreference());
+	public void setStormRunnerFactory(StormRunnerFactory<Double> stormRunnerFactory) {
+		this.stormRunnerFactory = stormRunnerFactory;
 	}
 }

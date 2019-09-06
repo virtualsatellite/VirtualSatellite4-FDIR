@@ -39,7 +39,7 @@ import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
  * @param <S> Return type of programs that this runner can execute
  */
 
-public class StormRunner<S> {
+public class StormRunner<S> implements IStormRunner<S> {
 	
 	public static final String DOCKER_IMAGE_STORM = "movesrwth/storm:travis";
 	public static final String DOCKER_TEMP_PATH = "C:\\Users\\" + System.getProperty("user.name") + "\\TEMP";
@@ -170,12 +170,7 @@ public class StormRunner<S> {
 		return id;
 	}
 	
-	/**
-	 * Main method for calling the storm binary
-	 * @return the textual result of the call
-	 * @throws IOException thrown if there is a file problem
-	 * @throws URISyntaxException thrown if there is a file problem
-	 */
+	@Override
 	public List<S> run() throws IOException, URISyntaxException {
 		String[] localInstanceFilePaths = stormProgram.createInstanceFiles(instanceFileGenerator);
 		List<String> instanceFilePathsList = new ArrayList<>();

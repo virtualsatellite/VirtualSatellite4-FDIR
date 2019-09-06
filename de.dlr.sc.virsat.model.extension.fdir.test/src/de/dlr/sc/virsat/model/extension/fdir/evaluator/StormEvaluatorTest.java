@@ -22,8 +22,9 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.storm.runner.IStormProgram;
+import de.dlr.sc.virsat.fdir.storm.runner.IStormRunner;
 import de.dlr.sc.virsat.fdir.storm.runner.StormExecutionEnvironment;
-import de.dlr.sc.virsat.fdir.storm.runner.StormRunner;
+import de.dlr.sc.virsat.fdir.storm.runner.StormRunnerFactory;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
@@ -36,18 +37,18 @@ public class StormEvaluatorTest extends ATestCase {
 
 	@Test
 	public void testEvaluateFaultTree() {
-		StormDFTEvaluator stormEvaluator = new StormDFTEvaluator(1) {
-			// Mock the creation of the StormRunner to simulate the Storm program returning some values
+		StormDFTEvaluator stormEvaluator = new StormDFTEvaluator(1);
+		stormEvaluator.setStormRunnerFactory(new StormRunnerFactory<Double>() {			
 			@Override
-			protected StormRunner<Double> createStormRunner(IStormProgram<Double> storm) {
-				return new StormRunner<Double>(storm, StormExecutionEnvironment.Local) {
+			public IStormRunner<Double> create(IStormProgram<Double> storm, StormExecutionEnvironment executionEnvironment) {
+				return new IStormRunner<Double>() {
 					@Override
 					public List<Double> run() throws IOException, URISyntaxException {
 						return Arrays.asList(1d, 0d);
 					}
 				};
 			}
-		};
+		});
 		
 		Fault fault = new Fault(concept);
 		ModelCheckingResult result = stormEvaluator.evaluateFaultTree(fault, MTTF.MTTF, new Reliability(1));

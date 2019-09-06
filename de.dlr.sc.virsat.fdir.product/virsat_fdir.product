@@ -101,6 +101,7 @@ Germany
       <feature id="org.eclipse.rcp"/>
       <feature id="org.eclipse.equinox.p2.rcp.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
       <feature id="org.eclipse.emf.workspace"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.emf.databinding"/>
