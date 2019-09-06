@@ -184,7 +184,7 @@ public class DFT2MAConverter {
 				return true;
 			}
 			
-			List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
+			List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().getOrDefault(node, Collections.emptyList());
 			toProcess.addAll(parents);
 		}
 		
