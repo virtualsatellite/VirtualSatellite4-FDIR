@@ -11,4 +11,4 @@ Export-Package: de.dlr.sc.virsat.fdir.storm.runner
 Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
  de.dlr.sc.virsat.fdir.core,
  com.google.guava,
- com.spotify.docker.client;visibility:=reexport
+ com.spotify.docker.client
