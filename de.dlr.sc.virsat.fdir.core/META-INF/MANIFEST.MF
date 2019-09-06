@@ -8,7 +8,8 @@ Bundle-Vendor: DLR (German Aerospace Center)
 Require-Bundle: org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: de.dlr.sc.virsat.fdir.core.markov,
+Export-Package: de.dlr.sc.virsat.fdir.core,
+ de.dlr.sc.virsat.fdir.core.markov,
  de.dlr.sc.virsat.fdir.core.markov.modelchecker,
  de.dlr.sc.virsat.fdir.core.markov.scheduler,
  de.dlr.sc.virsat.fdir.core.metrics

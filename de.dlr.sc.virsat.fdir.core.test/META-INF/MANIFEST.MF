@@ -7,5 +7,8 @@ Fragment-Host: de.dlr.sc.virsat.fdir.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit
 Bundle-Vendor: DLR (German Aerospace Center)
-Export-Package: de.dlr.sc.virsat.fdir.core.test
+Export-Package: de.dlr.sc.virsat.fdir.core.markov,
+ de.dlr.sc.virsat.fdir.core.markov.modelchecker,
+ de.dlr.sc.virsat.fdir.core.markov.scheduler,
+ de.dlr.sc.virsat.fdir.core.test
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.core.test

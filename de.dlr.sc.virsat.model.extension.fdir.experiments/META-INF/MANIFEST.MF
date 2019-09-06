@@ -9,3 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
  de.dlr.sc.virsat.concept.unittest.util
 Automatic-Module-Name: de.dlr.sc.virsat.model.extension.fdir.experiments
+Export-Package: de.dlr.sc.virsat.model.extension.fdir.experiments,
+ de.dlr.sc.virsat.model.extension.fdir.experiments.aiaa,
+ de.dlr.sc.virsat.model.extension.fdir.experiments.ftscs,
+ de.dlr.sc.virsat.model.extension.fdir.experiments.rise

@@ -19,8 +19,11 @@ Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0"
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.dlr.sc.virsat.fdir.galileo.ui.contentassist,
- de.dlr.sc.virsat.fdir.galileo.ui.quickfix,
- de.dlr.sc.virsat.fdir.galileo.ui.internal
+Export-Package: de.dlr.sc.virsat.fdir.galileo.ui,
+ de.dlr.sc.virsat.fdir.galileo.ui.contentassist,
+ de.dlr.sc.virsat.fdir.galileo.ui.internal,
+ de.dlr.sc.virsat.fdir.galileo.ui.labeling,
+ de.dlr.sc.virsat.fdir.galileo.ui.outline,
+ de.dlr.sc.virsat.fdir.galileo.ui.quickfix
 Bundle-Activator: de.dlr.sc.virsat.fdir.galileo.ui.internal.GalileoActivator
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.galileo.ui
