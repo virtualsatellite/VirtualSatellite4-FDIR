@@ -55,19 +55,6 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 	public static final Color UNCRITICAL_COLOR = new Color(Display.getDefault(), 144, 238, 144);
 	
 	public static final String COLUMN_SEVERTY_NAME = "Severity";
-	public static final String[] PL_NAMES = { 
-		FMECAEntry.PROBABILITY_ExtremelyRemote_NAME,   
-		FMECAEntry.PROBABILITY_Remote_NAME,
-		FMECAEntry.PROBABILITY_Occasional_NAME,
-		FMECAEntry.PROBABILITY_Probable_NAME
-	};
-	
-	public static final String[] SL_NAMES = { 
-		FMECAEntry.SEVERITY_Catastrophic_NAME,   
-		FMECAEntry.SEVERITY_Critical_NAME,
-		FMECAEntry.SEVERITY_Major_NAME,
-		FMECAEntry.SEVERITY_Minor_NAME
-	}; 
 	
 	public static final int DEFAULT_TABLE_HEIGHT = 21 * 4;
 	public static final int DEFAULT_COLUMN_SIZE = 125;
@@ -123,11 +110,11 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 		
 		CriticalityMatrix cm = new CriticalityMatrix((CategoryAssignment) model);
 		AProperty isCriticalProperty = (AProperty) cm.getCriticalityMatrix().get(0).getIsCritical().get(0).getTypeInstance().getType();
-		for (int i = 0; i < PL_NAMES.length; ++i) {
+		for (int i = 0; i < FMECAEntry.PL_NAMES.length; ++i) {
 			final int level = i + 1;
-			String columnName = level + " - " + PL_NAMES[i];
+			String columnName = level + " - " + FMECAEntry.PL_NAMES[i];
 			TableViewerColumn colPL = (TableViewerColumn) createDefaultColumn(columnName);
-			colPL.getColumn().setToolTipText("Probability level " + PL_NAMES[i]);
+			colPL.getColumn().setToolTipText("Probability level " + FMECAEntry.PL_NAMES[i]);
 			colPL.setEditingSupport(new BooleanPropertyCellEditingSupport(editingDomain, columnViewer, isCriticalProperty) {
 				
 				@Override
@@ -187,7 +174,7 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 			int detection = fdirParameters.getCriticalityMatrices().indexOf(cm) + 1;
 			
 			if (columnIndex == 0) {
-				String label = severity + " - " + SL_NAMES[index];
+				String label = severity + " - " + FMECAEntry.SL_NAMES[index];
 				return label;
 			} else {
 				redirectNotification(cv.getIsCritical().get(columnIndex - 1).getTypeInstance(), object);

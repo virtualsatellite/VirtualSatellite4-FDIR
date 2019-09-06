@@ -40,7 +40,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  * @author muel_s8
  *
  */
-public class DFTEvaluator extends AFaultTreeEvaluator {
+public class DFTEvaluator implements IFaultTreeEvaluator {
 	
 	private DFTSemantics defaultSemantics;
 	private DFTSemantics poSemantics;

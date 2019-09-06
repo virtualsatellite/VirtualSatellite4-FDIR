@@ -38,17 +38,23 @@ public interface IFaultTreeEvaluator {
 	 * @param metrics the evaluation metrics
 	 * @return the result of the evaluation
 	 */
-	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics);
+	default ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+		return evaluateFaultTree(root, null, metrics);
+	}
 	
 	/**
 	 * Sets the recovery strategy for the fault tree evaluation
 	 * @param recoveryStrategy the recovery strategy
 	 */
-	void setRecoveryStrategy(RecoveryStrategy recoveryStrategy);
+	default void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
+		
+	}
 	
 	/**
 	 * Gets the internal statistics of the last call to the evaluation method
 	 * @return the statistics of the last call of the evaluation method
 	 */
-	Object getStatistics();
+	default Object getStatistics() {
+		return new Object();
+	}
 }

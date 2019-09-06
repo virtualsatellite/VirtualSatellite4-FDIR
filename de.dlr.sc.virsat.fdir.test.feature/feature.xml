@@ -30,7 +30,6 @@ by German Aerospace Center (DLR e.V.)
       <import plugin="de.dlr.sc.virsat.model.extension.fdir" version="0.0.0" match="greaterOrEqual"/>
       <import feature="de.dlr.sc.virsat.model.feature" version="0.0.0" match="greaterOrEqual"/>
       <import feature="de.dlr.sc.virsat.project.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="de.dlr.sc.virsat.team.feature" version="0.0.0" match="greaterOrEqual"/>
       <import feature="de.dlr.sc.virsat.uiengine.feature" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="de.dlr.sc.virsat.model" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="de.dlr.sc.virsat.project" version="0.0.0" match="greaterOrEqual"/>

@@ -19,6 +19,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.CutSet;
+
 /**
  * This class tests the OpClassifyDL class.
  * @author muel_s8
@@ -40,34 +42,34 @@ public class OpClassifyDLTest {
 	@Test
 	public void testClassifyNoInputs() {
 		double result = op.apply(new double[] {});
-		assertEquals(OpClassifyDL.DL_UNKNOWN, result, TEST_EPS);
+		assertEquals(CutSet.DL_UNKNOWN, result, TEST_EPS);
 	}
 
 	@Test
 	public void testClassifyTooManyInputs() {
 		double result = op.apply(new double[] {0, 1, 0, 1, 0, 1});
-		assertEquals(OpClassifyDL.DL_UNKNOWN, result, TEST_EPS);
+		assertEquals(CutSet.DL_UNKNOWN, result, TEST_EPS);
 	}
 	
 	@Test
 	public void testClassify0() {
 		inputs.add(0, 0d);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyDL.DL_EXTREMELY_UNLIKELY, result, TEST_EPS);
+		assertEquals(CutSet.DL_EXTREMELY_UNLIKELY, result, TEST_EPS);
 	}
 	
 	@Test
 	public void testClassify1() {
 		inputs.add(0, 1d);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyDL.DL_VERY_LIKELY, result, TEST_EPS);
+		assertEquals(CutSet.DL_VERY_LIKELY, result, TEST_EPS);
 	}
 	
 	@Test
 	public void testClassifyNaN() {
 		inputs.add(0, Double.NaN);
 		double result = op.apply(inputs.stream().mapToDouble(Double::doubleValue).toArray());
-		assertEquals(OpClassifyDL.DL_UNKNOWN, result, TEST_EPS);
+		assertEquals(CutSet.DL_UNKNOWN, result, TEST_EPS);
 	}
 	
 	@Test

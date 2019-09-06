@@ -10,7 +10,7 @@
 <booleanAttribute key="clearConfig" value="true"/>
 <booleanAttribute key="clearws" value="true"/>
 <booleanAttribute key="clearwslog" value="false"/>
-<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/VirSat FDIR Application"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/VirSat FDIR Application (SuperUser)"/>
 <booleanAttribute key="default" value="false"/>
 <stringAttribute key="featureDefaultLocation" value="workspace"/>
 <stringAttribute key="featurePluginResolution" value="workspace"/>
@@ -24,7 +24,7 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre8"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console -superUser"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dosgi.requiredJavaVersion=1.8 -Xms1024m -Xmx2048m -Xmx1024m"/>
 <stringAttribute key="pde.version" value="3.3"/>
@@ -37,7 +37,6 @@
 <setEntry value="de.dlr.sc.virsat.commons.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.dependencies.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.docs.feature:default"/>
-<setEntry value="de.dlr.sc.virsat.excel.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.external.lib.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.fdir.branding.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.fdir.galileo.feature:default"/>
@@ -55,9 +54,7 @@
 <setEntry value="org.eclipse.datatools.connectivity.feature:default"/>
 <setEntry value="org.eclipse.datatools.doc.user:default"/>
 <setEntry value="org.eclipse.datatools.enablement.feature:default"/>
-<setEntry value="org.eclipse.datatools.enablement.jdbc.feature:default"/>
 <setEntry value="org.eclipse.datatools.modelbase.feature:default"/>
-<setEntry value="org.eclipse.datatools.sqldevtools.parsers.feature:default"/>
 <setEntry value="org.eclipse.datatools.sqldevtools.results.feature:default"/>
 <setEntry value="org.eclipse.datatools.sqldevtools.sqlbuilder.feature:default"/>
 <setEntry value="org.eclipse.draw2d:default"/>
@@ -65,13 +62,15 @@
 <setEntry value="org.eclipse.ecf.core.feature:default"/>
 <setEntry value="org.eclipse.ecf.core.ssl.feature:default"/>
 <setEntry value="org.eclipse.ecf.filetransfer.feature:default"/>
-<setEntry value="org.eclipse.ecf.filetransfer.httpclient45.feature:default"/>
 <setEntry value="org.eclipse.ecf.filetransfer.ssl.feature:default"/>
 <setEntry value="org.eclipse.egit:default"/>
 <setEntry value="org.eclipse.elk.algorithms.feature.source:default"/>
 <setEntry value="org.eclipse.elk.algorithms.feature:default"/>
+<setEntry value="org.eclipse.elk.feature.source:default"/>
 <setEntry value="org.eclipse.elk.feature:default"/>
 <setEntry value="org.eclipse.elk.graphiti.feature:default"/>
+<setEntry value="org.eclipse.elk.sdk.feature.source:default"/>
+<setEntry value="org.eclipse.elk.sdk.feature:default"/>
 <setEntry value="org.eclipse.elk.ui.feature:default"/>
 <setEntry value="org.eclipse.emf.codegen.ecore.ui:default"/>
 <setEntry value="org.eclipse.emf.codegen.ecore:default"/>
@@ -106,7 +105,6 @@
 <setEntry value="org.eclipse.graphiti.feature:default"/>
 <setEntry value="org.eclipse.help:default"/>
 <setEntry value="org.eclipse.jdt:default"/>
-<setEntry value="org.eclipse.jgit.ssh.apache:default"/>
 <setEntry value="org.eclipse.jgit:default"/>
 <setEntry value="org.eclipse.ocl:default"/>
 <setEntry value="org.eclipse.pde:default"/>
@@ -117,7 +115,6 @@
 <setEntry value="org.eclipse.wst.common_ui.feature:default"/>
 <setEntry value="org.eclipse.wst.xml_core.feature:default"/>
 <setEntry value="org.eclipse.wst.xml_ui.feature:default"/>
-<setEntry value="org.eclipse.wst.xml_userdoc.feature:default"/>
 <setEntry value="org.eclipse.xtext.runtime:default"/>
 <setEntry value="org.eclipse.xtext.xbase.lib:default"/>
 <setEntry value="org.eclipse.xtext.xbase:default"/>

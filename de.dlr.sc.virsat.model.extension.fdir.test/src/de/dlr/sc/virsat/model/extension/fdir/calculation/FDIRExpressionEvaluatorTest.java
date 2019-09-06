@@ -23,6 +23,7 @@ import de.dlr.sc.virsat.model.calculation.compute.extensions.ValuePropertyGetter
 import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
 import de.dlr.sc.virsat.model.dvlm.calculation.SetFunction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters;
+import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
@@ -55,6 +56,6 @@ public class FDIRExpressionEvaluatorTest extends ATestCase {
 		IExpressionResult classificationResult = evaluator.caseAAdvancedFunction(setFunction, inputs);
 		assertTrue(classificationResult instanceof NumberLiteralResult);
 		double plLevel = Double.valueOf(((NumberLiteralResult) classificationResult).getNumberLiteral().getValue());
-		assertEquals(OpClassifyPL.PL_PROBABLE, plLevel, TEST_EPSILON);
+		assertEquals(FMECAEntry.PL_PROBABLE, plLevel, TEST_EPSILON);
 	}
 }

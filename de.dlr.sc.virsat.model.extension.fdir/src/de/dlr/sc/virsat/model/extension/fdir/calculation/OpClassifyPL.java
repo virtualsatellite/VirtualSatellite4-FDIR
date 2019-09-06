@@ -15,6 +15,7 @@ import java.util.Map;
 import de.dlr.sc.virsat.model.calculation.compute.AAdvancedFunctionOp;
 import de.dlr.sc.virsat.model.dvlm.calculation.AAdvancedFunction;
 import de.dlr.sc.virsat.model.dvlm.qudv.AQuantityKind;
+import de.dlr.sc.virsat.model.extension.fdir.model.CutSet;
 import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry;
 
 /**
@@ -32,30 +33,23 @@ public class OpClassifyPL extends AAdvancedFunctionOp {
 	public static final double LIMIT_REMOTE = 1E-5 / SECONDS_PER_HOUR;
 	public static final double LIMIT_EXTREMELY_REMOTE = 0;
 	
-	public static final int PL_UNKNOWN = Integer.valueOf(FMECAEntry.PROBABILITY_Unknown_VALUE);
-	public static final int PL_PROBABLE = Integer.valueOf(FMECAEntry.PROBABILITY_Probable_VALUE);
-	public static final int PL_OCCASIONAL = Integer.valueOf(FMECAEntry.PROBABILITY_Occasional_VALUE);
-	public static final int PL_REMOTE = Integer.valueOf(FMECAEntry.PROBABILITY_Remote_VALUE);
-	public static final int PL_EXTREMELY_REMOTE = Integer.valueOf(FMECAEntry.PROBABILITY_ExtremelyRemote_VALUE);
-	
-	public static final int[] PL_LEVELS = new int[] { PL_PROBABLE, PL_OCCASIONAL, PL_REMOTE, PL_EXTREMELY_REMOTE};
 	public static final Double[] DEFAULT_PL_THRESHOLDS = new Double[] { LIMIT_PROBABLE, LIMIT_OCCASIONAL, LIMIT_REMOTE, LIMIT_EXTREMELY_REMOTE };
 	
 	@Override
 	public double apply(double[] inputs) {
-		if (inputs.length != PL_LEVELS.length + OpClassifyDL.DL_LEVELS.length + 1) {
-			return PL_UNKNOWN;
+		if (inputs.length != FMECAEntry.PL_LEVELS.length + CutSet.DL_LEVELS.length + 1) {
+			return FMECAEntry.PL_UNKNOWN;
 		}
 		
 		double failureRate = inputs[0];
 		
-		for (int i = 1; i < inputs.length - OpClassifyDL.DL_LEVELS.length; ++i) {
+		for (int i = 1; i < inputs.length - CutSet.DL_LEVELS.length; ++i) {
 			if (failureRate >= inputs[i]) {
-				return PL_LEVELS[i - 1];
+				return FMECAEntry.PL_LEVELS[i - 1];
 			}
 		}
 		
-		return PL_UNKNOWN;
+		return FMECAEntry.PL_UNKNOWN;
 	}
 	
 	@Override

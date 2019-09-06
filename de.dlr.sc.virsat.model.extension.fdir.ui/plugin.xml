@@ -2442,5 +2442,31 @@
 			class="de.dlr.sc.virsat.model.extension.fdir.propertyTester.CategoryAssignmentTester">
 		</propertyTester>
 	</extension>
+	
+	
+<!-- Template -->
+
+<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			allPopups="false"
+	        locationURI="menu:de.dlr.sc.virsat.apps.ui.menu.apps?after=additions">
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport"
+			style="push">
+		</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.commands">
+		<command
+			id="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport"
+			name="SAVOIR/FDIR Report">
+		</command>
+	</extension>
+<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.CreateFdirReportHandler"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport">
+		</handler>
+	</extension>
 	<!-- Plugin.XML Protected Region End -->
 </plugin>

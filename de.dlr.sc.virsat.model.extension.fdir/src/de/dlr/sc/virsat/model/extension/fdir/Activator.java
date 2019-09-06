@@ -9,6 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
@@ -68,4 +72,20 @@ public class Activator extends Plugin {
 		return pluginId;
 	}
 
+	/**
+	 * Method to access the fragments contents from the resource folder and to hand
+	 * it back as string
+	 * 
+	 * @param resourcePath
+	 *            the path to the resource starting with "resource/"
+	 * @return the content of the resource as string
+	 * @throws IOException
+	 *             throws
+	 */
+	public static InputStream getResourceContentAsString(String resourcePath) throws IOException {
+		URL url = new URL("platform:/plugin/" + pluginId + resourcePath);
+		InputStream inputStream = url.openConnection().getInputStream();
+
+		return inputStream;
+	}
 }

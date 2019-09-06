@@ -34,6 +34,21 @@ import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
  */
 public  class CutSet extends ACutSet {
 	
+	public static final int DL_UNKNOWN = Integer.valueOf(DETECTION_Unknown_VALUE);
+	public static final int DL_VERY_LIKELY = Integer.valueOf(DETECTION_VeryLikely_VALUE);
+	public static final int DL_LIKELY = Integer.valueOf(DETECTION_Likely_VALUE);
+	public static final int DL_UNLIKELY = Integer.valueOf(DETECTION_Unlikely_VALUE);
+	public static final int DL_EXTREMELY_UNLIKELY = Integer.valueOf(DETECTION_ExtremelyUnlikely_VALUE);
+	
+	public static final int[] DL_LEVELS = new int[] { DL_VERY_LIKELY, DL_LIKELY, DL_UNLIKELY, DL_EXTREMELY_UNLIKELY};
+	
+	public static final String[] DL_NAMES = { 
+		DETECTION_ExtremelyUnlikely_NAME,   
+		DETECTION_Unlikely_NAME,
+		DETECTION_Likely_NAME,
+		DETECTION_VeryLikely_NAME
+	};
+	
 	/**
 	 * Constructor of Concept Class
 	 */
