@@ -20,7 +20,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 
 @Suite.SuiteClasses({
-		de.dlr.sc.virsat.test.ProjectAllTest.class,
+		CoreAllTest.class,
 		de.dlr.sc.virsat.fdir.galileo.tests.AllTests.class,
 		de.dlr.sc.virsat.fdir.core.test.AllTests.class,
 		de.dlr.sc.virsat.fdir.storm.test.AllTests.class,
@@ -31,5 +31,5 @@ import org.junit.runners.Suite;
 /**
  * Test Class
  */
-public class ProjectAllTest {   
+public class ProjectAllTests {   
 }
