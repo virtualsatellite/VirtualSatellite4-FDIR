@@ -142,10 +142,10 @@ Germany
       <feature id="org.eclipse.datatools.connectivity.feature"/>
       <feature id="org.eclipse.emf.ecore.edit"/>
       <feature id="org.eclipse.jgit"/>
-      <feature id="org.eclipse.elk.algorithms.feature" version="0.4.0"/>
-      <feature id="org.eclipse.elk.feature" version="0.4.0"/>
-      <feature id="org.eclipse.elk.graphiti.feature" version="0.4.0"/>
-      <feature id="org.eclipse.elk.ui.feature" version="0.4.0"/>
+      <feature id="org.eclipse.elk.algorithms.feature"/>
+      <feature id="org.eclipse.elk.feature"/>
+      <feature id="org.eclipse.elk.graphiti.feature"/>
+      <feature id="org.eclipse.elk.ui.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature" installMode="root"/>
       <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.birt" installMode="root"/>
