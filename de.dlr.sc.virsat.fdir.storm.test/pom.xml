@@ -18,5 +18,5 @@
 	<artifactId>de.dlr.sc.virsat.fdir.storm.test</artifactId>
 	<name>de.dlr.sc.virsat.fdir.storm.test</name>
 
-	<packaging>eclipse-plugin</packaging>
+	<packaging>eclipse-test-plugin</packaging>
 </project>
