@@ -15,7 +15,7 @@
             <property name="dataType">string</property>
             <property name="distinct">true</property>
             <simple-property-list name="defaultValue">
-                <value type="constant">ConfigurationTree</value>
+                <value type="constant">KatSat</value>
             </simple-property-list>
             <list-property name="selectionList"/>
             <property name="paramType">simple</property>
@@ -599,11 +599,16 @@ if (count < fmecaEntries.size()) {
 	entry = fmecaEntries.get(count);
 	row["item"] = entry.getParent().getStructuralElementInstance().getFullQualifiedInstanceName();
 	row["failure"] = wrap(entry.getFailure().getName(), wrapLength);
-	failureMode = new String(entry.getFailureMode().getParent().getName() + "." + entry.getFailureMode().getName());
-	row["failureMode"] = wrap(failureMode, wrapLength);
-	row["cause"] = wrap(entry.getFailureCause().getName(), wrapLength);
+	if (entry.getFailureMode() != null) {
+		row["failureMode"] = wrap(entry.getFailureModeLabel(), wrapLength);
+	}
+	if (entry.getFailureCause() != null) {
+		row["cause"] = wrap(entry.getFailureCause().getName(), wrapLength);
+	}
 	row["sn"] = entry.getSeverityEnum();
-	row["pn"] = entry.getProbabilityEnum();
+	if (entry.getProbabilityBean().isSet()) {
+		row["pn"] = entry.getProbabilityEnum();
+	}
 	row["cn"] = entry.getCriticality();
 	
 	compensation = "";
@@ -626,7 +631,9 @@ if (count < fmecaEntries.size()) {
 	
 	row["failureEffects"] = effects;
 	
-	row["isCritical"] = fdirParameters.isCritical(1, entry.getSeverityEnum(), entry.getProbabilityEnum());
+	if (entry.getCriticality() != 0)  {
+		row["isCritical"] = fdirParameters.isCritical(1, entry.getSeverityEnum(), entry.getProbabilityEnum());
+	}
 	
 	count++;
 	return true;
@@ -916,7 +923,7 @@ return true;
         </simple-master-page>
     </page-setup>
     <body>
-        <label id="296">
+        <label name="Title" id="296">
             <property name="style">dlr-title</property>
             <property name="fontSize">xx-large</property>
             <property name="fontWeight">bold</property>
@@ -945,7 +952,7 @@ return true;
             </list-property>
             <property name="resultSetColumn">project</property>
         </data>
-        <label id="319">
+        <label name="Documt Identification" id="319">
             <property name="style">dlr-chapter</property>
             <property name="fontFamily">"Frutiger 45 Light"</property>
             <property name="fontSize">x-large</property>
@@ -1052,7 +1059,7 @@ return true;
                 </row>
             </footer>
         </table>
-        <label id="245">
+        <label name="System Configuration" id="245">
             <property name="style">dlr-chapter</property>
             <property name="fontFamily">"Frutiger 45 Light"</property>
             <property name="fontSize">x-large</property>
@@ -1089,6 +1096,7 @@ return true;
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
+            <property name="pageBreakInterval">10000000</property>
             <column id="358">
                 <property name="width">20%</property>
             </column>
@@ -1150,7 +1158,7 @@ return true;
                 </row>
             </footer>
         </table>
-        <label id="419">
+        <label name="FDIR Configuration" id="419">
             <property name="style">dlr-chapter</property>
             <property name="fontFamily">"Frutiger 45 Light"</property>
             <property name="fontSize">x-large</property>
@@ -1215,7 +1223,7 @@ return true;
                     <cell id="569"/>
                     <cell id="434">
                         <data id="435">
-                            <property name="textAlign">right</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">sn</property>
                         </data>
                     </cell>
@@ -1297,7 +1305,7 @@ return true;
                     </cell>
                     <cell id="455">
                         <data id="454">
-                            <property name="textAlign">right</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">pn</property>
                         </data>
                     </cell>
@@ -1379,7 +1387,7 @@ return true;
                     </cell>
                     <cell id="478">
                         <data id="477">
-                            <property name="textAlign">right</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">dn</property>
                         </data>
                     </cell>
@@ -1476,6 +1484,7 @@ return true;
                     <property name="allowExport">true</property>
                 </structure>
             </list-property>
+            <property name="pageBreakInterval">10000000</property>
             <column id="806"/>
             <column id="807"/>
             <column id="811"/>
@@ -1644,7 +1653,7 @@ return true;
                 </row>
             </footer>
         </table>
-        <label id="361">
+        <label name="FMECA Report" id="361">
             <property name="style">dlr-chapter</property>
             <property name="fontFamily">"Frutiger 45 Light"</property>
             <property name="fontSize">x-large</property>
@@ -1715,18 +1724,26 @@ return true;
                     <expression name="expression" type="javascript">dataSetRow["item"]</expression>
                     <property name="dataType">string</property>
                 </structure>
+                <structure>
+                    <property name="name">isCritical</property>
+                    <text-property name="displayName">Is Critical</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["isCritical"]</expression>
+                    <property name="dataType">boolean</property>
+                    <property name="allowExport">true</property>
+                </structure>
             </list-property>
+            <property name="pageBreakInterval">10000000</property>
             <column id="532">
-                <property name="width">20%</property>
+                <property name="width">15%</property>
             </column>
             <column id="533">
-                <property name="width">20%</property>
+                <property name="width">15%</property>
             </column>
             <column id="534">
-                <property name="width">20%</property>
+                <property name="width">15%</property>
             </column>
             <column id="535">
-                <property name="width">20%</property>
+                <property name="width">15%</property>
             </column>
             <column id="536">
                 <property name="width">5%</property>
@@ -1738,7 +1755,7 @@ return true;
                 <property name="width">5%</property>
             </column>
             <column id="539">
-                <property name="width">20%</property>
+                <property name="width">25%</property>
             </column>
             <header>
                 <row id="489">
@@ -1755,7 +1772,7 @@ return true;
                     </cell>
                     <cell id="494">
                         <label id="495">
-                            <text-property name="text">Cause</text-property>
+                            <text-property name="text">Failure Cause</text-property>
                         </label>
                     </cell>
                     <cell id="496">
@@ -1818,6 +1835,25 @@ return true;
             <detail>
                 <row id="506">
                     <property name="style">dlr-text</property>
+                    <property name="backgroundColor">#80FF80</property>
+                    <list-property name="highlightRules">
+                        <structure>
+                            <property name="operator">eq</property>
+                            <property name="backgroundColor">#FF8000</property>
+                            <expression name="testExpr" type="javascript">row["isCritical"]</expression>
+                            <simple-property-list name="value1">
+                                <value type="javascript">true</value>
+                            </simple-property-list>
+                        </structure>
+                        <structure>
+                            <property name="operator">eq</property>
+                            <property name="backgroundColor">#808080</property>
+                            <expression name="testExpr" type="javascript">row["cn"]</expression>
+                            <simple-property-list name="value1">
+                                <value type="javascript">0</value>
+                            </simple-property-list>
+                        </structure>
+                    </list-property>
                     <cell id="507">
                         <data id="508">
                             <property name="resultSetColumn">failure</property>
@@ -1840,19 +1876,19 @@ return true;
                     </cell>
                     <cell id="515">
                         <data id="516">
-                            <property name="textAlign">right</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">sn</property>
                         </data>
                     </cell>
                     <cell id="517">
                         <data id="518">
-                            <property name="textAlign">right</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">pn</property>
                         </data>
                     </cell>
                     <cell id="519">
                         <data id="520">
-                            <property name="textAlign">right</property>
+                            <property name="textAlign">center</property>
                             <property name="resultSetColumn">cn</property>
                         </data>
                     </cell>

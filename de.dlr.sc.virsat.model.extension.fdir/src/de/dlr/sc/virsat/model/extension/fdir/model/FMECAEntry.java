@@ -131,7 +131,7 @@ public  class FMECAEntry extends AFMECAEntry {
 		if (bean == null) {
 			return "";
 		}
-		return bean.getParent() + "." + bean.getName();
+		return (bean.getParent() != null ? bean.getParent().getName() + "." : "") + bean.getName();
 	}
 	
 	/**
