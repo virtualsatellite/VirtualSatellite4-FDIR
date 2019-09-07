@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
-    <property name="createdBy">Eclipse BIRT Designer Version 4.9.0.v201905231911</property>
+    <property name="createdBy">Eclipse BIRT Designer Version 4.12.0.v201909032344</property>
     <html-property name="description">Template for making SAVOIR compliant FDIR reports.</html-property>
     <property name="units">in</property>
     <text-property name="displayName">SAVOIR/FDIR Report</text-property>
+    <property name="layoutPreference">auto layout</property>
     <property name="bidiLayoutOrientation">ltr</property>
     <property name="imageDPI">96</property>
     <parameters>
@@ -164,25 +165,25 @@ return true;]]></method>
         <script-data-set name="system" id="336">
             <list-property name="resultSetHints">
                 <structure>
-                    <property name="position">0</property>
-                    <property name="name">id</property>
-                    <property name="dataType">string</property>
+                    <property name="position">1</property>
+                    <property name="name">no</property>
+                    <property name="dataType">integer</property>
                 </structure>
                 <structure>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                     <property name="name">name</property>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                     <property name="name">responsible</property>
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
             <list-property name="columnHints">
                 <structure>
-                    <property name="columnName">id</property>
-                    <text-property name="displayName">ID</text-property>
+                    <property name="columnName">no</property>
+                    <text-property name="displayName">No.</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">name</property>
@@ -197,8 +198,8 @@ return true;]]></method>
                 <list-property name="resultSet">
                     <structure>
                         <property name="position">1</property>
-                        <property name="name">id</property>
-                        <property name="dataType">string</property>
+                        <property name="name">no</property>
+                        <property name="dataType">integer</property>
                     </structure>
                     <structure>
                         <property name="position">2</property>
@@ -215,14 +216,14 @@ return true;]]></method>
             <property name="dataSource">virsat</property>
             <method name="open"><![CDATA[count = 0;]]></method>
             <method name="fetch"><![CDATA[if (count < elements.size()) {
-	element = elements.get(count);
-	row["id"] = element.getUuid();
+	element = elements.get(count++);
+	row["no"] = count;
 	
 	// Create some +++ symbols to indicate the level of nesting
 	prefix = "";
 	parent = element.getParentSeiBean();
 	while (parent != null) {
-		prefix += "+";
+		prefix += "-";
 		parent = parent.getParentSeiBean();
 	}
 	
@@ -232,7 +233,6 @@ return true;]]></method>
 	
 	row["name"] = prefix + element.getName();
 	row["responsible"] = element.getStructuralElementInstance().getAssignedDiscipline().getName();
-	count++;
 			
 	return true;
 }
@@ -598,9 +598,10 @@ function wrap(longStr, width) {
 if (count < fmecaEntries.size()) {
 	entry = fmecaEntries.get(count);
 	row["item"] = entry.getParent().getStructuralElementInstance().getFullQualifiedInstanceName();
-	row["failure"] = wrap(entry.getFailureLabel(), wrapLength);
-	row["failureMode"] = wrap(entry.getFailureModeLabel(), wrapLength);
-	row["cause"] = wrap(entry.getFailureCauseLabel(), wrapLength);
+	row["failure"] = wrap(entry.getFailure().getName(), wrapLength);
+	failureMode = new String(entry.getFailureMode().getParent().getName() + "." + entry.getFailureMode().getName());
+	row["failureMode"] = wrap(failureMode, wrapLength);
+	row["cause"] = wrap(entry.getFailureCause().getName(), wrapLength);
 	row["sn"] = entry.getSeverityEnum();
 	row["pn"] = entry.getProbabilityEnum();
 	row["cn"] = entry.getCriticality();
@@ -637,35 +638,66 @@ return false;]]></method>
             <list-property name="resultSetHints">
                 <structure>
                     <property name="position">1</property>
-                    <property name="name">pn</property>
-                    <property name="dataType">integer</property>
-                </structure>
-                <structure>
-                    <property name="position">2</property>
                     <property name="name">sn</property>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
-                    <property name="position">3</property>
+                    <property name="position">2</property>
                     <property name="name">dn</property>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
+                    <property name="position">3</property>
+                    <property name="name">severity</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
                     <property name="position">4</property>
-                    <property name="name">cn</property>
-                    <property name="dataType">integer</property>
+                    <property name="name">detectability</property>
+                    <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="position">5</property>
-                    <property name="name">isCritical</property>
+                    <property name="name">cn_1</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">cn_2</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">cn_3</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">cn_4</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">isCritical_1</property>
+                    <property name="dataType">boolean</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">isCritical_2</property>
+                    <property name="dataType">boolean</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">isCritical_3</property>
+                    <property name="dataType">boolean</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">isCritical_4</property>
                     <property name="dataType">boolean</property>
                 </structure>
             </list-property>
             <list-property name="columnHints">
-                <structure>
-                    <property name="columnName">pn</property>
-                    <text-property name="displayName">PN</text-property>
-                </structure>
                 <structure>
                     <property name="columnName">sn</property>
                     <text-property name="displayName">SN</text-property>
@@ -675,71 +707,145 @@ return false;]]></method>
                     <text-property name="displayName">DN</text-property>
                 </structure>
                 <structure>
-                    <property name="columnName">cn</property>
-                    <text-property name="displayName">CN</text-property>
+                    <property name="columnName">severity</property>
+                    <text-property name="displayName">Severity</text-property>
                 </structure>
                 <structure>
-                    <property name="columnName">isCritical</property>
-                    <text-property name="displayName">Is Critical</text-property>
+                    <property name="columnName">detectability</property>
+                    <text-property name="displayName">Detectability</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">cn_1</property>
+                    <text-property name="displayName">CN 1</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">cn_2</property>
+                    <text-property name="displayName">CN 2</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">cn_3</property>
+                    <text-property name="displayName">CN 3</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">cn_4</property>
+                    <text-property name="displayName">CN 4</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">isCritical_1</property>
+                    <text-property name="displayName">Is Critical 1</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">isCritical_2</property>
+                    <text-property name="displayName">Is Critical 2</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">isCritical_3</property>
+                    <text-property name="displayName">Is Critical 3</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">isCritical_4</property>
+                    <text-property name="displayName">Is Critical 4</text-property>
                 </structure>
             </list-property>
             <structure name="cachedMetaData">
                 <list-property name="resultSet">
                     <structure>
                         <property name="position">1</property>
-                        <property name="name">pn</property>
-                        <property name="dataType">integer</property>
-                    </structure>
-                    <structure>
-                        <property name="position">2</property>
                         <property name="name">sn</property>
                         <property name="dataType">integer</property>
                     </structure>
                     <structure>
-                        <property name="position">3</property>
+                        <property name="position">2</property>
                         <property name="name">dn</property>
                         <property name="dataType">integer</property>
                     </structure>
                     <structure>
+                        <property name="position">3</property>
+                        <property name="name">severity</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
                         <property name="position">4</property>
-                        <property name="name">cn</property>
-                        <property name="dataType">integer</property>
+                        <property name="name">detectability</property>
+                        <property name="dataType">string</property>
                     </structure>
                     <structure>
                         <property name="position">5</property>
-                        <property name="name">isCritical</property>
+                        <property name="name">cn_1</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">cn_2</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">cn_3</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">cn_4</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">isCritical_1</property>
+                        <property name="dataType">boolean</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">isCritical_2</property>
+                        <property name="dataType">boolean</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">isCritical_3</property>
+                        <property name="dataType">boolean</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">isCritical_4</property>
                         <property name="dataType">boolean</property>
                     </structure>
                 </list-property>
             </structure>
             <property name="dataSource">virsat</property>
             <method name="open"><![CDATA[cutSetClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.CutSet");
-fmecaClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.FMECEntry");
+fmecaClass = fdirBundle.loadClass("de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry");
 
-countPn = 0;
 pnNames = fmecaClass.getField("PL_NAMES").get(null);
-pn = fmecaClass.getField("PL_LEVELS").get(null);
 
-countSn = 0;
+countSn = 4;
 snNames = fmecaClass.getField("SL_NAMES").get(null);
-sn = fmecaClass.getField("SL_LEVELS").get(null);
 
-countDn = 0;
-dnNames = cutSetClass.getField("DL_NAMES").get(null);
-dn = cutSetClass.getField("DL_LEVELS").get(null);]]></method>
-            <method name="fetch"><![CDATA[if (countPn < pnNames.length) {
-	countPn++;
-} else if (countSn < snNames.length) {
-	countSn++;
-	countPn = 0;
-} else if (countDn< dnNames.length) {
-	countDn++;
-	countPn = 0;
-	countSn = 0;
-} else {
+countDn = 1;
+dnNames = cutSetClass.getField("DL_NAMES").get(null);]]></method>
+            <method name="fetch"><![CDATA[if (countDn > dnNames.length) {
 	return false;
 }
 
+row["sn"] = countSn;
+row["dn"] = countDn;
+
+row["severity"] = snNames[snNames.length - countSn];
+row["detectability"] = dnNames[dnNames.length - countDn];
+
+for (countPn = 1; countPn <= pnNames.length; ++countPn) {
+	cn = countPn * countSn * countDn;
+	row["cn_" + countPn] = cn;
+	
+	isCritical = fdirParameters.isCritical(countDn, countSn, countPn);
+	row["isCritical_" + countPn] = isCritical;
+}
+
+if (countSn > 1) {
+	countSn--;
+} else {
+	countDn++;
+	countSn = snNames.length;
+} 
 
 return true;
 
@@ -787,6 +893,7 @@ return true;
     </styles>
     <page-setup>
         <simple-master-page name="Main" id="2">
+            <property name="type">a4</property>
             <property name="topMargin">1in</property>
             <property name="leftMargin">1in</property>
             <property name="rightMargin">1in</property>
@@ -799,13 +906,9 @@ return true;
                     <text-property name="content"><![CDATA[<viewtime-value-of>pageNumber</viewtime-value-of>]]></text-property>
                 </text>
             </page-header>
-            <page-footer>
-                <text id="3">
-                    <property name="contentType">html</property>
-                </text>
-            </page-footer>
         </simple-master-page>
         <simple-master-page name="Title" id="420">
+            <property name="type">a4</property>
             <property name="topMargin">15pt</property>
             <property name="leftMargin">1in</property>
             <property name="bottomMargin">15pt</property>
@@ -963,14 +1066,15 @@ return true;
             <text-property name="text">1 System Configuration</text-property>
         </label>
         <table id="339">
-            <property name="width">6.458333333333333in</property>
+            <property name="width">6.260416666666667in</property>
             <property name="dataSet">system</property>
             <list-property name="boundDataColumns">
                 <structure>
                     <property name="name">id</property>
-                    <text-property name="displayName">ID</text-property>
-                    <expression name="expression" type="javascript">dataSetRow["id"]</expression>
+                    <text-property name="displayName">No.</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["no"]</expression>
                     <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
                 </structure>
                 <structure>
                     <property name="name">name</property>
@@ -986,20 +1090,20 @@ return true;
                 </structure>
             </list-property>
             <column id="358">
-                <property name="width">47%</property>
+                <property name="width">20%</property>
             </column>
             <column id="359">
-                <property name="width">37%</property>
+                <property name="width">50%</property>
             </column>
             <column id="360">
-                <property name="width">15%</property>
+                <property name="width">1.7395833333333333in</property>
             </column>
             <header>
                 <row id="340">
                     <property name="style">dlr-table-header</property>
                     <cell id="341">
                         <label id="342">
-                            <text-property name="text">ID</text-property>
+                            <text-property name="text">No.</text-property>
                         </label>
                     </cell>
                     <cell id="343">
@@ -1019,6 +1123,7 @@ return true;
                     <cell id="348">
                         <data id="349">
                             <property name="style">dlr-text</property>
+                            <property name="textAlign">left</property>
                             <property name="resultSetColumn">id</property>
                         </data>
                     </cell>
@@ -1075,9 +1180,14 @@ return true;
                 </structure>
             </list-property>
             <column id="439">
-                <property name="width">50%</property>
+                <property name="width">30%</property>
             </column>
-            <column id="440"/>
+            <column id="571">
+                <property name="width">30%</property>
+            </column>
+            <column id="440">
+                <property name="width">5%</property>
+            </column>
             <header>
                 <row id="426">
                     <property name="style">dlr-table-header</property>
@@ -1086,6 +1196,7 @@ return true;
                             <text-property name="text">Severity</text-property>
                         </label>
                     </cell>
+                    <cell id="568"/>
                     <cell id="429">
                         <label id="430">
                             <text-property name="text">SN</text-property>
@@ -1101,8 +1212,10 @@ return true;
                             <property name="resultSetColumn">severity</property>
                         </data>
                     </cell>
+                    <cell id="569"/>
                     <cell id="434">
                         <data id="435">
+                            <property name="textAlign">right</property>
                             <property name="resultSetColumn">sn</property>
                         </data>
                     </cell>
@@ -1112,6 +1225,7 @@ return true;
                 <row id="436">
                     <property name="style">dlr-table-footer</property>
                     <cell id="437"/>
+                    <cell id="570"/>
                     <cell id="438"/>
                 </row>
             </footer>
@@ -1139,10 +1253,14 @@ return true;
                 </structure>
             </list-property>
             <column id="461">
-                <property name="width">50%</property>
+                <property name="width">30%</property>
             </column>
-            <column id="462"/>
-            <column id="463"/>
+            <column id="462">
+                <property name="width">30%</property>
+            </column>
+            <column id="463">
+                <property name="width">5%</property>
+            </column>
             <header>
                 <row id="443">
                     <property name="style">dlr-table-header</property>
@@ -1152,13 +1270,13 @@ return true;
                         </label>
                     </cell>
                     <cell id="446">
-                        <label id="447">
-                            <text-property name="text">PN</text-property>
+                        <label id="449">
+                            <text-property name="text">Limit - Failure Rate [h^-1]</text-property>
                         </label>
                     </cell>
                     <cell id="448">
-                        <label id="449">
-                            <text-property name="text">Failure Rate [h^-1]</text-property>
+                        <label id="447">
+                            <text-property name="text">PN</text-property>
                         </label>
                     </cell>
                 </row>
@@ -1172,13 +1290,15 @@ return true;
                         </data>
                     </cell>
                     <cell id="453">
-                        <data id="454">
-                            <property name="resultSetColumn">pn</property>
+                        <data id="456">
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">failureRate</property>
                         </data>
                     </cell>
                     <cell id="455">
-                        <data id="456">
-                            <property name="resultSetColumn">failureRate</property>
+                        <data id="454">
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">pn</property>
                         </data>
                     </cell>
                 </row>
@@ -1215,10 +1335,14 @@ return true;
                 </structure>
             </list-property>
             <column id="484">
-                <property name="width">50%</property>
+                <property name="width">30%</property>
             </column>
-            <column id="485"/>
-            <column id="486"/>
+            <column id="485">
+                <property name="width">30%</property>
+            </column>
+            <column id="486">
+                <property name="width">5%</property>
+            </column>
             <header>
                 <row id="466">
                     <property name="style">dlr-table-header</property>
@@ -1228,13 +1352,13 @@ return true;
                         </label>
                     </cell>
                     <cell id="469">
-                        <label id="470">
-                            <text-property name="text">DN</text-property>
+                        <label id="472">
+                            <text-property name="text">Limit - Probability [%]</text-property>
                         </label>
                     </cell>
                     <cell id="471">
-                        <label id="472">
-                            <text-property name="text">Probability [%]</text-property>
+                        <label id="470">
+                            <text-property name="text">DN</text-property>
                         </label>
                     </cell>
                 </row>
@@ -1248,13 +1372,15 @@ return true;
                         </data>
                     </cell>
                     <cell id="476">
-                        <data id="477">
-                            <property name="resultSetColumn">dn</property>
+                        <data id="479">
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">probability</property>
                         </data>
                     </cell>
                     <cell id="478">
-                        <data id="479">
-                            <property name="resultSetColumn">probability</property>
+                        <data id="477">
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">dn</property>
                         </data>
                     </cell>
                 </row>
@@ -1265,6 +1391,256 @@ return true;
                     <cell id="481"/>
                     <cell id="482"/>
                     <cell id="483"/>
+                </row>
+            </footer>
+        </table>
+        <table id="792">
+            <property name="dataSet">criticality</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">sn</property>
+                    <text-property name="displayName">SN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["sn"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">severity</property>
+                    <text-property name="displayName">Severity</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["severity"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">cn_1</property>
+                    <text-property name="displayName">CN 1</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["cn_1"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">cn_2</property>
+                    <text-property name="displayName">CN 2</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["cn_2"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">cn_3</property>
+                    <text-property name="displayName">CN 3</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["cn_3"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">cn_4</property>
+                    <text-property name="displayName">CN 4</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["cn_4"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">dn</property>
+                    <text-property name="displayName">DN</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["dn"]</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">detectability</property>
+                    <text-property name="displayName">DN - Detectability</text-property>
+                    <expression name="expression" type="javascript">"Detectability - " + dataSetRow["dn"] + " - " +  dataSetRow["detectability"]</expression>
+                    <property name="dataType">string</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">isCritical_1</property>
+                    <text-property name="displayName">Is Critical 1</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["isCritical_1"]</expression>
+                    <property name="dataType">boolean</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">isCritical_2</property>
+                    <text-property name="displayName">Is Critical 2</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["isCritical_2"]</expression>
+                    <property name="dataType">boolean</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">isCritical_3</property>
+                    <text-property name="displayName">Is Critical 3</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["isCritical_3"]</expression>
+                    <property name="dataType">boolean</property>
+                    <property name="allowExport">true</property>
+                </structure>
+                <structure>
+                    <property name="name">isCritical_4</property>
+                    <text-property name="displayName">Is Critical 4</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["isCritical_4"]</expression>
+                    <property name="dataType">boolean</property>
+                    <property name="allowExport">true</property>
+                </structure>
+            </list-property>
+            <column id="806"/>
+            <column id="807"/>
+            <column id="811"/>
+            <column id="821"/>
+            <column id="826"/>
+            <column id="831"/>
+            <header>
+                <row id="793">
+                    <property name="style">dlr-table-header</property>
+                    <cell id="794">
+                        <property name="colSpan">1</property>
+                        <property name="rowSpan">2</property>
+                        <label id="797">
+                            <text-property name="text">Severity Category</text-property>
+                        </label>
+                    </cell>
+                    <cell id="796">
+                        <property name="colSpan">1</property>
+                        <property name="rowSpan">2</property>
+                        <label id="795">
+                            <text-property name="text">SNs</text-property>
+                        </label>
+                    </cell>
+                    <cell id="808">
+                        <property name="colSpan">4</property>
+                        <property name="rowSpan">1</property>
+                        <label id="812">
+                            <text-property name="text">PNs</text-property>
+                        </label>
+                    </cell>
+                </row>
+                <row id="813">
+                    <property name="style">dlr-table-header</property>
+                    <cell id="816">
+                        <label id="832">
+                            <text-property name="text">1</text-property>
+                        </label>
+                    </cell>
+                    <cell id="818">
+                        <label id="833">
+                            <text-property name="text">2</text-property>
+                        </label>
+                    </cell>
+                    <cell id="823">
+                        <label id="834">
+                            <text-property name="text">3</text-property>
+                        </label>
+                    </cell>
+                    <cell id="828">
+                        <label id="835">
+                            <text-property name="text">4</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <group id="855">
+                <property name="groupName">dn_group</property>
+                <expression name="keyExpr" type="javascript">row["dn"]</expression>
+                <property name="hideDetail">false</property>
+                <header>
+                    <row id="856">
+                        <property name="style">dlr-table-header</property>
+                        <cell id="857">
+                            <property name="colSpan">6</property>
+                            <property name="rowSpan">1</property>
+                            <data id="870">
+                                <property name="resultSetColumn">detectability</property>
+                            </data>
+                        </cell>
+                    </row>
+                </header>
+            </group>
+            <detail>
+                <row id="798">
+                    <property name="style">dlr-text</property>
+                    <cell id="799">
+                        <data id="802">
+                            <property name="resultSetColumn">severity</property>
+                        </data>
+                    </cell>
+                    <cell id="801">
+                        <data id="800">
+                            <property name="textAlign">center</property>
+                            <property name="resultSetColumn">sn</property>
+                        </data>
+                    </cell>
+                    <cell id="809">
+                        <data id="836">
+                            <property name="backgroundColor">#80FF80</property>
+                            <property name="textAlign">center</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">eq</property>
+                                    <property name="backgroundColor">#FF8000</property>
+                                    <expression name="testExpr" type="javascript">row["isCritical_1"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">true</value>
+                                    </simple-property-list>
+                                </structure>
+                            </list-property>
+                            <property name="resultSetColumn">cn_1</property>
+                        </data>
+                    </cell>
+                    <cell id="819">
+                        <data id="837">
+                            <property name="backgroundColor">#80FF80</property>
+                            <property name="textAlign">center</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">eq</property>
+                                    <property name="backgroundColor">#FF8000</property>
+                                    <expression name="testExpr" type="javascript">row["isCritical_2"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">true</value>
+                                    </simple-property-list>
+                                </structure>
+                            </list-property>
+                            <property name="resultSetColumn">cn_2</property>
+                        </data>
+                    </cell>
+                    <cell id="824">
+                        <data id="838">
+                            <property name="backgroundColor">#80FF80</property>
+                            <property name="textAlign">center</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">eq</property>
+                                    <property name="backgroundColor">#FF8000</property>
+                                    <expression name="testExpr" type="javascript">row["isCritical_3"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">true</value>
+                                    </simple-property-list>
+                                </structure>
+                            </list-property>
+                            <property name="resultSetColumn">cn_3</property>
+                        </data>
+                    </cell>
+                    <cell id="829">
+                        <data id="839">
+                            <property name="backgroundColor">#80FF80</property>
+                            <property name="textAlign">center</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">eq</property>
+                                    <property name="backgroundColor">#FF8000</property>
+                                    <expression name="testExpr" type="javascript">row["isCritical_4"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">true</value>
+                                    </simple-property-list>
+                                </structure>
+                            </list-property>
+                            <property name="resultSetColumn">cn_4</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="803">
+                    <property name="style">dlr-table-footer</property>
+                    <cell id="804"/>
+                    <cell id="805"/>
+                    <cell id="810"/>
+                    <cell id="820"/>
+                    <cell id="825"/>
+                    <cell id="830"/>
                 </row>
             </footer>
         </table>
@@ -1340,10 +1716,18 @@ return true;
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
-            <column id="532"/>
-            <column id="533"/>
-            <column id="534"/>
-            <column id="535"/>
+            <column id="532">
+                <property name="width">20%</property>
+            </column>
+            <column id="533">
+                <property name="width">20%</property>
+            </column>
+            <column id="534">
+                <property name="width">20%</property>
+            </column>
+            <column id="535">
+                <property name="width">20%</property>
+            </column>
             <column id="536">
                 <property name="width">5%</property>
             </column>
@@ -1456,16 +1840,19 @@ return true;
                     </cell>
                     <cell id="515">
                         <data id="516">
+                            <property name="textAlign">right</property>
                             <property name="resultSetColumn">sn</property>
                         </data>
                     </cell>
                     <cell id="517">
                         <data id="518">
+                            <property name="textAlign">right</property>
                             <property name="resultSetColumn">pn</property>
                         </data>
                     </cell>
                     <cell id="519">
                         <data id="520">
+                            <property name="textAlign">right</property>
                             <property name="resultSetColumn">cn</property>
                         </data>
                     </cell>
