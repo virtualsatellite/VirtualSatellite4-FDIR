@@ -15,7 +15,7 @@ import java.io.InputStream;
 import org.eclipse.core.commands.IHandler;
 
 import de.dlr.sc.virsat.apps.ui.handler.CopyAndOpenAppHandler;
-import de.dlr.sc.virsat.model.extension.fdir.Activator;
+import de.dlr.sc.virsat.model.extension.fdir.ui.Activator;
 
 /**
  * Handler for creating and opening a script that creates an FDIR Report
