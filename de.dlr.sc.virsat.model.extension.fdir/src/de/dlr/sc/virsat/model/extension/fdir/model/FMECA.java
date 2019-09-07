@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -126,10 +127,27 @@ public  class FMECA extends AFMECA {
 				entries.add(generateEntry(failure, null, null, monitor));
 			}
 		}
+		
+		entries.sort(new Comparator<FMECAEntry>() {
+			@Override
+			public int compare(FMECAEntry entry1, FMECAEntry entry2) {
+				String[] labels1 = { entry1.getFailureLabel(), entry1.getFailureModeLabel(), entry1.getFailureCauseLabel() };
+				String[] labels2 = { entry2.getFailureLabel(), entry2.getFailureModeLabel(), entry2.getFailureCauseLabel() };
+				
+				for (int i = 0; i < labels1.length; ++i) {
+					int compareLabels = labels1[i].compareTo(labels2[i]);
+					if (compareLabels != 0) {
+						return compareLabels;
+					}
+				}
+				
+				return 0;
+			}
+		});
+		
 		monitor.worked(1);
 		
 		monitor.beginTask("Filling out FMECA entries", entries.size());
-		
 		RecoveryAutomaton ra = getParent().getFirst(RecoveryAutomaton.class);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
 		if (ra != null) {
