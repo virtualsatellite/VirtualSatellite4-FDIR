@@ -97,8 +97,10 @@ public class MCSAnalysisTest extends AMCSAnalysisTest {
 
 		assertEquals(0, mcsAnalysis.getFaultTolerance());
 		assertEquals(2, mcsAnalysis.getMinimumCutSets().size());
+		
 		CutSet cutSet1 = mcsAnalysis.getMinimumCutSets().get(0);
 		assertEquals(be2, cutSet1.getBasicEvents().get(0));
+		
 		CutSet cutSet2 = mcsAnalysis.getMinimumCutSets().get(1);
 		assertEquals(be1, cutSet2.getBasicEvents().get(0));
 		assertEquals(1, cutSet2.getMeanTimeToFailure(), EPS);
