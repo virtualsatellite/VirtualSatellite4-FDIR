@@ -79,9 +79,14 @@ public class MCSAnalysisTest extends AMCSAnalysisTest {
 
 		Fault fault = new Fault(concept);
 		fault.setSeverity(Fault.SEVERITY_Critical_NAME);
-		BasicEvent be = new BasicEvent(concept);
-		be.setHotFailureRate(1);
-		fault.getBasicEvents().add(be);
+		BasicEvent be1 = new BasicEvent(concept);
+		be1.setName("B");
+		be1.setHotFailureRate(1);
+		fault.getBasicEvents().add(be1);
+		BasicEvent be2 = new BasicEvent(concept);
+		be2.setHotFailureRate(2);
+		be2.setName("A");
+		fault.getBasicEvents().add(be2);
 		sei.getCategoryAssignments().add(fault.getTypeInstance());
 
 		Command analysisCommand = mcsAnalysis.perform(ed, monitor);
@@ -91,9 +96,11 @@ public class MCSAnalysisTest extends AMCSAnalysisTest {
 		analysisCommand.execute();
 
 		assertEquals(0, mcsAnalysis.getFaultTolerance());
-		assertEquals(1, mcsAnalysis.getMinimumCutSets().size());
-		CutSet cutSet = mcsAnalysis.getMinimumCutSets().get(0);
-		assertEquals(be, cutSet.getBasicEvents().get(0));
-		assertEquals(1, cutSet.getMeanTimeToFailure(), EPS);
+		assertEquals(2, mcsAnalysis.getMinimumCutSets().size());
+		CutSet cutSet1 = mcsAnalysis.getMinimumCutSets().get(0);
+		assertEquals(be2, cutSet1.getBasicEvents().get(0));
+		CutSet cutSet2 = mcsAnalysis.getMinimumCutSets().get(1);
+		assertEquals(be1, cutSet2.getBasicEvents().get(0));
+		assertEquals(1, cutSet2.getMeanTimeToFailure(), EPS);
 	}
 }

@@ -10,11 +10,11 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -196,10 +196,6 @@ public  class MCSAnalysis extends AMCSAnalysis {
 	 * @return the generated cut sets
 	 */
 	private List<CutSet> generateEntries(Map<Set<Object>, List<Fault>> mapCutSetToFaults, Map<Set<Object>, ModelCheckingResult> mapMcsToResult) {
-		List<Set<Object>> sortedMinimumCutSets = mapCutSetToFaults.keySet().stream()
-				.sorted((b1, b2) -> Integer.compare(b1.size(), b2.size()))
-				.collect(Collectors.toList());
-		
 		FDIRParameters fdirParameters = null;
 		EObject root = VirSatEcoreUtil.getRootContainer(getTypeInstance().eContainer());
 		if (root != null) {
@@ -208,7 +204,7 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		}
 
 		List<CutSet> generatedEntries = new ArrayList<>();
-		for (Set<Object> minimumCutSet : sortedMinimumCutSets) {
+		for (Set<Object> minimumCutSet : mapCutSetToFaults.keySet()) {
 			List<Fault> failures = mapCutSetToFaults.get(minimumCutSet);
 			ModelCheckingResult mcsResult = mapMcsToResult.get(minimumCutSet);
 			for (Fault failure : failures) {
@@ -216,11 +212,34 @@ public  class MCSAnalysis extends AMCSAnalysis {
 				for (Object object : minimumCutSet) {
 					cutSet.getBasicEvents().add((BasicEvent) object);
 				}
-				getMinimumCutSets().add(cutSet);
+				generatedEntries.add(cutSet);
 				cutSet.setFailure(failure);
 				cutSet.fill(mcsResult, fdirParameters);
 			}
 		}
+		
+		generatedEntries.sort(new Comparator<CutSet>() {
+			@Override
+			public int compare(CutSet cutSet1, CutSet cutSet2) {
+				int compareCutSetSizes = Integer.compare(cutSet1.getBasicEvents().size(), cutSet2.getBasicEvents().size());
+				if (compareCutSetSizes != 0) {
+					return compareCutSetSizes;
+				}
+				
+				String[] labels1 = { cutSet1.getFailure().getName(), cutSet1.getBasicEventsLabel() };
+				String[] labels2 = { cutSet2.getFailure().getName(), cutSet2.getBasicEventsLabel() };
+				
+				for (int i = 0; i < labels1.length; ++i) {
+					int compareLabels = labels1[i].compareTo(labels2[i]);
+					if (compareLabels != 0) {
+						return compareLabels;
+					}
+				}
+				
+				return 0;
+			}
+		});
+		
 		return generatedEntries;
 	}
 }

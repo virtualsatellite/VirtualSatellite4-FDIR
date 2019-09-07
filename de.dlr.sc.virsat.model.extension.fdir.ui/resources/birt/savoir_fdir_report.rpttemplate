@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
-    <property name="createdBy">Eclipse BIRT Designer Version 4.7.0.v201706222054</property>
+    <property name="createdBy">Eclipse BIRT Designer Version 4.9.0.v201905231911</property>
     <html-property name="description">Template for making SAVOIR compliant FDIR reports.</html-property>
     <property name="units">in</property>
     <text-property name="displayName">SAVOIR/FDIR Report</text-property>
@@ -598,10 +598,9 @@ function wrap(longStr, width) {
 if (count < fmecaEntries.size()) {
 	entry = fmecaEntries.get(count);
 	row["item"] = entry.getParent().getStructuralElementInstance().getFullQualifiedInstanceName();
-	row["failure"] = wrap(entry.getFailure().getName(), wrapLength);
-	failureMode = new String(entry.getFailureMode().getParent().getName() + "." + entry.getFailureMode().getName());
-	row["failureMode"] = wrap(failureMode, wrapLength);
-	row["cause"] = wrap(entry.getFailureCause().getName(), wrapLength);
+	row["failure"] = wrap(entry.getFailureLabel(), wrapLength);
+	row["failureMode"] = wrap(entry.getFailureModeLabel(), wrapLength);
+	row["cause"] = wrap(entry.getFailureCauseLabel(), wrapLength);
 	row["sn"] = entry.getSeverityEnum();
 	row["pn"] = entry.getProbabilityEnum();
 	row["cn"] = entry.getCriticality();

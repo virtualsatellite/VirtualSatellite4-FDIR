@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.stream.Collectors;
+
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
 import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
@@ -96,5 +98,13 @@ public  class CutSet extends ACutSet {
 			ri1.setReference(fdirParameters.getTypeInstance());
 			opClassifyDL.getInputs().add(ri1);
 		}
+	}
+
+	/**
+	 * Gets a labeling for contained basic events
+	 * @return a labeling for the basic events
+	 */
+	public String getBasicEventsLabel() {
+		return getBasicEvents().stream().map(be -> (be.getParent() != null ? be.getParent().getName() + "." : "") + be.getName()).collect(Collectors.joining(","));
 	}
 }

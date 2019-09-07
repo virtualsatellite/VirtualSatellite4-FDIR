@@ -147,6 +147,27 @@ public class FMECATest extends AFMECATest {
 		assertEquals(fm, entry.getFailureMode());
 		assertEquals(Double.POSITIVE_INFINITY, entry.getMeanTimeToFailure(), TEST_EPSILON);
 	}
+
+	@Test
+	public void testGenerateEntriesFailureMode3() {
+		Fault fault = new Fault(concept);
+		beanSei.add(fault);
+		Fault fm1 = new Fault(concept);
+		fm1.setName("B");
+		ftHelper.connect(fault, fm1, fault);
+		Fault fm2 = new Fault(concept);
+		fm2.setName("A");
+		ftHelper.connect(fault, fm2, fault);
+		
+		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());
+		assertEquals(2, entries.size());
+		
+		FMECAEntry entry1 = entries.get(0);
+		assertEquals(fm2, entry1.getFailureMode());
+		
+		FMECAEntry entry2 = entries.get(1);
+		assertEquals(fm1, entry2.getFailureMode());
+	}
 	
 	@Test
 	public void testGenerateEntriesCause1() {

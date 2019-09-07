@@ -83,7 +83,7 @@ public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTab
 			redirectNotification(cutSet, object, true);
 			
 			if (columnIndex == CUT_SET_COLUMN) {
-				return cutSet.getBasicEvents().stream().map(be -> be.getParent().getName() + "." + be.getName()).collect(Collectors.joining(","));
+				return cutSet.getBasicEventsLabel();
 			} else if (columnIndex == CRITICALITY_COLUMN) {
 				if (cutSet.getCriticality() == 0) {
 					return CutSet.SEVERITY_Unknown_NAME;

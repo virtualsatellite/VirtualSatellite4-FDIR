@@ -14,6 +14,7 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
 import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
 import de.dlr.sc.virsat.model.dvlm.calculation.CalculationFactory;
@@ -95,6 +96,42 @@ public  class FMECAEntry extends AFMECAEntry {
 	 */
 	public FMECAEntry(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
+	}
+	
+	/**
+	 * Gets the failure label of this entry
+	 * @return the failure label
+	 */
+	public String getFailureLabel() {
+		return getEntryLabel(getFailure());
+	}
+	
+	/**
+	 * Gets the failure mode label of this entry
+	 * @return the failure mode label
+	 */
+	public String getFailureModeLabel() {
+		return getEntryLabel(getFailureMode());
+	}
+	
+	/**
+	 * Gets the failure cause label of this entry
+	 * @return the failure cause label
+	 */
+	public String getFailureCauseLabel() {
+		return getEntryLabel(getFailureCause());
+	}
+	
+	/**
+	 * Helper method to label the entry
+	 * @param bean the bean for which we want a label
+	 * @return a label for the bean
+	 */
+	private String getEntryLabel(ABeanCategoryAssignment bean) {
+		if (bean == null) {
+			return "";
+		}
+		return bean.getParent() + "." + bean.getName();
 	}
 	
 	/**
