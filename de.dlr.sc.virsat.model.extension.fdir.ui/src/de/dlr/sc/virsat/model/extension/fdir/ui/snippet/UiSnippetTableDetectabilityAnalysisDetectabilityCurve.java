@@ -33,14 +33,12 @@ import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatTransactionalAdapterFactoryContentProvider;
 import de.dlr.sc.virsat.project.ui.labelProvider.VirSatTransactionalAdapterFactoryLabelProvider;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
-
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
@@ -50,7 +48,8 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  * 
  */
-public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSnippetTableDetectabilityAnalysisDetectabilityCurve implements IUiSnippet {
+public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve
+		extends AUiSnippetTableDetectabilityAnalysisDetectabilityCurve implements IUiSnippet {
 	private static final int FONT_SIZE = 12;
 	private JFreeChart chart;
 	private ChartComposite chartComposite;
@@ -78,10 +77,10 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 
 		xyPlotChartViewer.setLabelProvider(new DetectabilityChartLabelProvider(adapterFactory));
 		xyPlotChartViewer.setInput(model);
-		
+
 		super.setUpTableViewer(editingDomain, toolkit);
 	}
-	
+
 	@Override
 	public Composite createSectionBody(FormToolkit toolkit, String sectionHeading, String sectionDescription,
 			int numberColumns) {
@@ -89,7 +88,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 		Composite composite = super.createSectionBody(toolkit, sectionHeading, sectionDescription, numberColumns + 1);
 		return composite;
 	}
-	
+
 	/**
 	 * 
 	 * @return chartViewer
@@ -133,8 +132,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 		renderer.setBaseShapesVisible(false);
 
 		// set the title
-		TextTitle myChartTitel = new TextTitle("",
-				new Font("SansSerif", Font.BOLD, FONT_SIZE));
+		TextTitle myChartTitel = new TextTitle("", new Font("SansSerif", Font.BOLD, FONT_SIZE));
 		chart.setTitle(myChartTitel);
 
 		return chart;
@@ -154,11 +152,13 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 	private class DetectabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
 
+		// Hard limit the maximum number of entries to be shown to avoid performance issues
+		private static final int MAX_POINTS = 100;
+		
 		/**
 		 * default constructor
 		 * 
-		 * @param adapterFactory
-		 *            the adapter Factory
+		 * @param adapterFactory the adapter Factory
 		 */
 		DetectabilityChartLabelProvider(AdapterFactory adapterFactory) {
 			super(adapterFactory);
@@ -172,16 +172,36 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 		}
 
 		@Override
+		public Double[] getValuesY(Object object) {
+			DetectabilityAnalysis detectabilityAnalysis = (DetectabilityAnalysis) object;
+			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurve();
+
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, detectabilityCurve.size());
+			double increment = (double) detectabilityCurve.size() / steps;
+			Double[] detectabilityValues = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				int timeStep = (int) (step * increment);
+				detectabilityValues[step] = detectabilityCurve.get(timeStep).getValue();
+			}
+
+			return detectabilityValues;
+		}
+
+		@Override
 		public Double[] getValuesX(Object object) {
-			DetectabilityAnalysis detectAnalysis = (DetectabilityAnalysis) object;
-			double timestep = detectAnalysis.getTimestepBean().getValueToBaseUnit();
-			double maxTime = detectAnalysis.getRemainingMissionTime();
-			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(
-					detectAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
-			int steps = (int) (maxTime / delta);
-			Double[] timeSteps = new Double[steps + 1];
-			for (int time = 0; time <= steps; ++time) {
-				timeSteps[time] = time * delta;
+			DetectabilityAnalysis detectabilityAnalysis = (DetectabilityAnalysis) object;
+			double maxTime = detectabilityAnalysis.getRemainingMissionTime();
+			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurve();
+
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, detectabilityCurve.size());
+			double increment = (double) detectabilityCurve.size() / steps;
+			double delta = maxTime / steps;
+			Double[] timeSteps = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				int timeStep = (int) (step * increment);
+				timeSteps[step] = timeStep * delta;
 			}
 
 			XYPlot plot = chart.getXYPlot();
@@ -189,15 +209,5 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve extends AUiSn
 
 			return timeSteps;
 		}
-
-		@Override
-		public Double[] getValuesY(Object object) {
-			DetectabilityAnalysis detectAnalysis = (DetectabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> detectCurve = detectAnalysis.getDetectabilityCurve();
-			Double[] detectValues = detectCurve.stream().mapToDouble(beanFloat -> beanFloat.getValue())
-					.boxed().toArray(Double[]::new);
-			return detectValues;
-		}
-
 	}
 }
