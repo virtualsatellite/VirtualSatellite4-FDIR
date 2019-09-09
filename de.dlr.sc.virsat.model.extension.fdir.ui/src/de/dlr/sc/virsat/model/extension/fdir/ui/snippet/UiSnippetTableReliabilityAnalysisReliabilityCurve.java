@@ -31,7 +31,6 @@ import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
@@ -150,6 +149,9 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 	private class ReliabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
 
+		// Hard limit the maximum number of entries to be shown to avoid performance issues
+		private static final int MAX_POINTS = 100;
+		
 		/**
 		 * Default constructor
 		 * 
@@ -164,8 +166,16 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 		public Double[] getValuesY(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
-			Double[] reliabilityValues = reliabilityCurve.stream().mapToDouble(beanFloat -> beanFloat.getValue())
-					.boxed().toArray(Double[]::new);
+			
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());
+			double increment = (double) reliabilityCurve.size() / steps;
+			Double[] reliabilityValues = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				int timeStep = (int) (step * increment);
+				reliabilityValues[step] = reliabilityCurve.get(timeStep).getValue();
+			}
+			
 			return reliabilityValues;
 		}
 
@@ -173,13 +183,16 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 		public Double[] getValuesX(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			double maxTime = relAnalysis.getRemainingMissionTime();
-			double timestep = relAnalysis.getTimestepBean().getValueToBaseUnit();
-			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(
-					relAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
-			int steps = (int) (maxTime / delta);
-			Double[] timeSteps = new Double[steps + 1];
-			for (int time = 0; time <= steps; ++time) {
-				timeSteps[time] = time * delta;
+			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
+			
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());
+			double increment = (double) reliabilityCurve.size() / steps;
+			double delta = maxTime / steps;
+			Double[] timeSteps = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				int timeStep = (int) (step * increment);
+				timeSteps[step] = timeStep * delta;
 			}
 
 			XYPlot plot = chart.getXYPlot();

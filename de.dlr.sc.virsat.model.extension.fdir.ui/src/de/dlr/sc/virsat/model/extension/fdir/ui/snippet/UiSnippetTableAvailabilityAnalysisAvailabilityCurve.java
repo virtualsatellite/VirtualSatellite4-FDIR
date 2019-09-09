@@ -33,7 +33,6 @@ import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.qudv.util.QudvUnitHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
@@ -153,6 +152,9 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 	private class AvailabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ISeriesXYValueLabelProvider {
 
+		// Hard limit the maximum number of entries to be shown to avoid performance issues
+		private static final int MAX_POINTS = 100;
+
 		/**
 		 * default constructor
 		 * 
@@ -171,31 +173,42 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 		}
 
 		@Override
+		public Double[] getValuesY(Object object) {
+			AvailabilityAnalysis availabilityAnalysis = (AvailabilityAnalysis) object;
+			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurve();
+			
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, availabilityCurve.size());
+			double increment = (double) availabilityCurve.size() / steps;
+			Double[] availabilityValues = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				int timeStep = (int) (step * increment);
+				availabilityValues[step] = availabilityCurve.get(timeStep).getValue();
+			}
+			
+			return availabilityValues;
+		}
+
+		@Override
 		public Double[] getValuesX(Object object) {
-			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			double timestep = availAnalysis.getTimestepBean().getValueToBaseUnit();
-			double maxTime = availAnalysis.getRemainingMissionTime();
-			double delta = QudvUnitHelper.getInstance().convertFromBaseUnitToTargetUnit(
-					availAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit(), timestep);
-			int steps = (int) (maxTime / delta);
-			Double[] timeSteps = new Double[steps + 1];
-			for (int time = 0; time <= steps; ++time) {
-				timeSteps[time] = time * delta;
+			AvailabilityAnalysis availabilityAnalysis = (AvailabilityAnalysis) object;
+			double maxTime = availabilityAnalysis.getRemainingMissionTime();
+			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurve();
+			
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, availabilityCurve.size());
+			double increment = (double) availabilityCurve.size() / steps;
+			double delta = maxTime / steps;
+			Double[] timeSteps = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				int timeStep = (int) (step * increment);
+				timeSteps[step] = timeStep * delta;
 			}
 
 			XYPlot plot = chart.getXYPlot();
 			plot.getDomainAxis().setUpperBound(maxTime);
 
 			return timeSteps;
-		}
-
-		@Override
-		public Double[] getValuesY(Object object) {
-			AvailabilityAnalysis availAnalysis = (AvailabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> availabilityCurve = availAnalysis.getAvailabilityCurve();
-			Double[] availabilityValues = availabilityCurve.stream().mapToDouble(beanFloat -> beanFloat.getValue())
-					.boxed().toArray(Double[]::new);
-			return availabilityValues;
 		}
 
 	}
