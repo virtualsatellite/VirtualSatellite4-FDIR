@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.fdir.storm.runner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
@@ -77,7 +78,7 @@ public class StormDFT implements IStormProgram<Double> {
 	}
 
 	@Override
-	public String[] buildCommandWithArgs(String[] instanceFilePath) {
+	public String[] buildCommandWithArgs(String[] instanceFilePath, boolean schedule) {
 		List<String> commandWithArgs = new ArrayList<>();
 
 		commandWithArgs.add(getExecutableName());
@@ -175,5 +176,6 @@ public class StormDFT implements IStormProgram<Double> {
 			
 		}
 	}
+	
 
 }

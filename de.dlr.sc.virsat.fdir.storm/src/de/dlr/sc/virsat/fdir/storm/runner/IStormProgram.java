@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.fdir.storm.runner;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
 
@@ -42,9 +43,10 @@ public interface IStormProgram<S> {
 	/**
 	 * Build the actual invokation command
 	 * @param instanceFilePath the location of the input file
+	 * @param getSchedule get schedule or not
 	 * @return the command line command
 	 */
-	String[] buildCommandWithArgs(String[] instanceFilePath);
+	String[] buildCommandWithArgs(String[] instanceFilePath, boolean getSchedule);
 	
 	/**
 	 * Extracts the actual results from the result of a STORM call
@@ -52,4 +54,7 @@ public interface IStormProgram<S> {
 	 * @return the extracted result
 	 */
 	List<S> extractResult(List<String> result);
+	
+
+
 }

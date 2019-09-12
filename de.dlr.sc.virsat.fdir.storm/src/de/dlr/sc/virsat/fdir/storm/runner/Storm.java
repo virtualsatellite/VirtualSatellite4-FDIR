@@ -11,15 +11,20 @@ package de.dlr.sc.virsat.fdir.storm.runner;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.storm.files.ExplicitDRNFileWriter;
 import de.dlr.sc.virsat.fdir.storm.files.ExplicitPropertiesWriter;
 import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
+
 /**
  * 
  * @author yoge_re
@@ -30,14 +35,17 @@ public class Storm implements IStormProgram<Double> {
 	private IBaseMetric[] metrics;
 	private MarkovAutomaton<? extends MarkovState> ma;
 	private double delta;
-	
+
 	/**
 	 * 
-	 * @param metrics Metrics
-	 * @param ma Markov Automaton
-	 * @param delta timeslice
+	 * @param metrics
+	 *            Metrics
+	 * @param ma
+	 *            Markov Automaton
+	 * @param delta
+	 *            timeslice
 	 */
-	public Storm(MarkovAutomaton<? extends MarkovState> ma, double delta,  IBaseMetric... metrics) {
+	public Storm(MarkovAutomaton<? extends MarkovState> ma, double delta, IBaseMetric... metrics) {
 		this.metrics = metrics;
 		this.ma = ma;
 		this.delta = delta;
@@ -52,17 +60,17 @@ public class Storm implements IStormProgram<Double> {
 	public String[] createInstanceFiles(InstanceFileGenerator fileGenerator) throws IOException {
 		String drnFilePath = fileGenerator.generateInstanceFile(EXPLICIT_DRN_FILE);
 		String propertiesFilePath = fileGenerator.generateInstanceFile(PROPERTIES_FILE);
-		
-		new ExplicitDRNFileWriter(ma, drnFilePath,  metrics).writeFile();
-		new ExplicitPropertiesWriter(delta, propertiesFilePath, metrics).writeFile(); 
+
+		new ExplicitDRNFileWriter(ma, drnFilePath, metrics).writeFile();
+		new ExplicitPropertiesWriter(delta, propertiesFilePath, metrics).writeFile();
 
 		return new String[] { drnFilePath, propertiesFilePath };
 	}
-	
+
 	@Override
-	public String[] buildCommandWithArgs(String[] instanceFilePath) {
+	public String[] buildCommandWithArgs(String[] instanceFilePath, boolean schedule) {
 		List<String> commandWithArgs = new ArrayList<>();
-		
+
 		commandWithArgs.add(getExecutableName());
 		commandWithArgs.add("--explicit-drn");
 		commandWithArgs.add(instanceFilePath[0]);
@@ -71,11 +79,15 @@ public class Storm implements IStormProgram<Double> {
 		}
 		commandWithArgs.add("--prop");
 		commandWithArgs.add(instanceFilePath[1]);
+		if (schedule) {
+			commandWithArgs.add("--exportscheduler");
+			commandWithArgs.add("scheduler.txt");
+		}
 		return commandWithArgs.stream().toArray(String[]::new);
 	}
 
 	private static final String RESULT_LINES_START = "Result (for initial states): ";
-	
+
 	@Override
 	public List<Double> extractResult(List<String> result) {
 		List<Double> resultExtracted = new ArrayList<Double>();
@@ -83,7 +95,7 @@ public class Storm implements IStormProgram<Double> {
 			if (line.startsWith(RESULT_LINES_START)) {
 				String stippedLine = line.substring(RESULT_LINES_START.length(), line.length());
 				StringTokenizer tokenizer = new StringTokenizer(stippedLine, ", ");
-				
+
 				while (tokenizer.hasMoreTokens()) {
 					String token = tokenizer.nextToken();
 					if (token.equals("inf")) {
@@ -97,4 +109,7 @@ public class Storm implements IStormProgram<Double> {
 
 		return resultExtracted;
 	}
+
+
+
 }

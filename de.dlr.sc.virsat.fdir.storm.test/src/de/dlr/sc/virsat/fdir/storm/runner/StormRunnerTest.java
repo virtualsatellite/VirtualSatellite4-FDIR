@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class StormRunnerTest {
 		}
 
 		@Override
-		public String[] buildCommandWithArgs(String[] instanceFilePath) {
+		public String[] buildCommandWithArgs(String[] instanceFilePath, boolean schedule) {
 			return instanceFilePath;
 		}
 
@@ -58,6 +59,7 @@ public class StormRunnerTest {
 		public List<Integer> extractResult(List<String> result) {
 			return MOCK_RESULT;
 		}
+
 	}
 	
 	@Test

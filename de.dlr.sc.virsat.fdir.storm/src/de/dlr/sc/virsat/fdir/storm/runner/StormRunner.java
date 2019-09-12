@@ -15,7 +15,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.spotify.docker.client.DefaultDockerClient;
@@ -27,20 +30,23 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.HostConfig.Bind;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.storm.docker.DockerHelper;
 import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
 
 /**
- * Storm runners, takes care of executing a storm program
- * taking the exeuction environment (e.g. docker or local)
- * into consideration
+ * Storm runners, takes care of executing a storm program taking the exeuction
+ * environment (e.g. docker or local) into consideration
+ * 
  * @author sascha
  *
- * @param <S> Return type of programs that this runner can execute
+ * @param <S>
+ *            Return type of programs that this runner can execute
  */
 
 public class StormRunner<S> {
-	
+
 	public static final String DOCKER_IMAGE_STORM = "movesrwth/storm:travis";
 	public static final String DOCKER_TEMP_PATH = "C:\\Users\\" + System.getProperty("user.name") + "\\TEMP";
 	public static final String DOCKER_DATA_PATH = "/data";
@@ -49,24 +55,30 @@ public class StormRunner<S> {
 	private StormExecutionEnvironment executionEnvironment;
 	private IStormProgram<S> stormProgram;
 	private InstanceFileGenerator instanceFileGenerator;
-	
+
 	/**
 	 * Standard constructor
-	 * @param stormProgram the storm program to execute
-	 * @param executionEnvironment the execution environemnt for the runner
+	 * 
+	 * @param stormProgram
+	 *            the storm program to execute
+	 * @param executionEnvironment
+	 *            the execution environemnt for the runner
 	 */
 	public StormRunner(IStormProgram<S> stormProgram, StormExecutionEnvironment executionEnvironment) {
 		this.stormProgram = stormProgram;
 		this.executionEnvironment = executionEnvironment;
 		this.instanceFileGenerator = new InstanceFileGenerator(executionEnvironment);
 	}
-	
+
 	/**
 	 * Run a storm command
-	 * @param commandWithArgs the command + its arguments
+	 * 
+	 * @param commandWithArgs
+	 *            the command + its arguments
 	 * @return returns the console output
-	 * @throws IOException if the execution failed
-	 * @throws URISyntaxException 
+	 * @throws IOException
+	 *             if the execution failed
+	 * @throws URISyntaxException
 	 */
 	private List<S> run(String[] commandWithArgs) throws IOException, URISyntaxException {
 		if (executionEnvironment.equals(StormExecutionEnvironment.Docker)) {
@@ -75,24 +87,28 @@ public class StormRunner<S> {
 			return runStormLocally(commandWithArgs);
 		}
 	}
-	
+
 	/**
 	 * Runs STORM in a local execution environment
-	 * @param commandWithArgs the STORM command to execute
+	 * 
+	 * @param commandWithArgs
+	 *            the STORM command to execute
 	 * @return the results of the execution
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private List<S> runStormLocally(String[] commandWithArgs) throws IOException {
 		InputStream resultStream = executeCommand(commandWithArgs);
 		List<S> results = stormProgram.extractResult(readResult(resultStream));
 		return results;
 	}
-	
+
 	/**
 	 * Overwriteable method for simplifying testing
-	 * @param commandWithArgs the command to execute
+	 * 
+	 * @param commandWithArgs
+	 *            the command to execute
 	 * @return the runtime to execute a command line command
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	protected InputStream executeCommand(String[] commandWithArgs) throws IOException {
 		Process process = Runtime.getRuntime().exec(commandWithArgs);
@@ -101,25 +117,27 @@ public class StormRunner<S> {
 
 	/**
 	 * Runs STORM in a docker execution environment
-	 * @param commandWithArgs the STORM command to execute
+	 * 
+	 * @param commandWithArgs
+	 *            the STORM command to execute
 	 * @return the results of the execution
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	private List<S> runStormInDocker(String[] commandWithArgs) throws IOException  {
+	private List<S> runStormInDocker(String[] commandWithArgs) throws IOException {
 		try {
 			// Create a client based on DOCKER_HOST and DOCKER_CERT_PATH env vars,
 			// If you have just setup docker, do a system restart before this, otherwise
 			// we cant read the enviroment variables for building the docker client!
 			DockerClient docker = DefaultDockerClient.fromEnv().build();
 			DockerHelper dockerHelper = new DockerHelper(docker);
-			
+
 			// Adjust the formatting of the command
 			commandWithArgs[0] = "./" + commandWithArgs[0];
-			
+
 			pullStormImageIfNeeded(docker);
-			
+
 			String id = createContainer(docker);
-			System.out.println("Created new Docker Container with ID " +  id);
+			System.out.println("Created new Docker Container with ID " + id);
 			System.out.println("Executing command: " + String.join(" ", commandWithArgs));
 			List<String> result = dockerHelper.run(id, commandWithArgs);
 			dockerHelper.destroyContainer(id);
@@ -129,52 +147,55 @@ public class StormRunner<S> {
 			throw new IOException(e);
 		}
 	}
-	
+
 	/**
 	 * Checks if the STORM image has been pulled, and if not pulls it
-	 * @param docker the docker instance
-	 * @throws DockerException 
-	 * @throws InterruptedException 
+	 * 
+	 * @param docker
+	 *            the docker instance
+	 * @throws DockerException
+	 * @throws InterruptedException
 	 */
 	private void pullStormImageIfNeeded(DockerClient docker) throws DockerException, InterruptedException {
 		DockerHelper dockerHelper = new DockerHelper(docker);
 		if (!dockerHelper.isImagePulled(DOCKER_IMAGE_STORM)) {
-			System.out.print("Docker Image " +  DOCKER_IMAGE_STORM + " has not been pulled. Pulling... ");
+			System.out.print("Docker Image " + DOCKER_IMAGE_STORM + " has not been pulled. Pulling... ");
 			docker.pull(DOCKER_IMAGE_STORM);
 			System.out.println("successfull");
 		}
 	}
-	
+
 	/**
 	 * Creates & setups a STORM docker container
-	 * @param docker the docker instance
+	 * 
+	 * @param docker
+	 *            the docker instance
 	 * @return ID of the created STORM docker container
-	 * @throws DockerException 
-	 * @throws InterruptedException 
+	 * @throws DockerException
+	 * @throws InterruptedException
 	 */
 	private String createContainer(DockerClient docker) throws DockerException, InterruptedException {
 		String mount = DockerHelper.convertDOSPathToDockerPath(DOCKER_TEMP_PATH);
 		HostConfig hostConfig = DockerHelper.getDockerHostConfig(Bind.from(mount).to(DOCKER_DATA_PATH).build());
-		
+
 		// Create container with exposed ports
-		ContainerConfig containerConfig = ContainerConfig.builder()
-		    .hostConfig(hostConfig)
-		    .image(DOCKER_IMAGE_STORM)
-		    .cmd("sh", "-c", "while :; do sleep 1; done")
-		    .workingDir(DOCKER_STORM_WORKING_DIR)
-		    .build();
-		
+		ContainerConfig containerConfig = ContainerConfig.builder().hostConfig(hostConfig).image(DOCKER_IMAGE_STORM)
+				.cmd("sh", "-c", "while :; do sleep 1; done").workingDir(DOCKER_STORM_WORKING_DIR).build();
+
 		ContainerCreation creation = docker.createContainer(containerConfig);
 		String id = creation.id();
 		docker.startContainer(id);
 		return id;
 	}
-	
+
 	/**
 	 * Main method for calling the storm binary
+	 * 
 	 * @return the textual result of the call
-	 * @throws IOException thrown if there is a file problem
-	 * @throws URISyntaxException thrown if there is a file problem
+	 * @throws IOException
+	 *             thrown if there is a file problem
+	 * @throws URISyntaxException
+	 *             thrown if there is a file problem
 	 */
 	public List<S> run() throws IOException, URISyntaxException {
 		String[] localInstanceFilePaths = stormProgram.createInstanceFiles(instanceFileGenerator);
@@ -182,21 +203,95 @@ public class StormRunner<S> {
 		for (String localPaths : localInstanceFilePaths) {
 			instanceFilePathsList.add(instanceFileGenerator.createFilePath(localPaths));
 		}
-		
-		String[] commandWithArgs = stormProgram.buildCommandWithArgs(instanceFilePathsList.stream().toArray(String[]::new));
+
+		String[] commandWithArgs = stormProgram
+				.buildCommandWithArgs(instanceFilePathsList.stream().toArray(String[]::new), false);
 		List<S> result = run(commandWithArgs);
 		return result;
 	}
 
-	
 	/**
 	 * Reads the result from the storm call
-	 * @param is the stream containing the storm call output
+	 * 
+	 * @param is
+	 *            the stream containing the storm call output
 	 * @return the result of the call by means of a list of lines
-	 * @throws IOException thrown if there was a problem in reading the process output stream
+	 * @throws IOException
+	 *             thrown if there was a problem in reading the process output
+	 *             stream
 	 */
 	protected List<String> readResult(InputStream is) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		return br.lines().collect(Collectors.toList());
+	}
+
+	/**
+	 * 
+	 * @return schedule
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public Map<Integer, Integer> getSchedule() throws IOException, URISyntaxException {
+		String[] localInstanceFilePaths = stormProgram.createInstanceFiles(instanceFileGenerator);
+		List<String> instanceFilePathsList = new ArrayList<>();
+		for (String localPaths : localInstanceFilePaths) {
+			instanceFilePathsList.add(instanceFileGenerator.createFilePath(localPaths));
+		}
+		String[] commandWithArgs = stormProgram
+				.buildCommandWithArgs(instanceFilePathsList.stream().toArray(String[]::new), true);
+
+		return extractSchedule(commandWithArgs);
+	}
+
+	/**
+	 * 
+	 * @param commandWithArgs command
+	 * @return schedule mapping
+	 * @throws IOException exception
+	 */
+	private Map<Integer, Integer> extractSchedule(String[] commandWithArgs) throws IOException {
+		if (executionEnvironment.equals(StormExecutionEnvironment.Docker)) {
+			DockerClient docker;
+			try {
+				docker = DefaultDockerClient.fromEnv().build();
+				DockerHelper dockerHelper = new DockerHelper(docker);
+
+				// Adjust the formatting of the command
+				commandWithArgs[0] = "./" + commandWithArgs[0];
+
+				pullStormImageIfNeeded(docker);
+
+				String id = createContainer(docker);
+				System.out.println("Executing command: " + String.join(" ", commandWithArgs));
+				String result = dockerHelper.getSchedule(id, commandWithArgs);
+				dockerHelper.destroyContainer(id);
+				return convertScheduleToMap(result);
+			} catch (DockerCertificateException e) {
+				e.printStackTrace();
+			} catch (DockerException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} 
+		return null;
+
+	}
+	
+	/**
+	 * 
+	 * @param result schedule text
+	 * @return schedule map
+	 */
+	public Map<Integer, Integer> convertScheduleToMap(String result) {
+		String[] lines = result.split("\n");
+		Map<Integer, Integer> schedulerMap = new HashMap<>();
+		for (int lineNumber = 3; lineNumber < lines.length - 1; lineNumber++) {
+			String[] contents = lines[lineNumber].toString().trim().split("\\s+");
+			Integer key = Integer.valueOf(contents[0]);
+			Integer value = Integer.valueOf(contents[1]);
+			schedulerMap.put(key, value);
+		}
+		return schedulerMap;
 	}
 }

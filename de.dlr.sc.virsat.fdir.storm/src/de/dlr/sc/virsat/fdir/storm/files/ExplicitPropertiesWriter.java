@@ -73,7 +73,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 
 	@Override
 	public void visit(MTTF mttfMetric) {
-		printWriter.println("Tmin=? [F \"" + FAILED_STATE + "\"];");
+		printWriter.println("Tmax=? [F \"" + FAILED_STATE + "\"];");
 	}
 
 	@Override

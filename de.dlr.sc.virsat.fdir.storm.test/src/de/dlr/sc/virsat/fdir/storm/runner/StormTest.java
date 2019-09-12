@@ -33,7 +33,7 @@ public class StormTest {
 	@Test
 	public void testBuildCommandWithArgs() {
 		Storm storm = new Storm(ma, 0);
-		String[] command = storm.buildCommandWithArgs(new String[] { "a.drn", "b.prop" });
+		String[] command = storm.buildCommandWithArgs(new String[] { "a.drn", "b.prop" }, false);
 		final String[] EXPECTED_COMMAND = { "storm", "--explicit-drn", "a.drn", "--io:to-nondet", "--prop", "b.prop" };
 		assertArrayEquals(EXPECTED_COMMAND, command);
 	}
