@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +25,6 @@ import org.eclipse.graphiti.tb.IContextButtonEntry;
 import org.eclipse.graphiti.tb.IContextButtonPadData;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeCollapseFeature;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
@@ -59,24 +59,29 @@ public class FaultTreeDiagramToolBehaviorProvider extends DefaultToolBehaviorPro
 			if (iCustomFeature instanceof FaultTreeNodeCollapseFeature) {
 				Fault fault = (Fault) getFeatureProvider().getBusinessObjectForPictogramElement(pe);
 				
-				List<FaultTreeNode> allLocalSubNodes = new FaultTreeHelper(fault.getConcept()).getAllLocalNodes(fault);
-				allLocalSubNodes.remove(fault);
+				FaultTreeHelper ftHelper = new FaultTreeHelper(fault.getConcept());
+				List<Object> allLocalSubObjects = new ArrayList<>(ftHelper.getAllLocalNodes(fault));
+				allLocalSubObjects.remove(fault);
+				allLocalSubObjects.addAll(fault.getFaultTree().getPropagations());
+				allLocalSubObjects.addAll(fault.getFaultTree().getSpares());
+				allLocalSubObjects.addAll(fault.getFaultTree().getDeps());
+				allLocalSubObjects.addAll(fault.getFaultTree().getObservations());
 				
-				if (allLocalSubNodes.isEmpty()) {
+				if (allLocalSubObjects.isEmpty()) {
 					break;
 				}
 				
 				// We check if there exists a local sub node that has no pictograph element in the
 				// diagram, if so then we offer the option to expand
 				// If every node is present in the diagram, then we offer the option to collapse
-				PictogramElement[] pes = getFeatureProvider().getDiagramTypeProvider().getNotificationService().calculateRelatedPictogramElements(allLocalSubNodes.toArray());
+				PictogramElement[] pes = getFeatureProvider().getDiagramTypeProvider().getNotificationService().calculateRelatedPictogramElements(allLocalSubObjects.toArray());
 				boolean isCollapse = true;
 				
-				for (FaultTreeNode subNode : allLocalSubNodes) {
+				for (Object subObject : allLocalSubObjects) {
 					boolean hasPe = false;
 					for (PictogramElement subPe : pes) {
 						Object bo = getFeatureProvider().getBusinessObjectForPictogramElement(subPe);
-						if (Objects.equals(subNode, bo)) {
+						if (Objects.equals(subObject, bo)) {
 							hasPe = true;
 							break;
 						}
