@@ -185,7 +185,7 @@ public class DFTSemantics {
 			throw new RuntimeException("The current semantics configuration doesnt support " +  node.getFaultTreeNodeType() + " as basic node type!");
 		}
 		
-		List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().get(node);
+		List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().getOrDefault(node, Collections.emptyList());
 		for (DFTState state : states) {
 			if (state.handleUpdateTriggers(node, depTriggers)) {
 				hasChanged = true;
