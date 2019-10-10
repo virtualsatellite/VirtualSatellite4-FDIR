@@ -187,12 +187,10 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());
-			double increment = (double) reliabilityCurve.size() / steps;
 			double delta = maxTime / steps;
 			Double[] timeSteps = new Double[steps];
 			for (int step = 0; step < steps; ++step) {
-				int timeStep = (int) (step * increment);
-				timeSteps[step] = timeStep * delta;
+				timeSteps[step] = step * delta;
 			}
 
 			XYPlot plot = chart.getXYPlot();

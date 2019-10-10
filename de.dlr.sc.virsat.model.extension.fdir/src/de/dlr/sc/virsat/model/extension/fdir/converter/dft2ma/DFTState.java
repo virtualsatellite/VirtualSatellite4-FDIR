@@ -289,15 +289,17 @@ public class DFTState extends MarkovState {
 			activeFaults.add((Fault) node);
 			
 			// All depenency gates in a fault are considered activated as soon as the parent fault is activated 
-			for (FaultTreeNode gate : node.getFault().getFaultTree().getGates()) {
-				if (gate instanceof ADEP) {
-					if (!activeFaults.contains(gate)) {
-						activateNode(gate);
+			if (!ftHolder.getMapNodeToDEPTriggers().isEmpty()) {
+				for (FaultTreeNode gate : node.getFault().getFaultTree().getGates()) {
+					if (gate instanceof ADEP) {
+						if (!activeFaults.contains(gate)) {
+							activateNode(gate);
+						}
 					}
 				}
 			}
 			
-			for (BasicEvent be : ((Fault) node).getBasicEvents()) {
+			for (FaultTreeNode be : ftHolder.getMapFaultToBasicEvents().getOrDefault(node, Collections.emptyList())) {
 				for (FaultTreeNode trigger : ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList())) {
 					if (!activeFaults.contains(trigger)) {
 						activateNode(trigger);

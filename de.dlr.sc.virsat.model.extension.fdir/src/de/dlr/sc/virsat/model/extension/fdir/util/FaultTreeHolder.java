@@ -107,10 +107,6 @@ public class FaultTreeHolder {
 				parentsChild.add(node);
 			}
 			
-			if (mapNodeToDEPTriggers.get(node) == null) {
-				mapNodeToDEPTriggers.put(node, new ArrayList<>());
-			}
-			
 			if (mapNodeToObservers.get(node) == null) {
 				mapNodeToObservers.put(node, new ArrayList<>());
 			}
@@ -214,7 +210,7 @@ public class FaultTreeHolder {
 		for (FaultTreeNode node : getNodes()) {
 			List<FaultTreeNode> children = getMapNodeToChildren().get(node);
 			List<FaultTreeNode> spares = getMapNodeToSpares().get(node);
-			List<FaultTreeNode> fdepTriggers = getMapNodeToDEPTriggers().get(node);
+			List<FaultTreeNode> fdepTriggers = getMapNodeToDEPTriggers().getOrDefault(node, Collections.emptyList());
 			
 			List<FaultTreeNode> subNodes = new ArrayList<>(children);
 			subNodes.addAll(spares);
