@@ -14,11 +14,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.storm.files.IFileProvider;
 
 /**
  * This class tests the Storm program
@@ -48,5 +50,24 @@ public class StormTest {
 		final List<Double> EXPECTED_RESULTS_DOUBLE = Arrays.asList(0.1, Double.POSITIVE_INFINITY);
 		assertEquals(EXPECTED_RESULTS_DOUBLE, resultsDouble);
 	}
-
+	
+	@Test
+	public void testExtractSchedule() {
+		Storm storm = new Storm(ma, 0);
+		
+		storm.buildCommandWithArgs(new String[] { "a.drn", "b.prop" }, true);
+		storm.onRunFinish(new IFileProvider() {
+			@Override
+			public String getFile(String fileName) {
+				return		"Storm\n" 
+						+ 	"Mock Schedule\n" 
+						+	"Schedule START\n" 
+						+	"0 1\n"
+						+ 	"Schedule END";
+			}
+		});
+		
+		Map<Integer, Integer> schedule = storm.extractSchedule();
+		assertEquals(Integer.valueOf(1), schedule.get(0));
+	}
 }
