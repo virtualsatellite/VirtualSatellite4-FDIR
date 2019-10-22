@@ -36,7 +36,6 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 	 *            stormExecutionEnvironment
 	 */
 	public StormScheduler(StormExecutionEnvironment stormExecutionEnvironment) {
-		super();
 		this.stormExecutionEnvironment = stormExecutionEnvironment;
 	}
 
@@ -46,23 +45,34 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 
 		Storm storm = new Storm(ma, delta, MTTF.MTTF);
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> mapScheduler = new HashMap<>();
+		Map<Integer, Integer> stormResults = runStormScheduler(storm);
+		for (MarkovState fromState : ma.getStates()) {
+			if (!fromState.isMarkovian()) {
+				int bestTransition = stormResults.get(fromState.getIndex());
+				Set<MarkovTransition<MarkovState>> transitionGroup = new HashSet<>();
+				transitionGroup.add(ma.getSuccTransitions(fromState).get(bestTransition));
+				mapScheduler.put(fromState, transitionGroup);
+			}
+		}
+
+		
+		return mapScheduler;
+	}
+	
+	/**
+	 * Actually runs storm.
+	 * Overwrite for test purposes
+	 * @param storm the storm program
+	 * @return the computed schedule
+	 */
+	protected Map<Integer, Integer> runStormScheduler(Storm storm) {
 		StormRunner<Double> stormRunner = new StormRunner<Double>(storm, stormExecutionEnvironment);
 		try {
 			stormRunner.run();
-			Map<Integer, Integer> stormResults = storm.extractSchedule();
-			for (MarkovState fromState : ma.getStates()) {
-				if (!fromState.isMarkovian()) {
-					int bestTransition = stormResults.get(fromState.getIndex());
-					Set<MarkovTransition<MarkovState>> transitionGroup = new HashSet<>();
-					transitionGroup.add(ma.getSuccTransitions(fromState).get(bestTransition));
-					mapScheduler.put(fromState, transitionGroup);
-				}
-			}
-
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
-		return mapScheduler;
+		
+		return storm.extractSchedule();
 	}
-
 }

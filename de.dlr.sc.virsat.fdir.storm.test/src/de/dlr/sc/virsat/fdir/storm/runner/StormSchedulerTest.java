@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.fdir.storm.runner;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,7 +53,15 @@ public class StormSchedulerTest {
 		ma.addMarkovianTransition("a", good, sink, 1);
 		ma.addMarkovianTransition("b", bad, sink, 2);
 		
-		StormScheduler scheduler = new StormScheduler(StormExecutionEnvironment.Docker);
+		StormScheduler scheduler = new StormScheduler(StormExecutionEnvironment.Docker) {
+			@Override
+			protected Map<Integer, Integer> runStormScheduler(Storm storm) {
+				Map<Integer, Integer> mapStateToChoice = new HashMap<>();
+				mapStateToChoice.put(0, 0);
+				mapStateToChoice.put(1, 1);
+				return mapStateToChoice;
+			}
+		};
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice));
