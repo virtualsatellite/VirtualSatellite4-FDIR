@@ -404,20 +404,20 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
     // $ANTLR end "ruleGalileoNodeType"
 
 
-    // $ANTLR start "entryRuleNamedType"
-    // InternalDft.g:153:1: entryRuleNamedType : ruleNamedType EOF ;
-    public final void entryRuleNamedType() throws RecognitionException {
+    // $ANTLR start "entryRuleNamed"
+    // InternalDft.g:153:1: entryRuleNamed : ruleNamed EOF ;
+    public final void entryRuleNamed() throws RecognitionException {
         try {
-            // InternalDft.g:154:1: ( ruleNamedType EOF )
-            // InternalDft.g:155:1: ruleNamedType EOF
+            // InternalDft.g:154:1: ( ruleNamed EOF )
+            // InternalDft.g:155:1: ruleNamed EOF
             {
-             before(grammarAccess.getNamedTypeRule()); 
+             before(grammarAccess.getNamedRule()); 
             pushFollow(FOLLOW_1);
-            ruleNamedType();
+            ruleNamed();
 
             state._fsp--;
 
-             after(grammarAccess.getNamedTypeRule()); 
+             after(grammarAccess.getNamedRule()); 
             match(input,EOF,FOLLOW_2); 
 
             }
@@ -431,35 +431,35 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "entryRuleNamedType"
+    // $ANTLR end "entryRuleNamed"
 
 
-    // $ANTLR start "ruleNamedType"
-    // InternalDft.g:162:1: ruleNamedType : ( ( rule__NamedType__TypeNameAssignment ) ) ;
-    public final void ruleNamedType() throws RecognitionException {
+    // $ANTLR start "ruleNamed"
+    // InternalDft.g:162:1: ruleNamed : ( ( rule__Named__Group__0 ) ) ;
+    public final void ruleNamed() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:166:2: ( ( ( rule__NamedType__TypeNameAssignment ) ) )
-            // InternalDft.g:167:2: ( ( rule__NamedType__TypeNameAssignment ) )
+            // InternalDft.g:166:2: ( ( ( rule__Named__Group__0 ) ) )
+            // InternalDft.g:167:2: ( ( rule__Named__Group__0 ) )
             {
-            // InternalDft.g:167:2: ( ( rule__NamedType__TypeNameAssignment ) )
-            // InternalDft.g:168:3: ( rule__NamedType__TypeNameAssignment )
+            // InternalDft.g:167:2: ( ( rule__Named__Group__0 ) )
+            // InternalDft.g:168:3: ( rule__Named__Group__0 )
             {
-             before(grammarAccess.getNamedTypeAccess().getTypeNameAssignment()); 
-            // InternalDft.g:169:3: ( rule__NamedType__TypeNameAssignment )
-            // InternalDft.g:169:4: rule__NamedType__TypeNameAssignment
+             before(grammarAccess.getNamedAccess().getGroup()); 
+            // InternalDft.g:169:3: ( rule__Named__Group__0 )
+            // InternalDft.g:169:4: rule__Named__Group__0
             {
             pushFollow(FOLLOW_2);
-            rule__NamedType__TypeNameAssignment();
+            rule__Named__Group__0();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getNamedTypeAccess().getTypeNameAssignment()); 
+             after(grammarAccess.getNamedAccess().getGroup()); 
 
             }
 
@@ -478,23 +478,23 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "ruleNamedType"
+    // $ANTLR end "ruleNamed"
 
 
-    // $ANTLR start "entryRuleObserverType"
-    // InternalDft.g:178:1: entryRuleObserverType : ruleObserverType EOF ;
-    public final void entryRuleObserverType() throws RecognitionException {
+    // $ANTLR start "entryRuleObserver"
+    // InternalDft.g:178:1: entryRuleObserver : ruleObserver EOF ;
+    public final void entryRuleObserver() throws RecognitionException {
         try {
-            // InternalDft.g:179:1: ( ruleObserverType EOF )
-            // InternalDft.g:180:1: ruleObserverType EOF
+            // InternalDft.g:179:1: ( ruleObserver EOF )
+            // InternalDft.g:180:1: ruleObserver EOF
             {
-             before(grammarAccess.getObserverTypeRule()); 
+             before(grammarAccess.getObserverRule()); 
             pushFollow(FOLLOW_1);
-            ruleObserverType();
+            ruleObserver();
 
             state._fsp--;
 
-             after(grammarAccess.getObserverTypeRule()); 
+             after(grammarAccess.getObserverRule()); 
             match(input,EOF,FOLLOW_2); 
 
             }
@@ -508,35 +508,35 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "entryRuleObserverType"
+    // $ANTLR end "entryRuleObserver"
 
 
-    // $ANTLR start "ruleObserverType"
-    // InternalDft.g:187:1: ruleObserverType : ( ( rule__ObserverType__Group__0 ) ) ;
-    public final void ruleObserverType() throws RecognitionException {
+    // $ANTLR start "ruleObserver"
+    // InternalDft.g:187:1: ruleObserver : ( ( rule__Observer__Group__0 ) ) ;
+    public final void ruleObserver() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:191:2: ( ( ( rule__ObserverType__Group__0 ) ) )
-            // InternalDft.g:192:2: ( ( rule__ObserverType__Group__0 ) )
+            // InternalDft.g:191:2: ( ( ( rule__Observer__Group__0 ) ) )
+            // InternalDft.g:192:2: ( ( rule__Observer__Group__0 ) )
             {
-            // InternalDft.g:192:2: ( ( rule__ObserverType__Group__0 ) )
-            // InternalDft.g:193:3: ( rule__ObserverType__Group__0 )
+            // InternalDft.g:192:2: ( ( rule__Observer__Group__0 ) )
+            // InternalDft.g:193:3: ( rule__Observer__Group__0 )
             {
-             before(grammarAccess.getObserverTypeAccess().getGroup()); 
-            // InternalDft.g:194:3: ( rule__ObserverType__Group__0 )
-            // InternalDft.g:194:4: rule__ObserverType__Group__0
+             before(grammarAccess.getObserverAccess().getGroup()); 
+            // InternalDft.g:194:3: ( rule__Observer__Group__0 )
+            // InternalDft.g:194:4: rule__Observer__Group__0
             {
             pushFollow(FOLLOW_2);
-            rule__ObserverType__Group__0();
+            rule__Observer__Group__0();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getObserverTypeAccess().getGroup()); 
+             after(grammarAccess.getObserverAccess().getGroup()); 
 
             }
 
@@ -555,23 +555,23 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "ruleObserverType"
+    // $ANTLR end "ruleObserver"
 
 
-    // $ANTLR start "entryRuleRDEPType"
-    // InternalDft.g:203:1: entryRuleRDEPType : ruleRDEPType EOF ;
-    public final void entryRuleRDEPType() throws RecognitionException {
+    // $ANTLR start "entryRuleRDEP"
+    // InternalDft.g:203:1: entryRuleRDEP : ruleRDEP EOF ;
+    public final void entryRuleRDEP() throws RecognitionException {
         try {
-            // InternalDft.g:204:1: ( ruleRDEPType EOF )
-            // InternalDft.g:205:1: ruleRDEPType EOF
+            // InternalDft.g:204:1: ( ruleRDEP EOF )
+            // InternalDft.g:205:1: ruleRDEP EOF
             {
-             before(grammarAccess.getRDEPTypeRule()); 
+             before(grammarAccess.getRDEPRule()); 
             pushFollow(FOLLOW_1);
-            ruleRDEPType();
+            ruleRDEP();
 
             state._fsp--;
 
-             after(grammarAccess.getRDEPTypeRule()); 
+             after(grammarAccess.getRDEPRule()); 
             match(input,EOF,FOLLOW_2); 
 
             }
@@ -585,35 +585,35 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "entryRuleRDEPType"
+    // $ANTLR end "entryRuleRDEP"
 
 
-    // $ANTLR start "ruleRDEPType"
-    // InternalDft.g:212:1: ruleRDEPType : ( ( rule__RDEPType__Group__0 ) ) ;
-    public final void ruleRDEPType() throws RecognitionException {
+    // $ANTLR start "ruleRDEP"
+    // InternalDft.g:212:1: ruleRDEP : ( ( rule__RDEP__Group__0 ) ) ;
+    public final void ruleRDEP() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:216:2: ( ( ( rule__RDEPType__Group__0 ) ) )
-            // InternalDft.g:217:2: ( ( rule__RDEPType__Group__0 ) )
+            // InternalDft.g:216:2: ( ( ( rule__RDEP__Group__0 ) ) )
+            // InternalDft.g:217:2: ( ( rule__RDEP__Group__0 ) )
             {
-            // InternalDft.g:217:2: ( ( rule__RDEPType__Group__0 ) )
-            // InternalDft.g:218:3: ( rule__RDEPType__Group__0 )
+            // InternalDft.g:217:2: ( ( rule__RDEP__Group__0 ) )
+            // InternalDft.g:218:3: ( rule__RDEP__Group__0 )
             {
-             before(grammarAccess.getRDEPTypeAccess().getGroup()); 
-            // InternalDft.g:219:3: ( rule__RDEPType__Group__0 )
-            // InternalDft.g:219:4: rule__RDEPType__Group__0
+             before(grammarAccess.getRDEPAccess().getGroup()); 
+            // InternalDft.g:219:3: ( rule__RDEP__Group__0 )
+            // InternalDft.g:219:4: rule__RDEP__Group__0
             {
             pushFollow(FOLLOW_2);
-            rule__RDEPType__Group__0();
+            rule__RDEP__Group__0();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getRDEPTypeAccess().getGroup()); 
+             after(grammarAccess.getRDEPAccess().getGroup()); 
 
             }
 
@@ -632,23 +632,23 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "ruleRDEPType"
+    // $ANTLR end "ruleRDEP"
 
 
-    // $ANTLR start "entryRuleDelayType"
-    // InternalDft.g:228:1: entryRuleDelayType : ruleDelayType EOF ;
-    public final void entryRuleDelayType() throws RecognitionException {
+    // $ANTLR start "entryRuleDelay"
+    // InternalDft.g:228:1: entryRuleDelay : ruleDelay EOF ;
+    public final void entryRuleDelay() throws RecognitionException {
         try {
-            // InternalDft.g:229:1: ( ruleDelayType EOF )
-            // InternalDft.g:230:1: ruleDelayType EOF
+            // InternalDft.g:229:1: ( ruleDelay EOF )
+            // InternalDft.g:230:1: ruleDelay EOF
             {
-             before(grammarAccess.getDelayTypeRule()); 
+             before(grammarAccess.getDelayRule()); 
             pushFollow(FOLLOW_1);
-            ruleDelayType();
+            ruleDelay();
 
             state._fsp--;
 
-             after(grammarAccess.getDelayTypeRule()); 
+             after(grammarAccess.getDelayRule()); 
             match(input,EOF,FOLLOW_2); 
 
             }
@@ -662,35 +662,35 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "entryRuleDelayType"
+    // $ANTLR end "entryRuleDelay"
 
 
-    // $ANTLR start "ruleDelayType"
-    // InternalDft.g:237:1: ruleDelayType : ( ( rule__DelayType__Group__0 ) ) ;
-    public final void ruleDelayType() throws RecognitionException {
+    // $ANTLR start "ruleDelay"
+    // InternalDft.g:237:1: ruleDelay : ( ( rule__Delay__Group__0 ) ) ;
+    public final void ruleDelay() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:241:2: ( ( ( rule__DelayType__Group__0 ) ) )
-            // InternalDft.g:242:2: ( ( rule__DelayType__Group__0 ) )
+            // InternalDft.g:241:2: ( ( ( rule__Delay__Group__0 ) ) )
+            // InternalDft.g:242:2: ( ( rule__Delay__Group__0 ) )
             {
-            // InternalDft.g:242:2: ( ( rule__DelayType__Group__0 ) )
-            // InternalDft.g:243:3: ( rule__DelayType__Group__0 )
+            // InternalDft.g:242:2: ( ( rule__Delay__Group__0 ) )
+            // InternalDft.g:243:3: ( rule__Delay__Group__0 )
             {
-             before(grammarAccess.getDelayTypeAccess().getGroup()); 
-            // InternalDft.g:244:3: ( rule__DelayType__Group__0 )
-            // InternalDft.g:244:4: rule__DelayType__Group__0
+             before(grammarAccess.getDelayAccess().getGroup()); 
+            // InternalDft.g:244:3: ( rule__Delay__Group__0 )
+            // InternalDft.g:244:4: rule__Delay__Group__0
             {
             pushFollow(FOLLOW_2);
-            rule__DelayType__Group__0();
+            rule__Delay__Group__0();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getDelayTypeAccess().getGroup()); 
+             after(grammarAccess.getDelayAccess().getGroup()); 
 
             }
 
@@ -709,7 +709,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "ruleDelayType"
+    // $ANTLR end "ruleDelay"
 
 
     // $ANTLR start "entryRuleFloat"
@@ -803,11 +803,11 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
             if ( (LA1_0==RULE_STRING) ) {
                 int LA1_1 = input.LA(2);
 
-                if ( (LA1_1==26) ) {
-                    alt1=2;
-                }
-                else if ( (LA1_1==RULE_XOFY||(LA1_1>=12 && LA1_1<=23)||LA1_1==30||LA1_1==32||LA1_1==34) ) {
+                if ( (LA1_1==RULE_XOFY||(LA1_1>=12 && LA1_1<=23)||LA1_1==30||LA1_1==32||LA1_1==34) ) {
                     alt1=1;
+                }
+                else if ( (LA1_1==26) ) {
+                    alt1=2;
                 }
                 else {
                     NoViableAltException nvae =
@@ -891,13 +891,13 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoNodeType__Alternatives"
-    // InternalDft.g:298:1: rule__GalileoNodeType__Alternatives : ( ( ruleNamedType ) | ( ruleObserverType ) | ( ruleRDEPType ) | ( ruleDelayType ) );
+    // InternalDft.g:298:1: rule__GalileoNodeType__Alternatives : ( ( ruleNamed ) | ( ruleObserver ) | ( ruleRDEP ) | ( ruleDelay ) );
     public final void rule__GalileoNodeType__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:302:1: ( ( ruleNamedType ) | ( ruleObserverType ) | ( ruleRDEPType ) | ( ruleDelayType ) )
+            // InternalDft.g:302:1: ( ( ruleNamed ) | ( ruleObserver ) | ( ruleRDEP ) | ( ruleDelay ) )
             int alt2=4;
             switch ( input.LA(1) ) {
             case RULE_XOFY:
@@ -941,18 +941,18 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
             switch (alt2) {
                 case 1 :
-                    // InternalDft.g:303:2: ( ruleNamedType )
+                    // InternalDft.g:303:2: ( ruleNamed )
                     {
-                    // InternalDft.g:303:2: ( ruleNamedType )
-                    // InternalDft.g:304:3: ruleNamedType
+                    // InternalDft.g:303:2: ( ruleNamed )
+                    // InternalDft.g:304:3: ruleNamed
                     {
-                     before(grammarAccess.getGalileoNodeTypeAccess().getNamedTypeParserRuleCall_0()); 
+                     before(grammarAccess.getGalileoNodeTypeAccess().getNamedParserRuleCall_0()); 
                     pushFollow(FOLLOW_2);
-                    ruleNamedType();
+                    ruleNamed();
 
                     state._fsp--;
 
-                     after(grammarAccess.getGalileoNodeTypeAccess().getNamedTypeParserRuleCall_0()); 
+                     after(grammarAccess.getGalileoNodeTypeAccess().getNamedParserRuleCall_0()); 
 
                     }
 
@@ -960,18 +960,18 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     }
                     break;
                 case 2 :
-                    // InternalDft.g:309:2: ( ruleObserverType )
+                    // InternalDft.g:309:2: ( ruleObserver )
                     {
-                    // InternalDft.g:309:2: ( ruleObserverType )
-                    // InternalDft.g:310:3: ruleObserverType
+                    // InternalDft.g:309:2: ( ruleObserver )
+                    // InternalDft.g:310:3: ruleObserver
                     {
-                     before(grammarAccess.getGalileoNodeTypeAccess().getObserverTypeParserRuleCall_1()); 
+                     before(grammarAccess.getGalileoNodeTypeAccess().getObserverParserRuleCall_1()); 
                     pushFollow(FOLLOW_2);
-                    ruleObserverType();
+                    ruleObserver();
 
                     state._fsp--;
 
-                     after(grammarAccess.getGalileoNodeTypeAccess().getObserverTypeParserRuleCall_1()); 
+                     after(grammarAccess.getGalileoNodeTypeAccess().getObserverParserRuleCall_1()); 
 
                     }
 
@@ -979,18 +979,18 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     }
                     break;
                 case 3 :
-                    // InternalDft.g:315:2: ( ruleRDEPType )
+                    // InternalDft.g:315:2: ( ruleRDEP )
                     {
-                    // InternalDft.g:315:2: ( ruleRDEPType )
-                    // InternalDft.g:316:3: ruleRDEPType
+                    // InternalDft.g:315:2: ( ruleRDEP )
+                    // InternalDft.g:316:3: ruleRDEP
                     {
-                     before(grammarAccess.getGalileoNodeTypeAccess().getRDEPTypeParserRuleCall_2()); 
+                     before(grammarAccess.getGalileoNodeTypeAccess().getRDEPParserRuleCall_2()); 
                     pushFollow(FOLLOW_2);
-                    ruleRDEPType();
+                    ruleRDEP();
 
                     state._fsp--;
 
-                     after(grammarAccess.getGalileoNodeTypeAccess().getRDEPTypeParserRuleCall_2()); 
+                     after(grammarAccess.getGalileoNodeTypeAccess().getRDEPParserRuleCall_2()); 
 
                     }
 
@@ -998,18 +998,18 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     }
                     break;
                 case 4 :
-                    // InternalDft.g:321:2: ( ruleDelayType )
+                    // InternalDft.g:321:2: ( ruleDelay )
                     {
-                    // InternalDft.g:321:2: ( ruleDelayType )
-                    // InternalDft.g:322:3: ruleDelayType
+                    // InternalDft.g:321:2: ( ruleDelay )
+                    // InternalDft.g:322:3: ruleDelay
                     {
-                     before(grammarAccess.getGalileoNodeTypeAccess().getDelayTypeParserRuleCall_3()); 
+                     before(grammarAccess.getGalileoNodeTypeAccess().getDelayParserRuleCall_3()); 
                     pushFollow(FOLLOW_2);
-                    ruleDelayType();
+                    ruleDelay();
 
                     state._fsp--;
 
-                     after(grammarAccess.getGalileoNodeTypeAccess().getDelayTypeParserRuleCall_3()); 
+                     after(grammarAccess.getGalileoNodeTypeAccess().getDelayParserRuleCall_3()); 
 
                     }
 
@@ -1033,9 +1033,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
     // $ANTLR end "rule__GalileoNodeType__Alternatives"
 
 
-    // $ANTLR start "rule__NamedType__TypeNameAlternatives_0"
-    // InternalDft.g:331:1: rule__NamedType__TypeNameAlternatives_0 : ( ( 'and' ) | ( 'or' ) | ( RULE_XOFY ) | ( 'pand' ) | ( 'pand_i' ) | ( 'por' ) | ( 'por_i' ) | ( 'sand' ) | ( 'hsp' ) | ( 'wsp' ) | ( 'csp' ) | ( 'seq' ) | ( 'fdep' ) );
-    public final void rule__NamedType__TypeNameAlternatives_0() throws RecognitionException {
+    // $ANTLR start "rule__Named__TypeNameAlternatives_1_0"
+    // InternalDft.g:331:1: rule__Named__TypeNameAlternatives_1_0 : ( ( 'and' ) | ( 'or' ) | ( RULE_XOFY ) | ( 'pand' ) | ( 'pand_i' ) | ( 'por' ) | ( 'por_i' ) | ( 'sand' ) | ( 'hsp' ) | ( 'wsp' ) | ( 'csp' ) | ( 'seq' ) | ( 'fdep' ) );
+    public final void rule__Named__TypeNameAlternatives_1_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
@@ -1122,9 +1122,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:336:2: ( 'and' )
                     // InternalDft.g:337:3: 'and'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameAndKeyword_0_0()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameAndKeyword_1_0_0()); 
                     match(input,12,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameAndKeyword_0_0()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameAndKeyword_1_0_0()); 
 
                     }
 
@@ -1137,9 +1137,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:342:2: ( 'or' )
                     // InternalDft.g:343:3: 'or'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameOrKeyword_0_1()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameOrKeyword_1_0_1()); 
                     match(input,13,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameOrKeyword_0_1()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameOrKeyword_1_0_1()); 
 
                     }
 
@@ -1152,9 +1152,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:348:2: ( RULE_XOFY )
                     // InternalDft.g:349:3: RULE_XOFY
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameXOFYTerminalRuleCall_0_2()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameXOFYTerminalRuleCall_1_0_2()); 
                     match(input,RULE_XOFY,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameXOFYTerminalRuleCall_0_2()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameXOFYTerminalRuleCall_1_0_2()); 
 
                     }
 
@@ -1167,9 +1167,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:354:2: ( 'pand' )
                     // InternalDft.g:355:3: 'pand'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNamePandKeyword_0_3()); 
+                     before(grammarAccess.getNamedAccess().getTypeNamePandKeyword_1_0_3()); 
                     match(input,14,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNamePandKeyword_0_3()); 
+                     after(grammarAccess.getNamedAccess().getTypeNamePandKeyword_1_0_3()); 
 
                     }
 
@@ -1182,9 +1182,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:360:2: ( 'pand_i' )
                     // InternalDft.g:361:3: 'pand_i'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNamePand_iKeyword_0_4()); 
+                     before(grammarAccess.getNamedAccess().getTypeNamePand_iKeyword_1_0_4()); 
                     match(input,15,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNamePand_iKeyword_0_4()); 
+                     after(grammarAccess.getNamedAccess().getTypeNamePand_iKeyword_1_0_4()); 
 
                     }
 
@@ -1197,9 +1197,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:366:2: ( 'por' )
                     // InternalDft.g:367:3: 'por'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNamePorKeyword_0_5()); 
+                     before(grammarAccess.getNamedAccess().getTypeNamePorKeyword_1_0_5()); 
                     match(input,16,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNamePorKeyword_0_5()); 
+                     after(grammarAccess.getNamedAccess().getTypeNamePorKeyword_1_0_5()); 
 
                     }
 
@@ -1212,9 +1212,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:372:2: ( 'por_i' )
                     // InternalDft.g:373:3: 'por_i'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNamePor_iKeyword_0_6()); 
+                     before(grammarAccess.getNamedAccess().getTypeNamePor_iKeyword_1_0_6()); 
                     match(input,17,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNamePor_iKeyword_0_6()); 
+                     after(grammarAccess.getNamedAccess().getTypeNamePor_iKeyword_1_0_6()); 
 
                     }
 
@@ -1227,9 +1227,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:378:2: ( 'sand' )
                     // InternalDft.g:379:3: 'sand'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameSandKeyword_0_7()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameSandKeyword_1_0_7()); 
                     match(input,18,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameSandKeyword_0_7()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameSandKeyword_1_0_7()); 
 
                     }
 
@@ -1242,9 +1242,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:384:2: ( 'hsp' )
                     // InternalDft.g:385:3: 'hsp'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameHspKeyword_0_8()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameHspKeyword_1_0_8()); 
                     match(input,19,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameHspKeyword_0_8()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameHspKeyword_1_0_8()); 
 
                     }
 
@@ -1257,9 +1257,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:390:2: ( 'wsp' )
                     // InternalDft.g:391:3: 'wsp'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameWspKeyword_0_9()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameWspKeyword_1_0_9()); 
                     match(input,20,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameWspKeyword_0_9()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameWspKeyword_1_0_9()); 
 
                     }
 
@@ -1272,9 +1272,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:396:2: ( 'csp' )
                     // InternalDft.g:397:3: 'csp'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameCspKeyword_0_10()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameCspKeyword_1_0_10()); 
                     match(input,21,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameCspKeyword_0_10()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameCspKeyword_1_0_10()); 
 
                     }
 
@@ -1287,9 +1287,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:402:2: ( 'seq' )
                     // InternalDft.g:403:3: 'seq'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameSeqKeyword_0_11()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameSeqKeyword_1_0_11()); 
                     match(input,22,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameSeqKeyword_0_11()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameSeqKeyword_1_0_11()); 
 
                     }
 
@@ -1302,9 +1302,9 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                     // InternalDft.g:408:2: ( 'fdep' )
                     // InternalDft.g:409:3: 'fdep'
                     {
-                     before(grammarAccess.getNamedTypeAccess().getTypeNameFdepKeyword_0_12()); 
+                     before(grammarAccess.getNamedAccess().getTypeNameFdepKeyword_1_0_12()); 
                     match(input,23,FOLLOW_2); 
-                     after(grammarAccess.getNamedTypeAccess().getTypeNameFdepKeyword_0_12()); 
+                     after(grammarAccess.getNamedAccess().getTypeNameFdepKeyword_1_0_12()); 
 
                     }
 
@@ -1325,7 +1325,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__NamedType__TypeNameAlternatives_0"
+    // $ANTLR end "rule__Named__TypeNameAlternatives_1_0"
 
 
     // $ANTLR start "rule__GalileoDft__Group__0"
@@ -3206,23 +3206,23 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
     // $ANTLR end "rule__GalileoBasicEvent__Group_5__2__Impl"
 
 
-    // $ANTLR start "rule__ObserverType__Group__0"
-    // InternalDft.g:1039:1: rule__ObserverType__Group__0 : rule__ObserverType__Group__0__Impl rule__ObserverType__Group__1 ;
-    public final void rule__ObserverType__Group__0() throws RecognitionException {
+    // $ANTLR start "rule__Named__Group__0"
+    // InternalDft.g:1039:1: rule__Named__Group__0 : rule__Named__Group__0__Impl rule__Named__Group__1 ;
+    public final void rule__Named__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1043:1: ( rule__ObserverType__Group__0__Impl rule__ObserverType__Group__1 )
-            // InternalDft.g:1044:2: rule__ObserverType__Group__0__Impl rule__ObserverType__Group__1
+            // InternalDft.g:1043:1: ( rule__Named__Group__0__Impl rule__Named__Group__1 )
+            // InternalDft.g:1044:2: rule__Named__Group__0__Impl rule__Named__Group__1
             {
             pushFollow(FOLLOW_11);
-            rule__ObserverType__Group__0__Impl();
+            rule__Named__Group__0__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__ObserverType__Group__1();
+            rule__Named__Group__1();
 
             state._fsp--;
 
@@ -3241,25 +3241,255 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__0"
+    // $ANTLR end "rule__Named__Group__0"
 
 
-    // $ANTLR start "rule__ObserverType__Group__0__Impl"
-    // InternalDft.g:1051:1: rule__ObserverType__Group__0__Impl : ( 'observer' ) ;
-    public final void rule__ObserverType__Group__0__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Named__Group__0__Impl"
+    // InternalDft.g:1051:1: rule__Named__Group__0__Impl : ( () ) ;
+    public final void rule__Named__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1055:1: ( ( 'observer' ) )
-            // InternalDft.g:1056:1: ( 'observer' )
+            // InternalDft.g:1055:1: ( ( () ) )
+            // InternalDft.g:1056:1: ( () )
             {
-            // InternalDft.g:1056:1: ( 'observer' )
-            // InternalDft.g:1057:2: 'observer'
+            // InternalDft.g:1056:1: ( () )
+            // InternalDft.g:1057:2: ()
             {
-             before(grammarAccess.getObserverTypeAccess().getObserverKeyword_0()); 
+             before(grammarAccess.getNamedAccess().getNamedAction_0()); 
+            // InternalDft.g:1058:2: ()
+            // InternalDft.g:1058:3: 
+            {
+            }
+
+             after(grammarAccess.getNamedAccess().getNamedAction_0()); 
+
+            }
+
+
+            }
+
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Named__Group__0__Impl"
+
+
+    // $ANTLR start "rule__Named__Group__1"
+    // InternalDft.g:1066:1: rule__Named__Group__1 : rule__Named__Group__1__Impl ;
+    public final void rule__Named__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1070:1: ( rule__Named__Group__1__Impl )
+            // InternalDft.g:1071:2: rule__Named__Group__1__Impl
+            {
+            pushFollow(FOLLOW_2);
+            rule__Named__Group__1__Impl();
+
+            state._fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Named__Group__1"
+
+
+    // $ANTLR start "rule__Named__Group__1__Impl"
+    // InternalDft.g:1077:1: rule__Named__Group__1__Impl : ( ( rule__Named__TypeNameAssignment_1 ) ) ;
+    public final void rule__Named__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1081:1: ( ( ( rule__Named__TypeNameAssignment_1 ) ) )
+            // InternalDft.g:1082:1: ( ( rule__Named__TypeNameAssignment_1 ) )
+            {
+            // InternalDft.g:1082:1: ( ( rule__Named__TypeNameAssignment_1 ) )
+            // InternalDft.g:1083:2: ( rule__Named__TypeNameAssignment_1 )
+            {
+             before(grammarAccess.getNamedAccess().getTypeNameAssignment_1()); 
+            // InternalDft.g:1084:2: ( rule__Named__TypeNameAssignment_1 )
+            // InternalDft.g:1084:3: rule__Named__TypeNameAssignment_1
+            {
+            pushFollow(FOLLOW_2);
+            rule__Named__TypeNameAssignment_1();
+
+            state._fsp--;
+
+
+            }
+
+             after(grammarAccess.getNamedAccess().getTypeNameAssignment_1()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Named__Group__1__Impl"
+
+
+    // $ANTLR start "rule__Observer__Group__0"
+    // InternalDft.g:1093:1: rule__Observer__Group__0 : rule__Observer__Group__0__Impl rule__Observer__Group__1 ;
+    public final void rule__Observer__Group__0() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1097:1: ( rule__Observer__Group__0__Impl rule__Observer__Group__1 )
+            // InternalDft.g:1098:2: rule__Observer__Group__0__Impl rule__Observer__Group__1
+            {
+            pushFollow(FOLLOW_12);
+            rule__Observer__Group__0__Impl();
+
+            state._fsp--;
+
+            pushFollow(FOLLOW_2);
+            rule__Observer__Group__1();
+
+            state._fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Observer__Group__0"
+
+
+    // $ANTLR start "rule__Observer__Group__0__Impl"
+    // InternalDft.g:1105:1: rule__Observer__Group__0__Impl : ( () ) ;
+    public final void rule__Observer__Group__0__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1109:1: ( ( () ) )
+            // InternalDft.g:1110:1: ( () )
+            {
+            // InternalDft.g:1110:1: ( () )
+            // InternalDft.g:1111:2: ()
+            {
+             before(grammarAccess.getObserverAccess().getObserverAction_0()); 
+            // InternalDft.g:1112:2: ()
+            // InternalDft.g:1112:3: 
+            {
+            }
+
+             after(grammarAccess.getObserverAccess().getObserverAction_0()); 
+
+            }
+
+
+            }
+
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Observer__Group__0__Impl"
+
+
+    // $ANTLR start "rule__Observer__Group__1"
+    // InternalDft.g:1120:1: rule__Observer__Group__1 : rule__Observer__Group__1__Impl rule__Observer__Group__2 ;
+    public final void rule__Observer__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1124:1: ( rule__Observer__Group__1__Impl rule__Observer__Group__2 )
+            // InternalDft.g:1125:2: rule__Observer__Group__1__Impl rule__Observer__Group__2
+            {
+            pushFollow(FOLLOW_13);
+            rule__Observer__Group__1__Impl();
+
+            state._fsp--;
+
+            pushFollow(FOLLOW_2);
+            rule__Observer__Group__2();
+
+            state._fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Observer__Group__1"
+
+
+    // $ANTLR start "rule__Observer__Group__1__Impl"
+    // InternalDft.g:1132:1: rule__Observer__Group__1__Impl : ( 'observer' ) ;
+    public final void rule__Observer__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1136:1: ( ( 'observer' ) )
+            // InternalDft.g:1137:1: ( 'observer' )
+            {
+            // InternalDft.g:1137:1: ( 'observer' )
+            // InternalDft.g:1138:2: 'observer'
+            {
+             before(grammarAccess.getObserverAccess().getObserverKeyword_1()); 
             match(input,30,FOLLOW_2); 
-             after(grammarAccess.getObserverTypeAccess().getObserverKeyword_0()); 
+             after(grammarAccess.getObserverAccess().getObserverKeyword_1()); 
 
             }
 
@@ -3278,26 +3508,26 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__0__Impl"
+    // $ANTLR end "rule__Observer__Group__1__Impl"
 
 
-    // $ANTLR start "rule__ObserverType__Group__1"
-    // InternalDft.g:1066:1: rule__ObserverType__Group__1 : rule__ObserverType__Group__1__Impl rule__ObserverType__Group__2 ;
-    public final void rule__ObserverType__Group__1() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__2"
+    // InternalDft.g:1147:1: rule__Observer__Group__2 : rule__Observer__Group__2__Impl rule__Observer__Group__3 ;
+    public final void rule__Observer__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1070:1: ( rule__ObserverType__Group__1__Impl rule__ObserverType__Group__2 )
-            // InternalDft.g:1071:2: rule__ObserverType__Group__1__Impl rule__ObserverType__Group__2
+            // InternalDft.g:1151:1: ( rule__Observer__Group__2__Impl rule__Observer__Group__3 )
+            // InternalDft.g:1152:2: rule__Observer__Group__2__Impl rule__Observer__Group__3
             {
-            pushFollow(FOLLOW_11);
-            rule__ObserverType__Group__1__Impl();
+            pushFollow(FOLLOW_13);
+            rule__Observer__Group__2__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__ObserverType__Group__2();
+            rule__Observer__Group__3();
 
             state._fsp--;
 
@@ -3316,24 +3546,24 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__1"
+    // $ANTLR end "rule__Observer__Group__2"
 
 
-    // $ANTLR start "rule__ObserverType__Group__1__Impl"
-    // InternalDft.g:1078:1: rule__ObserverType__Group__1__Impl : ( ( rule__ObserverType__ObservablesAssignment_1 )* ) ;
-    public final void rule__ObserverType__Group__1__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__2__Impl"
+    // InternalDft.g:1159:1: rule__Observer__Group__2__Impl : ( ( rule__Observer__ObservablesAssignment_2 )* ) ;
+    public final void rule__Observer__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1082:1: ( ( ( rule__ObserverType__ObservablesAssignment_1 )* ) )
-            // InternalDft.g:1083:1: ( ( rule__ObserverType__ObservablesAssignment_1 )* )
+            // InternalDft.g:1163:1: ( ( ( rule__Observer__ObservablesAssignment_2 )* ) )
+            // InternalDft.g:1164:1: ( ( rule__Observer__ObservablesAssignment_2 )* )
             {
-            // InternalDft.g:1083:1: ( ( rule__ObserverType__ObservablesAssignment_1 )* )
-            // InternalDft.g:1084:2: ( rule__ObserverType__ObservablesAssignment_1 )*
+            // InternalDft.g:1164:1: ( ( rule__Observer__ObservablesAssignment_2 )* )
+            // InternalDft.g:1165:2: ( rule__Observer__ObservablesAssignment_2 )*
             {
-             before(grammarAccess.getObserverTypeAccess().getObservablesAssignment_1()); 
-            // InternalDft.g:1085:2: ( rule__ObserverType__ObservablesAssignment_1 )*
+             before(grammarAccess.getObserverAccess().getObservablesAssignment_2()); 
+            // InternalDft.g:1166:2: ( rule__Observer__ObservablesAssignment_2 )*
             loop8:
             do {
                 int alt8=2;
@@ -3346,10 +3576,10 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
                 switch (alt8) {
             	case 1 :
-            	    // InternalDft.g:1085:3: rule__ObserverType__ObservablesAssignment_1
+            	    // InternalDft.g:1166:3: rule__Observer__ObservablesAssignment_2
             	    {
             	    pushFollow(FOLLOW_5);
-            	    rule__ObserverType__ObservablesAssignment_1();
+            	    rule__Observer__ObservablesAssignment_2();
 
             	    state._fsp--;
 
@@ -3362,7 +3592,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
                 }
             } while (true);
 
-             after(grammarAccess.getObserverTypeAccess().getObservablesAssignment_1()); 
+             after(grammarAccess.getObserverAccess().getObservablesAssignment_2()); 
 
             }
 
@@ -3381,26 +3611,26 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__1__Impl"
+    // $ANTLR end "rule__Observer__Group__2__Impl"
 
 
-    // $ANTLR start "rule__ObserverType__Group__2"
-    // InternalDft.g:1093:1: rule__ObserverType__Group__2 : rule__ObserverType__Group__2__Impl rule__ObserverType__Group__3 ;
-    public final void rule__ObserverType__Group__2() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__3"
+    // InternalDft.g:1174:1: rule__Observer__Group__3 : rule__Observer__Group__3__Impl rule__Observer__Group__4 ;
+    public final void rule__Observer__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1097:1: ( rule__ObserverType__Group__2__Impl rule__ObserverType__Group__3 )
-            // InternalDft.g:1098:2: rule__ObserverType__Group__2__Impl rule__ObserverType__Group__3
+            // InternalDft.g:1178:1: ( rule__Observer__Group__3__Impl rule__Observer__Group__4 )
+            // InternalDft.g:1179:2: rule__Observer__Group__3__Impl rule__Observer__Group__4
             {
             pushFollow(FOLLOW_8);
-            rule__ObserverType__Group__2__Impl();
+            rule__Observer__Group__3__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__ObserverType__Group__3();
+            rule__Observer__Group__4();
 
             state._fsp--;
 
@@ -3419,25 +3649,25 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__2"
+    // $ANTLR end "rule__Observer__Group__3"
 
 
-    // $ANTLR start "rule__ObserverType__Group__2__Impl"
-    // InternalDft.g:1105:1: rule__ObserverType__Group__2__Impl : ( 'obsRate' ) ;
-    public final void rule__ObserverType__Group__2__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__3__Impl"
+    // InternalDft.g:1186:1: rule__Observer__Group__3__Impl : ( 'obsRate' ) ;
+    public final void rule__Observer__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1109:1: ( ( 'obsRate' ) )
-            // InternalDft.g:1110:1: ( 'obsRate' )
+            // InternalDft.g:1190:1: ( ( 'obsRate' ) )
+            // InternalDft.g:1191:1: ( 'obsRate' )
             {
-            // InternalDft.g:1110:1: ( 'obsRate' )
-            // InternalDft.g:1111:2: 'obsRate'
+            // InternalDft.g:1191:1: ( 'obsRate' )
+            // InternalDft.g:1192:2: 'obsRate'
             {
-             before(grammarAccess.getObserverTypeAccess().getObsRateKeyword_2()); 
+             before(grammarAccess.getObserverAccess().getObsRateKeyword_3()); 
             match(input,31,FOLLOW_2); 
-             after(grammarAccess.getObserverTypeAccess().getObsRateKeyword_2()); 
+             after(grammarAccess.getObserverAccess().getObsRateKeyword_3()); 
 
             }
 
@@ -3456,26 +3686,26 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__2__Impl"
+    // $ANTLR end "rule__Observer__Group__3__Impl"
 
 
-    // $ANTLR start "rule__ObserverType__Group__3"
-    // InternalDft.g:1120:1: rule__ObserverType__Group__3 : rule__ObserverType__Group__3__Impl rule__ObserverType__Group__4 ;
-    public final void rule__ObserverType__Group__3() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__4"
+    // InternalDft.g:1201:1: rule__Observer__Group__4 : rule__Observer__Group__4__Impl rule__Observer__Group__5 ;
+    public final void rule__Observer__Group__4() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1124:1: ( rule__ObserverType__Group__3__Impl rule__ObserverType__Group__4 )
-            // InternalDft.g:1125:2: rule__ObserverType__Group__3__Impl rule__ObserverType__Group__4
+            // InternalDft.g:1205:1: ( rule__Observer__Group__4__Impl rule__Observer__Group__5 )
+            // InternalDft.g:1206:2: rule__Observer__Group__4__Impl rule__Observer__Group__5
             {
             pushFollow(FOLLOW_9);
-            rule__ObserverType__Group__3__Impl();
+            rule__Observer__Group__4__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__ObserverType__Group__4();
+            rule__Observer__Group__5();
 
             state._fsp--;
 
@@ -3494,25 +3724,25 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__3"
+    // $ANTLR end "rule__Observer__Group__4"
 
 
-    // $ANTLR start "rule__ObserverType__Group__3__Impl"
-    // InternalDft.g:1132:1: rule__ObserverType__Group__3__Impl : ( '=' ) ;
-    public final void rule__ObserverType__Group__3__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__4__Impl"
+    // InternalDft.g:1213:1: rule__Observer__Group__4__Impl : ( '=' ) ;
+    public final void rule__Observer__Group__4__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1136:1: ( ( '=' ) )
-            // InternalDft.g:1137:1: ( '=' )
+            // InternalDft.g:1217:1: ( ( '=' ) )
+            // InternalDft.g:1218:1: ( '=' )
             {
-            // InternalDft.g:1137:1: ( '=' )
-            // InternalDft.g:1138:2: '='
+            // InternalDft.g:1218:1: ( '=' )
+            // InternalDft.g:1219:2: '='
             {
-             before(grammarAccess.getObserverTypeAccess().getEqualsSignKeyword_3()); 
+             before(grammarAccess.getObserverAccess().getEqualsSignKeyword_4()); 
             match(input,27,FOLLOW_2); 
-             after(grammarAccess.getObserverTypeAccess().getEqualsSignKeyword_3()); 
+             after(grammarAccess.getObserverAccess().getEqualsSignKeyword_4()); 
 
             }
 
@@ -3531,21 +3761,21 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__3__Impl"
+    // $ANTLR end "rule__Observer__Group__4__Impl"
 
 
-    // $ANTLR start "rule__ObserverType__Group__4"
-    // InternalDft.g:1147:1: rule__ObserverType__Group__4 : rule__ObserverType__Group__4__Impl ;
-    public final void rule__ObserverType__Group__4() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__5"
+    // InternalDft.g:1228:1: rule__Observer__Group__5 : rule__Observer__Group__5__Impl ;
+    public final void rule__Observer__Group__5() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1151:1: ( rule__ObserverType__Group__4__Impl )
-            // InternalDft.g:1152:2: rule__ObserverType__Group__4__Impl
+            // InternalDft.g:1232:1: ( rule__Observer__Group__5__Impl )
+            // InternalDft.g:1233:2: rule__Observer__Group__5__Impl
             {
             pushFollow(FOLLOW_2);
-            rule__ObserverType__Group__4__Impl();
+            rule__Observer__Group__5__Impl();
 
             state._fsp--;
 
@@ -3564,35 +3794,35 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__4"
+    // $ANTLR end "rule__Observer__Group__5"
 
 
-    // $ANTLR start "rule__ObserverType__Group__4__Impl"
-    // InternalDft.g:1158:1: rule__ObserverType__Group__4__Impl : ( ( rule__ObserverType__ObservationRateAssignment_4 ) ) ;
-    public final void rule__ObserverType__Group__4__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Observer__Group__5__Impl"
+    // InternalDft.g:1239:1: rule__Observer__Group__5__Impl : ( ( rule__Observer__ObservationRateAssignment_5 ) ) ;
+    public final void rule__Observer__Group__5__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1162:1: ( ( ( rule__ObserverType__ObservationRateAssignment_4 ) ) )
-            // InternalDft.g:1163:1: ( ( rule__ObserverType__ObservationRateAssignment_4 ) )
+            // InternalDft.g:1243:1: ( ( ( rule__Observer__ObservationRateAssignment_5 ) ) )
+            // InternalDft.g:1244:1: ( ( rule__Observer__ObservationRateAssignment_5 ) )
             {
-            // InternalDft.g:1163:1: ( ( rule__ObserverType__ObservationRateAssignment_4 ) )
-            // InternalDft.g:1164:2: ( rule__ObserverType__ObservationRateAssignment_4 )
+            // InternalDft.g:1244:1: ( ( rule__Observer__ObservationRateAssignment_5 ) )
+            // InternalDft.g:1245:2: ( rule__Observer__ObservationRateAssignment_5 )
             {
-             before(grammarAccess.getObserverTypeAccess().getObservationRateAssignment_4()); 
-            // InternalDft.g:1165:2: ( rule__ObserverType__ObservationRateAssignment_4 )
-            // InternalDft.g:1165:3: rule__ObserverType__ObservationRateAssignment_4
+             before(grammarAccess.getObserverAccess().getObservationRateAssignment_5()); 
+            // InternalDft.g:1246:2: ( rule__Observer__ObservationRateAssignment_5 )
+            // InternalDft.g:1246:3: rule__Observer__ObservationRateAssignment_5
             {
             pushFollow(FOLLOW_2);
-            rule__ObserverType__ObservationRateAssignment_4();
+            rule__Observer__ObservationRateAssignment_5();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getObserverTypeAccess().getObservationRateAssignment_4()); 
+             after(grammarAccess.getObserverAccess().getObservationRateAssignment_5()); 
 
             }
 
@@ -3611,26 +3841,26 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__Group__4__Impl"
+    // $ANTLR end "rule__Observer__Group__5__Impl"
 
 
-    // $ANTLR start "rule__RDEPType__Group__0"
-    // InternalDft.g:1174:1: rule__RDEPType__Group__0 : rule__RDEPType__Group__0__Impl rule__RDEPType__Group__1 ;
-    public final void rule__RDEPType__Group__0() throws RecognitionException {
+    // $ANTLR start "rule__RDEP__Group__0"
+    // InternalDft.g:1255:1: rule__RDEP__Group__0 : rule__RDEP__Group__0__Impl rule__RDEP__Group__1 ;
+    public final void rule__RDEP__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1178:1: ( rule__RDEPType__Group__0__Impl rule__RDEPType__Group__1 )
-            // InternalDft.g:1179:2: rule__RDEPType__Group__0__Impl rule__RDEPType__Group__1
+            // InternalDft.g:1259:1: ( rule__RDEP__Group__0__Impl rule__RDEP__Group__1 )
+            // InternalDft.g:1260:2: rule__RDEP__Group__0__Impl rule__RDEP__Group__1
             {
-            pushFollow(FOLLOW_12);
-            rule__RDEPType__Group__0__Impl();
+            pushFollow(FOLLOW_14);
+            rule__RDEP__Group__0__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__RDEPType__Group__1();
+            rule__RDEP__Group__1();
 
             state._fsp--;
 
@@ -3649,25 +3879,100 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__RDEPType__Group__0"
+    // $ANTLR end "rule__RDEP__Group__0"
 
 
-    // $ANTLR start "rule__RDEPType__Group__0__Impl"
-    // InternalDft.g:1186:1: rule__RDEPType__Group__0__Impl : ( 'rdep' ) ;
-    public final void rule__RDEPType__Group__0__Impl() throws RecognitionException {
+    // $ANTLR start "rule__RDEP__Group__0__Impl"
+    // InternalDft.g:1267:1: rule__RDEP__Group__0__Impl : ( () ) ;
+    public final void rule__RDEP__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1190:1: ( ( 'rdep' ) )
-            // InternalDft.g:1191:1: ( 'rdep' )
+            // InternalDft.g:1271:1: ( ( () ) )
+            // InternalDft.g:1272:1: ( () )
             {
-            // InternalDft.g:1191:1: ( 'rdep' )
-            // InternalDft.g:1192:2: 'rdep'
+            // InternalDft.g:1272:1: ( () )
+            // InternalDft.g:1273:2: ()
             {
-             before(grammarAccess.getRDEPTypeAccess().getRdepKeyword_0()); 
+             before(grammarAccess.getRDEPAccess().getRdepAction_0()); 
+            // InternalDft.g:1274:2: ()
+            // InternalDft.g:1274:3: 
+            {
+            }
+
+             after(grammarAccess.getRDEPAccess().getRdepAction_0()); 
+
+            }
+
+
+            }
+
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__RDEP__Group__0__Impl"
+
+
+    // $ANTLR start "rule__RDEP__Group__1"
+    // InternalDft.g:1282:1: rule__RDEP__Group__1 : rule__RDEP__Group__1__Impl rule__RDEP__Group__2 ;
+    public final void rule__RDEP__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1286:1: ( rule__RDEP__Group__1__Impl rule__RDEP__Group__2 )
+            // InternalDft.g:1287:2: rule__RDEP__Group__1__Impl rule__RDEP__Group__2
+            {
+            pushFollow(FOLLOW_15);
+            rule__RDEP__Group__1__Impl();
+
+            state._fsp--;
+
+            pushFollow(FOLLOW_2);
+            rule__RDEP__Group__2();
+
+            state._fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__RDEP__Group__1"
+
+
+    // $ANTLR start "rule__RDEP__Group__1__Impl"
+    // InternalDft.g:1294:1: rule__RDEP__Group__1__Impl : ( 'rdep' ) ;
+    public final void rule__RDEP__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1298:1: ( ( 'rdep' ) )
+            // InternalDft.g:1299:1: ( 'rdep' )
+            {
+            // InternalDft.g:1299:1: ( 'rdep' )
+            // InternalDft.g:1300:2: 'rdep'
+            {
+             before(grammarAccess.getRDEPAccess().getRdepKeyword_1()); 
             match(input,32,FOLLOW_2); 
-             after(grammarAccess.getRDEPTypeAccess().getRdepKeyword_0()); 
+             after(grammarAccess.getRDEPAccess().getRdepKeyword_1()); 
 
             }
 
@@ -3686,26 +3991,26 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__RDEPType__Group__0__Impl"
+    // $ANTLR end "rule__RDEP__Group__1__Impl"
 
 
-    // $ANTLR start "rule__RDEPType__Group__1"
-    // InternalDft.g:1201:1: rule__RDEPType__Group__1 : rule__RDEPType__Group__1__Impl rule__RDEPType__Group__2 ;
-    public final void rule__RDEPType__Group__1() throws RecognitionException {
+    // $ANTLR start "rule__RDEP__Group__2"
+    // InternalDft.g:1309:1: rule__RDEP__Group__2 : rule__RDEP__Group__2__Impl rule__RDEP__Group__3 ;
+    public final void rule__RDEP__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1205:1: ( rule__RDEPType__Group__1__Impl rule__RDEPType__Group__2 )
-            // InternalDft.g:1206:2: rule__RDEPType__Group__1__Impl rule__RDEPType__Group__2
+            // InternalDft.g:1313:1: ( rule__RDEP__Group__2__Impl rule__RDEP__Group__3 )
+            // InternalDft.g:1314:2: rule__RDEP__Group__2__Impl rule__RDEP__Group__3
             {
             pushFollow(FOLLOW_9);
-            rule__RDEPType__Group__1__Impl();
+            rule__RDEP__Group__2__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__RDEPType__Group__2();
+            rule__RDEP__Group__3();
 
             state._fsp--;
 
@@ -3724,25 +4029,25 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__RDEPType__Group__1"
+    // $ANTLR end "rule__RDEP__Group__2"
 
 
-    // $ANTLR start "rule__RDEPType__Group__1__Impl"
-    // InternalDft.g:1213:1: rule__RDEPType__Group__1__Impl : ( 'rateFactor' ) ;
-    public final void rule__RDEPType__Group__1__Impl() throws RecognitionException {
+    // $ANTLR start "rule__RDEP__Group__2__Impl"
+    // InternalDft.g:1321:1: rule__RDEP__Group__2__Impl : ( 'rateFactor' ) ;
+    public final void rule__RDEP__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1217:1: ( ( 'rateFactor' ) )
-            // InternalDft.g:1218:1: ( 'rateFactor' )
+            // InternalDft.g:1325:1: ( ( 'rateFactor' ) )
+            // InternalDft.g:1326:1: ( 'rateFactor' )
             {
-            // InternalDft.g:1218:1: ( 'rateFactor' )
-            // InternalDft.g:1219:2: 'rateFactor'
+            // InternalDft.g:1326:1: ( 'rateFactor' )
+            // InternalDft.g:1327:2: 'rateFactor'
             {
-             before(grammarAccess.getRDEPTypeAccess().getRateFactorKeyword_1()); 
+             before(grammarAccess.getRDEPAccess().getRateFactorKeyword_2()); 
             match(input,33,FOLLOW_2); 
-             after(grammarAccess.getRDEPTypeAccess().getRateFactorKeyword_1()); 
+             after(grammarAccess.getRDEPAccess().getRateFactorKeyword_2()); 
 
             }
 
@@ -3761,21 +4066,21 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__RDEPType__Group__1__Impl"
+    // $ANTLR end "rule__RDEP__Group__2__Impl"
 
 
-    // $ANTLR start "rule__RDEPType__Group__2"
-    // InternalDft.g:1228:1: rule__RDEPType__Group__2 : rule__RDEPType__Group__2__Impl ;
-    public final void rule__RDEPType__Group__2() throws RecognitionException {
+    // $ANTLR start "rule__RDEP__Group__3"
+    // InternalDft.g:1336:1: rule__RDEP__Group__3 : rule__RDEP__Group__3__Impl ;
+    public final void rule__RDEP__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1232:1: ( rule__RDEPType__Group__2__Impl )
-            // InternalDft.g:1233:2: rule__RDEPType__Group__2__Impl
+            // InternalDft.g:1340:1: ( rule__RDEP__Group__3__Impl )
+            // InternalDft.g:1341:2: rule__RDEP__Group__3__Impl
             {
             pushFollow(FOLLOW_2);
-            rule__RDEPType__Group__2__Impl();
+            rule__RDEP__Group__3__Impl();
 
             state._fsp--;
 
@@ -3794,35 +4099,35 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__RDEPType__Group__2"
+    // $ANTLR end "rule__RDEP__Group__3"
 
 
-    // $ANTLR start "rule__RDEPType__Group__2__Impl"
-    // InternalDft.g:1239:1: rule__RDEPType__Group__2__Impl : ( ( rule__RDEPType__RateFactorAssignment_2 ) ) ;
-    public final void rule__RDEPType__Group__2__Impl() throws RecognitionException {
+    // $ANTLR start "rule__RDEP__Group__3__Impl"
+    // InternalDft.g:1347:1: rule__RDEP__Group__3__Impl : ( ( rule__RDEP__RateFactorAssignment_3 ) ) ;
+    public final void rule__RDEP__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1243:1: ( ( ( rule__RDEPType__RateFactorAssignment_2 ) ) )
-            // InternalDft.g:1244:1: ( ( rule__RDEPType__RateFactorAssignment_2 ) )
+            // InternalDft.g:1351:1: ( ( ( rule__RDEP__RateFactorAssignment_3 ) ) )
+            // InternalDft.g:1352:1: ( ( rule__RDEP__RateFactorAssignment_3 ) )
             {
-            // InternalDft.g:1244:1: ( ( rule__RDEPType__RateFactorAssignment_2 ) )
-            // InternalDft.g:1245:2: ( rule__RDEPType__RateFactorAssignment_2 )
+            // InternalDft.g:1352:1: ( ( rule__RDEP__RateFactorAssignment_3 ) )
+            // InternalDft.g:1353:2: ( rule__RDEP__RateFactorAssignment_3 )
             {
-             before(grammarAccess.getRDEPTypeAccess().getRateFactorAssignment_2()); 
-            // InternalDft.g:1246:2: ( rule__RDEPType__RateFactorAssignment_2 )
-            // InternalDft.g:1246:3: rule__RDEPType__RateFactorAssignment_2
+             before(grammarAccess.getRDEPAccess().getRateFactorAssignment_3()); 
+            // InternalDft.g:1354:2: ( rule__RDEP__RateFactorAssignment_3 )
+            // InternalDft.g:1354:3: rule__RDEP__RateFactorAssignment_3
             {
             pushFollow(FOLLOW_2);
-            rule__RDEPType__RateFactorAssignment_2();
+            rule__RDEP__RateFactorAssignment_3();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getRDEPTypeAccess().getRateFactorAssignment_2()); 
+             after(grammarAccess.getRDEPAccess().getRateFactorAssignment_3()); 
 
             }
 
@@ -3841,26 +4146,26 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__RDEPType__Group__2__Impl"
+    // $ANTLR end "rule__RDEP__Group__3__Impl"
 
 
-    // $ANTLR start "rule__DelayType__Group__0"
-    // InternalDft.g:1255:1: rule__DelayType__Group__0 : rule__DelayType__Group__0__Impl rule__DelayType__Group__1 ;
-    public final void rule__DelayType__Group__0() throws RecognitionException {
+    // $ANTLR start "rule__Delay__Group__0"
+    // InternalDft.g:1363:1: rule__Delay__Group__0 : rule__Delay__Group__0__Impl rule__Delay__Group__1 ;
+    public final void rule__Delay__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1259:1: ( rule__DelayType__Group__0__Impl rule__DelayType__Group__1 )
-            // InternalDft.g:1260:2: rule__DelayType__Group__0__Impl rule__DelayType__Group__1
+            // InternalDft.g:1367:1: ( rule__Delay__Group__0__Impl rule__Delay__Group__1 )
+            // InternalDft.g:1368:2: rule__Delay__Group__0__Impl rule__Delay__Group__1
             {
-            pushFollow(FOLLOW_13);
-            rule__DelayType__Group__0__Impl();
+            pushFollow(FOLLOW_6);
+            rule__Delay__Group__0__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__DelayType__Group__1();
+            rule__Delay__Group__1();
 
             state._fsp--;
 
@@ -3879,25 +4184,100 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__DelayType__Group__0"
+    // $ANTLR end "rule__Delay__Group__0"
 
 
-    // $ANTLR start "rule__DelayType__Group__0__Impl"
-    // InternalDft.g:1267:1: rule__DelayType__Group__0__Impl : ( 'delay' ) ;
-    public final void rule__DelayType__Group__0__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Delay__Group__0__Impl"
+    // InternalDft.g:1375:1: rule__Delay__Group__0__Impl : ( () ) ;
+    public final void rule__Delay__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1271:1: ( ( 'delay' ) )
-            // InternalDft.g:1272:1: ( 'delay' )
+            // InternalDft.g:1379:1: ( ( () ) )
+            // InternalDft.g:1380:1: ( () )
             {
-            // InternalDft.g:1272:1: ( 'delay' )
-            // InternalDft.g:1273:2: 'delay'
+            // InternalDft.g:1380:1: ( () )
+            // InternalDft.g:1381:2: ()
             {
-             before(grammarAccess.getDelayTypeAccess().getDelayKeyword_0()); 
+             before(grammarAccess.getDelayAccess().getDelayAction_0()); 
+            // InternalDft.g:1382:2: ()
+            // InternalDft.g:1382:3: 
+            {
+            }
+
+             after(grammarAccess.getDelayAccess().getDelayAction_0()); 
+
+            }
+
+
+            }
+
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Delay__Group__0__Impl"
+
+
+    // $ANTLR start "rule__Delay__Group__1"
+    // InternalDft.g:1390:1: rule__Delay__Group__1 : rule__Delay__Group__1__Impl rule__Delay__Group__2 ;
+    public final void rule__Delay__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1394:1: ( rule__Delay__Group__1__Impl rule__Delay__Group__2 )
+            // InternalDft.g:1395:2: rule__Delay__Group__1__Impl rule__Delay__Group__2
+            {
+            pushFollow(FOLLOW_16);
+            rule__Delay__Group__1__Impl();
+
+            state._fsp--;
+
+            pushFollow(FOLLOW_2);
+            rule__Delay__Group__2();
+
+            state._fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__Delay__Group__1"
+
+
+    // $ANTLR start "rule__Delay__Group__1__Impl"
+    // InternalDft.g:1402:1: rule__Delay__Group__1__Impl : ( 'delay' ) ;
+    public final void rule__Delay__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalDft.g:1406:1: ( ( 'delay' ) )
+            // InternalDft.g:1407:1: ( 'delay' )
+            {
+            // InternalDft.g:1407:1: ( 'delay' )
+            // InternalDft.g:1408:2: 'delay'
+            {
+             before(grammarAccess.getDelayAccess().getDelayKeyword_1()); 
             match(input,34,FOLLOW_2); 
-             after(grammarAccess.getDelayTypeAccess().getDelayKeyword_0()); 
+             after(grammarAccess.getDelayAccess().getDelayKeyword_1()); 
 
             }
 
@@ -3916,26 +4296,26 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__DelayType__Group__0__Impl"
+    // $ANTLR end "rule__Delay__Group__1__Impl"
 
 
-    // $ANTLR start "rule__DelayType__Group__1"
-    // InternalDft.g:1282:1: rule__DelayType__Group__1 : rule__DelayType__Group__1__Impl rule__DelayType__Group__2 ;
-    public final void rule__DelayType__Group__1() throws RecognitionException {
+    // $ANTLR start "rule__Delay__Group__2"
+    // InternalDft.g:1417:1: rule__Delay__Group__2 : rule__Delay__Group__2__Impl rule__Delay__Group__3 ;
+    public final void rule__Delay__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1286:1: ( rule__DelayType__Group__1__Impl rule__DelayType__Group__2 )
-            // InternalDft.g:1287:2: rule__DelayType__Group__1__Impl rule__DelayType__Group__2
+            // InternalDft.g:1421:1: ( rule__Delay__Group__2__Impl rule__Delay__Group__3 )
+            // InternalDft.g:1422:2: rule__Delay__Group__2__Impl rule__Delay__Group__3
             {
             pushFollow(FOLLOW_9);
-            rule__DelayType__Group__1__Impl();
+            rule__Delay__Group__2__Impl();
 
             state._fsp--;
 
             pushFollow(FOLLOW_2);
-            rule__DelayType__Group__2();
+            rule__Delay__Group__3();
 
             state._fsp--;
 
@@ -3954,25 +4334,25 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__DelayType__Group__1"
+    // $ANTLR end "rule__Delay__Group__2"
 
 
-    // $ANTLR start "rule__DelayType__Group__1__Impl"
-    // InternalDft.g:1294:1: rule__DelayType__Group__1__Impl : ( 'time' ) ;
-    public final void rule__DelayType__Group__1__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Delay__Group__2__Impl"
+    // InternalDft.g:1429:1: rule__Delay__Group__2__Impl : ( 'time' ) ;
+    public final void rule__Delay__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1298:1: ( ( 'time' ) )
-            // InternalDft.g:1299:1: ( 'time' )
+            // InternalDft.g:1433:1: ( ( 'time' ) )
+            // InternalDft.g:1434:1: ( 'time' )
             {
-            // InternalDft.g:1299:1: ( 'time' )
-            // InternalDft.g:1300:2: 'time'
+            // InternalDft.g:1434:1: ( 'time' )
+            // InternalDft.g:1435:2: 'time'
             {
-             before(grammarAccess.getDelayTypeAccess().getTimeKeyword_1()); 
+             before(grammarAccess.getDelayAccess().getTimeKeyword_2()); 
             match(input,35,FOLLOW_2); 
-             after(grammarAccess.getDelayTypeAccess().getTimeKeyword_1()); 
+             after(grammarAccess.getDelayAccess().getTimeKeyword_2()); 
 
             }
 
@@ -3991,21 +4371,21 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__DelayType__Group__1__Impl"
+    // $ANTLR end "rule__Delay__Group__2__Impl"
 
 
-    // $ANTLR start "rule__DelayType__Group__2"
-    // InternalDft.g:1309:1: rule__DelayType__Group__2 : rule__DelayType__Group__2__Impl ;
-    public final void rule__DelayType__Group__2() throws RecognitionException {
+    // $ANTLR start "rule__Delay__Group__3"
+    // InternalDft.g:1444:1: rule__Delay__Group__3 : rule__Delay__Group__3__Impl ;
+    public final void rule__Delay__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1313:1: ( rule__DelayType__Group__2__Impl )
-            // InternalDft.g:1314:2: rule__DelayType__Group__2__Impl
+            // InternalDft.g:1448:1: ( rule__Delay__Group__3__Impl )
+            // InternalDft.g:1449:2: rule__Delay__Group__3__Impl
             {
             pushFollow(FOLLOW_2);
-            rule__DelayType__Group__2__Impl();
+            rule__Delay__Group__3__Impl();
 
             state._fsp--;
 
@@ -4024,35 +4404,35 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__DelayType__Group__2"
+    // $ANTLR end "rule__Delay__Group__3"
 
 
-    // $ANTLR start "rule__DelayType__Group__2__Impl"
-    // InternalDft.g:1320:1: rule__DelayType__Group__2__Impl : ( ( rule__DelayType__TimeAssignment_2 ) ) ;
-    public final void rule__DelayType__Group__2__Impl() throws RecognitionException {
+    // $ANTLR start "rule__Delay__Group__3__Impl"
+    // InternalDft.g:1455:1: rule__Delay__Group__3__Impl : ( ( rule__Delay__TimeAssignment_3 ) ) ;
+    public final void rule__Delay__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1324:1: ( ( ( rule__DelayType__TimeAssignment_2 ) ) )
-            // InternalDft.g:1325:1: ( ( rule__DelayType__TimeAssignment_2 ) )
+            // InternalDft.g:1459:1: ( ( ( rule__Delay__TimeAssignment_3 ) ) )
+            // InternalDft.g:1460:1: ( ( rule__Delay__TimeAssignment_3 ) )
             {
-            // InternalDft.g:1325:1: ( ( rule__DelayType__TimeAssignment_2 ) )
-            // InternalDft.g:1326:2: ( rule__DelayType__TimeAssignment_2 )
+            // InternalDft.g:1460:1: ( ( rule__Delay__TimeAssignment_3 ) )
+            // InternalDft.g:1461:2: ( rule__Delay__TimeAssignment_3 )
             {
-             before(grammarAccess.getDelayTypeAccess().getTimeAssignment_2()); 
-            // InternalDft.g:1327:2: ( rule__DelayType__TimeAssignment_2 )
-            // InternalDft.g:1327:3: rule__DelayType__TimeAssignment_2
+             before(grammarAccess.getDelayAccess().getTimeAssignment_3()); 
+            // InternalDft.g:1462:2: ( rule__Delay__TimeAssignment_3 )
+            // InternalDft.g:1462:3: rule__Delay__TimeAssignment_3
             {
             pushFollow(FOLLOW_2);
-            rule__DelayType__TimeAssignment_2();
+            rule__Delay__TimeAssignment_3();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getDelayTypeAccess().getTimeAssignment_2()); 
+             after(grammarAccess.getDelayAccess().getTimeAssignment_3()); 
 
             }
 
@@ -4071,18 +4451,18 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__DelayType__Group__2__Impl"
+    // $ANTLR end "rule__Delay__Group__3__Impl"
 
 
     // $ANTLR start "rule__Float__Group__0"
-    // InternalDft.g:1336:1: rule__Float__Group__0 : rule__Float__Group__0__Impl rule__Float__Group__1 ;
+    // InternalDft.g:1471:1: rule__Float__Group__0 : rule__Float__Group__0__Impl rule__Float__Group__1 ;
     public final void rule__Float__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1340:1: ( rule__Float__Group__0__Impl rule__Float__Group__1 )
-            // InternalDft.g:1341:2: rule__Float__Group__0__Impl rule__Float__Group__1
+            // InternalDft.g:1475:1: ( rule__Float__Group__0__Impl rule__Float__Group__1 )
+            // InternalDft.g:1476:2: rule__Float__Group__0__Impl rule__Float__Group__1
             {
             pushFollow(FOLLOW_9);
             rule__Float__Group__0__Impl();
@@ -4113,20 +4493,20 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group__0__Impl"
-    // InternalDft.g:1348:1: rule__Float__Group__0__Impl : ( ( '-' )? ) ;
+    // InternalDft.g:1483:1: rule__Float__Group__0__Impl : ( ( '-' )? ) ;
     public final void rule__Float__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1352:1: ( ( ( '-' )? ) )
-            // InternalDft.g:1353:1: ( ( '-' )? )
+            // InternalDft.g:1487:1: ( ( ( '-' )? ) )
+            // InternalDft.g:1488:1: ( ( '-' )? )
             {
-            // InternalDft.g:1353:1: ( ( '-' )? )
-            // InternalDft.g:1354:2: ( '-' )?
+            // InternalDft.g:1488:1: ( ( '-' )? )
+            // InternalDft.g:1489:2: ( '-' )?
             {
              before(grammarAccess.getFloatAccess().getHyphenMinusKeyword_0()); 
-            // InternalDft.g:1355:2: ( '-' )?
+            // InternalDft.g:1490:2: ( '-' )?
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -4135,7 +4515,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
             }
             switch (alt9) {
                 case 1 :
-                    // InternalDft.g:1355:3: '-'
+                    // InternalDft.g:1490:3: '-'
                     {
                     match(input,36,FOLLOW_2); 
 
@@ -4167,16 +4547,16 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group__1"
-    // InternalDft.g:1363:1: rule__Float__Group__1 : rule__Float__Group__1__Impl rule__Float__Group__2 ;
+    // InternalDft.g:1498:1: rule__Float__Group__1 : rule__Float__Group__1__Impl rule__Float__Group__2 ;
     public final void rule__Float__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1367:1: ( rule__Float__Group__1__Impl rule__Float__Group__2 )
-            // InternalDft.g:1368:2: rule__Float__Group__1__Impl rule__Float__Group__2
+            // InternalDft.g:1502:1: ( rule__Float__Group__1__Impl rule__Float__Group__2 )
+            // InternalDft.g:1503:2: rule__Float__Group__1__Impl rule__Float__Group__2
             {
-            pushFollow(FOLLOW_14);
+            pushFollow(FOLLOW_17);
             rule__Float__Group__1__Impl();
 
             state._fsp--;
@@ -4205,17 +4585,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group__1__Impl"
-    // InternalDft.g:1375:1: rule__Float__Group__1__Impl : ( RULE_INT ) ;
+    // InternalDft.g:1510:1: rule__Float__Group__1__Impl : ( RULE_INT ) ;
     public final void rule__Float__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1379:1: ( ( RULE_INT ) )
-            // InternalDft.g:1380:1: ( RULE_INT )
+            // InternalDft.g:1514:1: ( ( RULE_INT ) )
+            // InternalDft.g:1515:1: ( RULE_INT )
             {
-            // InternalDft.g:1380:1: ( RULE_INT )
-            // InternalDft.g:1381:2: RULE_INT
+            // InternalDft.g:1515:1: ( RULE_INT )
+            // InternalDft.g:1516:2: RULE_INT
             {
              before(grammarAccess.getFloatAccess().getINTTerminalRuleCall_1()); 
             match(input,RULE_INT,FOLLOW_2); 
@@ -4242,16 +4622,16 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group__2"
-    // InternalDft.g:1390:1: rule__Float__Group__2 : rule__Float__Group__2__Impl rule__Float__Group__3 ;
+    // InternalDft.g:1525:1: rule__Float__Group__2 : rule__Float__Group__2__Impl rule__Float__Group__3 ;
     public final void rule__Float__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1394:1: ( rule__Float__Group__2__Impl rule__Float__Group__3 )
-            // InternalDft.g:1395:2: rule__Float__Group__2__Impl rule__Float__Group__3
+            // InternalDft.g:1529:1: ( rule__Float__Group__2__Impl rule__Float__Group__3 )
+            // InternalDft.g:1530:2: rule__Float__Group__2__Impl rule__Float__Group__3
             {
-            pushFollow(FOLLOW_14);
+            pushFollow(FOLLOW_17);
             rule__Float__Group__2__Impl();
 
             state._fsp--;
@@ -4280,20 +4660,20 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group__2__Impl"
-    // InternalDft.g:1402:1: rule__Float__Group__2__Impl : ( ( rule__Float__Group_2__0 )? ) ;
+    // InternalDft.g:1537:1: rule__Float__Group__2__Impl : ( ( rule__Float__Group_2__0 )? ) ;
     public final void rule__Float__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1406:1: ( ( ( rule__Float__Group_2__0 )? ) )
-            // InternalDft.g:1407:1: ( ( rule__Float__Group_2__0 )? )
+            // InternalDft.g:1541:1: ( ( ( rule__Float__Group_2__0 )? ) )
+            // InternalDft.g:1542:1: ( ( rule__Float__Group_2__0 )? )
             {
-            // InternalDft.g:1407:1: ( ( rule__Float__Group_2__0 )? )
-            // InternalDft.g:1408:2: ( rule__Float__Group_2__0 )?
+            // InternalDft.g:1542:1: ( ( rule__Float__Group_2__0 )? )
+            // InternalDft.g:1543:2: ( rule__Float__Group_2__0 )?
             {
              before(grammarAccess.getFloatAccess().getGroup_2()); 
-            // InternalDft.g:1409:2: ( rule__Float__Group_2__0 )?
+            // InternalDft.g:1544:2: ( rule__Float__Group_2__0 )?
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -4302,7 +4682,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
             }
             switch (alt10) {
                 case 1 :
-                    // InternalDft.g:1409:3: rule__Float__Group_2__0
+                    // InternalDft.g:1544:3: rule__Float__Group_2__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__Float__Group_2__0();
@@ -4338,14 +4718,14 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group__3"
-    // InternalDft.g:1417:1: rule__Float__Group__3 : rule__Float__Group__3__Impl ;
+    // InternalDft.g:1552:1: rule__Float__Group__3 : rule__Float__Group__3__Impl ;
     public final void rule__Float__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1421:1: ( rule__Float__Group__3__Impl )
-            // InternalDft.g:1422:2: rule__Float__Group__3__Impl
+            // InternalDft.g:1556:1: ( rule__Float__Group__3__Impl )
+            // InternalDft.g:1557:2: rule__Float__Group__3__Impl
             {
             pushFollow(FOLLOW_2);
             rule__Float__Group__3__Impl();
@@ -4371,20 +4751,20 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group__3__Impl"
-    // InternalDft.g:1428:1: rule__Float__Group__3__Impl : ( ( rule__Float__Group_3__0 )? ) ;
+    // InternalDft.g:1563:1: rule__Float__Group__3__Impl : ( ( rule__Float__Group_3__0 )? ) ;
     public final void rule__Float__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1432:1: ( ( ( rule__Float__Group_3__0 )? ) )
-            // InternalDft.g:1433:1: ( ( rule__Float__Group_3__0 )? )
+            // InternalDft.g:1567:1: ( ( ( rule__Float__Group_3__0 )? ) )
+            // InternalDft.g:1568:1: ( ( rule__Float__Group_3__0 )? )
             {
-            // InternalDft.g:1433:1: ( ( rule__Float__Group_3__0 )? )
-            // InternalDft.g:1434:2: ( rule__Float__Group_3__0 )?
+            // InternalDft.g:1568:1: ( ( rule__Float__Group_3__0 )? )
+            // InternalDft.g:1569:2: ( rule__Float__Group_3__0 )?
             {
              before(grammarAccess.getFloatAccess().getGroup_3()); 
-            // InternalDft.g:1435:2: ( rule__Float__Group_3__0 )?
+            // InternalDft.g:1570:2: ( rule__Float__Group_3__0 )?
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -4393,7 +4773,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
             }
             switch (alt11) {
                 case 1 :
-                    // InternalDft.g:1435:3: rule__Float__Group_3__0
+                    // InternalDft.g:1570:3: rule__Float__Group_3__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__Float__Group_3__0();
@@ -4429,16 +4809,16 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_2__0"
-    // InternalDft.g:1444:1: rule__Float__Group_2__0 : rule__Float__Group_2__0__Impl rule__Float__Group_2__1 ;
+    // InternalDft.g:1579:1: rule__Float__Group_2__0 : rule__Float__Group_2__0__Impl rule__Float__Group_2__1 ;
     public final void rule__Float__Group_2__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1448:1: ( rule__Float__Group_2__0__Impl rule__Float__Group_2__1 )
-            // InternalDft.g:1449:2: rule__Float__Group_2__0__Impl rule__Float__Group_2__1
+            // InternalDft.g:1583:1: ( rule__Float__Group_2__0__Impl rule__Float__Group_2__1 )
+            // InternalDft.g:1584:2: rule__Float__Group_2__0__Impl rule__Float__Group_2__1
             {
-            pushFollow(FOLLOW_15);
+            pushFollow(FOLLOW_18);
             rule__Float__Group_2__0__Impl();
 
             state._fsp--;
@@ -4467,17 +4847,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_2__0__Impl"
-    // InternalDft.g:1456:1: rule__Float__Group_2__0__Impl : ( '.' ) ;
+    // InternalDft.g:1591:1: rule__Float__Group_2__0__Impl : ( '.' ) ;
     public final void rule__Float__Group_2__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1460:1: ( ( '.' ) )
-            // InternalDft.g:1461:1: ( '.' )
+            // InternalDft.g:1595:1: ( ( '.' ) )
+            // InternalDft.g:1596:1: ( '.' )
             {
-            // InternalDft.g:1461:1: ( '.' )
-            // InternalDft.g:1462:2: '.'
+            // InternalDft.g:1596:1: ( '.' )
+            // InternalDft.g:1597:2: '.'
             {
              before(grammarAccess.getFloatAccess().getFullStopKeyword_2_0()); 
             match(input,37,FOLLOW_2); 
@@ -4504,14 +4884,14 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_2__1"
-    // InternalDft.g:1471:1: rule__Float__Group_2__1 : rule__Float__Group_2__1__Impl ;
+    // InternalDft.g:1606:1: rule__Float__Group_2__1 : rule__Float__Group_2__1__Impl ;
     public final void rule__Float__Group_2__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1475:1: ( rule__Float__Group_2__1__Impl )
-            // InternalDft.g:1476:2: rule__Float__Group_2__1__Impl
+            // InternalDft.g:1610:1: ( rule__Float__Group_2__1__Impl )
+            // InternalDft.g:1611:2: rule__Float__Group_2__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__Float__Group_2__1__Impl();
@@ -4537,17 +4917,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_2__1__Impl"
-    // InternalDft.g:1482:1: rule__Float__Group_2__1__Impl : ( RULE_INT ) ;
+    // InternalDft.g:1617:1: rule__Float__Group_2__1__Impl : ( RULE_INT ) ;
     public final void rule__Float__Group_2__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1486:1: ( ( RULE_INT ) )
-            // InternalDft.g:1487:1: ( RULE_INT )
+            // InternalDft.g:1621:1: ( ( RULE_INT ) )
+            // InternalDft.g:1622:1: ( RULE_INT )
             {
-            // InternalDft.g:1487:1: ( RULE_INT )
-            // InternalDft.g:1488:2: RULE_INT
+            // InternalDft.g:1622:1: ( RULE_INT )
+            // InternalDft.g:1623:2: RULE_INT
             {
              before(grammarAccess.getFloatAccess().getINTTerminalRuleCall_2_1()); 
             match(input,RULE_INT,FOLLOW_2); 
@@ -4574,14 +4954,14 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_3__0"
-    // InternalDft.g:1498:1: rule__Float__Group_3__0 : rule__Float__Group_3__0__Impl rule__Float__Group_3__1 ;
+    // InternalDft.g:1633:1: rule__Float__Group_3__0 : rule__Float__Group_3__0__Impl rule__Float__Group_3__1 ;
     public final void rule__Float__Group_3__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1502:1: ( rule__Float__Group_3__0__Impl rule__Float__Group_3__1 )
-            // InternalDft.g:1503:2: rule__Float__Group_3__0__Impl rule__Float__Group_3__1
+            // InternalDft.g:1637:1: ( rule__Float__Group_3__0__Impl rule__Float__Group_3__1 )
+            // InternalDft.g:1638:2: rule__Float__Group_3__0__Impl rule__Float__Group_3__1
             {
             pushFollow(FOLLOW_9);
             rule__Float__Group_3__0__Impl();
@@ -4612,17 +4992,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_3__0__Impl"
-    // InternalDft.g:1510:1: rule__Float__Group_3__0__Impl : ( 'e' ) ;
+    // InternalDft.g:1645:1: rule__Float__Group_3__0__Impl : ( 'e' ) ;
     public final void rule__Float__Group_3__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1514:1: ( ( 'e' ) )
-            // InternalDft.g:1515:1: ( 'e' )
+            // InternalDft.g:1649:1: ( ( 'e' ) )
+            // InternalDft.g:1650:1: ( 'e' )
             {
-            // InternalDft.g:1515:1: ( 'e' )
-            // InternalDft.g:1516:2: 'e'
+            // InternalDft.g:1650:1: ( 'e' )
+            // InternalDft.g:1651:2: 'e'
             {
              before(grammarAccess.getFloatAccess().getEKeyword_3_0()); 
             match(input,38,FOLLOW_2); 
@@ -4649,14 +5029,14 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_3__1"
-    // InternalDft.g:1525:1: rule__Float__Group_3__1 : rule__Float__Group_3__1__Impl rule__Float__Group_3__2 ;
+    // InternalDft.g:1660:1: rule__Float__Group_3__1 : rule__Float__Group_3__1__Impl rule__Float__Group_3__2 ;
     public final void rule__Float__Group_3__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1529:1: ( rule__Float__Group_3__1__Impl rule__Float__Group_3__2 )
-            // InternalDft.g:1530:2: rule__Float__Group_3__1__Impl rule__Float__Group_3__2
+            // InternalDft.g:1664:1: ( rule__Float__Group_3__1__Impl rule__Float__Group_3__2 )
+            // InternalDft.g:1665:2: rule__Float__Group_3__1__Impl rule__Float__Group_3__2
             {
             pushFollow(FOLLOW_9);
             rule__Float__Group_3__1__Impl();
@@ -4687,20 +5067,20 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_3__1__Impl"
-    // InternalDft.g:1537:1: rule__Float__Group_3__1__Impl : ( ( '-' )? ) ;
+    // InternalDft.g:1672:1: rule__Float__Group_3__1__Impl : ( ( '-' )? ) ;
     public final void rule__Float__Group_3__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1541:1: ( ( ( '-' )? ) )
-            // InternalDft.g:1542:1: ( ( '-' )? )
+            // InternalDft.g:1676:1: ( ( ( '-' )? ) )
+            // InternalDft.g:1677:1: ( ( '-' )? )
             {
-            // InternalDft.g:1542:1: ( ( '-' )? )
-            // InternalDft.g:1543:2: ( '-' )?
+            // InternalDft.g:1677:1: ( ( '-' )? )
+            // InternalDft.g:1678:2: ( '-' )?
             {
              before(grammarAccess.getFloatAccess().getHyphenMinusKeyword_3_1()); 
-            // InternalDft.g:1544:2: ( '-' )?
+            // InternalDft.g:1679:2: ( '-' )?
             int alt12=2;
             int LA12_0 = input.LA(1);
 
@@ -4709,7 +5089,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
             }
             switch (alt12) {
                 case 1 :
-                    // InternalDft.g:1544:3: '-'
+                    // InternalDft.g:1679:3: '-'
                     {
                     match(input,36,FOLLOW_2); 
 
@@ -4741,14 +5121,14 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_3__2"
-    // InternalDft.g:1552:1: rule__Float__Group_3__2 : rule__Float__Group_3__2__Impl ;
+    // InternalDft.g:1687:1: rule__Float__Group_3__2 : rule__Float__Group_3__2__Impl ;
     public final void rule__Float__Group_3__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1556:1: ( rule__Float__Group_3__2__Impl )
-            // InternalDft.g:1557:2: rule__Float__Group_3__2__Impl
+            // InternalDft.g:1691:1: ( rule__Float__Group_3__2__Impl )
+            // InternalDft.g:1692:2: rule__Float__Group_3__2__Impl
             {
             pushFollow(FOLLOW_2);
             rule__Float__Group_3__2__Impl();
@@ -4774,17 +5154,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__Float__Group_3__2__Impl"
-    // InternalDft.g:1563:1: rule__Float__Group_3__2__Impl : ( RULE_INT ) ;
+    // InternalDft.g:1698:1: rule__Float__Group_3__2__Impl : ( RULE_INT ) ;
     public final void rule__Float__Group_3__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1567:1: ( ( RULE_INT ) )
-            // InternalDft.g:1568:1: ( RULE_INT )
+            // InternalDft.g:1702:1: ( ( RULE_INT ) )
+            // InternalDft.g:1703:1: ( RULE_INT )
             {
-            // InternalDft.g:1568:1: ( RULE_INT )
-            // InternalDft.g:1569:2: RULE_INT
+            // InternalDft.g:1703:1: ( RULE_INT )
+            // InternalDft.g:1704:2: RULE_INT
             {
              before(grammarAccess.getFloatAccess().getINTTerminalRuleCall_3_2()); 
             match(input,RULE_INT,FOLLOW_2); 
@@ -4811,21 +5191,21 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoDft__RootAssignment_1"
-    // InternalDft.g:1579:1: rule__GalileoDft__RootAssignment_1 : ( ( RULE_STRING ) ) ;
+    // InternalDft.g:1714:1: rule__GalileoDft__RootAssignment_1 : ( ( RULE_STRING ) ) ;
     public final void rule__GalileoDft__RootAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1583:1: ( ( ( RULE_STRING ) ) )
-            // InternalDft.g:1584:2: ( ( RULE_STRING ) )
+            // InternalDft.g:1718:1: ( ( ( RULE_STRING ) ) )
+            // InternalDft.g:1719:2: ( ( RULE_STRING ) )
             {
-            // InternalDft.g:1584:2: ( ( RULE_STRING ) )
-            // InternalDft.g:1585:3: ( RULE_STRING )
+            // InternalDft.g:1719:2: ( ( RULE_STRING ) )
+            // InternalDft.g:1720:3: ( RULE_STRING )
             {
              before(grammarAccess.getGalileoDftAccess().getRootGalileoFaultTreeNodeCrossReference_1_0()); 
-            // InternalDft.g:1586:3: ( RULE_STRING )
-            // InternalDft.g:1587:4: RULE_STRING
+            // InternalDft.g:1721:3: ( RULE_STRING )
+            // InternalDft.g:1722:4: RULE_STRING
             {
              before(grammarAccess.getGalileoDftAccess().getRootGalileoFaultTreeNodeSTRINGTerminalRuleCall_1_0_1()); 
             match(input,RULE_STRING,FOLLOW_2); 
@@ -4856,17 +5236,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoDft__GatesAssignment_3_0_0"
-    // InternalDft.g:1598:1: rule__GalileoDft__GatesAssignment_3_0_0 : ( ruleGalileoGate ) ;
+    // InternalDft.g:1733:1: rule__GalileoDft__GatesAssignment_3_0_0 : ( ruleGalileoGate ) ;
     public final void rule__GalileoDft__GatesAssignment_3_0_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1602:1: ( ( ruleGalileoGate ) )
-            // InternalDft.g:1603:2: ( ruleGalileoGate )
+            // InternalDft.g:1737:1: ( ( ruleGalileoGate ) )
+            // InternalDft.g:1738:2: ( ruleGalileoGate )
             {
-            // InternalDft.g:1603:2: ( ruleGalileoGate )
-            // InternalDft.g:1604:3: ruleGalileoGate
+            // InternalDft.g:1738:2: ( ruleGalileoGate )
+            // InternalDft.g:1739:3: ruleGalileoGate
             {
              before(grammarAccess.getGalileoDftAccess().getGatesGalileoGateParserRuleCall_3_0_0_0()); 
             pushFollow(FOLLOW_2);
@@ -4897,17 +5277,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoDft__BasicEventsAssignment_3_1_0"
-    // InternalDft.g:1613:1: rule__GalileoDft__BasicEventsAssignment_3_1_0 : ( ruleGalileoBasicEvent ) ;
+    // InternalDft.g:1748:1: rule__GalileoDft__BasicEventsAssignment_3_1_0 : ( ruleGalileoBasicEvent ) ;
     public final void rule__GalileoDft__BasicEventsAssignment_3_1_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1617:1: ( ( ruleGalileoBasicEvent ) )
-            // InternalDft.g:1618:2: ( ruleGalileoBasicEvent )
+            // InternalDft.g:1752:1: ( ( ruleGalileoBasicEvent ) )
+            // InternalDft.g:1753:2: ( ruleGalileoBasicEvent )
             {
-            // InternalDft.g:1618:2: ( ruleGalileoBasicEvent )
-            // InternalDft.g:1619:3: ruleGalileoBasicEvent
+            // InternalDft.g:1753:2: ( ruleGalileoBasicEvent )
+            // InternalDft.g:1754:3: ruleGalileoBasicEvent
             {
              before(grammarAccess.getGalileoDftAccess().getBasicEventsGalileoBasicEventParserRuleCall_3_1_0_0()); 
             pushFollow(FOLLOW_2);
@@ -4938,17 +5318,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoGate__NameAssignment_0"
-    // InternalDft.g:1628:1: rule__GalileoGate__NameAssignment_0 : ( RULE_STRING ) ;
+    // InternalDft.g:1763:1: rule__GalileoGate__NameAssignment_0 : ( RULE_STRING ) ;
     public final void rule__GalileoGate__NameAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1632:1: ( ( RULE_STRING ) )
-            // InternalDft.g:1633:2: ( RULE_STRING )
+            // InternalDft.g:1767:1: ( ( RULE_STRING ) )
+            // InternalDft.g:1768:2: ( RULE_STRING )
             {
-            // InternalDft.g:1633:2: ( RULE_STRING )
-            // InternalDft.g:1634:3: RULE_STRING
+            // InternalDft.g:1768:2: ( RULE_STRING )
+            // InternalDft.g:1769:3: RULE_STRING
             {
              before(grammarAccess.getGalileoGateAccess().getNameSTRINGTerminalRuleCall_0_0()); 
             match(input,RULE_STRING,FOLLOW_2); 
@@ -4975,17 +5355,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoGate__TypeAssignment_1"
-    // InternalDft.g:1643:1: rule__GalileoGate__TypeAssignment_1 : ( ruleGalileoNodeType ) ;
+    // InternalDft.g:1778:1: rule__GalileoGate__TypeAssignment_1 : ( ruleGalileoNodeType ) ;
     public final void rule__GalileoGate__TypeAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1647:1: ( ( ruleGalileoNodeType ) )
-            // InternalDft.g:1648:2: ( ruleGalileoNodeType )
+            // InternalDft.g:1782:1: ( ( ruleGalileoNodeType ) )
+            // InternalDft.g:1783:2: ( ruleGalileoNodeType )
             {
-            // InternalDft.g:1648:2: ( ruleGalileoNodeType )
-            // InternalDft.g:1649:3: ruleGalileoNodeType
+            // InternalDft.g:1783:2: ( ruleGalileoNodeType )
+            // InternalDft.g:1784:3: ruleGalileoNodeType
             {
              before(grammarAccess.getGalileoGateAccess().getTypeGalileoNodeTypeParserRuleCall_1_0()); 
             pushFollow(FOLLOW_2);
@@ -5016,21 +5396,21 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoGate__ChildrenAssignment_2"
-    // InternalDft.g:1658:1: rule__GalileoGate__ChildrenAssignment_2 : ( ( RULE_STRING ) ) ;
+    // InternalDft.g:1793:1: rule__GalileoGate__ChildrenAssignment_2 : ( ( RULE_STRING ) ) ;
     public final void rule__GalileoGate__ChildrenAssignment_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1662:1: ( ( ( RULE_STRING ) ) )
-            // InternalDft.g:1663:2: ( ( RULE_STRING ) )
+            // InternalDft.g:1797:1: ( ( ( RULE_STRING ) ) )
+            // InternalDft.g:1798:2: ( ( RULE_STRING ) )
             {
-            // InternalDft.g:1663:2: ( ( RULE_STRING ) )
-            // InternalDft.g:1664:3: ( RULE_STRING )
+            // InternalDft.g:1798:2: ( ( RULE_STRING ) )
+            // InternalDft.g:1799:3: ( RULE_STRING )
             {
              before(grammarAccess.getGalileoGateAccess().getChildrenGalileoFaultTreeNodeCrossReference_2_0()); 
-            // InternalDft.g:1665:3: ( RULE_STRING )
-            // InternalDft.g:1666:4: RULE_STRING
+            // InternalDft.g:1800:3: ( RULE_STRING )
+            // InternalDft.g:1801:4: RULE_STRING
             {
              before(grammarAccess.getGalileoGateAccess().getChildrenGalileoFaultTreeNodeSTRINGTerminalRuleCall_2_0_1()); 
             match(input,RULE_STRING,FOLLOW_2); 
@@ -5061,17 +5441,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoBasicEvent__NameAssignment_0"
-    // InternalDft.g:1677:1: rule__GalileoBasicEvent__NameAssignment_0 : ( RULE_STRING ) ;
+    // InternalDft.g:1812:1: rule__GalileoBasicEvent__NameAssignment_0 : ( RULE_STRING ) ;
     public final void rule__GalileoBasicEvent__NameAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1681:1: ( ( RULE_STRING ) )
-            // InternalDft.g:1682:2: ( RULE_STRING )
+            // InternalDft.g:1816:1: ( ( RULE_STRING ) )
+            // InternalDft.g:1817:2: ( RULE_STRING )
             {
-            // InternalDft.g:1682:2: ( RULE_STRING )
-            // InternalDft.g:1683:3: RULE_STRING
+            // InternalDft.g:1817:2: ( RULE_STRING )
+            // InternalDft.g:1818:3: RULE_STRING
             {
              before(grammarAccess.getGalileoBasicEventAccess().getNameSTRINGTerminalRuleCall_0_0()); 
             match(input,RULE_STRING,FOLLOW_2); 
@@ -5098,17 +5478,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoBasicEvent__LambdaAssignment_3"
-    // InternalDft.g:1692:1: rule__GalileoBasicEvent__LambdaAssignment_3 : ( ruleFloat ) ;
+    // InternalDft.g:1827:1: rule__GalileoBasicEvent__LambdaAssignment_3 : ( ruleFloat ) ;
     public final void rule__GalileoBasicEvent__LambdaAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1696:1: ( ( ruleFloat ) )
-            // InternalDft.g:1697:2: ( ruleFloat )
+            // InternalDft.g:1831:1: ( ( ruleFloat ) )
+            // InternalDft.g:1832:2: ( ruleFloat )
             {
-            // InternalDft.g:1697:2: ( ruleFloat )
-            // InternalDft.g:1698:3: ruleFloat
+            // InternalDft.g:1832:2: ( ruleFloat )
+            // InternalDft.g:1833:3: ruleFloat
             {
              before(grammarAccess.getGalileoBasicEventAccess().getLambdaFloatParserRuleCall_3_0()); 
             pushFollow(FOLLOW_2);
@@ -5139,17 +5519,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoBasicEvent__DormAssignment_4_2"
-    // InternalDft.g:1707:1: rule__GalileoBasicEvent__DormAssignment_4_2 : ( ruleFloat ) ;
+    // InternalDft.g:1842:1: rule__GalileoBasicEvent__DormAssignment_4_2 : ( ruleFloat ) ;
     public final void rule__GalileoBasicEvent__DormAssignment_4_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1711:1: ( ( ruleFloat ) )
-            // InternalDft.g:1712:2: ( ruleFloat )
+            // InternalDft.g:1846:1: ( ( ruleFloat ) )
+            // InternalDft.g:1847:2: ( ruleFloat )
             {
-            // InternalDft.g:1712:2: ( ruleFloat )
-            // InternalDft.g:1713:3: ruleFloat
+            // InternalDft.g:1847:2: ( ruleFloat )
+            // InternalDft.g:1848:3: ruleFloat
             {
              before(grammarAccess.getGalileoBasicEventAccess().getDormFloatParserRuleCall_4_2_0()); 
             pushFollow(FOLLOW_2);
@@ -5180,17 +5560,17 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__GalileoBasicEvent__RepairAssignment_5_2"
-    // InternalDft.g:1722:1: rule__GalileoBasicEvent__RepairAssignment_5_2 : ( ruleFloat ) ;
+    // InternalDft.g:1857:1: rule__GalileoBasicEvent__RepairAssignment_5_2 : ( ruleFloat ) ;
     public final void rule__GalileoBasicEvent__RepairAssignment_5_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1726:1: ( ( ruleFloat ) )
-            // InternalDft.g:1727:2: ( ruleFloat )
+            // InternalDft.g:1861:1: ( ( ruleFloat ) )
+            // InternalDft.g:1862:2: ( ruleFloat )
             {
-            // InternalDft.g:1727:2: ( ruleFloat )
-            // InternalDft.g:1728:3: ruleFloat
+            // InternalDft.g:1862:2: ( ruleFloat )
+            // InternalDft.g:1863:3: ruleFloat
             {
              before(grammarAccess.getGalileoBasicEventAccess().getRepairFloatParserRuleCall_5_2_0()); 
             pushFollow(FOLLOW_2);
@@ -5220,32 +5600,32 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
     // $ANTLR end "rule__GalileoBasicEvent__RepairAssignment_5_2"
 
 
-    // $ANTLR start "rule__NamedType__TypeNameAssignment"
-    // InternalDft.g:1737:1: rule__NamedType__TypeNameAssignment : ( ( rule__NamedType__TypeNameAlternatives_0 ) ) ;
-    public final void rule__NamedType__TypeNameAssignment() throws RecognitionException {
+    // $ANTLR start "rule__Named__TypeNameAssignment_1"
+    // InternalDft.g:1872:1: rule__Named__TypeNameAssignment_1 : ( ( rule__Named__TypeNameAlternatives_1_0 ) ) ;
+    public final void rule__Named__TypeNameAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1741:1: ( ( ( rule__NamedType__TypeNameAlternatives_0 ) ) )
-            // InternalDft.g:1742:2: ( ( rule__NamedType__TypeNameAlternatives_0 ) )
+            // InternalDft.g:1876:1: ( ( ( rule__Named__TypeNameAlternatives_1_0 ) ) )
+            // InternalDft.g:1877:2: ( ( rule__Named__TypeNameAlternatives_1_0 ) )
             {
-            // InternalDft.g:1742:2: ( ( rule__NamedType__TypeNameAlternatives_0 ) )
-            // InternalDft.g:1743:3: ( rule__NamedType__TypeNameAlternatives_0 )
+            // InternalDft.g:1877:2: ( ( rule__Named__TypeNameAlternatives_1_0 ) )
+            // InternalDft.g:1878:3: ( rule__Named__TypeNameAlternatives_1_0 )
             {
-             before(grammarAccess.getNamedTypeAccess().getTypeNameAlternatives_0()); 
-            // InternalDft.g:1744:3: ( rule__NamedType__TypeNameAlternatives_0 )
-            // InternalDft.g:1744:4: rule__NamedType__TypeNameAlternatives_0
+             before(grammarAccess.getNamedAccess().getTypeNameAlternatives_1_0()); 
+            // InternalDft.g:1879:3: ( rule__Named__TypeNameAlternatives_1_0 )
+            // InternalDft.g:1879:4: rule__Named__TypeNameAlternatives_1_0
             {
             pushFollow(FOLLOW_2);
-            rule__NamedType__TypeNameAlternatives_0();
+            rule__Named__TypeNameAlternatives_1_0();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getNamedTypeAccess().getTypeNameAlternatives_0()); 
+             after(grammarAccess.getNamedAccess().getTypeNameAlternatives_1_0()); 
 
             }
 
@@ -5264,33 +5644,33 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__NamedType__TypeNameAssignment"
+    // $ANTLR end "rule__Named__TypeNameAssignment_1"
 
 
-    // $ANTLR start "rule__ObserverType__ObservablesAssignment_1"
-    // InternalDft.g:1752:1: rule__ObserverType__ObservablesAssignment_1 : ( ( RULE_STRING ) ) ;
-    public final void rule__ObserverType__ObservablesAssignment_1() throws RecognitionException {
+    // $ANTLR start "rule__Observer__ObservablesAssignment_2"
+    // InternalDft.g:1887:1: rule__Observer__ObservablesAssignment_2 : ( ( RULE_STRING ) ) ;
+    public final void rule__Observer__ObservablesAssignment_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1756:1: ( ( ( RULE_STRING ) ) )
-            // InternalDft.g:1757:2: ( ( RULE_STRING ) )
+            // InternalDft.g:1891:1: ( ( ( RULE_STRING ) ) )
+            // InternalDft.g:1892:2: ( ( RULE_STRING ) )
             {
-            // InternalDft.g:1757:2: ( ( RULE_STRING ) )
-            // InternalDft.g:1758:3: ( RULE_STRING )
+            // InternalDft.g:1892:2: ( ( RULE_STRING ) )
+            // InternalDft.g:1893:3: ( RULE_STRING )
             {
-             before(grammarAccess.getObserverTypeAccess().getObservablesGalileoFaultTreeNodeCrossReference_1_0()); 
-            // InternalDft.g:1759:3: ( RULE_STRING )
-            // InternalDft.g:1760:4: RULE_STRING
+             before(grammarAccess.getObserverAccess().getObservablesGalileoFaultTreeNodeCrossReference_2_0()); 
+            // InternalDft.g:1894:3: ( RULE_STRING )
+            // InternalDft.g:1895:4: RULE_STRING
             {
-             before(grammarAccess.getObserverTypeAccess().getObservablesGalileoFaultTreeNodeSTRINGTerminalRuleCall_1_0_1()); 
+             before(grammarAccess.getObserverAccess().getObservablesGalileoFaultTreeNodeSTRINGTerminalRuleCall_2_0_1()); 
             match(input,RULE_STRING,FOLLOW_2); 
-             after(grammarAccess.getObserverTypeAccess().getObservablesGalileoFaultTreeNodeSTRINGTerminalRuleCall_1_0_1()); 
+             after(grammarAccess.getObserverAccess().getObservablesGalileoFaultTreeNodeSTRINGTerminalRuleCall_2_0_1()); 
 
             }
 
-             after(grammarAccess.getObserverTypeAccess().getObservablesGalileoFaultTreeNodeCrossReference_1_0()); 
+             after(grammarAccess.getObserverAccess().getObservablesGalileoFaultTreeNodeCrossReference_2_0()); 
 
             }
 
@@ -5309,29 +5689,29 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__ObservablesAssignment_1"
+    // $ANTLR end "rule__Observer__ObservablesAssignment_2"
 
 
-    // $ANTLR start "rule__ObserverType__ObservationRateAssignment_4"
-    // InternalDft.g:1771:1: rule__ObserverType__ObservationRateAssignment_4 : ( ruleFloat ) ;
-    public final void rule__ObserverType__ObservationRateAssignment_4() throws RecognitionException {
+    // $ANTLR start "rule__Observer__ObservationRateAssignment_5"
+    // InternalDft.g:1906:1: rule__Observer__ObservationRateAssignment_5 : ( ruleFloat ) ;
+    public final void rule__Observer__ObservationRateAssignment_5() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1775:1: ( ( ruleFloat ) )
-            // InternalDft.g:1776:2: ( ruleFloat )
+            // InternalDft.g:1910:1: ( ( ruleFloat ) )
+            // InternalDft.g:1911:2: ( ruleFloat )
             {
-            // InternalDft.g:1776:2: ( ruleFloat )
-            // InternalDft.g:1777:3: ruleFloat
+            // InternalDft.g:1911:2: ( ruleFloat )
+            // InternalDft.g:1912:3: ruleFloat
             {
-             before(grammarAccess.getObserverTypeAccess().getObservationRateFloatParserRuleCall_4_0()); 
+             before(grammarAccess.getObserverAccess().getObservationRateFloatParserRuleCall_5_0()); 
             pushFollow(FOLLOW_2);
             ruleFloat();
 
             state._fsp--;
 
-             after(grammarAccess.getObserverTypeAccess().getObservationRateFloatParserRuleCall_4_0()); 
+             after(grammarAccess.getObserverAccess().getObservationRateFloatParserRuleCall_5_0()); 
 
             }
 
@@ -5350,29 +5730,29 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__ObserverType__ObservationRateAssignment_4"
+    // $ANTLR end "rule__Observer__ObservationRateAssignment_5"
 
 
-    // $ANTLR start "rule__RDEPType__RateFactorAssignment_2"
-    // InternalDft.g:1786:1: rule__RDEPType__RateFactorAssignment_2 : ( ruleFloat ) ;
-    public final void rule__RDEPType__RateFactorAssignment_2() throws RecognitionException {
+    // $ANTLR start "rule__RDEP__RateFactorAssignment_3"
+    // InternalDft.g:1921:1: rule__RDEP__RateFactorAssignment_3 : ( ruleFloat ) ;
+    public final void rule__RDEP__RateFactorAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1790:1: ( ( ruleFloat ) )
-            // InternalDft.g:1791:2: ( ruleFloat )
+            // InternalDft.g:1925:1: ( ( ruleFloat ) )
+            // InternalDft.g:1926:2: ( ruleFloat )
             {
-            // InternalDft.g:1791:2: ( ruleFloat )
-            // InternalDft.g:1792:3: ruleFloat
+            // InternalDft.g:1926:2: ( ruleFloat )
+            // InternalDft.g:1927:3: ruleFloat
             {
-             before(grammarAccess.getRDEPTypeAccess().getRateFactorFloatParserRuleCall_2_0()); 
+             before(grammarAccess.getRDEPAccess().getRateFactorFloatParserRuleCall_3_0()); 
             pushFollow(FOLLOW_2);
             ruleFloat();
 
             state._fsp--;
 
-             after(grammarAccess.getRDEPTypeAccess().getRateFactorFloatParserRuleCall_2_0()); 
+             after(grammarAccess.getRDEPAccess().getRateFactorFloatParserRuleCall_3_0()); 
 
             }
 
@@ -5391,29 +5771,29 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__RDEPType__RateFactorAssignment_2"
+    // $ANTLR end "rule__RDEP__RateFactorAssignment_3"
 
 
-    // $ANTLR start "rule__DelayType__TimeAssignment_2"
-    // InternalDft.g:1801:1: rule__DelayType__TimeAssignment_2 : ( ruleFloat ) ;
-    public final void rule__DelayType__TimeAssignment_2() throws RecognitionException {
+    // $ANTLR start "rule__Delay__TimeAssignment_3"
+    // InternalDft.g:1936:1: rule__Delay__TimeAssignment_3 : ( ruleFloat ) ;
+    public final void rule__Delay__TimeAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalDft.g:1805:1: ( ( ruleFloat ) )
-            // InternalDft.g:1806:2: ( ruleFloat )
+            // InternalDft.g:1940:1: ( ( ruleFloat ) )
+            // InternalDft.g:1941:2: ( ruleFloat )
             {
-            // InternalDft.g:1806:2: ( ruleFloat )
-            // InternalDft.g:1807:3: ruleFloat
+            // InternalDft.g:1941:2: ( ruleFloat )
+            // InternalDft.g:1942:3: ruleFloat
             {
-             before(grammarAccess.getDelayTypeAccess().getTimeFloatParserRuleCall_2_0()); 
+             before(grammarAccess.getDelayAccess().getTimeFloatParserRuleCall_3_0()); 
             pushFollow(FOLLOW_2);
             ruleFloat();
 
             state._fsp--;
 
-             after(grammarAccess.getDelayTypeAccess().getTimeFloatParserRuleCall_2_0()); 
+             after(grammarAccess.getDelayAccess().getTimeFloatParserRuleCall_3_0()); 
 
             }
 
@@ -5432,7 +5812,7 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__DelayType__TimeAssignment_2"
+    // $ANTLR end "rule__Delay__TimeAssignment_3"
 
     // Delegated rules
 
@@ -5449,10 +5829,13 @@ public class InternalDftParser extends AbstractInternalContentAssistParser {
     public static final BitSet FOLLOW_8 = new BitSet(new long[]{0x0000000008000000L});
     public static final BitSet FOLLOW_9 = new BitSet(new long[]{0x0000001000000020L});
     public static final BitSet FOLLOW_10 = new BitSet(new long[]{0x0000000030000000L});
-    public static final BitSet FOLLOW_11 = new BitSet(new long[]{0x0000000080000040L});
-    public static final BitSet FOLLOW_12 = new BitSet(new long[]{0x0000000200000000L});
-    public static final BitSet FOLLOW_13 = new BitSet(new long[]{0x0000000800000000L});
-    public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000006000000000L});
-    public static final BitSet FOLLOW_15 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_11 = new BitSet(new long[]{0x0000000000FFF010L});
+    public static final BitSet FOLLOW_12 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_13 = new BitSet(new long[]{0x0000000080000040L});
+    public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_15 = new BitSet(new long[]{0x0000000200000000L});
+    public static final BitSet FOLLOW_16 = new BitSet(new long[]{0x0000000800000000L});
+    public static final BitSet FOLLOW_17 = new BitSet(new long[]{0x0000006000000000L});
+    public static final BitSet FOLLOW_18 = new BitSet(new long[]{0x0000000000000020L});
 
 }

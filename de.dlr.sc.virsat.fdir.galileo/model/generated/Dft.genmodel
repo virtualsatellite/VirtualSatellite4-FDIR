@@ -19,12 +19,19 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoFaultTreeNode/dorm"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoFaultTreeNode/repair"/>
     </genClasses>
-    <genClasses ecoreClass="Dft.ecore#//GalileoNodeType">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoNodeType/typeName"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Dft.ecore#//GalileoNodeType/observables"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoNodeType/observationRate"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoNodeType/rateFactor"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoNodeType/time"/>
+    <genClasses ecoreClass="Dft.ecore#//GalileoNodeType"/>
+    <genClasses ecoreClass="Dft.ecore#//Named">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Named/typeName"/>
+    </genClasses>
+    <genClasses ecoreClass="Dft.ecore#//Observer">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Dft.ecore#//Observer/observables"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Observer/observationRate"/>
+    </genClasses>
+    <genClasses ecoreClass="Dft.ecore#//Rdep">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Rdep/rateFactor"/>
+    </genClasses>
+    <genClasses ecoreClass="Dft.ecore#//Delay">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Delay/time"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

@@ -19,6 +19,7 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftFactory;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
+import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 
 /**
  * This class tests the GalileoDFTWriter
@@ -29,12 +30,21 @@ public class GalileoDFTWriterTest {
 
 	@Test
 	public void testWrite() throws IOException {
-		GalileoDft galileoDft = DftFactory.eINSTANCE.createGalileoDft();	
+		GalileoDft galileoDft = DftFactory.eINSTANCE.createGalileoDft();
+		Named type = DftFactory.eINSTANCE.createNamed();
+		type.setTypeName("or");
 		GalileoFaultTreeNode root = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
+		root.setType(type);
 		root.setName("root");
-		root.setLambda("1.0");
-		galileoDft.getBasicEvents().add(root);
+		galileoDft.getGates().add(root);
 		galileoDft.setRoot(root);
+		
+		GalileoFaultTreeNode be = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
+		be.setName("be");
+		be.setLambda("1.0");
+		galileoDft.getBasicEvents().add(be);
+		root.getChildren().add(be);
+		
 		GalileoDFTWriter dftWriter = new GalileoDFTWriter("test");
 		
 		File file = dftWriter.write(galileoDft);
