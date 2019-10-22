@@ -102,9 +102,11 @@ public class ExplicitDRNFileWriter implements IExplicitFileWriter {
 				} else {
 
 					printWriter.print("state " + state.getIndex() + " !" + exitRate + " " + getLabel(state) + "\n");
+					int choice = 0;
 					for (MarkovTransition<? extends MarkovState> transition : ma.getSuccTransitions(state)) {
-						printWriter.print("\taction " + transition.getEvent() + setZeroReward + "\n");
+						printWriter.print("\taction " + choice + setZeroReward + "\n");
 						printWriter.print("\t\t" + transition.getTo().getIndex() + " : 1\n");
+						choice++;
 					}
 				}
 			}

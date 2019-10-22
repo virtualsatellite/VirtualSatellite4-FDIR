@@ -35,7 +35,7 @@ public class StormDFTTest {
 		stormDFT.addMetric(MTTF.MTTF);
 		stormDFT.setDelta(1);
 		String[] instancePath = {"//c/Users/test"};
-		String[] commandWithArgs = stormDFT.buildCommandWithArgs(instancePath);
+		String[] commandWithArgs = stormDFT.buildCommandWithArgs(instancePath, false);
 		
 		assertArrayEquals(
 			new String[] { "storm-dft", "-dft", "//c/Users/test", "-symred", "--timepoints", "0", "1.0", "1.0", "-mttf" }, 

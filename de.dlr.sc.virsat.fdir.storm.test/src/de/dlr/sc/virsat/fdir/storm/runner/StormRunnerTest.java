@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.storm.files.IFileProvider;
 import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
 
 /**
@@ -50,13 +51,17 @@ public class StormRunnerTest {
 		}
 
 		@Override
-		public String[] buildCommandWithArgs(String[] instanceFilePath) {
+		public String[] buildCommandWithArgs(String[] instanceFilePath, boolean schedule) {
 			return instanceFilePath;
 		}
 
 		@Override
 		public List<Integer> extractResult(List<String> result) {
 			return MOCK_RESULT;
+		}
+
+		@Override
+		public void onRunFinish(IFileProvider fileProvider) {
 		}
 	}
 	

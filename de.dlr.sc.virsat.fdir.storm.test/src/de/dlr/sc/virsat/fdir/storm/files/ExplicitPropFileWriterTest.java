@@ -42,7 +42,7 @@ public class ExplicitPropFileWriterTest {
 		
 		File expectedFile = File.createTempFile("test1", ".prop");	
 		PrintWriter writer = new PrintWriter(expectedFile);
-		writer.println("Tmin=? [F \"failed\"];");
+		writer.println("Tmax=? [F \"failed\"];");
 		writer.println("Pmin=? [F<=360.0 \"failed\"];");
 		writer.println("Pmin=? [F<=720.0 \"failed\"];");
 		writer.close();
