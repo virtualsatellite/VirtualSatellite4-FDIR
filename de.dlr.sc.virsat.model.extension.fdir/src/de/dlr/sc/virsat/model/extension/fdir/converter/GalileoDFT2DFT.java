@@ -176,11 +176,13 @@ public class GalileoDFT2DFT {
 					primaryAdded = true;
 				}
 				
-				List<GalileoFaultTreeNode> observables = ((Observer) galileoFtn.getType()).getObservables();
-				for (GalileoFaultTreeNode observable : observables) {
-					FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
-					FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
-					ftHelper.connectObserver(fault, ftnFrom, ftnTo);
+				if (galileoFtn.getType() instanceof Observer) {
+					List<GalileoFaultTreeNode> observables = ((Observer) galileoFtn.getType()).getObservables();
+					for (GalileoFaultTreeNode observable : observables) {
+						FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
+						FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
+						ftHelper.connectObserver(fault, ftnFrom, ftnTo);
+					}
 				}
 			}
 			
@@ -246,13 +248,12 @@ public class GalileoDFT2DFT {
 			}
 		} else if (galileoType instanceof Observer) {
 			return FaultTreeNodeType.OBSERVER;
-		} else if (galileoType instanceof RDEP) {
+		} else if (galileoType instanceof Rdep) {
 			return FaultTreeNodeType.RDEP;
-		} else if (galileoType instanceof DELAY) {
+		} else if (galileoType instanceof Delay) {
 			return FaultTreeNodeType.DELAY;
 		}
 
-		
 		throw new RuntimeException("Unknown Galileo Fault Tree Node Type: " + galileoType);
 	}
 }
