@@ -119,6 +119,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @param failableBasicEventsProvider the node fail criteria
 	 * @param failLabelProvider the labeling fail criteria
 	 * @param modularization optionally a modularization of the dft
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param baseMetrics the metrics to model check
 	 * @return the model checking result
 	 */
@@ -212,6 +213,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	/**
 	 * Model checks a tree
 	 * @param root the root of the tree
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param metrics the metrics to model check
 	 * @param failableBasicEventsProvider the nodes that need to fail
 	 * @param failLabelProvider the labels that will make a node considered to be failed

@@ -88,7 +88,7 @@ public class StormDFT implements IStormProgram<Double> {
 		commandWithArgs.add("-symred");
 
 		metrics.stream().forEach(metric -> {
-			commandWithArgs.addAll(new MetricToStormArguments().toArguments(null, metric));
+			commandWithArgs.addAll(new MetricToStormArguments().toArguments(metric));
 		});
 
 		return commandWithArgs.stream().toArray(String[]::new);
@@ -140,9 +140,9 @@ public class StormDFT implements IStormProgram<Double> {
 		 *            the metric
 		 * @return the command line arguments to compute the metric via storm
 		 */
-		public List<String> toArguments(SubMonitor subMonitor, IBaseMetric metric) {
+		public List<String> toArguments(IBaseMetric metric) {
 			stormArguments = new ArrayList<>();
-			metric.accept(this, subMonitor);
+			metric.accept(this, null);
 			return stormArguments;
 		}
 

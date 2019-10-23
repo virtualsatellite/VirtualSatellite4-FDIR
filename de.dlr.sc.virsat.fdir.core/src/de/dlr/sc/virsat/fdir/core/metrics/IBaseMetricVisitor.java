@@ -22,6 +22,7 @@ public interface IBaseMetricVisitor {
 	/**
 	 * Handle the case of a reliability metric
 	 * @param reliabilityMetric the reliabilitymetric
+	 * @param subMonitor eclipse ui element for progress reporting
 	 */
 	void visit(Reliability reliabilityMetric, SubMonitor subMonitor);
 	
@@ -34,6 +35,7 @@ public interface IBaseMetricVisitor {
 	/**
 	 * Handle the case of a point availability metric
 	 * @param pointAvailabilityMetric the point availabilityMetric
+	 * @param subMonitor eclipse ui element for progress reporting
 	 */
 	void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor);
 	

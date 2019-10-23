@@ -25,6 +25,7 @@ public interface IMarkovModelChecker extends IBaseMetricVisitor {
 	/**
 	 * Checks the markov chain model for the given metrics
 	 * @param mc markov chain
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param metrics metrics
 	 * @return a model checking result with the contained metrics
 	 */

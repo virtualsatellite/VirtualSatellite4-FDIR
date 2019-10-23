@@ -21,6 +21,7 @@ public interface IBaseMetric extends IMetric {
 	/**
 	 * Accept a visitor
 	 * @param visitor the visitor
+	 * @param subMonitor eclipse ui element for progress reporting
 	 */
 	void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor);
 }

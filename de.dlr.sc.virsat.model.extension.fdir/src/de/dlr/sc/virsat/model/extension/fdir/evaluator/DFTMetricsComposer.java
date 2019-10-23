@@ -63,6 +63,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	/**
 	 * Compose operation for composable metrics. Composes the results of the sub modules.
 	 * @param subModuleResults the results of the sub modules
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param k the combinatorial threshold
 	 * @param metrics the metrics to compose
 	 * @return the composed result
@@ -213,6 +214,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	 * of the top level module
 	 * @param module the module we want to compute the metrics for
 	 * @param modularization the dft modularization
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param metrics the metrics we want to compute
 	 * @param mapModuleToResult a map from module to the already computed results
 	 */
