@@ -3,11 +3,15 @@
  */
 package de.dlr.sc.virsat.fdir.galileo.dft.impl;
 
+import de.dlr.sc.virsat.fdir.galileo.dft.Delay;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftFactory;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftPackage;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
+import de.dlr.sc.virsat.fdir.galileo.dft.Named;
+import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
+import de.dlr.sc.virsat.fdir.galileo.dft.Rdep;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -44,6 +48,34 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   private EClass galileoNodeTypeEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass namedEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass observerEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass rdepEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass delayEClass = null;
 
   /**
    * Creates an instance of the model <b>Package</b>, registered with
@@ -246,9 +278,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EAttribute getGalileoNodeType_TypeName()
+  public EClass getNamed()
   {
-    return (EAttribute)galileoNodeTypeEClass.getEStructuralFeatures().get(0);
+    return namedEClass;
   }
 
   /**
@@ -257,9 +289,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EReference getGalileoNodeType_Observables()
+  public EAttribute getNamed_TypeName()
   {
-    return (EReference)galileoNodeTypeEClass.getEStructuralFeatures().get(1);
+    return (EAttribute)namedEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -268,9 +300,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EAttribute getGalileoNodeType_ObservationRate()
+  public EClass getObserver()
   {
-    return (EAttribute)galileoNodeTypeEClass.getEStructuralFeatures().get(2);
+    return observerEClass;
   }
 
   /**
@@ -279,9 +311,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EAttribute getGalileoNodeType_RateFactor()
+  public EReference getObserver_Observables()
   {
-    return (EAttribute)galileoNodeTypeEClass.getEStructuralFeatures().get(3);
+    return (EReference)observerEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -290,9 +322,53 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EAttribute getGalileoNodeType_Time()
+  public EAttribute getObserver_ObservationRate()
   {
-    return (EAttribute)galileoNodeTypeEClass.getEStructuralFeatures().get(4);
+    return (EAttribute)observerEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EClass getRdep()
+  {
+    return rdepEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EAttribute getRdep_RateFactor()
+  {
+    return (EAttribute)rdepEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EClass getDelay()
+  {
+    return delayEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EAttribute getDelay_Time()
+  {
+    return (EAttribute)delayEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -340,11 +416,19 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     createEAttribute(galileoFaultTreeNodeEClass, GALILEO_FAULT_TREE_NODE__REPAIR);
 
     galileoNodeTypeEClass = createEClass(GALILEO_NODE_TYPE);
-    createEAttribute(galileoNodeTypeEClass, GALILEO_NODE_TYPE__TYPE_NAME);
-    createEReference(galileoNodeTypeEClass, GALILEO_NODE_TYPE__OBSERVABLES);
-    createEAttribute(galileoNodeTypeEClass, GALILEO_NODE_TYPE__OBSERVATION_RATE);
-    createEAttribute(galileoNodeTypeEClass, GALILEO_NODE_TYPE__RATE_FACTOR);
-    createEAttribute(galileoNodeTypeEClass, GALILEO_NODE_TYPE__TIME);
+
+    namedEClass = createEClass(NAMED);
+    createEAttribute(namedEClass, NAMED__TYPE_NAME);
+
+    observerEClass = createEClass(OBSERVER);
+    createEReference(observerEClass, OBSERVER__OBSERVABLES);
+    createEAttribute(observerEClass, OBSERVER__OBSERVATION_RATE);
+
+    rdepEClass = createEClass(RDEP);
+    createEAttribute(rdepEClass, RDEP__RATE_FACTOR);
+
+    delayEClass = createEClass(DELAY);
+    createEAttribute(delayEClass, DELAY__TIME);
   }
 
   /**
@@ -376,6 +460,10 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     // Set bounds for type parameters
 
     // Add supertypes to classes
+    namedEClass.getESuperTypes().add(this.getGalileoNodeType());
+    observerEClass.getESuperTypes().add(this.getGalileoNodeType());
+    rdepEClass.getESuperTypes().add(this.getGalileoNodeType());
+    delayEClass.getESuperTypes().add(this.getGalileoNodeType());
 
     // Initialize classes and features; add operations and parameters
     initEClass(galileoDftEClass, GalileoDft.class, "GalileoDft", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -392,11 +480,19 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     initEAttribute(getGalileoFaultTreeNode_Repair(), ecorePackage.getEString(), "repair", null, 0, 1, GalileoFaultTreeNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(galileoNodeTypeEClass, GalileoNodeType.class, "GalileoNodeType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getGalileoNodeType_TypeName(), ecorePackage.getEString(), "typeName", null, 0, 1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getGalileoNodeType_Observables(), this.getGalileoFaultTreeNode(), null, "observables", null, 0, -1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getGalileoNodeType_ObservationRate(), ecorePackage.getEString(), "observationRate", null, 0, 1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getGalileoNodeType_RateFactor(), ecorePackage.getEString(), "rateFactor", null, 0, 1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getGalileoNodeType_Time(), ecorePackage.getEString(), "time", null, 0, 1, GalileoNodeType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(namedEClass, Named.class, "Named", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getNamed_TypeName(), ecorePackage.getEString(), "typeName", null, 0, 1, Named.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(observerEClass, Observer.class, "Observer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getObserver_Observables(), this.getGalileoFaultTreeNode(), null, "observables", null, 0, -1, Observer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getObserver_ObservationRate(), ecorePackage.getEString(), "observationRate", null, 0, 1, Observer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(rdepEClass, Rdep.class, "Rdep", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getRdep_RateFactor(), ecorePackage.getEString(), "rateFactor", null, 0, 1, Rdep.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(delayEClass, Delay.class, "Delay", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getDelay_Time(), ecorePackage.getEString(), "time", null, 0, 1, Delay.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Create resource
     createResource(eNS_URI);

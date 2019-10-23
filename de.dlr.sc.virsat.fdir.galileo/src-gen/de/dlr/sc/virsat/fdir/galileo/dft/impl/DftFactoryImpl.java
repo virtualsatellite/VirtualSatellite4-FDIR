@@ -68,6 +68,10 @@ public class DftFactoryImpl extends EFactoryImpl implements DftFactory
       case DftPackage.GALILEO_DFT: return createGalileoDft();
       case DftPackage.GALILEO_FAULT_TREE_NODE: return createGalileoFaultTreeNode();
       case DftPackage.GALILEO_NODE_TYPE: return createGalileoNodeType();
+      case DftPackage.NAMED: return createNamed();
+      case DftPackage.OBSERVER: return createObserver();
+      case DftPackage.RDEP: return createRdep();
+      case DftPackage.DELAY: return createDelay();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
@@ -107,6 +111,54 @@ public class DftFactoryImpl extends EFactoryImpl implements DftFactory
   {
     GalileoNodeTypeImpl galileoNodeType = new GalileoNodeTypeImpl();
     return galileoNodeType;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public Named createNamed()
+  {
+    NamedImpl named = new NamedImpl();
+    return named;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public Observer createObserver()
+  {
+    ObserverImpl observer = new ObserverImpl();
+    return observer;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public Rdep createRdep()
+  {
+    RdepImpl rdep = new RdepImpl();
+    return rdep;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public Delay createDelay()
+  {
+    DelayImpl delay = new DelayImpl();
+    return delay;
   }
 
   /**

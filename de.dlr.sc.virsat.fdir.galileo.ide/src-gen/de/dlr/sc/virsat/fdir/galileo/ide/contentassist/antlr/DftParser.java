@@ -33,7 +33,7 @@ public class DftParser extends AbstractContentAssistParser {
 		private static void init(ImmutableMap.Builder<AbstractElement, String> builder, DftGrammarAccess grammarAccess) {
 			builder.put(grammarAccess.getGalileoDftAccess().getAlternatives_3(), "rule__GalileoDft__Alternatives_3");
 			builder.put(grammarAccess.getGalileoNodeTypeAccess().getAlternatives(), "rule__GalileoNodeType__Alternatives");
-			builder.put(grammarAccess.getNamedTypeAccess().getTypeNameAlternatives_0(), "rule__NamedType__TypeNameAlternatives_0");
+			builder.put(grammarAccess.getNamedAccess().getTypeNameAlternatives_1_0(), "rule__Named__TypeNameAlternatives_1_0");
 			builder.put(grammarAccess.getGalileoDftAccess().getGroup(), "rule__GalileoDft__Group__0");
 			builder.put(grammarAccess.getGalileoDftAccess().getGroup_3_0(), "rule__GalileoDft__Group_3_0__0");
 			builder.put(grammarAccess.getGalileoDftAccess().getGroup_3_1(), "rule__GalileoDft__Group_3_1__0");
@@ -41,9 +41,10 @@ public class DftParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getGroup(), "rule__GalileoBasicEvent__Group__0");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getGroup_4(), "rule__GalileoBasicEvent__Group_4__0");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getGroup_5(), "rule__GalileoBasicEvent__Group_5__0");
-			builder.put(grammarAccess.getObserverTypeAccess().getGroup(), "rule__ObserverType__Group__0");
-			builder.put(grammarAccess.getRDEPTypeAccess().getGroup(), "rule__RDEPType__Group__0");
-			builder.put(grammarAccess.getDelayTypeAccess().getGroup(), "rule__DelayType__Group__0");
+			builder.put(grammarAccess.getNamedAccess().getGroup(), "rule__Named__Group__0");
+			builder.put(grammarAccess.getObserverAccess().getGroup(), "rule__Observer__Group__0");
+			builder.put(grammarAccess.getRDEPAccess().getGroup(), "rule__RDEP__Group__0");
+			builder.put(grammarAccess.getDelayAccess().getGroup(), "rule__Delay__Group__0");
 			builder.put(grammarAccess.getFloatAccess().getGroup(), "rule__Float__Group__0");
 			builder.put(grammarAccess.getFloatAccess().getGroup_2(), "rule__Float__Group_2__0");
 			builder.put(grammarAccess.getFloatAccess().getGroup_3(), "rule__Float__Group_3__0");
@@ -57,11 +58,11 @@ public class DftParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getLambdaAssignment_3(), "rule__GalileoBasicEvent__LambdaAssignment_3");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getDormAssignment_4_2(), "rule__GalileoBasicEvent__DormAssignment_4_2");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getRepairAssignment_5_2(), "rule__GalileoBasicEvent__RepairAssignment_5_2");
-			builder.put(grammarAccess.getNamedTypeAccess().getTypeNameAssignment(), "rule__NamedType__TypeNameAssignment");
-			builder.put(grammarAccess.getObserverTypeAccess().getObservablesAssignment_1(), "rule__ObserverType__ObservablesAssignment_1");
-			builder.put(grammarAccess.getObserverTypeAccess().getObservationRateAssignment_4(), "rule__ObserverType__ObservationRateAssignment_4");
-			builder.put(grammarAccess.getRDEPTypeAccess().getRateFactorAssignment_2(), "rule__RDEPType__RateFactorAssignment_2");
-			builder.put(grammarAccess.getDelayTypeAccess().getTimeAssignment_2(), "rule__DelayType__TimeAssignment_2");
+			builder.put(grammarAccess.getNamedAccess().getTypeNameAssignment_1(), "rule__Named__TypeNameAssignment_1");
+			builder.put(grammarAccess.getObserverAccess().getObservablesAssignment_2(), "rule__Observer__ObservablesAssignment_2");
+			builder.put(grammarAccess.getObserverAccess().getObservationRateAssignment_5(), "rule__Observer__ObservationRateAssignment_5");
+			builder.put(grammarAccess.getRDEPAccess().getRateFactorAssignment_3(), "rule__RDEP__RateFactorAssignment_3");
+			builder.put(grammarAccess.getDelayAccess().getTimeAssignment_3(), "rule__Delay__TimeAssignment_3");
 		}
 	}
 	

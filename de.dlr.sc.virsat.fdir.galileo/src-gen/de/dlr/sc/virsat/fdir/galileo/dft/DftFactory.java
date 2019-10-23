@@ -51,6 +51,42 @@ public interface DftFactory extends EFactory
   GalileoNodeType createGalileoNodeType();
 
   /**
+   * Returns a new object of class '<em>Named</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Named</em>'.
+   * @generated
+   */
+  Named createNamed();
+
+  /**
+   * Returns a new object of class '<em>Observer</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Observer</em>'.
+   * @generated
+   */
+  Observer createObserver();
+
+  /**
+   * Returns a new object of class '<em>Rdep</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Rdep</em>'.
+   * @generated
+   */
+  Rdep createRdep();
+
+  /**
+   * Returns a new object of class '<em>Delay</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Delay</em>'.
+   * @generated
+   */
+  Delay createDelay();
+
+  /**
    * Returns the package supported by this factory.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->

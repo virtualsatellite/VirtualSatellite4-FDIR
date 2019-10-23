@@ -18,12 +18,19 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dorm" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="repair" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GalileoNodeType">
+  <eClassifiers xsi:type="ecore:EClass" name="GalileoNodeType"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Named" eSuperTypes="#//GalileoNodeType">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="typeName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Observer" eSuperTypes="#//GalileoNodeType">
     <eStructuralFeatures xsi:type="ecore:EReference" name="observables" unique="false"
         upperBound="-1" eType="#//GalileoFaultTreeNode"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="observationRate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Rdep" eSuperTypes="#//GalileoNodeType">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="rateFactor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//GalileoNodeType">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="time" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
 </ecore:EPackage>

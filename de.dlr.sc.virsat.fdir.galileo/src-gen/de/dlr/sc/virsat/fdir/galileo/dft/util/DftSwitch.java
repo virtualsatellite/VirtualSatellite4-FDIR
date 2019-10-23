@@ -94,6 +94,38 @@ public class DftSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case DftPackage.NAMED:
+      {
+        Named named = (Named)theEObject;
+        T result = caseNamed(named);
+        if (result == null) result = caseGalileoNodeType(named);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DftPackage.OBSERVER:
+      {
+        Observer observer = (Observer)theEObject;
+        T result = caseObserver(observer);
+        if (result == null) result = caseGalileoNodeType(observer);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DftPackage.RDEP:
+      {
+        Rdep rdep = (Rdep)theEObject;
+        T result = caseRdep(rdep);
+        if (result == null) result = caseGalileoNodeType(rdep);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DftPackage.DELAY:
+      {
+        Delay delay = (Delay)theEObject;
+        T result = caseDelay(delay);
+        if (result == null) result = caseGalileoNodeType(delay);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       default: return defaultCase(theEObject);
     }
   }
@@ -142,6 +174,70 @@ public class DftSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseGalileoNodeType(GalileoNodeType object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Named</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Named</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseNamed(Named object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Observer</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Observer</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseObserver(Observer object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Rdep</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Rdep</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseRdep(Rdep object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Delay</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Delay</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseDelay(Delay object)
   {
     return null;
   }

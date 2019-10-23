@@ -26,23 +26,23 @@ GalileoBasicEvent returns GalileoFaultTreeNode:
 ;
 
 GalileoNodeType:
-	NamedType | ObserverType | RDEPType | DelayType
+	Named | Observer | RDEP| Delay
 ;
 
-NamedType returns GalileoNodeType:
-	typeName=('and' | 'or' | XOFY | 'pand' | 'pand_i' | 'por' | 'por_i' | 'sand' | 'hsp' | 'wsp' | 'csp' | 'seq' | 'fdep')
+Named returns GalileoNodeType:
+	{Named} typeName=('and' | 'or' |  XOFY | 'pand' | 'pand_i' | 'por' | 'por_i' | 'sand' | 'hsp' | 'wsp' | 'csp' | 'seq' | 'fdep')
 ;
 
-ObserverType returns GalileoNodeType: 
-	'observer' (observables+=[GalileoFaultTreeNode|STRING])* 'obsRate' '=' observationRate=Float 
+Observer returns GalileoNodeType: 
+	{Observer} 'observer' (observables+=[GalileoFaultTreeNode|STRING])* 'obsRate' '=' observationRate=Float 
 ;
 
-RDEPType returns GalileoNodeType:
-	'rdep' 'rateFactor' rateFactor=Float
+RDEP returns GalileoNodeType:
+	{Rdep} 'rdep' 'rateFactor' rateFactor=Float
 ;
 
-DelayType returns GalileoNodeType:
-	'delay' 'time' time=Float
+Delay returns GalileoNodeType:
+	{Delay} 'delay' 'time' time=Float
 ;
 
 
