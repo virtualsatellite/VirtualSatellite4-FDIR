@@ -165,11 +165,11 @@ public  class FMECAEntry extends AFMECAEntry {
 		
 		CategoryInstantiator ci = new CategoryInstantiator();
 		for (String proposedRecoveryAction : proposedRecoveryActions) {
-			APropertyInstance pi = ci.generateInstance(getProposedRecovery().getArrayInstance());
+			APropertyInstance pi = ci.generateInstance(getCompensation().getArrayInstance());
 			BeanPropertyString newBeanProperty = new BeanPropertyString();
 			newBeanProperty.setTypeInstance((ValuePropertyInstance) pi);
 			newBeanProperty.setValue(proposedRecoveryAction);
-			getProposedRecovery().add(newBeanProperty);
+			getCompensation().add(newBeanProperty);
 		}
 		
 
