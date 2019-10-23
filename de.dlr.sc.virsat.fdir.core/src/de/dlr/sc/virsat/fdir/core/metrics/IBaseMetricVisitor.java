@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 /**
  * Interface for visiting a metric
  * @author muel_s8
@@ -21,7 +23,7 @@ public interface IBaseMetricVisitor {
 	 * Handle the case of a reliability metric
 	 * @param reliabilityMetric the reliabilitymetric
 	 */
-	void visit(Reliability reliabilityMetric);
+	void visit(Reliability reliabilityMetric, SubMonitor subMonitor);
 	
 	/**
 	 * Handle the case of a mean time to failure metric
@@ -33,7 +35,7 @@ public interface IBaseMetricVisitor {
 	 * Handle the case of a point availability metric
 	 * @param pointAvailabilityMetric the point availabilityMetric
 	 */
-	void visit(Availability pointAvailabilityMetric);
+	void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor);
 	
 	/**
 	 * Handle the case of a steadyStateAvailabilityMetric metric

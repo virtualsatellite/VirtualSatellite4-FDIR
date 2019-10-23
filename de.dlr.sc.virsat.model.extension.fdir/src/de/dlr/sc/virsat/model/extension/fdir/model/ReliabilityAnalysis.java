@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;
@@ -101,6 +102,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 		subMonitor.split(1);
+		
 		subMonitor.setTaskName("Creating Data Model");
 		
 		double delta = getTimestepBean().getValueToBaseUnit();
@@ -115,10 +117,15 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
-		subMonitor.split(1);
+		SubMonitor childMonitor1 = subMonitor.split(1);
+
 		subMonitor.setTaskName("Performing Model Checking");
-		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new Reliability(maxTime), MTTF.MTTF);
+		ModelCheckingResult result;
+		try {
+			result = ftEvaluator.evaluateFaultTree(fault, childMonitor1, new Reliability(maxTime), MTTF.MTTF);
+		} catch (OperationCanceledException e) {
+			return UnexecutableCommand.INSTANCE;
+		}		
 		
 		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;

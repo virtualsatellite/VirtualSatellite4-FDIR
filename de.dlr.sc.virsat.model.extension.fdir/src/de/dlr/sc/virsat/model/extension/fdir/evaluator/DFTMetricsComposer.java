@@ -22,6 +22,7 @@ import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
 import org.apache.commons.math3.analysis.integration.UnivariateIntegrator;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
+import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
@@ -66,13 +67,13 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	 * @param metrics the metrics to compose
 	 * @return the composed result
 	 */
-	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, long k, IBaseMetric... metrics) {
+	public ModelCheckingResult compose(List<ModelCheckingResult> subModuleResults, SubMonitor subMonitor, long k, IBaseMetric... metrics) {
 		this.k = k;
 		this.subModuleResults = subModuleResults;
 		this.composedResult = new ModelCheckingResult();
 		
 		for (IBaseMetric metric : metrics) {
-			metric.accept(this);
+			metric.accept(this, subMonitor);
 		}
 		
 		return composedResult;
@@ -117,7 +118,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	}
 	
 	@Override
-	public void visit(Reliability reliabilityMetric) {
+	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
 		reliabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
 	}
@@ -144,7 +145,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	}
 
 	@Override
-	public void visit(Availability availabilityMetric) {
+	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
 		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
 		availabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getAvailability(), k, -1);
 	}
@@ -215,7 +216,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	 * @param metrics the metrics we want to compute
 	 * @param mapModuleToResult a map from module to the already computed results
 	 */
-	void composeModuleResults(Module module, DFTModularization modularization, IBaseMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult) {
+	void composeModuleResults(Module module, DFTModularization modularization, SubMonitor subMonitor, IBaseMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult) {
 		ModelCheckingResult result = mapModuleToResult.get(module);
 		if (result != null) {
 			return;
@@ -232,7 +233,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 				Module representantSubModule = modularization.getModule(representant);
 				ModelCheckingResult representantSubModuleResult = mapModuleToResult.get(subModule);
 				if (representantSubModuleResult == null) {
-					composeModuleResults(representantSubModule, modularization, metrics, mapModuleToResult);
+					composeModuleResults(representantSubModule, modularization, subMonitor, metrics, mapModuleToResult);
 					representantSubModuleResult = mapModuleToResult.get(subModule);
 				}
 				mapModuleToResult.put(subModule, representantSubModuleResult);
@@ -240,7 +241,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 			
 			ModelCheckingResult subModuleResult = mapModuleToResult.get(subModule);
 			if (subModuleResult == null) {
-				composeModuleResults(subModule, modularization, metrics, mapModuleToResult);
+				composeModuleResults(subModule, modularization, subMonitor, metrics, mapModuleToResult);
 				subModuleResult = mapModuleToResult.get(subModule);
 			}
 			subModuleResults.add(subModuleResult);
@@ -248,7 +249,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 		
 		if (subModuleResults.size() > 1) {
 			long k = getK(module.getRootNode(), module.getModuleRoot().getChildren());
-			result = compose(subModuleResults, k, metrics);
+			result = compose(subModuleResults, subMonitor, k, metrics);
 		} else {
 			result = subModuleResults.get(0);
 		}

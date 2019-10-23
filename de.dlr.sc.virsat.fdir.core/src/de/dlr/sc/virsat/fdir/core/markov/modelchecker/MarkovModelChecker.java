@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -218,7 +220,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 * 
 	 */
 	@Override
-	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, IBaseMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, SubMonitor subMonitor, IBaseMetric... metrics) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -230,7 +232,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		this.modelCheckingResult = new ModelCheckingResult();
 		
 		for (IBaseMetric metric : metrics) {
-			metric.accept(this);
+			metric.accept(this, subMonitor);
 		}
 		
 		statistics.time = System.currentTimeMillis() - statistics.time;
@@ -244,34 +246,46 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public void visit(Reliability reliabilityMetric) {
+	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		if (tmTerminal == null) {
 			tmTerminal = createTransitionMatrix(true);
 		}
 		
+		subMonitor.setTaskName("Running Markov Checker on Model");
+		final int PROGRESS_COUNT = 100;
+		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 		
-		if (Double.isFinite(reliabilityMetric.getTime())) {
+		if (Double.isFinite(reliabilityMetric.getTime())) {			
 			int steps = (int) (reliabilityMetric.getTime() / delta);
+			
+			subMonitor.setWorkRemaining(steps);
+			
 			for (int time = 0; time <= steps; ++time) {
+				subMonitor.split(1);			
+				
 				modelCheckingResult.failRates.add(getFailRate());
 				iterate(tmTerminal);
 			}
 		} else {
 			double oldFailRate = getFailRate();
 			modelCheckingResult.failRates.add(oldFailRate);
-			
+
 			boolean convergence = false;
 			while (!convergence) {
+				subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+				
 				iterate(tmTerminal);
 				double newFailRate = getFailRate();
 				modelCheckingResult.failRates.add(newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
 				oldFailRate = newFailRate;
 				double relativeChange = change / newFailRate;
+											
 				if (relativeChange < eps || !Double.isFinite(change)) {
 					convergence = true;
+					subMonitor.split(PROGRESS_COUNT);
 				}
 			}
 		}
@@ -316,17 +330,24 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	
 	@Override
-	public void visit(Availability availabilityMetric) {
+	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
 		if (tm == null) {
 			tm = createTransitionMatrix(false);
 		}
-
+		
+		subMonitor.setTaskName("Running Markov Checker on Model");
+		final int PROGRESS_COUNT = 100;
+		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
+			
+			subMonitor.setWorkRemaining(steps);
+			
 			for (int time = 0; time <= steps; ++time) {
+				subMonitor.split(1);
 				modelCheckingResult.availability.add(1 - getFailRate());
 				iterate(tm);
 			}
@@ -336,6 +357,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			
 			boolean convergence = false;
 			while (!convergence) {
+				subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+				
 				iterate(tm);
 				double newFailRate = getFailRate();
 				modelCheckingResult.availability.add(1 - newFailRate);
@@ -344,6 +367,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				double relativeChange = change / newFailRate;
 				if (relativeChange < eps || !Double.isFinite(change)) {
 					convergence = true;
+					subMonitor.split(PROGRESS_COUNT);
 				}
 			}
 		}

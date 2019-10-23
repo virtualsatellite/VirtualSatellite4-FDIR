@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
@@ -86,7 +88,7 @@ public class StormDFT implements IStormProgram<Double> {
 		commandWithArgs.add("-symred");
 
 		metrics.stream().forEach(metric -> {
-			commandWithArgs.addAll(new MetricToStormArguments().toArguments(metric));
+			commandWithArgs.addAll(new MetricToStormArguments().toArguments(null, metric));
 		});
 
 		return commandWithArgs.stream().toArray(String[]::new);
@@ -138,14 +140,14 @@ public class StormDFT implements IStormProgram<Double> {
 		 *            the metric
 		 * @return the command line arguments to compute the metric via storm
 		 */
-		public List<String> toArguments(IBaseMetric metric) {
+		public List<String> toArguments(SubMonitor subMonitor, IBaseMetric metric) {
 			stormArguments = new ArrayList<>();
-			metric.accept(this);
+			metric.accept(this, subMonitor);
 			return stormArguments;
 		}
 
 		@Override
-		public void visit(Reliability reliabilityMetric) {
+		public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 			stormArguments.add("--timepoints");
 			stormArguments.add("0");
 			stormArguments.add(String.valueOf(reliabilityMetric.getTime()));
@@ -158,7 +160,7 @@ public class StormDFT implements IStormProgram<Double> {
 		}
 
 		@Override
-		public void visit(Availability pointAvailabilityMetric) {
+		public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
 			// TODO Auto-generated method stub
 
 		}

@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -29,7 +31,8 @@ public interface IFaultTreeEvaluator {
 	 * @param metrics the evaluation metrics
 	 * @return the result of the evaluation
 	 */
-	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, IMetric... metrics);
+	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics);
+
 
 	/**
 	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailableBasicEventsProvider, IMetric...)} but with a default
@@ -39,7 +42,11 @@ public interface IFaultTreeEvaluator {
 	 * @return the result of the evaluation
 	 */
 	default ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
-		return evaluateFaultTree(root, null, metrics);
+		return evaluateFaultTree(root, null, null, metrics);
+	}
+	
+	default ModelCheckingResult evaluateFaultTree(FaultTreeNode root, SubMonitor subMonitor, IMetric... metrics) {
+		return evaluateFaultTree(root, null, subMonitor, metrics);
 	}
 	
 	/**
@@ -56,5 +63,5 @@ public interface IFaultTreeEvaluator {
 	 */
 	default Object getStatistics() {
 		return new Object();
-	}
+	}	
 }

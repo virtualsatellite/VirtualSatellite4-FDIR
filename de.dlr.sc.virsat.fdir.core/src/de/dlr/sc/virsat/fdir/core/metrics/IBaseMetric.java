@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 /**
  * A base metric is a metric that can be model checker for
  * @author muel_s8
@@ -20,5 +22,5 @@ public interface IBaseMetric extends IMetric {
 	 * Accept a visitor
 	 * @param visitor the visitor
 	 */
-	void accept(IBaseMetricVisitor visitor);
+	void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor);
 }

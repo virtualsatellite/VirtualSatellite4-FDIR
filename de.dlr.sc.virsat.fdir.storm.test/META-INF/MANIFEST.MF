@@ -12,3 +12,4 @@ Export-Package: de.dlr.sc.virsat.fdir.storm.docker,
  de.dlr.sc.virsat.fdir.storm.files,
  de.dlr.sc.virsat.fdir.storm.runner,
  de.dlr.sc.virsat.fdir.storm.test
+Import-Package: org.eclipse.core.runtime
