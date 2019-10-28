@@ -251,8 +251,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			tmTerminal = createTransitionMatrix(true);
 		}
 		
-		subMonitor.setTaskName("Running Markov Checker on Model");
 		final int PROGRESS_COUNT = 100;
+		if (subMonitor != null) {
+			subMonitor.setTaskName("Running Markov Checker on Model");			
+		}		
 		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
@@ -260,10 +262,15 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
 			
-			subMonitor.setWorkRemaining(steps);
+			if (subMonitor != null) {
+				subMonitor.setWorkRemaining(steps);
+			}
 			
 			for (int time = 0; time <= steps; ++time) {
-				subMonitor.split(1);			
+				
+				if (subMonitor != null) {
+					subMonitor.split(1);
+				}
 				
 				modelCheckingResult.failRates.add(getFailRate());
 				iterate(tmTerminal);
@@ -274,7 +281,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 			boolean convergence = false;
 			while (!convergence) {
-				subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+				if (subMonitor != null) {
+					subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+				}
 				
 				iterate(tmTerminal);
 				double newFailRate = getFailRate();
@@ -285,7 +294,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 											
 				if (relativeChange < eps || !Double.isFinite(change)) {
 					convergence = true;
-					subMonitor.split(PROGRESS_COUNT);
+					if (subMonitor != null) {
+						subMonitor.split(PROGRESS_COUNT);
+					}
 				}
 			}
 		}
@@ -335,19 +346,25 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			tm = createTransitionMatrix(false);
 		}
 		
-		subMonitor.setTaskName("Running Markov Checker on Model");
 		final int PROGRESS_COUNT = 100;
-		
+		if (subMonitor != null) {
+			subMonitor.setTaskName("Running Markov Checker on Model");
+		}
+				
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
 			
-			subMonitor.setWorkRemaining(steps);
+			if (subMonitor != null) {
+				subMonitor.setWorkRemaining(steps);
+			}
 			
 			for (int time = 0; time <= steps; ++time) {
-				subMonitor.split(1);
+				if (subMonitor != null) {
+					subMonitor.split(1);
+				}
 				modelCheckingResult.availability.add(1 - getFailRate());
 				iterate(tm);
 			}
@@ -357,7 +374,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			
 			boolean convergence = false;
 			while (!convergence) {
-				subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+				if (subMonitor != null) {
+					subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+				}
 				
 				iterate(tm);
 				double newFailRate = getFailRate();
@@ -367,7 +386,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				double relativeChange = change / newFailRate;
 				if (relativeChange < eps || !Double.isFinite(change)) {
 					convergence = true;
-					subMonitor.split(PROGRESS_COUNT);
+					if (subMonitor != null) {
+						subMonitor.split(PROGRESS_COUNT);
+					}
 				}
 			}
 		}
