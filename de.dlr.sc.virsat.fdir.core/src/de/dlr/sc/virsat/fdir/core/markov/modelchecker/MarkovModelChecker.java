@@ -257,7 +257,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 		resultBuffer = new double[probabilityDistribution.length];
 		
-		if (Double.isFinite(reliabilityMetric.getTime())) {			
+		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
 			
 			subMonitor.setWorkRemaining(steps);

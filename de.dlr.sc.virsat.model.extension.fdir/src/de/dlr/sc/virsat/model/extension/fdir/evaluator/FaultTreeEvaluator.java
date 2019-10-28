@@ -199,5 +199,5 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	@Override
 	public Object getStatistics() {
 		return evaluator.getStatistics();
-	}	
+	}
 }

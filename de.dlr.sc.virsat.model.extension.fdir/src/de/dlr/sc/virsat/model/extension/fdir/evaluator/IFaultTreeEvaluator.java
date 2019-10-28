@@ -71,5 +71,5 @@ public interface IFaultTreeEvaluator {
 	 */
 	default Object getStatistics() {
 		return new Object();
-	}	
+	}
 }

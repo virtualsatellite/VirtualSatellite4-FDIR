@@ -54,7 +54,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public void visit(Reliability reliabilityMetric, SubMonitor submonitor) {
+	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		modelCheckingResult.getFailRates().add((double) 0);
 		int endIndex = (int) (startIndex  + reliabilityMetric.getTime() / delta);
 		modelCheckingResult.getFailRates().addAll(resultExtracted.subList(startIndex, endIndex == 0 ? 1 : endIndex));
@@ -99,7 +99,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 		try {
 			resultExtracted  = stormRunner.run();
 			for (IBaseMetric metric : metrics) {
-				metric.accept(this, subMonitor);
+				metric.accept(this, null);
 			}
 
 		} catch (IOException | URISyntaxException e) {

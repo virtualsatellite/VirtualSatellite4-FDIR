@@ -3,17 +3,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="C:/Users/piet_ci/workspace_FDIR/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.common_3.10.400.v20190516-1504.jar" sourcepath="C:/Users/piet_ci/workspace_FDIR/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.common.source_3.10.400.v20190516-1504.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/piet_ci/workspace_FDIR/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.platform.doc.isv_4.12.0.v20190605-0405.jar!/reference/api"/>
-		</attributes>
-		<accessrules>
-			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/boot/*"/>
-			<accessrule kind="discouraged" pattern="org/eclipse/core/internal/runtime/*"/>
-			<accessrule kind="accessible" pattern="org/eclipse/core/runtime/*"/>
-			<accessrule kind="accessible" pattern="org/eclipse/equinox/events/*"/>
-			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
-		</accessrules>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

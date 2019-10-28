@@ -117,12 +117,12 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		if (subMonitor.isCanceled()) {
 			return UnexecutableCommand.INSTANCE;
 		}
-		SubMonitor childMonitor1 = subMonitor.split(1);
+		SubMonitor evaluationMonitor = subMonitor.split(1);
 
 		subMonitor.setTaskName("Performing Model Checking");
 		ModelCheckingResult result;
 		try {
-			result = ftEvaluator.evaluateFaultTree(fault, childMonitor1, new Reliability(maxTime), MTTF.MTTF);
+			result = ftEvaluator.evaluateFaultTree(fault, evaluationMonitor, new Reliability(maxTime), MTTF.MTTF);
 		} catch (OperationCanceledException e) {
 			return UnexecutableCommand.INSTANCE;
 		}		
