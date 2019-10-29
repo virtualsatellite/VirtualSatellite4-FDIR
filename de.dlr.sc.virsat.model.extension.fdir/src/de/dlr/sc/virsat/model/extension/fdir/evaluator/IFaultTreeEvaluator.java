@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -26,10 +28,12 @@ public interface IFaultTreeEvaluator {
 	 * Main evaluation function evaluating a fault tree identified by its root.
 	 * @param root the root of the fault tree to be evaluated.
 	 * @param failNodeProvider the fail criteria
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param metrics the evaluation metrics
 	 * @return the result of the evaluation
 	 */
-	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, IMetric... metrics);
+	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics);
+
 
 	/**
 	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailableBasicEventsProvider, IMetric...)} but with a default
@@ -39,7 +43,18 @@ public interface IFaultTreeEvaluator {
 	 * @return the result of the evaluation
 	 */
 	default ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
-		return evaluateFaultTree(root, null, metrics);
+		return evaluateFaultTree(root, null, null, metrics);
+	}
+	
+	/**
+	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailableBasicEventsProvider, IMetric...)} but with a default and submonitor
+	 * @param root root the root of the fault tree to be evaluated
+	 * @param subMonitor subMonitor eclipse ui element for progress reporting
+	 * @param metrics metrics the evaluation metrics
+	 * @return the result of the evaluation
+	 */
+	default ModelCheckingResult evaluateFaultTree(FaultTreeNode root, SubMonitor subMonitor, IMetric... metrics) {
+		return evaluateFaultTree(root, null, subMonitor, metrics);
 	}
 	
 	/**

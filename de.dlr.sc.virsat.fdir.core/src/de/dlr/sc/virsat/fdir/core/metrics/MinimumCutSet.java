@@ -12,6 +12,8 @@ package de.dlr.sc.virsat.fdir.core.metrics;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 /**
  * The minimumcut set metric describes minimum sets of events that 
  * can reach a fail state
@@ -34,7 +36,7 @@ public class MinimumCutSet implements IQualitativeMetric, IBaseMetric {
 	}
 	
 	@Override
-	public void accept(IBaseMetricVisitor visitor) {
+	public void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor) {
 		visitor.visit(this);
 	}
 	

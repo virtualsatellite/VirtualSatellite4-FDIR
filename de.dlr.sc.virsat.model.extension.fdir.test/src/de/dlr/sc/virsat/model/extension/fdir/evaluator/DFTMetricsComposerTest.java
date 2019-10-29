@@ -54,7 +54,7 @@ public class DFTMetricsComposerTest {
 	
 	@Test
 	public void testComposeMinimumCutSetOR() {
-		ModelCheckingResult composedResult = dftMetricsComposer.compose(subModuleResults, 1, MinimumCutSet.MINCUTSET);
+		ModelCheckingResult composedResult = dftMetricsComposer.compose(subModuleResults, null, 1, MinimumCutSet.MINCUTSET);
 	
 		final int EXPECTED_COUNT_MINCUTS = 3;
 		assertEquals("Number of MinCut sets correct", EXPECTED_COUNT_MINCUTS, composedResult.getMinCutSets().size());
@@ -65,7 +65,7 @@ public class DFTMetricsComposerTest {
 	
 	@Test
 	public void testComposeMinimumCutSetAND() {
-		ModelCheckingResult composedResult = dftMetricsComposer.compose(subModuleResults, subModuleResults.size(), MinimumCutSet.MINCUTSET);
+		ModelCheckingResult composedResult = dftMetricsComposer.compose(subModuleResults, null, subModuleResults.size(), MinimumCutSet.MINCUTSET);
 	
 		final int EXPECTED_COUNT_MINCUTS = 2;
 		assertEquals("Number of MinCut sets correct", EXPECTED_COUNT_MINCUTS, composedResult.getMinCutSets().size());
@@ -76,7 +76,7 @@ public class DFTMetricsComposerTest {
 	@Test
 	public void testComposeMinimumCutSetANDRestricted() {
 		final int MAX_MINCUT_SIZE = 3;
-		ModelCheckingResult composedResult = dftMetricsComposer.compose(subModuleResults, subModuleResults.size(), new MinimumCutSet(MAX_MINCUT_SIZE));
+		ModelCheckingResult composedResult = dftMetricsComposer.compose(subModuleResults, null, subModuleResults.size(), new MinimumCutSet(MAX_MINCUT_SIZE));
 	
 		final int EXPECTED_COUNT_MINCUTS = 1;
 		assertEquals("Number of MinCut sets correct", EXPECTED_COUNT_MINCUTS, composedResult.getMinCutSets().size());

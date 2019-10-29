@@ -180,7 +180,7 @@ public  class MCSAnalysis extends AMCSAnalysis {
 				failNodeProvider.getBasicEvents().add((BasicEvent) obj);
 			}
 			
-			ModelCheckingResult mcsResult = ftEvaluator.evaluateFaultTree(failure, failNodeProvider,
+			ModelCheckingResult mcsResult = ftEvaluator.evaluateFaultTree(failure, failNodeProvider, null,
 					MTTF.MTTF, SteadyStateDetectability.STEADY_STATE_DETECTABILITY, MeanTimeToDetection.MTTD);
 			
 			mapMcsToResult.put(minCutSet, mcsResult);

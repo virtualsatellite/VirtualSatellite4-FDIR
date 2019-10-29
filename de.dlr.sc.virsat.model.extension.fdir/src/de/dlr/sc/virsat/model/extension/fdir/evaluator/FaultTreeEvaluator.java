@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
@@ -58,7 +60,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -72,12 +74,13 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 		
 		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
 		
-		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, metrics);
+		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, subMonitor, metrics);
 		if (!result.getMinCutSets().isEmpty()) {
 			remapMinCutSets(result);
 		}
 		return result;
-	}
+	}	
+	
 	
 	/**
 	 * Maps the nodes in the given failLabelProvider to the nodes of the transformed tree

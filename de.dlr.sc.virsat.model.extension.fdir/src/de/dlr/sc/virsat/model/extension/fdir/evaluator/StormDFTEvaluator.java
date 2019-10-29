@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
@@ -46,7 +48,7 @@ public class StormDFTEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics) {
 		
 		DFT2GalileoDFT converter = new DFT2GalileoDFT(false);
 		GalileoDft dft = converter.convert((Fault) root);
