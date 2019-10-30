@@ -32,7 +32,6 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
 /**
  * Class for implementing Markov Model Checker Logic
- * 
  * @author yoge_re
  *
  */
@@ -112,7 +111,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	/**
 	 * 
 	 * @param delta time slice
-	 * @param eps   precision
+	 * @param eps precision
 	 */
 	public MarkovModelChecker(double delta, double eps) {
 		this.delta = delta;
@@ -121,8 +120,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	/**
 	 * Does model checking on the markov chain
-	 * 
-	 * @param mc      Markov Chain
+	 * @param mc Markov Chain
 	 * @param metrics metrics
 	 * 
 	 */
@@ -227,7 +225,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public void visit(Availability availabilityMetric) {
-		if (tm == null) {	
+		if (tm == null) {
 			Matrix matrix = new Matrix(mc);
 			tm = matrix.createTransitionMatrix(false, delta);
 		}
@@ -382,9 +380,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	}
 
 	/**
-	 * Gets the initial probaility distribution, that is 1 on the initial state and
-	 * 0 everywhere else
-	 * 
+	 * Gets the initial probaility distribution, that is 1 on the initial state
+	 * and 0 everywhere else
 	 * @return the initial probability distribution
 	 */
 	private double[] getInitialProbabilityDistribution() {
@@ -432,8 +429,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	/**
 	 * Performs a discrete time abstract step.
-	 * 
-	 * @param tm     the transition matrix
+	 * @param tm the transition matrix
 	 * @param vector the current probability distribution
 	 * @param result the vector to put the result into
 	 * @return squared length of the result vector
