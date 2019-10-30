@@ -38,7 +38,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 public class MarkovModelChecker implements IMarkovModelChecker {
 
 	/**
-	 * Gets the initial MTTF according to the Bellman equations with 
+	 * Gets the initial MTTF according to the Bellman equations with
 	 * MTTF(s) = 0 if s is a fail state and 
 	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
 	 * @return the initial probability distribution
