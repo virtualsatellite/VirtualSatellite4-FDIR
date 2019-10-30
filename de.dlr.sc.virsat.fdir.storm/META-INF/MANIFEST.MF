@@ -12,3 +12,4 @@ Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
  de.dlr.sc.virsat.fdir.core,
  com.google.guava,
  com.spotify.docker.client
+Import-Package: org.eclipse.core.runtime

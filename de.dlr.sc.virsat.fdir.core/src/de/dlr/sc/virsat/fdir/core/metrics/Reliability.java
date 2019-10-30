@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 /**
  * Metric representing time bounded reliability
  * @author sascha
@@ -29,7 +31,7 @@ public class Reliability extends AProbabilityCurve implements IBaseMetric {
 	}
 
 	@Override
-	public void accept(IBaseMetricVisitor visitor) {
-		visitor.visit(this);
+	public void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor) {
+		visitor.visit(this, subMonitor);
 	}
 }
