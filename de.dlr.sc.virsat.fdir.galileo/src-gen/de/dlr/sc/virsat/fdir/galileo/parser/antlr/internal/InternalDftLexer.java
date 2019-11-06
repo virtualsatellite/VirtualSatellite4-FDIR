@@ -629,8 +629,8 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_XOFY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:793:11: ( RULE_INT 'of' RULE_INT )
-            // InternalDft.g:793:13: RULE_INT 'of' RULE_INT
+            // InternalDft.g:823:11: ( RULE_INT 'of' RULE_INT )
+            // InternalDft.g:823:13: RULE_INT 'of' RULE_INT
             {
             mRULE_INT(); 
             match("of"); 
@@ -652,10 +652,10 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:795:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // InternalDft.g:795:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // InternalDft.g:825:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // InternalDft.g:825:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
-            // InternalDft.g:795:11: ( '^' )?
+            // InternalDft.g:825:11: ( '^' )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -664,7 +664,7 @@ public class InternalDftLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // InternalDft.g:795:11: '^'
+                    // InternalDft.g:825:11: '^'
                     {
                     match('^'); 
 
@@ -682,7 +682,7 @@ public class InternalDftLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // InternalDft.g:795:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // InternalDft.g:825:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop2:
             do {
                 int alt2=2;
@@ -731,10 +731,10 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:797:10: ( ( '0' .. '9' )+ )
-            // InternalDft.g:797:12: ( '0' .. '9' )+
+            // InternalDft.g:827:10: ( ( '0' .. '9' )+ )
+            // InternalDft.g:827:12: ( '0' .. '9' )+
             {
-            // InternalDft.g:797:12: ( '0' .. '9' )+
+            // InternalDft.g:827:12: ( '0' .. '9' )+
             int cnt3=0;
             loop3:
             do {
@@ -748,7 +748,7 @@ public class InternalDftLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // InternalDft.g:797:13: '0' .. '9'
+            	    // InternalDft.g:827:13: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -780,10 +780,10 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:799:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
-            // InternalDft.g:799:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // InternalDft.g:829:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
+            // InternalDft.g:829:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             {
-            // InternalDft.g:799:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // InternalDft.g:829:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -801,10 +801,10 @@ public class InternalDftLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // InternalDft.g:799:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
+                    // InternalDft.g:829:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
                     {
                     match('\"'); 
-                    // InternalDft.g:799:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
+                    // InternalDft.g:829:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
                     loop4:
                     do {
                         int alt4=3;
@@ -820,7 +820,7 @@ public class InternalDftLexer extends Lexer {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // InternalDft.g:799:21: '\\\\' .
+                    	    // InternalDft.g:829:21: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -828,7 +828,7 @@ public class InternalDftLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // InternalDft.g:799:28: ~ ( ( '\\\\' | '\"' ) )
+                    	    // InternalDft.g:829:28: ~ ( ( '\\\\' | '\"' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -853,10 +853,10 @@ public class InternalDftLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // InternalDft.g:799:48: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
+                    // InternalDft.g:829:48: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
                     {
                     match('\''); 
-                    // InternalDft.g:799:53: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // InternalDft.g:829:53: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop5:
                     do {
                         int alt5=3;
@@ -872,7 +872,7 @@ public class InternalDftLexer extends Lexer {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // InternalDft.g:799:54: '\\\\' .
+                    	    // InternalDft.g:829:54: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -880,7 +880,7 @@ public class InternalDftLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // InternalDft.g:799:61: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // InternalDft.g:829:61: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -923,12 +923,12 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:801:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // InternalDft.g:801:19: '/*' ( options {greedy=false; } : . )* '*/'
+            // InternalDft.g:831:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // InternalDft.g:831:19: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
-            // InternalDft.g:801:24: ( options {greedy=false; } : . )*
+            // InternalDft.g:831:24: ( options {greedy=false; } : . )*
             loop7:
             do {
                 int alt7=2;
@@ -953,7 +953,7 @@ public class InternalDftLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // InternalDft.g:801:52: .
+            	    // InternalDft.g:831:52: .
             	    {
             	    matchAny(); 
 
@@ -983,12 +983,12 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:803:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // InternalDft.g:803:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // InternalDft.g:833:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // InternalDft.g:833:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
             match("//"); 
 
-            // InternalDft.g:803:24: (~ ( ( '\\n' | '\\r' ) ) )*
+            // InternalDft.g:833:24: (~ ( ( '\\n' | '\\r' ) ) )*
             loop8:
             do {
                 int alt8=2;
@@ -1001,7 +1001,7 @@ public class InternalDftLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // InternalDft.g:803:24: ~ ( ( '\\n' | '\\r' ) )
+            	    // InternalDft.g:833:24: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -1021,7 +1021,7 @@ public class InternalDftLexer extends Lexer {
                 }
             } while (true);
 
-            // InternalDft.g:803:40: ( ( '\\r' )? '\\n' )?
+            // InternalDft.g:833:40: ( ( '\\r' )? '\\n' )?
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1030,9 +1030,9 @@ public class InternalDftLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // InternalDft.g:803:41: ( '\\r' )? '\\n'
+                    // InternalDft.g:833:41: ( '\\r' )? '\\n'
                     {
-                    // InternalDft.g:803:41: ( '\\r' )?
+                    // InternalDft.g:833:41: ( '\\r' )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -1041,7 +1041,7 @@ public class InternalDftLexer extends Lexer {
                     }
                     switch (alt9) {
                         case 1 :
-                            // InternalDft.g:803:41: '\\r'
+                            // InternalDft.g:833:41: '\\r'
                             {
                             match('\r'); 
 
@@ -1073,10 +1073,10 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:805:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
-            // InternalDft.g:805:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // InternalDft.g:835:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
+            // InternalDft.g:835:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             {
-            // InternalDft.g:805:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // InternalDft.g:835:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             int cnt11=0;
             loop11:
             do {
@@ -1130,8 +1130,8 @@ public class InternalDftLexer extends Lexer {
         try {
             int _type = RULE_ANY_OTHER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalDft.g:807:16: ( . )
-            // InternalDft.g:807:18: .
+            // InternalDft.g:837:16: ( . )
+            // InternalDft.g:837:18: .
             {
             matchAny(); 
 

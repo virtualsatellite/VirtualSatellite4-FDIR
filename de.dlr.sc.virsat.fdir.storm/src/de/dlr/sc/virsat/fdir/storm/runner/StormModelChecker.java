@@ -14,6 +14,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
@@ -52,7 +54,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public void visit(Reliability reliabilityMetric) {
+	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		modelCheckingResult.getFailRates().add((double) 0);
 		int endIndex = (int) (startIndex  + reliabilityMetric.getTime() / delta);
 		modelCheckingResult.getFailRates().addAll(resultExtracted.subList(startIndex, endIndex == 0 ? 1 : endIndex));
@@ -73,7 +75,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 	
 	@Override
-	public void visit(Availability pointAvailabilityMetric) {
+	public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -85,7 +87,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, IBaseMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, SubMonitor subMonitor, IBaseMetric... metrics) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -97,7 +99,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 		try {
 			resultExtracted  = stormRunner.run();
 			for (IBaseMetric metric : metrics) {
-				metric.accept(this);
+				metric.accept(this, null);
 			}
 
 		} catch (IOException | URISyntaxException e) {

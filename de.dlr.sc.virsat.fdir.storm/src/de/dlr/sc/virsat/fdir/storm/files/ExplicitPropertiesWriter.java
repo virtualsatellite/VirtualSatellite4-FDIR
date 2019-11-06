@@ -12,7 +12,7 @@ package de.dlr.sc.virsat.fdir.storm.files;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+import org.eclipse.core.runtime.SubMonitor;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
@@ -53,7 +53,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 			FileWriter fileWriter = new FileWriter(instancePath);
 			printWriter = new PrintWriter(fileWriter);
 			for (IBaseMetric metric : metrics) {
-				metric.accept(this);
+				metric.accept(this, null);
 			}
 			printWriter.close();
 		} catch (IOException e) {
@@ -63,7 +63,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	}
 
 	@Override
-	public void visit(Reliability reliabilityMetric) {
+	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		if (delta > 0) {
 			for (double timepoint = delta; timepoint <= reliabilityMetric.getTime(); timepoint += delta) {
 				printWriter.println("Pmin=? [F<=" + timepoint + " \"" + FAILED_STATE + "\"];");
@@ -82,7 +82,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	}
 
 	@Override
-	public void visit(Availability pointAvailabilityMetric) {
+	public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
 		// TODO Auto-generated method stub
 	}
 

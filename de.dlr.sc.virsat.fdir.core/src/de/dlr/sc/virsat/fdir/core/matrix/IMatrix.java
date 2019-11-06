@@ -7,21 +7,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.core.metrics;
-
-import org.eclipse.core.runtime.SubMonitor;
+package de.dlr.sc.virsat.fdir.core.matrix;
 
 /**
- * A base metric is a metric that can be model checker for
- * @author muel_s8
+ * Interface for matrices
+ * @author piet
  *
  */
+public interface IMatrix {
 
-public interface IBaseMetric extends IMetric {
-	/**
-	 * Accept a visitor
-	 * @param visitor the visitor
-	 * @param subMonitor eclipse ui element for progress reporting
-	 */
-	void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor);
 }

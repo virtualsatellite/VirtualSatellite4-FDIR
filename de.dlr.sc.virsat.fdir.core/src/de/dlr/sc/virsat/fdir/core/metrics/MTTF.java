@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
@@ -31,7 +33,7 @@ public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	}
 	
 	@Override
-	public void accept(IBaseMetricVisitor visitor) {
+	public void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor) {
 		visitor.visit(this);
 	}
 	

@@ -72,7 +72,7 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	public static final String PROPERTY_PROBABILITY = "probability";
 	public static final String PROPERTY_CRITICALITY = "criticality";
 	public static final String PROPERTY_MEANTIMETOFAILURE = "meanTimeToFailure";
-	public static final String PROPERTY_PROPOSEDRECOVERY = "proposedRecovery";
+	public static final String PROPERTY_COMPENSATION = "compensation";
 	
 	// Severity enumeration value names
 	public static final String SEVERITY_Catastrophic_NAME = "Catastrophic";
@@ -423,19 +423,19 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	}
 	
 	// *****************************************************************
-	// * Array Attribute: proposedRecovery
+	// * Array Attribute: compensation
 	// *****************************************************************
-	private IBeanList<BeanPropertyString> proposedRecovery = new TypeSafeArrayInstanceList<>(BeanPropertyString.class);
+	private IBeanList<BeanPropertyString> compensation = new TypeSafeArrayInstanceList<>(BeanPropertyString.class);
 	
-	private void safeAccessProposedRecovery() {
-		if (proposedRecovery.getArrayInstance() == null) {
-			proposedRecovery.setArrayInstance((ArrayInstance) helper.getPropertyInstance("proposedRecovery"));
+	private void safeAccessCompensation() {
+		if (compensation.getArrayInstance() == null) {
+			compensation.setArrayInstance((ArrayInstance) helper.getPropertyInstance("compensation"));
 		}
 	}
 	
-	public IBeanList<BeanPropertyString> getProposedRecovery() {
-		safeAccessProposedRecovery();
-		return proposedRecovery;
+	public IBeanList<BeanPropertyString> getCompensation() {
+		safeAccessCompensation();
+		return compensation;
 	}
 	
 	

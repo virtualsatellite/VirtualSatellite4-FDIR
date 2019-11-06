@@ -1951,9 +1951,9 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryFailureEffects">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntryProposedRecovery"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntryCompensation"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryProposedRecovery">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryCompensation">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysis"
