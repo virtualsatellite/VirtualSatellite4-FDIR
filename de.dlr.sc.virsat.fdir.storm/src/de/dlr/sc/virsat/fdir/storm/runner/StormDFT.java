@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.fdir.galileo.GalileoDFTWriter;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
+import de.dlr.sc.virsat.fdir.storm.files.IFileProvider;
 import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
 
 /**
@@ -79,7 +80,7 @@ public class StormDFT implements IStormProgram<Double> {
 	}
 
 	@Override
-	public String[] buildCommandWithArgs(String[] instanceFilePath) {
+	public String[] buildCommandWithArgs(String[] instanceFilePath, boolean schedule) {
 		List<String> commandWithArgs = new ArrayList<>();
 
 		commandWithArgs.add(getExecutableName());
@@ -178,4 +179,7 @@ public class StormDFT implements IStormProgram<Double> {
 		}
 	}
 
+	@Override
+	public void onRunFinish(IFileProvider fileProvider) {
+	}
 }
