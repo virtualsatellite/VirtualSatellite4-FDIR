@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.Matrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
+import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.TransitionMatrix;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
@@ -157,8 +158,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		if (tmTerminal == null) {
-			MatrixFactory mf = new MatrixFactory(mc);
-			tmTerminal = mf.getTransitionMatrix(true, delta, eps);
+			MatrixFactory mtxFac = new MatrixFactory(mc);
+			tmTerminal = mtxFac.getTransitionMatrix(true, delta);
 		}
 		
 		final int PROGRESS_COUNT = 100;
@@ -167,10 +168,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
     
 		probabilityDistribution = getInitialProbabilityDistribution();
-		tmTerminal.setProbabilityDistribution(probabilityDistribution);
 		
-		resultBuffer = new double[probabilityDistribution.length];
-		tmTerminal.setResultBuffer(resultBuffer);
+		MatrixIterator mtxIterator = new MatrixIterator(tmTerminal, probabilityDistribution, delta, eps);
+		
 
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
@@ -183,12 +183,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				
 				if (subMonitor != null) {
 					subMonitor.split(1);
-				}
-				
-				probabilityDistribution = tmTerminal.getProbabilityDistribution();
-				
+				}				
+				probabilityDistribution = mtxIterator.getProbabilityDistribution();
 				modelCheckingResult.failRates.add(getFailRate());
-				tmTerminal.iterate();				
+				mtxIterator.iterate();
 			}
 		} else {
 			double oldFailRate = getFailRate();

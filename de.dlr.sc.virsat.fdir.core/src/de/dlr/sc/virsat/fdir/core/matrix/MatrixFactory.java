@@ -10,8 +10,11 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+import java.util.List;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 
 /**
  * @author piet_ci
@@ -22,6 +25,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 public class MatrixFactory {
 	
 	private MarkovAutomaton<? extends MarkovState> mc;
+	private boolean failStatesAreTerminal;
+	private double delta;
 	
 	/**
 	 * @param mc MarkovChain
@@ -34,15 +39,51 @@ public class MatrixFactory {
 	/**
 	 * @param failStatesAreTerminal failStatesAreTerminal
 	 * @param delta delta
-	 * @param eps eps
 	 * @return transition matrix
 	 */
-	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double delta, double eps) {
+	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double delta) {
+		this.failStatesAreTerminal = failStatesAreTerminal;
+		this.delta = delta;
+		
 		TransitionMatrix tm = new TransitionMatrix(mc);
-		tm.setDelta(delta);
-		tm.setEps(eps);
-		tm.setFailStatesAreTerminal(failStatesAreTerminal);
-		tm.createTransitionMatrix();
+		
+		return createTransitionMatrix(tm);
+	}
+	
+	/**
+	 * Creates a transition matrix
+	 * @param tm 
+	 * 
+	 * @return a transition matrix
+	 */
+	private TransitionMatrix createTransitionMatrix(TransitionMatrix tm) {
+		int countStates = mc.getStates().size();
+		
+		for (Object event : mc.getEvents()) {
+			for (MarkovTransition<? extends MarkovState> transition : mc.getTransitions(event)) {
+				int fromIndex = transition.getFrom().getIndex();
+				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
+					tm.getDiagonal()[fromIndex] -= transition.getRate() * delta;
+				}
+			}
+		}
+		
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = mc.getStates().get(i);
+			List<?> transitions = mc.getPredTransitions(state);
+			
+			tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
+			tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
+			for (int j = 0; j < transitions.size(); ++j) {
+				@SuppressWarnings("unchecked")
+				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
+					tm.getStatePredIndices()[state.getIndex()][j] = transition.getFrom().getIndex();
+					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() * delta;
+				}
+			}
+		}
+		
 		return tm;
 	}
 	
