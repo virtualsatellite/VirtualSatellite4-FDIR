@@ -28,10 +28,13 @@ public class TransitionMatrix implements IMatrix {
 	private int[][] statePredIndices;
 	private double[][] statePredRates;
 	private MarkovAutomaton<? extends MarkovState> mc;
+	
 	private double delta;
 	private double eps;
 	private boolean failStatesAreTerminal;
 	
+	
+	private double[] probabilityDistribution;
 	private double[] resultBuffer;
 	
 	/**
@@ -51,7 +54,7 @@ public class TransitionMatrix implements IMatrix {
 	 * 
 	 * @param probabilityDistribution probabilityDistribution
 	 */
-	public void iterate(double[] probabilityDistribution) {
+	public void iterate() {
 		double[] res = probabilityDistribution;
 		probabilityDistribution = new double[probabilityDistribution.length];
 
@@ -64,12 +67,12 @@ public class TransitionMatrix implements IMatrix {
 			}
 
 			lambda = lambda / (i + 1);
-			double change = lambda * multiply(this, res, resultBuffer) / delta;
+			double change = lambda * multiply(this, res, getResultBuffer()) / delta;
 
 			// Swap the discrete time buffers
 			double[] tmp = res;
-			res = resultBuffer;
-			resultBuffer = tmp;
+			res = getResultBuffer();
+			setResultBuffer(tmp);
 
 			if (change < getEps() * getEps() || !Double.isFinite(change)) {
 				for (int j = 0; j < probabilityDistribution.length; ++j) {
@@ -243,5 +246,25 @@ public class TransitionMatrix implements IMatrix {
 	 */
 	public void setEps(double eps) {
 		this.eps = eps;
+	}
+
+
+	public double[] getResultBuffer() {
+		return resultBuffer;
+	}
+
+
+	public void setResultBuffer(double[] resultBuffer) {
+		this.resultBuffer = resultBuffer;
+	}
+
+
+	public double[] getProbabilityDistribution() {
+		return probabilityDistribution;
+	}
+
+
+	public void setProbabilityDistribution(double[] probabilityDistribution) {
+		this.probabilityDistribution = probabilityDistribution;
 	}
 }

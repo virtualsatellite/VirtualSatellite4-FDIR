@@ -25,6 +25,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.Matrix;
+import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
+import de.dlr.sc.virsat.fdir.core.matrix.TransitionMatrix;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
@@ -98,7 +100,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	private MarkovAutomaton<? extends MarkovState> mc;
 	private Matrix tm;
-	private Matrix tmTerminal;
+	private TransitionMatrix tmTerminal;
 	private Matrix bellmanMatrix;
 
 	/* Buffers */
@@ -155,8 +157,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		if (tmTerminal == null) {
-			Matrix matrix = new Matrix(mc);
-			tmTerminal = matrix.createTransitionMatrix(true, delta);
+			MatrixFactory mf = new MatrixFactory(mc);
+			tmTerminal = mf.getTransitionMatrix(true, delta, eps);
 		}
 		
 		final int PROGRESS_COUNT = 100;
@@ -165,7 +167,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
     
 		probabilityDistribution = getInitialProbabilityDistribution();
+		tmTerminal.setProbabilityDistribution(probabilityDistribution);
+		
 		resultBuffer = new double[probabilityDistribution.length];
+		tmTerminal.setResultBuffer(resultBuffer);
 
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
@@ -180,8 +185,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 					subMonitor.split(1);
 				}
 				
+				probabilityDistribution = tmTerminal.getProbabilityDistribution();
+				
 				modelCheckingResult.failRates.add(getFailRate());
-				iterate(tmTerminal);
+				tmTerminal.iterate();				
 			}
 		} else {
 			double oldFailRate = getFailRate();
@@ -193,7 +200,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 					subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 				}
 				
-				iterate(tmTerminal);
+				//iterate(tmTerminal);
 				double newFailRate = getFailRate();
 				modelCheckingResult.failRates.add(newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
