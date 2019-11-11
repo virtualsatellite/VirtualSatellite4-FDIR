@@ -198,7 +198,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 					subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 				}
 				
-				//iterate(tmTerminal);
+				mtxIterator.iterate();
+				probabilityDistribution = mtxIterator.getProbabilityDistribution();
 				double newFailRate = getFailRate();
 				modelCheckingResult.failRates.add(newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);

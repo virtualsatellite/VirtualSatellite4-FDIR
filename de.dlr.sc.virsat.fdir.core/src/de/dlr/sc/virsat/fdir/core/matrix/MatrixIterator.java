@@ -1,5 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+/**
+ * @author piet_ci
+ * 
+ * Class representing an Iterator iterating a matrix and probability distribution over time 
+ *
+ */
 public class MatrixIterator {
 
 	private TransitionMatrix tmTerminal;
@@ -8,6 +24,12 @@ public class MatrixIterator {
 	private double eps;
 	private double[] resultBuffer;
 
+	/**
+	 * @param tmTerminal transition matrix
+	 * @param probabilityDistribution probability distribution
+	 * @param delta delta
+	 * @param eps epsilon
+	 */
 	public MatrixIterator(TransitionMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
 		this.tmTerminal = tmTerminal;
 		this.probabilityDistribution = probabilityDistribution;
@@ -18,8 +40,6 @@ public class MatrixIterator {
 	
 	/**
 	 * Performs one update iteration
-	 * 
-	 * @param probabilityDistribution probabilityDistribution
 	 */
 	public void iterate() {
 		double[] res = getProbabilityDistribution();
@@ -53,6 +73,9 @@ public class MatrixIterator {
 		}
 	}
 
+	/**
+	 * @return probability distribution at current time
+	 */
 	public double[] getProbabilityDistribution() {
 		return probabilityDistribution;
 	}

@@ -24,20 +24,22 @@ public class TransitionMatrix implements IMatrix {
 	private double[] diagonal;
 	private int[][] statePredIndices;
 	private double[][] statePredRates;
-	private MarkovAutomaton<? extends MarkovState> mc;
-	
 	
 	/**
 	 * @param mc Markov Chain
 	 */
 	public TransitionMatrix(MarkovAutomaton<? extends MarkovState> mc) {
-		this.mc = mc;
 		int countStates = mc.getStates().size();
 		this.diagonal = new double[countStates];
 		this.statePredIndices = new int[countStates][];
 		this.statePredRates = new double[countStates][];
 	}
 	
+	/**
+	 * @param vector vector
+	 * @param result result buffer
+	 * @return result
+	 */
 	public double multiply(double[] vector, double[] result) {
 		int countStates = vector.length;
 		double res = 0;
