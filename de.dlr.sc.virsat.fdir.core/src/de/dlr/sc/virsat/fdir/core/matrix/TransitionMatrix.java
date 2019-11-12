@@ -24,15 +24,20 @@ public class TransitionMatrix implements IMatrix {
 	private double[] diagonal;
 	private int[][] statePredIndices;
 	private double[][] statePredRates;
+	private MatrixIterator mi;
 	
 	/**
-	 * @param mc Markov Chain
+	 * @param mc markov chain
+	 * @param probabilityDistribution probabilityDistribution
+	 * @param delta delta
+	 * @param eps epsilon
 	 */
-	public TransitionMatrix(MarkovAutomaton<? extends MarkovState> mc) {
+	public TransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, double[] probabilityDistribution, double delta, double eps) {
 		int countStates = mc.getStates().size();
 		this.diagonal = new double[countStates];
 		this.statePredIndices = new int[countStates][];
 		this.statePredRates = new double[countStates][];
+		this.mi = new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
 	}
 	
 	/**
@@ -81,8 +86,12 @@ public class TransitionMatrix implements IMatrix {
 	}
 
 	@Override
-	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
-		TransitionMatrixIterator tmi = new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
-		return tmi;
-	}	
+	public MatrixIterator getIterator() {
+		return this.mi;
+	}
+
+	@Override
+	public void setIterator(MatrixIterator mi) {
+		this.mi = mi;
+	}
 }

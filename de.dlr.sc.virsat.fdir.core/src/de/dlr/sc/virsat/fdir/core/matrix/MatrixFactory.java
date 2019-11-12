@@ -29,11 +29,13 @@ public class MatrixFactory {
 		
 	/**
 	 * @param failStatesAreTerminal failStatesAreTerminal
+	 * @param probabilityDistribution probabilityDistribution
 	 * @param delta delta
+	 * @param eps epsilon
 	 * @return transition matrix
 	 */
-	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double delta) {		
-		TransitionMatrix tm = new TransitionMatrix(mc);		
+	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double[] probabilityDistribution, double delta, double eps) {		
+		TransitionMatrix tm = new TransitionMatrix(mc, probabilityDistribution, delta, eps);		
 		return createTransitionMatrix(tm, failStatesAreTerminal, delta);
 	}
 	

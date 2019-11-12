@@ -23,10 +23,12 @@ public interface IMatrix {
 	double multiply(double[] vector, double[] result);
 
 	/**
-	 * @param probabilityDistribution probabilityDistribution
-	 * @param delta delta
-	 * @param eps epsilon
 	 * @return MatrixIterator
 	 */
-	MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps);
+	MatrixIterator getIterator();
+	
+	/**
+	 * @param mi MatrixIterator
+	 */
+	void setIterator(MatrixIterator mi);
 }

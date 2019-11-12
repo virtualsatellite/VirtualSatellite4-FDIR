@@ -159,9 +159,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
+		probabilityDistribution = getInitialProbabilityDistribution();
+
 		if (tmTerminal == null) {
 			matrixFactory.setMc(mc);
-			tmTerminal = matrixFactory.getTransitionMatrix(true, delta);
+			tmTerminal = matrixFactory.getTransitionMatrix(true, probabilityDistribution, delta, eps);
 		}
 		
 		final int PROGRESS_COUNT = 100;
@@ -169,9 +171,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			subMonitor.setTaskName("Running Markov Checker on Model");			
 		}
     
-		probabilityDistribution = getInitialProbabilityDistribution();
 		
-		MatrixIterator mtxIterator = tmTerminal.getIterator(probabilityDistribution, delta, eps);
+		MatrixIterator mtxIterator = tmTerminal.getIterator();
 		
 
 		if (Double.isFinite(reliabilityMetric.getTime())) {
