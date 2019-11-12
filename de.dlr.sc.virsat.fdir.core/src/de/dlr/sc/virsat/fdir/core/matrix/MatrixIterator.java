@@ -38,7 +38,7 @@ public abstract class MatrixIterator {
 	}
 	
 	/**
-	 * abstract iterate method for different matrix iterators
+	 * abstract iterate method for different matrix iterators. Iterate performs one update iteration.
 	 */
 	public abstract void iterate();
 	
