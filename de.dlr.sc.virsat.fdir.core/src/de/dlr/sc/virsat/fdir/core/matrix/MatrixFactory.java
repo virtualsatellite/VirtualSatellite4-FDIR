@@ -25,38 +25,26 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 public class MatrixFactory {
 	
 	private MarkovAutomaton<? extends MarkovState> mc;
-	private boolean failStatesAreTerminal;
-	private double delta;
 	
-	/**
-	 * @param mc MarkovChain
-	 */
-	public MatrixFactory(MarkovAutomaton<? extends MarkovState> mc) {
-		this.mc = mc;		
-	}
-
-	
+		
 	/**
 	 * @param failStatesAreTerminal failStatesAreTerminal
 	 * @param delta delta
 	 * @return transition matrix
 	 */
-	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double delta) {
-		this.failStatesAreTerminal = failStatesAreTerminal;
-		this.delta = delta;
-		
-		TransitionMatrix tm = new TransitionMatrix(mc);
-		
-		return createTransitionMatrix(tm);
+	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double delta) {		
+		TransitionMatrix tm = new TransitionMatrix(mc);		
+		return createTransitionMatrix(tm, failStatesAreTerminal, delta);
 	}
 	
 	/**
 	 * Creates a transition matrix
-	 * @param tm 
-	 * 
-	 * @return a transition matrix
+	 * @param tm transition matrix
+	 * @param failStatesAreTerminal failStatesAreTerminal
+	 * @param delta delta
+	 * @return transition matrix
 	 */
-	private TransitionMatrix createTransitionMatrix(TransitionMatrix tm) {
+	private TransitionMatrix createTransitionMatrix(TransitionMatrix tm, boolean failStatesAreTerminal, double delta) {
 		int countStates = mc.getStates().size();
 		
 		for (Object event : mc.getEvents()) {
@@ -82,10 +70,14 @@ public class MatrixFactory {
 					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() * delta;
 				}
 			}
-		}
-		
+		}		
 		return tm;
 	}
-	
-	
+
+	/**
+	 * @param mc markov chain
+	 */
+	public void setMc(MarkovAutomaton<? extends MarkovState> mc) {
+		this.mc = mc;
+	}	
 }

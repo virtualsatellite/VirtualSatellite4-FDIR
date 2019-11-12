@@ -27,7 +27,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.Matrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
-import de.dlr.sc.virsat.fdir.core.matrix.TransitionMatrix;
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
@@ -101,7 +101,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	private MarkovAutomaton<? extends MarkovState> mc;
 	private Matrix tm;
-	private TransitionMatrix tmTerminal;
+	private IMatrix tmTerminal;
 	private Matrix bellmanMatrix;
 
 	/* Buffers */
@@ -112,7 +112,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	/* Results */
 	private ModelCheckingResult modelCheckingResult;
 	private ModelCheckingStatistics statistics;
-
+	
+	private MatrixFactory matrixFactory;
 	/**
 	 * 
 	 * @param delta time slice
@@ -121,6 +122,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	public MarkovModelChecker(double delta, double eps) {
 		this.delta = delta;
 		this.eps = eps;
+		this.matrixFactory = new MatrixFactory();
 	}
 
 	/**
@@ -158,8 +160,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		if (tmTerminal == null) {
-			MatrixFactory mtxFac = new MatrixFactory(mc);
-			tmTerminal = mtxFac.getTransitionMatrix(true, delta);
+			matrixFactory.setMc(mc);
+			tmTerminal = matrixFactory.getTransitionMatrix(true, delta);
 		}
 		
 		final int PROGRESS_COUNT = 100;
@@ -169,7 +171,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
     
 		probabilityDistribution = getInitialProbabilityDistribution();
 		
-		MatrixIterator mtxIterator = new MatrixIterator(tmTerminal, probabilityDistribution, delta, eps);
+		MatrixIterator mtxIterator = tmTerminal.getIterator(probabilityDistribution, delta, eps);
 		
 
 		if (Double.isFinite(reliabilityMetric.getTime())) {

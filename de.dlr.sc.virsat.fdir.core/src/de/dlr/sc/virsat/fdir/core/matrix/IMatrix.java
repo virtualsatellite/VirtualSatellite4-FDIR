@@ -15,5 +15,18 @@ package de.dlr.sc.virsat.fdir.core.matrix;
  *
  */
 public interface IMatrix {
+	/**
+	 * @param vector vector
+	 * @param result resultbuffer
+	 * @return result
+	 */
+	double multiply(double[] vector, double[] result);
 
+	/**
+	 * @param probabilityDistribution probabilityDistribution
+	 * @param delta delta
+	 * @param eps epsilon
+	 * @return MatrixIterator
+	 */
+	MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps);
 }

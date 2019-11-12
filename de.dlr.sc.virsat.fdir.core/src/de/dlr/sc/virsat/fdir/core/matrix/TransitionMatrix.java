@@ -78,5 +78,11 @@ public class TransitionMatrix implements IMatrix {
 	 */
 	public double[][] getStatePredRates() {
 		return statePredRates;
+	}
+
+	@Override
+	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
+		TransitionMatrixIterator tmi = new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
+		return tmi;
 	}	
 }
