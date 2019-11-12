@@ -24,7 +24,7 @@ public class TransitionMatrixIterator extends MatrixIterator {
 	 * @param delta delta
 	 * @param eps epsilon
 	 */
-	public TransitionMatrixIterator(IMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
+	public TransitionMatrixIterator(TransitionMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
 		super(tmTerminal, probabilityDistribution, delta, eps);
 	}
 	
