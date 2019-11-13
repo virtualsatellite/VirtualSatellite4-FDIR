@@ -169,12 +169,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		final int PROGRESS_COUNT = 100;
 		if (subMonitor != null) {
 			subMonitor.setTaskName("Running Markov Checker on Model");			
-		}
-    
-		
+		}		
 		MatrixIterator mtxIterator = tmTerminal.getIterator();
-		
-
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
 			
@@ -186,7 +182,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				
 				if (subMonitor != null) {
 					subMonitor.split(1);
-				}				
+				}
 				probabilityDistribution = mtxIterator.getProbabilityDistribution();
 				modelCheckingResult.failRates.add(getFailRate());
 				mtxIterator.iterate();
