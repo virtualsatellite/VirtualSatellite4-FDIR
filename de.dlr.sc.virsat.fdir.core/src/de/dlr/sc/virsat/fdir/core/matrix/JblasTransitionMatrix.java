@@ -19,8 +19,6 @@ import org.jblas.DoubleMatrix;
  */
 public class JblasTransitionMatrix extends DoubleMatrix implements IMatrix {
 	
-	private MatrixIterator mi;
-
 	/**
 	 * 
 	 */

@@ -36,6 +36,7 @@ public class TransitionMatrix implements IMatrix {
 	 * @param result result buffer
 	 * @return result
 	 */
+	@Override
 	public double multiply(double[] vector, double[] result) {
 		int countStates = vector.length;
 		double res = 0;
