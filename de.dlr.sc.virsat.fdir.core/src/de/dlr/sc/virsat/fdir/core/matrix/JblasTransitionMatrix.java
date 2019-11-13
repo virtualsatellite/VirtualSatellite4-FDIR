@@ -40,13 +40,8 @@ public class JblasTransitionMatrix extends DoubleMatrix implements IMatrix {
 	}
 
 	@Override
-	public MatrixIterator getIterator() {
-		return this.mi;
+	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
-	@Override
-	public void setIterator(MatrixIterator mi) {
-		this.mi = mi;
-	}
-
 }
