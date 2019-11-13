@@ -35,9 +35,15 @@ public class MatrixFactory {
 	 * @return transition matrix
 	 */
 	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double[] probabilityDistribution, double delta, double eps) {		
-		TransitionMatrix tm = new TransitionMatrix(mc, probabilityDistribution, delta, eps);		
-		return createTransitionMatrix(tm, failStatesAreTerminal, delta);
+		TransitionMatrix tm = new TransitionMatrix(mc.getStates().size());
+		createTransitionMatrix(tm, failStatesAreTerminal, delta);
+		
+		TransitionMatrixIterator tmi = new TransitionMatrixIterator(tm, probabilityDistribution, delta, eps);
+		tm.setIterator(tmi);
+		return tm;
 	}
+	
+	
 	
 	/**
 	 * Creates a transition matrix

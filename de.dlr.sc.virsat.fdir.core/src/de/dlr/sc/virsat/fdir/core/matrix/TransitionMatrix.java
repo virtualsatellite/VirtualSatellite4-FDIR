@@ -10,9 +10,6 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-
 /**
  * @author piet_ci
  * 
@@ -27,17 +24,12 @@ public class TransitionMatrix implements IMatrix {
 	private MatrixIterator mi;
 	
 	/**
-	 * @param mc markov chain
-	 * @param probabilityDistribution probabilityDistribution
-	 * @param delta delta
-	 * @param eps epsilon
+	 * @param countStates markov chain state count
 	 */
-	public TransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, double[] probabilityDistribution, double delta, double eps) {
-		int countStates = mc.getStates().size();
+	public TransitionMatrix(int countStates) {
 		this.diagonal = new double[countStates];
 		this.statePredIndices = new int[countStates][];
 		this.statePredRates = new double[countStates][];
-		this.mi = new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
 	}
 	
 	/**
@@ -61,8 +53,7 @@ public class TransitionMatrix implements IMatrix {
 			}
 		}
 		return res;
-	}
-	
+	}	
 	
 	/**
 	 * @return Diagonal
