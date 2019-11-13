@@ -43,7 +43,14 @@ public class MatrixFactory {
 		return tm;
 	}
 	
-	
+	public JblasTransitionMatrix getJblasTransitionMatrix(boolean failStatesAreTerminal, double[] probabilityDistribution, double delta, double eps) {		
+		JblasTransitionMatrix jblasTransitionMatrix = new JblasTransitionMatrix(mc.getStates().size());	
+		createJblasMatrix(jblasTransitionMatrix, failStatesAreTerminal, delta);
+		
+		JblasTransitionMatrixIterator jblasMtxIterator = new JblasTransitionMatrixIterator(jblasTransitionMatrix, probabilityDistribution, delta, eps);
+		jblasTransitionMatrix.setIterator(jblasMtxIterator);
+		return jblasTransitionMatrix;
+	}
 	
 	/**
 	 * Creates a transition matrix
@@ -81,6 +88,12 @@ public class MatrixFactory {
 		}		
 		return tm;
 	}
+	
+	private JblasTransitionMatrix createJblasMatrix(JblasTransitionMatrix jblasMatrix, boolean failStatesAreTerminal, double delta) {
+		return jblasMatrix;
+	}
+	
+	
 
 	/**
 	 * @param mc markov chain
