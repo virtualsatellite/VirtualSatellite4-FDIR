@@ -36,7 +36,7 @@ public class MatrixFactory {
 	 */
 	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double[] probabilityDistribution, double delta, double eps) {		
 		TransitionMatrix tm = new TransitionMatrix(mc.getStates().size());
-		createTransitionMatrix(tm, failStatesAreTerminal, delta);
+		tm = createTransitionMatrix(tm, failStatesAreTerminal, delta);
 		
 		TransitionMatrixIterator tmi = new TransitionMatrixIterator(tm, probabilityDistribution, delta, eps);
 		tm.setIterator(tmi);
