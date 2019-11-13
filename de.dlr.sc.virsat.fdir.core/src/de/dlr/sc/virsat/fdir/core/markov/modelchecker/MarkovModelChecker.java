@@ -163,14 +163,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 		if (tmTerminal == null) {
 			matrixFactory.setMc(mc);
-			tmTerminal = matrixFactory.getTransitionMatrix(true, probabilityDistribution, delta, eps);
+			tmTerminal = matrixFactory.getTransitionMatrix(true,  delta);
 		}
 		
 		final int PROGRESS_COUNT = 100;
 		if (subMonitor != null) {
 			subMonitor.setTaskName("Running Markov Checker on Model");			
 		}		
-		MatrixIterator mtxIterator = tmTerminal.getIterator();
+		MatrixIterator mtxIterator = tmTerminal.getIterator(probabilityDistribution, delta, eps);
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
 			

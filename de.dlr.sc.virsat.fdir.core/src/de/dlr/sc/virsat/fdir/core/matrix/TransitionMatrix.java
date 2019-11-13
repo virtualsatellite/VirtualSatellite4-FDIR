@@ -21,7 +21,6 @@ public class TransitionMatrix implements IMatrix {
 	private double[] diagonal;
 	private int[][] statePredIndices;
 	private double[][] statePredRates;
-	private MatrixIterator mi;
 	
 	/**
 	 * @param countStates markov chain state count
@@ -77,12 +76,7 @@ public class TransitionMatrix implements IMatrix {
 	}
 
 	@Override
-	public MatrixIterator getIterator() {
-		return this.mi;
-	}
-
-	@Override
-	public void setIterator(MatrixIterator mi) {
-		this.mi = mi;
+	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
+		return new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
 	}
 }

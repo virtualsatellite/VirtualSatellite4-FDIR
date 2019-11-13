@@ -26,22 +26,17 @@ public class MatrixFactory {
 	
 	private MarkovAutomaton<? extends MarkovState> mc;
 	
-		
 	/**
 	 * @param failStatesAreTerminal failStatesAreTerminal
-	 * @param probabilityDistribution probabilityDistribution
 	 * @param delta delta
-	 * @param eps epsilon
 	 * @return transition matrix
 	 */
-	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double[] probabilityDistribution, double delta, double eps) {		
+	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double delta) {		
 		TransitionMatrix tm = new TransitionMatrix(mc.getStates().size());
 		tm = createTransitionMatrix(tm, failStatesAreTerminal, delta);
-		
-		TransitionMatrixIterator tmi = new TransitionMatrixIterator(tm, probabilityDistribution, delta, eps);
-		tm.setIterator(tmi);
 		return tm;
 	}
+	
 	
 	public JblasTransitionMatrix getJblasTransitionMatrix(boolean failStatesAreTerminal, double[] probabilityDistribution, double delta, double eps) {		
 		JblasTransitionMatrix jblasTransitionMatrix = new JblasTransitionMatrix(mc.getStates().size());	
@@ -51,6 +46,7 @@ public class MatrixFactory {
 		jblasTransitionMatrix.setIterator(jblasMtxIterator);
 		return jblasTransitionMatrix;
 	}
+
 	
 	/**
 	 * Creates a transition matrix

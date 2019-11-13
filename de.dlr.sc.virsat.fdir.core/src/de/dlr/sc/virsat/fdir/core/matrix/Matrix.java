@@ -168,14 +168,8 @@ public class Matrix implements IMatrix {
 	}
 
 	@Override
-	public MatrixIterator getIterator() {
+	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void setIterator(MatrixIterator mi) {
-		// TODO Auto-generated method stub
-		
 	}
 }
