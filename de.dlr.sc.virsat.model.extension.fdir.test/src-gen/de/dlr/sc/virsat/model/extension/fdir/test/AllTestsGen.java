@@ -23,10 +23,10 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimActionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITORTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEventTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrixTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVERTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTETest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v0Test;
@@ -75,7 +75,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	SANDTest.class,
 	PORITest.class,
 	PANDITest.class,
-	OBSERVERTest.class,
+	MONITORTest.class,
 	DELAYTest.class,
 	FDEPTest.class,
 	RDEPTest.class,

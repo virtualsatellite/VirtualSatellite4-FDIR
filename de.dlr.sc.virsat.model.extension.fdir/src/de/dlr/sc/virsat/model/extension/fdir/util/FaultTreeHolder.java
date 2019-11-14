@@ -25,7 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 
 /**
  * This helper class holds fault tree data and provides interferable data
@@ -42,7 +42,7 @@ public class FaultTreeHolder {
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToParents;
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapNodeToAllParents;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToDEPTriggers;
-	private Map<FaultTreeNode, List<OBSERVER>> mapNodeToObservers;
+	private Map<FaultTreeNode, List<MONITOR>> mapNodeToMonitors;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSubNodes;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapFaultToBasicEvents;
 	private Map<BasicEvent, Fault> mapBasicEventToFault;
@@ -107,8 +107,8 @@ public class FaultTreeHolder {
 				parentsChild.add(node);
 			}
 			
-			if (mapNodeToObservers.get(node) == null) {
-				mapNodeToObservers.put(node, new ArrayList<>());
+			if (mapNodeToMonitors.get(node) == null) {
+				mapNodeToMonitors.put(node, new ArrayList<>());
 			}
 			
 			if (node instanceof Fault) {
@@ -132,22 +132,22 @@ public class FaultTreeHolder {
 				}
 				
 				for (FaultTreeEdge obs : node.getFault().getFaultTree().getObservations()) {
-					OBSERVER observer = (OBSERVER) obs.getTo();
-					FaultTreeNode observable = obs.getFrom();
+					MONITOR monitor = (MONITOR) obs.getTo();
+					FaultTreeNode monitored = obs.getFrom();
 					
-					List<OBSERVER> nodeObservers = mapNodeToObservers.get(observable);
-					if (nodeObservers == null) {
-						nodeObservers = new ArrayList<>();
-						mapNodeToObservers.put(observable, nodeObservers);
+					List<MONITOR> nodeMonitors = mapNodeToMonitors.get(monitored);
+					if (nodeMonitors == null) {
+						nodeMonitors = new ArrayList<>();
+						mapNodeToMonitors.put(monitored, nodeMonitors);
 					}
 					
-					toProcess.add(observer);
-					nodeObservers.add(observer);
+					toProcess.add(monitor);
+					nodeMonitors.add(monitor);
 
-					if (mapNodeToParents.get(observer) == null) {
-						mapNodeToParents.put(observer, new ArrayList<>());
+					if (mapNodeToParents.get(monitor) == null) {
+						mapNodeToParents.put(monitor, new ArrayList<>());
 					}
-					mapNodeToParents.get(observer).add(observable);
+					mapNodeToParents.get(monitor).add(monitored);
 				}
 
 				mapFaultToBasicEvents.put(node, new ArrayList<>(node.getFault().getBasicEvents()));
@@ -177,7 +177,7 @@ public class FaultTreeHolder {
 		mapNodeToParents = new HashMap<>();
 		mapNodeToDEPTriggers = new HashMap<>();
 		mapFaultToBasicEvents = new HashMap<>();
-		mapNodeToObservers = new HashMap<>();
+		mapNodeToMonitors = new HashMap<>();
 		mapNodeToIndex = new HashMap<>();
 		mapBasicEventToFault = new HashMap<>();
 		mapBasicEventToHotFailRate = new HashMap<>();
@@ -240,8 +240,8 @@ public class FaultTreeHolder {
 	 * Gets a mapping from any node to the Observers
 	 * @return map from node to Observer
 	 */
-	public Map<FaultTreeNode, List<OBSERVER>> getMapNodeToObservers() {
-		return mapNodeToObservers;
+	public Map<FaultTreeNode, List<MONITOR>> getMapNodeToMonitors() {
+		return mapNodeToMonitors;
 	}
 	
 	/**
@@ -249,7 +249,7 @@ public class FaultTreeHolder {
 	 * @return true iff the tree has an observer node
 	 */
 	public boolean isPartialObservable() {
-		return getNodes().stream().filter(node -> node instanceof OBSERVER).findAny().isPresent();
+		return getNodes().stream().filter(node -> node instanceof MONITOR).findAny().isPresent();
 	}
 	
 	/**

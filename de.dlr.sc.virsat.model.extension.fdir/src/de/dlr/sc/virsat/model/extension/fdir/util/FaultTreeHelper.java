@@ -29,7 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.OR;
 import de.dlr.sc.virsat.model.extension.fdir.model.PAND;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDI;
@@ -399,7 +399,7 @@ public class FaultTreeHelper {
 			case RDEP:
 			case PDEP:
 				return connectDep(fault, from, to);
-			case OBSERVER:
+			case MONITOR:
 				return connectObserver(fault, from, to);
 			default:
 				return connect(fault, from, to);
@@ -481,8 +481,8 @@ public class FaultTreeHelper {
 				return new RDEP(concept);
 			case PDEP:
 				return new PDEP(concept);
-			case OBSERVER:
-				return new OBSERVER(concept);
+			case MONITOR:
+				return new MONITOR(concept);
 			case DELAY:
 				return new DELAY(concept);
 			default:

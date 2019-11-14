@@ -30,7 +30,7 @@ import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatUpdateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
@@ -77,8 +77,8 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 				if (hasOutOfDateText(expectedDelay, cs, FaultTreeNodeAddFeature.INDEX_DELAY_SHAPE)) {
 		        	neededUpdates.add("Delay out of date");
 		        }
-			} else if (bean instanceof OBSERVER) {
-				String expectedObservationRate = String.valueOf(((OBSERVER) bean).getObservationRateBean().getValueWithUnit());
+			} else if (bean instanceof MONITOR) {
+				String expectedObservationRate = String.valueOf(((MONITOR) bean).getObservationRateBean().getValueWithUnit());
 				if (hasOutOfDateText(expectedObservationRate, cs, FaultTreeNodeAddFeature.INDEX_OBSERVATION_RATE_SHAPE)) {
 		        	neededUpdates.add("Observation rate out of date");
 		        }
@@ -92,7 +92,7 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 		        if (AnchorUtil.getFreeAnchors(cs, AnchorType.SPARE).size() != 1) {
 		        	neededUpdates.add("Number of spares out of date");
 		        }
-	        } else if (bean instanceof OBSERVER) {
+	        } else if (bean instanceof MONITOR) {
 		        if (AnchorUtil.getFreeAnchors(cs, AnchorType.OBSERVER).size() != 1) {
 		        	neededUpdates.add("Number of observed nodes out of date");
 		        }
@@ -138,15 +138,15 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
             } else if (bean instanceof DELAY) {
             	String delay = String.valueOf(((DELAY) bean).getTimeBean().getValueWithUnit());
 	            changeDuringUpdate |= updateText(delay, cs, FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
-            } else if (bean instanceof OBSERVER) {
-            	String observationRate = String.valueOf(((OBSERVER) bean).getObservationRateBean().getValueWithUnit());
+            } else if (bean instanceof MONITOR) {
+            	String observationRate = String.valueOf(((MONITOR) bean).getObservationRateBean().getValueWithUnit());
 	            changeDuringUpdate |= updateText(observationRate, cs, FaultTreeNodeAddFeature.INDEX_OBSERVATION_RATE_SHAPE);
             }
             
             changeDuringUpdate |= updateAnchors(cs, bean, FaultTreeNodeAddFeature.PORT_COLOR, AnchorType.INPUT);
             if (bean instanceof SPARE) {
             	changeDuringUpdate |= updateAnchors(cs, bean, FaultTreeNodeAddFeature.PORT_COLOR, AnchorType.SPARE);
-            } else if (bean instanceof OBSERVER) {
+            } else if (bean instanceof MONITOR) {
             	changeDuringUpdate |= updateAnchors(cs, bean, FaultTreeNodeAddFeature.OBSERVER_PORT_COLOR, AnchorType.OBSERVER);
             }
         } 

@@ -20,9 +20,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+
 import org.junit.Before;
 
-import de.dlr.sc.virsat.concept.unittest.util.test.AConceptTestCase;
+import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFT;
@@ -41,7 +42,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
  *
  */
 
-public class ASynthesizerExperiment extends AConceptTestCase {
+public class ASynthesizerExperiment {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
 	protected BasicSynthesizer synthesizer;
@@ -52,7 +53,7 @@ public class ASynthesizerExperiment extends AConceptTestCase {
 	
 	@Before
 	public void setUp() {
-		concept = loadConceptFromPlugin(PLUGIN_ID);
+		concept = ConceptXmiLoader.loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
 		this.ftHelper = new FaultTreeHelper(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
 		this.synthesizer = new BasicSynthesizer();

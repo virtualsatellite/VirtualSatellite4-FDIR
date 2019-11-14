@@ -61,7 +61,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		
 	}
 	
-	Category OBSERVER extends Gate {
+	Category MONITOR extends Gate {
 		FloatProperty observationRate default 0 quantityKind "Frequency" unit "Hertz";
 	}
 	

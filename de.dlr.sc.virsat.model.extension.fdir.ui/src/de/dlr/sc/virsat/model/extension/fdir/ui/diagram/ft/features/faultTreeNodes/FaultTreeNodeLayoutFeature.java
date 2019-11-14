@@ -31,7 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
@@ -147,7 +147,7 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 			for (int i = 0; i < inputAnchors.size(); ++i) {
 				BoxRelativeAnchor anchor = (BoxRelativeAnchor) inputAnchors.get(i);
 				double relativeWidth = (double) (i + 1) / (inputAnchors.size() + 1);
-				if (bean instanceof SPARE || bean instanceof OBSERVER) {
+				if (bean instanceof SPARE || bean instanceof MONITOR) {
 					relativeWidth /= 2;
 				} 
 				
@@ -168,7 +168,7 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 				anythingChanged |= layoutVOTE(containerShape, width, height, typeText.getFont(), bean);
 			} else if (bean instanceof DELAY) {
 				anythingChanged |= layoutDELAY(containerShape, width, height, typeText.getFont(), bean);
-			} else if (bean instanceof OBSERVER) {
+			} else if (bean instanceof MONITOR) {
 				anythingChanged |= layoutOBSERVER(containerShape, width, height, typeText.getFont(), bean);
 			}
 		} 

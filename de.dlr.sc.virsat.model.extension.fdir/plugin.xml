@@ -58,8 +58,8 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PANDI">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
-			id="de.dlr.sc.virsat.model.extension.fdir.OBSERVER"
-			caBean="de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER">
+			id="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MONITOR">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.DELAY"

@@ -64,8 +64,8 @@
 		pathToImage="resources/icons/PANDI.gif">
 	</conceptImage>
 	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.OBSERVER"
-		pathToImage="resources/icons/OBSERVER.gif">
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
+		pathToImage="resources/icons/MONITOR.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.DELAY"
@@ -234,8 +234,8 @@
 		name="Add PANDI">
 	</command>
 	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
-		name="Add OBSERVER">
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
+		name="Add MONITOR">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
@@ -394,9 +394,9 @@
 	      icon="resources/icons/PANDI.gif">
 	</image>
 	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
-	      disabledIcon="resources/icons/OBSERVER_disabled.gif"
-	      icon="resources/icons/OBSERVER.gif">
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
+	      disabledIcon="resources/icons/MONITOR_disabled.gif"
+	      icon="resources/icons/MONITOR.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
@@ -571,8 +571,8 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddPANDI">
 	</handler>
 	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddOBSERVERHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER">
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMONITORHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddDELAYHandler"
@@ -944,7 +944,7 @@
 			</visibleWhen>
 		</command>
 		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1651,14 +1651,14 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionPANDI">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetOBSERVER"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableOBSERVER">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMONITOR">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetOBSERVER"
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionOBSERVER">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionMONITOR">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDELAY"
@@ -1766,9 +1766,9 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesPANDI">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesOBSERVER"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesOBSERVER">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesMONITOR">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesDELAY"

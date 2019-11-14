@@ -7,12 +7,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
+package de.dlr.sc.virsat.model.extension.fdir.ui.command;
 
-
-// *****************************************************************
-// * Class Declaration
-// *****************************************************************
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
@@ -22,5 +18,5 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
  * 
  * 
  */
-public class UiSnippetTableOBSERVER extends AUiSnippetTableOBSERVER {
+public class CreateAddMONITORCommand extends ACreateAddMONITORCommand {
 }

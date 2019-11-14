@@ -27,7 +27,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
@@ -130,7 +130,7 @@ public class DFT2GalileoDFT {
 			if (node instanceof Fault) {
 				Fault fault = (Fault) node;
 				allChildren.addAll(fault.getBasicEvents());
-			} else if (node instanceof OBSERVER) {
+			} else if (node instanceof MONITOR) {
 				List<FaultTreeNode> observables = ftHelper.getObservables(node);
 				for (FaultTreeNode observable : observables) {
 					GalileoFaultTreeNode galileoChild = mapDftNodeToGalileoNode.get(observable);

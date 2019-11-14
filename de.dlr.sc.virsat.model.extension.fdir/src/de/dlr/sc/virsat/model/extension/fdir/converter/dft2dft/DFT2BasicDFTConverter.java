@@ -23,7 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -95,12 +95,12 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 				ftHelper.connectSpare(fault, newSpareOutputNode, newNodeOutputNode);
 			}
 
-			List<OBSERVER> observers = ftHolder.getMapNodeToObservers().get(node);
-			for (int i = 0; i < observers.size(); ++i) {
-				OBSERVER observer = observers.get(i);
-				List<FaultTreeNode> newChildNodeList = mapNodes.get(observer);
-				FaultTreeNode newObserverOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-				ftHelper.connectObserver(fault, newNodeOutputNode, newObserverOutputNode);
+			List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().get(node);
+			for (int i = 0; i < monitors.size(); ++i) {
+				MONITOR monitor = monitors.get(i);
+				List<FaultTreeNode> newChildNodeList = mapNodes.get(monitor);
+				FaultTreeNode newMonitorOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
+				ftHelper.connectObserver(fault, newNodeOutputNode, newMonitorOutputNode);
 			}
 			
 			List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
@@ -254,8 +254,8 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			Gate gate = ftHelper.createGate(newFault, type);
 			if (gate instanceof VOTE) {
 				((VOTE) gate).setVotingThreshold(((VOTE) oldGate).getVotingThreshold());
-			} else if (gate instanceof OBSERVER) {
-				((OBSERVER) gate).setObservationRate(((OBSERVER) oldGate).getObservationRateBean().getValueToBaseUnit());
+			} else if (gate instanceof MONITOR) {
+				((MONITOR) gate).setObservationRate(((MONITOR) oldGate).getObservationRateBean().getValueToBaseUnit());
 			} else if (gate instanceof RDEP) {
 				((RDEP) gate).setRateChange(((RDEP) oldGate).getRateChangeBean().getValueToBaseUnit());
 			} else if (gate instanceof DELAY) {

@@ -14,7 +14,7 @@
   <categories name="SAND" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
   <categories name="PORI" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
   <categories name="PANDI" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
-  <categories name="OBSERVER" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
+  <categories name="MONITOR" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="observationRate" quantityKindName="Frequency" unitName="Hertz" defaultValue="0"/>
   </categories>
   <categories name="DELAY" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">

@@ -27,12 +27,12 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
  * 
  * 
  */
-public  class OBSERVER extends AOBSERVER {
+public  class MONITOR extends AMONITOR {
 	
 	/**
 	 * Constructor of Concept Class
 	 */
-	public OBSERVER() {
+	public MONITOR() {
 		super();
 	}
 
@@ -41,7 +41,7 @@ public  class OBSERVER extends AOBSERVER {
 	 * a CategoryAssignment in the background from the given concept
 	 * @param concept the concept where it will find the correct Category to instantiate from
 	 */
-	public OBSERVER(Concept concept) {
+	public MONITOR(Concept concept) {
 		super(concept);
 	}	
 
@@ -49,12 +49,12 @@ public  class OBSERVER extends AOBSERVER {
 	 * Constructor of Concept Class that can be initialized manually by a given Category Assignment
 	 * @param categoryAssignment The category Assignment to be used for background initialization of the Category bean
 	 */
-	public OBSERVER(CategoryAssignment categoryAssignment) {
+	public MONITOR(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
 	}
-
+	
 	@Override
 	public FaultTreeNodeType getFaultTreeNodeType() {
-		return FaultTreeNodeType.OBSERVER;
+		return FaultTreeNodeType.MONITOR;
 	}
 }

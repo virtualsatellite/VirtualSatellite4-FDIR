@@ -16,8 +16,8 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoriesFactory;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
 import java.lang.Exception;
 
 
@@ -41,7 +41,7 @@ import org.junit.Test;
  * 
  * 
  */	
-public abstract class AOBSERVERTest {
+public abstract class AMONITORTest {
 	
 	protected Concept concept;
 	
@@ -61,24 +61,24 @@ public abstract class AOBSERVERTest {
 	// *****************************************************************
 	
 	@Test
-	public void testOBSERVER() {
-		OBSERVER testOBSERVER = new OBSERVER();
+	public void testMONITOR() {
+		MONITOR testMONITOR = new MONITOR();
 	
-		assertNull("There is no internal DVLM object", testOBSERVER.getTypeInstance());
+		assertNull("There is no internal DVLM object", testMONITOR.getTypeInstance());
 	}
 	
 	@Test
-	public void testOBSERVERConcept() {
-		OBSERVER testOBSERVER = new OBSERVER(concept);
+	public void testMONITORConcept() {
+		MONITOR testMONITOR = new MONITOR(concept);
 		
-		assertNotNull("There is an internal DVLM object", testOBSERVER.getATypeInstance());
+		assertNotNull("There is an internal DVLM object", testMONITOR.getATypeInstance());
 	}
 	
 	@Test
-	public void testOBSERVERCategoryAssignment() {
+	public void testMONITORCategoryAssignment() {
 		CategoryAssignment testCa = CategoriesFactory.eINSTANCE.createCategoryAssignment();
-		OBSERVER testOBSERVER = new OBSERVER(testCa);
+		MONITOR testMONITOR = new MONITOR(testCa);
 		
-		assertEquals("DVLM object has been set as specified", testCa, testOBSERVER.getTypeInstance());
+		assertEquals("DVLM object has been set as specified", testCa, testMONITOR.getTypeInstance());
 	}
 }

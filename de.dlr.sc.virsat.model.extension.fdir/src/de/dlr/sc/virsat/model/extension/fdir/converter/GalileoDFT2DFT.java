@@ -33,7 +33,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -211,8 +211,8 @@ public class GalileoDFT2DFT {
 				String[] split = ((Named) galileoType).getTypeName().split(GALILEO_VOTE);
 				Integer x = Integer.valueOf(split[0]);
 				((VOTE) gate).setVotingThreshold(x);
-			} else if (type.equals(FaultTreeNodeType.OBSERVER)) {
-				((OBSERVER) gate).setObservationRate(Double.valueOf(((Observer) galileoType).getObservationRate()));
+			} else if (type.equals(FaultTreeNodeType.MONITOR)) {
+				((MONITOR) gate).setObservationRate(Double.valueOf(((Observer) galileoType).getObservationRate()));
 			} else if (type.equals(FaultTreeNodeType.RDEP)) {
 				((RDEP) gate).setRateChange(Double.valueOf(((Rdep) galileoType).getRateFactor()));
 			} else if (type.equals(FaultTreeNodeType.DELAY)) {
@@ -247,7 +247,7 @@ public class GalileoDFT2DFT {
 				return FaultTreeNodeType.valueOf(typeName.toUpperCase());
 			}
 		} else if (galileoType instanceof Observer) {
-			return FaultTreeNodeType.OBSERVER;
+			return FaultTreeNodeType.MONITOR;
 		} else if (galileoType instanceof Rdep) {
 			return FaultTreeNodeType.RDEP;
 		} else if (galileoType instanceof Delay) {

@@ -9,14 +9,14 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddArrayElementGatesCommand;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
-import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetGenericCategoryAssignmentTable;
-import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddOBSERVERCommand;
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetArrayInstanceCategoryTable;
 
-;
 
 /**
  * Auto Generated Abstract Generator Gap Class
@@ -26,16 +26,19 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddOBSERVERCommand
  * 
  * 
  */	
-public abstract class AUiSnippetTableOBSERVER extends AUiSnippetGenericCategoryAssignmentTable implements IUiSnippet {
-	public AUiSnippetTableOBSERVER() {
+public abstract class AUiSnippetTableFaultTreeGatesMONITOR extends AUiSnippetArrayInstanceCategoryTable implements IUiSnippet {
+
+	public AUiSnippetTableFaultTreeGatesMONITOR() {
 		super("de.dlr.sc.virsat.model.extension.fdir",
-			"OBSERVER",
-			"de.dlr.sc.virsat.model.extension.fdir.OBSERVER",
+			"MONITOR",
+			"gates",
+			"FaultTree",
+			"de.dlr.sc.virsat.model.extension.fdir.MONITOR",
 			STYLE_ADD_BUTTON | STYLE_REMOVE_BUTTON | STYLE_EDITOR_BUTTON);
 	}
-
+	
 	@Override
 	protected Command createAddCommand(EditingDomain editingDomain, Concept activeConcept) {
-		return new CreateAddOBSERVERCommand().create(editingDomain, model, activeConcept);
+		return new CreateAddArrayElementGatesCommand().create(editingDomain, getArrayInstance(model),  ActiveConceptHelper.getCategory(activeConcept, "MONITOR"));
 	}
 }
