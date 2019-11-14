@@ -39,7 +39,14 @@ public class MatrixFactory {
 		return tm;
 	}
 	
-	public JblasTransitionMatrix getJblasTransitionMatrix(boolean failStatesAreTerminal, double[] probabilityDistribution, double delta, double eps) {		
+	/**
+	 * @param mc markov chain
+	 * @param failStatesAreTerminal failStatesAreTerminal
+	 * @param delta delta
+	 * @return jblasTransitionMatrix
+	 */
+	public JblasTransitionMatrix getJblasTransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal, double delta) {		
+		this.mc = mc;
 		JblasTransitionMatrix jBlasTransitionMatrix = new JblasTransitionMatrix(mc.getStates().size());
 		jBlasTransitionMatrix = createJblasMatrix(jBlasTransitionMatrix, failStatesAreTerminal, delta);
 		return jBlasTransitionMatrix;
@@ -82,7 +89,40 @@ public class MatrixFactory {
 		return tm;
 	}
 
+	/**
+	 * Populates a JblasTransitionMatrix according to a specified makov chain
+	 * @param jblasMatrix jblasMatrix
+	 * @param failStatesAreTerminal failStatesAreTerminal
+	 * @param delta delta
+	 * @return JblasTransitionMatrix
+	 */
 	private JblasTransitionMatrix createJblasMatrix(JblasTransitionMatrix jblasMatrix, boolean failStatesAreTerminal, double delta) {
+		jblasMatrix.fill(0);
+		
+		int countStates = mc.getStates().size();
+		
+		for (Object event : mc.getEvents()) {
+			for (MarkovTransition<? extends MarkovState> transition : mc.getTransitions(event)) {
+				int fromIndex = transition.getFrom().getIndex();
+				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
+					double value = jblasMatrix.get(fromIndex, fromIndex) - transition.getRate() * delta;
+					jblasMatrix.put(fromIndex, fromIndex, value);
+				}
+			}
+		}
+		
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = mc.getStates().get(i);
+			List<?> transitions = mc.getPredTransitions(state);
+			
+			for (int j = 0; j < transitions.size(); ++j) {
+				@SuppressWarnings("unchecked")
+				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {					
+					jblasMatrix.put(state.getIndex(), j, transition.getRate() * delta);
+				}
+			}
+		}		
 		return jblasMatrix;
 	}
 }
