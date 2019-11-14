@@ -19,6 +19,8 @@ package de.dlr.sc.virsat.fdir.core.matrix;
 public class TransitionMatrixIterator extends MatrixIterator {	
 
 	/**
+	 * Implementation of a MatrixIterator using custom sparse matrices
+	 * 
 	 * @param tmTerminal transition matrix
 	 * @param probabilityDistribution probability distribution
 	 * @param delta delta
