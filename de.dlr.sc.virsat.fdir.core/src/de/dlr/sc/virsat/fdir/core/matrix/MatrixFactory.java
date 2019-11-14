@@ -27,11 +27,13 @@ public class MatrixFactory {
 	private MarkovAutomaton<? extends MarkovState> mc;
 	
 	/**
+	 * @param mc 
 	 * @param failStatesAreTerminal failStatesAreTerminal
 	 * @param delta delta
 	 * @return transition matrix
 	 */
-	public TransitionMatrix getTransitionMatrix(boolean failStatesAreTerminal, double delta) {		
+	public TransitionMatrix getTransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal, double delta) {		
+		this.mc = mc;
 		TransitionMatrix tm = new TransitionMatrix(mc.getStates().size());
 		tm = createTransitionMatrix(tm, failStatesAreTerminal, delta);
 		return tm;
@@ -74,11 +76,4 @@ public class MatrixFactory {
 		}		
 		return tm;
 	}
-
-	/**
-	 * @param mc markov chain
-	 */
-	public void setMc(MarkovAutomaton<? extends MarkovState> mc) {
-		this.mc = mc;
-	}	
 }

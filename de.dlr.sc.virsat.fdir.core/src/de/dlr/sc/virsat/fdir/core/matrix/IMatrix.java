@@ -12,6 +12,8 @@ package de.dlr.sc.virsat.fdir.core.matrix;
 /**
  * Interface for matrices
  * @author piet
+ * 
+ * Matrix Interface for different types of matrices
  *
  */
 public interface IMatrix {
@@ -23,6 +25,8 @@ public interface IMatrix {
 	double multiply(double[] vector, double[] result);
 
 	/**
+	 * Returns an iterator for specific matrix type.
+	 * 
 	 * @param probabilityDistribution probabilityDistribution
 	 * @param delta delta
 	 * @param eps epsilon

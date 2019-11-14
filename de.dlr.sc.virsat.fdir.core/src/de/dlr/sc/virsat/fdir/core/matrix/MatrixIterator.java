@@ -24,6 +24,8 @@ public abstract class MatrixIterator {
 	
 	
 	/**
+	 * MatrixIterator constructor
+	 * 
 	 * @param matrix matrix
 	 * @param probabilityDistribution probabilityDistribution
 	 * @param delta delta
