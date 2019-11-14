@@ -27,7 +27,7 @@ public class MatrixFactory {
 	private MarkovAutomaton<? extends MarkovState> mc;
 	
 	/**
-	 * @param mc 
+	 * @param mc markov chain
 	 * @param failStatesAreTerminal failStatesAreTerminal
 	 * @param delta delta
 	 * @return transition matrix
