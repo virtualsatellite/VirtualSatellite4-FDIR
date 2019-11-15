@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropert
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
 // * Class Declaration
@@ -74,41 +75,6 @@ public  class FaultTree extends AFaultTree {
 	 */
 	public Fault getRoot() {
 		return new Fault((CategoryAssignment) getTypeInstance().eContainer().eContainer());
-	}
-
-	/**
-	 * Gets all child faults of this fault tree
-	 * @return the set of child faults
-	 */
-	public Set<Fault> getChildFaults() {
-		Set<Fault> causes = new HashSet<>();
-		for (FaultTreeEdge propagation : getPropagations()) {
-			FaultTreeNode node = propagation.getFrom();
-			if (node instanceof Fault) {
-				causes.add((Fault) node);
-			}
-		}
-		
-		for (FaultTreeEdge dep : getDeps()) {
-			FaultTreeNode node = dep.getFrom();
-			if (node instanceof Fault) {
-				causes.add((Fault) node);
-			}
-		}
-		return causes;
-	}
-	
-	/**
-	 * Gets all failure modes for the root event.
-	 * An event is a failure mode iff 
-	 * - its a direct child fault
-	 * - its a basic event attached to the root event
-	 * @return all failure modes for the root event
-	 */
-	public Set<FaultEvent> getFailureModes() {
-		Set<FaultEvent> failureModes = new HashSet<>(getChildFaults());
-		failureModes.addAll(getRoot().getBasicEvents());
-		return failureModes;
 	}
 	
 	/**
@@ -166,7 +132,8 @@ public  class FaultTree extends AFaultTree {
 	public List<String> getPotentialRecoveryActions() {
 		List<String> potentialRecoveryActions = new ArrayList<>();
 		
-		List<BasicEvent> basicEvents = getChildFaults().stream()
+		FaultTreeHolder ftHolder = new FaultTreeHolder(getRoot());
+		List<BasicEvent> basicEvents = ftHolder.getChildFaults(getRoot()).stream()
 				.flatMap(fault -> fault.getBasicEvents().stream())
 				.collect(Collectors.toList());
 		

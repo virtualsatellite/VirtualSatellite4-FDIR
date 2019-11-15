@@ -20,8 +20,13 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
+import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -72,6 +77,22 @@ public class FaultTreeHolder {
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
+		
+		IBeanStructuralElementInstance rootParent = root.getParent();
+		if (rootParent != null) {
+			StructuralElementInstance rootSei = (StructuralElementInstance) VirSatEcoreUtil.getRootContainer(root.getParent().getStructuralElementInstance(), true);
+			List<StructuralElementInstance> deepChildren = rootSei.getDeepChildren();
+			for (StructuralElementInstance child : deepChildren) {
+				BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance();
+				beanSei.setStructuralElementInstance(child);
+				for (Fault fault : beanSei.getAll(Fault.class)) {
+					if (!fault.getFaultTree().getPropagations().isEmpty()) {
+						faultTrees.add(fault.getFaultTree());
+					}
+				}
+			}
+		}
+		
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
 			
@@ -391,5 +412,44 @@ public class FaultTreeHolder {
 			return (T) getNodes().stream()
 					.filter(node -> ftnClazz.isAssignableFrom(node.getClass()) && node.getName().equals(name)).findFirst().get();
 		}
+	}
+	
+	/**
+	 * Gets all direct child faults of this fault
+	 * @param fault the fault
+	 * @return the set of direct child faults
+	 */
+	public Set<Fault> getChildFaults(Fault fault) {
+		Set<Fault> childFaults = new HashSet<>();
+		Queue<FaultTreeNode> nodes = new LinkedList<FaultTreeNode>();
+		nodes.add(fault);
+		
+		while (!nodes.isEmpty()) {
+			FaultTreeNode node = nodes.poll();
+			List<FaultTreeNode> children = getMapNodeToChildren().getOrDefault(node, Collections.emptyList());
+			for (FaultTreeNode child : children) {
+				if (!(child instanceof Fault && childFaults.add((Fault) child))) {
+					nodes.add(child);
+				}
+			}
+		}
+		
+		return childFaults;
+	}
+	
+	/**
+	 * Gets all failure modes for the fault event.
+	 * An event is a failure mode iff 
+	 * - its a direct child fault
+	 * - its a basic event attached to the root event
+	 * @param fault the fault
+	 * @return all failure modes for the root event
+	 */
+	public Set<FaultEvent> getFailureModes(Fault fault) {
+		Set<FaultEvent> failureModes = new HashSet<>(getChildFaults(fault));
+		if (fault instanceof Fault) {
+			failureModes.addAll(fault.getBasicEvents());
+		}
+		return failureModes;
 	}
 }

@@ -33,6 +33,7 @@ import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
 // * Class Declaration
@@ -124,12 +125,13 @@ public  class FMECA extends AFMECA {
 		subMonitor.subTask("Collecting FMECA entries...");
 		for (Fault failure : failures) {
 			SubMonitor iterationMonitor = subMonitor.split(1);
-			Set<FaultEvent> failureModes = failure.getFaultTree().getFailureModes();
+			FaultTreeHolder ftHolder = new FaultTreeHolder(failure);
+			Set<FaultEvent> failureModes = ftHolder.getFailureModes(failure);
 			iterationMonitor.setWorkRemaining(failureModes.size());
 			for (FaultEvent failureMode : failureModes) {
 				if (failureMode instanceof Fault) {
 					Fault nonBasicFailureMode = (Fault) failureMode; 
-					Set<FaultEvent> failureCauses = nonBasicFailureMode.getFaultTree().getFailureModes();
+					Set<FaultEvent> failureCauses = ftHolder.getFailureModes(nonBasicFailureMode);
 					
 					for (FaultEvent failureCause : failureCauses) {
 						entries.add(generateEntry(failure, failureMode, failureCause, iterationMonitor.split(1)));

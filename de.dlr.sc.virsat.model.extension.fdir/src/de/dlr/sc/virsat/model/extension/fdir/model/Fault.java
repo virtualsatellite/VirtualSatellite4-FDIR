@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
 // * Class Declaration
@@ -83,8 +84,10 @@ public class Fault extends AFault {
 		StructuralElementInstance parentSei = VirSatEcoreUtil.getEContainerOfClass(ti, StructuralElementInstance.class);
 		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(parentSei);
 		List<Fault> otherFaults = parent.getAll(Fault.class);
+		
 		for (Fault potentialParentFault : otherFaults) {
-			Set<Fault> childFaults = potentialParentFault.getFaultTree().getChildFaults();
+			FaultTreeHolder ftHolder = new FaultTreeHolder(potentialParentFault);
+			Set<Fault> childFaults = ftHolder.getChildFaults(potentialParentFault);
 			if (childFaults.contains(this)) {
 				return false;
 			}

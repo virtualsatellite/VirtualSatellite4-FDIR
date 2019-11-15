@@ -147,7 +147,7 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeHolder fthold = new FaultTreeHolder(rootcsp2);
 		FaultTreeNode spare = fthold.getNodeByName("B", Fault.class);
 		FaultTreeNode spareGate = fthold.getNodeByName("tle", SPARE.class);
-		FaultTreeNode child = rootcsp2.getFaultTree().getChildFaults().iterator().next();
+		FaultTreeNode child = fthold.getChildFaults(rootcsp2).iterator().next();
 		
 		final int MODULESIZE_ROOT = 6;
 		assertEquals(MODULESIZE_ROOT, module.getNodes().size());
@@ -163,7 +163,7 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeHolder fthold = new FaultTreeHolder(rootcsp2);
 		FaultTreeNode spare = fthold.getNodeByName("B", Fault.class);
 		FaultTreeNode spareGate = fthold.getNodeByName("tle", SPARE.class);
-		FaultTreeNode child = rootcsp2.getFaultTree().getChildFaults().iterator().next();
+		FaultTreeNode child = fthold.getChildFaults(rootcsp2).iterator().next();
 		
 		Module module = modularizer.harvestModule(spareGate);
 		final int MODULESIZE_SPAREGATE = 5;

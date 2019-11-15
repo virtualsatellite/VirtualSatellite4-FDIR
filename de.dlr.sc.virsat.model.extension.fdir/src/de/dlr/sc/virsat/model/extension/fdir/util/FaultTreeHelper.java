@@ -724,7 +724,8 @@ public class FaultTreeHelper {
 			allLocalSubNodes.add(gate);
 		}
 		allLocalSubNodes.addAll(fault.getBasicEvents());
-		allLocalSubNodes.addAll(faultTree.getChildFaults());
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		allLocalSubNodes.addAll(ftHolder.getChildFaults(fault));
 		allLocalSubNodes.addAll(faultTree.getChildSpares());
 		return allLocalSubNodes;
 	}
