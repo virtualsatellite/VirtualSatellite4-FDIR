@@ -74,24 +74,10 @@ public class FaultTreeHolder {
 		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
 		
 		initDataStructures();
+		collectFaultTrees();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
-		
-		IBeanStructuralElementInstance rootParent = root.getParent();
-		if (rootParent != null) {
-			StructuralElementInstance rootSei = (StructuralElementInstance) VirSatEcoreUtil.getRootContainer(root.getParent().getStructuralElementInstance(), true);
-			List<StructuralElementInstance> deepChildren = rootSei.getDeepChildren();
-			for (StructuralElementInstance child : deepChildren) {
-				BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance();
-				beanSei.setStructuralElementInstance(child);
-				for (Fault fault : beanSei.getAll(Fault.class)) {
-					if (!fault.getFaultTree().getPropagations().isEmpty()) {
-						faultTrees.add(fault.getFaultTree());
-					}
-				}
-			}
-		}
 		
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
@@ -187,6 +173,26 @@ public class FaultTreeHolder {
 		
 		indexNodes();
 		mapNodeToSubNodes();
+	}
+	
+	/**
+	 * Collects fault trees with related edges to this tree
+	 */
+	private void collectFaultTrees() {
+		IBeanStructuralElementInstance rootParent = root.getParent();
+		if (rootParent != null) {
+			StructuralElementInstance rootSei = (StructuralElementInstance) VirSatEcoreUtil.getRootContainer(root.getParent().getStructuralElementInstance(), true);
+			List<StructuralElementInstance> deepChildren = rootSei.getDeepChildren();
+			for (StructuralElementInstance child : deepChildren) {
+				BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance();
+				beanSei.setStructuralElementInstance(child);
+				for (Fault fault : beanSei.getAll(Fault.class)) {
+					if (!fault.getFaultTree().getPropagations().isEmpty()) {
+						faultTrees.add(fault.getFaultTree());
+					}
+				}
+			}
+		}
 	}
 	
 	/**
