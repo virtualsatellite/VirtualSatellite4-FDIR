@@ -12,7 +12,6 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
@@ -90,15 +89,12 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
-		
-		if (monitor != null) {
-			monitor.setTaskName("Availability Analysis");
-		}
-		
+
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
+		subMonitor.setTaskName("Availability Analysis");
+		subMonitor.subTask("Creating Data Model");
 		subMonitor.split(1);
-		subMonitor.setTaskName("Creating Data Model");
 		
 		double delta = getTimestepBean().getValueToBaseUnit();
 
@@ -112,20 +108,14 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 		}
 		
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		if (subMonitor.isCanceled()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-		subMonitor.split(1);
-		subMonitor.setTaskName("Performing Model Checking");
-		
+
+		subMonitor.subTask("Performing Model Checking");
 		ModelCheckingResult result = ftEvaluator
-				.evaluateFaultTree(fault, new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+				.evaluateFaultTree(fault, subMonitor.split(1), new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		if (subMonitor.isCanceled()) {
-			return UnexecutableCommand.INSTANCE;
-		}
+		
+		subMonitor.subTask("Updating Results");
 		subMonitor.split(1);
-		subMonitor.setTaskName("Updating Results");
 		
 		double steadyStateAvailability = result.getSteadyStateAvailability();
 		return new RecordingCommand(ed, "Availability Analysis") {
