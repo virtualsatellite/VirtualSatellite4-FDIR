@@ -33,7 +33,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil.AnchorType;
@@ -125,8 +125,8 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 			decorateVOTE((VOTE) addedNode, containerShape);
 		} else if (addedNode instanceof DELAY) {
 			decorateDELAY((DELAY) addedNode, containerShape);
-		} else if (addedNode instanceof OBSERVER) {
-			decorateOBSERVER((OBSERVER) addedNode, containerShape);
+		} else if (addedNode instanceof MONITOR) {
+			decorateMONITOR((MONITOR) addedNode, containerShape);
 		}
 		
 		Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
@@ -182,7 +182,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	 * @param observer Node the observer gate
 	 * @param containerShape the container shape
 	 */
-	private void decorateOBSERVER(OBSERVER observer, ContainerShape containerShape) {
+	private void decorateMONITOR(MONITOR observer, ContainerShape containerShape) {
 		String observationRate = String.valueOf(observer.getObservationRate());
 		Shape observationRateShape = createLabel(observationRate, containerShape);
 		link(observationRateShape, observer);

@@ -199,9 +199,9 @@ public class PluginXml {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.PANDI";
 			public static final String PATHTOIMAGE = "resources/icons/PANDI.gif";
 		}	
-		public static class ConceptImageOBSERVER {
-			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.OBSERVER";
-			public static final String PATHTOIMAGE = "resources/icons/OBSERVER.gif";
+		public static class ConceptImageMONITOR {
+			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.MONITOR";
+			public static final String PATHTOIMAGE = "resources/icons/MONITOR.gif";
 		}	
 		public static class ConceptImageDELAY {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.DELAY";

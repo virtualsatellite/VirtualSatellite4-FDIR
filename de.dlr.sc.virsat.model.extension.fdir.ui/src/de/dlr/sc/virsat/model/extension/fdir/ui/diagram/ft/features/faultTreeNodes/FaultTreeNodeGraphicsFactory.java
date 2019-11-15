@@ -144,7 +144,7 @@ public class FaultTreeNodeGraphicsFactory {
 			case PDEP:
 			case RDEP:
 				return createFDEPGa();
-			case OBSERVER:
+			case MONITOR:
 				return createObserverGateGa();
 			default:
 				return createDefaultGa();

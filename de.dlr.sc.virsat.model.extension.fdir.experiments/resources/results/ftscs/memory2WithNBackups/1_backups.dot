@@ -1,0 +1,6 @@
+digraph ra {
+q_0 [label=q_0]
+q_1 [label=q_1]
+q_0 -> q_1 [label="{F(BasicEvent:B1)} : Claim(SPARE1, B3) "]
+q_0 -> q_1 [label="{F(BasicEvent:B2)} : Claim(SPARE2, B3) "]
+}
