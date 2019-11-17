@@ -76,8 +76,13 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 		}
 
+		FaultTreeNode newRoot = mapNodes.get(root).get(0);
+		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			if (node instanceof Gate) {
+				if (!mapNodes.containsKey(node.getFault())) {
+					mapNodes.put(node.getFault(), Collections.singletonList(newRoot));
+				}
 				convertNode(node);
 			}
 		}
@@ -120,8 +125,6 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 		}
 
-		FaultTreeNode newRoot = mapNodes.get(root).get(0);
-		
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerators = new HashMap<>();
 		for (FaultTreeNode generator : mapNodes.keySet()) {
 			List<FaultTreeNode> generatedNodes = mapNodes.get(generator);

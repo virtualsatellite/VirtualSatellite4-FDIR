@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -54,27 +53,6 @@ public class FaultTreeTest extends AFaultTreeTest {
 	public void testGetRoot() {
 		Fault fault = new Fault(concept);
 		assertEquals(fault, fault.getFaultTree().getRoot());
-	}
-
-	@Test
-	public void testGetChildFaults() {
-		// Propagation flow: grandchild -> child -> intermediateNode -> root
-		Fault root = new Fault(concept);
-		AND intermediateNode = new AND(concept);
-		Fault child = new Fault(concept);
-		Fault grandchild = new Fault(concept);
-		Fault trigger = new Fault(concept);
-		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
-		ftHelper.connect(root, intermediateNode, root);
-		ftHelper.connect(root, child, intermediateNode);
-		ftHelper.connect(child, grandchild, child);
-		ftHelper.connectDep(root, trigger, root);
-		
-		Set<Fault> childFaults = root.getFaultTree().getChildFaults();
-		
-		assertThat(childFaults, hasItems(child, trigger));
-		assertThat(childFaults, not(hasItem(grandchild)));
 	}
 	
 	@Test
@@ -130,6 +108,7 @@ public class FaultTreeTest extends AFaultTreeTest {
 		
 		Fault root = new Fault(concept);
 		SPARE spareGate = new SPARE(concept);
+		root.getFaultTree().getGates().add(spareGate);
 		Fault child = new Fault(concept);
 		Fault spare = new Fault(concept);
 		BasicEvent be = new BasicEvent(concept);
