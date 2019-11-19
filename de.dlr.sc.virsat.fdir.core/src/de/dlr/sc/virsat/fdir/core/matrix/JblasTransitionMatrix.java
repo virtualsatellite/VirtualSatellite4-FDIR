@@ -57,6 +57,7 @@ public class JblasTransitionMatrix extends DoubleMatrix implements IMatrix {
 
 	@Override
 	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
-		return new JblasTransitionMatrixIterator(this, probabilityDistribution, delta, eps);
+		//return new JblasTransitionMatrixIterator(this, probabilityDistribution, delta, eps);
+		return new JblasExponentialMatrixIterator(this, probabilityDistribution, delta, eps);
 	}
 }
