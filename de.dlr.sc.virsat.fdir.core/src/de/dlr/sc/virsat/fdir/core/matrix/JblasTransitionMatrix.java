@@ -33,8 +33,26 @@ public class JblasTransitionMatrix extends DoubleMatrix implements IMatrix {
 
 	@Override
 	public double multiply(double[] vector, double[] result) {
-		
-		return 0;
+		int countStates = vector.length;
+		double res = 0;
+
+		for (int i = 0; i < countStates; ++i) {
+			result[i] = vector[i] * this.get(i, i);	
+					
+			double[] row = this.getRow(i).toArray();
+			
+			for (int j = 0; j < row.length; ++j) {
+				
+				if (row[j] < 0) {
+					row[j] = 0;
+				}
+				
+				double change = row[j] * vector[j];
+				res += change * change;
+				result[i] += change;
+			}
+		}
+		return res;
 	}
 
 	@Override
