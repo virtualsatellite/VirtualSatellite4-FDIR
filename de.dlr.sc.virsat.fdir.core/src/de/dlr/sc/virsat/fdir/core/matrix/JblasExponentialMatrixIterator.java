@@ -36,12 +36,12 @@ public class JblasExponentialMatrixIterator extends MatrixIterator {
 	 * Performs one update iteration
 	 */
 	public void iterate() {
-		DoubleMatrix transitionMatrix = ((JblasTransitionMatrix) (matrix)).mmul(counter);
+		DoubleMatrix transitionMatrix = ((JblasTransitionMatrix) (matrix)).mmul(iterationCounter);
 		DoubleMatrix expMatrix = MatrixFunctions.expm(transitionMatrix);
 		DoubleMatrix probDisMatrix = new DoubleMatrix(initialProbabilityDistribution);
 		
 		DoubleMatrix result = expMatrix.mmul(probDisMatrix);
 		probabilityDistribution = result.toArray();
-		counter++;
+		iterationCounter++;
 	}	
 }

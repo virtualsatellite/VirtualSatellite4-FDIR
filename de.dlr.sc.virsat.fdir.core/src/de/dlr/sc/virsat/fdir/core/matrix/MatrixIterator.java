@@ -23,7 +23,7 @@ public abstract class MatrixIterator {
 	protected double delta;
 	protected double eps;
 	protected double[] resultBuffer;
-	protected int counter;
+	protected int iterationCounter;
 	protected double[] initialProbabilityDistribution;
 	
 	
@@ -42,7 +42,7 @@ public abstract class MatrixIterator {
 		this.delta = delta;
 		this.eps = eps;
 		this.resultBuffer = new double[probabilityDistribution.length];
-		this.counter = 0;
+		this.iterationCounter = 0;
 	}
 	
 	/**
