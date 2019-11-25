@@ -20,7 +20,11 @@ import org.jblas.MatrixFunctions;
  * using matrix exponentials.
  *
  */
-public class JblasExponentialMatrixIterator extends MatrixIterator {	
+
+public class JblasExponentialMatrixIterator extends MatrixIterator {
+	
+	DoubleMatrix transitionMatrix;
+	DoubleMatrix expMatrix;
 
 	/**
 	 * @param tmTerminal transition matrix
@@ -30,15 +34,15 @@ public class JblasExponentialMatrixIterator extends MatrixIterator {
 	 */
 	public JblasExponentialMatrixIterator(JblasTransitionMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
 		super(tmTerminal, probabilityDistribution, delta, eps);
+		transitionMatrix = (JblasTransitionMatrix) matrix;
+		expMatrix = MatrixFunctions.expm(transitionMatrix);
 	}
 	
 	/**
 	 * Performs one update iteration
 	 */
 	public void iterate() {
-		DoubleMatrix transitionMatrix = ((JblasTransitionMatrix) (matrix)).mmul(iterationCounter);
-		DoubleMatrix expMatrix = MatrixFunctions.expm(transitionMatrix);
-		DoubleMatrix probDisMatrix = new DoubleMatrix(initialProbabilityDistribution);
+		DoubleMatrix probDisMatrix = new DoubleMatrix(probabilityDistribution);
 		
 		DoubleMatrix result = expMatrix.mmul(probDisMatrix);
 		probabilityDistribution = result.toArray();

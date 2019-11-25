@@ -118,8 +118,10 @@ public class MatrixFactory {
 			for (int j = 0; j < transitions.size(); ++j) {
 				@SuppressWarnings("unchecked")
 				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
-				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {					
-					jblasMatrix.put(state.getIndex(), j, transition.getRate() * delta);
+				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
+					double oldValue = jblasMatrix.get(state.getIndex(), transition.getFrom().getIndex());
+					jblasMatrix.put(state.getIndex(), transition.getFrom().getIndex(), oldValue + transition.getRate() * delta);
+					
 				}
 			}
 		}		
