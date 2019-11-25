@@ -121,7 +121,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state, 
 			GenerationResult generationResult) {
 		state.getSpareClaims().put(spare, node);
-		state.activateNode(spare);
+		state.setNodeActivation(spare, true);
 		return true;
 	}
 }

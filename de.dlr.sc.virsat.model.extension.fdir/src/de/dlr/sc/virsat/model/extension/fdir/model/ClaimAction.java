@@ -90,7 +90,7 @@ public  class ClaimAction extends AClaimAction {
 		}
 		
 		state.getSpareClaims().put(claimSpare, spareGate);
-		state.activateNode(claimSpare);
+		state.setNodeActivation(claimSpare, true);
 	}
 	
 	@Override

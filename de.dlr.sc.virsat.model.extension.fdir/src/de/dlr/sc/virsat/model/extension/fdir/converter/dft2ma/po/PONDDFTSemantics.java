@@ -107,7 +107,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 				}
 			}
 		} else {
-			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(true);
+			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
 			changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, event);
 			for (DFTState state : succs) {
 				for (FaultTreeNode node : changedNodes) {
@@ -132,7 +132,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		}
 		
 		if (anyObservation) {
-			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(false);
+			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 			Queue<FaultTreeNode> spareGates = new LinkedList<>(possiblyFailedSpareGates);
 			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, spareGates);
 			
