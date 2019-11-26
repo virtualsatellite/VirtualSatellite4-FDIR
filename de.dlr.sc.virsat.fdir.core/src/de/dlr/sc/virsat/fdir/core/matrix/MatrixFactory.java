@@ -45,11 +45,11 @@ public class MatrixFactory {
 	 * @param delta delta
 	 * @return jblasTransitionMatrix
 	 */
-	public JblasTransitionMatrix getJblasTransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal, double delta) {		
+	public JEigenTransitionMatrix getJEigenTransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal, double delta) {		
 		this.mc = mc;
-		JblasTransitionMatrix jBlasTransitionMatrix = new JblasTransitionMatrix(mc.getStates().size());
-		jBlasTransitionMatrix = createJblasMatrix(jBlasTransitionMatrix, failStatesAreTerminal, delta);
-		return jBlasTransitionMatrix;
+		JEigenTransitionMatrix jEigenTransitionMatrix = new JEigenTransitionMatrix(mc.getStates().size());
+		jEigenTransitionMatrix = createJblasMatrix(jEigenTransitionMatrix, failStatesAreTerminal, delta);
+		return jEigenTransitionMatrix;
 	}
 	
 	/**
@@ -96,8 +96,8 @@ public class MatrixFactory {
 	 * @param delta delta
 	 * @return JblasTransitionMatrix
 	 */
-	private JblasTransitionMatrix createJblasMatrix(JblasTransitionMatrix jblasMatrix, boolean failStatesAreTerminal, double delta) {
-		jblasMatrix.fill(0);
+	private JEigenTransitionMatrix createJblasMatrix(JEigenTransitionMatrix jblasMatrix, boolean failStatesAreTerminal, double delta) {
+		//jblasMatrix.fill(0);
 		
 		int countStates = mc.getStates().size();
 		
@@ -106,7 +106,7 @@ public class MatrixFactory {
 				int fromIndex = transition.getFrom().getIndex();
 				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
 					double value = jblasMatrix.get(fromIndex, fromIndex) - transition.getRate() * delta;
-					jblasMatrix.put(fromIndex, fromIndex, value);
+					jblasMatrix.set(fromIndex, fromIndex, value);
 				}
 			}
 		}
@@ -120,7 +120,7 @@ public class MatrixFactory {
 				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
 				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
 					double oldValue = jblasMatrix.get(state.getIndex(), transition.getFrom().getIndex());
-					jblasMatrix.put(state.getIndex(), transition.getFrom().getIndex(), oldValue + transition.getRate() * delta);
+					jblasMatrix.set(state.getIndex(), transition.getFrom().getIndex(), oldValue + transition.getRate() * delta);
 					
 				}
 			}

@@ -163,7 +163,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 		if (tmTerminal == null) {
 			//tmTerminal = matrixFactory.getTransitionMatrix(mc, true, delta);
-			tmTerminal = matrixFactory.getJblasTransitionMatrix(mc, true, delta);
+			tmTerminal = matrixFactory.getJEigenTransitionMatrix(mc, true, delta);
 		}
 		
 		final int PROGRESS_COUNT = 100;

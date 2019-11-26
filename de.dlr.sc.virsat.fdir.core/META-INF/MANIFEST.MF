@@ -13,13 +13,6 @@ Export-Package: de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.fdir.core.markov.modelchecker,
  de.dlr.sc.virsat.fdir.core.markov.scheduler,
  de.dlr.sc.virsat.fdir.core.matrix,
- de.dlr.sc.virsat.fdir.core.metrics,
- org.jblas,
- org.jblas.benchmark,
- org.jblas.exceptions,
- org.jblas.ranges,
- org.jblas.util
+ de.dlr.sc.virsat.fdir.core.metrics
 Eclipse-ExtensibleAPI: true
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.core
-Bundle-ClassPath: externalLib/jblas-1.2.4.jar,
- .
