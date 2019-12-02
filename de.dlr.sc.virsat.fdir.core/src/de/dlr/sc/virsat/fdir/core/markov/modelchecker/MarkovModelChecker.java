@@ -162,8 +162,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 
 		if (tmTerminal == null) {
-			//tmTerminal = matrixFactory.getTransitionMatrix(mc, true, delta);
-			tmTerminal = matrixFactory.getJEigenTransitionMatrix(mc, true, delta);
+			tmTerminal = matrixFactory.getTransitionMatrix(mc, true, delta);
 		}
 		
 		final int PROGRESS_COUNT = 100;

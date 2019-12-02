@@ -16,15 +16,17 @@ package de.dlr.sc.virsat.fdir.core.matrix;
  * Class representing an Iterator iterating a matrix and probability distribution over time 
  *
  */
-public class JEigenTransitionMatrixIterator extends MatrixIterator {	
+public class SPSIterator extends MatrixIterator {	
 
 	/**
+	 * Implementation of a MatrixIterator using custom sparse matrices
+	 * 
 	 * @param tmTerminal transition matrix
 	 * @param probabilityDistribution probability distribution
 	 * @param delta delta
 	 * @param eps epsilon
 	 */
-	public JEigenTransitionMatrixIterator(JEigenTransitionMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
+	public SPSIterator(TransitionMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
 		super(tmTerminal, probabilityDistribution, delta, eps);
 	}
 	
