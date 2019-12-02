@@ -9,11 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
-import java.util.Map;
-
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 
 
 /**
@@ -27,8 +24,7 @@ public interface ISynthesizer {
 	/**
 	 * Synthesizes a recovery automaton.
 	 * @param fault the fault
-	 * @param requirements map of requirements that need each fault needs to fulfill
 	 * @return the synthesized recovery automaton
 	 */
-	RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements);
+	RecoveryAutomaton synthesize(Fault fault);
 }

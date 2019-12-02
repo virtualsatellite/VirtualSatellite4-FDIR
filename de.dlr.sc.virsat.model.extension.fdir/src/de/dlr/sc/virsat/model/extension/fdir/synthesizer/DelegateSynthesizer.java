@@ -9,11 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
-import java.util.Map;
-
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -29,9 +26,9 @@ public class DelegateSynthesizer implements ISynthesizer {
 	protected ISynthesizer poSynthesizer = new POSynthesizer();
 
 	@Override
-	public RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements) {
+	public RecoveryAutomaton synthesize(Fault fault) {
 		ISynthesizer delegate = chooseSynthesizer(fault);
-		return delegate.synthesize(fault, requirements);
+		return delegate.synthesize(fault);
 	}
 	
 	/**

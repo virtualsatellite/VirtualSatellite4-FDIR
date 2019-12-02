@@ -40,14 +40,12 @@ import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirementTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVectorTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FMECATest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARETest;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAYTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirementTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.StateTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysisTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.SANDTest;
@@ -94,8 +92,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	AvailabilityAnalysisTest.class,
 	DetectabilityAnalysisTest.class,
 	MCSAnalysisTest.class,
-	ReliabilityRequirementTest.class,
-	FaultToleranceRequirementTest.class,
 	RecoveryAutomatonTest.class,
 	ClaimActionTest.class,
 	FreeActionTest.class,
