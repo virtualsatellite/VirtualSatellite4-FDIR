@@ -21,14 +21,16 @@ public class TransitionMatrix implements IMatrix {
 	private double[] diagonal;
 	private int[][] statePredIndices;
 	private double[][] statePredRates;
+	private int countStates;
 	
 	/**
 	 * @param countStates markov chain state count
 	 */
 	public TransitionMatrix(int countStates) {
-		this.diagonal = new double[countStates];
-		this.statePredIndices = new int[countStates][];
-		this.statePredRates = new double[countStates][];
+		this.countStates = countStates;
+		this.setDiagonal(new double[countStates]);
+		this.setStatePredIndices(new int[countStates][]);
+		this.setStatePredRates(new double[countStates][]);
 	}
 	
 	/**
@@ -60,13 +62,27 @@ public class TransitionMatrix implements IMatrix {
 	 */
 	public double[] getDiagonal() {
 		return diagonal;
-	}	
+	}
+	
+	/**
+	 * @param diagonal matrix diagonal
+	 */
+	public void setDiagonal(double[] diagonal) {
+		this.diagonal = diagonal.clone();
+	}
 
 	/**
 	 * @return StatePredIndices
 	 */
 	public int[][] getStatePredIndices() {
 		return statePredIndices;
+	}
+	
+	/**
+	 * @param statePredIndices statePredIndices
+	 */
+	public void setStatePredIndices(int[][] statePredIndices) {
+		this.statePredIndices = statePredIndices.clone();
 	}	
 	
 	/**
@@ -75,11 +91,26 @@ public class TransitionMatrix implements IMatrix {
 	public double[][] getStatePredRates() {
 		return statePredRates;
 	}
+	
+	/**
+	 * @param statePredRates statePredRates
+	 */
+	public void setStatePredRates(double[][] statePredRates) {
+		this.statePredRates = statePredRates.clone();
+	}
+
 
 	@Override
 	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
-		//return new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
-		return new SPSIterator(this, probabilityDistribution, delta, eps);
+		return new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
+		//return new SPSIterator(this, probabilityDistribution, delta, eps);
 
+	}
+
+	/**
+	 * @return countStates
+	 */
+	public int getCountStates() {
+		return countStates;
 	}
 }
