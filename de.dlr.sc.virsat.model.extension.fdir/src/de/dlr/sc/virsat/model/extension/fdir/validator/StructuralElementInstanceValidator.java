@@ -9,8 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.validator;
 
+import java.util.List;
+
 import de.dlr.sc.virsat.build.validator.external.IStructuralElementInstanceValidator;
+import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.extension.fdir.marker.VirSatFDIRMarkerHelper;
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 
 
 // *****************************************************************
@@ -27,11 +32,19 @@ import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
  */
 public class StructuralElementInstanceValidator extends AStructuralElementInstanceValidator implements IStructuralElementInstanceValidator {
 
-	//private VirSatFDIRMarkerHelper vfmHelper = new VirSatFDIRMarkerHelper();
+	private VirSatFDIRMarkerHelper vfmHelper = new VirSatFDIRMarkerHelper();
+	private FaultValidator faultValidator = new FaultValidator(vfmHelper);
 	
 	@Override
 	public boolean validate(StructuralElementInstance sei) {
 		boolean allInfoValid = true;
+		
+		BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance(sei);
+		List<Fault> faults = beanSei.getAll(Fault.class);
+		
+		for (Fault fault : faults) {
+			allInfoValid &= faultValidator.validate(fault);
+		}
 		
 		return super.validate(sei) && allInfoValid;
 	}

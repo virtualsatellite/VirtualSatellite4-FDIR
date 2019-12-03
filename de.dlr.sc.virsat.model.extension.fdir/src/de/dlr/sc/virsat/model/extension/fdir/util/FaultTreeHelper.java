@@ -835,6 +835,20 @@ public class FaultTreeHelper {
 		allEdges.addAll(getAllObservations(fault));
 		return allEdges;
 	}
+	
+	/**
+	 * Gets the edges in the fault tree of the passed fault
+	 * @param fault the root fault of a fault tree
+	 * @return all edges in the fault
+	 */
+	public List<FaultTreeEdge> getEdges(Fault fault) {
+		List<FaultTreeEdge> edges = new ArrayList<>();
+		edges.addAll(fault.getFaultTree().getPropagations());
+		edges.addAll(fault.getFaultTree().getSpares());
+		edges.addAll(fault.getFaultTree().getDeps());
+		edges.addAll(fault.getFaultTree().getObservations());
+		return edges;
+	}
 
 	/**
 	 * Checks whether transition contains equivalent recovery actions with the given transition
