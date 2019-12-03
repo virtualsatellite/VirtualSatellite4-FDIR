@@ -13,14 +13,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
 
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
@@ -46,7 +43,7 @@ public class DelegateSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		ISynthesizer mockSynthesizer = new ISynthesizer() {
 			@Override
-			public RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements) {
+			public RecoveryAutomaton synthesize(Fault fault) {
 				return ra;
 			}
 		};
@@ -57,7 +54,7 @@ public class DelegateSynthesizerTest extends ATestCase {
 			};
 		};
 		
-		assertEquals(ra, synthesizer.synthesize(null, Collections.emptyMap()));
+		assertEquals(ra, synthesizer.synthesize(null));
 	}
 
 }

@@ -265,14 +265,6 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
-  <categories name="FDIRRequirement" isApplicableForAll="true" isAbstract="true"/>
-  <categories name="ReliabilityRequirement" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRRequirement">
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="minReliability" quantityKindName="Dimensionless" unitName="Percent" defaultValue="0.0"/>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="maxCriticality" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0.0"/>
-  </categories>
-  <categories name="FaultToleranceRequirement" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRRequirement">
-    <properties xsi:type="dvlm_cppd:IntProperty" name="minFaultTolerance" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
-  </categories>
   <categories name="RecoveryAutomaton" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="initial" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="states" type="de.dlr.sc.virsat.model.extension.fdir.State">

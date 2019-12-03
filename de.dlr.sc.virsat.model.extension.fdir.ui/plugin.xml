@@ -148,18 +148,6 @@
 		pathToImage="resources/icons/MCSAnalysis.gif">
 	</conceptImage>
 	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FDIRRequirement"
-		pathToImage="resources/icons/FDIRRequirement.gif">
-	</conceptImage>
-	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ReliabilityRequirement"
-		pathToImage="resources/icons/ReliabilityRequirement.gif">
-	</conceptImage>
-	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FaultToleranceRequirement"
-		pathToImage="resources/icons/FaultToleranceRequirement.gif">
-	</conceptImage>
-	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomaton"
 		pathToImage="resources/icons/RecoveryAutomaton.gif">
 	</conceptImage>
@@ -308,14 +296,6 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis"
 		name="Add MCSAnalysis">
-	</command>
-	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement"
-		name="Add ReliabilityRequirement">
-	</command>
-	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement"
-		name="Add FaultToleranceRequirement">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomaton"
@@ -489,16 +469,6 @@
 	      icon="resources/icons/MCSAnalysis.gif">
 	</image>
 	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement"
-	      disabledIcon="resources/icons/ReliabilityRequirement_disabled.gif"
-	      icon="resources/icons/ReliabilityRequirement.gif">
-	</image>
-	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement"
-	      disabledIcon="resources/icons/FaultToleranceRequirement_disabled.gif"
-	      icon="resources/icons/FaultToleranceRequirement.gif">
-	</image>
-	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomaton"
 	      disabledIcon="resources/icons/RecoveryAutomaton_disabled.gif"
 	      icon="resources/icons/RecoveryAutomaton.gif">
@@ -645,14 +615,6 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMCSAnalysisHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis">
-	</handler>
-	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddReliabilityRequirementHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement">
-	</handler>
-	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFaultToleranceRequirementHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddRecoveryAutomatonHandler"
@@ -1362,50 +1324,6 @@
 			</visibleWhen>
 		</command>
 		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement"
-			style="push">
-			<visibleWhen
-				checkEnabled="true">
-				<with
-					variable="selection">
-					<iterate
-						ifEmpty="false"
-						operator="and">
-						<test 
-							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
-							value="true" 
-							forcePluginActivation="true">
-						</test>		
-						<instanceof
-							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
-						</instanceof>
-					</iterate>
-				</with>
-			</visibleWhen>
-		</command>
-		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement"
-			style="push">
-			<visibleWhen
-				checkEnabled="true">
-				<with
-					variable="selection">
-					<iterate
-						ifEmpty="false"
-						operator="and">
-						<test 
-							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
-							value="true" 
-							forcePluginActivation="true">
-						</test>		
-						<instanceof
-							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
-						</instanceof>
-					</iterate>
-				</with>
-			</visibleWhen>
-		</command>
-		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomaton"
 			style="push">
 			<visibleWhen
@@ -2014,26 +1932,6 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysisMinimumCutSetsCutSet"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMCSAnalysisMinimumCutSetsCutSet">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityRequirement">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetReliabilityRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionReliabilityRequirement">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultToleranceRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultToleranceRequirement">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFaultToleranceRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFaultToleranceRequirement">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomaton"

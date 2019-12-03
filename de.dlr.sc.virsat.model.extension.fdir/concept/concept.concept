@@ -244,25 +244,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Cardinality 1;
 		IntProperty maxMinimumCutSetSize default 0 unit "No Unit";
 		IntProperty faultTolerance unit "No Unit";
-		Type minimumCutSets [] of Category CutSet;
-	}
-	
-	/* Components for describing FDIR Requirements */
-	
-	Category FDIRRequirement {
-		IsAbstract;
-		Applicable For All;
-	}
-	
-	Category ReliabilityRequirement extends FDIRRequirement {	
-		Cardinality 1;
-		FloatProperty minReliability default 0.0 quantityKind "Dimensionless" unit "Percent";
-		FloatProperty maxCriticality default 0.0 quantityKind "Dimensionless" unit "No Unit";
-	}
-	
-	Category FaultToleranceRequirement extends FDIRRequirement {	
-		Cardinality 1;
-		IntProperty minFaultTolerance default 0 quantityKind "Dimensionless" unit "No Unit";
+		Type minimumCutSets[] of Category CutSet;
 	}
 	
 	/* Components for describing recovery behavior */
@@ -271,8 +253,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Applicable For All;
 		Cardinality 1;
 		Reference initial of Type State;
-		Type states [] of Category State;
-		Type transitions [] of Category Transition;
+		Type states[] of Category State;
+		Type transitions[] of Category Transition;
 	}
 
 	Category RecoveryAction {
