@@ -163,13 +163,11 @@ public class Matrix implements IMatrix {
 
 	@Override
 	public double multiply(double[] vector, double[] result) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

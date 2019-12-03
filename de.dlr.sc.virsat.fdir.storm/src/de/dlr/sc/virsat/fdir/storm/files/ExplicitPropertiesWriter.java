@@ -83,13 +83,10 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 
 	@Override
 	public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void visit(MinimumCutSet minimumCutSet) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
