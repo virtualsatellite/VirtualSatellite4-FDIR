@@ -10,12 +10,12 @@
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
@@ -29,7 +29,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
@@ -55,7 +54,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	protected SynthesisStatistics statistics;
 	
 	@Override
-	public RecoveryAutomaton synthesize(Fault fault, Map<ReliabilityRequirement, Fault> requirements) {
+	public RecoveryAutomaton synthesize(Fault fault) {
 		statistics = new SynthesisStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -125,16 +124,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the schedule represented as a recovery automaton
 	 */
 	protected abstract RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initial);
-
-	/**
-	 * Synthesies a recovery automaton.
-	 * @param fault the fault
-	 * @return the synthesized recovery automaton
-	 */
-	public RecoveryAutomaton synthesize(Fault fault) {
-		return synthesize(fault, Collections.emptyMap());
-	}
-
+	
 	/**
 	 * Sets the minimizer that will be used to synthesize the recovery automaton
 	 * @param minimizer the minimizer
