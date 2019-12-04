@@ -102,8 +102,8 @@ public class TransitionMatrix implements IMatrix {
 
 	@Override
 	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
-		return new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
-		//return new SPSIterator(this, probabilityDistribution, delta, eps);
+		//return new TransitionMatrixIterator(this, probabilityDistribution, delta, eps);
+		return new SPSIterator(this, probabilityDistribution, delta, eps);
 
 	}
 

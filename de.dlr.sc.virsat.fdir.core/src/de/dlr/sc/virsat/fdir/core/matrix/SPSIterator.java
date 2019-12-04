@@ -74,7 +74,6 @@ public class SPSIterator extends MatrixIterator {
 		double c = 0;
 		
 		if (b > big) {
-			System.out.println("Big 1");
 			for (int i = 0; i < v.length; i++) {
 				v[i] = v[i] / b;
 			}			
@@ -90,7 +89,10 @@ public class SPSIterator extends MatrixIterator {
 		
 		for (int j = 1; j <= m; j++) {
 			p.multiply(vpro, vprotmp);
+			
+			double[] tmp = vpro;
 			vpro = vprotmp;
+			vprotmp = tmp;
 			
 			for (int i = 0; i < vpro.length; i++) {
 				vpro[i] = vpro[i] / f;
@@ -107,7 +109,6 @@ public class SPSIterator extends MatrixIterator {
 			///
 			
 			if (b > big) {
-				System.out.println("Big 2");
 				for (int i = 0; i < vpro.length; i++) {
 					vpro[i] = vpro[i] / b;					
 				}
@@ -116,9 +117,9 @@ public class SPSIterator extends MatrixIterator {
 					vsum[i] = vsum[i] / b;
 				}
 				c = c + Math.log(b);
-				b = 1;
-				
+				b = 1;				
 			}
+			
 			f = f + 1;		
 			
 		}
