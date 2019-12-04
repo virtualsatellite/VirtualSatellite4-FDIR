@@ -22,15 +22,7 @@ public class FaultValidator {
 	public static final String WARNING_MISSING_FTEFROM = "FaultTreeEdgeFrom is not set for FaultTreeEdge ";
 	public static final String WARNING_MISSING_FTETO = "FaultTreeEdgeTo is not set for FaultTreeEdge ";
 	
-	private VirSatFDIRMarkerHelper vfmHelper;
-
-	/**
-	 * Standard constructor.
-	 * @param vfmHelper helper to manage problem markers
-	 */
-	public FaultValidator(VirSatFDIRMarkerHelper vfmHelper) {
-		this.vfmHelper = vfmHelper;
-	}
+	private VirSatFDIRMarkerHelper vfmHelper = new VirSatFDIRMarkerHelper();
 
 	/**
 	 * Performs a validation of a single fault
