@@ -35,6 +35,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysisTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CutSetTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeActionTest;
+import de.dlr.sc.virsat.model.extension.fdir.validator.StructuralElementInstanceValidatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ORTest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
@@ -100,6 +101,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	TimedTransitionTest.class,
 	Migrator1v0Test.class,
 	Migrator1v1Test.class,
+	StructuralElementInstanceValidatorTest.class,
 				})
 
 /**
