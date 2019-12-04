@@ -19,7 +19,7 @@ package de.dlr.sc.virsat.fdir.core.matrix;
 public class SPSIterator extends MatrixIterator {
 	
 	private double rho;
-	private final double big;
+	private final double big = Math.pow(10, 100);
 	private double[] v;
 	private double[] vpro;
 	private double[] vprotmp;
@@ -38,8 +38,9 @@ public class SPSIterator extends MatrixIterator {
 	 */
 	public SPSIterator(TransitionMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
 		super(tmTerminal, probabilityDistribution, delta, eps);		
-		
-		big = Math.pow(10, 100);
+		this.rho = initRho();
+		initP();
+		m = findm();
 	}
 	
 	/**
@@ -62,10 +63,9 @@ public class SPSIterator extends MatrixIterator {
 	 * Performs one update iteration
 	 */
 	public void iterate() {
-		this.rho = initRho();
-		initP();
-		v = probabilityDistribution.clone();
-		m = findm();
+		
+		v = probabilityDistribution;
+		
 		
 		
 		
@@ -85,7 +85,6 @@ public class SPSIterator extends MatrixIterator {
 		
 		vprotmp = vpro.clone();
 		
-		int f = 1;
 		
 		for (int j = 1; j <= m; j++) {
 			p.multiply(vpro, vprotmp);
@@ -95,10 +94,10 @@ public class SPSIterator extends MatrixIterator {
 			vprotmp = tmp;
 			
 			for (int i = 0; i < vpro.length; i++) {
-				vpro[i] = vpro[i] / f;
+				vpro[i] = vpro[i] / j;
 			}
 			
-			b = b * rho / f;
+			b = b * rho / j;
 			
 			////
 			
@@ -118,10 +117,7 @@ public class SPSIterator extends MatrixIterator {
 				}
 				c = c + Math.log(b);
 				b = 1;				
-			}
-			
-			f = f + 1;		
-			
+			}			
 		}
 		
 		double ecr = Math.exp(c - rho);
