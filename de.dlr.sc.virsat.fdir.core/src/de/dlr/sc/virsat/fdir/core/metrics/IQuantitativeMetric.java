@@ -34,9 +34,7 @@ public interface IQuantitativeMetric extends IMetric {
 			for (double failRate : probabilities) {
 				composedProbability *= failRate;
 			}
-		} 
-		
-		// TODO: Else for general k
+		}
 		
 		return composedProbability;
 	}
