@@ -119,7 +119,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 	
 	Category BasicEvent extends FaultEvent {
-		FloatProperty hotFailureRate default 0.0 quantityKind "Frequency" unit "Per Hour";
+		FloatProperty hotFailureRate quantityKind "Frequency" unit "Per Hour";
 		FloatProperty coldFailureRate default 0.0 quantityKind "Frequency" unit "Per Hour";
 		FloatProperty repairRate default 0.0 quantityKind "Frequency" unit "Per Hour";
 		StringProperty repairAction description "Description of the action(s) needed to be performed for the repair.";
