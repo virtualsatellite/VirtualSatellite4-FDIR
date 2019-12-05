@@ -2,7 +2,7 @@
 		<?pde version="3.8"?><target name="virsat_fdir_development" sequenceNumber="1">
 		<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="de.dlr.sc.virsat.target.feature.feature.group" version="0.0.0"/>
+		<unit id="de.dlr.sc.virsat.target.feature.feature.group" version="4.10.0.d201912041137"/>
 		<unit id="de.dlr.sc.virsat.apps.feature.feature.group" version="0.0.0"/>
 		<unit id="de.dlr.sc.virsat.branding.feature.feature.group" version="0.0.0"/>
 		<unit id="de.dlr.sc.virsat.build.feature.feature.group" version="0.0.0"/>
