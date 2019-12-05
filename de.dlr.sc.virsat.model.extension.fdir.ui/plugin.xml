@@ -2188,6 +2188,7 @@
    <wizard
          category="de.dlr.sc.virsat.model.extension.ui.fdir"
          class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ImportGalileoDFTWizard"
+         icon="resources/icons/FaultTree.gif"
          id="de.dlr.sc.virsat.model.extension.fdir.ui.importGalileo"
          name="Galileo DFT Import">
    </wizard>
@@ -2201,6 +2202,7 @@
    <wizard
          category="de.dlr.sc.virsat.model.extension.ui.fdir"
          class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ExportGalileoDFTWizard"
+         icon="resources/icons/FaultTree.gif"
          id="de.dlr.sc.virsat.model.extension.fdir.ui.exportGalileo"
          name="Galileo DFT Export">
    </wizard>
