@@ -46,13 +46,9 @@ public class SPSIterator extends MatrixIterator {
 	/**
 	 * @return m
 	 */
-	private int findm() {
-		
-		double logEps = Math.log(eps);
-		
-		double atmp = 1 + (Math.pow((1 - ((18 * rho) / logEps)), 0.5));
-	
-		
+	private int findm() {		
+		double logEps = Math.log(eps);		
+		double atmp = 1 + (Math.pow((1 - ((18 * rho) / logEps)), 0.5));			
 		double btmp = (logEps / 3) * atmp;
 		double mtmp = rho - btmp - 1;
 		m = (int) (Math.ceil(mtmp));
@@ -62,14 +58,11 @@ public class SPSIterator extends MatrixIterator {
 	/**
 	 * Performs one update iteration
 	 */
-	public void iterate() {
-		
+	public void iterate() {		
 		v = probabilityDistribution;
-		
-		
-		
-		
-		
+		vsum = v.clone();
+		vpro = vsum.clone();		
+		vprotmp = vpro.clone();				
 		double b = calcNorm1();
 		double c = 0;
 		
@@ -79,13 +72,7 @@ public class SPSIterator extends MatrixIterator {
 			}			
 			c = c + Math.log(b);
 			b = 1;
-		}
-		vsum = v.clone();
-		vpro = vsum.clone();
-		
-		vprotmp = vpro.clone();
-		
-		
+		}		
 		for (int j = 1; j <= m; j++) {
 			p.multiply(vpro, vprotmp);
 			
@@ -95,24 +82,14 @@ public class SPSIterator extends MatrixIterator {
 			
 			for (int i = 0; i < vpro.length; i++) {
 				vpro[i] = vpro[i] / j;
+				vsum[i] = vsum[i] + vpro[i];
 			}
 			
 			b = b * rho / j;
 			
-			////
-			
-			for (int i = 0; i < vsum.length; i++) {
-				vsum[i] = vsum[i] + vpro[i];
-			}
-			
-			///
-			
 			if (b > big) {
 				for (int i = 0; i < vpro.length; i++) {
-					vpro[i] = vpro[i] / b;					
-				}
-				
-				for (int i = 0; i < vsum.length; i++) {
+					vpro[i] = vpro[i] / b;
 					vsum[i] = vsum[i] / b;
 				}
 				c = c + Math.log(b);
@@ -124,6 +101,7 @@ public class SPSIterator extends MatrixIterator {
 		for (int i = 0; i < vsum.length; i++) {
 			vsum[i] = vsum[i] * ecr;
 		}
+		
 		probabilityDistribution = vsum;
 	}
 	
