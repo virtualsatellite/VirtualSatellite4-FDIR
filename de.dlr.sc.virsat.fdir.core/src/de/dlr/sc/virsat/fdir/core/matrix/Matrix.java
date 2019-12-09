@@ -171,4 +171,16 @@ public class Matrix implements IMatrix {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public int getCountStates() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public IMatrix copy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

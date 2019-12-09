@@ -32,4 +32,20 @@ public interface IMatrix {
 	 * @return MatrixIterator
 	 */
 	MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps);
+
+	int getCountStates();
+
+	double[] getDiagonal();
+
+	int[][] getStatePredIndices();
+
+	double[][] getStatePredRates();
+
+	void setDiagonal(double[] diagonal);
+
+	void setStatePredIndices(int[][] statePredIndices);
+
+	void setStatePredRates(double[][] statePredRates);
+
+	IMatrix copy();
 }

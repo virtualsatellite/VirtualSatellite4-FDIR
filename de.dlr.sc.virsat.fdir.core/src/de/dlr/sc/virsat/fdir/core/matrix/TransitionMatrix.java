@@ -55,6 +55,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @return Diagonal
 	 */
+	@Override
 	public double[] getDiagonal() {
 		return diagonal;
 	}
@@ -62,6 +63,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param diagonal matrix diagonal
 	 */
+	@Override
 	public void setDiagonal(double[] diagonal) {
 		this.diagonal = diagonal.clone();
 	}
@@ -69,6 +71,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @return StatePredIndices
 	 */
+	@Override
 	public int[][] getStatePredIndices() {
 		return statePredIndices;
 	}
@@ -76,6 +79,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param statePredIndices statePredIndices
 	 */
+	@Override
 	public void setStatePredIndices(int[][] statePredIndices) {
 		this.statePredIndices = statePredIndices.clone();
 	}	
@@ -83,6 +87,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @return StatePredRates
 	 */
+	@Override
 	public double[][] getStatePredRates() {
 		return statePredRates;
 	}
@@ -90,6 +95,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param statePredRates statePredRates
 	 */
+	@Override
 	public void setStatePredRates(double[][] statePredRates) {
 		this.statePredRates = statePredRates.clone();
 	}
@@ -105,7 +111,17 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @return countStates
 	 */
+	@Override
 	public int getCountStates() {
 		return countStates;
+	}
+
+	@Override
+	public IMatrix copy() {
+		TransitionMatrix t = new TransitionMatrix(this.getCountStates());
+		t.setDiagonal(this.getDiagonal());
+		t.setStatePredIndices(this.getStatePredIndices());
+		t.setStatePredRates(this.getStatePredRates());
+		return t;
 	}
 }

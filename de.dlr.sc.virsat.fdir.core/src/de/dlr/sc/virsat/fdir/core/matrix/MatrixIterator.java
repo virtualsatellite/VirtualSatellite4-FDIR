@@ -10,7 +10,6 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
-import java.util.Arrays;
 
 /**
  * @author piet_ci
@@ -23,9 +22,6 @@ public abstract class MatrixIterator {
 	protected double delta;
 	protected double eps;
 	protected double[] resultBuffer;
-	protected int iterationCounter;
-	protected double[] initialProbabilityDistribution;
-	
 	
 	/**
 	 * MatrixIterator constructor
@@ -38,11 +34,9 @@ public abstract class MatrixIterator {
 	public MatrixIterator(IMatrix matrix, double[] probabilityDistribution, double delta, double eps) {
 		this.matrix = matrix;
 		this.probabilityDistribution = probabilityDistribution;
-		this.initialProbabilityDistribution = Arrays.copyOf(probabilityDistribution, probabilityDistribution.length);
 		this.delta = delta;
 		this.eps = eps;
 		this.resultBuffer = new double[probabilityDistribution.length];
-		this.iterationCounter = 0;
 	}
 	
 	/**

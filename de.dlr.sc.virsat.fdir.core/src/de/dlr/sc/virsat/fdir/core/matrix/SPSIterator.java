@@ -26,7 +26,7 @@ public class SPSIterator extends MatrixIterator {
 	private double[] vsum;
 	private int m;
 	
-	private TransitionMatrix p;
+	private IMatrix p;
 	
 	/**
 	 * Implementation of a MatrixIterator using custom sparse matrices
@@ -36,7 +36,7 @@ public class SPSIterator extends MatrixIterator {
 	 * @param delta delta
 	 * @param eps epsilon
 	 */
-	public SPSIterator(TransitionMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
+	public SPSIterator(IMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
 		super(tmTerminal, probabilityDistribution, delta, eps);		
 		this.rho = initRho();
 		initP();
@@ -129,12 +129,7 @@ public class SPSIterator extends MatrixIterator {
 	 * 
 	 */
 	private void initP() {
-		p = new TransitionMatrix(((TransitionMatrix) (matrix)).getCountStates());
-		
-		p.setDiagonal(((TransitionMatrix) (matrix)).getDiagonal());
-		p.setStatePredIndices(((TransitionMatrix) (matrix)).getStatePredIndices());
-		p.setStatePredRates(((TransitionMatrix) (matrix)).getStatePredRates());
-		
+		p = matrix.copy();
 		double[] diag = p.getDiagonal();
 						
 		for (int i = 0; i < diag.length; i++) {
@@ -147,7 +142,7 @@ public class SPSIterator extends MatrixIterator {
 	 */
 	private double initRho() {
 		double maxVal = 0;
-		double[] diag = ((TransitionMatrix) (matrix)).getDiagonal();
+		double[] diag = matrix.getDiagonal();
 		int diagLength = diag.length;
 		
 		for (int i = 0; i < diagLength; i++) {
