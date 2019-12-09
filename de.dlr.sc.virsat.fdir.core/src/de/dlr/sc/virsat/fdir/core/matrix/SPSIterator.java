@@ -60,9 +60,11 @@ public class SPSIterator extends MatrixIterator {
 	 */
 	public void iterate() {		
 		v = probabilityDistribution;
+		
 		vsum = v.clone();
 		vpro = vsum.clone();		
-		vprotmp = vpro.clone();				
+		vprotmp = vpro.clone();		
+				
 		double b = calcNorm1();
 		double c = 0;
 		
@@ -72,7 +74,11 @@ public class SPSIterator extends MatrixIterator {
 			}			
 			c = c + Math.log(b);
 			b = 1;
-		}		
+		}
+		
+		
+		
+		
 		for (int j = 1; j <= m; j++) {
 			p.multiply(vpro, vprotmp);
 			

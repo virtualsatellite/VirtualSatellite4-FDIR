@@ -20,9 +20,8 @@ public interface IMatrix {
 	/**
 	 * @param vector vector
 	 * @param result resultbuffer
-	 * @return result
 	 */
-	double multiply(double[] vector, double[] result);
+	void multiply(double[] vector, double[] result);
 
 	/**
 	 * Returns an iterator for specific matrix type.
