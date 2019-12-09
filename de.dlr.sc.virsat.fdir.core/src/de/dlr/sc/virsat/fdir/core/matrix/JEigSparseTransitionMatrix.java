@@ -44,7 +44,6 @@ public class JEigSparseTransitionMatrix extends SparseMatrixLil implements IMatr
 
 	@Override
 	public double[] getDiagonal() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

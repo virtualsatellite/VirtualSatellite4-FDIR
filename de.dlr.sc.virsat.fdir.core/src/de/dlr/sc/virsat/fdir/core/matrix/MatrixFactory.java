@@ -82,6 +82,41 @@ public class MatrixFactory {
 	}
 	
 	private JEigSparseTransitionMatrix createJEigTransitionMatrix(JEigSparseTransitionMatrix jEigTransitionMatrix, boolean failStatesAreTerminal, double delta) {
+		int countStates = mc.getStates().size();
+		
+		for (Object event : mc.getEvents()) {
+			for (MarkovTransition<? extends MarkovState> transition : mc.getTransitions(event)) {
+				int fromIndex = transition.getFrom().getIndex();
+				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
+					//jEigTransitionMatrix.getDiagonal()[fromIndex] -= transition.getRate() * delta;
+					double value = 0;
+					value -= transition.getRate() * delta;
+					jEigTransitionMatrix.append(fromIndex, fromIndex, value);
+				}
+			}
+		}
+		
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = mc.getStates().get(i);
+			List<?> transitions = mc.getPredTransitions(state);
+			
+			//jEigTransitionMatrix.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
+			//jEigTransitionMatrix.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
+			
+			for (int j = 0; j < transitions.size(); ++j) {
+				@SuppressWarnings("unchecked")
+				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
+					
+					//jEigTransitionMatrix.getStatePredIndices()[state.getIndex()][j] = transition.getFrom().getIndex();
+					jEigTransitionMatrix.append(state.getIndex(), j, transition.getRate() * delta);
+					
+					
+					//jEigTransitionMatrix.getStatePredRates()[state.getIndex()][j] = transition.getRate() * delta;
+					
+				}
+			}
+		}
 		return null;
 	}
 	
