@@ -31,7 +31,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -102,18 +101,16 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		double delta = getTimestepBean().getValueToBaseUnit();
 		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) fault.getTypeInstance().eContainer());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
-		if (ra != null) {
-			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		}
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, delta, EPS);
 
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
 		
+		subMonitor.split(1);
 		subMonitor.subTask("Performing Model Checking");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, subMonitor.split(1), new Reliability(maxTime), MTTF.MTTF);
 		
-		subMonitor.subTask("Updating Results");
 		subMonitor.split(1);
+		subMonitor.subTask("Updating Results");
 
 		double mttf = result.getMeanTimeToFailure();
 		return new RecordingCommand(ed, "Reliability Analysis") {

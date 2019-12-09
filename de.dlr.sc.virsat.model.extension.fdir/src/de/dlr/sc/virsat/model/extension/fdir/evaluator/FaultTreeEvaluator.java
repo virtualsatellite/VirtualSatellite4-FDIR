@@ -162,7 +162,16 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	 * @return a fault tree evaluator
 	 */
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(RecoveryAutomaton ra) {
-		FaultTreeEvaluator ftEvaluator = createDefaultFaultTreeEvaluator(true, DEFAULT_DELTA, DEFAULT_EPS);
+		return createDefaultFaultTreeEvaluator(ra, DEFAULT_DELTA, DEFAULT_EPS);
+	}
+	
+	/**
+	 * Creates a fault tree evaluator with a recovery automaton
+	 * @param ra a recovery automaton
+	 * @return a fault tree evaluator
+	 */
+	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(RecoveryAutomaton ra, double delta, double eps) {
+		FaultTreeEvaluator ftEvaluator = createDefaultFaultTreeEvaluator(true, delta, eps);
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		return ftEvaluator;
 	}

@@ -82,8 +82,7 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		ra = synthesizer.synthesize(tle);
 		saveRA(ra, "aiaa/2017/memory2/synthesizedMinimized");
 		
-		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		result = ndDFTftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for Memory2 with NdDFT -----------------------");

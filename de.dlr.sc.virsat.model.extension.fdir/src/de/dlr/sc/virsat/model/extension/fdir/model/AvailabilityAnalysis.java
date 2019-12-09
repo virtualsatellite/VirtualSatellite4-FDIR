@@ -31,7 +31,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -102,10 +101,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 				(StructuralElementInstance) fault.getTypeInstance().eContainer());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
-		if (ra != null) {
-			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		}
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, delta, EPS);
 		
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
 

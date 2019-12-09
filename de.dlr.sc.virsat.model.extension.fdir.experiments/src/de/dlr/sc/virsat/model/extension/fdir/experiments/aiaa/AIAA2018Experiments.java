@@ -21,7 +21,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
 
@@ -55,8 +54,7 @@ public class AIAA2018Experiments extends ASynthesizerExperiment {
 		ra = synthesizer.synthesize(tle);
 		saveRA(ra, "aiaa/2018/memory2WithFDEP/synthesizedMinimized");
 		
-		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		result = ndDFTftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for Memory2WithFDEP with NdDFT -----------------------");
@@ -98,8 +96,7 @@ public class AIAA2018Experiments extends ASynthesizerExperiment {
 			synthesizer.setMinimizer(new ComposedMinimizer());
 			RecoveryAutomaton ra = synthesizer.synthesize(tle);
 			
-			FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-			ndDFTftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+			FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 			ndDFTftEvaluator.evaluateFaultTree(tle);
 			int statesMc = ((DFTEvaluator) ndDFTftEvaluator.getEvaluator()).getStatistics().stateSpaceGenerationStatistics.maxStates;
 			System.out.println(i + " " + statesMc);
