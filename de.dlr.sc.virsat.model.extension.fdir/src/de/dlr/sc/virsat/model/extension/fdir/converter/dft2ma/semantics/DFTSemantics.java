@@ -63,11 +63,11 @@ public class DFTSemantics {
 		Set<IDFTEvent> faultEvents = new HashSet<>();
 		
 		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
-			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() > 0) {
+			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() != 0) {
 				faultEvents.add(new FaultEvent(be, true, ftHolder));					
 			}
 			
-			if (be.isSetHotFailureRate() && be.getHotFailureRate() > 0) {
+			if (be.isSetHotFailureRate() && be.getHotFailureRate() != 0) {
 				faultEvents.add(new FaultEvent(be, false, ftHolder));
 			}
 		}

@@ -82,7 +82,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		statistics.time = System.currentTimeMillis();
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
-		configureDFT2MAConverter(ftHolder, metrics);
+		configureDFT2MAConverter(ftHolder, metrics, failableBasicEventsProvider);
 		
 		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
 		
@@ -178,10 +178,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	
 	/**
 	 * Configures the state space generator
-	 * @param ftHolder the fault ree to convert
+	 * @param ftHolder the fault tree to convert
 	 * @param metrics the metrics to evaluate
+	 * @param failableBasicEventsProvider the basic events provider
 	 */
-	private void configureDFT2MAConverter(FaultTreeHolder ftHolder, IMetric[] metrics) {
+	private void configureDFT2MAConverter(FaultTreeHolder ftHolder, IMetric[] metrics, FailableBasicEventsProvider failableBasicEventsProvider) {
 		dft2MAConverter.setSemantics(chooseSemantics(ftHolder));
 		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
 		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
@@ -192,6 +193,10 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		} else {
 			dft2MAConverter.setSymmetryChecker(new FaultTreeSymmetryChecker());
 			dft2MAConverter.setAllowsDontCareFailing(true);
+		}
+		
+		if (failableBasicEventsProvider != null) {
+			dft2MAConverter.setSymmetryChecker(null);
 		}
 	}
 	
