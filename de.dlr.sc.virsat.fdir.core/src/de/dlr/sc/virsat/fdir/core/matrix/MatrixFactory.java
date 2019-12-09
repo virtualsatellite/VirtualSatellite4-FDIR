@@ -38,7 +38,12 @@ public class MatrixFactory {
 		tm = createTransitionMatrix(tm, failStatesAreTerminal, delta);
 		return tm;
 	}
-	
+	public JEigSparseTransitionMatrix getJEigTransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal, double delta) {		
+		this.mc = mc;
+		JEigSparseTransitionMatrix jEigTransitionMatrix = new JEigSparseTransitionMatrix(mc.getStates().size(), mc.getStates().size());
+		jEigTransitionMatrix = createJEigTransitionMatrix(jEigTransitionMatrix, failStatesAreTerminal, delta);
+		return jEigTransitionMatrix;
+	}
 	/**
 	 * Creates a transition matrix
 	 * @param tm transition matrix
@@ -75,4 +80,9 @@ public class MatrixFactory {
 		}		
 		return tm;
 	}
+	
+	private JEigSparseTransitionMatrix createJEigTransitionMatrix(JEigSparseTransitionMatrix jEigTransitionMatrix, boolean failStatesAreTerminal, double delta) {
+		return null;
+	}
+	
 }
