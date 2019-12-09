@@ -32,6 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantic
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.EngineExecutionPreference;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
@@ -153,6 +154,28 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	 */
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic) {
 		return createDefaultFaultTreeEvaluator(isNondeterministic, DEFAULT_DELTA, DEFAULT_EPS);
+	}
+	
+	/**
+	 * Creates a fault tree evaluator with a recovery automaton
+	 * @param ra a recovery automaton
+	 * @return a fault tree evaluator
+	 */
+	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(RecoveryAutomaton ra) {
+		return createDefaultFaultTreeEvaluator(ra, DEFAULT_DELTA, DEFAULT_EPS);
+	}
+	
+	/**
+	 * Creates a fault tree evaluator with a recovery automaton
+	 * @param ra a recovery automaton
+	 * @return a fault tree evaluator
+	 */
+	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(RecoveryAutomaton ra, double delta, double eps) {
+		FaultTreeEvaluator ftEvaluator = createDefaultFaultTreeEvaluator(ra != null, delta, eps);
+		if (ra != null) {
+			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		}
+		return ftEvaluator;
 	}
 	
 	/**

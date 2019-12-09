@@ -17,7 +17,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.CleanMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimizer;
@@ -154,12 +153,10 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 		saveRA(ra, "scp/2019/nestedMCS/composedRules");
 		
 		final float DELTA = 0.01f;
-		FaultTreeEvaluator unminimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		unminimizedEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		FaultTreeEvaluator unminimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		unminimizedEvaluator.evaluateFaultTree(fault);
 		
-		FaultTreeEvaluator minimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		minimizedEvaluator.setRecoveryStrategy(new RecoveryStrategy(composedMinimized));
+		FaultTreeEvaluator minimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(composedMinimized, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		minimizedEvaluator.evaluateFaultTree(fault);
 	}
 	
