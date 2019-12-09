@@ -19,7 +19,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -41,7 +40,6 @@ import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -92,35 +90,25 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		List<Fault> faults = parent.getAll(Fault.class);
 		
 		final int COUNT_TASKS = 2 + faults.size();
-		if (monitor != null) {
-			monitor.setTaskName("MCS Analysis");
-		}
-		
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
+		subMonitor.setTaskName("MCS Analysis");
+		subMonitor.split(1);
+		subMonitor.subTask("Creating Data Model");
 		
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
-		if (ra != null) {
-			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		}
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra);
 		
 		Map<Set<Object>, List<Fault>> mapCutSetToFaults = gatherMinimumCutSets(faults, ftEvaluator, subMonitor);
-		
-		if (subMonitor.isCanceled()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-		subMonitor.setTaskName("Computing MCS metrics");
+
 		subMonitor.split(1);
+		subMonitor.subTask("Computing MCS metrics");
 		
 		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = computeMinimumCutSetsMetrics(mapCutSetToFaults, ftEvaluator);
 		
-		if (subMonitor.isCanceled()) {
-			return UnexecutableCommand.INSTANCE;
-		}
-		subMonitor.setTaskName("Updating Results");
 		subMonitor.split(1);
+		subMonitor.subTask("Updating Results");
 		
-		long faultTolerance = mapCutSetToFaults.keySet().stream().mapToLong(cutSet -> cutSet.size()).min().orElse(1) - 1;
+		long faultTolerance = mapCutSetToFaults.keySet().stream().mapToLong(Set::size).min().orElse(1) - 1;
 		
 		return new RecordingCommand(ed, "MCS Analysis") {
 			@Override
@@ -145,14 +133,8 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
 		
 		for (Fault fault : faults) {
-			if (monitor != null) {
-				if (monitor.isCanceled()) {
-					return null;
-				}
-				
-				monitor.setTaskName("Analysing fault " + fault.getName());
-				monitor.split(1);
-			}
+			monitor.split(1);
+			monitor.subTask("Analysing fault " + fault.getName());
 			
 			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new MinimumCutSet(maxMinimumCutSetSize));
 			
