@@ -171,8 +171,10 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	 * @return a fault tree evaluator
 	 */
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(RecoveryAutomaton ra, double delta, double eps) {
-		FaultTreeEvaluator ftEvaluator = createDefaultFaultTreeEvaluator(true, delta, eps);
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		FaultTreeEvaluator ftEvaluator = createDefaultFaultTreeEvaluator(ra != null, delta, eps);
+		if (ra != null) {
+			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		}
 		return ftEvaluator;
 	}
 	
