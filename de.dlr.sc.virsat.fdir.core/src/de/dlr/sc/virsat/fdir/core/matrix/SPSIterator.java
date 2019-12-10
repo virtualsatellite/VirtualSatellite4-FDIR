@@ -13,71 +13,82 @@ package de.dlr.sc.virsat.fdir.core.matrix;
 /**
  * @author piet_ci
  * 
- * Class representing an Iterator iterating a matrix and probability distribution over time 
+ * Class representing an Iterator iterating a matrix and probability distribution over time
+ * 
+ * This iterator implementation uses the Single Positive Series (SPS) - Algorithm for the sake of 
+ * good numerical stability at reasonable speeds as outlined in: 
+ * 
+ * 	C. Sherlock. Simple, fast and accurate evaluation of the action of the exponential 
+ * 	of a rate matrix on a probability vector. In: 1809.07110, arXiv, 2018. 
  *
  */
 public class SPSIterator extends MatrixIterator {
 	
-	private double rho;
-	private final double big = Math.pow(10, 100);
-	private double[] v;
+	private static final double BIG = Math.pow(10, 100);
+	private static final int RHO_FACTOR = 18;
+	private static final int TAYLOR_TRIM_FACTOR = 3;
+	
+	private double maxEntry;
 	private double[] vpro;
 	private double[] vprotmp;
 	private double[] vsum;
-	private int m;
 	
-	private IMatrix p;
+	private int taylorTrim;
+	
+	private IMatrix uniformMatrix;
 	
 	/**
 	 * Implementation of a MatrixIterator using custom sparse matrices
 	 * 
 	 * @param tmTerminal transition matrix
 	 * @param probabilityDistribution probability distribution
-	 * @param delta delta
 	 * @param eps epsilon
 	 */
-	public SPSIterator(IMatrix tmTerminal, double[] probabilityDistribution, double delta, double eps) {
-		super(tmTerminal, probabilityDistribution, delta, eps);		
-		this.rho = initRho();
-		initP();
-		m = findm();
+	public SPSIterator(IMatrix tmTerminal, double[] probabilityDistribution, double eps) {
+		super(tmTerminal, probabilityDistribution, eps);		
+		this.maxEntry = initRho();
+		this.vsum = probabilityDistribution;
+		this.vpro = new double[probabilityDistribution.length];
+		this.vprotmp = new double[probabilityDistribution.length];
+		
+		initUniformMatrix();
+		taylorTrim = findm();
 	}
 	
 	/**
-	 * @return m
+	 * @return returns truncation point m for trimmed Taylor series
 	 */
 	private int findm() {		
 		double logEps = Math.log(eps);		
-		double atmp = 1 + (Math.pow((1 - ((18 * rho) / logEps)), 0.5));			
-		double btmp = (logEps / 3) * atmp;
-		double mtmp = rho - btmp - 1;
-		m = (int) (Math.ceil(mtmp));
-		return m;
+		double atmp = 1 + (Math.sqrt((1 - ((RHO_FACTOR * maxEntry) / logEps))));			
+		double btmp = (logEps / TAYLOR_TRIM_FACTOR) * atmp;
+		double mtmp = maxEntry - btmp - 1;
+		taylorTrim = (int) (Math.ceil(mtmp));
+		return taylorTrim;
 	}
 
 	/**
 	 * Performs one update iteration
 	 */
-	public void iterate() {		
-		v = probabilityDistribution;
-		
-		vsum = v.clone();
-		vpro = vsum.clone();		
-		vprotmp = vpro.clone();		
+	public void iterate() {
 				
-		double b = calcNorm1();
+		double b = calcManhattanNorm();
 		double c = 0;
 		
-		if (b > big) {
-			for (int i = 0; i < v.length; i++) {
-				v[i] = v[i] / b;
+		if (b > BIG) {
+			for (int i = 0; i < vsum.length; i++) {
+				vsum[i] = vsum[i] / b;
 			}			
 			c = c + Math.log(b);
 			b = 1;
 		}
 		
-		for (int j = 1; j <= m; j++) {
-			p.multiply(vpro, vprotmp);
+		for (int i = 0; i < vsum.length; ++i) {
+			vpro[i] = vsum[i];
+		}
+		
+		for (int j = 1; j <= taylorTrim; j++) {
+			uniformMatrix.multiply(vpro, vprotmp);
 			
 			double[] tmp = vpro;
 			vpro = vprotmp;
@@ -88,9 +99,9 @@ public class SPSIterator extends MatrixIterator {
 				vsum[i] = vsum[i] + vpro[i];
 			}
 			
-			b = b * rho / j;
+			b = b * maxEntry / j;
 			
-			if (b > big) {
+			if (b > BIG) {
 				for (int i = 0; i < vpro.length; i++) {
 					vpro[i] = vpro[i] / b;
 					vsum[i] = vsum[i] / b;
@@ -100,41 +111,39 @@ public class SPSIterator extends MatrixIterator {
 			}			
 		}
 		
-		double ecr = Math.exp(c - rho);
+		double ecr = Math.exp(c - maxEntry);
 		for (int i = 0; i < vsum.length; i++) {
 			vsum[i] = vsum[i] * ecr;
 		}
-		
-		probabilityDistribution = vsum;
 	}
 	
 	/**
-	 * @return norm1
+	 * @return returns the Manhattan Norm of vector
 	 */
-	private double calcNorm1() {
+	private double calcManhattanNorm() {
 		double norm1 = 0;
 		
-		for (int i = 0; i < v.length; i++) {
-			norm1 += Math.abs(v[i]);
+		for (int i = 0; i < vsum.length; i++) {
+			norm1 += Math.abs(vsum[i]);
 		}
 		return norm1;
-	}
+	}	
 	
 	/**
-	 * 
+	 * Initializes the Uniform Matrix
 	 */
-	private void initP() {
-		p = matrix.copy();
-		double[] diag = p.getDiagonal();
+	private void initUniformMatrix() {
+		uniformMatrix = matrix.copy();
+		double[] diag = uniformMatrix.getDiagonal();
 						
 		for (int i = 0; i < diag.length; i++) {
-			diag[i] += rho;
+			diag[i] += maxEntry;
 		}
-		p.setDiagonal(diag);
+		uniformMatrix.setDiagonal(diag);
 	}
 	
 	/**
-	 * @return 0
+	 * @return returns the initial value for Rho
 	 */
 	private double initRho() {
 		double maxVal = 0;
