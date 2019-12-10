@@ -76,9 +76,6 @@ public class SPSIterator extends MatrixIterator {
 			b = 1;
 		}
 		
-		
-		
-		
 		for (int j = 1; j <= m; j++) {
 			p.multiply(vpro, vprotmp);
 			
@@ -123,8 +120,6 @@ public class SPSIterator extends MatrixIterator {
 		return norm1;
 	}
 	
-	
-	
 	/**
 	 * 
 	 */
@@ -135,6 +130,7 @@ public class SPSIterator extends MatrixIterator {
 		for (int i = 0; i < diag.length; i++) {
 			diag[i] += rho;
 		}
+		p.setDiagonal(diag);
 	}
 	
 	/**

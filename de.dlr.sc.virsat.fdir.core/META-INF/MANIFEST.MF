@@ -8,19 +8,10 @@ Bundle-Vendor: DLR (German Aerospace Center)
 Require-Bundle: org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: com.sun.jna,
- com.sun.jna.ptr,
- com.sun.jna.win32,
- de.dlr.sc.virsat.fdir.core,
+Export-Package: de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.fdir.core.markov,
  de.dlr.sc.virsat.fdir.core.markov.modelchecker,
  de.dlr.sc.virsat.fdir.core.markov.scheduler,
- de.dlr.sc.virsat.fdir.core.matrix,
- de.dlr.sc.virsat.fdir.core.metrics,
- jeigen,
- jeigen.statistics
+ de.dlr.sc.virsat.fdir.core.metrics
 Eclipse-ExtensibleAPI: true
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.core
-Bundle-ClassPath: externalLib/Jeigen-onefat.jar,
- externalLib/jna-4.1.0.jar,
- .
