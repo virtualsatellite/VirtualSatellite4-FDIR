@@ -46,19 +46,19 @@ public class SPSIterator extends MatrixIterator {
 	 */
 	public SPSIterator(IMatrix tmTerminal, double[] probabilityDistribution, double eps) {
 		super(tmTerminal, probabilityDistribution, eps);		
-		this.maxEntry = initRho();
+		this.maxEntry = initMaxEntry();
 		this.vsum = probabilityDistribution;
 		this.vpro = new double[probabilityDistribution.length];
 		this.vprotmp = new double[probabilityDistribution.length];
 		
 		initUniformMatrix();
-		taylorTrim = findm();
+		taylorTrim = findTaylorTrim();
 	}
 	
 	/**
 	 * @return returns truncation point m for trimmed Taylor series
 	 */
-	private int findm() {		
+	private int findTaylorTrim() {		
 		double logEps = Math.log(eps);		
 		double atmp = 1 + (Math.sqrt((1 - ((RHO_FACTOR * maxEntry) / logEps))));			
 		double btmp = (logEps / TAYLOR_TRIM_FACTOR) * atmp;
@@ -145,7 +145,7 @@ public class SPSIterator extends MatrixIterator {
 	/**
 	 * @return returns the initial value for Rho
 	 */
-	private double initRho() {
+	private double initMaxEntry() {
 		double maxVal = 0;
 		double[] diag = matrix.getDiagonal();
 		int diagLength = diag.length;

@@ -27,16 +27,15 @@ public interface IMatrix {
 	 * Returns an iterator for specific matrix type.
 	 * 
 	 * @param probabilityDistribution probabilityDistribution
-	 * @param delta delta
 	 * @param eps epsilon
 	 * @return MatrixIterator
 	 */
-	MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps);
+	MatrixIterator getIterator(double[] probabilityDistribution, double eps);
 
 	/**
 	 * @return returns number of states
 	 */
-	int getCountStates();
+	int size();
 
 	/**
 	 * @return returns matrix diagonal

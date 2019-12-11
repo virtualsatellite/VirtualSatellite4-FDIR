@@ -38,6 +38,16 @@ public class MatrixFactory {
 		return tm;
 	}
 	/**
+	 * @param mc markov chain
+	 * @return transition matrix
+	 */
+	public TransitionMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc) {		
+		this.mc = mc;
+		TransitionMatrix tm = new TransitionMatrix(mc.getStates().size());
+		tm = createBellmanMatrix(tm);
+		return tm;
+	}
+	/**
 	 * Creates a transition matrix
 	 * @param tm transition matrix
 	 * @param failStatesAreTerminal failStatesAreTerminal
@@ -73,4 +83,44 @@ public class MatrixFactory {
 		}		
 		return tm;
 	}
+	
+	
+	/**
+	 * Creates the iteration matrix for computing the Mean Time To Failure (MTTF)
+	 * according to the Bellman equation: MTTF(s) = 0 if s is a fail state MTTF(s) =
+	 * 1/ExitRate(s) + SUM(s' successor of s: Prob(s, s') * MTTF(s')
+	 * 
+	 * @param tm TransitionMatrix
+	 * @return the matrix representing the fixpoint iteration
+	 */
+	public TransitionMatrix createBellmanMatrix(TransitionMatrix tm) {
+		int countStates = mc.getStates().size();
+
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = mc.getStates().get(i);
+			List<?> transitions = mc.getSuccTransitions(state);
+
+			tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
+			tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
+
+			if (!mc.getFinalStates().contains(state)) {
+				double exitRate = 0;
+				for (int j = 0; j < transitions.size(); ++j) {
+					@SuppressWarnings("unchecked")
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
+							.get(j);
+					exitRate += transition.getRate();
+				}
+
+				for (int j = 0; j < transitions.size(); ++j) {
+					@SuppressWarnings("unchecked")
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
+							.get(j);
+					tm.getStatePredIndices()[state.getIndex()][j] = transition.getTo().getIndex();
+					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() / exitRate;
+				}
+			}
+		}
+		return tm;
+	}	
 }

@@ -102,7 +102,7 @@ public class TransitionMatrix implements IMatrix {
 
 
 	@Override
-	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
+	public MatrixIterator getIterator(double[] probabilityDistribution, double eps) {
 		return new SPSIterator(this, probabilityDistribution, eps);
 	}
 
@@ -110,13 +110,13 @@ public class TransitionMatrix implements IMatrix {
 	 * @return countStates
 	 */
 	@Override
-	public int getCountStates() {
+	public int size() {
 		return countStates;
 	}
 
 	@Override
 	public IMatrix copy() {
-		TransitionMatrix t = new TransitionMatrix(this.getCountStates());
+		TransitionMatrix t = new TransitionMatrix(this.size());
 		t.setDiagonal(this.getDiagonal());
 		t.setStatePredIndices(this.getStatePredIndices());
 		t.setStatePredRates(this.getStatePredRates());
