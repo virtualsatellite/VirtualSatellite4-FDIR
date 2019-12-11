@@ -16,7 +16,7 @@ package de.dlr.sc.virsat.fdir.core.matrix;
  * Class representing an Iterator iterating a matrix and probability distribution over time
  * 
  * This iterator implementation uses the Single Positive Series (SPS) - Algorithm for the sake of 
- * good numerical stability at reasonable speeds as outlined in: 
+ * good numerical stability at reasonable speeds as described in: 
  * 
  * 	C. Sherlock. Simple, fast and accurate evaluation of the action of the exponential 
  * 	of a rate matrix on a probability vector. In: 1809.07110, arXiv, 2018. 
