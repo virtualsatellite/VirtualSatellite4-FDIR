@@ -29,7 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.OR;
 import de.dlr.sc.virsat.model.extension.fdir.model.PAND;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDI;
@@ -399,7 +399,7 @@ public class FaultTreeHelper {
 			case RDEP:
 			case PDEP:
 				return connectDep(fault, from, to);
-			case OBSERVER:
+			case MONITOR:
 				return connectObserver(fault, from, to);
 			default:
 				return connect(fault, from, to);
@@ -422,9 +422,21 @@ public class FaultTreeHelper {
 
 		for (BasicEvent fm : fault.getBasicEvents()) {
 			BasicEvent newFm = new BasicEvent(concept);
-			newFm.getHotFailureRateBean().setValueAsBaseUnit(fm.getHotFailureRateBean().getValueToBaseUnit());
-			newFm.getColdFailureRateBean().setValueAsBaseUnit(fm.getColdFailureRateBean().getValueToBaseUnit());
-			newFm.getRepairRateBean().setValueAsBaseUnit(fm.getRepairRateBean().getValueToBaseUnit());
+			try {
+				newFm.getHotFailureRateBean().setValueAsBaseUnit(fm.getHotFailureRateBean().getValueToBaseUnit());
+			} catch (NullPointerException e) {
+				newFm.getHotFailureRateBean().setValueAsBaseUnit(Double.NaN);
+			}
+			try {
+				newFm.getColdFailureRateBean().setValueAsBaseUnit(fm.getColdFailureRateBean().getValueToBaseUnit());
+			} catch (NullPointerException e) {
+				newFm.getColdFailureRateBean().setValueAsBaseUnit(Double.NaN);
+			}
+			try {
+				newFm.getRepairRateBean().setValueAsBaseUnit(fm.getRepairRateBean().getValueToBaseUnit());
+			} catch (NullPointerException e) {
+				newFm.getRepairRateBean().setValueAsBaseUnit(Double.NaN);
+			}
 			newFm.setName(fm.getName());
 			newFm.getTypeInstance().setUuid(fm.getTypeInstance().getUuid());
 			copy.getBasicEvents().add(newFm);
@@ -481,8 +493,8 @@ public class FaultTreeHelper {
 				return new RDEP(concept);
 			case PDEP:
 				return new PDEP(concept);
-			case OBSERVER:
-				return new OBSERVER(concept);
+			case MONITOR:
+				return new MONITOR(concept);
 			case DELAY:
 				return new DELAY(concept);
 			default:
@@ -724,7 +736,8 @@ public class FaultTreeHelper {
 			allLocalSubNodes.add(gate);
 		}
 		allLocalSubNodes.addAll(fault.getBasicEvents());
-		allLocalSubNodes.addAll(faultTree.getChildFaults());
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		allLocalSubNodes.addAll(ftHolder.getChildFaults(fault));
 		allLocalSubNodes.addAll(faultTree.getChildSpares());
 		return allLocalSubNodes;
 	}
@@ -833,6 +846,20 @@ public class FaultTreeHelper {
 		allEdges.addAll(getAllDeps(fault));
 		allEdges.addAll(getAllObservations(fault));
 		return allEdges;
+	}
+	
+	/**
+	 * Gets the edges in the fault tree of the passed fault
+	 * @param fault the root fault of a fault tree
+	 * @return all edges in the fault
+	 */
+	public List<FaultTreeEdge> getEdges(Fault fault) {
+		List<FaultTreeEdge> edges = new ArrayList<>();
+		edges.addAll(fault.getFaultTree().getPropagations());
+		edges.addAll(fault.getFaultTree().getSpares());
+		edges.addAll(fault.getFaultTree().getDeps());
+		edges.addAll(fault.getFaultTree().getObservations());
+		return edges;
 	}
 
 	/**

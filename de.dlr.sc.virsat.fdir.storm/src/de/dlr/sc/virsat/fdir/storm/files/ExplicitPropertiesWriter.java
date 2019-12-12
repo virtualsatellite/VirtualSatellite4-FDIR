@@ -73,7 +73,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 
 	@Override
 	public void visit(MTTF mttfMetric) {
-		printWriter.println("Tmin=? [F \"" + FAILED_STATE + "\"];");
+		printWriter.println("Tmax=? [F \"" + FAILED_STATE + "\"];");
 	}
 
 	@Override
@@ -83,13 +83,10 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 
 	@Override
 	public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void visit(MinimumCutSet minimumCutSet) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

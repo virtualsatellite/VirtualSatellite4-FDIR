@@ -16,7 +16,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 
 /**
  * This class represents a single observation event (e.g. observation of failure or repair)
@@ -48,8 +48,8 @@ public class ObservationEvent implements IDFTEvent {
 	@Override
 	public double getRate(DFTState state) {
 		double rate = 0;
-		List<OBSERVER> observers = state.getFTHolder().getMapNodeToObservers().get(node);
-		for (OBSERVER observer : observers) {
+		List<MONITOR> observers = state.getFTHolder().getMapNodeToMonitors().get(node);
+		for (MONITOR observer : observers) {
 			if (!state.hasFaultTreeNodeFailed(observer)) {
 				rate += observer.getObservationRateBean().getValueToBaseUnit();
 			}
@@ -82,8 +82,8 @@ public class ObservationEvent implements IDFTEvent {
 			}
 		}
 		
-		List<OBSERVER> observers = state.getFTHolder().getMapNodeToObservers().get(node);
-		for (OBSERVER observer : observers) {
+		List<MONITOR> observers = state.getFTHolder().getMapNodeToMonitors().get(node);
+		for (MONITOR observer : observers) {
 			if (!state.hasFaultTreeNodeFailed(observer)) {
 				return true;
 			}

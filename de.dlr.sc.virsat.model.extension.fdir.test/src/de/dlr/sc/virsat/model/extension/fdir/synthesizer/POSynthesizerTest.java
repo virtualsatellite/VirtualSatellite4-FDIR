@@ -74,7 +74,6 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		System.out.println(ra.toDot());
-		// TODO: correct assertions
 	}
 	
 	@Test
@@ -83,7 +82,6 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		System.out.println(ra.toDot());
-		// TODO: correct assertions
 	}
 	
 	@Test

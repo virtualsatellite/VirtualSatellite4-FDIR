@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.PORSeman
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.VOTESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -52,7 +53,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.RDEP, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.VOTE, new VOTESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.OBSERVER, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new PONDSPARESemantics(semantics.stateGenerator));
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
 		return semantics;
@@ -63,17 +64,15 @@ public class PONDDFTSemantics extends DFTSemantics {
 		Set<IDFTEvent> events = super.createEventSet(ftHolder);
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
-			List<OBSERVER> observers = ftHolder.getMapNodeToObservers().get(node);
-			if (observers != null) {
-				double observationRate = 0;
-				for (OBSERVER observer : observers) {
-					observationRate += observer.getObservationRateBean().getValueToBaseUnit();
-				}
-				
-				if (observationRate > 0) {
-					events.add(new ObservationEvent(node, true));	
-					events.add(new ObservationEvent(node, false));	
-				}
+			List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
+			double observationRate = 0;
+			for (MONITOR observer : monitors) {
+				observationRate += observer.getObservationRateBean().getValueToBaseUnit();
+			}
+			
+			if (observationRate > 0) {
+				events.add(new ObservationEvent(node, true));	
+				events.add(new ObservationEvent(node, false));	
 			}
 		}
 		
@@ -163,13 +162,13 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 * @return true iff the node is being observed
 	 */
 	private boolean existsNonFailedImmediateObserver(DFTState state, FaultTreeHolder ftHolder, FaultTreeNode node) {
-		if (node instanceof OBSERVER) {
+		if (node instanceof MONITOR) {
 			return true;
 		}
 		
-		List<OBSERVER> observers = ftHolder.getMapNodeToObservers().get(node);
+		List<MONITOR> observers = ftHolder.getMapNodeToMonitors().get(node);
 		if (observers != null) {
-			for (OBSERVER observer : observers) {
+			for (MONITOR observer : observers) {
 				if (!state.hasFaultTreeNodeFailed(observer) && observer.getObservationRate() == 0) {
 					return true;
 				}

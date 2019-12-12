@@ -43,6 +43,7 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolderTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
+import de.dlr.sc.virsat.model.extension.fdir.validator.FaultValidatorTest;
 import junit.framework.JUnit4TestAdapter;
 
 /**
@@ -82,7 +83,8 @@ import junit.framework.JUnit4TestAdapter;
 		FDIRParametersGetterTest.class,
 		FDIRExpressionEvaluatorTest.class,
 		FDIRExpressionExtensionTest.class,
-		FaultTreeTrimmerTest.class
+		FaultTreeTrimmerTest.class,
+		FaultValidatorTest.class
 		})
 
 public class AllTests {

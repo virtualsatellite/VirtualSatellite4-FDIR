@@ -48,7 +48,7 @@ public class CreateDeleteWithReferencingFDIRCategoryAssignmentsCommand extends C
 	@Override
 	public Command create(EditingDomain ed, CategoryAssignment eObject) {
 		DeleteCommand deleteCommand = (DeleteCommand) DeleteCommand.create(ed, eObject);
-				
+		
 		// Make sure the cascade deletion only happens when we actually try to delete the object
 		// Otherwise there are severe performance issues in the menues due to all the checking for valid deletion
 		deleteCommand.append(new CommandWrapper() {
@@ -72,7 +72,10 @@ public class CreateDeleteWithReferencingFDIRCategoryAssignmentsCommand extends C
 				if (command == null) {
 					command = createCommand();
 				}
-				super.execute();
+				
+				if (command.canExecute()) {
+					super.execute();
+				}
 			}
 		});
 		

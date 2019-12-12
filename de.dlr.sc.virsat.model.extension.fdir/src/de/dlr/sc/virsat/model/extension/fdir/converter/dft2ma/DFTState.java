@@ -28,7 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -318,9 +318,9 @@ public class DFTState extends MarkovState {
 			}
 		}
 		
-		List<OBSERVER> observers = ftHolder.getMapNodeToObservers().getOrDefault(node, Collections.emptyList());
-		for (OBSERVER observer : observers) {
-			activateNode(observer);
+		List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
+		for (MONITOR monitor : monitors) {
+			activateNode(monitor);
 		}
 	}
 	

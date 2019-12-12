@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -31,7 +32,7 @@ import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
 // * Class Declaration
@@ -98,36 +99,66 @@ public  class FMECA extends AFMECA {
 	 * @return the newly generated fmeca entries
 	 */
 	public List<FMECAEntry> generateEntries(IProgressMonitor monitor) {
-		List<FMECAEntry> entries = new ArrayList<>();
 		List<Fault> failures = getParent().getAll(Fault.class).stream()
 				.filter(fault -> fault.isLocalTopLevelFault())
 				.collect(Collectors.toList());
 		
-		monitor.beginTask("Collecting FMECA entries", 1);
+		final int FMECA_WORK = 3;
+		SubMonitor subMonitor = SubMonitor.convert(monitor, FMECA_WORK);
+		List<FMECAEntry> entries = collectFMECAEntries(failures, subMonitor.split(1));
+		sortFMECAEntries(entries, subMonitor.split(1));
+		fillFMECAEntries(entries, subMonitor.split(1));
+		
+		return entries;
+	}
+	
+	/**
+	 * Collects all FMECA entries for the given failures
+	 * @param failures the failures
+	 * @param subMonitor the monitor
+	 * @return returns all triples (failure, failureMode, cause)
+	 */
+	private List<FMECAEntry> collectFMECAEntries(List<Fault> failures, SubMonitor subMonitor) {
+		List<FMECAEntry> entries = new ArrayList<>();
+		subMonitor.setWorkRemaining(failures.size());
+		subMonitor.subTask("Collecting FMECA entries...");
 		for (Fault failure : failures) {
-			Set<FaultEvent> failureModes = failure.getFaultTree().getFailureModes();
+			SubMonitor iterationMonitor = subMonitor.split(1);
+			FaultTreeHolder ftHolder = new FaultTreeHolder(failure);
+			Set<FaultEvent> failureModes = ftHolder.getFailureModes(failure);
+			iterationMonitor.setWorkRemaining(failureModes.size());
 			for (FaultEvent failureMode : failureModes) {
 				if (failureMode instanceof Fault) {
 					Fault nonBasicFailureMode = (Fault) failureMode; 
-					Set<FaultEvent> failureCauses = nonBasicFailureMode.getFaultTree().getFailureModes();
+					Set<FaultEvent> failureCauses = ftHolder.getFailureModes(nonBasicFailureMode);
 					
 					for (FaultEvent failureCause : failureCauses) {
-						entries.add(generateEntry(failure, failureMode, failureCause, monitor));
+						entries.add(generateEntry(failure, failureMode, failureCause, iterationMonitor.split(1)));
 					}
 					
 					if (failureCauses.isEmpty()) {
-						entries.add(generateEntry(failure, failureMode, null, monitor));
+						entries.add(generateEntry(failure, failureMode, null, iterationMonitor.split(1)));
 					}
 				} else {
-					entries.add(generateEntry(failure, failureMode, null, monitor));
+					entries.add(generateEntry(failure, failureMode, null, iterationMonitor.split(1)));
 				}
 			}
 			
 			if (failureModes.isEmpty()) {
-				entries.add(generateEntry(failure, null, null, monitor));
+				entries.add(generateEntry(failure, null, null, iterationMonitor.split(1)));
 			}
 		}
 		
+		return entries;
+	}
+	
+	/**
+	 * Sorts the fmeca entries so that the triples are correctly grouped together
+	 * @param entries the entries to sort
+	 * @param subMonitor the monitor
+	 */
+	private void sortFMECAEntries(List<FMECAEntry> entries, SubMonitor subMonitor) {
+		subMonitor.subTask("Sorting FMECA entries...");
 		entries.sort(new Comparator<FMECAEntry>() {
 			@Override
 			public int compare(FMECAEntry entry1, FMECAEntry entry2) {
@@ -144,15 +175,19 @@ public  class FMECA extends AFMECA {
 				return 0;
 			}
 		});
+	}
+	
+	/**
+	 * Fills out the quantitative part of the fmeca sheet
+	 * @param entries the entries to fill out
+	 * @param subMonitor the monitor
+	 */
+	private void fillFMECAEntries(List<FMECAEntry> entries, SubMonitor subMonitor) {
+		subMonitor.setWorkRemaining(entries.size());
+		subMonitor.subTask("Filling out FMECA entries...");
 		
-		monitor.worked(1);
-		
-		monitor.beginTask("Filling out FMECA entries", entries.size());
 		RecoveryAutomaton ra = getParent().getFirst(RecoveryAutomaton.class);
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
-		if (ra != null) {
-			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		}
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra);
 		
 		FDIRParameters fdirParameters  = null;
 		EObject root = VirSatEcoreUtil.getRootContainer(getTypeInstance().eContainer());
@@ -162,11 +197,10 @@ public  class FMECA extends AFMECA {
 		}
 		
 		for (FMECAEntry entry : entries) {
+			subMonitor.split(1);
 			entry.fill(ftEvaluator, fdirParameters);
-			monitor.worked(1);
 		}
-		
-		return entries;
+		subMonitor.done();
 	}
 	
 	/**

@@ -31,9 +31,8 @@ import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatAddShapeFeature;
 import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil.AnchorType;
@@ -50,8 +49,6 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	public static final IColorConstant PORT_COLOR = IColorConstant.BLACK;
 	public static final IColorConstant OBSERVER_PORT_COLOR = IColorConstant.LIGHT_GRAY;
 	
-	public static final int INDEX_TYPE_TEXT_SHAPE = 0;
-	public static final int INDEX_NAME_TEXT_SHAPE = 1;
 	public static final int INDEX_SPARE_RECT_SHAPE = 0;
 	public static final int INDEX_VOTE_TRESHOLD_SHAPE = 1;
 	public static final int INDEX_DELAY_SHAPE = 1;
@@ -114,19 +111,18 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 		Graphiti.getPeService().setPropertyValue(containerShape, COUNT_BASE_SUB_SHAPES_KEY, String.valueOf(containerShape.getChildren().size()));
 		link(containerShape, addedNode);
 		
-		// Create Shape with Type Label
-		String typeName = "\u00ab" + addedNode.getFaultTreeNodeType().toString() + "\u00bb";
-		createLabel(typeName, containerShape);
+		// Create name label
+		String name = addedNode.getName();
+		Shape nameShape = createLabel(name, containerShape);
+		link(nameShape, addedNode);
 		
-		// Create Shape with Name Label
-		if (addedNode instanceof Fault) {
-			decorateFault((Fault) addedNode, containerShape);
-		} else if (addedNode instanceof VOTE) {
+		// Add additional node decorations
+		if (addedNode instanceof VOTE) {
 			decorateVOTE((VOTE) addedNode, containerShape);
 		} else if (addedNode instanceof DELAY) {
 			decorateDELAY((DELAY) addedNode, containerShape);
-		} else if (addedNode instanceof OBSERVER) {
-			decorateOBSERVER((OBSERVER) addedNode, containerShape);
+		} else if (addedNode instanceof MONITOR) {
+			decorateMONITOR((MONITOR) addedNode, containerShape);
 		}
 		
 		Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
@@ -142,17 +138,6 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 		getFeatureProvider().getMoveShapeFeature(moveContext).execute(moveContext);
 		
 		return containerShape;
-	}
-	
-	/**
-	 * Creates additional decoration for faults
-	 * @param fault the fault
-	 * @param containerShape the container shape
-	 */
-	private void decorateFault(Fault fault, ContainerShape containerShape) {
-		String name = fault.getParent().getName() + "." + fault.getName();
-		Shape nameShape = createLabel(name, containerShape);
-		link(nameShape, fault);
 	}
 	
 	/**
@@ -182,7 +167,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	 * @param observer Node the observer gate
 	 * @param containerShape the container shape
 	 */
-	private void decorateOBSERVER(OBSERVER observer, ContainerShape containerShape) {
+	private void decorateMONITOR(MONITOR observer, ContainerShape containerShape) {
 		String observationRate = String.valueOf(observer.getObservationRate());
 		Shape observationRateShape = createLabel(observationRate, containerShape);
 		link(observationRateShape, observer);

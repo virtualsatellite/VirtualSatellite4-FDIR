@@ -63,11 +63,11 @@ public class DFTSemantics {
 		Set<IDFTEvent> faultEvents = new HashSet<>();
 		
 		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
-			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() > 0) {
+			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() != 0) {
 				faultEvents.add(new FaultEvent(be, true, ftHolder));					
 			}
 			
-			if (be.isSetHotFailureRate() && be.getHotFailureRate() > 0) {
+			if (be.isSetHotFailureRate() && be.getHotFailureRate() != 0) {
 				faultEvents.add(new FaultEvent(be, false, ftHolder));
 			}
 		}
@@ -269,7 +269,7 @@ public class DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.VOTE, new VOTESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new StandardSPARESemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.OBSERVER, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
 		return semantics;
 	}
