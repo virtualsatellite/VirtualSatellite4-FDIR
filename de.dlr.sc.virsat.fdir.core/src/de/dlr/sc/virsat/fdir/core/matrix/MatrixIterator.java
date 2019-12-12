@@ -10,6 +10,7 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+
 /**
  * @author piet_ci
  * 
@@ -18,25 +19,18 @@ package de.dlr.sc.virsat.fdir.core.matrix;
 public abstract class MatrixIterator {
 	protected IMatrix matrix;
 	protected double[] probabilityDistribution;
-	protected double delta;
-	protected double eps;
-	protected double[] resultBuffer;
-	
-	
+	protected double eps;	
 	/**
 	 * MatrixIterator constructor
 	 * 
 	 * @param matrix matrix
 	 * @param probabilityDistribution probabilityDistribution
-	 * @param delta delta
 	 * @param eps epsilon
 	 */
-	public MatrixIterator(IMatrix matrix, double[] probabilityDistribution, double delta, double eps) {
+	public MatrixIterator(IMatrix matrix, double[] probabilityDistribution, double eps) {
 		this.matrix = matrix;
 		this.probabilityDistribution = probabilityDistribution;
-		this.delta = delta;
 		this.eps = eps;
-		this.resultBuffer = new double[probabilityDistribution.length];
 	}
 	
 	/**
