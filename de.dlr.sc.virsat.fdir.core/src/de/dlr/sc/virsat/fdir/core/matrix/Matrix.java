@@ -162,12 +162,22 @@ public class Matrix implements IMatrix {
 	}
 
 	@Override
-	public double multiply(double[] vector, double[] result) {
+	public void multiply(double[] vector, double[] result) {
+	}
+
+
+	@Override
+	public MatrixIterator getIterator(double[] probabilityDistribution, double eps) {
+		return null;
+	}
+
+	@Override
+	public int size() {
 		return 0;
 	}
 
 	@Override
-	public MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps) {
+	public IMatrix copy() {
 		return null;
 	}
 }
