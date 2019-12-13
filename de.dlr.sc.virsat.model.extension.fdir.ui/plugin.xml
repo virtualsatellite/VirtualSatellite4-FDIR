@@ -64,8 +64,12 @@
 		pathToImage="resources/icons/PANDI.gif">
 	</conceptImage>
 	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.OBSERVER"
-		pathToImage="resources/icons/OBSERVER.gif">
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
+		pathToImage="resources/icons/MONITOR.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.DELAY"
+		pathToImage="resources/icons/DELAY.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ADEP"
@@ -108,12 +112,24 @@
 		pathToImage="resources/icons/CutSet.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.CriticalityVector"
+		pathToImage="resources/icons/CriticalityVector.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.CriticalityMatrix"
+		pathToImage="resources/icons/CriticalityMatrix.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters"
 		pathToImage="resources/icons/FDIRParameters.gif">
 	</conceptImage>
 	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FDIRAnalysis"
-		pathToImage="resources/icons/FDIRAnalysis.gif">
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECA"
+		pathToImage="resources/icons/FMECA.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry"
+		pathToImage="resources/icons/FMECAEntry.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
@@ -124,20 +140,12 @@
 		pathToImage="resources/icons/AvailabilityAnalysis.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis"
+		pathToImage="resources/icons/DetectabilityAnalysis.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.MCSAnalysis"
 		pathToImage="resources/icons/MCSAnalysis.gif">
-	</conceptImage>
-	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FDIRRequirement"
-		pathToImage="resources/icons/FDIRRequirement.gif">
-	</conceptImage>
-	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.ReliabilityRequirement"
-		pathToImage="resources/icons/ReliabilityRequirement.gif">
-	</conceptImage>
-	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FaultToleranceRequirement"
-		pathToImage="resources/icons/FaultToleranceRequirement.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomaton"
@@ -162,6 +170,14 @@
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.Transition"
 		pathToImage="resources/icons/Transition.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.FaultEventTransition"
+		pathToImage="resources/icons/FaultEventTransition.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.TimedTransition"
+		pathToImage="resources/icons/TimedTransition.gif">
 	</conceptImage>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
@@ -206,8 +222,12 @@
 		name="Add PANDI">
 	</command>
 	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
-		name="Add OBSERVER">
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
+		name="Add MONITOR">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
+		name="Add DELAY">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP"
@@ -242,8 +262,24 @@
 		name="Add CutSet">
 	</command>
 	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector"
+		name="Add CriticalityVector">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix"
+		name="Add CriticalityMatrix">
+	</command>
+	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
 		name="Add FDIRParameters">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+		name="Add FMECA">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
+		name="Add FMECAEntry">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityAnalysis"
@@ -254,16 +290,12 @@
 		name="Add AvailabilityAnalysis">
 	</command>
 	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis"
+		name="Add DetectabilityAnalysis">
+	</command>
+	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis"
 		name="Add MCSAnalysis">
-	</command>
-	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement"
-		name="Add ReliabilityRequirement">
-	</command>
-	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement"
-		name="Add FaultToleranceRequirement">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomaton"
@@ -282,8 +314,12 @@
 		name="Add State">
 	</command>
 	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition"
-		name="Add Transition">
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition"
+		name="Add FaultEventTransition">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
+		name="Add TimedTransition">
 	</command>
 	</extension>
 	<extension point="org.eclipse.ui.commandImages">
@@ -338,9 +374,14 @@
 	      icon="resources/icons/PANDI.gif">
 	</image>
 	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
-	      disabledIcon="resources/icons/OBSERVER_disabled.gif"
-	      icon="resources/icons/OBSERVER.gif">
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
+	      disabledIcon="resources/icons/MONITOR_disabled.gif"
+	      icon="resources/icons/MONITOR.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
+	      disabledIcon="resources/icons/DELAY_disabled.gif"
+	      icon="resources/icons/DELAY.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDEP"
@@ -383,9 +424,29 @@
 	      icon="resources/icons/CutSet.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector"
+	      disabledIcon="resources/icons/CriticalityVector_disabled.gif"
+	      icon="resources/icons/CriticalityVector.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix"
+	      disabledIcon="resources/icons/CriticalityMatrix_disabled.gif"
+	      icon="resources/icons/CriticalityMatrix.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
 	      disabledIcon="resources/icons/FDIRParameters_disabled.gif"
 	      icon="resources/icons/FDIRParameters.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+	      disabledIcon="resources/icons/FMECA_disabled.gif"
+	      icon="resources/icons/FMECA.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
+	      disabledIcon="resources/icons/FMECAEntry_disabled.gif"
+	      icon="resources/icons/FMECAEntry.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityAnalysis"
@@ -398,19 +459,14 @@
 	      icon="resources/icons/AvailabilityAnalysis.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis"
+	      disabledIcon="resources/icons/DetectabilityAnalysis_disabled.gif"
+	      icon="resources/icons/DetectabilityAnalysis.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis"
 	      disabledIcon="resources/icons/MCSAnalysis_disabled.gif"
 	      icon="resources/icons/MCSAnalysis.gif">
-	</image>
-	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement"
-	      disabledIcon="resources/icons/ReliabilityRequirement_disabled.gif"
-	      icon="resources/icons/ReliabilityRequirement.gif">
-	</image>
-	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement"
-	      disabledIcon="resources/icons/FaultToleranceRequirement_disabled.gif"
-	      icon="resources/icons/FaultToleranceRequirement.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomaton"
@@ -433,9 +489,14 @@
 	      icon="resources/icons/State.gif">
 	</image>
 	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition"
-	      disabledIcon="resources/icons/Transition_disabled.gif"
-	      icon="resources/icons/Transition.gif">
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition"
+	      disabledIcon="resources/icons/FaultEventTransition_disabled.gif"
+	      icon="resources/icons/FaultEventTransition.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
+	      disabledIcon="resources/icons/TimedTransition_disabled.gif"
+	      icon="resources/icons/TimedTransition.gif">
 	</image>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
@@ -480,8 +541,12 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddPANDI">
 	</handler>
 	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddOBSERVERHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER">
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMONITORHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddDELAYHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDEPHandler"
@@ -516,8 +581,24 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCutSet">
 	</handler>
 	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddCriticalityVectorHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddCriticalityMatrixHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix">
+	</handler>
+	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFDIRParametersHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFMECAHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFMECAEntryHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddReliabilityAnalysisHandler"
@@ -528,16 +609,12 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddAvailabilityAnalysis">
 	</handler>
 	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddDetectabilityAnalysisHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis">
+	</handler>
+	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMCSAnalysisHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis">
-	</handler>
-	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddReliabilityRequirementHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement">
-	</handler>
-	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFaultToleranceRequirementHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddRecoveryAutomatonHandler"
@@ -556,8 +633,12 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddState">
 	</handler>
 	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTransitionHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition">
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFaultEventTransitionHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTimedTransitionHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition">
 	</handler>
 	</extension>
 	<extension point="org.eclipse.ui.menus">
@@ -825,7 +906,29 @@
 			</visibleWhen>
 		</command>
 		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddOBSERVER"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDELAY"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1023,7 +1126,95 @@
 			</visibleWhen>
 		</command>
 		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityVector"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddCriticalityMatrix"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFDIRParameters"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECA"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFMECAEntry"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1089,51 +1280,29 @@
 			</visibleWhen>
 		</command>
 		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddDetectabilityAnalysis"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMCSAnalysis"
-			style="push">
-			<visibleWhen
-				checkEnabled="true">
-				<with
-					variable="selection">
-					<iterate
-						ifEmpty="false"
-						operator="and">
-						<test 
-							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
-							value="true" 
-							forcePluginActivation="true">
-						</test>		
-						<instanceof
-							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
-						</instanceof>
-					</iterate>
-				</with>
-			</visibleWhen>
-		</command>
-		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddReliabilityRequirement"
-			style="push">
-			<visibleWhen
-				checkEnabled="true">
-				<with
-					variable="selection">
-					<iterate
-						ifEmpty="false"
-						operator="and">
-						<test 
-							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
-							value="true" 
-							forcePluginActivation="true">
-						</test>		
-						<instanceof
-							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
-						</instanceof>
-					</iterate>
-				</with>
-			</visibleWhen>
-		</command>
-		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultToleranceRequirement"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1243,7 +1412,29 @@
 			</visibleWhen>
 		</command>
 		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTransition"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1378,14 +1569,24 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionPANDI">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetOBSERVER"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableOBSERVER">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMONITOR">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetOBSERVER"
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionOBSERVER">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionMONITOR">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDELAY">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionDELAY">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDEP"
@@ -1483,9 +1684,14 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesPANDI">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesOBSERVER"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesOBSERVER">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesMONITOR">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesDELAY"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesDELAY">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesFDEP"
@@ -1538,6 +1744,21 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultReliabilityAnalysisReliabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAvailabilityAnalysisAvailabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultDetectabilityAnalysisDetectabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultDetectabilityAnalysisDetectabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEvent"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableBasicEvent">
@@ -1563,6 +1784,36 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCutSetBasicEvents">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityVector"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityVector">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetCriticalityVector"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionCriticalityVector">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityVectorIsCritical"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityVectorIsCritical">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityMatrix"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityMatrix">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetCriticalityMatrix"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionCriticalityMatrix">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCriticalityMatrixCriticalityMatrix"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCriticalityMatrixCriticalityMatrix">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParameters"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParameters">
@@ -1571,6 +1822,56 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFDIRParameters"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFDIRParameters">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParametersProbabilityLevels"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParametersProbabilityLevels">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParametersDetectionLevels"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParametersDetectionLevels">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParametersCriticalityMatrices"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParametersCriticalityMatrices">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECA"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECA">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFMECA"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFMECA">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntriesFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntriesFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFMECAEntry"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFMECAEntry">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntryFailureEffects"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryFailureEffects">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntryCompensation"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntryCompensation">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysis"
@@ -1598,9 +1899,24 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionAvailabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisPointAvailabilityCurve"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisAvailabilityCurve"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisPointAvailabilityCurve">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisAvailabilityCurve">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDetectabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDetectabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetDetectabilityAnalysis"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionDetectabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDetectabilityAnalysisDetectabilityCurve"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDetectabilityAnalysisDetectabilityCurve">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysis"
@@ -1618,26 +1934,6 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMCSAnalysisMinimumCutSetsCutSet">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityRequirement">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetReliabilityRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionReliabilityRequirement">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultToleranceRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultToleranceRequirement">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFaultToleranceRequirement"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFaultToleranceRequirement">
-		</uiSnippet>
-		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomaton"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomaton">
@@ -1653,9 +1949,14 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonStatesState">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsFaultEventTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsFaultEventTransition">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTimedTransition"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTimedTransition">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetClaimAction"
@@ -1688,32 +1989,53 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionState">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransition">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFaultEventTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFaultEventTransition">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransitionGuards"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransitionGuards"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransitionGuards">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionGuards">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransitionRecoveryActionsClaimAction"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransitionRecoveryActionsClaimAction"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransitionRecoveryActionsClaimAction">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionRecoveryActionsClaimAction">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTransitionRecoveryActionsFreeAction"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultEventTransitionRecoveryActionsFreeAction"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTransitionRecoveryActionsFreeAction">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionRecoveryActionsFreeAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransition"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransition">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTimedTransition"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTimedTransition">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsClaimAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsClaimAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsFreeAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsFreeAction">
 		</uiSnippet>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
+<!-- Graphiti Diagrams -->	
 <extension
        point="org.eclipse.graphiti.ui.diagramTypes">
     <diagramType
@@ -1789,39 +2111,6 @@
   </editor>
    </extension>
 <extension
-      point="org.eclipse.ui.importWizards">
-   <wizard
-         category="de.dlr.sc.virsat.model.extension.ui.fdir"
-         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ImportGalileoDFTWizard"
-         id="de.dlr.sc.virsat.model.extension.fdir.ui.importGalileo"
-         name="Galileo DFT Import">
-   </wizard>
-   <category
-         id="de.dlr.sc.virsat.model.extension.ui.fdir"
-         name="FDIR">
-   </category>
-</extension>
-<extension
-      point="org.eclipse.ui.exportWizards">
-   <wizard
-         category="de.dlr.sc.virsat.model.extension.ui.fdir"
-         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ExportGalileoDFTWizard"
-         id="de.dlr.sc.virsat.model.extension.fdir.ui.exportGalileo"
-         name="Galileo DFT Export">
-   </wizard>
-   <category
-         id="de.dlr.sc.virsat.model.extension.ui.fdir"
-         name="FDIR">
-   </category>
-</extension>
-<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
-	      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
-	</uiSnippet>
-</extension>
-<extension
       point="org.eclipse.elk.core.service.layoutConnectors">
    <setup
          class="de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.RecoveryAutomatonLayoutSetup"
@@ -1831,30 +2120,6 @@
          class="de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.FaultTreeLayoutSetup"
          priority="2">
    </setup>
-</extension>
-<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysisReliabilityCurve"
-	      section="de.dlr.sc.virsat.uiengine.ui.editorSection.Others"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityAnalysisReliabilityCurve">
-	</uiSnippet>
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCutSetAnalysisMinimumCutSetsCutSet"
-	      section="de.dlr.sc.virsat.uiengine.ui.editorSection.Others"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableCutSetAnalysisMinimumCutSetsCutSet">
-	</uiSnippet>
-</extension>
-<extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="de.dlr.sc.virsat.model.ui.preferencePage.virsat"
-            class="de.dlr.sc.virsat.model.extension.fdir.ui.preferences.FDIRWorkbenchPreferencePage"
-            id="de.dlr.sc.virsat.model.extension.fdir.ui.preferencePage.fdir"
-            name="FDIR">
-         <keywordReference
-               id="de.dlr.sc.virsat.model.ui.keyword.virsat">
-         </keywordReference>
-      </page>
 </extension>
 	<extension point="org.eclipse.ui.commands">
 		<command
@@ -1916,6 +2181,158 @@
 			</command>
 		</menuContribution>
 	</extension>
+	
+<!-- Wizards -->
+<extension
+      point="org.eclipse.ui.importWizards">
+   <wizard
+         category="de.dlr.sc.virsat.model.extension.ui.fdir"
+         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ImportGalileoDFTWizard"
+         icon="resources/icons/FaultTree.gif"
+         id="de.dlr.sc.virsat.model.extension.fdir.ui.importGalileo"
+         name="Galileo DFT Import">
+   </wizard>
+   <category
+         id="de.dlr.sc.virsat.model.extension.ui.fdir"
+         name="FDIR">
+   </category>
+</extension>
+<extension
+      point="org.eclipse.ui.exportWizards">
+   <wizard
+         category="de.dlr.sc.virsat.model.extension.ui.fdir"
+         class="de.dlr.sc.virsat.model.extension.fdir.ui.wizards.ExportGalileoDFTWizard"
+         icon="resources/icons/FaultTree.gif"
+         id="de.dlr.sc.virsat.model.extension.fdir.ui.exportGalileo"
+         name="Galileo DFT Export">
+   </wizard>
+   <category
+         id="de.dlr.sc.virsat.model.extension.ui.fdir"
+         name="FDIR">
+   </category>
+</extension>
+
+<!-- Snippets -->
+	<extension
+	       point="de.dlr.sc.virsat.uiengine.ui.EditorSection">
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	          topRanking="1010">
+	    </editorSection>
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	          topRanking="1020">
+	    </editorSection>
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	          topRanking="1090">
+	    </editorSection>
+	    <editorSection
+	          id="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	          topRanking="1100">
+	    </editorSection>
+	</extension>
+
+<extension point="de.dlr.sc.virsat.uiengine.ui.EditorUiSnippets">
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetFDIRParameters"
+	      section="de.dlr.sc.virsat.uiengine.ui.editorSection.General"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionFDIRParameters">
+	</uiSnippet>
+	
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultBasicEventsBasicEvent"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultBasicEventsBasicEvent"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultBasicEventsBasicEvent">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFDIRParameters"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.config"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFDIRParameters">
+	</uiSnippet>
+	
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFault"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFault">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomaton"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomaton">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
+	</uiSnippet>
+
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultReliabilityAnalysisReliabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultAvailabilityAnalysisAvailabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultAvailabilityAnalysisAvailabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultDetectabilityAnalysisDetectabilityAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultDetectabilityAnalysisDetectabilityAnalysis">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECA"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECA">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysis"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMCSAnalysis">
+	</uiSnippet>
+	
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysisReliabilityCurve"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityAnalysisReliabilityCurve">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisAvailabilityCurve"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableAvailabilityAnalysisAvailabilityCurve">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysisMinimumCutSetsCutSet"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMCSAnalysisMinimumCutSetsCutSet">
+	</uiSnippet>
+	<uiSnippet
+	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFMECAEntriesFMECAEntry"
+	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis.artifacts"
+	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFMECAEntriesFMECAEntry">
+	</uiSnippet>
+</extension>
+
+<!-- Preferences -->
+<extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="de.dlr.sc.virsat.model.ui.preferencePage.virsat"
+            class="de.dlr.sc.virsat.model.extension.fdir.ui.preferences.FDIRWorkbenchPreferencePage"
+            id="de.dlr.sc.virsat.model.extension.fdir.ui.preferencePage.fdir"
+            name="FDIR">
+         <keywordReference
+               id="de.dlr.sc.virsat.model.ui.keyword.virsat">
+         </keywordReference>
+      </page>
+</extension>
 <extension point="org.eclipse.core.expressions.propertyTesters">
 		<propertyTester
 			id="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.CaOfSpecificCategoryTester"
@@ -1924,6 +2341,32 @@
 			properties="caOfSpecificCategory"
 			class="de.dlr.sc.virsat.model.extension.fdir.propertyTester.CategoryAssignmentTester">
 		</propertyTester>
+	</extension>
+	
+	
+<!-- Template -->
+
+<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			allPopups="false"
+	        locationURI="menu:de.dlr.sc.virsat.apps.ui.menu.apps?after=additions">
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport"
+			style="push">
+		</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.commands">
+		<command
+			id="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport"
+			name="SAVOIR/FDIR Report">
+		</command>
+	</extension>
+<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.CreateFdirReportHandler"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport">
+		</handler>
 	</extension>
 	<!-- Plugin.XML Protected Region End -->
 </plugin>

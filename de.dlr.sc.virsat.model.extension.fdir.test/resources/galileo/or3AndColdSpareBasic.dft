@@ -1,0 +1,9 @@
+toplevel "tle";
+"tle" or "A" "B" "AND";
+"AND" and "C" "SPAREGATE";
+"SPAREGATE" csp "PRIMARY" "SPARE";
+"A" lambda=1;
+"B" lambda=2;
+"C" lambda=3;
+"PRIMARY" lambda=4;
+"SPARE" lambda=5;

@@ -9,11 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 
 // *****************************************************************
 // * Class Declaration
@@ -51,5 +52,25 @@ public class FaultTreeEdge extends AFaultTreeEdge {
 	 */
 	public FaultTreeEdge(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
+	}
+	
+	/**
+	 * Method to access the RPI which will be needed by the Validator
+	 * to indicate the correct target of where warning come from.
+	 * @return the EMF ReferencePropertyInstance
+	 */
+	public ReferencePropertyInstance getFromReferenceProperty() {
+		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance(PROPERTY_FROM);
+		return propertyInstance;
+	}
+	
+	/**
+	 * Method to access the RPI which will be needed by the Validator
+	 * to indicate the correct target of where warning come from.
+	 * @return the EMF ReferencePropertyInstance
+	 */
+	public ReferencePropertyInstance getToReferenceProperty() {
+		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance(PROPERTY_TO);
+		return propertyInstance;
 	}
 }

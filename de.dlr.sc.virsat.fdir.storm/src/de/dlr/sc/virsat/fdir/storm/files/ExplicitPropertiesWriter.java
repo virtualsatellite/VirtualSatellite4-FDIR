@@ -12,11 +12,12 @@ package de.dlr.sc.virsat.fdir.storm.files;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import org.eclipse.core.runtime.SubMonitor;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -25,10 +26,10 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
  * @author yoge_re
  *
  */
-public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVisitor {
+public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetricVisitor {
 	private double delta;
 	private String instancePath;
-	private IMetric[] metrics;
+	private IBaseMetric[] metrics;
 	private PrintWriter printWriter;
 
 	/**
@@ -40,7 +41,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 	 * @param metrics
 	 *            the metrics
 	 */
-	public ExplicitPropertiesWriter(double delta, String instancePath, IMetric[] metrics) {
+	public ExplicitPropertiesWriter(double delta, String instancePath, IBaseMetric[] metrics) {
 		this.delta = delta;
 		this.instancePath = instancePath;
 		this.metrics = metrics;
@@ -51,8 +52,8 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 		try {
 			FileWriter fileWriter = new FileWriter(instancePath);
 			printWriter = new PrintWriter(fileWriter);
-			for (IMetric metric : metrics) {
-				metric.accept(this);
+			for (IBaseMetric metric : metrics) {
+				metric.accept(this, null);
 			}
 			printWriter.close();
 		} catch (IOException e) {
@@ -62,7 +63,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 	}
 
 	@Override
-	public void visit(Reliability reliabilityMetric) {
+	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		if (delta > 0) {
 			for (double timepoint = delta; timepoint <= reliabilityMetric.getTime(); timepoint += delta) {
 				printWriter.println("Pmin=? [F<=" + timepoint + " \"" + FAILED_STATE + "\"];");
@@ -72,7 +73,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 
 	@Override
 	public void visit(MTTF mttfMetric) {
-		printWriter.println("Tmin=? [F \"" + FAILED_STATE + "\"];");
+		printWriter.println("Tmax=? [F \"" + FAILED_STATE + "\"];");
 	}
 
 	@Override
@@ -81,8 +82,11 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IMetricVis
 	}
 
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
-		// TODO Auto-generated method stub
+	public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
+	}
+
+	@Override
+	public void visit(MinimumCutSet minimumCutSet) {
 	}
 
 }

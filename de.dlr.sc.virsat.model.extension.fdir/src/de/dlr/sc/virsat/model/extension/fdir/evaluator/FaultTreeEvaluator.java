@@ -15,8 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
@@ -24,13 +27,15 @@ import de.dlr.sc.virsat.fdir.storm.runner.StormModelChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.IDFT2DFTConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.DFTSemantics;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.ExplicitDFT2MAConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.EngineExecutionPreference;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * This class provides a configureable evaluation workflow for fault trees.
@@ -41,7 +46,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
 
 public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	
-	public static final float DEFAULT_EPS = 0.001f;
+	public static final float DEFAULT_EPS = 0.00001f;
 	public static final float DEFAULT_DELTA = 0.1f;
 	
 	private IFaultTreeEvaluator evaluator;
@@ -56,7 +61,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	@Override
-	public void evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics) {
 		if (metrics.length == 0) {
 			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
 		}
@@ -68,52 +73,69 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		evaluator.evaluateFaultTree(convertedRoot, metrics);
-	}
+		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
+		
+		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, subMonitor, metrics);
+		if (!result.getMinCutSets().isEmpty()) {
+			remapMinCutSets(result);
+		}
+		return result;
+	}	
+	
 	
 	/**
-	 * Gets the minimum cut sets from the fault tree
-	 * @return the minimum cut sets causing the top level event
+	 * Maps the nodes in the given failLabelProvider to the nodes of the transformed tree
+	 * @param failNodeProvider the failable provider
+	 * @return the failable provider with remapped nodes
 	 */
-	public Set<Set<BasicEvent>> getMinimumCutSets() {
+	private FailableBasicEventsProvider remapFailLabelProvider(FailableBasicEventsProvider failNodeProvider) {
+		FailableBasicEventsProvider failNodeProviderRemapped = new FailableBasicEventsProvider();
+		for (BasicEvent be : failNodeProvider.getBasicEvents()) {
+			FaultTreeNode remappedNode = conversionResult.getMapGeneratedToGenerator().keySet().stream()
+					.filter(generated -> generated.getUuid().equals(be.getUuid()))
+					.findFirst().get();
+			failNodeProviderRemapped.getBasicEvents().add((BasicEvent) remappedNode);
+		}
+		return failNodeProviderRemapped;
+	}
+
+	/**
+	 * Remaps the events of the computed mincut sets to the events of the original tree
+	 * @param result a model checking result
+	 */
+	private void remapMinCutSets(ModelCheckingResult result) {
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = conversionResult.getMapGeneratedToGenerator();
-		Set<Set<BasicEvent>> minimumCutSets = evaluator.getMinimumCutSets();
-		Set<Set<BasicEvent>> originalMinimumCutSets = new HashSet<>();
+		Set<Set<Object>> originalMinimumCutSets = new HashSet<>();
 		
-		for (Set<BasicEvent> minimumCutSet : minimumCutSets) {
-			Set<BasicEvent> originalMiniumCutSet = new HashSet<>();
-			for (BasicEvent be : minimumCutSet) {
-				BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(be);
-				originalMiniumCutSet.add(originalBe);
+		for (Set<Object> minimumCutSet : result.getMinCutSets()) {
+			Set<Object> originalMiniumCutSet = new HashSet<>();
+			for (Object object : minimumCutSet) {
+				if (object instanceof FaultEvent) {
+					FaultEvent fe = (FaultEvent) object;
+					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
+					originalMiniumCutSet.add(originalBe);
+				}
 			}
 			originalMinimumCutSets.add(originalMiniumCutSet);
 		}
 		
-		return originalMinimumCutSets;
+		// Make sure all cuts are mincuts
+		Set<Set<Object>> subsumedMinCuts = new HashSet<>();
+		for (Set<Object> minCut : originalMinimumCutSets) {
+			for (Set<Object> minCutOther : originalMinimumCutSets) {
+				if (minCut != minCutOther && minCut.containsAll(minCutOther)) {
+					subsumedMinCuts.add(minCut);
+				}
+			}
+		}
+		originalMinimumCutSets.removeAll(subsumedMinCuts);
+		
+		result.getMinCutSets().clear();
+		result.getMinCutSets().addAll(originalMinimumCutSets);
 	}
 
 	@Override
-	public List<Double> getFailRates() {
-		return evaluator.getFailRates();
-	}
-
-	@Override
-	public double getMeanTimeToFailure() {
-		return evaluator.getMeanTimeToFailure();
-	}
-
-	@Override
-	public List<Double> getPointAvailability() {
-		return evaluator.getPointAvailability();
-	}
-
-	@Override
-	public double getSteadyStateAvailability() {
-		return evaluator.getSteadyStateAvailability();
-	}
-
-	@Override
-	public void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy) {
+	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		evaluator.setRecoveryStrategy(recoveryStrategy);
 	}
 	
@@ -135,6 +157,28 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	/**
+	 * Creates a fault tree evaluator with a recovery automaton
+	 * @param ra a recovery automaton
+	 * @return a fault tree evaluator
+	 */
+	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(RecoveryAutomaton ra) {
+		return createDefaultFaultTreeEvaluator(ra, DEFAULT_DELTA, DEFAULT_EPS);
+	}
+	
+	/**
+	 * Creates a fault tree evaluator with a recovery automaton
+	 * @param ra a recovery automaton
+	 * @return a fault tree evaluator
+	 */
+	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(RecoveryAutomaton ra, double delta, double eps) {
+		FaultTreeEvaluator ftEvaluator = createDefaultFaultTreeEvaluator(ra != null, delta, eps);
+		if (ra != null) {
+			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		}
+		return ftEvaluator;
+	}
+	
+	/**
 	 * Creates a fault tree evaluator with a default setup and a specified dft2MaConverter
 	 * @param isNondeterministic whether the evaluator uses Non-deterministic fault trees
 	 * @param delta the timestep slice
@@ -142,16 +186,16 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	 * @return a fault tree evaluator
 	 */
 	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic, double delta, double eps) {
-		
 		String preferences = FaultTreePreferences.getEnginePreference();
 		if (preferences.equals(EngineExecutionPreference.StormDFT.toString())) {
-			return decorateFaultTreeEvaluator(new StormEvaluator(delta));
+			return decorateFaultTreeEvaluator(new StormDFTEvaluator(delta));
 		} else {
-			ExplicitDFT2MAConverter explicitDFT2MAConverter = new ExplicitDFT2MAConverter();
-			explicitDFT2MAConverter.setSemantics(isNondeterministic ? DFTSemantics.createNDDFTSemantics() : DFTSemantics.createStandardDFTSemantics());
-			IMarkovModelChecker markovModelChecker = preferences.equals(EngineExecutionPreference.Custom.toString()) ?  new MarkovModelChecker(delta, eps) : new StormModelChecker(delta, FaultTreePreferences.getStormExecutionEnvironmentPreference());
+			DFTSemantics defaultSemantics = isNondeterministic ? DFTSemantics.createNDDFTSemantics() : DFTSemantics.createStandardDFTSemantics();
+			DFTSemantics poSemantics = PONDDFTSemantics.createPONDDFTSemantics();
 			
-			return decorateFaultTreeEvaluator(new DFTEvaluator(explicitDFT2MAConverter, markovModelChecker));
+			IMarkovModelChecker markovModelChecker = preferences.equals(EngineExecutionPreference.Custom.toString()) ?  new MarkovModelChecker(delta, eps) : new StormModelChecker(delta, FaultTreePreferences.getStormExecutionEnvironmentPreference());
+			DFTEvaluator dftEvaluator = new DFTEvaluator(defaultSemantics, poSemantics, markovModelChecker);
+			return decorateFaultTreeEvaluator(dftEvaluator);
 		}
 	}
 	
@@ -175,4 +219,8 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 		return evaluator;
 	}
 
+	@Override
+	public Object getStatistics() {
+		return evaluator.getStatistics();
+	}
 }

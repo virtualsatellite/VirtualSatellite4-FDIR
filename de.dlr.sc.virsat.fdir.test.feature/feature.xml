@@ -2,7 +2,7 @@
 <feature
       id="de.dlr.sc.virsat.fdir.test.feature"
       label="Virsat FDIR Tests Feature"
-      version="4.9.0.qualifier"
+      version="4.10.0.qualifier"
       provider-name="DLR (German Aerospace Center)"
       plugin="de.dlr.sc.virsat.fdir.branding.ui"
       license-feature="de.dlr.sc.virsat.fdir.license.feature">
@@ -30,7 +30,6 @@ by German Aerospace Center (DLR e.V.)
       <import plugin="de.dlr.sc.virsat.model.extension.fdir" version="0.0.0" match="greaterOrEqual"/>
       <import feature="de.dlr.sc.virsat.model.feature" version="0.0.0" match="greaterOrEqual"/>
       <import feature="de.dlr.sc.virsat.project.feature" version="0.0.0" match="greaterOrEqual"/>
-      <import feature="de.dlr.sc.virsat.svn.feature" version="0.0.0" match="greaterOrEqual"/>
       <import feature="de.dlr.sc.virsat.uiengine.feature" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="de.dlr.sc.virsat.model" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="de.dlr.sc.virsat.project" version="0.0.0" match="greaterOrEqual"/>

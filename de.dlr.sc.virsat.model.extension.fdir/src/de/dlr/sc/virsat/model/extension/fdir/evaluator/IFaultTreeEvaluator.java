@@ -9,13 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
-import java.util.List;
-import java.util.Set;
+import org.eclipse.core.runtime.SubMonitor;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.IRecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Interface for evaluating fault trees.
@@ -28,43 +27,49 @@ public interface IFaultTreeEvaluator {
 	/**
 	 * Main evaluation function evaluating a fault tree identified by its root.
 	 * @param root the root of the fault tree to be evaluated.
+	 * @param failNodeProvider the fail criteria
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param metrics the evaluation metrics
+	 * @return the result of the evaluation
 	 */
-	void evaluateFaultTree(FaultTreeNode root, IMetric... metrics);
+	ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics);
+
 
 	/**
-	 * Gets the total sum of probability mass in the fail state
-	 * @return the total probability mass in the fail state
+	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailableBasicEventsProvider, IMetric...)} but with a default
+	 * failNodeProvider.
+	 * @param root the root of the fault tree to be evaluated
+	 * @param metrics the evaluation metrics
+	 * @return the result of the evaluation
 	 */
-	List<Double> getFailRates();
+	default ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
+		return evaluateFaultTree(root, null, null, metrics);
+	}
 	
 	/**
-	 * Computes the mean time to failure
-	 * @return the expected time to failure
+	 * As {@link IFaultTreeEvaluator#evaluateFaultTree(FaultTreeNode, FailableBasicEventsProvider, IMetric...)} but with a default and submonitor
+	 * @param root root the root of the fault tree to be evaluated
+	 * @param subMonitor subMonitor eclipse ui element for progress reporting
+	 * @param metrics metrics the evaluation metrics
+	 * @return the result of the evaluation
 	 */
-	double getMeanTimeToFailure();
-	
-	/**
-	 * Computes the minimum cut sets
-	 * @return the minimum cut sets
-	 */
-	Set<Set<BasicEvent>> getMinimumCutSets();
+	default ModelCheckingResult evaluateFaultTree(FaultTreeNode root, SubMonitor subMonitor, IMetric... metrics) {
+		return evaluateFaultTree(root, null, subMonitor, metrics);
+	}
 	
 	/**
 	 * Sets the recovery strategy for the fault tree evaluation
 	 * @param recoveryStrategy the recovery strategy
 	 */
-	void setRecoveryStrategy(IRecoveryStrategy recoveryStrategy);
+	default void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
+		
+	}
 	
 	/**
-	 * Computes the long run availability
-	 * @return the steady state availability
+	 * Gets the internal statistics of the last call to the evaluation method
+	 * @return the statistics of the last call of the evaluation method
 	 */
-	double getSteadyStateAvailability();
-	
-	/**
-	 * Gets the availability at different points of time
-	 * @return the availability at different instances
-	 */
-	List<Double> getPointAvailability();
+	default Object getStatistics() {
+		return new Object();
+	}
 }

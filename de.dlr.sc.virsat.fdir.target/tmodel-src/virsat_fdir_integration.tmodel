@@ -2,7 +2,7 @@ Target virsat_fdir_integration extends virsat {
 	Import core_integration
 	Import fdir_dependencies
 	
-	RepositoryLocation VirSat4CoreIntegration url "https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/integration/4.9.0/"{	
+	RepositoryLocation VirSat4CoreIntegration url "https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/integration/4.10.0/"{	
 		Unit de.dlr.sc.virsat.target.feature.feature.group version newest;
-	} 
+	}
 }

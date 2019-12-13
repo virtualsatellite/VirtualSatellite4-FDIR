@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VirSat FDIR Galileo
 Bundle-Vendor: DLR (German Aerospace Center)
-Bundle-Version: 4.9.0.qualifier
+Bundle-Version: 4.10.0.qualifier
 Bundle-SymbolicName: de.dlr.sc.virsat.fdir.galileo.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
@@ -15,12 +15,15 @@ Require-Bundle: de.dlr.sc.virsat.fdir.galileo,
  org.eclipse.ui,
  org.eclipse.compare,
  org.eclipse.xtext.builder,
- org.eclipse.xtend.lib;resolution:=optional,
- org.eclipse.xtext.xbase.lib
+ org.eclipse.xtend.lib;bundle-version="2.14.0";resolution:=optional,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0"
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.dlr.sc.virsat.fdir.galileo.ui.contentassist,
- de.dlr.sc.virsat.fdir.galileo.ui.quickfix,
- de.dlr.sc.virsat.fdir.galileo.ui.internal
+Export-Package: de.dlr.sc.virsat.fdir.galileo.ui,
+ de.dlr.sc.virsat.fdir.galileo.ui.contentassist,
+ de.dlr.sc.virsat.fdir.galileo.ui.internal,
+ de.dlr.sc.virsat.fdir.galileo.ui.labeling,
+ de.dlr.sc.virsat.fdir.galileo.ui.outline,
+ de.dlr.sc.virsat.fdir.galileo.ui.quickfix
 Bundle-Activator: de.dlr.sc.virsat.fdir.galileo.ui.internal.GalileoActivator
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.galileo.ui

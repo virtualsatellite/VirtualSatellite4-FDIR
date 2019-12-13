@@ -11,11 +11,13 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
  * This class test the clean minimizer for removing duplicate transitions and epsilon loops
@@ -23,10 +25,15 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
  *
  */
 
-public class CleanMinimizerTest extends AMinimizerTestCase {
+public class CleanMinimizerTest extends ATestCase {
+
+	protected ARecoveryAutomatonMinimizer minimizer;
+	
+	@Before
 	@Override
-	public ARecoveryAutomatonMinimizer createMinimizer() {
-		return new CleanMinimizer();
+	public void setUp() throws Exception {
+		super.setUp();
+		minimizer = new CleanMinimizer();
 	}
 	
 	@Test
@@ -38,12 +45,11 @@ public class CleanMinimizerTest extends AMinimizerTestCase {
 		Fault fault = new Fault(concept);
 		
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
-		recoveryAutomatonHelper.createStates(ra, INITIAL_STATES); 
+		raHelper.createStates(ra, INITIAL_STATES); 
 		
-		Transition transition00 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(0));
-		recoveryAutomatonHelper.assignInputs(transition00, fault);
+		FaultEventTransition transition00 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(0));
+		raHelper.assignInputs(transition00, fault);
 		
-		ARecoveryAutomatonMinimizer minimizer = createMinimizer();
 		minimizer.minimize(ra);
 		
 		assertEquals(RESULTING_STATES, ra.getStates().size());
@@ -58,14 +64,13 @@ public class CleanMinimizerTest extends AMinimizerTestCase {
 		Fault fault = new Fault(concept);
 		
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
-		recoveryAutomatonHelper.createStates(ra, INITIAL_STATES); 
+		raHelper.createStates(ra, INITIAL_STATES); 
 		
-		Transition transition010 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		recoveryAutomatonHelper.assignInputs(transition010, fault);
-		Transition transition011 = recoveryAutomatonHelper.createTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		recoveryAutomatonHelper.assignInputs(transition011, fault);
+		FaultEventTransition transition010 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		raHelper.assignInputs(transition010, fault);
+		FaultEventTransition transition011 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		raHelper.assignInputs(transition011, fault);
 		
-		ARecoveryAutomatonMinimizer minimizer = createMinimizer();
 		minimizer.minimize(ra);
 		
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());

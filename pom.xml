@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dlr.sc.virsat.fdir</groupId>
 	<artifactId>de.dlr.sc.virsat.fdir.parent</artifactId>
-	<version>4.9.0-SNAPSHOT</version>
+	<version>4.10.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<profiles>
@@ -32,8 +32,7 @@
 			</properties>
 			<modules>
 				<module>de.dlr.sc.virsat.fdir.target</module>
-				<module>de.dlr.sc.virsat.fdir.product</module>
-
+				
 				<!-- The Extension for the FDIR Data Model -->
 				<module>de.dlr.sc.virsat.fdir.core</module>
 				<module>de.dlr.sc.virsat.fdir.core.test</module>
@@ -41,24 +40,29 @@
 				<module>de.dlr.sc.virsat.fdir.storm.test</module>
 				<module>de.dlr.sc.virsat.model.extension.fdir</module>
 				<module>de.dlr.sc.virsat.model.extension.fdir.ui</module>
-				<module>de.dlr.sc.virsat.model.extension.fdir.feature</module>
 				<module>de.dlr.sc.virsat.model.extension.fdir.test</module>
 
 				<!-- The Galileo DFT Model -->
 				<module>de.dlr.sc.virsat.fdir.galileo</module>
 				<module>de.dlr.sc.virsat.fdir.galileo.ui</module>
 				<module>de.dlr.sc.virsat.fdir.galileo.ide</module>
-				<module>de.dlr.sc.virsat.fdir.galileo.feature</module>
 				<module>de.dlr.sc.virsat.fdir.galileo.tests</module>
 
 				<module>de.dlr.sc.virsat.fdir.branding.ui</module>
+				<module>de.dlr.sc.virsat.fdir.test</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>deploy</id>
+			<modules>
+				<module>de.dlr.sc.virsat.fdir.product</module>
+				<module>de.dlr.sc.virsat.fdir.p2updatesite</module>
 				<module>de.dlr.sc.virsat.fdir.branding.feature</module>
-
 				<module>de.dlr.sc.virsat.fdir.license.feature</module>
 				<module>de.dlr.sc.virsat.fdir.docs.feature</module>
-				<module>de.dlr.sc.virsat.fdir.test</module>
-
-				<module>de.dlr.sc.virsat.fdir.p2updatesite</module>
+				
+				<module>de.dlr.sc.virsat.fdir.galileo.feature</module>
+				<module>de.dlr.sc.virsat.model.extension.fdir.feature</module>
 			</modules>
 		</profile>
 	</profiles>

@@ -9,36 +9,29 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.metrics;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 /**
- * Enables storm-dft to compute reliability values
+ * Metric representing time bounded reliability
  * @author sascha
  *
  */
 
-public class Reliability implements IMetric {
+public class Reliability extends AProbabilityCurve implements IBaseMetric {
 	
 	public static final Reliability UNIT_RELIABILITY = new Reliability(1);
-	
-	private double time;
+	public static final Reliability INF_RELIABILITY = new Reliability(Double.POSITIVE_INFINITY);
 	
 	/**
 	 * Default constructor
 	 * @param time the end time
 	 */
 	public Reliability(double time) {
-		this.time = time;
-	}
-	
-	/**
-	 * Gets the time horizon
-	 * @return the time horizon
-	 */
-	public double getTime() {
-		return time;
+		super(time);
 	}
 
 	@Override
-	public void accept(IMetricVisitor visitor) {
-		visitor.visit(this);
+	public void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor) {
+		visitor.visit(this, subMonitor);
 	}
 }

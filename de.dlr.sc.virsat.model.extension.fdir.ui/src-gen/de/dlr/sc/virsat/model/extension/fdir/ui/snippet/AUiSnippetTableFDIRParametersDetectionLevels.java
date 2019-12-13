@@ -9,9 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddArrayElementDetectionLevelsCommand;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetArrayInstancePropertyTable;
@@ -31,11 +31,11 @@ public abstract class AUiSnippetTableFDIRParametersDetectionLevels extends AUiSn
 		super("de.dlr.sc.virsat.model.extension.fdir",
 			"detectionLevels",
 			"FDIRParameters",
-			STYLE_ADD_BUTTON | STYLE_REMOVE_BUTTON | STYLE_EDITOR_BUTTON);
+			STYLE_NONE);
 	}
 
 	@Override
 	protected Command createAddCommand(EditingDomain editingDomain, Concept activeConcept) {
-		return new CreateAddArrayElementDetectionLevelsCommand().create(editingDomain, getArrayInstance(model), null);
+		return UnexecutableCommand.INSTANCE;
 	}
 }

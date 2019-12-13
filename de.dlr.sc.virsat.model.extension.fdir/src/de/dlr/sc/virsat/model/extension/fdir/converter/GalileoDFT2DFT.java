@@ -16,19 +16,24 @@ import java.util.List;
 import java.util.Map;
 
 import de.dlr.sc.virsat.fdir.galileo.GalileoDFTParser;
+import de.dlr.sc.virsat.fdir.galileo.dft.Delay;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
+import de.dlr.sc.virsat.fdir.galileo.dft.Named;
+import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
+import de.dlr.sc.virsat.fdir.galileo.dft.Rdep;
 import de.dlr.sc.virsat.model.concept.types.structural.ABeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -171,11 +176,13 @@ public class GalileoDFT2DFT {
 					primaryAdded = true;
 				}
 				
-				List<GalileoFaultTreeNode> observables = galileoFtn.getType().getObservables();
-				for (GalileoFaultTreeNode observable : observables) {
-					FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
-					FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
-					ftHelper.connectObserver(fault, ftnFrom, ftnTo);
+				if (galileoFtn.getType() instanceof Observer) {
+					List<GalileoFaultTreeNode> observables = ((Observer) galileoFtn.getType()).getObservables();
+					for (GalileoFaultTreeNode observable : observables) {
+						FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
+						FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
+						ftHelper.connectObserver(fault, ftnFrom, ftnTo);
+					}
 				}
 			}
 			
@@ -201,14 +208,16 @@ public class GalileoDFT2DFT {
 			Gate gate = ftHelper.createGate(type);
 			
 			if (type.equals(FaultTreeNodeType.VOTE)) {
-				String[] split = galileoType.getTypeName().split(GALILEO_VOTE);
+				String[] split = ((Named) galileoType).getTypeName().split(GALILEO_VOTE);
 				Integer x = Integer.valueOf(split[0]);
 				((VOTE) gate).setVotingThreshold(x);
-			} else if (type.equals(FaultTreeNodeType.OBSERVER)) {
-				((OBSERVER) gate).setObservationRate(Double.valueOf(galileoType.getObservationRate()));
+			} else if (type.equals(FaultTreeNodeType.MONITOR)) {
+				((MONITOR) gate).setObservationRate(Double.valueOf(((Observer) galileoType).getObservationRate()));
 			} else if (type.equals(FaultTreeNodeType.RDEP)) {
-				((RDEP) gate).setRateChange(Double.valueOf(galileoType.getRateFactor()));
-			}
+				((RDEP) gate).setRateChange(Double.valueOf(((Rdep) galileoType).getRateFactor()));
+			} else if (type.equals(FaultTreeNodeType.DELAY)) {
+				((DELAY) gate).setTime(Double.valueOf(((Delay) galileoType).getTime()));
+			} 
 			
 			ftn = gate;
 		} else {
@@ -228,8 +237,8 @@ public class GalileoDFT2DFT {
 	 * @return the converted VirSat node type
 	 */
 	private FaultTreeNodeType galileoNodeType2FaultTreeNodeType(GalileoNodeType galileoType) {
-		if (galileoType.getTypeName() != null) {
-			String typeName = galileoType.getTypeName();
+		if (galileoType instanceof Named) {
+			String typeName = ((Named) galileoType).getTypeName();
 			if (typeName.contains(GALILEO_VOTE)) {
 				return FaultTreeNodeType.VOTE;
 			} else if (typeName.contains(GALILEO_SPARE_GATE_SUFFIX)) {
@@ -237,12 +246,14 @@ public class GalileoDFT2DFT {
 			} else {
 				return FaultTreeNodeType.valueOf(typeName.toUpperCase());
 			}
-		} else if (galileoType.getObservationRate() != null) {
-			return FaultTreeNodeType.OBSERVER;
-		} else if (galileoType.getRateFactor() != null) {
+		} else if (galileoType instanceof Observer) {
+			return FaultTreeNodeType.MONITOR;
+		} else if (galileoType instanceof Rdep) {
 			return FaultTreeNodeType.RDEP;
+		} else if (galileoType instanceof Delay) {
+			return FaultTreeNodeType.DELAY;
 		}
-		
+
 		throw new RuntimeException("Unknown Galileo Fault Tree Node Type: " + galileoType);
 	}
 }

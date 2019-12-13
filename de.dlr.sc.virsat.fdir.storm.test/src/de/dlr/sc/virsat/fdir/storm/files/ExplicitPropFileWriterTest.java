@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 
@@ -37,12 +37,12 @@ public class ExplicitPropFileWriterTest {
 		final double DELTA = 360;
 		final double timeHorizon = 720;
 		Reliability reliability = new Reliability(timeHorizon);
-		final IMetric[] METRICS = {MTTF.MTTF, reliability};	
+		final IBaseMetric[] METRICS = {MTTF.MTTF, reliability};	
 		new ExplicitPropertiesWriter(DELTA, testFile.getAbsolutePath(), METRICS).writeFile();
 		
 		File expectedFile = File.createTempFile("test1", ".prop");	
 		PrintWriter writer = new PrintWriter(expectedFile);
-		writer.println("Tmin=? [F \"failed\"];");
+		writer.println("Tmax=? [F \"failed\"];");
 		writer.println("Pmin=? [F<=360.0 \"failed\"];");
 		writer.println("Pmin=? [F<=720.0 \"failed\"];");
 		writer.close();

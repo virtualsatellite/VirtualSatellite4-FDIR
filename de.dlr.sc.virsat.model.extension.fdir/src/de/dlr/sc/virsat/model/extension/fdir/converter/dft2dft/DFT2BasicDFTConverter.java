@@ -11,17 +11,19 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
@@ -52,8 +54,10 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 	public DFT2DFTConversionResult convert(FaultTreeNode root) {
 		this.concept = root.getConcept();
 
+		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
+		
 		ftHelper = new FaultTreeHelper(concept);
-		ftHolder = new FaultTreeHolder(root);
+		ftHolder = new FaultTreeHolder(holderRoot);
 		mapNodes = new HashMap<>();
 
 		for (FaultTreeNode node : ftHolder.getNodes()) {
@@ -72,8 +76,13 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 		}
 
+		FaultTreeNode newRoot = mapNodes.get(root).get(0);
+		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			if (node instanceof Gate) {
+				if (!mapNodes.containsKey(node.getFault())) {
+					mapNodes.put(node.getFault(), Collections.singletonList(newRoot));
+				}
 				convertNode(node);
 			}
 		}
@@ -91,12 +100,12 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 				ftHelper.connectSpare(fault, newSpareOutputNode, newNodeOutputNode);
 			}
 
-			List<OBSERVER> observers = ftHolder.getMapNodeToObservers().get(node);
-			for (int i = 0; i < observers.size(); ++i) {
-				OBSERVER observer = observers.get(i);
-				List<FaultTreeNode> newChildNodeList = mapNodes.get(observer);
-				FaultTreeNode newSpareOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-				ftHelper.connectObserver(fault, newSpareOutputNode, newNodeOutputNode);
+			List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().get(node);
+			for (int i = 0; i < monitors.size(); ++i) {
+				MONITOR monitor = monitors.get(i);
+				List<FaultTreeNode> newChildNodeList = mapNodes.get(monitor);
+				FaultTreeNode newMonitorOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
+				ftHelper.connectObserver(fault, newNodeOutputNode, newMonitorOutputNode);
 			}
 			
 			List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
@@ -105,30 +114,26 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			
 			if (node instanceof Fault) {
 				for (BasicEvent be : node.getFault().getBasicEvents()) {
-					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().get(be);
-					if (deps != null) {
-						for (int i = 0; i < deps.size(); ++i) {
-							FaultTreeNode dep = deps.get(i);
-							List<FaultTreeNode> newChildNodeList = mapNodes.get(dep);
-							FaultTreeNode newDepOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-							ftHelper.connectDep(fault, newDepOutputNode, mapNodes.get(be).get(0));
-						}
+					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+					for (int i = 0; i < deps.size(); ++i) {
+						FaultTreeNode dep = deps.get(i);
+						List<FaultTreeNode> newChildNodeList = mapNodes.get(dep);
+						FaultTreeNode newDepOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
+						ftHelper.connectDep(fault, newDepOutputNode, mapNodes.get(be).get(0));
 					}
 				}
 			}
 		}
 
-		Fault newFault = (Fault) mapNodes.get(root).get(0);
-		
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerators = new HashMap<>();
 		for (FaultTreeNode generator : mapNodes.keySet()) {
 			List<FaultTreeNode> generatedNodes = mapNodes.get(generator);
 			for (FaultTreeNode generated : generatedNodes) {
 				mapGeneratedToGenerators.put(generated, generator);
 			}
-		} 
+		}
 		
-		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newFault, mapGeneratedToGenerators);
+		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newRoot, mapGeneratedToGenerators);
 		
 		return conversionResult;
 	}
@@ -252,10 +257,12 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			Gate gate = ftHelper.createGate(newFault, type);
 			if (gate instanceof VOTE) {
 				((VOTE) gate).setVotingThreshold(((VOTE) oldGate).getVotingThreshold());
-			} else if (gate instanceof OBSERVER) {
-				((OBSERVER) gate).setObservationRate(((OBSERVER) oldGate).getObservationRate());
+			} else if (gate instanceof MONITOR) {
+				((MONITOR) gate).setObservationRate(((MONITOR) oldGate).getObservationRateBean().getValueToBaseUnit());
 			} else if (gate instanceof RDEP) {
-				((RDEP) gate).setRateChange(((RDEP) oldGate).getRateChange());
+				((RDEP) gate).setRateChange(((RDEP) oldGate).getRateChangeBean().getValueToBaseUnit());
+			} else if (gate instanceof DELAY) {
+				((DELAY) gate).setTime(((DELAY) oldGate).getTimeBean().getValueToBaseUnit());
 			}
 			
 			gate.setName(oldGate.getName());

@@ -17,7 +17,8 @@ import java.util.Map;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftFactory;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
-import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
+import de.dlr.sc.virsat.fdir.galileo.dft.Named;
+import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.ATypeInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
@@ -26,7 +27,9 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
+import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 /**
@@ -88,12 +91,20 @@ public class DFT2GalileoDFT {
 			
 			if (node instanceof Gate) {
 				Gate gate = (Gate) node;
-				GalileoNodeType nodeType = DftFactory.eINSTANCE.createGalileoNodeType();
+				Named nodeType = DftFactory.eINSTANCE.createNamed();
 				galileoNode.setType(nodeType);
-				nodeType.setTypeName(gate.getFaultTreeNodeType().toString().toLowerCase());
+				
+				if (node instanceof VOTE) {
+					VOTE vote = (VOTE) node;
+					nodeType.setTypeName(vote.getVotingThreshold() + "of" +  ftHelper.getChildren(vote).size());
+				} else if (node instanceof SPARE) {
+					nodeType.setTypeName("wsp");
+				} else {
+					nodeType.setTypeName(gate.getFaultTreeNodeType().toString().toLowerCase());
+				}
 				galileoDft.getGates().add(galileoNode);
 			} else if (node instanceof Fault) {
-				GalileoNodeType nodeType = DftFactory.eINSTANCE.createGalileoNodeType();
+				Named nodeType = DftFactory.eINSTANCE.createNamed();
 				galileoNode.setType(nodeType);
 				nodeType.setTypeName(FaultTreeNodeType.OR.name().toLowerCase());
 				galileoDft.getGates().add(galileoNode);
@@ -122,11 +133,11 @@ public class DFT2GalileoDFT {
 			if (node instanceof Fault) {
 				Fault fault = (Fault) node;
 				allChildren.addAll(fault.getBasicEvents());
-			} else if (node instanceof OBSERVER) {
+			} else if (node instanceof MONITOR) {
 				List<FaultTreeNode> observables = ftHelper.getObservables(node);
 				for (FaultTreeNode observable : observables) {
 					GalileoFaultTreeNode galileoChild = mapDftNodeToGalileoNode.get(observable);
-					galileoNode.getType().getObservables().add(galileoChild);
+					((Observer) galileoNode.getType()).getObservables().add(galileoChild);
 				}
 			}
 			

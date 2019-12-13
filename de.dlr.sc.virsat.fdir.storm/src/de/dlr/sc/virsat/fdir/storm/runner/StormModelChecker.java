@@ -14,12 +14,17 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -32,12 +37,12 @@ public class StormModelChecker implements IMarkovModelChecker {
 
 	private double delta;
 	private StormExecutionEnvironment stormExecutionEnvironment;
-	private List<Double> failRates = new ArrayList<Double>();
-	private double mttf;
 	private List<Double> resultExtracted = new ArrayList<Double>();
 	private int startIndex = 0;
-	private double steadyStateAvailability;
 	 
+	private ModelCheckingResult modelCheckingResult;
+	private ModelCheckingStatistics statistics;
+	
 	/**
 	 * 
 	 * @param delta timeslice
@@ -49,56 +54,64 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public void visit(Reliability reliabilityMetric) {
-		failRates.add((double) 0);
+	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
+		modelCheckingResult.getFailRates().add((double) 0);
 		int endIndex = (int) (startIndex  + reliabilityMetric.getTime() / delta);
-		failRates.addAll(resultExtracted.subList(startIndex, endIndex == 0 ? 1 : endIndex));
-		startIndex += failRates.size() - 1;
+		modelCheckingResult.getFailRates().addAll(resultExtracted.subList(startIndex, endIndex == 0 ? 1 : endIndex));
+		startIndex += modelCheckingResult.getFailRates().size() - 1;
 	}
 
 
 	@Override
 	public void visit(MTTF mttfMetric) {
-		mttf = resultExtracted.get(startIndex);
+		modelCheckingResult.setMeanTimeToFailure(resultExtracted.get(startIndex));
 		startIndex++;
-	}
-	
-	@Override
-	public double getMeanTimeToFailure() {
-		return mttf;
-	}
-
-	@Override
-	public List<Double> getFailRates() {
-		return failRates;
-	}
-
-	@Override
-	public double getSteadyStateAvailability() {
-		return steadyStateAvailability;
 	}
 
 	@Override
 	public void visit(SteadyStateAvailability steadyStateavailabilityMetric) {
-		steadyStateAvailability = resultExtracted.get(startIndex);
+		modelCheckingResult.setSteadyStateAvailability(resultExtracted.get(startIndex));
 		startIndex++;
+	}
+	
+	@Override
+	public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
+		
+	}
+	
+	@Override
+	public void visit(MinimumCutSet minimumCutSet) {
 		
 	}
 
 	@Override
-	public void checkModel(MarkovAutomaton<? extends MarkovState> ma, IMetric... metrics) {
+	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, SubMonitor subMonitor, IBaseMetric... metrics) {
+		statistics = new ModelCheckingStatistics();
+		statistics.time = System.currentTimeMillis();
+		
 		Storm storm = new Storm(ma, delta, metrics);
 		StormRunner<Double> stormRunner = createStormRunner(storm);
 		
+		modelCheckingResult = new ModelCheckingResult();
+		
 		try {
 			resultExtracted  = stormRunner.run();
-			for (IMetric metric : metrics) {
-				metric.accept(this);
+			for (IBaseMetric metric : metrics) {
+				metric.accept(this, null);
 			}
 
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		
+		return modelCheckingResult;
+	}
+	
+	@Override
+	public ModelCheckingStatistics getStatistics() {
+		return statistics;
 	}
 	
 	/**
@@ -111,14 +124,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public void visit(PointAvailability pointAvailabilityMetric) {
-		// TODO Auto-generated method stub
-		
+	public double getDelta() {
+		return delta;
 	}
-
-	@Override
-	public List<Double> getPointAvailability() {
-		return null;
-	}
-
 }

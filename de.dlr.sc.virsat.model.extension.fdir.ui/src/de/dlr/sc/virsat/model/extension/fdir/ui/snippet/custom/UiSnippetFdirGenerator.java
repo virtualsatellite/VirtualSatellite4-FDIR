@@ -27,7 +27,8 @@ import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementIns
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
 import de.dlr.sc.virsat.project.editingDomain.VirSatTransactionalEditingDomain;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSectionSnippet;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
@@ -55,33 +56,6 @@ public class UiSnippetFdirGenerator extends AUiSectionSnippet implements IUiSnip
 		super.createSwt(toolkit, editingDomain, composite, initModel);
 		
 		Composite sectionBody = createSectionBody(toolkit, SECTION_HEADING + SECTION_NAME, null, 1);
-		/*
-		buttonGenerateFaultTrees = toolkit.createButton(sectionBody, BUTTON_GENERATE_FAULT_TREE_TEXT, SWT.PUSH);
-		buttonGenerateFaultTrees.addSelectionListener(new SelectionListener() { 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				VirSatTransactionalEditingDomain virSatEd = (VirSatTransactionalEditingDomain) editingDomain;
-				ActiveConceptHelper acHelper = new ActiveConceptHelper(virSatEd.getResourceSet().getRepository());
-				Concept conceptFdir = acHelper.getConcept(de.dlr.sc.virsat.model.extension.fdir.Activator.getPluginId());
-				FaultTreeGenerator ftGenerator = new FaultTreeGenerator(conceptFdir);
-				FunctionTree functionTree = new FunctionTree((StructuralElementInstance) model);
-				
-				RecordingCommand rcCommand = new RecordingCommand(virSatEd, "Generate Fault Trees") {
-					@Override
-					protected void doExecute() {
-						ftGenerator.generate(functionTree);
-					}
-				};
-				
-				virSatEd.getCommandStack().execute(rcCommand);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
-		*/
 		
 		buttonGenerateRecoverystrategy = toolkit.createButton(sectionBody, BUTTON_GENERATE_RECOVERY_AUTOMATON_TEXT, SWT.PUSH);
 		buttonGenerateRecoverystrategy.addSelectionListener(new SelectionListener() { 
@@ -92,8 +66,8 @@ public class UiSnippetFdirGenerator extends AUiSectionSnippet implements IUiSnip
 				Fault fault = beanSei.getFirst(Fault.class);
 				
 				if (fault != null) {
-					BasicSynthesizer basicSynthesizer = new BasicSynthesizer();
-					RecoveryAutomaton ra = basicSynthesizer.synthesize(fault);
+					ISynthesizer synthesizer = new DelegateSynthesizer();
+					RecoveryAutomaton ra = synthesizer.synthesize(fault);
 					Command addCommand = beanSei.add(virSatEd, ra);
 					virSatEd.getCommandStack().execute(addCommand);
 				}

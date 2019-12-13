@@ -20,12 +20,17 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
+import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 
 /**
  * This helper class holds fault tree data and provides interferable data
@@ -40,10 +45,11 @@ public class FaultTreeHolder {
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToChildren;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSpares;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToParents;
+	private Map<FaultTreeNode, Set<FaultTreeNode>> mapNodeToAllParents;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToDEPTriggers;
-	private Map<FaultTreeNode, List<OBSERVER>> mapNodeToObservers;
+	private Map<FaultTreeNode, List<MONITOR>> mapNodeToMonitors;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSubNodes;
-	private Map<FaultTreeNode, Set<BasicEvent>> mapFaultToBasicEvents;
+	private Map<FaultTreeNode, List<FaultTreeNode>> mapFaultToBasicEvents;
 	private Map<BasicEvent, Fault> mapBasicEventToFault;
 	private Map<BasicEvent, Double> mapBasicEventToHotFailRate;
 	private Map<BasicEvent, Double> mapBasicEventToColdFailRate;
@@ -68,19 +74,18 @@ public class FaultTreeHolder {
 		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
 		
 		initDataStructures();
+		collectFaultTrees();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
+		
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
 			
-			if (nodes.contains(node)) {
+			if (!nodes.add(node)) {
 				continue;
-			} else {
-				nodes.add(node);
 			}
 			
-			nodes.add(node);
 			faultTrees.add(node.getFault().getFaultTree());
 			List<FaultTreeNode> children = ftHelper.getChildren(node, faultTrees);
 			List<FaultTreeNode> spares = ftHelper.getSpares(node, faultTrees);
@@ -109,12 +114,8 @@ public class FaultTreeHolder {
 				parentsChild.add(node);
 			}
 			
-			if (mapNodeToDEPTriggers.get(node) == null) {
-				mapNodeToDEPTriggers.put(node, new ArrayList<>());
-			}
-			
-			if (mapNodeToObservers.get(node) == null) {
-				mapNodeToObservers.put(node, new ArrayList<>());
+			if (mapNodeToMonitors.get(node) == null) {
+				mapNodeToMonitors.put(node, new ArrayList<>());
 			}
 			
 			if (node instanceof Fault) {
@@ -138,30 +139,42 @@ public class FaultTreeHolder {
 				}
 				
 				for (FaultTreeEdge obs : node.getFault().getFaultTree().getObservations()) {
-					OBSERVER observer = (OBSERVER) obs.getFrom();
-					FaultTreeNode observable = obs.getTo();
+					MONITOR monitor = (MONITOR) obs.getTo();
+					FaultTreeNode monitored = obs.getFrom();
 					
-					List<OBSERVER> nodeObservers = mapNodeToObservers.get(observable);
-					if (nodeObservers == null) {
-						nodeObservers = new ArrayList<>();
-						mapNodeToObservers.put(observable, nodeObservers);
+					List<MONITOR> nodeMonitors = mapNodeToMonitors.get(monitored);
+					if (nodeMonitors == null) {
+						nodeMonitors = new ArrayList<>();
+						mapNodeToMonitors.put(monitored, nodeMonitors);
 					}
 					
-					toProcess.add(observer);
-					nodeObservers.add(observer);
+					toProcess.add(monitor);
+					nodeMonitors.add(monitor);
 
-					if (mapNodeToParents.get(observer) == null) {
-						mapNodeToParents.put(observer, new ArrayList<>());
+					if (mapNodeToParents.get(monitor) == null) {
+						mapNodeToParents.put(monitor, new ArrayList<>());
 					}
-					mapNodeToParents.get(observer).add(observable);
+					mapNodeToParents.get(monitor).add(monitored);
 				}
 
-				mapFaultToBasicEvents.put(node, new HashSet<>(node.getFault().getBasicEvents()));
+				mapFaultToBasicEvents.put(node, new ArrayList<>(node.getFault().getBasicEvents()));
 				for (BasicEvent basicEvent : node.getFault().getBasicEvents()) {
 					mapBasicEventToFault.put(basicEvent, node.getFault());
-					mapBasicEventToHotFailRate.put(basicEvent, basicEvent.getHotFailureRateBean().getValueToBaseUnit());
-					mapBasicEventToColdFailRate.put(basicEvent, basicEvent.getColdFailureRateBean().getValueToBaseUnit());
-					mapBasicEventToRepairRate.put(basicEvent, basicEvent.getRepairRateBean().getValueToBaseUnit());
+					try {
+						mapBasicEventToHotFailRate.put(basicEvent, basicEvent.getHotFailureRateBean().getValueToBaseUnit());
+					} catch (NullPointerException e) {
+						mapBasicEventToHotFailRate.put(basicEvent, Double.NaN);
+					}
+					try {
+						mapBasicEventToColdFailRate.put(basicEvent, basicEvent.getColdFailureRateBean().getValueToBaseUnit());
+					} catch (NullPointerException e) {
+						mapBasicEventToHotFailRate.put(basicEvent, Double.NaN);
+					}
+					try {
+						mapBasicEventToRepairRate.put(basicEvent, basicEvent.getRepairRateBean().getValueToBaseUnit());
+					} catch (NullPointerException e) {
+						mapBasicEventToHotFailRate.put(basicEvent, Double.NaN);
+					}
 					mapNodeToParents.put(basicEvent, Collections.singletonList(node.getFault()));
 				}
 			}
@@ -175,6 +188,26 @@ public class FaultTreeHolder {
 	}
 	
 	/**
+	 * Collects fault trees with related edges to this tree
+	 */
+	private void collectFaultTrees() {
+		IBeanStructuralElementInstance rootParent = root.getParent();
+		if (rootParent != null) {
+			StructuralElementInstance rootSei = (StructuralElementInstance) VirSatEcoreUtil.getRootContainer(root.getParent().getStructuralElementInstance(), true);
+			List<StructuralElementInstance> deepChildren = rootSei.getDeepChildren();
+			for (StructuralElementInstance child : deepChildren) {
+				BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance();
+				beanSei.setStructuralElementInstance(child);
+				for (Fault fault : beanSei.getAll(Fault.class)) {
+					if (!fault.getFaultTree().getPropagations().isEmpty()) {
+						faultTrees.add(fault.getFaultTree());
+					}
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Initializes all data structures
 	 */
 	private void initDataStructures() {
@@ -183,7 +216,7 @@ public class FaultTreeHolder {
 		mapNodeToParents = new HashMap<>();
 		mapNodeToDEPTriggers = new HashMap<>();
 		mapFaultToBasicEvents = new HashMap<>();
-		mapNodeToObservers = new HashMap<>();
+		mapNodeToMonitors = new HashMap<>();
 		mapNodeToIndex = new HashMap<>();
 		mapBasicEventToFault = new HashMap<>();
 		mapBasicEventToHotFailRate = new HashMap<>();
@@ -199,7 +232,7 @@ public class FaultTreeHolder {
 	 */
 	private void indexNodes() {
 		List<FaultTreeNode> indexedNodes = new ArrayList<>(nodes);
-		for (Entry<FaultTreeNode, Set<BasicEvent>> entry : mapFaultToBasicEvents.entrySet()) {
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : mapFaultToBasicEvents.entrySet()) {
 			indexedNodes.addAll(entry.getValue());
 		}
 		
@@ -216,7 +249,7 @@ public class FaultTreeHolder {
 		for (FaultTreeNode node : getNodes()) {
 			List<FaultTreeNode> children = getMapNodeToChildren().get(node);
 			List<FaultTreeNode> spares = getMapNodeToSpares().get(node);
-			List<FaultTreeNode> fdepTriggers = getMapNodeToDEPTriggers().get(node);
+			List<FaultTreeNode> fdepTriggers = getMapNodeToDEPTriggers().getOrDefault(node, Collections.emptyList());
 			
 			List<FaultTreeNode> subNodes = new ArrayList<>(children);
 			subNodes.addAll(spares);
@@ -246,8 +279,16 @@ public class FaultTreeHolder {
 	 * Gets a mapping from any node to the Observers
 	 * @return map from node to Observer
 	 */
-	public Map<FaultTreeNode, List<OBSERVER>> getMapNodeToObservers() {
-		return mapNodeToObservers;
+	public Map<FaultTreeNode, List<MONITOR>> getMapNodeToMonitors() {
+		return mapNodeToMonitors;
+	}
+	
+	/**
+	 * Checks if the passed tree is partially observable
+	 * @return true iff the tree has an observer node
+	 */
+	public boolean isPartialObservable() {
+		return getNodes().stream().filter(node -> node instanceof MONITOR).findAny().isPresent();
 	}
 	
 	/**
@@ -267,10 +308,33 @@ public class FaultTreeHolder {
 	}
 	
 	/**
+	 * Gets a mapping from a node to all parents
+	 * @return a mapping from a node to all parents
+	 */
+	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapNodeToAllParents() {
+		if (mapNodeToAllParents == null) {
+			mapNodeToAllParents = new HashMap<>();
+			for (FaultTreeNode node : mapNodeToParents.keySet()) {
+				Set<FaultTreeNode> allParents = new HashSet<>();
+				mapNodeToAllParents.put(node, allParents);
+				Queue<FaultTreeNode> queue = new LinkedList<>();
+				queue.addAll(mapNodeToParents.get(node));
+				while (!queue.isEmpty()) {
+					FaultTreeNode parent = queue.poll();
+					if (allParents.add(parent)) {
+						queue.addAll(mapNodeToParents.get(parent));
+					}
+				}
+			}
+		}
+		return mapNodeToAllParents;
+	}
+	
+	/**
 	 * Gets a mapping from any fault to the basic events
 	 * @return map fault to basic events
 	 */
-	public Map<FaultTreeNode, Set<BasicEvent>> getMapFaultToBasicEvents() {
+	public Map<FaultTreeNode, List<FaultTreeNode>> getMapFaultToBasicEvents() {
 		return mapFaultToBasicEvents;
 	}
 	
@@ -348,5 +412,62 @@ public class FaultTreeHolder {
 	 */
 	public Map<FaultTreeNode, List<FaultTreeNode>> getMapNodeToSubNodes() {
 		return mapNodeToSubNodes;
+	}
+	
+	/**
+	 * Gets a fault tree node by name
+	 * @param name the name of the node
+	 * @param ftnClazz the fault tree node type
+	 * @param <T> the fault tree node type
+	 * @return the node if there is 
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends FaultTreeNode> T getNodeByName(String name, Class<T> ftnClazz) {
+		if (ftnClazz == BasicEvent.class) {
+			return (T) getMapBasicEventToFault().keySet().stream()
+					.filter(be -> be.getName().equals(name)).findFirst().get();
+		} else {
+			return (T) getNodes().stream()
+					.filter(node -> ftnClazz.isAssignableFrom(node.getClass()) && node.getName().equals(name)).findFirst().get();
+		}
+	}
+	
+	/**
+	 * Gets all direct child faults of this fault
+	 * @param fault the fault
+	 * @return the set of direct child faults
+	 */
+	public Set<Fault> getChildFaults(Fault fault) {
+		Set<Fault> childFaults = new HashSet<>();
+		Queue<FaultTreeNode> nodes = new LinkedList<FaultTreeNode>();
+		nodes.add(fault);
+		
+		while (!nodes.isEmpty()) {
+			FaultTreeNode node = nodes.poll();
+			List<FaultTreeNode> children = getMapNodeToChildren().getOrDefault(node, Collections.emptyList());
+			for (FaultTreeNode child : children) {
+				if (!(child instanceof Fault && childFaults.add((Fault) child))) {
+					nodes.add(child);
+				}
+			}
+		}
+		
+		return childFaults;
+	}
+	
+	/**
+	 * Gets all failure modes for the fault event.
+	 * An event is a failure mode iff 
+	 * - its a direct child fault
+	 * - its a basic event attached to the root event
+	 * @param fault the fault
+	 * @return all failure modes for the root event
+	 */
+	public Set<FaultEvent> getFailureModes(Fault fault) {
+		Set<FaultEvent> failureModes = new HashSet<>(getChildFaults(fault));
+		if (fault instanceof Fault) {
+			failureModes.addAll(fault.getBasicEvents());
+		}
+		return failureModes;
 	}
 }

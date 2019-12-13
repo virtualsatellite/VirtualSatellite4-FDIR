@@ -52,7 +52,7 @@ public class FaultTreeLayoutConnector extends VirSatGraphitiDiagramLayoutConnect
 				return childNode;
 			}
 			
-			if (type == FaultTreeNodeType.SPARE || type == FaultTreeNodeType.OBSERVER) {
+			if (type == FaultTreeNodeType.SPARE || type == FaultTreeNodeType.MONITOR) {
 				childNode.setProperty(CoreOptions.PORT_CONSTRAINTS, PortConstraints.FIXED_RATIO);
 				return childNode;
 			}

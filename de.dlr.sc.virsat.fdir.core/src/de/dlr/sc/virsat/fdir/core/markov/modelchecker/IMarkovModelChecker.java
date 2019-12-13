@@ -9,42 +9,37 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
-import java.util.List;
+import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IMetricVisitor;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 /**
  * Interface for model checkers
  * @author yoge_re
  *
  */
-public interface IMarkovModelChecker extends IMetricVisitor {
+public interface IMarkovModelChecker extends IBaseMetricVisitor {
+
 	/**
-	 * 
-	 * @return MTTF
-	 */
-	double getMeanTimeToFailure();
-	/**
-	 * 
-	 * @return failrates
-	 */
-	List<Double> getFailRates();
-	/**
-	 * 
-	 * @return point availability
-	 */
-	List<Double> getPointAvailability();
-	/**
-	 * 
-	 * @return steadyStateAvailability
-	 */
-	double getSteadyStateAvailability();
-	/**
-	 * 
+	 * Checks the markov chain model for the given metrics
 	 * @param mc markov chain
+	 * @param subMonitor eclipse ui element for progress reporting
 	 * @param metrics metrics
+	 * @return a model checking result with the contained metrics
 	 */
-	void checkModel(MarkovAutomaton<? extends MarkovState> mc, IMetric... metrics);
+	ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, SubMonitor subMonitor, IBaseMetric... metrics);
+	
+	/**
+	 * Gets the internal statistics for the last model checking call
+	 * @return the model checking statistics of the last model checking call
+	 */
+	ModelCheckingStatistics getStatistics();
+	
+	/**
+	 * Returns the internally configured time step
+	 * @return the internal timestep
+	 */
+	double getDelta();
 }

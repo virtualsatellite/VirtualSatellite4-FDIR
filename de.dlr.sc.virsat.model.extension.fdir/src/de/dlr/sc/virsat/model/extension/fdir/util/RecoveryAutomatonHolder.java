@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -37,6 +38,7 @@ public class RecoveryAutomatonHolder {
 	private Map<State, List<Transition>> mapStateToIncomingTransitions;
 	private Map<Transition, Set<FaultTreeNode>> mapTransitionToGuards;
 	private Map<Transition, String> mapTransitionToActionLabels;
+	private Map<Transition, List<RecoveryAction>> mapTransitionToRecoveryActions;
 	private Map<Transition, State> mapTransitionToTo;
 	private Map<State, Map<Set<FaultTreeNode>, String>> mapStateToGuardProfile;
 	private List<Transition> transitions;
@@ -59,7 +61,7 @@ public class RecoveryAutomatonHolder {
 	}
 	
 	/**
-	 * Gives acces tot he underyling ra helper
+	 * Gives access to the underyling ra helper
 	 * @return the ra helper
 	 */
 	public RecoveryAutomatonHelper getRaHelper() {
@@ -72,7 +74,10 @@ public class RecoveryAutomatonHolder {
 	 */
 	public List<Transition> getTransitions() {
 		if (transitions == null) {
-			transitions = new ArrayList<>(ra.getTransitions());
+			transitions = new ArrayList<>();
+			for (Transition transition : ra.getTransitions()) {
+				transitions.add(transition);
+			}
 		}
 		return transitions;
 	}
@@ -90,6 +95,24 @@ public class RecoveryAutomatonHolder {
 			}
 		}
 		return mapTransitionToActionLabels;
+	}
+	
+	/**
+	 * Gets a map from a transition to its action labels
+	 * @return a mapping from a transition to its action labels
+	 */
+	public Map<Transition, List<RecoveryAction>> getMapTransitionToRecoveryActions() {
+		if (mapTransitionToRecoveryActions == null) {
+			mapTransitionToRecoveryActions = new HashMap<>();
+			for (Transition transition : getTransitions()) {
+				List<RecoveryAction> recoveryActions = new ArrayList<>();
+				for (RecoveryAction recoveryAction : transition.getRecoveryActions()) {
+					recoveryActions.add(recoveryAction);
+				}
+				mapTransitionToRecoveryActions.put(transition, recoveryActions);
+			}
+		}
+		return mapTransitionToRecoveryActions;
 	}
 	
 	/**
@@ -123,7 +146,9 @@ public class RecoveryAutomatonHolder {
 			mapTransitionToGuards = new HashMap<>();
 			
 			for (Transition transition : getTransitions()) {
-				mapTransitionToGuards.put(transition, new HashSet<>(transition.getGuards()));
+				if (transition instanceof FaultEventTransition) {
+					mapTransitionToGuards.put(transition, new HashSet<>(((FaultEventTransition) transition).getGuards()));
+				}
 			}
 		}
 		return mapTransitionToGuards;

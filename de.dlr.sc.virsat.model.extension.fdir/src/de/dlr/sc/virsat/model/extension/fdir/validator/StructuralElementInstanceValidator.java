@@ -9,18 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.validator;
 
-import org.eclipse.core.resources.IMarker;
+import java.util.List;
 
 import de.dlr.sc.virsat.build.validator.external.IStructuralElementInstanceValidator;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
-import de.dlr.sc.virsat.model.dvlm.general.IUuid;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.extension.fdir.marker.VirSatFDIRMarkerHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirement;
-import de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysis;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
 
 
 // *****************************************************************
@@ -37,56 +31,17 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement;
  */
 public class StructuralElementInstanceValidator extends AStructuralElementInstanceValidator implements IStructuralElementInstanceValidator {
 
-	private VirSatFDIRMarkerHelper vfmHelper = new VirSatFDIRMarkerHelper();
-
-	public static final String WARNING_MIN_RELIABILITY = "Under minimum reliability ";
-	public static final String WARNING_MIN_FAULT_TOLERANCE = "Under minimum fault tolerance ";
-	public static final String WARNING_MAX_CRITICALITY_LEVEL = "Over maximum criticality level ";
+	private FaultValidator faultValidator = new FaultValidator();
 	
 	@Override
 	public boolean validate(StructuralElementInstance sei) {
 		boolean allInfoValid = true;
-		BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance();
-		beanSei.setStructuralElementInstance(sei);
 		
-		ReliabilityAnalysis relAnalysis = beanSei.getFirst(ReliabilityAnalysis.class);
-		MCSAnalysis cutSetAnalysis = beanSei.getFirst(MCSAnalysis.class);
+		BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance(sei);
+		List<Fault> faults = beanSei.getAll(Fault.class);
 		
-		ReliabilityRequirement rr = beanSei.getFirst(ReliabilityRequirement.class);
-		FaultToleranceRequirement ftr = beanSei.getFirst(FaultToleranceRequirement.class);
-		
-		Fault fault =  beanSei.getFirst(Fault.class);
-		
-		if (fault != null) {
-			// check if the requirements for the fault scenario are fulfilled
-			
-			if (rr != null && relAnalysis != null) {
-				if (rr.getMinReliability() > 0 && relAnalysis.getReliability() < rr.getMinReliability()) {
-					allInfoValid = false;
-					String fqn = rr.getMinReliabilityBean().getATypeInstance().getFullQualifiedInstanceName();
-					IUuid iUuid = rr.getMinReliabilityBean().getTypeInstance();
-																																	
-					vfmHelper.createFEAValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MIN_RELIABILITY + fqn, iUuid);
-				}
-				
-				if (rr.getMaxCriticality() > 0 && fault.getCriticalityLevel() > rr.getMaxCriticality()) {
-					allInfoValid = false;
-					String fqn = rr.getMaxCriticalityBean().getATypeInstance().getFullQualifiedInstanceName();
-					IUuid iUuid = rr.getMaxCriticalityBean().getTypeInstance();
-																																	
-					vfmHelper.createFEAValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MAX_CRITICALITY_LEVEL + fqn, iUuid);
-				}
-			}
-			
-			if (ftr != null && cutSetAnalysis != null) {
-				if (ftr.getMinFaultTolerance() > 0 && cutSetAnalysis.getFaultTolerance() > 0 && cutSetAnalysis.getFaultTolerance() < ftr.getMinFaultTolerance()) {
-					allInfoValid = false;
-					String fqn = ftr.getMinFaultToleranceBean().getATypeInstance().getFullQualifiedInstanceName();
-					IUuid iUuid = ftr.getMinFaultToleranceBean().getTypeInstance();
-																																	
-					vfmHelper.createFEAValidationMarker(IMarker.SEVERITY_WARNING, WARNING_MIN_FAULT_TOLERANCE + fqn, iUuid);
-				}
-			}
+		for (Fault fault : faults) {
+			allInfoValid &= faultValidator.validate(fault);
 		}
 		
 		return super.validate(sei) && allInfoValid;

@@ -17,7 +17,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +46,7 @@ import de.dlr.sc.virsat.project.resources.VirSatResourceSet;
  * 
  */
 public class MCSAnalysisTest extends AMCSAnalysisTest {
+	private static final double EPS = 0.00001;
 	private IProject project;
 	private VirSatTransactionalEditingDomain ed;
 
@@ -77,14 +77,16 @@ public class MCSAnalysisTest extends AMCSAnalysisTest {
 		MCSAnalysis mcsAnalysis = new MCSAnalysis(concept);
 		sei.getCategoryAssignments().add(mcsAnalysis.getTypeInstance());
 
-		Command unexecutableCommand = mcsAnalysis.perform(ed, monitor);
-
-		assertEquals(UnexecutableCommand.INSTANCE, unexecutableCommand);
-
 		Fault fault = new Fault(concept);
-		BasicEvent be = new BasicEvent(concept);
-		be.setHotFailureRate(1);
-		fault.getBasicEvents().add(be);
+		fault.setSeverity(Fault.SEVERITY_Critical_NAME);
+		BasicEvent be1 = new BasicEvent(concept);
+		be1.setName("B");
+		be1.setHotFailureRate(1);
+		fault.getBasicEvents().add(be1);
+		BasicEvent be2 = new BasicEvent(concept);
+		be2.setHotFailureRate(2);
+		be2.setName("A");
+		fault.getBasicEvents().add(be2);
 		sei.getCategoryAssignments().add(fault.getTypeInstance());
 
 		Command analysisCommand = mcsAnalysis.perform(ed, monitor);
@@ -93,8 +95,14 @@ public class MCSAnalysisTest extends AMCSAnalysisTest {
 
 		analysisCommand.execute();
 
-		assertEquals(1, mcsAnalysis.getFaultTolerance());
-		assertEquals(1, mcsAnalysis.getMinimumCutSets().size());
-		assertEquals(be, mcsAnalysis.getMinimumCutSets().get(0).getBasicEvents().get(0));
+		assertEquals(0, mcsAnalysis.getFaultTolerance());
+		assertEquals(2, mcsAnalysis.getMinimumCutSets().size());
+		
+		CutSet cutSet1 = mcsAnalysis.getMinimumCutSets().get(0);
+		assertEquals(be2, cutSet1.getBasicEvents().get(0));
+		
+		CutSet cutSet2 = mcsAnalysis.getMinimumCutSets().get(1);
+		assertEquals(be1, cutSet2.getBasicEvents().get(0));
+		assertEquals(1, cutSet2.getMeanTimeToFailure(), EPS);
 	}
 }

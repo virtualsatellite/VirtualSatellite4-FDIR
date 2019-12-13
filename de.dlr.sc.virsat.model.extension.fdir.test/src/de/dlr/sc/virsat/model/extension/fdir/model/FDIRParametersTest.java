@@ -9,6 +9,15 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyDL;
+import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL;
+
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
@@ -28,5 +37,43 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
  * 
  */	
 public class FDIRParametersTest extends AFDIRParametersTest {
-
+	@Test
+	public void testSetDefaultProbabilityLevels() {
+		FDIRParameters fdirParameters = new FDIRParameters(concept);
+		fdirParameters.setDefaultProbablityThresholds();
+		
+		Object[] plTresholds = fdirParameters.getProbabilityLevels()
+				.stream().map(pl -> pl.getValue()).toArray();
+		
+		assertArrayEquals(OpClassifyPL.DEFAULT_PL_THRESHOLDS, plTresholds);
+	}
+	
+	@Test
+	public void testSetDefaultDetectabilityLevels() {
+		FDIRParameters fdirParameters = new FDIRParameters(concept);
+		fdirParameters.setDefaultDetectabilityThresholds();
+		
+		Object[] dlTresholds = fdirParameters.getDetectionLevels()
+				.stream().map(dl -> dl.getValue()).toArray();
+		
+		assertArrayEquals(OpClassifyDL.DEFAULT_DL_THRESHOLDS, dlTresholds);
+	}
+	
+	@Test
+	public void testSetIsCritical() {
+		FDIRParameters fdirParameters = new FDIRParameters(concept);
+		fdirParameters.setDefaultCriticalityMatrix();
+		
+		assertFalse(fdirParameters.isDefaultCritical(
+			Integer.valueOf(CutSet.DETECTION_VeryLikely_VALUE), 
+			Integer.valueOf(CutSet.SEVERITY_Minor_VALUE), 
+			Integer.valueOf(CutSet.PROBABILITY_ExtremelyRemote_VALUE))
+		);
+		
+		assertTrue(fdirParameters.isDefaultCritical(
+			Integer.valueOf(CutSet.DETECTION_VeryLikely_VALUE), 
+			Integer.valueOf(CutSet.SEVERITY_Catastrophic_VALUE), 
+			Integer.valueOf(CutSet.PROBABILITY_ExtremelyRemote_VALUE))
+		);
+	}
 }

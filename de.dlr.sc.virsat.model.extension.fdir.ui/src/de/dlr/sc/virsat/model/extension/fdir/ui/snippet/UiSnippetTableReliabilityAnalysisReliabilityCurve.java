@@ -9,8 +9,34 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
+import java.awt.Color;
+import java.awt.Font;
 
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.experimental.chart.swt.ChartComposite;
+
+import de.dlr.sc.virsat.commons.ui.jface.viewer.ISeriesXYValueLabelProvider;
+import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
+import de.dlr.sc.virsat.model.concept.list.IBeanList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis;
+import de.dlr.sc.virsat.project.ui.contentProvider.VirSatFilteredWrappedTreeContentProvider;
+import de.dlr.sc.virsat.project.ui.contentProvider.VirSatTransactionalAdapterFactoryContentProvider;
+import de.dlr.sc.virsat.project.ui.labelProvider.VirSatTransactionalAdapterFactoryLabelProvider;
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
@@ -20,5 +46,164 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  * 
  */
-public class UiSnippetTableReliabilityAnalysisReliabilityCurve extends AUiSnippetTableReliabilityAnalysisReliabilityCurve implements IUiSnippet {
+public class UiSnippetTableReliabilityAnalysisReliabilityCurve
+		extends AUiSnippetTableReliabilityAnalysisReliabilityCurve implements IUiSnippet {
+
+	private static final int FONT_SIZE = 12;
+	private JFreeChart chart;
+	private ChartComposite chartComposite;
+	private XYSplineChartViewer xyPlotChartViewer;
+
+	private XYSeriesCollection dataset;
+
+	@Override
+	protected void setUpTableViewer(EditingDomain editingDomain, FormToolkit toolkit) {
+		// make a chart
+		chart = createChart();
+		chart.setBorderVisible(false);
+
+		chartComposite = new ChartComposite(sectionBody, SWT.NONE, chart, true);
+		GridData chartLayout = new GridData(SWT.FILL, SWT.FILL, true, true);
+		chartLayout.verticalSpan = 2;
+		chartComposite.setLayoutData(chartLayout);
+
+		xyPlotChartViewer = new XYSplineChartViewer(dataset, chartComposite);
+		xyPlotChartViewer.setContentProvider(new VirSatFilteredWrappedTreeContentProvider(
+				new VirSatTransactionalAdapterFactoryContentProvider(adapterFactory).setUpdateCaContainerLabels(true)) {
+			@Override
+			public Object[] getElements(Object inputElement) {
+				ReliabilityAnalysis relAnalysis = new ReliabilityAnalysis((CategoryAssignment) inputElement);
+				return new Object[] { relAnalysis };
+			}
+		});
+
+		xyPlotChartViewer.setLabelProvider(new ReliabilityChartLabelProvider(adapterFactory));
+		xyPlotChartViewer.setInput(model);
+		
+		super.setUpTableViewer(editingDomain, toolkit);
+	}
+	
+	@Override
+	public Composite createSectionBody(FormToolkit toolkit, String sectionHeading, String sectionDescription,
+			int numberColumns) {
+		// Add an additional column for the plot
+		Composite composite = super.createSectionBody(toolkit, sectionHeading, sectionDescription, numberColumns + 1);
+		return composite;
+	}
+	
+	/**
+	 * 
+	 * @return chartViewer
+	 */
+	public XYSplineChartViewer getXyPlotChartViewer() {
+		return xyPlotChartViewer;
+	}
+
+	private static final double TO_PERCENT = 100;
+
+	/**
+	 * Creates the line chart
+	 * 
+	 * @return a configured line chart using the passed data set
+	 */
+	private JFreeChart createChart() {
+		ReliabilityAnalysis reliabilityAnalysis = new ReliabilityAnalysis((CategoryAssignment) model);
+		String missionTimeUnit = reliabilityAnalysis.getRemainingMissionTimeBean().getTypeInstance().getUnit()
+				.getSymbol();
+
+		dataset = new XYSeriesCollection();
+		JFreeChart chart = ChartFactory.createXYLineChart(null, "Mission Time [" + missionTimeUnit + "]",
+				"Reliability [%]", dataset);
+
+		XYPlot plot = chart.getXYPlot();
+		plot.setNoDataMessage("No data available");
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setOutlineVisible(false);
+		plot.setBackgroundPaint(Color.white);
+		plot.setDomainGridlinePaint(Color.GRAY);
+		plot.setRangeGridlinePaint(Color.GRAY);
+		chart.setAntiAlias(true);
+		chart.setBorderVisible(true);
+		chart.setBackgroundPaint(Color.white);
+		plot.getRangeAxis().setRange(0, TO_PERCENT);
+
+		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, true);
+		plot.setRenderer(renderer);
+		renderer.setSeriesVisibleInLegend(0, false);
+		renderer.setBaseShapesVisible(false);
+
+		// set the title
+		TextTitle myChartTitel = new TextTitle("",
+				new Font("SansSerif", Font.BOLD, FONT_SIZE));
+		chart.setTitle(myChartTitel);
+
+		return chart;
+	}
+
+	/**
+	 * Provides the reliabilty data to the chart
+	 * 
+	 * @author muel_s8
+	 *
+	 */
+	private class ReliabilityChartLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
+			implements ISeriesXYValueLabelProvider {
+
+		// Hard limit the maximum number of entries to be shown to avoid performance issues
+		private static final int MAX_POINTS = 100;
+		
+		/**
+		 * Default constructor
+		 * 
+		 * @param adapterFactory
+		 *            the adapter factory
+		 */
+		ReliabilityChartLabelProvider(AdapterFactory adapterFactory) {
+			super(adapterFactory);
+		}
+
+		@Override
+		public Double[] getValuesY(Object object) {
+			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
+			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
+			
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());
+			double increment = (double) reliabilityCurve.size() / steps;
+			Double[] reliabilityValues = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				int timeStep = (int) (step * increment);
+				reliabilityValues[step] = reliabilityCurve.get(timeStep).getValue();
+			}
+			
+			return reliabilityValues;
+		}
+
+		@Override
+		public Double[] getValuesX(Object object) {
+			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
+			double maxTime = relAnalysis.getRemainingMissionTime();
+			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
+			
+			// Limit the maximum number of visualized points
+			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());
+			double delta = maxTime / steps;
+			Double[] timeSteps = new Double[steps];
+			for (int step = 0; step < steps; ++step) {
+				timeSteps[step] = step * delta;
+			}
+
+			XYPlot plot = chart.getXYPlot();
+			plot.getDomainAxis().setUpperBound(maxTime);
+
+			return timeSteps;
+		}
+
+		@Override
+		public String getSeries(Object object) {
+			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
+			Fault fault = relAnalysis.getParentCaBeanOfClass(Fault.class);
+			return "Reliability of " + fault.getName();
+		}
+	}
 }

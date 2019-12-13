@@ -34,7 +34,6 @@ import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -47,9 +46,11 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.NullObjectUpdateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentDirectEditFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata.MinimizeRAFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata.RecoveryAutomatonAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateCreateFeature;
@@ -57,8 +58,9 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.State
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateSetAsInitialStateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateUnsetAsInitialStateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateUpdateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.FaultEventTransitionCreateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TimedTransitionCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionAddFeature;
-import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionReconnectionFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.TransitionUpdateFeature;
 
@@ -136,11 +138,19 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 		
 		Object object = getBusinessObjectForPictogramElement(pe);
 		
-		if (object instanceof State) {
+		if (Graphiti.getPeService().getPropertyValue(pe, StateAddFeature.IS_STATE_KEY) != null) {
+			if (object == null) {
+				return new NullObjectUpdateFeature(this);
+			}
+			
 			return new StateUpdateFeature(this);
 		}
 		
-		if (object instanceof Transition && context.getPictogramElement() instanceof Connection) {
+		if (Graphiti.getPeService().getPropertyValue(pe, TransitionAddFeature.IS_TRANSITION_KEY) != null) {
+			if (object == null) {
+				return new NullObjectUpdateFeature(this);
+			}
+			
 			return new TransitionUpdateFeature(this);
 		}
 				
@@ -185,7 +195,7 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 	
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { new TransitionCreateFeature(this) };
+		return new ICreateConnectionFeature[] { new FaultEventTransitionCreateFeature(this), new TimedTransitionCreateFeature(this) };
 	}
 	
 	@Override
@@ -207,16 +217,21 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 			State state = (State) object;
 			RecoveryAutomaton ra = state.getParentCaBeanOfClass(RecoveryAutomaton.class);
 			State initialState = ra.getInitial();
-			if (initialState == null ||  !(initialState.equals(state))) {
-				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this), new StateSetAsInitialStateFeature(this)};
+			if (initialState == null || !(initialState.equals(state))) {
+				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this),
+					new VirSatChangeColorFeature(this), new StateSetAsInitialStateFeature(this),
+					new MinimizeRAFeature(this) };
 			} else {
-				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this), new StateUnsetAsInitialStateFeature(this)};
+				return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this),
+					new VirSatChangeColorFeature(this), new StateUnsetAsInitialStateFeature(this),
+					new MinimizeRAFeature(this) };
 			}
 		}
-		
-		return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this)};
-	} 
-	
+
+		return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this),
+			new VirSatChangeColorFeature(this) };
+	}
+
 	@Override
 	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());

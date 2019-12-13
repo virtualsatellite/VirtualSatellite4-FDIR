@@ -24,11 +24,13 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.explicit.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -44,6 +46,9 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	private Map<MarkovState, State> mapMarkovStateToRaState;
 	private MarkovAutomaton<S> ma;
 	private Concept concept;
+	
+	private RecoveryAutomatonHelper raHelper;
+	private RecoveryAutomaton ra;
 	
 	/**
 	 * Standard constructor
@@ -65,8 +70,8 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	public RecoveryAutomaton convert(Map<S, Set<MarkovTransition<S>>> schedule, S initialMa) {
 		mapMarkovStateToRaState = new HashMap<>();
 		
-		RecoveryAutomatonHelper raHelper = new RecoveryAutomatonHelper(concept);
-		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raHelper = new RecoveryAutomatonHelper(concept);
+		ra = new RecoveryAutomaton(concept);
 		
 		Queue<MarkovState> toProcess = new LinkedList<>();
 		toProcess.offer(initialMa);
@@ -76,80 +81,71 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		while (!toProcess.isEmpty()) {
 			MarkovState state = toProcess.poll();
 			
-			List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
+			List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
 			
-			boolean hasNonInternalTransition = false;
-			for (MarkovTransition<S> markovianTransition : markovianTransitions) {
-				Object event = markovianTransition.getEvent();
-				if (event instanceof Collection<?>) {
-					Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
-					if (!guards.isEmpty()) {
-						hasNonInternalTransition = true;
-						break;
-					} else {
-						hasNonInternalTransition = true;
+			if (state.isMarkovian()) {
+				/*
+				 * Provide event synchronization for internal transitions:
+				 * If an event that is only enabled for a later transition occurs,
+				 * it means we have to synchronize the recovery automaton with this event.
+				 * That means we need to create a corresponding transition in the recovery automaton
+				 * to react to the event.
+				 */
+				
+				MarkovState internalState = state;
+				MarkovTransition<S> internalTransition = null;
+				while ((internalTransition = getInternalTransition(internalState)) != null) {
+					internalState = internalTransition.getTo();
+					
+					List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
+					for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
+						if (!isInternalTransition(internalMarkovTransition) && !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
+							MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
+							pseudoTransition.setFrom((S) state);
+							markovianTransitions.add(pseudoTransition);
+						}
 					}
 				}
 			}
 			
 			for (MarkovTransition<S> markovianTransition : markovianTransitions) {
 				Object event = markovianTransition.getEvent();
-				if (hasNonInternalTransition && event instanceof Collection<?>) {
-					Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
-					if (guards.isEmpty()) {
-						mapMarkovStateToRaState.put(markovianTransition.getTo(), getOrCreateRecoveryAutomatonState(ra, state));
-						
-						if (handledNonDetStates.add(markovianTransition.getTo())) {
-							toProcess.offer(markovianTransition.getTo());
-						} 
-						continue;
-					}
-				}
+				S fromState = markovianTransition.getFrom();
+				S toState = markovianTransition.getTo();
 				
 				if (!markovianTransition.getTo().isMarkovian()) {
-					Set<MarkovTransition<S>> bestTransitionSet = schedule.getOrDefault(markovianTransition.getTo(), Collections.EMPTY_SET);
+					Set<MarkovTransition<S>> bestTransitionSet = schedule.getOrDefault(toState, Collections.EMPTY_SET);
 					
 					for (MarkovTransition<S> bestTransition : bestTransitionSet) {
-						Transition raTransition = new Transition(concept);
-						State fromRaState = getOrCreateRecoveryAutomatonState(ra, markovianTransition.getFrom());
-						State toRaState = getOrCreateRecoveryAutomatonState(ra, bestTransition.getTo());
-						raTransition.setFrom(fromRaState);
-						raTransition.setTo(toRaState);
-						if (event instanceof Collection<?>) {
-							raTransition.getGuards().addAll((Collection<? extends FaultTreeNode>) event);
-						} else {
-							raTransition.getGuards().add(((IDFTEvent) event).getNode());
-						}
-						raTransition.setName(fromRaState.getName() + toRaState.getName());
-						
+						toState = bestTransition.getTo();
+						FaultEventTransition raTransition = createFaultEventTransition(fromState, toState, event);
+					
 						List<RecoveryAction> recoveryActions = (List<RecoveryAction>) bestTransition.getEvent();
 						for (RecoveryAction recoveryAction : recoveryActions)  {
 							raTransition.getRecoveryActions().add(raHelper.copyRecoveryAction(recoveryAction));
 						}
+						
 						createdTransitions.add(raTransition);
 						
-						MarkovState nextState = bestTransition.getTo();
-						if (handledNonDetStates.add(nextState)) {
-							toProcess.offer(nextState);
+						if (handledNonDetStates.add(toState)) {
+							toProcess.offer(toState);
 						} 
 					}
 				} else {
-					Transition raTransition = new Transition(concept);
-					State fromRaState = getOrCreateRecoveryAutomatonState(ra, markovianTransition.getFrom());
-					State toRaState = getOrCreateRecoveryAutomatonState(ra, markovianTransition.getTo());
-					raTransition.setFrom(fromRaState);
-					raTransition.setTo(toRaState);
-					if (event instanceof Collection<?>) {
-						raTransition.getGuards().addAll((Collection<? extends FaultTreeNode>) event);
-					} else {
-						raTransition.getGuards().add(((IDFTEvent) event).getNode());
+					if (isInternalTransition(markovianTransition)) {
+						createdTransitions.add(createTimedTransition(fromState, toState, 1 / markovianTransition.getRate()));
+						
+						if (handledNonDetStates.add(toState)) {
+							toProcess.offer(toState);
+						}
+						
+						continue;
 					}
-					raTransition.setName(fromRaState.getName() + toRaState.getName());
-					createdTransitions.add(raTransition);
 					
-					S nextState = markovianTransition.getTo();
-					if (handledNonDetStates.add(nextState)) {
-						toProcess.offer(nextState);
+					createdTransitions.add(createFaultEventTransition(fromState, toState, event));
+					
+					if (handledNonDetStates.add(toState)) {
+						toProcess.offer(toState);
 					} 
 				}
 			}
@@ -159,6 +155,91 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		ra.setInitial(getOrCreateRecoveryAutomatonState(ra, initialMa));
 		
 		return ra;
+	}
+	
+	/**
+	 * Checks if a given transition is internal
+	 * @param markovianTransition the transition
+	 * @return true iff the transition has no guards
+	 */
+	@SuppressWarnings("unchecked")
+	protected boolean isInternalTransition(MarkovTransition<S> markovianTransition) {
+		Object event = markovianTransition.getEvent();
+		if (event instanceof Collection<?>) {
+			Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
+			return guards.isEmpty();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks for internal transitions
+	 * @param state set of markovian state
+	 * @return an internal transition if there is one, null otherwise
+	 */
+	protected MarkovTransition<S> getInternalTransition(MarkovState state) {
+		List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
+		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
+			if (isInternalTransition(markovianTransition)) {
+				return markovianTransition;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Checks if a given list of markov transitions has a transition for a specified event
+	 * @param event the event
+	 * @param markovTransitions the list of markov transitions
+	 * @return true iff an event in the list corresponds to the given event
+	 */
+	protected boolean hasEvent(Object event, List<MarkovTransition<S>> markovTransitions) {
+		for (MarkovTransition<S> markovTransition : markovTransitions) {
+			if (markovTransition.getEvent().equals(event)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+	 * Creates an RA timed transition corresponding to an internal Markovian Transition
+	 * @param from the from state
+	 * @param to the to state
+	 * @param time the time
+	 * @return the created RA transition
+	 */
+	protected TimedTransition createTimedTransition(S from, S to, double time) {
+		State fromRaState = getOrCreateRecoveryAutomatonState(ra, from);
+		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
+		TimedTransition raTransition = raHelper.createTimedTransition(ra, fromRaState, toRaState, time);
+		raTransition.setName(fromRaState.getName() + toRaState.getName());
+		return raTransition;
+	}
+	
+	/**
+	 * Creates an RA transition corresponding to a Markovian Transition
+	 * @param from the from state
+	 * @param to the to state
+	 * @param event the event
+	 * @return the created RA transition
+	 */
+	@SuppressWarnings("unchecked")
+	protected FaultEventTransition createFaultEventTransition(S from, S to, Object event) {
+		State fromRaState = getOrCreateRecoveryAutomatonState(ra, from);
+		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
+		FaultEventTransition raTransition = raHelper.createFaultEventTransition(ra, fromRaState, toRaState);
+		
+		if (event instanceof Collection<?>) {
+			raTransition.getGuards().addAll((Collection<? extends FaultTreeNode>) event);
+		} else {
+			raTransition.getGuards().add(((IDFTEvent) event).getNode());
+		}
+		raTransition.setName(fromRaState.getName() + toRaState.getName());
+		return raTransition;
 	}
 	
 	/**

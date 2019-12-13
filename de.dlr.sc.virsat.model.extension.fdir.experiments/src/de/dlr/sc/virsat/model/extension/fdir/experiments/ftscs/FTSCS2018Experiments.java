@@ -13,14 +13,12 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizer;
@@ -38,7 +36,7 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 	
 	@Test
 	public void experimentMultiProcessorSystem() throws Exception {
-		Fault fault = createGalileoDFT("/resources/ftscs/cm1.dft");
+		Fault fault = createDFT("/resources/ftscs/cm1.dft");
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
@@ -89,12 +87,10 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		saveRA(fsMinimized, "ftscs/mcs/composedRules");
 		
 		final float DELTA = 0.01f;
-		FaultTreeEvaluator unminimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		unminimizedEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
+		FaultTreeEvaluator unminimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		unminimizedEvaluator.evaluateFaultTree(fault);
 		
-		FaultTreeEvaluator minimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		minimizedEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(composedMinimized));
+		FaultTreeEvaluator minimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(composedMinimized, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 		minimizedEvaluator.evaluateFaultTree(fault);
 	}
 	
@@ -109,8 +105,8 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		FaultTreeNode spare2 = ftHelper.createGate(tle, FaultTreeNodeType.SPARE);
 		spare2.setName("SPARE2");
 		final float FAILURE_RATE = 1f;
-		Fault memory1 = ftHelper.createBasicFault("B1", FAILURE_RATE);
-		Fault memory2 = ftHelper.createBasicFault("B2", FAILURE_RATE);
+		Fault memory1 = ftHelper.createBasicFault("B1", FAILURE_RATE, 0);
+		Fault memory2 = ftHelper.createBasicFault("B2", FAILURE_RATE, 0);
 		
 		ftHelper.connect(tle, or, tle);
 		ftHelper.connect(tle, spare1, or);
@@ -119,24 +115,21 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		ftHelper.connect(tle, memory1, spare1);
 		ftHelper.connect(tle, memory2, spare2);
 		
-		final float DELTA = 0.01f;
-		final int MAX_BACKUPS = 10;
+		final int MAX_BACKUPS = 20;
 		
 		for (int i = 1; i <= MAX_BACKUPS; ++i) {
-			Fault backup = ftHelper.createBasicFault("B" + (i + 2), FAILURE_RATE);
+			Fault backup = ftHelper.createBasicFault("B" + (i + 2), FAILURE_RATE, 0);
 			ftHelper.connectSpare(tle, backup, spare1);
 			ftHelper.connectSpare(tle, backup, spare2);
 			
 			BasicSynthesizer synthesizer = new BasicSynthesizer();
 			RecoveryAutomaton ra = synthesizer.synthesize(tle);
-			
-			FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-			ndDFTftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
-			ndDFTftEvaluator.evaluateFaultTree(tle);
-			int statesMc = ((DFTEvaluator) ndDFTftEvaluator.getEvaluator()).getMc().getStates().size();
+
+			int statesMa = synthesizer.getStatistics().stateSpaceGenerationStatistics.maxStates;
 			int statesMinimizedRa = ra.getStates().size();
+			int statesUnminimizedRa = statesMinimizedRa + synthesizer.getStatistics().minimizationStatistics.removedStates;
 			
-			System.out.println(i  + " " + statesMc + " " + statesMinimizedRa);
+			System.out.println(i  + " " + statesMa + " " + statesMinimizedRa + " " + statesUnminimizedRa);
 			
 			saveRA(ra, "ftscs/memory2WithNBackups/" + i + "_backups");
 		}

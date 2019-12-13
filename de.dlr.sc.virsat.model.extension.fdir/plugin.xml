@@ -4,7 +4,7 @@
 	<extension point="de.dlr.sc.virsat.model.Concept">
 	<concept
 	          id="de.dlr.sc.virsat.model.extension.fdir"
-	          version="1.0"
+	          version="1.1"
 	          xmi="concept/concept.xmi">
 	    </concept>
 	</extension>
@@ -58,8 +58,12 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PANDI">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
-			id="de.dlr.sc.virsat.model.extension.fdir.OBSERVER"
-			caBean="de.dlr.sc.virsat.model.extension.fdir.model.OBSERVER">
+			id="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MONITOR">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.DELAY"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.DELAY">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.FDEP"
@@ -94,8 +98,24 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.CutSet">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.CriticalityVector"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVector">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.CriticalityMatrix"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrix">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FMECA"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FMECA">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntry">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis"
@@ -106,16 +126,12 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.MCSAnalysis"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysis">
-		</CategoryAssignmentBean>
-		<CategoryAssignmentBean
-			id="de.dlr.sc.virsat.model.extension.fdir.ReliabilityRequirement"
-			caBean="de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityRequirement">
-		</CategoryAssignmentBean>
-		<CategoryAssignmentBean
-			id="de.dlr.sc.virsat.model.extension.fdir.FaultToleranceRequirement"
-			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FaultToleranceRequirement">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomaton"
@@ -134,8 +150,12 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.State">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
-			id="de.dlr.sc.virsat.model.extension.fdir.Transition"
-			caBean="de.dlr.sc.virsat.model.extension.fdir.model.Transition">
+			id="de.dlr.sc.virsat.model.extension.fdir.FaultEventTransition"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.TimedTransition"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition">
 		</CategoryAssignmentBean>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
@@ -147,6 +167,14 @@
 		xmi="concept/concept_v1_0.xmi">
 	</migrator>
 </extension>
+<extension point="de.dlr.sc.virsat.model.edit.ConceptMigrator">
+	<migrator
+		id="de.dlr.sc.virsat.model.extension.fdir"
+		version="1.1"
+		class="de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1"
+		xmi="concept/concept_v1_1.xmi">
+	</migrator>
+</extension>
 	<!-- Plugin.XML Protected Region End -->
 	<!-- Plugin.XML Protected Region Start -->
 <extension
@@ -154,10 +182,23 @@
          name="Classify Function"
          point="de.dlr.sc.virsat.model.calculation.setFunction">
       <setFunction
-      		name="classify"
-            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassify">
+      		name="classifyPL"
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPL">
+      </setFunction>
+      <setFunction
+      		name="classifyDL"
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyDL">
       </setFunction>
    </extension>
+    <extension
+         id="fdirExpressionExtender"
+         name="FDIR Expression Extender"
+         point="de.dlr.sc.virsat.model.edit.TypeInstanceSetterProvider">
+      <typeInstanceSetterProvider
+            class="de.dlr.sc.virsat.model.extension.fdir.calculation.FDIRExpressionExtension"
+            priority="1">
+      </typeInstanceSetterProvider>
+	</extension>
  <extension
       id="de.dlr.sc.virsat.problem.markers.validation.fdir"
       name="VirSat FDIR Validator Problem Marker"

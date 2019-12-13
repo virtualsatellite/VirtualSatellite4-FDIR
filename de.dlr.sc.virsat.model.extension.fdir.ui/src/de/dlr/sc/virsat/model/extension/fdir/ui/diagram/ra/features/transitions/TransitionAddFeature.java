@@ -29,6 +29,7 @@ import org.eclipse.graphiti.util.IColorConstant;
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatAddConnectionFeature;
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
@@ -42,6 +43,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 
 	private static final IColorConstant CONNECTION_FOREGROUND = new ColorConstant(98, 131, 167);
 	private static final double DECORATOR_LOCATION = 0.5;
+	public static final String IS_TRANSITION_KEY = "is-transition";
 	
 	/**
 	 * Default constructor.
@@ -54,7 +56,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 	
 	@Override
 	public boolean canAdd(IAddContext context) {
-		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new Transition((CategoryAssignment) context.getNewObject());
+		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new FaultEventTransition((CategoryAssignment) context.getNewObject());
 		
 		for (Connection connection : getDiagram().getConnections()) {
 			Object bo = getBusinessObjectForPictogramElement(connection);
@@ -68,7 +70,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 	
 	@Override
 	public PictogramElement add(IAddContext context) {
-		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new Transition((CategoryAssignment) context.getNewObject());
+		Transition addedTransition = context.getNewObject() instanceof Transition ? (Transition) context.getNewObject() : new FaultEventTransition((CategoryAssignment) context.getNewObject());
 		
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		
@@ -112,6 +114,7 @@ public class TransitionAddFeature extends VirSatAddConnectionFeature {
 			polyline.setLineWidth(2);
 			polyline.setForeground(manageColor(CONNECTION_FOREGROUND));
 			link(connection, addedTransition);
+			Graphiti.getPeService().setPropertyValue(connection, IS_TRANSITION_KEY, "true");
 			
 			// Create the label
 			ConnectionDecorator textDecorator = peCreateService.createConnectionDecorator(connection, true, DECORATOR_LOCATION, true);

@@ -67,5 +67,4 @@ public class Activator extends Plugin {
 	public static String getPluginId() {
 		return pluginId;
 	}
-
 }

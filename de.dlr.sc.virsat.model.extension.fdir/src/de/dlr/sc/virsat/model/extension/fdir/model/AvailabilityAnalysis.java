@@ -12,11 +12,12 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
-import de.dlr.sc.virsat.fdir.core.metrics.PointAvailability;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
@@ -30,7 +31,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -45,9 +45,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryAutomatonStrategy;
  * 
  */
 public class AvailabilityAnalysis extends AAvailabilityAnalysis {
-	private static final double TO_PERCENT = 100;
 	private static final double EPS = 0.0001;
-	public static final int COUNT_AVAILABILITY_POINTS = 100;
 
 	/**
 	 * Constructor of Concept Class
@@ -81,17 +79,6 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	}
 
 	/**
-	 * Gets the first fault attached to the same structural element instance
-	 * 
-	 * @return the top level fault to be analysed
-	 */
-	public Fault getFault() {
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-				(StructuralElementInstance) getTypeInstance().eContainer());
-		return parent.getFirst(Fault.class);
-	}
-
-	/**
 	 * 
 	 * @param ed
 	 *            the editing domain
@@ -100,69 +87,44 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 * @return a command that sets the availability analysis
 	 */
 	public Command perform(TransactionalEditingDomain ed, IProgressMonitor monitor) {
-		FaultTreeNode fault = getFault();
+		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
 
-		if (fault != null) {
-			SubMonitor subMonitor = null;
+		final int COUNT_TASKS = 3;
+		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
+		subMonitor.setTaskName("Availability Analysis");
+		subMonitor.subTask("Creating Data Model");
+		subMonitor.split(1);
+		
+		double delta = getTimestepBean().getValueToBaseUnit();
 
-			if (monitor != null) {
-				monitor.setTaskName("Availability Analysis");
-				final int COUNT_TASKS = 3;
-				subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
-				subMonitor.setTaskName("Creating Data Model");
-				subMonitor.split(1);
-			}
-			double delta = getTimestepBean().getValueToBaseUnit();
+		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
+				(StructuralElementInstance) fault.getTypeInstance().eContainer());
+		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 
-			IBeanStructuralElementInstance parent = new BeanStructuralElementInstance(
-					(StructuralElementInstance) getTypeInstance().eContainer());
-			RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, delta, EPS);
+		
+		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
 
-			FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
-			if (ra != null) {
-				ftEvaluator.setRecoveryStrategy(new RecoveryAutomatonStrategy(ra));
-			}
-			double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-			double pointDelta = maxTime / COUNT_AVAILABILITY_POINTS;
-			if (monitor != null) {
-				if (monitor.isCanceled()) {
-					return UnexecutableCommand.INSTANCE;
+		subMonitor.subTask("Performing Model Checking");
+		ModelCheckingResult result = ftEvaluator
+				.evaluateFaultTree(fault, subMonitor.split(1), new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		
+		subMonitor.subTask("Updating Results");
+		subMonitor.split(1);
+		
+		double steadyStateAvailability = result.getSteadyStateAvailability();
+		return new RecordingCommand(ed, "Availability Analysis") {
+			@Override
+			protected void doExecute() {
+				getSteadyStateAvailabilityBean().setValueAsBaseUnit(steadyStateAvailability);
+				getAvailabilityBean().setValueAsBaseUnit(result.getAvailability().get(result.getAvailability().size() - 1));
+				getAvailabilityCurve().clear();
+				for (int i = 0; i < result.getAvailability().size(); ++i) {
+					createNewAvailabilityCurveEntry(result.getAvailability().get(i));
 				}
-				subMonitor.setTaskName("Performing Model Checking");
-				subMonitor.split(1);
 			}
-			ftEvaluator.evaluateFaultTree(fault, new PointAvailability(maxTime),
-					de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
-			if (monitor != null) {
-				if (monitor.isCanceled()) {
-					return UnexecutableCommand.INSTANCE;
-				}
-				subMonitor.setTaskName("Updating Results");
-				subMonitor.split(1);
-			}
-			double steadyStateAvailability = ftEvaluator.getSteadyStateAvailability();
-			return new RecordingCommand(ed, "Availability Analysis") {
-				@Override
-				protected void doExecute() {
-					getSteadyStateAvailabilityBean().setValue(TO_PERCENT * steadyStateAvailability);
-					getPointAvailabilityCurve().clear();
-
-					double accDelta = pointDelta;
-					if (ftEvaluator.getPointAvailability() != null) {
-						for (int i = 0; i < ftEvaluator.getPointAvailability().size(); ++i) {
-							accDelta += delta;
-							if (accDelta >= pointDelta) {
-								createNewAvailabilityCurveEntry(
-										TO_PERCENT * (ftEvaluator.getPointAvailability().get(i)));
-								accDelta -= pointDelta;
-							}
-						}
-					}
-				}
-			};
-		} else {
-			return UnexecutableCommand.INSTANCE;
-		}
+		};
 	}
 
 	/**
@@ -173,10 +135,10 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 	 */
 	private void createNewAvailabilityCurveEntry(double value) {
 		CategoryInstantiator ci = new CategoryInstantiator();
-		APropertyInstance pi = ci.generateInstance(getPointAvailabilityCurve().getArrayInstance());
+		APropertyInstance pi = ci.generateInstance(getAvailabilityCurve().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
-		newBeanProperty.setValue(value);
-		getPointAvailabilityCurve().add(newBeanProperty);
+		newBeanProperty.setValueAsBaseUnit(value);
+		getAvailabilityCurve().add(newBeanProperty);
 	}
 }
