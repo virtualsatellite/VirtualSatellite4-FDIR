@@ -106,7 +106,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	/* Buffers */
 
 	private double[] probabilityDistribution;
-	private double[] resultBuffer;
 
 	/* Results */
 	private ModelCheckingResult modelCheckingResult;
@@ -212,43 +211,28 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 	}
-
+	
 	@Override
 	public void visit(MTTF mttfMetric) {
 		if (bellmanMatrix == null) {
 			bellmanMatrix = matrixFactory.getBellmanMatrix(mc);
 		}
-
-		double[] baseMTTFs = getInitialMTTFVector();
 		probabilityDistribution = getInitialMTTFVector();
+		MatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, eps);
 		
-		resultBuffer = new double[probabilityDistribution.length];
-		double[] res = probabilityDistribution;
-
 		boolean convergence = false;
-		while (!convergence) {
-			bellmanMatrix.multiply(res, resultBuffer);
-
-			for (int i = 0; i < baseMTTFs.length; ++i) {
-				resultBuffer[i] += baseMTTFs[i];
-			}
-
-			double change = Math.abs(res[0] - resultBuffer[0]);
-
+		while (!convergence) {			
+			mxIterator.iterate();			
+			double change = mxIterator.getChange();
 			if (change < eps || Double.isNaN(change)) {
-				if (Double.isInfinite(res[0])) {
-					resultBuffer[0] = Double.POSITIVE_INFINITY;
-				}
-				probabilityDistribution = resultBuffer;
-				convergence = true;
-			} else {
-				double[] tmp = res;
-				res = resultBuffer;
-				resultBuffer = tmp;
-			}
-		}
-
-		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);
+				probabilityDistribution = mxIterator.getProbabilityDistribution();
+				convergence = true;				
+				if (Double.isInfinite(mxIterator.getOldProbabilityDistribution()[0])) {
+					probabilityDistribution[0] = Double.POSITIVE_INFINITY;
+				}				
+			}			
+		}		
+		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);		
 	}
 
 	@Override

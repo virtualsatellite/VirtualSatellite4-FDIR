@@ -41,9 +41,9 @@ public class MatrixFactory {
 	 * @param mc markov chain
 	 * @return transition matrix
 	 */
-	public TransitionMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc) {		
+	public BellmanMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc) {		
 		this.mc = mc;
-		TransitionMatrix tm = new TransitionMatrix(mc.getStates().size());
+		BellmanMatrix tm = new BellmanMatrix(mc.getStates().size());
 		tm = createBellmanMatrix(tm);
 		return tm;
 	}
@@ -93,7 +93,7 @@ public class MatrixFactory {
 	 * @param tm TransitionMatrix
 	 * @return the matrix representing the fixpoint iteration
 	 */
-	public TransitionMatrix createBellmanMatrix(TransitionMatrix tm) {
+	public BellmanMatrix createBellmanMatrix(BellmanMatrix tm) {
 		int countStates = mc.getStates().size();
 
 		for (int i = 0; i < countStates; ++i) {
