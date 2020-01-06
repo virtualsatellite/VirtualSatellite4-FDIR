@@ -43,5 +43,13 @@ public abstract class MatrixIterator {
 	 */
 	public double[] getProbabilityDistribution() {
 		return probabilityDistribution;
-	}	
+	}
+
+	public double[] getOldProbabilityDistribution() {
+		return null;
+	}
+
+	public double getChange() {
+		return 0;
+	}
 }
