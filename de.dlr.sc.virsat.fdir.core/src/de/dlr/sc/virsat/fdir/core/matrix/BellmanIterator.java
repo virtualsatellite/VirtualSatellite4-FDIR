@@ -13,12 +13,13 @@ package de.dlr.sc.virsat.fdir.core.matrix;
 public class BellmanIterator extends MatrixIterator {
 	
 	private double[] baseMTTFs;
-	private double[] result = new double[probabilityDistribution.length];
+	private double[] result;
 	private double[] oldProbabilityDistribution;
 
 	public BellmanIterator(IMatrix matrix, double[] probabilityDistribution, double eps) {
 		super(matrix, probabilityDistribution, eps);
 		baseMTTFs = probabilityDistribution.clone();
+		result = new double[probabilityDistribution.length];
 	}
 
 	@Override
