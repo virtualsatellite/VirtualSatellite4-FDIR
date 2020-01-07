@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
@@ -40,57 +41,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
  *
  */
 public class MarkovModelChecker implements IMarkovModelChecker {
-
-	/**
-	 * Gets the initial MTTF according to the Bellman equations with
-	 * MTTF(s) = 0 if s is a fail state and 
-	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
-	 * @return the initial probability distribution
-	 */
-	private double[] getInitialMTTFVector() {
-		int countStates = mc.getStates().size();
-		double[] inititalVector = new double[countStates];
-
-		Queue<MarkovState> toProcess = new LinkedList<>();
-		toProcess.addAll(mc.getFinalStates());
-		Set<MarkovState> failableStates = new HashSet<>();
-
-		while (!toProcess.isEmpty()) {
-			MarkovState state = toProcess.poll();
-			if (failableStates.add(state)) {
-				List<?> transitions = mc.getPredTransitions(state);
-				for (int j = 0; j < transitions.size(); ++j) {
-					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					toProcess.add(transition.getFrom());
-				}
-			}
-		}
-
-		for (int i = 0; i < countStates; ++i) {
-			MarkovState state = mc.getStates().get(i);
-			if (!mc.getFinalStates().contains(state)) {
-				if (!failableStates.contains(state)) {
-					inititalVector[i] = Double.POSITIVE_INFINITY;
-					continue;
-				}
-
-				List<?> transitions = mc.getSuccTransitions(state);
-				double exitRate = 0;
-				for (int j = 0; j < transitions.size(); ++j) {
-					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					exitRate += transition.getRate();
-				}
-				inititalVector[i] = 1 / exitRate;
-			}
-		}
-
-		return inititalVector;
-	}
-
+	
 	/* Parameters */
 
 	private double delta;
@@ -101,7 +52,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	private MarkovAutomaton<? extends MarkovState> mc;
 	private IMatrix tm;
 	private IMatrix tmTerminal;
-	private IMatrix bellmanMatrix;
+	private BellmanMatrix bellmanMatrix;
 
 	/* Buffers */
 
@@ -217,7 +168,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		if (bellmanMatrix == null) {
 			bellmanMatrix = matrixFactory.getBellmanMatrix(mc);
 		}
-		probabilityDistribution = getInitialMTTFVector();
+		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(mc); 
 		MatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, eps);
 		
 		boolean convergence = false;
