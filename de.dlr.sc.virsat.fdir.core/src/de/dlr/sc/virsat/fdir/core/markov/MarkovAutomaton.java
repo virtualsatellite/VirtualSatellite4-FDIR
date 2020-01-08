@@ -202,6 +202,27 @@ public class MarkovAutomaton<S extends MarkovState> {
 		mapStateToPredTransitions.remove(state);
 	}
 	
+	
+	/**
+	 * @param state Markov state
+	 * @return Returns exit rate for state 
+	 */
+	public double getExitRateForState(MarkovState state) {
+		if (!getFinalStates().contains(state)) {
+			List<?> transitions = getSuccTransitions(state);
+			
+			double exitRate = 0;
+			for (int j = 0; j < transitions.size(); ++j) {
+				@SuppressWarnings("unchecked")
+				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+				exitRate += transition.getRate();
+			}
+			return 1 / exitRate;
+		} else {
+			return 0;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return getTransitions().stream().map(MarkovTransition::toString).collect(Collectors.joining("\n"));

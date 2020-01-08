@@ -66,20 +66,9 @@ public class BellmanMatrix extends TransitionMatrix {
 					inititalVector[i] = Double.POSITIVE_INFINITY;
 					continue;
 				}
-
-				List<?> transitions = mc.getSuccTransitions(state);
-				double exitRate = 0;
-				for (int j = 0; j < transitions.size(); ++j) {
-					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					exitRate += transition.getRate();
-				}
-				inititalVector[i] = 1 / exitRate;
+				inititalVector[i] = mc.getExitRateForState(state);
 			}
 		}
-
 		return inititalVector;
 	}
-
 }
