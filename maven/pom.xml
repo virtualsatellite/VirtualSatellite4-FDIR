@@ -288,6 +288,19 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
+										<groupId>org.asciidoctor</groupId>
+										<artifactId>asciidoctor-maven-plugin</artifactId>
+										<versionRange>[2.0.0-RC.1,)</versionRange>
+										<goals>
+											<goal>process-asciidoc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
 										<groupId>org.eclipse.tycho.extras</groupId>
 										<artifactId>tycho-document-bundle-plugin</artifactId>
 										<versionRange>[1.0.0,)</versionRange>
