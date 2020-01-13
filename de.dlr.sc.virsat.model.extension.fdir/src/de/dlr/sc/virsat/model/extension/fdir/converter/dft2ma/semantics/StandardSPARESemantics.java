@@ -32,27 +32,20 @@ public class StandardSPARESemantics implements INodeSemantics {
 		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(node);
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		
-		for (FaultTreeNode child : children) {
-			if (!state.hasFaultTreeNodeFailed(child)) {
-				for (FaultTreeNode spare : spares) {
-					FaultTreeNode claimingGate = state.getMapSpareToClaimedSpares().get(spare);
-					if (claimingGate != null && claimingGate.equals(node)) {
-						state.getMapSpareToClaimedSpares().remove(spare);
-					}
+		boolean currentClaimWorks = !hasPrimaryFailed(state, children);
+		for (FaultTreeNode spare : spares) {
+			FaultTreeNode spareGate = state.getMapSpareToClaimedSpares().get(spare);
+			if (spareGate != null && spareGate.equals(node)) {
+				if (!currentClaimWorks && !state.hasFaultTreeNodeFailed(spare)) {
+					currentClaimWorks = true;
+				} else {
+					performFree((SPARE) node, spare, state, generationResult);
 				}
-				return state.setFaultTreeNodeFailed(node, false);
 			}
 		}
 		
-		for (FaultTreeNode spare : spares) {
-			if (!state.hasFaultTreeNodeFailed(spare)) {
-				FaultTreeNode spareGate = state.getMapSpareToClaimedSpares().get(spare);
-				if (spareGate != null && spareGate.equals(node)) {
-					return state.setFaultTreeNodeFailed(node, false);
-				}
-			} else {
-				state.getMapSpareToClaimedSpares().remove(spare);
-			}
+		if (currentClaimWorks) {
+			return state.setFaultTreeNodeFailed(node, false);
 		}
 		
 		boolean canClaim = canClaim(pred, state, node, ftHolder);
@@ -75,6 +68,22 @@ public class StandardSPARESemantics implements INodeSemantics {
 		} 
 		
 		return false;
+	}
+	
+	/**
+	 * Checks if all primary units have failed
+	 * @param state the current state
+	 * @param children the children
+	 * @return true iff all primaries have failed
+	 */
+	protected boolean hasPrimaryFailed(DFTState state, List<FaultTreeNode> children) {
+		for (FaultTreeNode child : children) {
+			if (!state.hasFaultTreeNodeFailed(child)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -122,6 +131,19 @@ public class StandardSPARESemantics implements INodeSemantics {
 			GenerationResult generationResult) {
 		state.getSpareClaims().put(spare, node);
 		state.setNodeActivation(spare, true);
+		return true;
+	}
+	
+	/**
+	 * Frees a spare from all claims
+	 * @param spare the spare to be freed
+	 * @param state the current state
+	 * @param generationResult accumulator for state space generation results
+	 * @return constant true
+	 */
+	protected boolean performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+		state.getMapSpareToClaimedSpares().remove(spare);
+		state.setNodeActivation(spare, false);
 		return true;
 	}
 }

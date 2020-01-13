@@ -69,7 +69,12 @@ public class DFT2MAConverterTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
 		
 		MarkovAutomaton<DFTState> ma = converter.convert(fault);
+		
+		System.out.println(ma.toDot());
+		
 		final int EXPECTED_COUNT_STATES = 4;
+		final int EXPECTED_COUNT_TRANSITIONS = 8;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 	}
 }

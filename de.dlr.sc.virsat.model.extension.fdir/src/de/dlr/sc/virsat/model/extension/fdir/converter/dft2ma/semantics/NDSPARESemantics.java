@@ -35,6 +35,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class NDSPARESemantics extends StandardSPARESemantics {
 	
 	private Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction = new HashMap<>();
+	private Map<FaultTreeNode, FreeAction> mapNodeToFreeAction = new HashMap<>();
 	private IStateGenerator stateGenerator;
 	
 	protected boolean propagateWithoutActions = false;
@@ -104,19 +105,13 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	}
 	
 	/**
-	 * 
-	 * @param node
-	 *            node
-	 * @param spare
-	 *            the spare gate claimed
-	 * @param state
-	 *            state
-	 * @param generationResult
-	 *            result
-	 * @return boolean
+	 * Frees a spare from all claims
+	 * @param spare the spare to be freed
+	 * @param state the current state
+	 * @param generationResult accumulator for state space generation results
+	 * @return constant true
 	 */
 	protected boolean performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
-
 		List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 
 		FreeAction fa = getOrCreateFreeAction(spare);
@@ -136,16 +131,20 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	}
 
 	/**
-	 * 
-	 * @param spare
-	 *            spare
-	 * @return fa
+	 * Creates a new free action or recycles an existing one if possible
+	 * @param spare the spare to free
+	 * @return the created free action
 	 */
 	protected FreeAction getOrCreateFreeAction(FaultTreeNode spare) {
-		FreeAction fa = new FreeAction(spare.getConcept());
-		fa.setFreeSpare(spare);
+		FreeAction fa = mapNodeToFreeAction.get(spare);
+		if (fa == null) {
+			fa = new FreeAction(spare.getConcept());
+			fa.setFreeSpare(spare);
+			mapNodeToFreeAction.put(spare, fa);
+		}
 		return fa;
 	}
+
 
 	
 	/**
