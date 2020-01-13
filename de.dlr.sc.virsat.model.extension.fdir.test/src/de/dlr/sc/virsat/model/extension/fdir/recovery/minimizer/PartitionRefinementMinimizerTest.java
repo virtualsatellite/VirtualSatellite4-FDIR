@@ -91,8 +91,8 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		ClaimAction action = new ClaimAction(concept);
 		action.setClaimSpare(spare);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action));
-		raHelper.assignAction(transition11, raHelper.copyClaimAction(action));
+		raHelper.assignAction(transition01, action.copy());
+		raHelper.assignAction(transition11, action.copy());
 
 		minimizer.minimize(ra);
 		
@@ -139,12 +139,12 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare2);
 		
-		raHelper.assignAction(transition00, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition11, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(newTransition11, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition20, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition21, raHelper.copyClaimAction(action0));
+		raHelper.assignAction(transition00, action0.copy());
+		raHelper.assignAction(transition01, action0.copy());
+		raHelper.assignAction(transition11, action1.copy());
+		raHelper.assignAction(newTransition11, action1.copy());
+		raHelper.assignAction(transition20, action0.copy());
+		raHelper.assignAction(transition21, action0.copy());
 		
 		minimizer.minimize(ra);
 		
@@ -196,14 +196,14 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare2);
 		
-		raHelper.assignAction(transition03, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition13, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition12, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition23, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition20, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition33, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition32, raHelper.copyClaimAction(action1));
+		raHelper.assignAction(transition03, action0.copy());
+		raHelper.assignAction(transition02, action0.copy());
+		raHelper.assignAction(transition13, action0.copy());
+		raHelper.assignAction(transition12, action0.copy());
+		raHelper.assignAction(transition23, action0.copy());
+		raHelper.assignAction(transition20, action0.copy());
+		raHelper.assignAction(transition33, action1.copy());
+		raHelper.assignAction(transition32, action1.copy());
 	
 		minimizer.minimize(ra);
 		
@@ -295,14 +295,14 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		ClaimAction action3 = new ClaimAction(concept);
 		action3.setClaimSpare(spare3);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition13, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition13_2, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition14, raHelper.copyClaimAction(action3));
-		raHelper.assignAction(transition24, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition24_2, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition23, raHelper.copyClaimAction(action3));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition02, action2.copy());
+		raHelper.assignAction(transition13, action1.copy());
+		raHelper.assignAction(transition13_2, action2.copy());
+		raHelper.assignAction(transition14, action3.copy());
+		raHelper.assignAction(transition24, action1.copy());
+		raHelper.assignAction(transition24_2, action2.copy());
+		raHelper.assignAction(transition23, action3.copy());
 		
 		minimizer.minimize(ra);
 		

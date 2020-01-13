@@ -122,7 +122,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 					
 						List<RecoveryAction> recoveryActions = (List<RecoveryAction>) bestTransition.getEvent();
 						for (RecoveryAction recoveryAction : recoveryActions)  {
-							raTransition.getRecoveryActions().add(raHelper.copyRecoveryAction(recoveryAction));
+							raTransition.getRecoveryActions().add(recoveryAction.copy());
 						}
 						
 						createdTransitions.add(raTransition);

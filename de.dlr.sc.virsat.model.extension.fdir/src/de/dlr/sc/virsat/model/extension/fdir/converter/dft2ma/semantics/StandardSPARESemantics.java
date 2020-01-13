@@ -32,12 +32,17 @@ public class StandardSPARESemantics implements INodeSemantics {
 		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(node);
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		
-		boolean currentClaimWorks = !hasPrimaryFailed(state, children);
+		boolean hasPrimaryFailed = hasPrimaryFailed(state, children);
+		boolean currentClaimWorks = !hasPrimaryFailed;
 		for (FaultTreeNode spare : spares) {
 			FaultTreeNode spareGate = state.getMapSpareToClaimedSpares().get(spare);
 			if (spareGate != null && spareGate.equals(node)) {
 				if (!currentClaimWorks && !state.hasFaultTreeNodeFailed(spare)) {
 					currentClaimWorks = true;
+					
+					if (!isSingleClaim()) {
+						performFree((SPARE) node, spare, state, generationResult);
+					}
 				} else {
 					performFree((SPARE) node, spare, state, generationResult);
 				}
@@ -64,7 +69,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 		
 		if (hasFailed(foundSpare)) {
 			updatePermanence(state, node, ftHolder);
-			return state.setFaultTreeNodeFailed(node, true);
+			return state.setFaultTreeNodeFailed(node, hasPrimaryFailed);
 		} 
 		
 		return false;
@@ -119,6 +124,14 @@ public class StandardSPARESemantics implements INodeSemantics {
 		return !foundSpare;
 	}
 	
+	/***
+	 * Checks if one working claim is enough to satisfy a spare gate
+	 * @return true iff the semantics are single claim
+	 */
+	protected boolean isSingleClaim() {
+		return true;
+	}
+	
 	/**
 	 * Restores a failed spare gate node by switching to a spare.
 	 * @param node the spare gate node
@@ -141,9 +154,8 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @param generationResult accumulator for state space generation results
 	 * @return constant true
 	 */
-	protected boolean performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+	protected void performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
 		state.getMapSpareToClaimedSpares().remove(spare);
 		state.setNodeActivation(spare, false);
-		return true;
 	}
 }

@@ -131,7 +131,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			}
 		}
 		
-		if (anyObservation) {
+		if (anyObservation && succs.get(0).getRecoveryStrategy() == null) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 			Queue<FaultTreeNode> spareGates = new LinkedList<>(possiblyFailedSpareGates);
 			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, spareGates);

@@ -37,18 +37,22 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsCsp2.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
 		assertEquals(1, ra.getStates().size());
 		assertEquals(1, ra.getTransitions().size());
 	}
 	
+	/*
 	@Test
 	public void testSynthesizeObsCsp2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsCsp2Delayed.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
 		assertEquals(1, ra.getStates().size());
 		assertEquals(1, ra.getTransitions().size());
 	}
+	*/
 
 	@Test
 	public void testSynthesizeObsOr2Csp2() throws IOException {

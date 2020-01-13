@@ -89,6 +89,7 @@ public class DFTState extends MarkovState {
 		permanentNodes = (BitSet) other.permanentNodes.clone();
 		failingNodes = (BitSet) other.failingNodes.clone();
 		ftHolder = other.ftHolder;
+		recoveryStrategy = other.recoveryStrategy;
 	}
 	
 	/**

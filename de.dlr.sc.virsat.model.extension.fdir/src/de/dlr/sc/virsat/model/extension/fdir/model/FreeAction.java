@@ -14,6 +14,8 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
+import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 
 // *****************************************************************
@@ -54,9 +56,30 @@ public  class FreeAction extends AFreeAction {
 		super(categoryAssignment);
 	}
 
+	private FaultTreeNode freeSpare;
+	
 	@Override
 	public void execute(DFTState state) {
+		if (freeSpare == null) {
+			FaultTreeNode claimSpareOriginal = getFreeSpare();
+			freeSpare = state.getFTHolder().getNodes().stream()
+					.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
+					.findFirst().get();
+		}
 		
+		state.getMapSpareToClaimedSpares().remove(freeSpare);
+		state.setNodeActivation(freeSpare, false);
+	}
+	
+	@Override
+	public String toString() {
+		if (getFreeSpare() == null) {
+			return "Free()";
+		} else {
+			StructuralElementInstance freeSpareSei = VirSatEcoreUtil.getEContainerOfClass(getFreeSpare().getATypeInstance(), StructuralElementInstance.class);
+			String sparePrefix = freeSpareSei != null ? (getFreeSpare().getParent().getName() + ".") : "";
+			return "Free(" + sparePrefix + getFreeSpare().getName() +  ")";
+		}
 	}
 	
 	@Override
@@ -75,5 +98,12 @@ public  class FreeAction extends AFreeAction {
 		sb.append(")");
 		
 		return sb.toString();
+	}
+
+	@Override
+	public RecoveryAction copy() {
+		FreeAction copyFreeAction = new FreeAction(getConcept());
+		copyFreeAction.setFreeSpare(getFreeSpare());
+		return copyFreeAction;
 	}
 }

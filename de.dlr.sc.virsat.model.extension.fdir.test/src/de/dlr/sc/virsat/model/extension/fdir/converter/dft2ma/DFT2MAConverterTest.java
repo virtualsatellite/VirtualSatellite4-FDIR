@@ -70,10 +70,8 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		MarkovAutomaton<DFTState> ma = converter.convert(fault);
 		
-		System.out.println(ma.toDot());
-		
 		final int EXPECTED_COUNT_STATES = 4;
-		final int EXPECTED_COUNT_TRANSITIONS = 8;
+		final int EXPECTED_COUNT_TRANSITIONS = 7;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 	}
