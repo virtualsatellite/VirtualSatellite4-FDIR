@@ -127,9 +127,9 @@ public class BasicSynthesizerTest extends ATestCase {
 	public void testEvaluateCM1() throws IOException {
 		final double[] EXPECTED = {
 			6.297634506950505e-05,
-			4.654260986536632e-04,
-			0.0016928828332256056,  
-			0.004302923685329981
+			4.633278718727809e-04,
+			0.0016864867216674444,  
+			0.004289188056220271
 		};
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
