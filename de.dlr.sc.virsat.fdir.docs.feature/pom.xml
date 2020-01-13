@@ -13,11 +13,69 @@
 		<relativePath>../maven/pom.xml</relativePath>
 		<groupId>de.dlr.sc.virsat.fdir</groupId>
 		<artifactId>de.dlr.sc.virsat.fdir.parent</artifactId>
-		<version>4.9.0-SNAPSHOT</version>
+		<version>4.10.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>de.dlr.sc.virsat.fdir.docs.feature</artifactId>
 	<name>de.dlr.sc.virsat.fdir.docs.feature</name>
 	
 	<packaging>eclipse-feature</packaging>
+	
+	<profiles>
+		<profile>
+			<id>doc</id>
+			<build>
+				<defaultGoal>process-resources</defaultGoal>
+				<plugins>
+					<plugin>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctor-maven-plugin</artifactId>
+						<version>2.0.0-RC.1</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.asciidoctor</groupId>
+								<artifactId>asciidoctorj-pdf</artifactId>
+								<version>1.5.0-beta.4</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<sourceDirectory>src/docs/</sourceDirectory>
+							<outputDirectory>${project.basedir}/docs</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/docs</directory>
+									<excludes>
+										<exclude>images/**/*</exclude>
+										<exclude>images</exclude>
+									</excludes>
+								</resource>
+							</resources>
+						</configuration>
+						<executions>
+							<execution>
+								<id>generate-pdf-doc</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<backend>pdf</backend>
+									<sourceHighlighter>coderay</sourceHighlighter>
+									<doctype>book</doctype>
+									<attributes>
+										<pdf-stylesdir>${project.basedir}/src/theme</pdf-stylesdir>
+										<pdf-style>custom</pdf-style>
+										<icons>font</icons>
+										<revnumber>${build.version}</revnumber>
+										<revdate>${maven.build.timestamp}</revdate>
+										<buildnr>${TRAVIS_BUILD_NUMBER}</buildnr>
+									</attributes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project> 

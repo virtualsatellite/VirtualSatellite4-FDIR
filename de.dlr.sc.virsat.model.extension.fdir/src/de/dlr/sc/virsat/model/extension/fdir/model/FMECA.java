@@ -32,7 +32,6 @@ import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
@@ -188,10 +187,7 @@ public  class FMECA extends AFMECA {
 		subMonitor.subTask("Filling out FMECA entries...");
 		
 		RecoveryAutomaton ra = getParent().getFirst(RecoveryAutomaton.class);
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
-		if (ra != null) {
-			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		}
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra);
 		
 		FDIRParameters fdirParameters  = null;
 		EObject root = VirSatEcoreUtil.getRootContainer(getTypeInstance().eContainer());
@@ -201,8 +197,8 @@ public  class FMECA extends AFMECA {
 		}
 		
 		for (FMECAEntry entry : entries) {
-			entry.fill(ftEvaluator, fdirParameters);
 			subMonitor.split(1);
+			entry.fill(ftEvaluator, fdirParameters);
 		}
 		subMonitor.done();
 	}

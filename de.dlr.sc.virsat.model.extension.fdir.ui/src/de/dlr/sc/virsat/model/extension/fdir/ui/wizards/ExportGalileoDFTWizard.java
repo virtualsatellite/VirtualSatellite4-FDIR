@@ -66,7 +66,7 @@ public class ExportGalileoDFTWizard extends Wizard implements INewWizard {
 		// grab an input
 		String path = page.getDestination();
 		try {
-			DFT2GalileoDFT converter = new DFT2GalileoDFT();
+			DFT2GalileoDFT converter = new DFT2GalileoDFT(false);
 			GalileoDft galileoDft = converter.convert(sei);
 			new GalileoDFTWriter(path).write(galileoDft);
 			return true;

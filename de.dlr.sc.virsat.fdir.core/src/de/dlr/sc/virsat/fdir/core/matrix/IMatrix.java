@@ -20,17 +20,55 @@ public interface IMatrix {
 	/**
 	 * @param vector vector
 	 * @param result resultbuffer
-	 * @return result
 	 */
-	double multiply(double[] vector, double[] result);
+	void multiply(double[] vector, double[] result);
 
 	/**
 	 * Returns an iterator for specific matrix type.
 	 * 
 	 * @param probabilityDistribution probabilityDistribution
-	 * @param delta delta
 	 * @param eps epsilon
 	 * @return MatrixIterator
 	 */
-	MatrixIterator getIterator(double[] probabilityDistribution, double delta, double eps);
+	MatrixIterator getIterator(double[] probabilityDistribution, double eps);
+
+	/**
+	 * @return returns number of states
+	 */
+	int size();
+
+	/**
+	 * @return returns matrix diagonal
+	 */
+	double[] getDiagonal();
+
+	/**
+	 * @return returns StatePredIndices
+	 */
+	int[][] getStatePredIndices();
+
+	/**
+	 * @return return StatePredRates
+	 */
+	double[][] getStatePredRates();
+
+	/**
+	 * @param diagonal sets new diagonal for this matrix
+	 */
+	void setDiagonal(double[] diagonal);
+
+	/**
+	 * @param statePredIndices sets new StatePredIndices
+	 */
+	void setStatePredIndices(int[][] statePredIndices);
+
+	/**
+	 * @param statePredRates sets new StatePredRates
+	 */
+	void setStatePredRates(double[][] statePredRates);
+
+	/**
+	 * @return returns copy of this matrix object
+	 */
+	IMatrix copy();
 }

@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
+import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
@@ -96,6 +97,8 @@ public class DFT2GalileoDFT {
 				if (node instanceof VOTE) {
 					VOTE vote = (VOTE) node;
 					nodeType.setTypeName(vote.getVotingThreshold() + "of" +  ftHelper.getChildren(vote).size());
+				} else if (node instanceof SPARE) {
+					nodeType.setTypeName("wsp");
 				} else {
 					nodeType.setTypeName(gate.getFaultTreeNodeType().toString().toLowerCase());
 				}

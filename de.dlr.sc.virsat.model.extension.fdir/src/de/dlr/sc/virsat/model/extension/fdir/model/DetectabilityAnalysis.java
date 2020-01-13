@@ -12,7 +12,6 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
@@ -33,7 +32,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -82,12 +80,12 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 	 */
 	public Command perform(TransactionalEditingDomain editingDomain, IProgressMonitor monitor) {
 		FaultTreeNode fault = getParentCaBeanOfClass(Fault.class);
-		
-		monitor.setTaskName("Detectability Analysis");
+				
 		final int COUNT_TASKS = 3;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
+		subMonitor.setTaskName("Detectability Analysis");
 		subMonitor.split(1);
-		subMonitor.setTaskName("Creating Data Model");
+		subMonitor.subTask("Creating Data Model");
 		
 		double delta = getTimestepBean().getValueToBaseUnit();
 
@@ -95,17 +93,11 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 				(StructuralElementInstance) fault.getTypeInstance().eContainer());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null, delta, EPS);
-		if (ra != null) {
-			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		}
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, delta, EPS);
 		
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
-		if (monitor.isCanceled()) {
-			return UnexecutableCommand.INSTANCE;
-		}
 		subMonitor.split(1);
-		subMonitor.setTaskName("Performing Model Checking");
+		subMonitor.subTask("Performing Model Checking");
 
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault,
 				new Detectability(maxTime), SteadyStateDetectability.STEADY_STATE_DETECTABILITY, MeanTimeToDetection.MTTD);
@@ -113,11 +105,8 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		double meanTimeToDetection = result.getMeanTimeToDetection();
 		double steadyStateDetectability = result.getSteadyStateDetectability();
 		
-		if (monitor.isCanceled()) {
-			return UnexecutableCommand.INSTANCE;
-		}
 		subMonitor.split(1);
-		subMonitor.setTaskName("Updating Results");
+		subMonitor.subTask("Updating Results");
 		
 		return new RecordingCommand(editingDomain, "Detectability Analysis") {
 			@Override

@@ -24,9 +24,9 @@ import org.eclipse.core.runtime.SubMonitor;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-import de.dlr.sc.virsat.fdir.core.matrix.Matrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
@@ -41,57 +41,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
  *
  */
 public class MarkovModelChecker implements IMarkovModelChecker {
-
-	/**
-	 * Gets the initial MTTF according to the Bellman equations with
-	 * MTTF(s) = 0 if s is a fail state and 
-	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
-	 * @return the initial probability distribution
-	 */
-	private double[] getInitialMTTFVector() {
-		int countStates = mc.getStates().size();
-		double[] inititalVector = new double[countStates];
-
-		Queue<MarkovState> toProcess = new LinkedList<>();
-		toProcess.addAll(mc.getFinalStates());
-		Set<MarkovState> failableStates = new HashSet<>();
-
-		while (!toProcess.isEmpty()) {
-			MarkovState state = toProcess.poll();
-			if (failableStates.add(state)) {
-				List<?> transitions = mc.getPredTransitions(state);
-				for (int j = 0; j < transitions.size(); ++j) {
-					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					toProcess.add(transition.getFrom());
-				}
-			}
-		}
-
-		for (int i = 0; i < countStates; ++i) {
-			MarkovState state = mc.getStates().get(i);
-			if (!mc.getFinalStates().contains(state)) {
-				if (!failableStates.contains(state)) {
-					inititalVector[i] = Double.POSITIVE_INFINITY;
-					continue;
-				}
-
-				List<?> transitions = mc.getSuccTransitions(state);
-				double exitRate = 0;
-				for (int j = 0; j < transitions.size(); ++j) {
-					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					exitRate += transition.getRate();
-				}
-				inititalVector[i] = 1 / exitRate;
-			}
-		}
-
-		return inititalVector;
-	}
-
+	
 	/* Parameters */
 
 	private double delta;
@@ -100,14 +50,13 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	/* Transition System */
 
 	private MarkovAutomaton<? extends MarkovState> mc;
-	private Matrix tm;
+	private IMatrix tm;
 	private IMatrix tmTerminal;
-	private Matrix bellmanMatrix;
+	private BellmanMatrix bellmanMatrix;
 
 	/* Buffers */
 
 	private double[] probabilityDistribution;
-	private double[] resultBuffer;
 
 	/* Results */
 	private ModelCheckingResult modelCheckingResult;
@@ -169,7 +118,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		if (subMonitor != null) {
 			subMonitor.setTaskName("Running Markov Checker on Model");			
 		}		
-		MatrixIterator mtxIterator = tmTerminal.getIterator(probabilityDistribution, delta, eps);
+		MatrixIterator mtxIterator = tmTerminal.getIterator(probabilityDistribution, eps);
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
 			
@@ -213,50 +162,34 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 	}
-
+	
 	@Override
 	public void visit(MTTF mttfMetric) {
 		if (bellmanMatrix == null) {
-			Matrix matrix = new Matrix(mc);
-			bellmanMatrix = matrix.createBellmanMatrix();
+			bellmanMatrix = matrixFactory.getBellmanMatrix(mc);
 		}
-
-		double[] baseMTTFs = getInitialMTTFVector();
-		probabilityDistribution = getInitialMTTFVector();
-		resultBuffer = new double[probabilityDistribution.length];
-		double[] res = probabilityDistribution;
-
+		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(mc); 
+		MatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, eps);
+		
 		boolean convergence = false;
-		while (!convergence) {
-			multiply(bellmanMatrix, res, resultBuffer);
-
-			for (int i = 0; i < baseMTTFs.length; ++i) {
-				resultBuffer[i] += baseMTTFs[i];
-			}
-
-			double change = Math.abs(res[0] - resultBuffer[0]);
-
+		while (!convergence) {			
+			mxIterator.iterate();			
+			double change = mxIterator.getChange();
 			if (change < eps || Double.isNaN(change)) {
-				if (Double.isInfinite(res[0])) {
-					resultBuffer[0] = Double.POSITIVE_INFINITY;
-				}
-				probabilityDistribution = resultBuffer;
-				convergence = true;
-			} else {
-				double[] tmp = res;
-				res = resultBuffer;
-				resultBuffer = tmp;
-			}
-		}
-
-		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);
+				probabilityDistribution = mxIterator.getProbabilityDistribution();
+				convergence = true;				
+				if (Double.isInfinite(mxIterator.getOldProbabilityDistribution()[0])) {
+					probabilityDistribution[0] = Double.POSITIVE_INFINITY;
+				}				
+			}			
+		}		
+		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);		
 	}
 
 	@Override
 	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
 		if (tm == null) {
-			Matrix matrix = new Matrix(mc);
-			tm = matrix.createTransitionMatrix(false, delta);
+			tm = matrixFactory.getTransitionMatrix(mc, false, delta);
 		}
 		
 		final int PROGRESS_COUNT = 100;
@@ -265,7 +198,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 				
 		probabilityDistribution = getInitialProbabilityDistribution();
-		resultBuffer = new double[probabilityDistribution.length];
+		MatrixIterator mtxIterator = tm.getIterator(probabilityDistribution, eps);
 
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
@@ -279,7 +212,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 					subMonitor.split(1);
 				}
 				modelCheckingResult.availability.add(1 - getFailRate());
-				iterate(tm);
+				mtxIterator.iterate();
 			}
 		} else {
 			double oldFailRate = getFailRate();
@@ -290,8 +223,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				if (subMonitor != null) {
 					subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 				}
-				
-				iterate(tm);
+				mtxIterator.iterate();
 				double newFailRate = getFailRate();
 				modelCheckingResult.availability.add(1 - newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
@@ -310,17 +242,17 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
 		if (tm == null) {
-			Matrix matrix = new Matrix(mc);
-			tm = matrix.createTransitionMatrix(false, delta);
+			tm = matrixFactory.getTransitionMatrix(mc, false, delta);
 		}
 
 		probabilityDistribution = getInitialProbabilityDistribution();
-		resultBuffer = new double[probabilityDistribution.length];
+		MatrixIterator mtxIterator = tm.getIterator(probabilityDistribution, eps);
+		
 		double oldUnavailability = getFailRate();
 		double difference = 0;
 		boolean convergence = false;
 		while (!convergence) {
-			iterate(tm);
+			mtxIterator.iterate();
 			double newUnavailability = getFailRate();
 			difference = Math.abs(newUnavailability - oldUnavailability) / newUnavailability;
 
@@ -437,69 +369,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		double[] inititalVector = new double[mc.getStates().size()];
 		inititalVector[0] = 1;
 		return inititalVector;
-	}
-
-	/**
-	 * Performs one update iteration
-	 * 
-	 * @param tm the transition matrix
-	 */
-	private void iterate(Matrix tm) {
-		double[] res = probabilityDistribution;
-		probabilityDistribution = new double[probabilityDistribution.length];
-
-		double lambda = 1;
-		int i = 0;
-		boolean convergence = false;
-		while (!convergence) {
-			for (int j = 0; j < probabilityDistribution.length; ++j) {
-				probabilityDistribution[j] += res[j] * lambda;
-			}
-
-			lambda = lambda / (i + 1);
-			double change = lambda * multiply(tm, res, resultBuffer) / delta;
-
-			// Swap the discrete time buffers
-			double[] tmp = res;
-			res = resultBuffer;
-			resultBuffer = tmp;
-
-			if (change < eps * eps || !Double.isFinite(change)) {
-				for (int j = 0; j < probabilityDistribution.length; ++j) {
-					probabilityDistribution[j] += res[j] * lambda;
-				}
-
-				convergence = true;
-			} else {
-				++i;
-			}
-		}
-	}
-
-	/**
-	 * Performs a discrete time abstract step.
-	 * @param tm the transition matrix
-	 * @param vector the current probability distribution
-	 * @param result the vector to put the result into
-	 * @return squared length of the result vector
-	 */
-	private double multiply(Matrix tm, double[] vector, double[] result) {
-		int countStates = vector.length;
-		double res = 0;
-
-		for (int i = 0; i < countStates; ++i) {
-			result[i] = vector[i] * tm.getDiagonal()[i];
-			int[] predIndices = tm.getStatePredIndices()[i];
-			double[] predRates = tm.getStatePredRates()[i];
-
-			for (int j = 0; j < predIndices.length; ++j) {
-				double change = vector[predIndices[j]] * predRates[j];
-				res += change * change;
-				result[i] += change;
-			}
-		}
-
-		return res;
 	}
 
 	@Override

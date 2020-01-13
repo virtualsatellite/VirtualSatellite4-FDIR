@@ -66,11 +66,11 @@ public class MarkovModelCheckerTest {
 	@Test
 	public void testAvailability() {
 		final List<Double> EXPECTED_POINT_AVAILABILITY = new ArrayList<>();
-		final double AVAIL_RATE = 0.5453268543142235;
+		final double AVAIL_RATE = 0.5453633159017502;
 		EXPECTED_POINT_AVAILABILITY.add((double) 1);
 		EXPECTED_POINT_AVAILABILITY.add(AVAIL_RATE);
-		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.4365424;
-		MarkovModelChecker modelChecker = new MarkovModelChecker(1, 1);
+		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.5;
+		MarkovModelChecker modelChecker = new MarkovModelChecker(1, EPSILON);
 
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		ma.getEvents().add("a");

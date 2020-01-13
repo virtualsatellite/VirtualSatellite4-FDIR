@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<dvlm_c:Concept xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dvlm_c="http://www.virsat.sc.dlr.de/dvlm/v6/c" xmlns:dvlm_calc="http://www.virsat.sc.dlr.de/dvlm/v6/calc" xmlns:dvlm_cppd="http://www.virsat.sc.dlr.de/dvlm/v6/cp/cppd" name="de.dlr.sc.virsat.model.extension.fdir" description="VirSat DLR FDIR Concept" version="1.1" displayName="FDIR">
+<dvlm_c:Concept xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dvlm_c="http://www.virsat.sc.dlr.de/dvlm/v7/c" xmlns:dvlm_calc="http://www.virsat.sc.dlr.de/dvlm/v7/calc" xmlns:dvlm_cppd="http://www.virsat.sc.dlr.de/dvlm/v7/cp/cppd" name="de.dlr.sc.virsat.model.extension.fdir" description="VirSat DLR FDIR Concept" version="1.1" displayName="FDIR">
   <categories name="FaultTreeNode"/>
   <categories name="FaultEvent" isAbstract="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
   <categories name="Gate" isAbstract="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
@@ -74,7 +74,7 @@
     </properties>
   </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" quantityKindName="Frequency" unitName="Per Hour"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="coldFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
     <properties xsi:type="dvlm_cppd:StringProperty" name="repairAction" description="Description of the action(s) needed to be performed for the repair."/>
@@ -264,14 +264,6 @@
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="minimumCutSets" type="de.dlr.sc.virsat.model.extension.fdir.CutSet">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
-  </categories>
-  <categories name="FDIRRequirement" isApplicableForAll="true" isAbstract="true"/>
-  <categories name="ReliabilityRequirement" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRRequirement">
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="minReliability" quantityKindName="Dimensionless" unitName="Percent" defaultValue="0.0"/>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="maxCriticality" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0.0"/>
-  </categories>
-  <categories name="FaultToleranceRequirement" cardinality="1" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FDIRRequirement">
-    <properties xsi:type="dvlm_cppd:IntProperty" name="minFaultTolerance" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
   </categories>
   <categories name="RecoveryAutomaton" isApplicableForAll="true" cardinality="1">
     <properties xsi:type="dvlm_cppd:ReferenceProperty" name="initial" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>

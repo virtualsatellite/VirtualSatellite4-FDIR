@@ -40,7 +40,6 @@ import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.IFaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 // *****************************************************************
 // * Class Declaration
@@ -91,27 +90,25 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		List<Fault> faults = parent.getAll(Fault.class);
 		
 		final int COUNT_TASKS = 2 + faults.size();
-
 		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_TASKS);
 		subMonitor.setTaskName("MCS Analysis");
+		subMonitor.split(1);
+		subMonitor.subTask("Creating Data Model");
 		
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
-		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra != null);
-		if (ra != null) {
-			ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		}
+		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra);
 		
 		Map<Set<Object>, List<Fault>> mapCutSetToFaults = gatherMinimumCutSets(faults, ftEvaluator, subMonitor);
-		
+
+		subMonitor.split(1);
 		subMonitor.subTask("Computing MCS metrics");
+		
+		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = computeMinimumCutSetsMetrics(mapCutSetToFaults, ftEvaluator);
+		
 		subMonitor.split(1);
-		
-		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = computeMinimumCutSetsMetrics(mapCutSetToFaults, ftEvaluator, subMonitor);
-		
 		subMonitor.subTask("Updating Results");
-		subMonitor.split(1);
 		
-		long faultTolerance = mapCutSetToFaults.keySet().stream().mapToLong(cutSet -> cutSet.size()).min().orElse(1) - 1;
+		long faultTolerance = mapCutSetToFaults.keySet().stream().mapToLong(Set::size).min().orElse(1) - 1;
 		
 		return new RecordingCommand(ed, "MCS Analysis") {
 			@Override
@@ -136,9 +133,9 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		long maxMinimumCutSetSize = getMaxMinimumCutSetSizeBean().isSet() ? getMaxMinimumCutSetSize() : 0;
 		
 		for (Fault fault : faults) {
-			monitor.subTask("Analysing fault " + fault.getName());
 			monitor.split(1);
-
+			monitor.subTask("Analysing fault " + fault.getName());
+			
 			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, new MinimumCutSet(maxMinimumCutSetSize));
 			
 			for (Set<Object> minCutSet : result.getMinCutSets()) {
@@ -153,10 +150,9 @@ public  class MCSAnalysis extends AMCSAnalysis {
 	 * Computes for each Minimum Cut Set its associated metrics
 	 * @param mapCutSetToFaults the mapping from cut set to fault
 	 * @param ftEvaluator the fault tree evaluator
-	 * @param subMonitor the monitor
 	 * @return the model checking result
 	 */
-	private Map<Set<Object>, ModelCheckingResult> computeMinimumCutSetsMetrics(Map<Set<Object>, List<Fault>> mapCutSetToFaults, IFaultTreeEvaluator ftEvaluator, SubMonitor subMonitor) {
+	private Map<Set<Object>, ModelCheckingResult> computeMinimumCutSetsMetrics(Map<Set<Object>, List<Fault>> mapCutSetToFaults, IFaultTreeEvaluator ftEvaluator) {
 		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = new HashMap<>();
 		for (Set<Object> minCutSet : mapCutSetToFaults.keySet()) {
 			List<Fault> failures = mapCutSetToFaults.get(minCutSet);
@@ -166,7 +162,7 @@ public  class MCSAnalysis extends AMCSAnalysis {
 				failNodeProvider.getBasicEvents().add((BasicEvent) obj);
 			}
 			
-			ModelCheckingResult mcsResult = ftEvaluator.evaluateFaultTree(failure, failNodeProvider, subMonitor,
+			ModelCheckingResult mcsResult = ftEvaluator.evaluateFaultTree(failure, failNodeProvider, null,
 					MTTF.MTTF, SteadyStateDetectability.STEADY_STATE_DETECTABILITY, MeanTimeToDetection.MTTD);
 			
 			mapMcsToResult.put(minCutSet, mcsResult);

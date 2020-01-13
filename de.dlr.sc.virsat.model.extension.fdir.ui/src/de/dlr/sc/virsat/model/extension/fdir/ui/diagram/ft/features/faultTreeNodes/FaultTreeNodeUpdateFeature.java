@@ -62,12 +62,17 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 		if (pictogramElement instanceof ContainerShape) {
 			ContainerShape cs = (ContainerShape) pictogramElement;
 			
+			String expectedName = bean.getName();
 			if (bean instanceof Fault) {
-				String expectedName = bean.getParent().getName() + "." + bean.getName();
-		        if (hasOutOfDateText(expectedName, cs, FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE)) {
-		        	neededUpdates.add("Name out of date");
-		        }
-			} else if (bean instanceof VOTE) {
+				expectedName = bean.getParent().getName() + "." + expectedName;
+			} 
+			
+			int nameShapeIndex = Integer.valueOf(Graphiti.getPeService().getPropertyValue(cs, FaultTreeNodeAddFeature.COUNT_BASE_SUB_SHAPES_KEY));
+	        if (hasOutOfDateText(expectedName, cs, nameShapeIndex)) {
+	        	neededUpdates.add("Name out of date");
+	        }
+			
+			if (bean instanceof VOTE) {
 				String expectedVotingThreshold = String.valueOf("\u2265" + ((VOTE) bean).getVotingThreshold());
 		        if (hasOutOfDateText(expectedVotingThreshold, cs, FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE)) {
 		        	neededUpdates.add("Voting threshold out of date");
@@ -114,7 +119,7 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
 	 * @return true iff the text is out of date
 	 */
 	private boolean hasOutOfDateText(String expectedText, ContainerShape cs, int childIndex) {
-        Shape shape = cs.getChildren().get(FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE);
+        Shape shape = cs.getChildren().get(childIndex);
         Text text = (Text) shape.getGraphicsAlgorithm();
         return !Objects.equals(text.getValue(), expectedText);
 	}
@@ -129,10 +134,14 @@ public class FaultTreeNodeUpdateFeature extends VirSatUpdateFeature {
             ContainerShape cs = (ContainerShape) pictogramElement;
             
             // update name
-            if (bean instanceof Fault) {
-	            String businessName = bean.getParent().getName() + "." + bean.getName();
-	            changeDuringUpdate |= updateText(businessName, cs, FaultTreeNodeAddFeature.INDEX_NAME_TEXT_SHAPE);
-            } else if (bean instanceof VOTE) {
+			String businessName = bean.getName();
+			if (bean instanceof Fault) {
+				businessName = bean.getParent().getName() + "." + businessName;
+			} 
+			int nameShapeIndex = Integer.valueOf(Graphiti.getPeService().getPropertyValue(cs, FaultTreeNodeAddFeature.COUNT_BASE_SUB_SHAPES_KEY));
+            changeDuringUpdate |= updateText(businessName, cs, nameShapeIndex);
+           
+            if (bean instanceof VOTE) {
 		        String votingThreshold = String.valueOf("\u2265" + ((VOTE) bean).getVotingThreshold());
 	            changeDuringUpdate |= updateText(votingThreshold, cs, FaultTreeNodeAddFeature.INDEX_VOTE_TRESHOLD_SHAPE);
             } else if (bean instanceof DELAY) {

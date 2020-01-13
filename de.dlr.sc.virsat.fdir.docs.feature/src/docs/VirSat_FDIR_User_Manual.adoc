@@ -1,0 +1,56 @@
+= Virtual Satellite 4 FDIR: User Manual
+:imagesdir: images
+:title-logo-image: images/title/VirtualSatellite_Modelling_4k.jpg
+:toc:
+:toclevels: 3
+:experimental:  
+:sectnums:
+
+== What is Virtual Satellite 4 FDIR?
+
+== Getting Started
+
+== Fault Modeling
+
+=== Modeling Fault Trees
+
+=== Modeling Detection
+
+=== Data exchange with the GALILEO Format
+
+== Recovery Modeling
+
+=== Modeling Recovery Automata
+
+== FDIR Analysis
+
+=== Configuring Analysis information
+
+=== Qualitative Analysis
+
+=== Quantitative Analysis
+
+=== Using STORM
+
+=== FDIR Reporting
+
+== FDIR Synthesis
+
+=== Fault Tree Generation
+
+=== Recovery Automata Synthesis
+
+[colophone]
+== Legal - License & Copyright
+
+|===
+| Product Version:      | {revnumber}
+| Build Date Qualifier: | {revdate}
+| Travis CI Job Number: | {buildnr}
+|=== 
+
+Copyright (c) 2008-2020 DLR (German Aerospace Center),
+Simulation and Software Technology.
+Lilienthalplatz 7, 38108 Braunschweig, Germany
+
+This program and the accompanying materials are made available under the terms of the Eclipse Public License 2.0 which is available at https://www.eclipse.org/legal/epl-2.0/ . A copy of the license is shipped with the Virtual Satellite software product.

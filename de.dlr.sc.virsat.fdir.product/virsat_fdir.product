@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="VirSat FDIR Edition" uid="de.dlr.virsat.fdir.product" id="de.dlr.sc.virsat.fdir.branding.ui.VirSat_FDIR" application="org.eclipse.ui.ide.workbench" version="4.9.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="VirSat FDIR Edition" uid="de.dlr.virsat.fdir.product" id="de.dlr.sc.virsat.fdir.branding.ui.VirSat_FDIR" application="org.eclipse.ui.ide.workbench" version="4.10.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/de.dlr.sc.virsat.fdir.branding.ui/resources/images/Branding/Configuration.gif"/>
       <text>
          Virtual Satellite - FDIR
-Version 4.9.0
+Version 4.10.0
 
 Copyright 2015 by German Aerospace Center (DLR) e.V.
 

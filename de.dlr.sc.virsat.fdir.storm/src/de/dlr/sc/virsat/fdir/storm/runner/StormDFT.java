@@ -162,19 +162,16 @@ public class StormDFT implements IStormProgram<Double> {
 
 		@Override
 		public void visit(Availability pointAvailabilityMetric, SubMonitor subMonitor) {
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void visit(MinimumCutSet minimumCutSet) {
-			// TODO Auto-generated method stub
 			
 		}
 	}

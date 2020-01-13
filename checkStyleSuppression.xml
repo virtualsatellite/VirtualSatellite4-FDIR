@@ -6,6 +6,7 @@
 
 <suppressions>
     <suppress files="[\\/]src-gen[\\/]" checks="[a-zA-Z0-9]*"/>
+    <suppress files="[\\/]src-dmf[\\/]" checks="[a-zA-Z0-9]*"/>
     <suppress files="[\\/]src/gen/java[\\/]" checks="[a-zA-Z0-9]*"/>
     <suppress files="[\\/]xtend-gen[\\/]" checks="[a-zA-Z0-9]*"/>
 </suppressions>

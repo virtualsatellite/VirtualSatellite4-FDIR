@@ -422,9 +422,21 @@ public class FaultTreeHelper {
 
 		for (BasicEvent fm : fault.getBasicEvents()) {
 			BasicEvent newFm = new BasicEvent(concept);
-			newFm.getHotFailureRateBean().setValueAsBaseUnit(fm.getHotFailureRateBean().getValueToBaseUnit());
-			newFm.getColdFailureRateBean().setValueAsBaseUnit(fm.getColdFailureRateBean().getValueToBaseUnit());
-			newFm.getRepairRateBean().setValueAsBaseUnit(fm.getRepairRateBean().getValueToBaseUnit());
+			try {
+				newFm.getHotFailureRateBean().setValueAsBaseUnit(fm.getHotFailureRateBean().getValueToBaseUnit());
+			} catch (NullPointerException e) {
+				newFm.getHotFailureRateBean().setValueAsBaseUnit(Double.NaN);
+			}
+			try {
+				newFm.getColdFailureRateBean().setValueAsBaseUnit(fm.getColdFailureRateBean().getValueToBaseUnit());
+			} catch (NullPointerException e) {
+				newFm.getColdFailureRateBean().setValueAsBaseUnit(Double.NaN);
+			}
+			try {
+				newFm.getRepairRateBean().setValueAsBaseUnit(fm.getRepairRateBean().getValueToBaseUnit());
+			} catch (NullPointerException e) {
+				newFm.getRepairRateBean().setValueAsBaseUnit(Double.NaN);
+			}
 			newFm.setName(fm.getName());
 			newFm.getTypeInstance().setUuid(fm.getTypeInstance().getUuid());
 			copy.getBasicEvents().add(newFm);
@@ -834,6 +846,20 @@ public class FaultTreeHelper {
 		allEdges.addAll(getAllDeps(fault));
 		allEdges.addAll(getAllObservations(fault));
 		return allEdges;
+	}
+	
+	/**
+	 * Gets the edges in the fault tree of the passed fault
+	 * @param fault the root fault of a fault tree
+	 * @return all edges in the fault
+	 */
+	public List<FaultTreeEdge> getEdges(Fault fault) {
+		List<FaultTreeEdge> edges = new ArrayList<>();
+		edges.addAll(fault.getFaultTree().getPropagations());
+		edges.addAll(fault.getFaultTree().getSpares());
+		edges.addAll(fault.getFaultTree().getDeps());
+		edges.addAll(fault.getFaultTree().getObservations());
+		return edges;
 	}
 
 	/**

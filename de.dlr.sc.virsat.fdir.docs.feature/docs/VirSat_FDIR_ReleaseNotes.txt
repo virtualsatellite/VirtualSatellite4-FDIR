@@ -3,11 +3,48 @@ VirSat FDIR Release Notes
 
 VirSat FDIR is based on VirSat Core. Please don't forget to read the Release Notes of VirSat Core as well!
 
+Release 4.10.0 (13th December 2019)
+----------------------------------
+
+New Features:
+	Improved runtime of Recovery Automaton synthesis - #7 #8 #9 #21 #64 Feature
+	Improved runtime of DFT evaluation - #53 #88 #90 #93 Feature Bug
+	Implemented support for Partial Observable Fault Trees - #24 #28 #32 Feature
+	Extended Recovery Automaton Model with Timed Transitions - #12 Feature
+	Extended Fault Tree model with a DELAY gate - #15 Feature
+	Extended Fault Tree model with a MONITOR gate - #13 Feature
+	Extended configuration data model with a probability, observability, and criticality model - #20 #122 Feature
+	Extended analysis model with an Observability Analysis - #29 Feature
+	Implemented FDIR report generation mechanism - #61 #151 Feature
+	Implemented support for using STORM as a backend for Recovery Automaton synthesis - #96 Feature
+	Extended enums (Severity, ProbabiliyLevel, etc.) to support the UNKNOWN value - #116 Feature
+	Migrated to Eclipse 2019-06 - #142 Feature Build
+	Migrated to DVLM v7 - #197 Feature Build
+
+Usability Updates:
+	Recovery Automaton Minimizer can now be called from the UI - #18 UI
+	Improved Look & Feel of analysis' with charts - #19 #60 #157 Comfort/Usability UI
+	Restructured generated FMECA - #42 #132 Comfort/Usability UI
+	Restructured generated MCSA - #101 #111 #132 Comfort/Usability Feature
+	Implemented support for progress monitors in long running analysis methods - #59 Comfort/Usability 
+	Coloring criticality values in analysis' according to criticality model - #124 UI
+	Implemented support for setting names of gates in the Fault Tree diagrams - #130 UI
+	Implemented validation checking for broken fault tree edges - #195 Comfort/Usability
+	Modified data model to initialize failure rates with undefined value - #200 Comfort/Usability
+
+Fixed Bug:
+	Fixed an issue where Recovery Automaton Diagrams did not request for updates after state space changes - #56 Bug
+	Fixed a performance issue when hovering over Fault Tree nodes in a Fault Tree diagram - #57 Bug
+	Improved numerical stability of reliability and availability metric computations - #156 Bug
+	Fixed a bug where common cause failures in the Fault Tree diagram were not expanded correctly - #164 Bug
+	Fixed Galileo DFT export not being able to deal with not-unique full qualified names by switching to UUIDs - #169 Bug
+	Fixed issue of Galileo DFT exporter not having an icon - #202 Bug UI 
+
 Release 4.9.0 (2nd July 2019)
 ----------------------------------
 
 New Features:
-	Initial Open Source Release #3
+	Initial Open Source Release - #3 Release
 
 Usability Updates:
 	

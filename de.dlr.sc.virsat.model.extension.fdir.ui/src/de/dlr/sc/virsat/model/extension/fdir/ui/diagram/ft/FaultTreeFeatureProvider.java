@@ -236,7 +236,7 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 		
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
 		
-		if (object instanceof Fault || object instanceof BasicEvent) {
+		if (object instanceof FaultTreeNode) {
 			return new BeanDirectEditNameFeature(this);
 		}
 		

@@ -46,8 +46,8 @@ public class FaultTreeNodeGraphicsFactory {
 		0, 40 
 	};
 	
-	public static final int GATE_WIDTH = 55;
-	public static final int GATE_HEIGHT = 45;
+	public static final int GATE_WIDTH = 50;
+	public static final int GATE_HEIGHT = 40;
 	
 	public static final int[] AND_POLYGON = new int[] { 
 		GATE_WIDTH * 4 / 6, 0,  
