@@ -90,19 +90,17 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		MatrixFactory matrixFactory = new MatrixFactory();
 		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
 		
-		double[] probabilityDistribution;		
-		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(ma);
-		
+		double[] probabilityDistribution = BellmanMatrix.getInitialMTTFVector(ma);		
 		MatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, EPS);		
 		
 		for (S state : ma.getStates()) {
 			if (!state.isMarkovian()) {
 				nondeterministicStates.add(state);
 			}
-		}		
+		}
 		
 		while (!converged) {
-			mxIterator.iterate();					
+			mxIterator.iterate();
 			for (S nondeterministicState : nondeterministicStates) {
 				double maxValue = Double.NEGATIVE_INFINITY;
 				
@@ -117,7 +115,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				}
 				
 				probabilityDistribution[nondeterministicState.getIndex()] = maxValue;
-			}			
+			}
+			
 			double change = mxIterator.getChange();
 			if (change < EPS || Double.isNaN(change)) {
 				converged = true;
@@ -131,7 +130,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				value = 0.0;
 			}			
 			resultMap.put(state, value);
-		}		
+		}
 		return resultMap;
 	}
 	
