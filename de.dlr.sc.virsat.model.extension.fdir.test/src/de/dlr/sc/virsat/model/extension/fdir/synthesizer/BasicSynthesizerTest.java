@@ -173,11 +173,21 @@ public class BasicSynthesizerTest extends ATestCase {
 	public void testSynthesizeVGS1() throws IOException {
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
 		synthesizer.synthesize(fault);
-	} 
+	}
 	
 	@Test
-	public void testSynthesizeCM4() throws IOException {
-		Fault fault = createDFT("/resources/galileo/cm4.dft");
-		synthesizer.synthesize(fault);
+	public void testSynthesizeCsp2Repair1() throws IOException {
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
+	}
+	
+	@Test
+	public void testSynthesizeCsp2Repair2() throws IOException {
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
 	} 
 }

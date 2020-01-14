@@ -24,7 +24,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -236,7 +236,9 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		if (event instanceof Collection<?>) {
 			raTransition.getGuards().addAll((Collection<? extends FaultTreeNode>) event);
 		} else {
-			raTransition.getGuards().add(((IDFTEvent) event).getNode());
+			FaultEvent faultEvent = (FaultEvent) event;
+			raTransition.getGuards().add(faultEvent.getNode());
+			raTransition.setIsRepair(faultEvent.isRepair());
 		}
 		raTransition.setName(fromRaState.getName() + toRaState.getName());
 		return raTransition;

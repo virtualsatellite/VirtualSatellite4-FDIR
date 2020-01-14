@@ -80,6 +80,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 				statistics.maxModuleSize = Math.max(statistics.maxModuleSize, module.getNodes().size());
 				
 				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
+				
+				System.out.println(ra.toDot());
+				
 				if (minimizer != null) {
 					minimizer.minimize(ra);
 					statistics.minimizationStatistics.compose(minimizer.getStatistics());

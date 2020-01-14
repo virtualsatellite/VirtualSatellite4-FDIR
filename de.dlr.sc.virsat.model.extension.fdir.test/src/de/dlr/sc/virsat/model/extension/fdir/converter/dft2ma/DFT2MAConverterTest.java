@@ -36,15 +36,6 @@ public class DFT2MAConverterTest extends ATestCase {
 		converter = new DFT2MAConverter();
 		converter.setSemantics(DFTSemantics.createStandardDFTSemantics());
 	}
-
-	/**
-	 * Creates the dft2MAconverter to be used
-	 * @return a dft2MAconverter
-	 */
-	public DFT2MAConverter createDFT2MAConverter() {
-		converter.setSemantics(DFTSemantics.createStandardDFTSemantics());
-		return converter;
-	}
 	
 	@Test
 	public void testEvaluateTransientOrPermanent() throws IOException {

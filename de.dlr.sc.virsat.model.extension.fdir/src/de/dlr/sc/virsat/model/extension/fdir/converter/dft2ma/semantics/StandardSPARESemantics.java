@@ -83,7 +83,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean hasPrimaryFailed(DFTState state, List<FaultTreeNode> children) {
 		for (FaultTreeNode child : children) {
-			if (!state.hasFaultTreeNodeFailed(child)) {
+			if (!state.hasFaultTreeNodeFailed(child) || !state.isNodeActive(child)) {
 				return false;
 			}
 		}
