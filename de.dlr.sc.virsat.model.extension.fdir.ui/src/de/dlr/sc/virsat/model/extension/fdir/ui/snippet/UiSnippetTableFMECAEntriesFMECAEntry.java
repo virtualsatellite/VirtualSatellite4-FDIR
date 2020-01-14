@@ -77,6 +77,11 @@ public class UiSnippetTableFMECAEntriesFMECAEntry extends AUiSnippetTableFMECAEn
 		public String getColumnText(Object object, int columnIndex) {
 			ComposedPropertyInstance cpi = (ComposedPropertyInstance) object;
 			CategoryAssignment ca = cpi.getTypeInstance();
+			
+			if (ca == null) {
+				return tableLabelProvider.getColumnText(ca, columnIndex);
+			}
+			
 			FMECAEntry fmecaEntry = new FMECAEntry(ca);
 			redirectNotification(fmecaEntry, object, true);
 
@@ -100,6 +105,11 @@ public class UiSnippetTableFMECAEntriesFMECAEntry extends AUiSnippetTableFMECAEn
 		public Color getBackground(Object object, int columnIndex) {
 			ComposedPropertyInstance cpi = (ComposedPropertyInstance) object;
 			CategoryAssignment ca = cpi.getTypeInstance();
+			
+			if (ca == null) {
+				return null;
+			}
+			
 			FMECAEntry fmecaEntry = new FMECAEntry(ca);
 			
 			if (columnIndex == CRITICALITY_COLUMN) {

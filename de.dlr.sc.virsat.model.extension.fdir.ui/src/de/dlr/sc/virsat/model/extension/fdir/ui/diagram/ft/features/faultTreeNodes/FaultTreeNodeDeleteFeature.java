@@ -12,11 +12,14 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNo
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IMultiDeleteInfo;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
+import org.eclipse.graphiti.features.context.impl.RemoveContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -65,7 +68,16 @@ public class FaultTreeNodeDeleteFeature extends BeanDeleteFeature {
 			for (PictogramElement pe : pes) {
 				DeleteContext deleteContext = new DeleteContext(pe);
 				deleteContext.setMultiDeleteInfo(multiDeleteInfo);
-				getFeatureProvider().getDeleteFeature(deleteContext).delete(deleteContext);
+				IDeleteFeature deleteFeature = getFeatureProvider().getDeleteFeature(deleteContext);
+				if (deleteFeature != null && deleteFeature.canDelete(deleteContext)) {
+					deleteFeature.delete(deleteContext);
+				} else {
+					RemoveContext removeContext = new RemoveContext(pe);
+					IRemoveFeature removeFeature = getFeatureProvider().getRemoveFeature(removeContext);
+					if (removeFeature != null && removeFeature.canRemove(removeContext)) {
+						removeFeature.remove(removeContext);
+					}
+				}
 			}
 		} 
 		
