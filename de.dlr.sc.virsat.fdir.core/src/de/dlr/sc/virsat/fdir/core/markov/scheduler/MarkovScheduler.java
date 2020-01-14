@@ -22,6 +22,9 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
+import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
+import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -67,8 +70,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 					} 
 				}
 			}
-		}
-	
+		}	
 		return schedule;
 	}
 	
@@ -80,66 +82,57 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 */
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
 		boolean converged = false;
-		List<Map<S, Double>> values = new ArrayList<>();
-		int iteration = 0;
 		final double EPS = 0.0000000001;
 		
-		while (!converged) {			
-			Map<S, Double> oldValues = values.isEmpty() ? null : values.get(iteration - 1);
-			Map<S, Double> currentValues = new HashMap<>();
-			values.add(currentValues);
-			
-			if (oldValues != null) {
-				converged = true;
+		Map<S, Double> resultMap = new HashMap<S, Double>();
+		List<S> nondeterministicStates = new ArrayList<S>();
+		
+		MatrixFactory matrixFactory = new MatrixFactory();
+		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
+		
+		double[] probabilityDistribution;		
+		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(ma);
+		
+		MatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, EPS);		
+		
+		for (S state : ma.getStates()) {
+			if (!state.isMarkovian()) {
+				nondeterministicStates.add(state);
 			}
-			
-			for (S state : ma.getStates()) {
-				double value = 0;
+		}		
+		
+		while (!converged) {
+			mxIterator.iterate();					
+			for (S nondeterministicState : nondeterministicStates) {
 				double maxValue = Double.NEGATIVE_INFINITY;
 				
-				if (state.isMarkovian()) {
-					List<MarkovTransition<S>> transitions = ma.getSuccTransitions(state);
-					for (MarkovTransition<S> transition : transitions) {
-						double reward = ma.getFinalStates().contains(transition.getTo()) ? -1 : 0;
-						double prevValue = oldValues != null ? oldValues.get(transition.getTo()) : 0;
-						double newValue = reward + prevValue;
-						value += transition.getRate() * newValue;
-					} 
-				} else {
-					Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
-					for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
-						double expectationValue = 0;
-						for (MarkovTransition<S> transition : transitionGroup) {
-							double reward = ma.getFinalStates().contains(transition.getTo()) ? -1 : 0;
-							double prevValue = oldValues != null ? oldValues.get(transition.getTo()) : 0;
-							double newValue = reward + prevValue;
-							expectationValue += transition.getRate() * newValue;
-						} 
-						
-						maxValue = Math.max(expectationValue, maxValue);
-					}
-					
-					
-					if (maxValue != Double.NEGATIVE_INFINITY) {
-						value += maxValue;
-					}
+				Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(nondeterministicState);
+				for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
+					double expectationValue = 0;
+					for (MarkovTransition<S> transition : transitionGroup) {
+						double succValue = probabilityDistribution[transition.getTo().getIndex()];
+						expectationValue += transition.getRate() * succValue;
+					}					
+					maxValue = Math.max(expectationValue, maxValue);
 				}
 				
-				currentValues.put(state, value);
-				if (oldValues != null) {
-					double change = value - oldValues.get(state);
-					if (Math.abs(change) >= EPS) {
-						converged = false;
-					} 
-				}
-			}
-	
-			if (!converged) {
-				++iteration;
+				probabilityDistribution[nondeterministicState.getIndex()] = maxValue;
+			}			
+			double change = mxIterator.getChange();
+			if (change < EPS || Double.isNaN(change)) {
+				converged = true;
 			}
 		}
 		
-		return values.get(iteration);
+		probabilityDistribution = mxIterator.getProbabilityDistribution();
+		for (S state : ma.getStates()) {			
+			double value = probabilityDistribution[state.getIndex()];			
+			if (Double.isNaN(value) || Double.isInfinite(value)) {
+				value = 0.0;
+			}			
+			resultMap.put(state, value);
+		}		
+		return resultMap;
 	}
 	
 	/**
@@ -164,9 +157,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				bestValue = expectationValue;
 				bestTransitionGroup = transitionGroup;
 			}
-		}
-		
+		}		
 		return bestTransitionGroup;
 	}
-
 }
