@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -83,7 +84,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean hasPrimaryFailed(DFTState state, List<FaultTreeNode> children) {
 		for (FaultTreeNode child : children) {
-			if (!state.hasFaultTreeNodeFailed(child) || !state.isNodeActive(child)) {
+			if (!state.hasFaultTreeNodeFailed(child) && state.isNodeActive(child)) {
 				return false;
 			}
 		}
@@ -155,7 +156,12 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @return constant true
 	 */
 	protected void performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+		FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
 		state.getMapSpareToClaimedSpares().remove(spare);
 		state.setNodeActivation(spare, false);
+		
+		for (FaultTreeNode primary : state.getFTHolder().getMapNodeToChildren().getOrDefault(claimingSpareGate, Collections.emptyList())) {
+			state.setNodeActivation(primary, true);
+		}
 	}
 }

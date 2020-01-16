@@ -81,8 +81,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 				
 				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
 				
-				System.out.println(ra.toDot());
-				
 				if (minimizer != null) {
 					minimizer.minimize(ra);
 					statistics.minimizationStatistics.compose(minimizer.getStatistics());
@@ -110,7 +108,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 			
 			statistics.maxModuleRaSize = synthesizedRA.getStates().size();
 		}
-
+		
 		statistics.time = System.currentTimeMillis() - statistics.time;
 		return synthesizedRA;
 	}

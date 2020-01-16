@@ -83,8 +83,6 @@ public class DFT2MAConverter {
 		staticAnalysis();
 		buildMA();
 		
-		System.out.println(ma.toDot());
-		
 		statistics.maxStates = ma.getStates().size();
 		statistics.maxTransitions = ma.getTransitions().size();
 		statistics.time = System.currentTimeMillis() - statistics.time;

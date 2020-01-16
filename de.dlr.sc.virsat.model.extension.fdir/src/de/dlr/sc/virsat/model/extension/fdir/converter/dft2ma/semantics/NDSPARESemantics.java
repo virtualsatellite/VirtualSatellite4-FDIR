@@ -129,7 +129,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 			DFTState newState = stateGenerator.generateState(state);
 			fa.execute(newState);
 	
-			newState.setFaultTreeNodeFailed(node, true); // true or false depending on primary
+			newState.setFaultTreeNodeFailed(node, hasPrimaryFailed(newState, newState.getFTHolder().getMapNodeToChildren().get(node)));
 			List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
 	
 			extendedRecoveryActions.add(fa);

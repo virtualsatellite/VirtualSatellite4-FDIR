@@ -177,17 +177,33 @@ public class BasicSynthesizerTest extends ATestCase {
 	
 	@Test
 	public void testSynthesizeCsp2Repair1() throws IOException {
+		final double[] EXPECTED = {
+			9.867825542307891E-5,
+			3.895175202883881E-4, 
+			8.649262706560498E-4, 
+			0.0015175732434922476
+		};
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
+		synthesizer.setMinimizer(null);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		System.out.println(ra.toDot());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	}
 	
 	@Test
 	public void testSynthesizeCsp2Repair2() throws IOException {
+		final double[] EXPECTED = {
+			9.867825542307891E-5,
+			3.895175202883881E-4, 
+			8.649262706560498E-4, 
+			0.0015175732434922476
+		};
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
+		synthesizer.setMinimizer(null);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		System.out.println(ra.toDot());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
 	} 
 }

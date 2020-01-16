@@ -405,7 +405,24 @@ public class DFTState extends MarkovState {
 				}
 				
 				if (removeClaimedSparesOnFailure(ftn)) {
-					mapSpareToClaimedSpares.remove(ftn);
+					FaultTreeNode oldCLaimingSpareGate = mapSpareToClaimedSpares.remove(ftn);
+					if (oldCLaimingSpareGate != null) {
+						List<FaultTreeNode> spares = getFTHolder().getMapNodeToSpares().get(oldCLaimingSpareGate);
+						boolean hasClaim = false;
+						for (FaultTreeNode spare : spares) {
+							FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
+							if (oldCLaimingSpareGate != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
+								hasClaim = true;
+								break;
+							}
+						}
+						
+						if (!hasClaim) {
+							for (FaultTreeNode primary : getFTHolder().getMapNodeToChildren().getOrDefault(oldCLaimingSpareGate, Collections.emptyList())) {
+								setNodeActivation(primary, true);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -422,7 +439,17 @@ public class DFTState extends MarkovState {
 	 * @return per default true for all permanent nodes
 	 */
 	protected boolean removeClaimedSparesOnFailure(FaultTreeNode node) {
-		return isFaultTreeNodePermanent(node);
+		if (!isFaultTreeNodePermanent(node)) {
+			return false;
+		}
+		
+		for (FaultTreeNode parent : getFTHolder().getMapNodeToParents().get(node)) {
+			if (!isFaultTreeNodePermanent(parent)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
