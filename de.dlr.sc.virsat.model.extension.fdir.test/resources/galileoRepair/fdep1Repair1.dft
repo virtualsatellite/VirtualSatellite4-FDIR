@@ -1,0 +1,4 @@
+toplevel "tle";
+"tle" lambda=2 repair=1;
+"fdep" fdep "A" "tle";
+"A" lambda=1 repair=2;

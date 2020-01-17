@@ -991,6 +991,26 @@ public class DFTEvaluatorTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateFDEP1Repair1() throws IOException {
+		final double[] EXPECTED = {
+			0.9706402809831216,
+			0.9425231450758,
+			0.9155935856604325,
+			0.8897991134702452
+		};
+		
+		final double EXPECTEDSTEADYSTATE = 0.2666906886974718;
+		
+		Fault fault = createDFT("/resources/galileoRepair/fdep1Repair1.dft");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
+		assertEquals("Steady State Availability has correct value", EXPECTEDSTEADYSTATE, result.getSteadyStateAvailability(), TEST_EPSILON);
+	}
+	
+	
+	@Test
 	public void testEvaluateObsOr2ObsBe2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2ObsBe2Delayed.dft");
 		
