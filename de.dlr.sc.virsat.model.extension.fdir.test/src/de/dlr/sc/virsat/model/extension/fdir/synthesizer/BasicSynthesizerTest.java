@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -178,32 +179,32 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeCsp2Repair1() throws IOException {
 		final double[] EXPECTED = {
-			9.867825542307891E-5,
-			3.895175202883881E-4, 
-			8.649262706560498E-4, 
-			0.0015175732434922476
+			0.9999016501226037,
+			0.9996130705668653, 
+			0.9991436794433161, 
+			0.9985025233486501
 		};
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
 		synthesizer.setMinimizer(null);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
 	}
 	
 	@Test
 	public void testSynthesizeCsp2Repair2() throws IOException {
 		final double[] EXPECTED = {
-			9.867825542307891E-5,
-			3.895175202883881E-4, 
-			8.649262706560498E-4, 
-			0.0015175732434922476
+			0.9999018128802991,
+			0.9996143421328886, 
+			0.9991478706086724, 
+			0.9985122259438284
 		};
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
 		synthesizer.setMinimizer(null);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
 	} 
 }
