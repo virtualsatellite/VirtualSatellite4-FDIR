@@ -56,7 +56,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -135,7 +135,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -150,7 +150,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -165,7 +165,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	} 
 	
 	
@@ -188,7 +188,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -204,6 +204,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	} 
 }
