@@ -29,9 +29,9 @@ Virtual Satellite is based on Java / Eclipse and provides an installable feature
 
 ## Quickstart
 
-1. Open your Eclipse and switch to the Git Perspective.
+1. Get the Virtual Satellite 4 DEV IDE from https://github.com/virtualsatellite/VirtualSatellite4-DEV-IDE and switch to the Git Perspective.
 2. Clone this repository.
-3. Import all projects and working-sets via the ProjectSet file in _de.dlr.sc.virsat.fdir/projectSet_
+3. Check "Import all projects" while completing the clone repository wizard. Or perform an import of working-sets via the ProjectSet file in _de.dlr.sc.virsat.fdir/projectSet_
 6. Execute the Virtual Satellite build from _de.dlr.sc.virsat.fdir/launchers_
 7. Inspect the build artifacts for the p2 repository in _de.dlr.sc.virsat.fdir.p2updatesite/target_
 
