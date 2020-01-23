@@ -27,6 +27,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
@@ -79,6 +80,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 				statistics.maxModuleSize = Math.max(statistics.maxModuleSize, module.getNodes().size());
 				
 				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
+				
 				if (minimizer != null) {
 					minimizer.minimize(ra);
 					statistics.minimizationStatistics.compose(minimizer.getStatistics());
@@ -106,7 +108,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 			
 			statistics.maxModuleRaSize = synthesizedRA.getStates().size();
 		}
-
+		
 		statistics.time = System.currentTimeMillis() - statistics.time;
 		return synthesizedRA;
 	}
@@ -190,7 +192,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 				List<FaultTreeNode> generatorGuards = new ArrayList<>();
 				
 				for (FaultTreeNode guard : fet.getGuards()) {
-					generatorGuards.add(mapGeneratedToGenerator.get(guard));
+					if (guard.getTypeInstance() != null) {
+						generatorGuards.add(mapGeneratedToGenerator.get(guard));
+					}
 				}
 				fet.getGuards().clear();
 				fet.getGuards().addAll(generatorGuards);
@@ -201,6 +205,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 		    		ClaimAction claimAction = (ClaimAction) recoveryAction;
 		    		claimAction.setClaimSpare(mapGeneratedToGenerator.get(claimAction.getClaimSpare()));
 		    		claimAction.setSpareGate((SPARE) mapGeneratedToGenerator.get(claimAction.getSpareGate()));
+		    	} else if (recoveryAction instanceof FreeAction) {
+		    		FreeAction freeAction = (FreeAction) recoveryAction;
+		    		freeAction.setFreeSpare(mapGeneratedToGenerator.get(freeAction.getFreeSpare()));
 		    	}
 		    }
 		}

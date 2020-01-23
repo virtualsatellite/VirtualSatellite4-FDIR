@@ -89,6 +89,7 @@ public class DFTState extends MarkovState {
 		permanentNodes = (BitSet) other.permanentNodes.clone();
 		failingNodes = (BitSet) other.failingNodes.clone();
 		ftHolder = other.ftHolder;
+		recoveryStrategy = other.recoveryStrategy;
 	}
 	
 	/**
@@ -276,24 +277,33 @@ public class DFTState extends MarkovState {
 	}
 	
 	/**
-	 * Activates the passed node in a given state
-	 * @param node the node to activate
+	 * Changes the activation state of the passed node in this state
+	 * @param node the node to activate/deactivate
+	 * @param activation true to activate, false to deactivate
 	 */
-	public void activateNode(FaultTreeNode node) {
+	public void setNodeActivation(FaultTreeNode node, boolean activation) {
 		if (node instanceof BasicEvent) {
-			activeFaults.add(node.getFault());
+			if (activation) {
+				activeFaults.add(node.getFault());
+			} else {
+				activeFaults.remove(node.getFault());
+			}
 			return;
 		}
 		
 		if (node instanceof Fault) {
-			activeFaults.add((Fault) node);
+			if (activation) {
+				activeFaults.add((Fault) node);
+			} else {
+				activeFaults.remove((Fault) node);
+			}
 			
 			// All depenency gates in a fault are considered activated as soon as the parent fault is activated 
 			if (!ftHolder.getMapNodeToDEPTriggers().isEmpty()) {
 				for (FaultTreeNode gate : node.getFault().getFaultTree().getGates()) {
 					if (gate instanceof ADEP) {
-						if (!activeFaults.contains(gate)) {
-							activateNode(gate);
+						if (activeFaults.contains(gate) ^ activation) {
+							setNodeActivation(gate, activation);
 						}
 					}
 				}
@@ -301,8 +311,8 @@ public class DFTState extends MarkovState {
 			
 			for (FaultTreeNode be : ftHolder.getMapFaultToBasicEvents().getOrDefault(node, Collections.emptyList())) {
 				for (FaultTreeNode trigger : ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList())) {
-					if (!activeFaults.contains(trigger)) {
-						activateNode(trigger);
+					if (activeFaults.contains(trigger) ^ activation) {
+						setNodeActivation(trigger, activation);
 					}
 				}
 			}
@@ -314,13 +324,13 @@ public class DFTState extends MarkovState {
 				continue;
 			}
 			if (!activeFaults.contains(child)) {
-				activateNode(child);
+				setNodeActivation(child, activation);
 			}
 		}
 		
 		List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
 		for (MONITOR monitor : monitors) {
-			activateNode(monitor);
+			setNodeActivation(monitor, activation);
 		}
 	}
 	
@@ -353,7 +363,7 @@ public class DFTState extends MarkovState {
 				permanentNodes.set(nodeID);
 				activeFaults.remove(ftn);
 				
-				if (removeClaimedSparesOnFailure(ftn)) {
+				if (removeClaimedSparesOnFailureIfPossible(ftn)) {
 					mapSpareToClaimedSpares.remove(ftn);
 				}
 			}
@@ -394,9 +404,7 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				if (removeClaimedSparesOnFailure(ftn)) {
-					mapSpareToClaimedSpares.remove(ftn);
-				}
+				removeClaimedSparesOnFailureIfPossible(ftn);
 			}
 		}
 		
@@ -411,8 +419,37 @@ public class DFTState extends MarkovState {
 	 * @param node the node to check
 	 * @return per default true for all permanent nodes
 	 */
-	protected boolean removeClaimedSparesOnFailure(FaultTreeNode node) {
-		return isFaultTreeNodePermanent(node);
+	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
+		if (!isFaultTreeNodePermanent(node)) {
+			return false;
+		}
+		
+		for (FaultTreeNode parent : getFTHolder().getMapNodeToParents().get(node)) {
+			if (!isFaultTreeNodePermanent(parent)) {
+				return false;
+			}
+		}
+		
+		FaultTreeNode oldCLaimingSpareGate = mapSpareToClaimedSpares.remove(node);
+		if (oldCLaimingSpareGate != null) {
+			List<FaultTreeNode> spares = getFTHolder().getMapNodeToSpares().get(oldCLaimingSpareGate);
+			boolean hasClaim = false;
+			for (FaultTreeNode spare : spares) {
+				FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
+				if (oldCLaimingSpareGate != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
+					hasClaim = true;
+					break;
+				}
+			}
+			
+			if (!hasClaim) {
+				for (FaultTreeNode primary : getFTHolder().getMapNodeToChildren().getOrDefault(oldCLaimingSpareGate, Collections.emptyList())) {
+					setNodeActivation(primary, true);
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -586,4 +623,6 @@ public class DFTState extends MarkovState {
 		}
 		return mapParentToSymmetryRequirements;
 	}
+
+
 }

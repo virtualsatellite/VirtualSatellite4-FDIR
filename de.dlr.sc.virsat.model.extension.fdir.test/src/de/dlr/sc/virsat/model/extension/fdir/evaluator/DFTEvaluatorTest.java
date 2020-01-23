@@ -81,7 +81,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxStates);
 		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxTransitions);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 
@@ -107,7 +107,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxStates);
 		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxTransitions);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		
 		final int EXPECTED_COUNT_MINCUTS = 2;
@@ -138,7 +138,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxStates);
 		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxTransitions);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		
 		final int EXPECTED_COUNT_MINCUTS = 1;
@@ -164,7 +164,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, MinimumCutSet.MINCUTSET);
 		
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		
 		final int EXPECTED_COUNT_MINCUTS = 2;
@@ -187,7 +187,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2or.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -205,7 +205,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and3.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -237,7 +237,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and4.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -253,7 +253,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and3or.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -269,7 +269,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -309,7 +309,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/or2AndOr2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -325,7 +325,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -355,7 +355,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/vote2Of3.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -371,7 +371,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/pand2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -387,7 +387,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/pand3.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -403,7 +403,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/pand4.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -419,7 +419,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/por2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -436,7 +436,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -468,7 +468,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -507,7 +507,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -522,7 +522,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/csp3.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -538,7 +538,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/csp4.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -554,7 +554,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare2Basic.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -570,7 +570,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 
@@ -586,7 +586,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2ColdSpare2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -602,7 +602,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare1Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -619,7 +619,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare2Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -635,7 +635,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/or2ColdSpare3Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -651,7 +651,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2ColdSpare1Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -668,7 +668,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2ColdSpare3Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -684,7 +684,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and3ColdSpare3Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -700,7 +700,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and4ColdSpare3Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -717,7 +717,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/or2Pand2ColdSpare2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -733,7 +733,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/coldSpare2ColdSpare2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -749,7 +749,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/wsp2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -765,7 +765,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/wsp3.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -783,7 +783,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/fdep1.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -801,7 +801,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/rdep1.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -824,7 +824,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		final double EXPECTEDMTTF = 0.25627188;
 		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 
@@ -851,7 +851,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -867,7 +867,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -883,7 +883,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -902,7 +902,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals("SSA has correct value", EXPECTEDSSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
@@ -920,7 +920,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		dftEvaluator.setSymmetryChecker(new FaultTreeSymmetryChecker());
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -936,7 +936,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/rc1.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
@@ -985,10 +985,30 @@ public class DFTEvaluatorTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, 
 				Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals("Steady State Availability has correct value", EXPECTEDSTEADYSTATE, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
+	
+	@Test
+	public void testEvaluateFDEP1Repair1() throws IOException {
+		final double[] EXPECTED = {
+			0.9706402809831216,
+			0.9425231450758,
+			0.9155935856604325,
+			0.8897991134702452
+		};
+		
+		final double EXPECTEDSTEADYSTATE = 0.2666906886974718;
+		
+		Fault fault = createDFT("/resources/galileoRepair/fdep1Repair1.dft");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
+		assertEquals("Steady State Availability has correct value", EXPECTEDSTEADYSTATE, result.getSteadyStateAvailability(), TEST_EPSILON);
+	}
+	
 	
 	@Test
 	public void testEvaluateObsOr2ObsBe2Delayed() throws IOException {

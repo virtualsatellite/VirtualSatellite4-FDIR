@@ -69,7 +69,7 @@ public class POSynthesizer extends ASynthesizer {
 					.map(entry -> entry.getValue() + ": " +  entry.getKey().getLabel())
 					.collect(Collectors.joining(","));
 			
-			String label = index + " [label=\"[" + index + beliefs + "]\"";
+			String label = index + " [label=\"[" + index + " " + beliefs + "]\"";
 			if (beliefMa.getFinalStates().contains(this)) {
 				label += ", color=\"red\"";
 			}
@@ -180,6 +180,8 @@ public class POSynthesizer extends ASynthesizer {
 				transition.setRate(transition.getRate() * normalizationRate);
 			}
 		}
+		
+		System.out.println(beliefMa.toDot());
 		
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState);
 	}

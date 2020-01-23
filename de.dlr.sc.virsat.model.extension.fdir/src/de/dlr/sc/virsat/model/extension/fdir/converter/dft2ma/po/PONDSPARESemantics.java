@@ -42,6 +42,6 @@ public class PONDSPARESemantics extends NDSPARESemantics {
 	
 	@Override
 	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		return !propagateWithoutClaiming;
+		return !propagateWithoutActions;
 	}
 }

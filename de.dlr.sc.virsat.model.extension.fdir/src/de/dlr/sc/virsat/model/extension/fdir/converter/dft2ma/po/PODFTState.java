@@ -103,7 +103,7 @@ public class PODFTState extends DFTState {
 	}
 	
 	@Override
-	protected boolean removeClaimedSparesOnFailure(FaultTreeNode node) {
-		return super.removeClaimedSparesOnFailure(node) && observedFailed.get(ftHolder.getNodeIndex(node));
+	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
+		return observedFailed.get(ftHolder.getNodeIndex(node)) && super.removeClaimedSparesOnFailureIfPossible(node);
 	}
 }

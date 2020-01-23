@@ -19,6 +19,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -34,9 +35,10 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class NDSPARESemantics extends StandardSPARESemantics {
 	
 	private Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction = new HashMap<>();
+	private Map<FaultTreeNode, FreeAction> mapNodeToFreeAction = new HashMap<>();
 	private IStateGenerator stateGenerator;
 	
-	protected boolean propagateWithoutClaiming = false;
+	protected boolean propagateWithoutActions = false;
 	
 	/**
 	 * Standard constructor
@@ -50,10 +52,15 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	protected boolean hasFailed(boolean foundSpare) {
 		return true;
 	}
+
+	@Override
+	protected boolean isSingleClaim() {
+		return false;
+	}
 	
 	@Override
 	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		return !propagateWithoutClaiming && super.canClaim(pred, state, node, ftHolder);
+		return !propagateWithoutActions && super.canClaim(pred, state, node, ftHolder);
 	}
 	
 	@Override
@@ -71,7 +78,12 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		extendedRecoveryActions.add(ca);
 		generationResult.getMapStateToRecoveryActions().put(newState, extendedRecoveryActions);
 		
-		newState.activateNode(spare);
+		newState.setNodeActivation(spare, true);
+		List<FaultTreeNode> primaries = newState.getFTHolder().getMapNodeToChildren().get(node);
+		for (FaultTreeNode primary : primaries) {
+			newState.setNodeActivation(primary, false);
+		}
+		
 		generationResult.getGeneratedStates().add(newState);
 		
 		return false;
@@ -103,10 +115,50 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	}
 	
 	/**
-	 * Sets the propagation flag
-	 * @param propagateWithoutClaiming whether this gate should prevent the propagation or not
+	 * Frees a spare from all claims
+	 * @param spare the spare to be freed
+	 * @param state the current state
+	 * @param generationResult accumulator for state space generation results
+	 * @return constant true
 	 */
-	public void setPropagateWithoutClaiming(boolean propagateWithoutClaiming) {
-		this.propagateWithoutClaiming = propagateWithoutClaiming;
+	protected void performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+		if (!propagateWithoutActions) {
+			List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
+	
+			FreeAction fa = getOrCreateFreeAction(spare);
+			DFTState newState = stateGenerator.generateState(state);
+			fa.execute(newState);
+	
+			newState.setFaultTreeNodeFailed(node, hasPrimaryFailed(newState, newState.getFTHolder().getMapNodeToChildren().get(node)));
+			List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
+	
+			extendedRecoveryActions.add(fa);
+			generationResult.getMapStateToRecoveryActions().put(newState, extendedRecoveryActions);
+	
+			generationResult.getGeneratedStates().add(newState);
+		}
+	}
+
+	/**
+	 * Creates a new free action or recycles an existing one if possible
+	 * @param spare the spare to free
+	 * @return the created free action
+	 */
+	protected FreeAction getOrCreateFreeAction(FaultTreeNode spare) {
+		FreeAction fa = mapNodeToFreeAction.get(spare);
+		if (fa == null) {
+			fa = new FreeAction(spare.getConcept());
+			fa.setFreeSpare(spare);
+			mapNodeToFreeAction.put(spare, fa);
+		}
+		return fa;
+	}
+	
+	/**
+	 * Sets the propagation flag
+	 * @param propagateWithoutActions whether this gate should prevent the propagation or not
+	 */
+	public void setPropagateWithoutActions(boolean propagateWithoutActions) {
+		this.propagateWithoutActions = propagateWithoutActions;
 	}
 }
