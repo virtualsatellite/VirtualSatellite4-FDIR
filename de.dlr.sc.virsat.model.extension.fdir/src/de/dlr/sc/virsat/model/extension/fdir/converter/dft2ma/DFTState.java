@@ -363,7 +363,7 @@ public class DFTState extends MarkovState {
 				permanentNodes.set(nodeID);
 				activeFaults.remove(ftn);
 				
-				if (removeClaimedSparesOnFailure(ftn)) {
+				if (removeClaimedSparesOnFailureIfPossible(ftn)) {
 					mapSpareToClaimedSpares.remove(ftn);
 				}
 			}
@@ -404,26 +404,7 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				if (removeClaimedSparesOnFailure(ftn)) {
-					FaultTreeNode oldCLaimingSpareGate = mapSpareToClaimedSpares.remove(ftn);
-					if (oldCLaimingSpareGate != null) {
-						List<FaultTreeNode> spares = getFTHolder().getMapNodeToSpares().get(oldCLaimingSpareGate);
-						boolean hasClaim = false;
-						for (FaultTreeNode spare : spares) {
-							FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
-							if (oldCLaimingSpareGate != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
-								hasClaim = true;
-								break;
-							}
-						}
-						
-						if (!hasClaim) {
-							for (FaultTreeNode primary : getFTHolder().getMapNodeToChildren().getOrDefault(oldCLaimingSpareGate, Collections.emptyList())) {
-								setNodeActivation(primary, true);
-							}
-						}
-					}
-				}
+				removeClaimedSparesOnFailureIfPossible(ftn);
 			}
 		}
 		
@@ -438,7 +419,7 @@ public class DFTState extends MarkovState {
 	 * @param node the node to check
 	 * @return per default true for all permanent nodes
 	 */
-	protected boolean removeClaimedSparesOnFailure(FaultTreeNode node) {
+	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
 		if (!isFaultTreeNodePermanent(node)) {
 			return false;
 		}
@@ -446,6 +427,25 @@ public class DFTState extends MarkovState {
 		for (FaultTreeNode parent : getFTHolder().getMapNodeToParents().get(node)) {
 			if (!isFaultTreeNodePermanent(parent)) {
 				return false;
+			}
+		}
+		
+		FaultTreeNode oldCLaimingSpareGate = mapSpareToClaimedSpares.remove(node);
+		if (oldCLaimingSpareGate != null) {
+			List<FaultTreeNode> spares = getFTHolder().getMapNodeToSpares().get(oldCLaimingSpareGate);
+			boolean hasClaim = false;
+			for (FaultTreeNode spare : spares) {
+				FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
+				if (oldCLaimingSpareGate != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
+					hasClaim = true;
+					break;
+				}
+			}
+			
+			if (!hasClaim) {
+				for (FaultTreeNode primary : getFTHolder().getMapNodeToChildren().getOrDefault(oldCLaimingSpareGate, Collections.emptyList())) {
+					setNodeActivation(primary, true);
+				}
 			}
 		}
 		
