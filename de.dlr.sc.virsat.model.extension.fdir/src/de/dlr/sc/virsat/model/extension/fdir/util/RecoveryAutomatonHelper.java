@@ -211,14 +211,12 @@ public class RecoveryAutomatonHelper {
 	
 	/**
 	 * Computes a map of inputs for every transition in the path to a state 
-	 * @param ra recovery automaton to compute the inputs for
-	 * @param mapStateToPredecessors mapping of state to precessor transitions
-	 * @param mapStateToSuccessors mapping of state to successor transitions 
-	 * @param mapTransitionToTo mapping of a transition to its succesor state
+	 * @param raHolder holde rof the ra data
 	 * @return map of inputs 
 	 */
-	public Map<State, Set<FaultTreeNode>> computeInputs(RecoveryAutomaton ra, Map<State, List<Transition>> mapStateToPredecessors, Map<State, List<Transition>> mapStateToSuccessors, Map<Transition, State> mapTransitionToTo) {
+	public Map<State, Set<FaultTreeNode>> computeDisabledInputs(RecoveryAutomatonHolder raHolder) {
 		Map<State, Set<FaultTreeNode>> mapStateToInputs = new HashMap<>();
+		RecoveryAutomaton ra = raHolder.getRa();
 		
 		for (State s : ra.getStates()) {
 			mapStateToInputs.put(s, new HashSet<>());
@@ -231,7 +229,7 @@ public class RecoveryAutomatonHelper {
 			// Compute the updated set of guaranteed inputs
 			Set<FaultTreeNode> newInputs = new HashSet<>();
 			boolean initialInput = true;
-			for (Transition predecessor : mapStateToPredecessors.get(s)) {
+			for (Transition predecessor : raHolder.getMapStateToIncomingTransitions().get(s)) {
 				State predecessorState = predecessor.getFrom();
 				if (!s.equals(predecessorState)) {
 					Set<FaultTreeNode> incomingInputs = new HashSet<>(mapStateToInputs.get(predecessorState));
@@ -253,8 +251,8 @@ public class RecoveryAutomatonHelper {
 				// and recompute all successors
 				
 				mapStateToInputs.put(s, newInputs);
-				for (Transition successor : mapStateToSuccessors.get(s)) {
-					State successorState = mapTransitionToTo.get(successor);
+				for (Transition successor : raHolder.getMapStateToOutgoingTransitions().get(s)) {
+					State successorState = raHolder.getMapTransitionToTo().get(successor);
 					if (!queue.contains(successorState)) {
 						queue.offer(successorState);
 					}

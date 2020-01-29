@@ -32,30 +32,19 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 	private RecoveryAutomaton ra;
+	private RecoveryAutomatonHolder raHolder;
 	
-	private Map<State, List<Transition>> mapStateToOutgoingTransitions;
-	private Map<State, List<Transition>> mapStateToIncomingTransitions;
-	private Map<Transition, Set<FaultTreeNode>> mapTransitionToGuards;
 	private Map<State, List<State>> mapStateToBlock;
-	private Map<Transition, String> mapTransitionToActionLabels;
-	private Map<Transition, State> mapTransitionToTo;
-	private Map<State, Map<Set<FaultTreeNode>, String>> mapStateToGuardProfile;
 	
 	@Override
 	public void minimize(RecoveryAutomatonHolder raHolder) {
-		ra = raHolder.getRa();
+		this.ra = raHolder.getRa();
+		this.raHolder = raHolder;
 		
 		statistics = new MinimizationStatistics();
 		statistics.time = System.currentTimeMillis();
 		statistics.removedStates = ra.getStates().size();
 		statistics.removedTransitions = ra.getTransitions().size();
-		
-		mapStateToIncomingTransitions = raHolder.getMapStateToIncomingTransitions();
-		mapStateToOutgoingTransitions = raHolder.getMapStateToOutgoingTransitions();
-		mapTransitionToActionLabels = raHolder.getMapTransitionToActionLabels();
-		mapTransitionToGuards = raHolder.getMapTransitionToGuards();
-		mapTransitionToTo = raHolder.getMapTransitionToTo();
-		mapStateToGuardProfile = raHolder.getMapStateToGuardProfile();
 
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
@@ -80,7 +69,7 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 			List<State> block = getBlock(state, mapGuardProfileToBlock);
 			if (!blocks.remove(block)) {
 				block = new ArrayList<>();
-				mapGuardProfileToBlock.put(mapStateToGuardProfile.get(state), block);
+				mapGuardProfileToBlock.put(raHolder.getMapStateToGuardProfile().get(state), block);
 			}
 			
 			block.add(state);	
@@ -120,7 +109,7 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 				// Get the predecessor blocks and check if we now have to refine them
 				for (List<State> refinedBlock : refinedBlocks) {
 					for (State state : refinedBlock) {
-						List<Transition> incomingTransitions = mapStateToIncomingTransitions.get(state);
+						List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
 						for (Transition transition : incomingTransitions) {
 							List<State> fromBlock = mapStateToBlock.get(transition.getFrom());
 							if (!blocksToProcess.contains(fromBlock)) {
@@ -145,13 +134,13 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 		List<List<State>> refinedBlocks = new ArrayList<>();
 		
 		for (State state : block) {
-			List<Transition> outgoingTransitions = mapStateToOutgoingTransitions.get(state);
+			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
 			Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock = new HashMap<>();
 			
 			for (Transition transition : outgoingTransitions) {
-				List<State> toBlock = mapStateToBlock.get(mapTransitionToTo.get(transition));
-				if (toBlock != block || !mapTransitionToActionLabels.get(transition).isEmpty()) {
-					mapGuardsToBlock.put(mapTransitionToGuards.get(transition), toBlock);
+				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
+				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
+					mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
 				}
 			}
 			
@@ -176,19 +165,19 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 		for (List<State> block : blocks) {
 			State state = block.get(0);
 			
-			List<Transition> outgoingTransitions = mapStateToOutgoingTransitions.get(state);
+			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
 			for (Transition transition : outgoingTransitions) {
-				State stateTo = mapTransitionToTo.get(transition);
+				State stateTo = raHolder.getMapTransitionToTo().get(transition);
 				State blockRepresentative = mapStateToBlock.get(stateTo).get(0);
 				if (blockRepresentative != stateTo) {
-					if (blockRepresentative != state || !mapTransitionToActionLabels.get(transition).isEmpty()) {
+					if (blockRepresentative != state || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
 						transition.setTo(blockRepresentative);
-						mapTransitionToTo.put(transition, blockRepresentative);
+						raHolder.getMapTransitionToTo().put(transition, blockRepresentative);
 						
-						List<Transition> otherIncomingTransitions = mapStateToIncomingTransitions.get(stateTo);
+						List<Transition> otherIncomingTransitions = raHolder.getMapStateToIncomingTransitions().get(stateTo);
 						otherIncomingTransitions.remove(transition);
 						
-						otherIncomingTransitions = mapStateToIncomingTransitions.get(blockRepresentative);
+						otherIncomingTransitions = raHolder.getMapStateToIncomingTransitions().get(blockRepresentative);
 						otherIncomingTransitions.add(transition);
 					}
 				}
@@ -206,11 +195,11 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 			List<Transition> transitionsToRemove = new ArrayList<>();
 			
 			for (State removedState : block) {
-				List<Transition> outgoingTransitions = mapStateToOutgoingTransitions.get(removedState);
-				List<Transition> incomingTransitions = mapStateToIncomingTransitions.get(removedState);
+				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(removedState);
+				List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(removedState);
 				
 				for (Transition transition : outgoingTransitions) {
-					List<Transition> otherIncomingTransitions = mapStateToIncomingTransitions.get(mapTransitionToTo.get(transition));
+					List<Transition> otherIncomingTransitions = raHolder.getMapStateToIncomingTransitions().get(raHolder.getMapTransitionToTo().get(transition));
 					if (otherIncomingTransitions != null) {
 						otherIncomingTransitions.remove(transition);
 					}
@@ -218,7 +207,7 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 				}
 				
 				for (Transition transition : incomingTransitions) {
-					List<Transition> otherOutgoingTransitions = mapStateToOutgoingTransitions.get(transition.getFrom());
+					List<Transition> otherOutgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(transition.getFrom());
 					if (otherOutgoingTransitions != null) {
 						otherOutgoingTransitions.remove(transition);
 					}
@@ -226,13 +215,13 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 				}
 			}
 			
-			mapTransitionToActionLabels.keySet().removeAll(transitionsToRemove);
-			mapTransitionToTo.keySet().removeAll(transitionsToRemove);
-			mapTransitionToGuards.keySet().removeAll(transitionsToRemove);
+			raHolder.getMapTransitionToActionLabels().keySet().removeAll(transitionsToRemove);
+			raHolder.getMapTransitionToTo().keySet().removeAll(transitionsToRemove);
+			raHolder.getMapTransitionToGuards().keySet().removeAll(transitionsToRemove);
 			
-			mapStateToOutgoingTransitions.keySet().removeAll(block);
-			mapStateToIncomingTransitions.keySet().removeAll(block);
-			mapStateToGuardProfile.keySet().removeAll(block);
+			raHolder.getMapStateToOutgoingTransitions().keySet().removeAll(block);
+			raHolder.getMapStateToIncomingTransitions().keySet().removeAll(block);
+			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
 			
 			ra.getTransitions().removeAll(transitionsToRemove);
 			ra.getStates().removeAll(block);
@@ -246,6 +235,6 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 	 * @return the partition to which the state belongs or null if it belongs no existing partition
 	 */
 	private List<State> getBlock(State state, Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock) {
-		return mapGuardProfileToBlock.get(mapStateToGuardProfile.get(state));
+		return mapGuardProfileToBlock.get(raHolder.getMapStateToGuardProfile().get(state));
 	}
 }

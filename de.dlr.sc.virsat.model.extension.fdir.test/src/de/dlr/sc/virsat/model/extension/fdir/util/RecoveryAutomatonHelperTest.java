@@ -67,16 +67,17 @@ public class RecoveryAutomatonHelperTest extends ATestCase {
 			mapTransitionToTo.put(transition, transition.getTo());
 		}
 		
-		Map<State, Set<FaultTreeNode>> inputs = raHelper
-				.computeInputs(ra, raHelper.getPreviousTransitions(ra), raHelper.getCurrentTransitions(ra), mapTransitionToTo);
+		RecoveryAutomatonHolder raHolder = new RecoveryAutomatonHolder(ra);
+		
+		Map<State, Set<FaultTreeNode>> disabledInputs = raHelper.computeDisabledInputs(raHolder);
 		//CHECKSTYLE:OFF
-		assertTrue(inputs.get(ra.getStates().get(0)).isEmpty());
-		assertThat(inputs.get(ra.getStates().get(1)), hasItems(fault1));
-		assertThat(inputs.get(ra.getStates().get(2)), hasItems(fault2));
-		assertThat(inputs.get(ra.getStates().get(3)), hasItems(fault1, fault2));
-		assertEquals(inputs.get(ra.getStates().get(1)).size(), 1);
-		assertEquals(inputs.get(ra.getStates().get(2)).size(), 1);
-		assertEquals(inputs.get(ra.getStates().get(3)).size(), 2);
+		assertTrue(disabledInputs.get(ra.getStates().get(0)).isEmpty());
+		assertThat(disabledInputs.get(ra.getStates().get(1)), hasItems(fault1));
+		assertThat(disabledInputs.get(ra.getStates().get(2)), hasItems(fault2));
+		assertThat(disabledInputs.get(ra.getStates().get(3)), hasItems(fault1, fault2));
+		assertEquals(disabledInputs.get(ra.getStates().get(1)).size(), 1);
+		assertEquals(disabledInputs.get(ra.getStates().get(2)).size(), 1);
+		assertEquals(disabledInputs.get(ra.getStates().get(3)).size(), 2);
 		//CHECKSTYLE:ON
 	}
 	

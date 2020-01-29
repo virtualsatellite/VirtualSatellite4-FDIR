@@ -33,36 +33,24 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  */
 
 public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
-	private RecoveryAutomatonHelper raHelper;
 	private RecoveryAutomaton ra;
-	private Map<State, List<Transition>> mapStateToOutgoingTransitions;
-	private Map<State, List<Transition>> mapStateToIncomingTransitions;
-	private Map<Transition, Set<FaultTreeNode>> mapTransitionToGuards;
-	private Map<Transition, String> mapTransitionToActionLabels;
-	private Map<State, Map<Set<FaultTreeNode>, String>> mapStateToGuardProfile;
-	private Map<Transition, State> mapTransitionToTo;
+	private RecoveryAutomatonHolder raHolder;
 	
 	private Map<State, List<State>> mapStateToBlock;
-	private Map<State, Set<FaultTreeNode>> mapStateToGuaranteedInputs;
+	private Map<State, Set<FaultTreeNode>> mapStateToDisabledInputs;
 	
 	@Override
 	public void minimize(RecoveryAutomatonHolder raHolder) {
-		ra = raHolder.getRa();
+		this.ra = raHolder.getRa();
+		this.raHolder = raHolder;
 		
 		statistics = new MinimizationStatistics();
 		statistics.time = System.currentTimeMillis();
 		statistics.removedStates = ra.getStates().size();
 		statistics.removedTransitions = ra.getTransitions().size();
 		
-		raHelper = raHolder.getRaHelper();
-		
-		mapStateToIncomingTransitions = raHolder.getMapStateToIncomingTransitions();
-		mapStateToOutgoingTransitions = raHolder.getMapStateToOutgoingTransitions();
-		mapTransitionToActionLabels = raHolder.getMapTransitionToActionLabels();
-		mapTransitionToGuards = raHolder.getMapTransitionToGuards();
-		mapTransitionToTo = raHolder.getMapTransitionToTo();
-		mapStateToGuardProfile = raHolder.getMapStateToGuardProfile();
-		mapStateToGuaranteedInputs = raHelper.computeInputs(ra, mapStateToIncomingTransitions, mapStateToOutgoingTransitions, mapTransitionToTo);
+		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
+		mapStateToDisabledInputs = raHelper.computeDisabledInputs(raHolder);
 		
 		removeUntakeableTransitions();
 		
@@ -83,11 +71,12 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		List<Transition> toRemove = new ArrayList<>();
 		for (Transition transition : ra.getTransitions()) {
 			State state = transition.getFrom();
-			Set<FaultTreeNode> guaranteedInputs = mapStateToGuaranteedInputs.get(state);
-			if (mapTransitionToGuards.containsKey(transition) && guaranteedInputs.containsAll(mapTransitionToGuards.get(transition))) {
+			Set<FaultTreeNode> guaranteedInputs = mapStateToDisabledInputs.get(state);
+			if (raHolder.getMapTransitionToGuards().containsKey(transition) 
+					&& guaranteedInputs.containsAll(raHolder.getMapTransitionToGuards().get(transition))) {
 				toRemove.add(transition);
-				mapStateToIncomingTransitions.get(transition.getTo()).remove(transition);
-				mapStateToOutgoingTransitions.get(state).remove(transition);
+				raHolder.getMapStateToIncomingTransitions().get(transition.getTo()).remove(transition);
+				raHolder.getMapStateToOutgoingTransitions().get(state).remove(transition);
 			}
 		}
 		ra.getTransitions().removeAll(toRemove);
@@ -145,7 +134,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 				// Get the predecessor blocks and check if we now have to refine them
 				for (List<State> refinedBlock : refinedBlocks) {
 					for (State state : refinedBlock) {
-						List<Transition> incomingTransitions = mapStateToIncomingTransitions.get(state);
+						List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
 						for (Transition transition : incomingTransitions) {
 							List<State> fromBlock = mapStateToBlock.get(transition.getFrom());
 							if (!blocksToProcess.contains(fromBlock)) {
@@ -170,13 +159,13 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		List<List<State>> refinedBlocks = new ArrayList<>();
 		
 		for (State state : block) {
-			List<Transition> outgoingTransitions = mapStateToOutgoingTransitions.get(state);
+			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
 			Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock = new HashMap<>();
 			
 			for (Transition transition : outgoingTransitions) {
-				List<State> toBlock = mapStateToBlock.get(mapTransitionToTo.get(transition));
-				if (toBlock != block || !mapTransitionToActionLabels.get(transition).isEmpty()) {
-					mapGuardsToBlock.put(mapTransitionToGuards.get(transition), toBlock);
+				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
+				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
+					mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
 				}
 			}
 			
@@ -228,15 +217,15 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 			
 			block.remove(state);
 		
-			List<Transition> outgoingTransitionsState = mapStateToOutgoingTransitions.get(state);
-			List<Transition> incomingTransitionsState = mapStateToIncomingTransitions.get(state);
+			List<Transition> outgoingTransitionsState = raHolder.getMapStateToOutgoingTransitions().get(state);
+			List<Transition> incomingTransitionsState = raHolder.getMapStateToIncomingTransitions().get(state);
 			
 			List<Transition> outgoingTransitionsToAdd = new ArrayList<>();
 			List<Transition> incomingTransitionsToAdd = new ArrayList<>();
 			
 			for (State removedState : block) {
-				List<Transition> outgoingTransitions = mapStateToOutgoingTransitions.get(removedState);
-				List<Transition> incomingTransitions = mapStateToIncomingTransitions.get(removedState);
+				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(removedState);
+				List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(removedState);
 				
 				for (Transition transition : outgoingTransitions) {
 					outgoingTransitionsToAdd.add(transition);
@@ -246,16 +235,16 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 				for (Transition transition : incomingTransitions) {
 					incomingTransitionsToAdd.add(transition);
 					transition.setTo(state);
-					mapTransitionToTo.put(transition, state);
+					raHolder.getMapTransitionToTo().put(transition, state);
 				}
 			}
 			
 			outgoingTransitionsState.addAll(outgoingTransitionsToAdd);
 			incomingTransitionsState.addAll(incomingTransitionsToAdd);
 			
-			mapStateToOutgoingTransitions.keySet().removeAll(block);
-			mapStateToIncomingTransitions.keySet().removeAll(block);
-			mapStateToGuardProfile.keySet().removeAll(block);
+			raHolder.getMapStateToOutgoingTransitions().keySet().removeAll(block);
+			raHolder.getMapStateToIncomingTransitions().keySet().removeAll(block);
+			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
 			
 			ra.getStates().removeAll(block);
 		}
@@ -302,8 +291,8 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 * @return isEqual 
 	 */
 	private boolean isActionEquivalent(State state0, State state1) {
-		List<Transition> outgoingTransitions0 = mapStateToOutgoingTransitions.get(state0);
-		List<Transition> outgoingTransitions1 = mapStateToOutgoingTransitions.get(state1);
+		List<Transition> outgoingTransitions0 = raHolder.getMapStateToOutgoingTransitions().get(state0);
+		List<Transition> outgoingTransitions1 = raHolder.getMapStateToOutgoingTransitions().get(state1);
 		return isRecoveryEquivalent(outgoingTransitions0, state0, state1) && isRecoveryEquivalent(outgoingTransitions1, state0, state1);
 	}
 	
@@ -319,7 +308,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	private boolean isRecoveryEquivalent(List<Transition> transitions, State state0, State state1) {
 		for (Transition transition : transitions) {
 			// Check for orthogonality
-			Set<FaultTreeNode> guards0 = mapTransitionToGuards.get(transition);
+			Set<FaultTreeNode> guards0 = raHolder.getMapTransitionToGuards().get(transition);
 			if (guards0 == null) {
 				return false;
 			}
@@ -328,7 +317,8 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 				continue;
 			}
 			
-			if (!Objects.equals(mapStateToGuardProfile.get(state0).get(guards0), mapStateToGuardProfile.get(state1).get(guards0))) {
+			if (!Objects.equals(raHolder.getMapStateToGuardProfile().get(state0).get(guards0), 
+					raHolder.getMapStateToGuardProfile().get(state1).get(guards0))) {
 				return false;
 			}
 		}
@@ -344,12 +334,12 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 * @return true iff state0 and state1 are orthogonal with respect to the set of guards transition
 	 */
 	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards) {
-		Set<FaultTreeNode> guaranteedInputs0 = mapStateToGuaranteedInputs.get(state0); 
+		Set<FaultTreeNode> guaranteedInputs0 = mapStateToDisabledInputs.get(state0); 
 		if (guaranteedInputs0.containsAll(guards)) {
 			return true;
 		}
 		
-		Set<FaultTreeNode> guaranteedInputs1 = mapStateToGuaranteedInputs.get(state1); 
+		Set<FaultTreeNode> guaranteedInputs1 = mapStateToDisabledInputs.get(state1); 
 		if (guaranteedInputs1.containsAll(guards)) {
 			return true;
 		}
