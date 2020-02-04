@@ -36,15 +36,6 @@ public class DFT2MAConverterTest extends ATestCase {
 		converter = new DFT2MAConverter();
 		converter.setSemantics(DFTSemantics.createStandardDFTSemantics());
 	}
-
-	/**
-	 * Creates the dft2MAconverter to be used
-	 * @return a dft2MAconverter
-	 */
-	public DFT2MAConverter createDFT2MAConverter() {
-		converter.setSemantics(DFTSemantics.createStandardDFTSemantics());
-		return converter;
-	}
 	
 	@Test
 	public void testEvaluateTransientOrPermanent() throws IOException {
@@ -69,7 +60,10 @@ public class DFT2MAConverterTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
 		
 		MarkovAutomaton<DFTState> ma = converter.convert(fault);
+		
 		final int EXPECTED_COUNT_STATES = 4;
+		final int EXPECTED_COUNT_TRANSITIONS = 7;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 	}
 }

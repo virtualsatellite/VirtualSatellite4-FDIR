@@ -64,6 +64,12 @@ public abstract class RecoveryAction extends ARecoveryAction {
 	public abstract void execute(DFTState state);
 	
 	/**
+	 * Create a copy of this recovery action
+	 * @return a copy of the recovery action
+	 */
+	public abstract RecoveryAction copy();
+	
+	/**
 	 * Gets an action label from this recovery action such that
 	 * if r1.getActionLabel().equals(r2.getActionLabel()) it holds that
 	 * r1 and r2 are equivalent recovery actions.

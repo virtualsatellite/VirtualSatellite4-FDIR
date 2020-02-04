@@ -20,7 +20,6 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -124,11 +123,11 @@ public class RecoveryAutomatonHelper {
 	/**
 	 * Adds an action to a transition  
 	 * @param transition the transition to which the action is added
-	 * @param claimAction the action that will be assigned to the transition 
+	 * @param recoveryAction the action that will be assigned to the transition 
 	 * @return assignedActions present state recovery actions 
 	 */
-	public IBeanList<RecoveryAction> assignAction(Transition transition, ClaimAction claimAction) {
-		transition.getRecoveryActions().add(claimAction); 
+	public IBeanList<RecoveryAction> assignAction(Transition transition, RecoveryAction recoveryAction) {
+		transition.getRecoveryActions().add(recoveryAction); 
 		return transition.getRecoveryActions();
 	}
 	
@@ -208,33 +207,6 @@ public class RecoveryAutomatonHelper {
 		}
 		
 		return mapStateToPredecessors;
-	}
-
-	/**
-	 * Creates a copy of the given recovery action
-	 * @param recoveryAction the recovery action to copy
-	 * @return the copied recovery action
-	 */
-	public RecoveryAction copyRecoveryAction(RecoveryAction recoveryAction) {
-		if (recoveryAction instanceof ClaimAction) {
-			return copyClaimAction((ClaimAction) recoveryAction);
-		}
-		
-		throw new RuntimeException("Unknown Recovery Action type of recovery action " + recoveryAction.toString());
-	}
-	
-	/**
-	 * Creates a copy of a claimAction
-	 * @param claimAction clamAction whose copy gets created
-	 * @return copy of the claimAction
-	 */
-	public ClaimAction copyClaimAction(ClaimAction claimAction) {
-		
-		ClaimAction copyClaimAction = new ClaimAction(concept);
-		copyClaimAction.setClaimSpare(claimAction.getClaimSpare());
-		copyClaimAction.setSpareGate(claimAction.getSpareGate());
-		
-		return copyClaimAction;
 	}
 	
 	/**
@@ -395,7 +367,7 @@ public class RecoveryAutomatonHelper {
 		}
 		
 		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {
-			newTransition.getRecoveryActions().add(copyRecoveryAction(recoveryAction));
+			newTransition.getRecoveryActions().add(recoveryAction.copy());
 		}
 		
 		return newTransition;
@@ -411,7 +383,7 @@ public class RecoveryAutomatonHelper {
 		
 		newTransition.setTime(transition.getTimeBean().getValueToBaseUnit());
 		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {
-			newTransition.getRecoveryActions().add(copyRecoveryAction(recoveryAction));
+			newTransition.getRecoveryActions().add(recoveryAction.copy());
 		}
 		
 		return newTransition;

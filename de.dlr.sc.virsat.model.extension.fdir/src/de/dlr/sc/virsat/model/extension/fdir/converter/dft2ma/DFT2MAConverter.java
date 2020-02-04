@@ -133,7 +133,7 @@ public class DFT2MAConverter {
 			events.addAll(recoveryStrategy.createEventSet());
 			INodeSemantics spareSemantics = dftSemantics.getMapTypeToSemantics().get(FaultTreeNodeType.SPARE);
 			if (spareSemantics instanceof NDSPARESemantics) {
-				((NDSPARESemantics) spareSemantics).setPropagateWithoutClaiming(true);
+				((NDSPARESemantics) spareSemantics).setPropagateWithoutActions(true);
 			}
 		}
 	}
@@ -302,9 +302,9 @@ public class DFT2MAConverter {
 	private void createInitialState() {
 		initial = dftSemantics.getStateGenerator().generateState(ftHolder);
 		mapUnorderedBesToMarkovianDFTStates.put(initial.unorderedBes, new ArrayList<>(Collections.singletonList(initial)));
-		initial.activateNode(root.getFault());
+		initial.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
-			initial.activateNode(root);
+			initial.setNodeActivation(root, true);
 		}
 		initial.setRecoveryStrategy(recoveryStrategy);
 		ma.addState(initial);

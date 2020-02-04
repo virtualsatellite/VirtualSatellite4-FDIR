@@ -74,6 +74,6 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Reliability.UNIT_RELIABILITY);
-		assertIterationResultsEquals(result, EXPECTED);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	}
 }

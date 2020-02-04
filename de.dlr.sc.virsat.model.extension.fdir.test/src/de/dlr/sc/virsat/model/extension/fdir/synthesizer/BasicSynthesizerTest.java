@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -56,7 +57,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 
 	@Test
@@ -74,7 +75,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 
 	@Test
@@ -120,7 +121,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -135,7 +136,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -150,7 +151,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test
@@ -165,7 +166,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	} 
 	
 	
@@ -173,11 +174,37 @@ public class BasicSynthesizerTest extends ATestCase {
 	public void testSynthesizeVGS1() throws IOException {
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
 		synthesizer.synthesize(fault);
-	} 
+	}
 	
 	@Test
-	public void testSynthesizeCM4() throws IOException {
-		Fault fault = createDFT("/resources/galileo/cm4.dft");
-		synthesizer.synthesize(fault);
+	public void testSynthesizeCsp2Repair1() throws IOException {
+		final double[] EXPECTED = {
+			0.9999016501226037,
+			0.9996130705668653, 
+			0.9991436794433161, 
+			0.9985025233486501
+		};
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
+		synthesizer.setMinimizer(null);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
+	}
+	
+	@Test
+	public void testSynthesizeCsp2Repair2() throws IOException {
+		final double[] EXPECTED = {
+			0.9999018128802991,
+			0.9996143421328886, 
+			0.9991478706086724, 
+			0.9985122259438284
+		};
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
+		synthesizer.setMinimizer(null);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
 	} 
 }
