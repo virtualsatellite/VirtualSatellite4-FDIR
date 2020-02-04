@@ -70,9 +70,7 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		
 		
 		diagramEditor.activateTool("Propagation");
-		SWTBotGefEditPart elementConfPart = diagramEditor.getEditPart("ElementConfiguration.Fault");
-		SWTBotGefEditPart elementConfFaultAnchor = elementConfPart.children().get(0);
-		elementConfFaultAnchor.click();
+		diagramEditor.getEditPart("ElementConfiguration.Fault").children().get(0).click();
 		
 		diagramEditor.getEditPart("ConfigurationTree.Fault").children().get(1).click();		
 		diagramEditor.activateTool("Select");
