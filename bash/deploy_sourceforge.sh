@@ -69,7 +69,7 @@ case $UPLOAD in
     integration )       uploadIntegration
                         exit
                         ;;
-    release )      	    uploadRelease
+    release )           uploadRelease
                         exit
                         ;;
     * )                 printUsage
