@@ -160,7 +160,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 	
 	@Test
 	public void testCsp2Repair2() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileoRepair/csp2Repair2.dft");
+		InputStream is = TestActivator.getResourceContentAsString("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();

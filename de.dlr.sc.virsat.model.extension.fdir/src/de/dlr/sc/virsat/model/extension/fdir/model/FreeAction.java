@@ -74,7 +74,7 @@ public  class FreeAction extends AFreeAction {
 		state.getMapSpareToClaimedSpares().remove(freeSpare);
 		state.setNodeActivation(freeSpare, false);
 		
-		List<FaultTreeNode> spares = state.getFTHolder().getMapNodeToSpares().get(claimingSpareGate);
+		List<FaultTreeNode> spares = state.getFTHolder().getMapNodeToSpares().getOrDefault(claimingSpareGate, Collections.emptyList());
 		boolean hasClaim = false;
 		for (FaultTreeNode spare : spares) {
 			FaultTreeNode claimingSpareGateOther = state.getMapSpareToClaimedSpares().get(spare);

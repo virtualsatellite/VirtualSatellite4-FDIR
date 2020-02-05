@@ -185,7 +185,6 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.9985025233486501
 		};
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
-		synthesizer.setMinimizer(null);
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
@@ -193,15 +192,31 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testSynthesizeCsp2Repair2() throws IOException {
+	public void testSynthesizeCsp2Repair2BadPrimary() throws IOException {
 		final double[] EXPECTED = {
 			0.9999018128802991,
 			0.9996143421328886, 
 			0.9991478706086724, 
 			0.9985122259438284
 		};
-		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
-		synthesizer.setMinimizer(null);
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
+	}
+	
+	@Test
+	public void testSynthesizeCsp2Repair2BadSpare() throws IOException {
+		final double[] EXPECTED = {
+			0.9999018128802991,
+			0.9996143421328886, 
+			0.9991478706086724, 
+			0.9985122259438284
+		};
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadSpare.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));

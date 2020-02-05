@@ -9,16 +9,20 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -37,7 +41,8 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	private RecoveryAutomatonHolder raHolder;
 	
 	private Map<State, List<State>> mapStateToBlock;
-	private Map<State, Set<FaultTreeNode>> mapStateToDisabledInputs;
+	private Map<State, Map<FaultTreeNode, Boolean>> mapStateToDisabledInputs;
+	private Set<FaultTreeNode> repairableEvents;
 	
 	@Override
 	public void minimize(RecoveryAutomatonHolder raHolder) {
@@ -50,6 +55,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		statistics.removedTransitions = ra.getTransitions().size();
 		
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
+		repairableEvents = raHelper.computeRepairableEvents(raHolder);
 		mapStateToDisabledInputs = raHelper.computeDisabledInputs(raHolder);
 		
 		removeUntakeableTransitions();
@@ -70,13 +76,36 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	private void removeUntakeableTransitions() {
 		List<Transition> toRemove = new ArrayList<>();
 		for (Transition transition : ra.getTransitions()) {
-			State state = transition.getFrom();
-			Set<FaultTreeNode> guaranteedInputs = mapStateToDisabledInputs.get(state);
-			if (raHolder.getMapTransitionToGuards().containsKey(transition) 
-					&& guaranteedInputs.containsAll(raHolder.getMapTransitionToGuards().get(transition))) {
-				toRemove.add(transition);
-				raHolder.getMapStateToIncomingTransitions().get(transition.getTo()).remove(transition);
-				raHolder.getMapStateToOutgoingTransitions().get(state).remove(transition);
+			if (transition instanceof FaultEventTransition) {
+				FaultEventTransition fte = (FaultEventTransition) transition;
+				
+				State state = transition.getFrom();
+				Map<FaultTreeNode, Boolean> guaranteedInputs = mapStateToDisabledInputs.get(state);
+				
+				boolean canRemove = raHolder.getMapTransitionToGuards().containsKey(transition);
+				
+				if (canRemove) {
+					for (FaultTreeNode guard : raHolder.getMapTransitionToGuards().get(transition)) {
+						Boolean repairLabel = guaranteedInputs.get(guard);
+						if (repairableEvents.contains(guard)) {
+							if (!Objects.equals(repairLabel, fte.getIsRepair())) {
+								canRemove = false;
+								break;
+							}
+						} else {
+							if (!guaranteedInputs.containsKey(guard)) {
+								canRemove = false;
+								break;
+							}
+						}
+					}
+				}
+				
+				if (canRemove) {
+					toRemove.add(transition);
+					raHolder.getMapStateToIncomingTransitions().get(transition.getTo()).remove(transition);
+					raHolder.getMapStateToOutgoingTransitions().get(state).remove(transition);
+				}
 			}
 		}
 		ra.getTransitions().removeAll(toRemove);
@@ -155,32 +184,40 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 * @return a list of refined partitions
 	 */
 	private List<List<State>> refineBlock(List<State> block) {
-		Map<Map<Set<FaultTreeNode>, List<State>>, List<State>> mapBlockReachabilityMapToRefinedBlock = new HashMap<>();
+		Map<Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>>, List<State>> mapBlockReachabilityMapToRefinedBlock = new HashMap<>();
 		List<List<State>> refinedBlocks = new ArrayList<>();
 		
 		for (State state : block) {
 			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
-			Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock = new HashMap<>();
+			Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock = new HashMap<>();
 			
 			for (Transition transition : outgoingTransitions) {
 				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
 				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
-					mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
+					Entry<Set<FaultTreeNode>, Boolean> guards = new SimpleEntry<>(raHolder.getMapTransitionToGuards().get(transition), false);
+					
+					if (transition instanceof FaultEventTransition) {
+						FaultEventTransition fte = (FaultEventTransition) transition;
+						guards.setValue(fte.getIsRepair());
+					}
+					
+					mapGuardsToBlock.put(guards, toBlock);
 				}
 			}
 			
 			List<State> refinedBlock = null;
-			for (Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlockOther : mapBlockReachabilityMapToRefinedBlock.keySet()) {
+			for (Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlockOther : mapBlockReachabilityMapToRefinedBlock.keySet()) {
 				boolean isEqual = true;
-				Set<Set<FaultTreeNode>> allGuards = new HashSet<>(mapGuardsToBlock.keySet());
+				Set<Entry<Set<FaultTreeNode>, Boolean>> allGuards = new HashSet<>(mapGuardsToBlock.keySet());
 				allGuards.addAll(mapGuardsToBlockOther.keySet());
 				
-				for (Set<FaultTreeNode> guards : allGuards) {
+				equalityCheck: for (Entry<Set<FaultTreeNode>, Boolean> guards : allGuards) {
 					if (mapGuardsToBlock.get(guards) != mapGuardsToBlockOther.get(guards)) {
-						State stateOther = mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther).get(0);
-						if (!isOrthogonalWithRespectToGuards(state, stateOther, guards)) {
-							isEqual = false;
-							break;
+						for (State stateOther : mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther)) {
+							if (!isOrthogonalWithRespectToGuards(state, stateOther, guards.getKey(), guards.getValue())) {
+								isEqual = false;
+								break equalityCheck;
+							}
 						}
 					}
 				}
@@ -247,6 +284,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
 			
 			ra.getStates().removeAll(block);
+			
 		}
 	}
 	
@@ -307,19 +345,22 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 */
 	private boolean isRecoveryEquivalent(List<Transition> transitions, State state0, State state1) {
 		for (Transition transition : transitions) {
-			// Check for orthogonality
 			Set<FaultTreeNode> guards0 = raHolder.getMapTransitionToGuards().get(transition);
 			if (guards0 == null) {
 				return false;
 			}
 			
-			if (isOrthogonalWithRespectToGuards(state0, state1, guards0)) {
-				continue;
-			}
-			
-			if (!Objects.equals(raHolder.getMapStateToGuardProfile().get(state0).get(guards0), 
-					raHolder.getMapStateToGuardProfile().get(state1).get(guards0))) {
-				return false;
+			if (transition instanceof FaultEventTransition) {
+				// Check for orthogonality				
+				FaultEventTransition fte = (FaultEventTransition) transition;
+				if (isOrthogonalWithRespectToGuards(state0, state1, guards0, fte.getIsRepair())) {
+					continue;
+				}
+				
+				if (!Objects.equals(raHolder.getMapStateToGuardProfile().get(state0).get(guards0), 
+						raHolder.getMapStateToGuardProfile().get(state1).get(guards0))) {
+					return false;
+				}
 			}
 		}
 		
@@ -331,20 +372,33 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 * @param state0 the first state
 	 * @param state1 the second state
 	 * @param guards the guards
+	 * @param 
 	 * @return true iff state0 and state1 are orthogonal with respect to the set of guards transition
 	 */
-	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards) {
-		Set<FaultTreeNode> guaranteedInputs0 = mapStateToDisabledInputs.get(state0); 
-		if (guaranteedInputs0.containsAll(guards)) {
+	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards, boolean isRepair) {
+		Map<FaultTreeNode, Boolean> disabledInputs0 = mapStateToDisabledInputs.get(state0);
+		Map<FaultTreeNode, Boolean> disabledInputs1 = mapStateToDisabledInputs.get(state1);
+		
+		if (Collections.disjoint(guards, repairableEvents)) {
+			if (disabledInputs0.keySet().containsAll(guards)) {
+				return true;
+			}
+			
+			if (disabledInputs1.keySet().containsAll(guards)) {
+				return true;
+			}
+			
+			return false;
+		} else {
+			for (FaultTreeNode guard : guards) {
+				Boolean repairLabel0 = disabledInputs0.get(guard);
+				Boolean repairLabel1 = disabledInputs1.get(guard);
+				
+				if (!Objects.equals(repairLabel0, isRepair) || !Objects.equals(repairLabel1, isRepair)) {
+					return false;
+				}
+			}
 			return true;
 		}
-		
-		Set<FaultTreeNode> guaranteedInputs1 = mapStateToDisabledInputs.get(state1); 
-		if (guaranteedInputs1.containsAll(guards)) {
-			return true;
-		}
-		
-		return false;
 	}
-	
 }
