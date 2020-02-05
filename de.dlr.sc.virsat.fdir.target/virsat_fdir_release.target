@@ -17,7 +17,6 @@
 		<unit id="de.dlr.sc.virsat.model.extension.tests.feature.feature.group" version="4.10.0.r201912021231"/>
 		<unit id="de.dlr.sc.virsat.model.feature.feature.group" version="4.10.0.r201912021231"/>
 		<unit id="de.dlr.sc.virsat.project.feature.feature.group" version="4.10.0.r201912021231"/>
-		<unit id="de.dlr.sc.virsat.svn.feature.feature.group" version="4.10.0.r201912021231"/>
 		<unit id="de.dlr.sc.virsat.test.feature.feature.group" version="4.10.0.r201912021231"/>
 		<unit id="de.dlr.sc.virsat.uiengine.feature.feature.group" version="4.10.0.r201912021231"/>
 		<unit id="de.dlr.sc.virsat.target.feature.feature.group" version="4.10.0.r201912021231"/>
