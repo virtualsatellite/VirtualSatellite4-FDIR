@@ -18,18 +18,9 @@
 # displayed in case of usage issues
 COMMAND=$0
 
-# This method decrypts the SSH secret to upload it to sourceforge
-sourceforgeDecryptSecret() {
-	eval "$(ssh-agent -s)"
-	mkdir -p -m 700 /tmp/.sourceforge_ssh
-	openssl aes-256-cbc -K $DECRYPT_KEY -iv $DECRYPT_IV -in id_ed25519.enc -out /tmp/.sourceforge_ssh/id_ed25519 -d
-	chmod 600 /tmp/.sourceforge_ssh/id_ed25519
-	ssh-add /tmp/.sourceforge_ssh/id_ed25519
-}
-
 # this method gives some little usage info
 printUsage() {
-    echo "usage: ${COMMAND} -k SECRET -i SECRET -u [swtbot|development|integration|release]"
+    echo "usage: ${COMMAND} -u [swtbot|development|integration|release]"
 }
 
 uploadSwtBot() {
@@ -52,12 +43,6 @@ uploadRelease() {
 # process all command line arguments
 while [ "$1" != "" ]; do
     case $1 in
-        -k | --key )            shift
-                                DECRYPT_KEY=$1
-                                ;;
-        -i | --iv )    			shift
-                                DECRYPT_IV=$1
-                                ;;
         -u | --upload ) 		shift
                                 UPLOAD=$1
                                 ;;
@@ -81,10 +66,10 @@ case $UPLOAD in
     development )      	uploadDevelopment
     					exit
                         ;;
-    integration )      	uploadIntegration
+    integration )       uploadIntegration
     					exit
                         ;;
-    release )      		uploadRelease
+    release )      	    uploadRelease
     					exit
                         ;;
     * )                 printUsage
