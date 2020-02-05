@@ -43,7 +43,7 @@ uploadRelease() {
 # process all command line arguments
 while [ "$1" != "" ]; do
     case $1 in
-        -u | --upload ) 		shift
+        -u | --upload )         shift
                                 UPLOAD=$1
                                 ;;
         -h | --help )           printUsage
@@ -60,17 +60,17 @@ sourceforgeDecryptSecret
 
 # Decide what to upload
 case $UPLOAD in
-    swtbot )           	uploadSwtBot
-    					exit
+    swtbot )            uploadSwtBot
+                        exit
                         ;;
-    development )      	uploadDevelopment
-    					exit
+    development )       uploadDevelopment
+                        exit
                         ;;
     integration )       uploadIntegration
-    					exit
+                        exit
                         ;;
     release )      	    uploadRelease
-    					exit
+                        exit
                         ;;
     * )                 printUsage
                         exit 1
