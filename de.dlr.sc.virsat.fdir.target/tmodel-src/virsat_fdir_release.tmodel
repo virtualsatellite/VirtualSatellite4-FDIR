@@ -20,5 +20,6 @@ Target virsat_fdir_release extends virsat {
 		Unit de.dlr.sc.virsat.test.feature.feature.group version 4.10.0.r201912021231;
 		Unit de.dlr.sc.virsat.uiengine.feature.feature.group version 4.10.0.r201912021231;
 		Unit de.dlr.sc.virsat.target.feature.feature.group version 4.10.0.r201912021231;
+		Unit de.dlr.sc.virsat.excel.feature.feature.group version 4.10.0.r201912021231; 
 	} 
 }
