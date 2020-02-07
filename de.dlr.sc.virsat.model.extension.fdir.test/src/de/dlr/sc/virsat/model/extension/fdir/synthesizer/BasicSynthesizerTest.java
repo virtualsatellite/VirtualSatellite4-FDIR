@@ -221,5 +221,20 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
-	} 
+	}
+	
+	@Test
+	public void testSynthesizeFdep1Csp2Repair1() throws IOException {
+		final double[] EXPECTED = {
+			0.9989175145388334,
+			0.9976781543963685, 
+			0.9962924314941493, 
+			0.9947737194259697
+		};
+		Fault fault = createDFT("/resources/galileoRepair/fdep1Csp2Repair1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
+	}
 }
