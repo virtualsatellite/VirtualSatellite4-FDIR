@@ -57,7 +57,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateCsp2Repair2() throws IOException {
-		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2.dft");
+		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		
 		MarkovAutomaton<DFTState> ma = converter.convert(fault);
 		

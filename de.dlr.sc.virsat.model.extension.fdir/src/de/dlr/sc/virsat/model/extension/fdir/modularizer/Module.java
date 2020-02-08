@@ -184,14 +184,19 @@ public class Module {
 					childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
 					mapOriginalToCopy.put(child, childCopy);
 					mapCopyToOriginal.put(childCopy, child);
-					for (int i = 0; i < childCopy.getFault().getBasicEvents().size(); ++i) {
-						BasicEvent oldBasicEvent = child.getFault().getBasicEvents().get(i);
-						BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
-						mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
-						mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
-					}
 					
 					dfsStack.push(child);
+					
+					if (childCopy instanceof Fault) {
+						for (int i = 0; i < childCopy.getFault().getBasicEvents().size(); ++i) {
+							BasicEvent oldBasicEvent = child.getFault().getBasicEvents().get(i);
+							BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
+							mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
+							mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
+							
+							dfsStack.push(oldBasicEvent);
+						}
+					}
 				} else {
 					childCopy = mapOriginalToCopy.get(child);
 				}

@@ -41,7 +41,6 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 	
 	@Test 
 	public void testMinimzeStatesWithEmptyActions() {
-		
 		final int INITIAL_STATES = 2;
 		final int RESULTING_STATES = 1; 
 		
@@ -64,7 +63,6 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		
 		assertEquals(RESULTING_STATES, ra.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
-		
 	}
 	
 	@Test 
@@ -167,6 +165,31 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		
 		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
 		raHelper.assignInputs(transition01, fault);
+		
+		minimizer.minimize(ra);
+		
+		assertEquals(RESULTING_STATES, ra.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+	}
+	
+	@Test
+	public void testRepair() {
+		final int INITIAL_STATES = 2;
+		final int RESULTING_STATES = 1;
+		final int RESULTING_TRANSITIONS = 2;
+		
+		Fault fault = new Fault(concept);
+		
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raHelper.createStates(ra, INITIAL_STATES); 
+		
+		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition10 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(0));
+		
+		raHelper.assignInputs(transition01, fault);
+		raHelper.assignInputs(transition10, fault);
+		
+		transition10.setIsRepair(true);
 		
 		minimizer.minimize(ra);
 		

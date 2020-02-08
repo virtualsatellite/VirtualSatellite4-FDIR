@@ -960,6 +960,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	}
 	*/
 	
+	/*
 	@Test
 	public void testFTPP4() throws IOException {
 		final double EXPECTEDMTTF = 4595.0333844;
@@ -967,6 +968,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
+	*/
 	
 	@Test
 	public void testEvaluateAnd2Repair1() throws IOException {
