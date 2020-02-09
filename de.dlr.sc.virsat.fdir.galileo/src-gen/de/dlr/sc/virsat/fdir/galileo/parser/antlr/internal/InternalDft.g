@@ -370,29 +370,20 @@ ruleGalileoNodeType returns [EObject current=null]
 		}
 		    |
 		{
-			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getObserverParserRuleCall_1());
+			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getParametrizedParserRuleCall_1());
 		}
-		this_Observer_1=ruleObserver
+		this_Parametrized_1=ruleParametrized
 		{
-			$current = $this_Observer_1.current;
+			$current = $this_Parametrized_1.current;
 			afterParserOrEnumRuleCall();
 		}
 		    |
 		{
-			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getRDEPParserRuleCall_2());
+			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getObserverParserRuleCall_2());
 		}
-		this_RDEP_2=ruleRDEP
+		this_Observer_2=ruleObserver
 		{
-			$current = $this_RDEP_2.current;
-			afterParserOrEnumRuleCall();
-		}
-		    |
-		{
-			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getDelayParserRuleCall_3());
-		}
-		this_Delay_3=ruleDelay
-		{
-			$current = $this_Delay_3.current;
+			$current = $this_Observer_2.current;
 			afterParserOrEnumRuleCall();
 		}
 	)
@@ -646,15 +637,15 @@ ruleObserver returns [EObject current=null]
 	)
 ;
 
-// Entry rule entryRuleRDEP
-entryRuleRDEP returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getRDEPRule()); }
-	iv_ruleRDEP=ruleRDEP
-	{ $current=$iv_ruleRDEP.current; }
+// Entry rule entryRuleParametrized
+entryRuleParametrized returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getParametrizedRule()); }
+	iv_ruleParametrized=ruleParametrized
+	{ $current=$iv_ruleParametrized.current; }
 	EOF;
 
-// Rule RDEP
-ruleRDEP returns [EObject current=null]
+// Rule Parametrized
+ruleParametrized returns [EObject current=null]
 @init {
 	enterRule();
 }
@@ -665,85 +656,55 @@ ruleRDEP returns [EObject current=null]
 		(
 			{
 				$current = forceCreateModelElement(
-					grammarAccess.getRDEPAccess().getRdepAction_0(),
+					grammarAccess.getParametrizedAccess().getParametrizedAction_0(),
 					$current);
 			}
 		)
-		otherlv_1='rdep'
-		{
-			newLeafNode(otherlv_1, grammarAccess.getRDEPAccess().getRdepKeyword_1());
-		}
-		otherlv_2='rateFactor'
-		{
-			newLeafNode(otherlv_2, grammarAccess.getRDEPAccess().getRateFactorKeyword_2());
-		}
 		(
 			(
-				{
-					newCompositeNode(grammarAccess.getRDEPAccess().getRateFactorFloatParserRuleCall_3_0());
-				}
-				lv_rateFactor_3_0=ruleFloat
-				{
-					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getRDEPRule());
+				(
+					lv_typeName_1_1='rdep'
+					{
+						newLeafNode(lv_typeName_1_1, grammarAccess.getParametrizedAccess().getTypeNameRdepKeyword_1_0_0());
 					}
-					set(
-						$current,
-						"rateFactor",
-						lv_rateFactor_3_0,
-						"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
-					afterParserOrEnumRuleCall();
-				}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getParametrizedRule());
+						}
+						setWithLastConsumed($current, "typeName", lv_typeName_1_1, null);
+					}
+					    |
+					lv_typeName_1_2='delay'
+					{
+						newLeafNode(lv_typeName_1_2, grammarAccess.getParametrizedAccess().getTypeNameDelayKeyword_1_0_1());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getParametrizedRule());
+						}
+						setWithLastConsumed($current, "typeName", lv_typeName_1_2, null);
+					}
+				)
 			)
 		)
-	)
-;
-
-// Entry rule entryRuleDelay
-entryRuleDelay returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getDelayRule()); }
-	iv_ruleDelay=ruleDelay
-	{ $current=$iv_ruleDelay.current; }
-	EOF;
-
-// Rule Delay
-ruleDelay returns [EObject current=null]
-@init {
-	enterRule();
-}
-@after {
-	leaveRule();
-}:
-	(
-		(
-			{
-				$current = forceCreateModelElement(
-					grammarAccess.getDelayAccess().getDelayAction_0(),
-					$current);
-			}
-		)
-		otherlv_1='delay'
+		otherlv_2='='
 		{
-			newLeafNode(otherlv_1, grammarAccess.getDelayAccess().getDelayKeyword_1());
-		}
-		otherlv_2='time'
-		{
-			newLeafNode(otherlv_2, grammarAccess.getDelayAccess().getTimeKeyword_2());
+			newLeafNode(otherlv_2, grammarAccess.getParametrizedAccess().getEqualsSignKeyword_2());
 		}
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getDelayAccess().getTimeFloatParserRuleCall_3_0());
+					newCompositeNode(grammarAccess.getParametrizedAccess().getParameterFloatParserRuleCall_3_0());
 				}
-				lv_time_3_0=ruleFloat
+				lv_parameter_3_0=ruleFloat
 				{
 					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getDelayRule());
+						$current = createModelElementForParent(grammarAccess.getParametrizedRule());
 					}
 					set(
 						$current,
-						"time",
-						lv_time_3_0,
+						"parameter",
+						lv_parameter_3_0,
 						"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
 					afterParserOrEnumRuleCall();
 				}

@@ -21,7 +21,7 @@ import org.eclipse.ui.IWorkbench;
 import de.dlr.sc.virsat.fdir.galileo.GalileoDFTWriter;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFT;
+import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.DFT2GalileoDFT;
 import de.dlr.sc.virsat.model.extension.fdir.ui.Activator;
 
 /**

@@ -4,13 +4,12 @@
 package de.dlr.sc.virsat.fdir.galileo.serializer;
 
 import com.google.inject.Inject;
-import de.dlr.sc.virsat.fdir.galileo.dft.Delay;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftPackage;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
-import de.dlr.sc.virsat.fdir.galileo.dft.Rdep;
+import de.dlr.sc.virsat.fdir.galileo.dft.Parametrized;
 import de.dlr.sc.virsat.fdir.galileo.services.DftGrammarAccess;
 import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
@@ -19,9 +18,7 @@ import org.eclipse.xtext.Action;
 import org.eclipse.xtext.Parameter;
 import org.eclipse.xtext.ParserRule;
 import org.eclipse.xtext.serializer.ISerializationContext;
-import org.eclipse.xtext.serializer.acceptor.SequenceFeeder;
 import org.eclipse.xtext.serializer.sequencer.AbstractDelegatingSemanticSequencer;
-import org.eclipse.xtext.serializer.sequencer.ITransientValueService.ValueTransient;
 
 @SuppressWarnings("all")
 public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
@@ -37,9 +34,6 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 		Set<Parameter> parameters = context.getEnabledBooleanParameters();
 		if (epackage == DftPackage.eINSTANCE)
 			switch (semanticObject.eClass().getClassifierID()) {
-			case DftPackage.DELAY:
-				sequence_Delay(context, (Delay) semanticObject); 
-				return; 
 			case DftPackage.GALILEO_DFT:
 				sequence_GalileoDft(context, (GalileoDft) semanticObject); 
 				return; 
@@ -59,32 +53,13 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 			case DftPackage.OBSERVER:
 				sequence_Observer(context, (Observer) semanticObject); 
 				return; 
-			case DftPackage.RDEP:
-				sequence_RDEP(context, (Rdep) semanticObject); 
+			case DftPackage.PARAMETRIZED:
+				sequence_Parametrized(context, (Parametrized) semanticObject); 
 				return; 
 			}
 		if (errorAcceptor != null)
 			errorAcceptor.accept(diagnosticProvider.createInvalidContextOrTypeDiagnostic(semanticObject, context));
 	}
-	
-	/**
-	 * Contexts:
-	 *     GalileoNodeType returns Delay
-	 *     Delay returns Delay
-	 *
-	 * Constraint:
-	 *     time=Float
-	 */
-	protected void sequence_Delay(ISerializationContext context, Delay semanticObject) {
-		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, DftPackage.Literals.DELAY__TIME) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, DftPackage.Literals.DELAY__TIME));
-		}
-		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getDelayAccess().getTimeFloatParserRuleCall_3_0(), semanticObject.getTime());
-		feeder.finish();
-	}
-	
 	
 	/**
 	 * Contexts:
@@ -164,20 +139,14 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 	
 	/**
 	 * Contexts:
-	 *     GalileoNodeType returns Rdep
-	 *     RDEP returns Rdep
+	 *     GalileoNodeType returns Parametrized
+	 *     Parametrized returns Parametrized
 	 *
 	 * Constraint:
-	 *     rateFactor=Float
+	 *     ((typeName='rdep' | typeName='delay') parameter=Float)
 	 */
-	protected void sequence_RDEP(ISerializationContext context, Rdep semanticObject) {
-		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, DftPackage.Literals.RDEP__RATE_FACTOR) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, DftPackage.Literals.RDEP__RATE_FACTOR));
-		}
-		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getRDEPAccess().getRateFactorFloatParserRuleCall_3_0(), semanticObject.getRateFactor());
-		feeder.finish();
+	protected void sequence_Parametrized(ISerializationContext context, Parametrized semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
 	}
 	
 	
