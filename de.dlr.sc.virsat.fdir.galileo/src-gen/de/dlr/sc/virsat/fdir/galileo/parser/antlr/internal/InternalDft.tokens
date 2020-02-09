@@ -1,12 +1,12 @@
-'-'=36
-'.'=37
+'-'=34
+'.'=35
 ';'=13
 '='=15
 'and'=18
 'csp'=27
-'delay'=34
+'delay'=33
 'dorm'=16
-'e'=38
+'e'=36
 'fdep'=29
 'hsp'=25
 'lambda'=14
@@ -17,12 +17,10 @@
 'pand_i'=21
 'por'=22
 'por_i'=23
-'rateFactor'=33
 'rdep'=32
 'repair'=17
 'sand'=24
 'seq'=28
-'time'=35
 'toplevel'=12
 'wsp'=26
 RULE_ANY_OTHER=11
@@ -58,5 +56,3 @@ T__33=33
 T__34=34
 T__35=35
 T__36=36
-T__37=37
-T__38=38

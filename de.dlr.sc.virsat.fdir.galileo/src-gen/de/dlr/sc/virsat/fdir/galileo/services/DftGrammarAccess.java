@@ -209,28 +209,24 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.GalileoNodeType");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final RuleCall cNamedParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
-		private final RuleCall cObserverParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
-		private final RuleCall cRDEPParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
-		private final RuleCall cDelayParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
+		private final RuleCall cParametrizedParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cObserverParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		
 		//GalileoNodeType:
-		//	Named | Observer | RDEP | Delay;
+		//	Named | Parametrized | Observer;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//Named | Observer | RDEP | Delay
+		//Named | Parametrized | Observer
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//Named
 		public RuleCall getNamedParserRuleCall_0() { return cNamedParserRuleCall_0; }
 		
+		//Parametrized
+		public RuleCall getParametrizedParserRuleCall_1() { return cParametrizedParserRuleCall_1; }
+		
 		//Observer
-		public RuleCall getObserverParserRuleCall_1() { return cObserverParserRuleCall_1; }
-		
-		//RDEP
-		public RuleCall getRDEPParserRuleCall_2() { return cRDEPParserRuleCall_2; }
-		
-		//Delay
-		public RuleCall getDelayParserRuleCall_3() { return cDelayParserRuleCall_3; }
+		public RuleCall getObserverParserRuleCall_2() { return cObserverParserRuleCall_2; }
 	}
 	public class NamedElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.Named");
@@ -356,67 +352,48 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		//Float
 		public RuleCall getObservationRateFloatParserRuleCall_5_0() { return cObservationRateFloatParserRuleCall_5_0; }
 	}
-	public class RDEPElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.RDEP");
+	public class ParametrizedElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.Parametrized");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Action cRdepAction_0 = (Action)cGroup.eContents().get(0);
-		private final Keyword cRdepKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Keyword cRateFactorKeyword_2 = (Keyword)cGroup.eContents().get(2);
-		private final Assignment cRateFactorAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cRateFactorFloatParserRuleCall_3_0 = (RuleCall)cRateFactorAssignment_3.eContents().get(0);
+		private final Action cParametrizedAction_0 = (Action)cGroup.eContents().get(0);
+		private final Assignment cTypeNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final Alternatives cTypeNameAlternatives_1_0 = (Alternatives)cTypeNameAssignment_1.eContents().get(0);
+		private final Keyword cTypeNameRdepKeyword_1_0_0 = (Keyword)cTypeNameAlternatives_1_0.eContents().get(0);
+		private final Keyword cTypeNameDelayKeyword_1_0_1 = (Keyword)cTypeNameAlternatives_1_0.eContents().get(1);
+		private final Keyword cEqualsSignKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Assignment cParameterAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cParameterFloatParserRuleCall_3_0 = (RuleCall)cParameterAssignment_3.eContents().get(0);
 		
-		//RDEP GalileoNodeType:
-		//	{Rdep} 'rdep' 'rateFactor' rateFactor=Float;
+		//Parametrized GalileoNodeType:
+		//	{Parametrized} typeName=('rdep' | 'delay') '=' parameter=Float;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//{Rdep} 'rdep' 'rateFactor' rateFactor=Float
+		//{Parametrized} typeName=('rdep' | 'delay') '=' parameter=Float
 		public Group getGroup() { return cGroup; }
 		
-		//{Rdep}
-		public Action getRdepAction_0() { return cRdepAction_0; }
+		//{Parametrized}
+		public Action getParametrizedAction_0() { return cParametrizedAction_0; }
+		
+		//typeName=('rdep' | 'delay')
+		public Assignment getTypeNameAssignment_1() { return cTypeNameAssignment_1; }
+		
+		//('rdep' | 'delay')
+		public Alternatives getTypeNameAlternatives_1_0() { return cTypeNameAlternatives_1_0; }
 		
 		//'rdep'
-		public Keyword getRdepKeyword_1() { return cRdepKeyword_1; }
-		
-		//'rateFactor'
-		public Keyword getRateFactorKeyword_2() { return cRateFactorKeyword_2; }
-		
-		//rateFactor=Float
-		public Assignment getRateFactorAssignment_3() { return cRateFactorAssignment_3; }
-		
-		//Float
-		public RuleCall getRateFactorFloatParserRuleCall_3_0() { return cRateFactorFloatParserRuleCall_3_0; }
-	}
-	public class DelayElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.Delay");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Action cDelayAction_0 = (Action)cGroup.eContents().get(0);
-		private final Keyword cDelayKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Keyword cTimeKeyword_2 = (Keyword)cGroup.eContents().get(2);
-		private final Assignment cTimeAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cTimeFloatParserRuleCall_3_0 = (RuleCall)cTimeAssignment_3.eContents().get(0);
-		
-		//Delay GalileoNodeType:
-		//	{Delay} 'delay' 'time' time=Float;
-		@Override public ParserRule getRule() { return rule; }
-		
-		//{Delay} 'delay' 'time' time=Float
-		public Group getGroup() { return cGroup; }
-		
-		//{Delay}
-		public Action getDelayAction_0() { return cDelayAction_0; }
+		public Keyword getTypeNameRdepKeyword_1_0_0() { return cTypeNameRdepKeyword_1_0_0; }
 		
 		//'delay'
-		public Keyword getDelayKeyword_1() { return cDelayKeyword_1; }
+		public Keyword getTypeNameDelayKeyword_1_0_1() { return cTypeNameDelayKeyword_1_0_1; }
 		
-		//'time'
-		public Keyword getTimeKeyword_2() { return cTimeKeyword_2; }
+		//'='
+		public Keyword getEqualsSignKeyword_2() { return cEqualsSignKeyword_2; }
 		
-		//time=Float
-		public Assignment getTimeAssignment_3() { return cTimeAssignment_3; }
+		//parameter=Float
+		public Assignment getParameterAssignment_3() { return cParameterAssignment_3; }
 		
 		//Float
-		public RuleCall getTimeFloatParserRuleCall_3_0() { return cTimeFloatParserRuleCall_3_0; }
+		public RuleCall getParameterFloatParserRuleCall_3_0() { return cParameterFloatParserRuleCall_3_0; }
 	}
 	public class FloatElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.Float");
@@ -473,8 +450,7 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 	private final GalileoNodeTypeElements pGalileoNodeType;
 	private final NamedElements pNamed;
 	private final ObserverElements pObserver;
-	private final RDEPElements pRDEP;
-	private final DelayElements pDelay;
+	private final ParametrizedElements pParametrized;
 	private final FloatElements pFloat;
 	private final TerminalRule tXOFY;
 	
@@ -493,8 +469,7 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		this.pGalileoNodeType = new GalileoNodeTypeElements();
 		this.pNamed = new NamedElements();
 		this.pObserver = new ObserverElements();
-		this.pRDEP = new RDEPElements();
-		this.pDelay = new DelayElements();
+		this.pParametrized = new ParametrizedElements();
 		this.pFloat = new FloatElements();
 		this.tXOFY = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.XOFY");
 	}
@@ -557,7 +532,7 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//GalileoNodeType:
-	//	Named | Observer | RDEP | Delay;
+	//	Named | Parametrized | Observer;
 	public GalileoNodeTypeElements getGalileoNodeTypeAccess() {
 		return pGalileoNodeType;
 	}
@@ -587,24 +562,14 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		return getObserverAccess().getRule();
 	}
 	
-	//RDEP GalileoNodeType:
-	//	{Rdep} 'rdep' 'rateFactor' rateFactor=Float;
-	public RDEPElements getRDEPAccess() {
-		return pRDEP;
+	//Parametrized GalileoNodeType:
+	//	{Parametrized} typeName=('rdep' | 'delay') '=' parameter=Float;
+	public ParametrizedElements getParametrizedAccess() {
+		return pParametrized;
 	}
 	
-	public ParserRule getRDEPRule() {
-		return getRDEPAccess().getRule();
-	}
-	
-	//Delay GalileoNodeType:
-	//	{Delay} 'delay' 'time' time=Float;
-	public DelayElements getDelayAccess() {
-		return pDelay;
-	}
-	
-	public ParserRule getDelayRule() {
-		return getDelayAccess().getRule();
+	public ParserRule getParametrizedRule() {
+		return getParametrizedAccess().getRule();
 	}
 	
 	//Float:

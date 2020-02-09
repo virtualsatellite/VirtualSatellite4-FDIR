@@ -22,7 +22,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.storm.runner.StormDFT;
 import de.dlr.sc.virsat.fdir.storm.runner.StormRunnerFactory;
-import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFT;
+import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.DFT2GalileoDFT;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferences;

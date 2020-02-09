@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter;
+package de.dlr.sc.virsat.model.extension.fdir.converter.galileo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,13 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 import de.dlr.sc.virsat.fdir.galileo.GalileoDFTParser;
-import de.dlr.sc.virsat.fdir.galileo.dft.Delay;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
 import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
-import de.dlr.sc.virsat.fdir.galileo.dft.Rdep;
+import de.dlr.sc.virsat.fdir.galileo.dft.Parametrized;
 import de.dlr.sc.virsat.model.concept.types.structural.ABeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
@@ -214,9 +213,9 @@ public class GalileoDFT2DFT {
 			} else if (type.equals(FaultTreeNodeType.MONITOR)) {
 				((MONITOR) gate).setObservationRate(Double.valueOf(((Observer) galileoType).getObservationRate()));
 			} else if (type.equals(FaultTreeNodeType.RDEP)) {
-				((RDEP) gate).setRateChange(Double.valueOf(((Rdep) galileoType).getRateFactor()));
+				((RDEP) gate).setRateChange(Double.valueOf((((Parametrized) galileoType).getParameter())));
 			} else if (type.equals(FaultTreeNodeType.DELAY)) {
-				((DELAY) gate).setTime(Double.valueOf(((Delay) galileoType).getTime()));
+				((DELAY) gate).setTime(Double.valueOf(((Parametrized) galileoType).getParameter()));
 			} 
 			
 			ftn = gate;
@@ -248,11 +247,9 @@ public class GalileoDFT2DFT {
 			}
 		} else if (galileoType instanceof Observer) {
 			return FaultTreeNodeType.MONITOR;
-		} else if (galileoType instanceof Rdep) {
-			return FaultTreeNodeType.RDEP;
-		} else if (galileoType instanceof Delay) {
-			return FaultTreeNodeType.DELAY;
-		}
+		} else if (galileoType instanceof Parametrized) {
+			return FaultTreeNodeType.valueOf(((Parametrized) galileoType).getTypeName().toUpperCase());
+		} 
 
 		throw new RuntimeException("Unknown Galileo Fault Tree Node Type: " + galileoType);
 	}

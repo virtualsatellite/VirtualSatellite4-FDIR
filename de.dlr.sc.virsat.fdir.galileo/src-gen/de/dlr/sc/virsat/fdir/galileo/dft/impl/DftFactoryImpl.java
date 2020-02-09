@@ -70,8 +70,7 @@ public class DftFactoryImpl extends EFactoryImpl implements DftFactory
       case DftPackage.GALILEO_NODE_TYPE: return createGalileoNodeType();
       case DftPackage.NAMED: return createNamed();
       case DftPackage.OBSERVER: return createObserver();
-      case DftPackage.RDEP: return createRdep();
-      case DftPackage.DELAY: return createDelay();
+      case DftPackage.PARAMETRIZED: return createParametrized();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
@@ -143,22 +142,10 @@ public class DftFactoryImpl extends EFactoryImpl implements DftFactory
    * @generated
    */
   @Override
-  public Rdep createRdep()
+  public Parametrized createParametrized()
   {
-    RdepImpl rdep = new RdepImpl();
-    return rdep;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  @Override
-  public Delay createDelay()
-  {
-    DelayImpl delay = new DelayImpl();
-    return delay;
+    ParametrizedImpl parametrized = new ParametrizedImpl();
+    return parametrized;
   }
 
   /**

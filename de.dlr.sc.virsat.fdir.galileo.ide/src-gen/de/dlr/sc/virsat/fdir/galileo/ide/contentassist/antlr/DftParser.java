@@ -34,6 +34,7 @@ public class DftParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getGalileoDftAccess().getAlternatives_3(), "rule__GalileoDft__Alternatives_3");
 			builder.put(grammarAccess.getGalileoNodeTypeAccess().getAlternatives(), "rule__GalileoNodeType__Alternatives");
 			builder.put(grammarAccess.getNamedAccess().getTypeNameAlternatives_1_0(), "rule__Named__TypeNameAlternatives_1_0");
+			builder.put(grammarAccess.getParametrizedAccess().getTypeNameAlternatives_1_0(), "rule__Parametrized__TypeNameAlternatives_1_0");
 			builder.put(grammarAccess.getGalileoDftAccess().getGroup(), "rule__GalileoDft__Group__0");
 			builder.put(grammarAccess.getGalileoDftAccess().getGroup_3_0(), "rule__GalileoDft__Group_3_0__0");
 			builder.put(grammarAccess.getGalileoDftAccess().getGroup_3_1(), "rule__GalileoDft__Group_3_1__0");
@@ -43,8 +44,7 @@ public class DftParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getGroup_5(), "rule__GalileoBasicEvent__Group_5__0");
 			builder.put(grammarAccess.getNamedAccess().getGroup(), "rule__Named__Group__0");
 			builder.put(grammarAccess.getObserverAccess().getGroup(), "rule__Observer__Group__0");
-			builder.put(grammarAccess.getRDEPAccess().getGroup(), "rule__RDEP__Group__0");
-			builder.put(grammarAccess.getDelayAccess().getGroup(), "rule__Delay__Group__0");
+			builder.put(grammarAccess.getParametrizedAccess().getGroup(), "rule__Parametrized__Group__0");
 			builder.put(grammarAccess.getFloatAccess().getGroup(), "rule__Float__Group__0");
 			builder.put(grammarAccess.getFloatAccess().getGroup_2(), "rule__Float__Group_2__0");
 			builder.put(grammarAccess.getFloatAccess().getGroup_3(), "rule__Float__Group_3__0");
@@ -61,8 +61,8 @@ public class DftParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getNamedAccess().getTypeNameAssignment_1(), "rule__Named__TypeNameAssignment_1");
 			builder.put(grammarAccess.getObserverAccess().getObservablesAssignment_2(), "rule__Observer__ObservablesAssignment_2");
 			builder.put(grammarAccess.getObserverAccess().getObservationRateAssignment_5(), "rule__Observer__ObservationRateAssignment_5");
-			builder.put(grammarAccess.getRDEPAccess().getRateFactorAssignment_3(), "rule__RDEP__RateFactorAssignment_3");
-			builder.put(grammarAccess.getDelayAccess().getTimeAssignment_3(), "rule__Delay__TimeAssignment_3");
+			builder.put(grammarAccess.getParametrizedAccess().getTypeNameAssignment_1(), "rule__Parametrized__TypeNameAssignment_1");
+			builder.put(grammarAccess.getParametrizedAccess().getParameterAssignment_3(), "rule__Parametrized__ParameterAssignment_3");
 		}
 	}
 	
