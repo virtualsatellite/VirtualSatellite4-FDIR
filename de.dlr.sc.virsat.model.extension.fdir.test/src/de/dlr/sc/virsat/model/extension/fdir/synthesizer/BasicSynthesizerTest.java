@@ -12,16 +12,25 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * This class tests the BasicSynthesizer.
@@ -226,14 +235,58 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeFdep1Csp2Repair1() throws IOException {
 		final double[] EXPECTED = {
-			0.9989175145388334,
-			0.9976781543963685, 
-			0.9962924314941493
+			0.9989127437420443,
+			0.9976596933453932, 
+			0.9962533670570343
 		};
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
+	}
+	
+	@Test
+	public void testEvaluatePand2ColdSpare1SharedWithRa() throws IOException {
+		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, 10, TEST_EPSILON);
+		
+		Fault fault = createDFT("/resources/galileo/pand2ColdSpare1Shared.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		List<Double> reliability1 = ftEvaluator.evaluateFaultTree(fault, new Reliability(4000)).getFailRates();
+		
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		SPARE spareGate1 = ftHolder.getNodeByName("SPARE1", SPARE.class);
+		SPARE spareGate2 = ftHolder.getNodeByName("SPARE2", SPARE.class);
+		FaultTreeNode spare = ftHolder.getNodeByName("B", Fault.class);
+		FaultTreeNode beA = ftHolder.getNodeByName("A", BasicEvent.class);
+		FaultTreeNode beC = ftHolder.getNodeByName("A", BasicEvent.class);
+		
+		ra = new RecoveryAutomaton(concept);
+		State s0 = raHelper.createSingleState(ra, 0);
+		State s1 = raHelper.createSingleState(ra, 1);
+		ra.setInitial(s0);
+		
+		FaultEventTransition t01 = raHelper.createFaultEventTransition(ra, s0, s1);
+		raHelper.assignInputs(t01, beA);
+		
+		FaultEventTransition t11 = raHelper.createFaultEventTransition(ra, s1, s1);
+		raHelper.assignInputs(t11, beC);
+		ClaimAction ca = new ClaimAction(concept);
+		ca.setSpareGate(spareGate2);
+		ca.setClaimSpare(spare);
+		raHelper.assignAction(t11, ca);
+		
+		System.out.println(ra.toDot());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		List<Double> reliability2 = ftEvaluator.evaluateFaultTree(fault, new Reliability(4000)).getFailRates();
+		
+		for (int i = 0; i < reliability2.size(); ++i) {
+			System.out.println(i + " " + reliability1.get(i) + " " + reliability2.get(i));
+		}
 	}
 }

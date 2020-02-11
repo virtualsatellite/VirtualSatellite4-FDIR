@@ -31,13 +31,15 @@ public class PORSemantics implements INodeSemantics {
 		
 		boolean firstChildFailed = state.hasFaultTreeNodeFailed(children.get(0));
 		boolean existsOtherChildThatFailed = false;
-		for (int i = 1; i < children.size(); ++i) {
-			if (state.hasFaultTreeNodeFailed(children.get(i))) {
-				existsOtherChildThatFailed = true;
-				if (state.isFaultTreeNodePermanent(children.get(i))) {
-					state.setFaultTreeNodePermanent(node, true);
+		if (!pred.hasFaultTreeNodeFailed(node)) {
+			for (int i = 1; i < children.size(); ++i) {
+				if (state.hasFaultTreeNodeFailed(children.get(i))) {
+					existsOtherChildThatFailed = true;
+					if (state.isFaultTreeNodePermanent(children.get(i))) {
+						state.setFaultTreeNodePermanent(node, true);
+					}
+					break;
 				}
-				break;
 			}
 		}
 		

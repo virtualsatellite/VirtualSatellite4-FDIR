@@ -132,17 +132,14 @@ public class Schedule2RAConverter<S extends MarkovState> {
 						} 
 					}
 				} else {
+					Transition raTransition;
 					if (isInternalTransition(markovianTransition)) {
-						createdTransitions.add(createTimedTransition(fromState, toState, 1 / markovianTransition.getRate()));
-						
-						if (handledNonDetStates.add(toState)) {
-							toProcess.offer(toState);
-						}
-						
-						continue;
+						raTransition = createTimedTransition(fromState, toState, 1 / markovianTransition.getRate());
+					} else {
+						raTransition = createFaultEventTransition(fromState, toState, event);
 					}
 					
-					createdTransitions.add(createFaultEventTransition(fromState, toState, event));
+					createdTransitions.add(raTransition);
 					
 					if (handledNonDetStates.add(toState)) {
 						toProcess.offer(toState);

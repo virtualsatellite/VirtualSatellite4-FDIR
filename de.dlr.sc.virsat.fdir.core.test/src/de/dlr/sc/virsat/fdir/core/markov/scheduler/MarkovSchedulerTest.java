@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -114,5 +115,29 @@ public class MarkovSchedulerTest {
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice1));
 		assertFalse(schedule.get(initial).contains(falseChoice2));
+	}
+	
+	@Test
+	public void testNoActionOverAction() {
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		
+		MarkovState initial = new MarkovState();
+		MarkovState bad = new MarkovState();
+		
+		ma.addState(initial);
+		ma.addState(bad);
+		
+		ma.getEvents().add(Collections.emptyList());
+		ma.getEvents().add("b");
+		
+		ma.getFinalStates().add(bad);
+		
+		Object correctChoice = ma.addNondeterministicTransition(Collections.emptyList(), initial, bad, 1);
+		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad, 1);
+		
+		MarkovScheduler<MarkovState> scheduler = new MarkovScheduler<>();
+		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
+		assertTrue(schedule.get(initial).contains(correctChoice));
+		assertFalse(schedule.get(initial).contains(falseChoice));
 	}
 }

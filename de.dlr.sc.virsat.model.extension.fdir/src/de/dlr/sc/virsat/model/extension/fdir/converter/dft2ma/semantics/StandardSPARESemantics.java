@@ -73,6 +73,10 @@ public class StandardSPARESemantics implements INodeSemantics {
 			return state.setFaultTreeNodeFailed(node, hasPrimaryFailed);
 		} 
 		
+		if (foundSpare) {
+			return state.setFaultTreeNodeFailed(node, false);
+		}
+		
 		return false;
 	}
 	

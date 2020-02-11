@@ -271,6 +271,7 @@ public class DFT2MAConverter {
 						succ.failDontCares(changedNodes, orderDependentBasicEvents);
 					}
 					
+					checkFailState(succ);
 					DFTState equivalentState = getEquivalentState(succ);
 					
 					if (equivalentState == succ) {
@@ -282,7 +283,10 @@ public class DFT2MAConverter {
 						
 						ma.addState(succ);
 						toProcess.offer(succ);
-						checkFailState(succ);
+						
+						if (succ.isFailState) {
+							ma.getFinalStates().add(succ);
+						}
 					}
 					
 					if (markovSucc != null) {
@@ -358,7 +362,6 @@ public class DFT2MAConverter {
 			}
 		}
 		
-		ma.getFinalStates().add(state);
 		state.setFailState(true);
 	}
 	

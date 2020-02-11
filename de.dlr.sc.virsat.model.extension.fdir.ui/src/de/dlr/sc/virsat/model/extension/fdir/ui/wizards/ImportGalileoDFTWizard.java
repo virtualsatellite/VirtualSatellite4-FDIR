@@ -10,10 +10,13 @@
 package de.dlr.sc.virsat.model.extension.fdir.ui.wizards;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -21,6 +24,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.Repository;
@@ -85,17 +89,24 @@ public class ImportGalileoDFTWizard extends Wizard implements INewWizard {
 			RecordingCommand importCommand = new RecordingCommand(ed, "Import Galileo DFT") {
 				@Override
 				protected void doExecute() {
-					BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance();
-					beanSei.setStructuralElementInstance(sei);
+					BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance(sei);
 					GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, inputStream, beanSei);
-					converter.convert();
+					try {
+						converter.convert();
+					} catch (IOException e) {
+						Status status = new Status(Status.ERROR, Activator.getPluginId(),
+								"Import GalileoDFT: Failed to perform import!", e);
+						StatusManager.getManager().handle(status, StatusManager.LOG | StatusManager.SHOW);
+					}
 				}
 			};
 			ed.getCommandStack().execute(importCommand);
 			
 			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			Status status = new Status(Status.ERROR, Activator.getPluginId(),
+					"Import GalileoDFT: Failed to perform import!", e);
+			StatusManager.getManager().handle(status, StatusManager.LOG | StatusManager.SHOW);
 		} 
 		
 		return false;
