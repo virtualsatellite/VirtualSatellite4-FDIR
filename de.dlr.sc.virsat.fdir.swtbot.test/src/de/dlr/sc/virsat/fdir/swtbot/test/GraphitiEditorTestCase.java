@@ -11,6 +11,7 @@
 package de.dlr.sc.virsat.fdir.swtbot.test;
 
 import java.lang.reflect.Field;
+
 import org.eclipse.swtbot.eclipse.gef.finder.SWTGefBot;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditor;
@@ -43,14 +44,11 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 	private SWTBotTreeItem fault2;
 	private SWTBotGefEditor diagramEditor;
 	
-	private SWTGefBot gefBot;
-
 	@Before
 	public void before() throws Exception {
 		super.before();
 		// create the necessary items for the test
 		Concept conceptFDIR = ConceptXmiLoader.loadConceptFromPlugin(de.dlr.sc.virsat.model.extension.fdir.Activator.getPluginId() + "/concept/concept.xmi");
-		gefBot = new SWTGefBot();
 		repositoryNavigatorItem = bot.tree().expandNode(PROJECTNAME, "Repository");
 		configurationTree = addElement(ConfigurationTree.class, conceptPs, repositoryNavigatorItem);
 		elementConfiguration = addElement(ElementConfiguration.class, conceptPs, configurationTree);
@@ -60,9 +58,8 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 	}
 	
 	@Test
-	public void startTest() {		
+	public void startTest() {
 		dragTreeItemToDiagramEditor(fault2, diagramEditor);
-		
 		diagramEditor.activateTool("Basic Event");		
 		diagramEditor.click("ElementConfiguration.Fault");
 		SWTBotGefEditPart basicEventPart = diagramEditor.getEditPart("BasicEvent");
@@ -72,18 +69,16 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		diagramEditor.activateTool("Propagation");
 		diagramEditor.getEditPart("ElementConfiguration.Fault").children().get(0).click();
 		
-		diagramEditor.getEditPart("ConfigurationTree.Fault").children().get(1).click();		
+		
+		diagramEditor.getEditPart("ConfigurationTree.Fault").children().get(1).click();
 		diagramEditor.activateTool("Select");
-		
 		deleteEditPartInDiagramEditor(diagramEditor, "ElementConfiguration.Fault");
-		
  		//Check if EditPart has been removed from the diagram editor as expected
 		Assert.assertFalse(isEditPartPresentInDiagramEditor(diagramEditor, "ElementConfiguration.Fault"));
 		Assert.assertFalse(isEditPartPresentInDiagramEditor(diagramEditor, "BasicEvent"));
 		
  		//Check if associated fault model disappeared from the tree view		
-		Assert.assertFalse(isTreeItemPresentInTreeView(fault2));
-		
+		Assert.assertFalse(isTreeItemPresentInTreeView(fault2));		
 	}
 	
 	private boolean isEditPartPresentInDiagramEditor(SWTBotGefEditor diagramEditor, String editPartName) {
@@ -109,7 +104,8 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 	 */
 	protected void deleteEditPartInDiagramEditor(SWTBotGefEditor diagramEditor, String editPartName) {
 		diagramEditor.getEditPart(editPartName).select();		
-		diagramEditor.clickContextMenu("Delete");				
+		diagramEditor.clickContextMenu("Delete");
+		waitForEditingDomainAndUiThread();
 		bot.button("Yes").click();
 	}
 
@@ -134,6 +130,7 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		    }
 		}
 		item.dragAndDrop(canvas);
+		waitForEditingDomainAndUiThread();
 	}
 
 	/**
@@ -141,8 +138,10 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 	 * @return Graphiti GEF Editor handle that SWTBot can work on
 	 */
 	protected SWTBotGefEditor openDiagramEditorForTreeItem(SWTBotTreeItem item) {
+		SWTGefBot gefBot = new SWTGefBot();
 		item.contextMenu().menu("Open Diagram Editor").click();
-		String editorTitle = bot.editors().get(1).getTitle();
+		waitForEditingDomainAndUiThread();		
+		String editorTitle = bot.editors().get(1).getTitle();				
 		SWTBotGefEditor editor = gefBot.gefEditor(editorTitle);
 		return editor;
 	}
