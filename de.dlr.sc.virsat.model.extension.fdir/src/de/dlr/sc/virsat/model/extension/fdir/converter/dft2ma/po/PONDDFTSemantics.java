@@ -85,7 +85,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		
 		boolean anyObservation = false;
 		List<FaultTreeNode> changedNodes = null;
-		Set<FaultTreeNode> possiblyFailedSpareGates = new HashSet<>();
+		Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
 		FaultTreeHelper ftHelper = new FaultTreeHelper(event.getNode().getConcept());
 		
 		if (event instanceof ObservationEvent) {
@@ -95,14 +95,15 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			for (DFTState state : succs) {
 				PODFTState poState = (PODFTState) state;
-				poState.setNodeFailObserved(observedNode, state.hasFaultTreeNodeFailed(observedNode));
+				boolean observedNodeFail = state.hasFaultTreeNodeFailed(observedNode);
+				poState.setNodeFailObserved(observedNode, observedNodeFail);
 				for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(observedNode)) {
-					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(observedNode));
+					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 				}
 				
-				for (FaultTreeNode child : ftHelper.getAllNodes(observedNode.getFault())) {
+				for (FaultTreeNode child : ftHolder.getNodes()) {
 					if (child instanceof SPARE) {
-						possiblyFailedSpareGates.add(child);
+						spareGatesToCheck.add(child);
 					}
 				}
 			}
@@ -123,7 +124,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 						
 						for (FaultTreeNode child : ftHelper.getAllNodes(node.getFault())) {
 							if (child instanceof SPARE) {
-								possiblyFailedSpareGates.add(child);
+								spareGatesToCheck.add(child);
 							}
 						}
 					}
@@ -133,7 +134,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		
 		if (anyObservation && succs.get(0).getRecoveryStrategy() == null) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
-			Queue<FaultTreeNode> spareGates = new LinkedList<>(possiblyFailedSpareGates);
+			Queue<FaultTreeNode> spareGates = new LinkedList<>(spareGatesToCheck);
 			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, spareGates);
 			
 			for (DFTState state : succs) {

@@ -101,6 +101,8 @@ public abstract class ASynthesizer implements ISynthesizer {
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 			
+			System.out.println(synthesizedRA.toDot());
+			
 			if (minimizer != null) {
 				minimizer.minimize(synthesizedRA);
 				statistics.minimizationStatistics.compose(minimizer.getStatistics());

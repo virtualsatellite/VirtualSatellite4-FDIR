@@ -386,7 +386,6 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 			}
 		}
 		
-		
 		Map<FaultTreeNode, Boolean> disabledInputs0 = mapStateToDisabledInputs.get(state0);
 		Map<FaultTreeNode, Boolean> disabledInputs1 = mapStateToDisabledInputs.get(state1);
 		

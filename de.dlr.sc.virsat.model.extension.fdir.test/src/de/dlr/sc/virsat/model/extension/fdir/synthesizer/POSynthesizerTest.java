@@ -68,9 +68,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
-		final double EXPECTED_MTTF = 1.5;
-		
-		System.out.println(ra.toDot());
+		final double EXPECTED_MTTF = 1;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -82,7 +80,15 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsOr2Csp2() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		System.out.println(ra.toDot());
+	
+		final int EXPECTED_COUNT_STATES = 1;
+		final int EXPECTED_COUNT_TRANSITIONS = 1;
+		final double EXPECTED_MTTF = 1;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test

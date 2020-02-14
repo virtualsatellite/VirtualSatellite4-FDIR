@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -162,8 +163,9 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	@SuppressWarnings("unchecked")
 	protected boolean isInternalTransition(MarkovTransition<S> markovianTransition) {
 		Object event = markovianTransition.getEvent();
-		if (event instanceof Collection<?>) {
-			Collection<? extends FaultTreeNode> guards = (Collection<? extends FaultTreeNode>) event;
+		if (event instanceof Entry) {
+			Entry<Collection<? extends FaultTreeNode>, Boolean> genericEvent = (Entry<Collection<? extends FaultTreeNode>, Boolean>) event;
+			Collection<? extends FaultTreeNode> guards = genericEvent.getKey();
 			return guards.isEmpty();
 		}
 		
@@ -230,13 +232,16 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
 		FaultEventTransition raTransition = raHelper.createFaultEventTransition(ra, fromRaState, toRaState);
 		
-		if (event instanceof Collection<?>) {
-			raTransition.getGuards().addAll((Collection<? extends FaultTreeNode>) event);
-		} else {
+		if (event instanceof Entry) {
+			Entry<Collection<? extends FaultTreeNode>, Boolean> genericEvent = (Entry<Collection<? extends FaultTreeNode>, Boolean>) event;
+			raTransition.getGuards().addAll(genericEvent.getKey());
+			raTransition.setIsRepair(genericEvent.getValue());
+		} else if (event instanceof FaultEvent) {
 			FaultEvent faultEvent = (FaultEvent) event;
 			raTransition.getGuards().add(faultEvent.getNode());
 			raTransition.setIsRepair(faultEvent.isRepair());
 		}
+		
 		raTransition.setName(fromRaState.getName() + toRaState.getName());
 		return raTransition;
 	}
