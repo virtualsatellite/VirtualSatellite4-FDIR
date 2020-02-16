@@ -121,7 +121,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.0060088,
 			0.0122455,
 			0.0191832,
-			0.0273548
+			0.0273547
 		};
 		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -138,8 +138,8 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double[] EXPECTED = {
 			6.297634506950505e-05,
 			4.633278718727809e-04,
-			0.0016864867216674444,  
-			0.004289188056220271
+			0.0016864867216674448,  
+			0.004289188056220272
 		};
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
