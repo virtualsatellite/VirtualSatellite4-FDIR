@@ -43,6 +43,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	private Map<State, List<State>> mapStateToBlock;
 	private Map<State, Map<FaultTreeNode, Boolean>> mapStateToDisabledInputs;
 	private Set<FaultTreeNode> repairableEvents;
+	private Set<FaultTreeNode> repeatedEvents;
 	
 	@Override
 	public void minimize(RecoveryAutomatonHolder raHolder) {
@@ -57,8 +58,7 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		repairableEvents = raHelper.computeRepairableEvents(raHolder);
 		mapStateToDisabledInputs = raHelper.computeDisabledInputs(raHolder);
-		
-		removeUntakeableTransitions();
+		repeatedEvents = computeRepeatedEvents();
 		
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
@@ -70,11 +70,11 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	}
 	
 	/**
-	 * Removes all transitions that cannot be taken due to their inputs
-	 * being guaranteed to have already occured.
+	 * Identify all repeated inputs and mark them to not be considered for orthogonal minimization
+	 * This is to ensure that observable events which can occur more than once are correctly handled
 	 */
-	private void removeUntakeableTransitions() {
-		List<Transition> toRemove = new ArrayList<>();
+	private Set<FaultTreeNode> computeRepeatedEvents() {
+		Set<FaultTreeNode> repeatedEvents = new HashSet<>();
 		for (Transition transition : ra.getTransitions()) {
 			if (transition instanceof FaultEventTransition) {
 				FaultEventTransition fte = (FaultEventTransition) transition;
@@ -82,33 +82,37 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 				State state = transition.getFrom();
 				Map<FaultTreeNode, Boolean> guaranteedInputs = mapStateToDisabledInputs.get(state);
 				
-				boolean canRemove = raHolder.getMapTransitionToGuards().containsKey(transition);
+				boolean isRepeated = raHolder.getMapTransitionToGuards().containsKey(transition);
 				
-				if (canRemove) {
+				if (isRepeated 
+						&& transition.getRecoveryActions().isEmpty() && transition.getFrom().equals(transition.getTo())) {
+					isRepeated = false;
+				}
+				
+				if (isRepeated) {
 					for (FaultTreeNode guard : raHolder.getMapTransitionToGuards().get(transition)) {
 						Boolean repairLabel = guaranteedInputs.get(guard);
 						if (repairableEvents.contains(guard)) {
 							if (!Objects.equals(repairLabel, fte.getIsRepair())) {
-								canRemove = false;
+								isRepeated = false;
 								break;
 							}
 						} else {
 							if (!guaranteedInputs.containsKey(guard)) {
-								canRemove = false;
+								isRepeated = false;
 								break;
 							}
 						}
 					}
 				}
 				
-				if (canRemove) {
-					toRemove.add(transition);
-					raHolder.getMapStateToIncomingTransitions().get(transition.getTo()).remove(transition);
-					raHolder.getMapStateToOutgoingTransitions().get(state).remove(transition);
+				if (isRepeated) {
+					repeatedEvents.addAll(((FaultEventTransition) transition).getGuards());
 				}
 			}
 		}
-		ra.getTransitions().removeAll(toRemove);
+		
+		return repeatedEvents;
 	}
 	
 	/**
@@ -376,6 +380,12 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 * @return true iff state0 and state1 are orthogonal with respect to the set of guards transition
 	 */
 	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards, boolean isRepair) {
+		for (FaultTreeNode guard : guards) {
+			if (repeatedEvents.contains(guard)) {
+				return false;
+			}
+		}
+		
 		Map<FaultTreeNode, Boolean> disabledInputs0 = mapStateToDisabledInputs.get(state0);
 		Map<FaultTreeNode, Boolean> disabledInputs1 = mapStateToDisabledInputs.get(state1);
 		

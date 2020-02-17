@@ -50,7 +50,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 			}
 		}
 		
-		if (currentClaimWorks) {
+		if (currentClaimWorks && isSingleClaim()) {
 			return state.setFaultTreeNodeFailed(node, false);
 		}
 		
@@ -70,8 +70,12 @@ public class StandardSPARESemantics implements INodeSemantics {
 		
 		if (hasFailed(foundSpare)) {
 			updatePermanence(state, node, ftHolder);
-			return state.setFaultTreeNodeFailed(node, hasPrimaryFailed);
+			return state.setFaultTreeNodeFailed(node, !currentClaimWorks);
 		} 
+		
+		if (foundSpare) {
+			return state.setFaultTreeNodeFailed(node, false);
+		}
 		
 		return false;
 	}

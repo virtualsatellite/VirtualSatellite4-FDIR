@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
@@ -101,6 +100,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 			
 			synthesizedRA = convertToRecoveryAutomaton(fault);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
+			
 			if (minimizer != null) {
 				minimizer.minimize(synthesizedRA);
 				statistics.minimizationStatistics.compose(minimizer.getStatistics());
@@ -213,32 +213,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 		}
 	}
 	
-	protected double normalizationRate;
-	
-	/**
-	 * Normalizes the transition rates in the given markov automaton
-	 * @param ma the markov automaton
-	 * @param faultEvents the fault events
-	 */
-	protected void normalizeRates(MarkovAutomaton<DFTState> ma, Set<Object> faultEvents) {
-		normalizationRate = 0;
-		for (Object event : faultEvents) {
-			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
-				if (transition.isMarkovian()) {
-					normalizationRate += transition.getRate();
-				}
-			}
-		}
-		
-		for (Object event : faultEvents) {
-			for (MarkovTransition<DFTState> transition : ma.getTransitions(event)) {
-				if (transition.isMarkovian()) {
-					transition.setRate(transition.getRate() / normalizationRate);
-				}
-			}
-		}
-	}
-	
 	/**
 	 * Convert a module to recovery automaton
 	 * @param module the module
@@ -257,8 +231,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 		DFT2MAConverter dft2ma = createDFT2MAConverter();
 		dft2ma.setSymmetryChecker(null);
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
-		Set<Object> faultEvents = ma.getEvents();
-		normalizeRates(ma, faultEvents);
 		
 		RecoveryAutomaton ra = computeMarkovAutomatonSchedule(ma, dft2ma.getInitial());
 		

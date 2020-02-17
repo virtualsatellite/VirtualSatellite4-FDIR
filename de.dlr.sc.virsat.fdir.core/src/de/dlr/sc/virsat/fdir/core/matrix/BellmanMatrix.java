@@ -64,9 +64,9 @@ public class BellmanMatrix extends TransitionMatrix {
 			if (!mc.getFinalStates().contains(state)) {
 				if (!failableStates.contains(state)) {
 					inititalVector[i] = Double.POSITIVE_INFINITY;
-					continue;
+				} else {
+					inititalVector[i] = mc.getExitRateForState(state);
 				}
-				inititalVector[i] = mc.getExitRateForState(state);
 			}
 		}
 		return inititalVector;

@@ -134,7 +134,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 		}
 		
 		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newRoot, mapGeneratedToGenerators);
-		
+
 		return conversionResult;
 	}
 

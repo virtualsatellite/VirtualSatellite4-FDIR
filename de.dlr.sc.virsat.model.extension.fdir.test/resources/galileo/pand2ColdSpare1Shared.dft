@@ -1,0 +1,7 @@
+toplevel "tle";
+"tle" pand "SPARE1" "SPARE2";
+"SPARE1" csp "A" "B";
+"SPARE2" csp "C" "B";
+"A" lambda=1000;
+"B" lambda=0.01;
+"C" lambda=0.001;

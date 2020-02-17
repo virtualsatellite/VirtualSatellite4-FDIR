@@ -55,12 +55,12 @@ public class DFTSemantics {
 	}
 	
 	/**
-	 * Creates the set of occurable events
+	 * Creates the list of occurable events
 	 * @param ftHolder the fault tree holder
-	 * @return the set of all occurable events
+	 * @return the list of all occurable events
 	 */
-	public Set<IDFTEvent> createEventSet(FaultTreeHolder ftHolder) {
-		Set<IDFTEvent> faultEvents = new HashSet<>();
+	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
+		List<IDFTEvent> faultEvents = new ArrayList<>();
 		
 		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
 			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() != 0) {

@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,6 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 /**
@@ -102,8 +104,23 @@ public class POSynthesizer extends ASynthesizer {
 					double exitRate = getTotalRate(entry.getValue());
 					BeliefState beliefSucc = new BeliefState(entry.getKey());
 					
-					Set<Object> observationSet = new HashSet<>(beliefSucc.representant.getObservedFailedNodes());
-					observationSet.removeAll(beliefState.representant.getObservedFailedNodes());
+					// obtain all newly observed failed nodes
+					Set<FaultTreeNode> succObservedFailedNodes = beliefSucc.representant.getObservedFailedNodes();
+					Set<FaultTreeNode> currentObservedFailedNodes = beliefState.representant.getObservedFailedNodes();
+					Set<Object> observationSet = new HashSet<>(succObservedFailedNodes);
+					observationSet.removeAll(currentObservedFailedNodes);
+					
+					// obtain all newly observed repaired nodes in the event that no failures were observed
+					boolean isRepair = false;
+					if (observationSet.isEmpty()) {
+						for (FaultTreeNode node : beliefState.representant.getFTHolder().getNodes()) {
+							if (currentObservedFailedNodes.contains(node) && !succObservedFailedNodes.contains(node)) {
+								observationSet.add(node);
+							}
+						}
+						
+						isRepair = !observationSet.isEmpty();
+					}
 					
 					boolean isMarkovian = true;
 					boolean isFinal = false;
@@ -129,7 +146,9 @@ public class POSynthesizer extends ASynthesizer {
 							beliefMa.getFinalStates().add(beliefSucc);
 						}
 					}
-					beliefMa.addMarkovianTransition(observationSet, beliefState, equivalentbeliefSucc, exitRate);
+					
+					Entry<Object, Boolean> genericEvent = new SimpleEntry<>(observationSet, isRepair);
+					beliefMa.addMarkovianTransition(genericEvent, beliefState, equivalentbeliefSucc, exitRate);
 				}
 			} else {
 				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
@@ -174,14 +193,6 @@ public class POSynthesizer extends ASynthesizer {
 		
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
-		
-		for (MarkovTransition<BeliefState> transition : beliefMa.getTransitions()) {
-			if (transition.isMarkovian()) {
-				transition.setRate(transition.getRate() * normalizationRate);
-			}
-		}
-		
-		System.out.println(beliefMa.toDot());
 		
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState);
 	}
