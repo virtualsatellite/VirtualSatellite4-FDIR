@@ -11,7 +11,7 @@
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -39,9 +39,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
 		Map<S, Double> results = computeValues(ma, initialMa);
-		for (S failState : ma.getFinalStates()) {
-			results.put(failState, Double.NEGATIVE_INFINITY);
-		}
 		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(initialMa);
@@ -154,15 +151,34 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				expectationValue += transition.getRate() * results.get(transition.getTo());
 			}
 			if (expectationValue >= bestValue) {
-				// Prefer to keep the empty action over any other actions in case of the same value
-				if (bestTransitionGroup == null 
-						|| !bestTransitionGroup.iterator().next().getEvent().equals(Collections.emptyList()) 
-						|| expectationValue > bestValue) {
+				boolean isNewBestTransition = bestTransitionGroup == null || expectationValue > bestValue;
+				
+				if (!isNewBestTransition) {
+					// Prefer to keep the fewer actions over any other actions in case of the same value
+					Object event1 = transitionGroup.iterator().next().getEvent();
+					Object event2 = bestTransitionGroup.iterator().next().getEvent();
+					
+					if (event1 instanceof Collection && event2 instanceof Collection) {
+						Collection<?> eventCollection1 = (Collection<?>) event1;
+						Collection<?> eventCollection2 = (Collection<?>) event2;
+						
+						isNewBestTransition = eventCollection2.size() > eventCollection1.size();
+						
+						// To ensure that there is no nondeterminism in the scheduling
+						// the final deciding factor is the string representation of the events
+						if (eventCollection2.size() == eventCollection1.size()) {
+							isNewBestTransition = eventCollection2.toString().compareTo(eventCollection1.toString()) > 0;
+						}
+					}
+				}
+				
+				if (isNewBestTransition) {
 					bestValue = expectationValue;
 					bestTransitionGroup = transitionGroup;
 				}
 			}
-		}		
+		}
+	
 		return bestTransitionGroup;
 	}
 }

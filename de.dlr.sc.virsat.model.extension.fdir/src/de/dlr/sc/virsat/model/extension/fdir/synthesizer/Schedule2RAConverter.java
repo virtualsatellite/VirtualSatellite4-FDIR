@@ -117,17 +117,21 @@ public class Schedule2RAConverter<S extends MarkovState> {
 				if (!markovianTransition.getTo().isMarkovian()) {
 					Set<MarkovTransition<S>> bestTransitionSet = schedule.getOrDefault(toState, Collections.EMPTY_SET);
 					
+					MarkovTransition<S> representativeTransition = bestTransitionSet.iterator().next();
+					toState = representativeTransition.getTo();
+					FaultEventTransition raTransition = createFaultEventTransition(fromState, toState, event);
+				
+					List<RecoveryAction> recoveryActions = (List<RecoveryAction>) representativeTransition.getEvent();
+					for (RecoveryAction recoveryAction : recoveryActions)  {
+						raTransition.getRecoveryActions().add(recoveryAction.copy());
+					}
+					
+					createdTransitions.add(raTransition);
+					
 					for (MarkovTransition<S> bestTransition : bestTransitionSet) {
 						toState = bestTransition.getTo();
-						FaultEventTransition raTransition = createFaultEventTransition(fromState, toState, event);
+						mapMarkovStateToRaState.put(toState, raTransition.getTo());
 					
-						List<RecoveryAction> recoveryActions = (List<RecoveryAction>) bestTransition.getEvent();
-						for (RecoveryAction recoveryAction : recoveryActions)  {
-							raTransition.getRecoveryActions().add(recoveryAction.copy());
-						}
-						
-						createdTransitions.add(raTransition);
-						
 						if (handledNonDetStates.add(toState)) {
 							toProcess.offer(toState);
 						} 

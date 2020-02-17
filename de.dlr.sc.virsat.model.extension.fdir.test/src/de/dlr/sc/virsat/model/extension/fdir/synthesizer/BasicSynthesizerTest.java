@@ -248,7 +248,10 @@ public class BasicSynthesizerTest extends ATestCase {
 	
 	@Test
 	public void testEvaluatePand2ColdSpare1SharedWithRa() throws IOException {
-		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, 10, TEST_EPSILON);
+		final double DELTA = 10;
+		final double TIME = 4000;
+		
+		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		
 		Fault fault = createDFT("/resources/galileo/pand2ColdSpare1Shared.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -256,10 +259,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		System.out.println(ra.toDot());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		List<Double> reliability1 = ftEvaluator.evaluateFaultTree(fault, new Reliability(4000)).getFailRates();
+		List<Double> reliability1 = ftEvaluator.evaluateFaultTree(fault, new Reliability(TIME)).getFailRates();
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
-		SPARE spareGate1 = ftHolder.getNodeByName("SPARE1", SPARE.class);
 		SPARE spareGate2 = ftHolder.getNodeByName("SPARE2", SPARE.class);
 		FaultTreeNode spare = ftHolder.getNodeByName("B", Fault.class);
 		FaultTreeNode beA = ftHolder.getNodeByName("A", BasicEvent.class);
@@ -283,7 +285,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		System.out.println(ra.toDot());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		List<Double> reliability2 = ftEvaluator.evaluateFaultTree(fault, new Reliability(4000)).getFailRates();
+		List<Double> reliability2 = ftEvaluator.evaluateFaultTree(fault, new Reliability(TIME)).getFailRates();
 		
 		for (int i = 0; i < reliability2.size(); ++i) {
 			System.out.println(i + " " + reliability1.get(i) + " " + reliability2.get(i));

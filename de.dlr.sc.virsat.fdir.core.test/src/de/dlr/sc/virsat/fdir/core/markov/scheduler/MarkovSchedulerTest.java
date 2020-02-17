@@ -110,6 +110,8 @@ public class MarkovSchedulerTest {
 		Object falseChoice2 = ma.addNondeterministicTransition("b", initial, bad, 0.5);
 		// CHECKSTYLE:ON
 		
+		ma.addMarkovianTransition("c", good, bad, 1);
+		
 		MarkovScheduler<MarkovState> scheduler = new MarkovScheduler<>();
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
 		assertTrue(schedule.get(initial).contains(correctChoice));
