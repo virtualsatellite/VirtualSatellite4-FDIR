@@ -71,7 +71,7 @@ public abstract class AOpenInDiagramEdiorHandler extends AEditingDomainCommandHa
 	
 		IFile diagramFile = documentsFolder.getFile(diagramName + "." +  getExtension());
 		String path = diagramFile.getFullPath().toString(); 
-		URI uri = resourceSet.getURIConverter().normalize(URI.createFileURI(path));
+		URI uri = URI.createPlatformResourceURI(path, true);
 		
 		Diagram diagram = null;
 		boolean makeNewDiagram = !diagramFile.exists();
