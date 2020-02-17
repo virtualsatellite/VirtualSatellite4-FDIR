@@ -60,8 +60,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public Set<IDFTEvent> createEventSet(FaultTreeHolder ftHolder) {
-		Set<IDFTEvent> events = super.createEventSet(ftHolder);
+	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
+		List<IDFTEvent> events = super.createEvents(ftHolder);
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
