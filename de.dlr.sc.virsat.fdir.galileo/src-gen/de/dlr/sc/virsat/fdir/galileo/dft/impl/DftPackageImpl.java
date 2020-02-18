@@ -3,7 +3,6 @@
  */
 package de.dlr.sc.virsat.fdir.galileo.dft.impl;
 
-import de.dlr.sc.virsat.fdir.galileo.dft.Delay;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftFactory;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftPackage;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
@@ -11,7 +10,7 @@ import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
 import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
-import de.dlr.sc.virsat.fdir.galileo.dft.Rdep;
+import de.dlr.sc.virsat.fdir.galileo.dft.Parametrized;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -68,14 +67,7 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass rdepEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass delayEClass = null;
+  private EClass parametrizedEClass = null;
 
   /**
    * Creates an instance of the model <b>Package</b>, registered with
@@ -333,9 +325,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EClass getRdep()
+  public EClass getParametrized()
   {
-    return rdepEClass;
+    return parametrizedEClass;
   }
 
   /**
@@ -344,9 +336,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EAttribute getRdep_RateFactor()
+  public EAttribute getParametrized_TypeName()
   {
-    return (EAttribute)rdepEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)parametrizedEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -355,20 +347,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EClass getDelay()
+  public EAttribute getParametrized_Parameter()
   {
-    return delayEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  @Override
-  public EAttribute getDelay_Time()
-  {
-    return (EAttribute)delayEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)parametrizedEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -424,11 +405,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     createEReference(observerEClass, OBSERVER__OBSERVABLES);
     createEAttribute(observerEClass, OBSERVER__OBSERVATION_RATE);
 
-    rdepEClass = createEClass(RDEP);
-    createEAttribute(rdepEClass, RDEP__RATE_FACTOR);
-
-    delayEClass = createEClass(DELAY);
-    createEAttribute(delayEClass, DELAY__TIME);
+    parametrizedEClass = createEClass(PARAMETRIZED);
+    createEAttribute(parametrizedEClass, PARAMETRIZED__TYPE_NAME);
+    createEAttribute(parametrizedEClass, PARAMETRIZED__PARAMETER);
   }
 
   /**
@@ -462,8 +441,7 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     // Add supertypes to classes
     namedEClass.getESuperTypes().add(this.getGalileoNodeType());
     observerEClass.getESuperTypes().add(this.getGalileoNodeType());
-    rdepEClass.getESuperTypes().add(this.getGalileoNodeType());
-    delayEClass.getESuperTypes().add(this.getGalileoNodeType());
+    parametrizedEClass.getESuperTypes().add(this.getGalileoNodeType());
 
     // Initialize classes and features; add operations and parameters
     initEClass(galileoDftEClass, GalileoDft.class, "GalileoDft", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -488,11 +466,9 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     initEReference(getObserver_Observables(), this.getGalileoFaultTreeNode(), null, "observables", null, 0, -1, Observer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getObserver_ObservationRate(), ecorePackage.getEString(), "observationRate", null, 0, 1, Observer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(rdepEClass, Rdep.class, "Rdep", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getRdep_RateFactor(), ecorePackage.getEString(), "rateFactor", null, 0, 1, Rdep.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(delayEClass, Delay.class, "Delay", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getDelay_Time(), ecorePackage.getEString(), "time", null, 0, 1, Delay.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(parametrizedEClass, Parametrized.class, "Parametrized", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getParametrized_TypeName(), ecorePackage.getEString(), "typeName", null, 0, 1, Parametrized.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getParametrized_Parameter(), ecorePackage.getEString(), "parameter", null, 0, 1, Parametrized.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Create resource
     createResource(eNS_URI);

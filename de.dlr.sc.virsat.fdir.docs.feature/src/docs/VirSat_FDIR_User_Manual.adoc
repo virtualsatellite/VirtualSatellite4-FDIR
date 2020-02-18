@@ -8,11 +8,76 @@
 
 == What is Virtual Satellite 4 FDIR?
 
+This user manual describes how to use the Software Virtual Satellite 4 FDIR (VirSat4 FDIR).
+The software is an extension to Virtual Satellite 4 CORE, for a guide on how to use Virtual Satellite in general,
+please refer to the Virtual Satellite 4 CORE Manual.
+
+== Purpose
+
+VirSat4 FDIR focuses on modeling Fault Detection, Isolation, and Recovery.
+This includes among others: 
+Models on failure behavior, recovery behavior, detection behavior, analysis results, and more.
+The main purpose of VirSat4 FDIR is to enable the analysis of FDIR concepts by means of 
+mathematically well founded evaluation.
+
+The software primarily follows the ESA ECSS standards by means of the 
+SAVOIR FDIR Handbook (http://savoir.estec.esa.int/SAVOIRDocuments.htm).
+For clarification on vocabulary, further details on FDIR analysis and process, please
+check the SAVOIR FDIR Handbook.
+
 == Getting Started
+
+=== Modeling Workflow
+
+Learn in this section about the recommended workflow for approaching FDIR modeling & analysis.
+The workflow for creating fault models is up to the preference of the users.
+Nevertheless, basing the workflow on the following steps is recommended:
+
+* Create a system model using the product structures concepts (PS Concept).
+For details check the Virtual Satellite 4 CORE User Manual.
+* Create a SubSystem dedicated to Risk / FDIR.
+* Create a list of Feared Events in this sub system and assign severity categories to them.
+* Create a list of faults, with their basic events, for each equipment.
+* Perform a Fault Tree Analysis to determine the fault propagations.
+* Create the FDIRParameters category at the top of your system model and configure it.
+* Create FDIR analysis categories for the desired faults
+* Refine the system model and the Fault Tree Analysis and update the FDIR analysis
+
+In the following sections, the various categories, means of analysis, etc. will be elaborated.
 
 == Fault Modeling
 
+Fault modeling forms the core of VirSat4 FDIR and is the primary activity required to perform any FDIR analysis.
+Learn in this section how to use the graphical editor to perform the main analysis of VirSat4 FDIR,
+Fault Tree Analysis (FTA), and how to use it to build up fault models.
+
 === Modeling Fault Trees
+
+Faults, their propagations, and inhibiting fault propagation through means of FDIR is modeled using Fault Trees.
+Fault Trees are graphical models describing how faults combine with each other, 
+propagate through the system, and eventually turn into a feared event.
+The recombination of faults is modeled via so-called Gates, such as "AND" and "OR".
+In this section you will learn the basics on Fault Tree Analysis, which gates are supported by the software,
+and how to use the graphical editor to create a Fault Tree.
+For further in-depth information on how to perform an FTA, we refer to the standards.
+
+==== Fault Trees
+
+Static Elements
+
+Fault, BE, etc..
+
+Dynamic Elements
+
+SPARE, PAND, etc..
+
+==== The graphical Fault Tree Editor
+
+===== Creating a new Fault Tree Diagram
+
+===== Basic Usage
+
+===== Using the Auto Layout functionality
 
 === Modeling Detection
 
@@ -21,6 +86,16 @@
 == Recovery Modeling
 
 === Modeling Recovery Automata
+
+==== Recovery Automata
+
+==== The graphical Recovery Automaton Editor
+
+===== Creating a new Recovery Automaton Diagram
+
+===== Basic Usage
+
+===== Using the Auto Layout functionality
 
 == FDIR Analysis
 
@@ -32,7 +107,11 @@
 
 === Using STORM
 
-=== FDIR Reporting
+== FDIR Reporting
+
+=== Using the SAVOIR/FDIR Report Template
+
+=== Excel Exports
 
 == FDIR Synthesis
 

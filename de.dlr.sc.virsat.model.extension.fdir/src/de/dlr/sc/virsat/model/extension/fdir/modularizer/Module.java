@@ -9,18 +9,18 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
+
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 /**
  * Contains information for modules of the fault tree
@@ -184,14 +184,19 @@ public class Module {
 					childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
 					mapOriginalToCopy.put(child, childCopy);
 					mapCopyToOriginal.put(childCopy, child);
-					for (int i = 0; i < childCopy.getFault().getBasicEvents().size(); ++i) {
-						BasicEvent oldBasicEvent = child.getFault().getBasicEvents().get(i);
-						BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
-						mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
-						mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
-					}
 					
 					dfsStack.push(child);
+					
+					if (childCopy instanceof Fault) {
+						for (int i = 0; i < childCopy.getFault().getBasicEvents().size(); ++i) {
+							BasicEvent oldBasicEvent = child.getFault().getBasicEvents().get(i);
+							BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
+							mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
+							mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
+							
+							dfsStack.push(oldBasicEvent);
+						}
+					}
 				} else {
 					childCopy = mapOriginalToCopy.get(child);
 				}

@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class DFT2MAConverter {
 	private MarkovAutomaton<DFTState> ma;
 	private DFTState initial;
 
-	private Set<IDFTEvent> events;
+	private Collection<IDFTEvent> events;
 	private Set<FaultTreeNode> transientNodes;
 	private Set<BasicEvent> orderDependentBasicEvents;
 	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToMarkovianDFTStates;
@@ -110,7 +111,7 @@ public class DFT2MAConverter {
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
 		ftHolder = new FaultTreeHolder(holderRoot);
 		
-		events = dftSemantics.createEventSet(ftHolder);
+		events = dftSemantics.createEvents(ftHolder);
 		
 		Set<IDFTEvent> unoccurableEvents = new HashSet<>();
 		for (IDFTEvent event : events) {
@@ -271,6 +272,7 @@ public class DFT2MAConverter {
 						succ.failDontCares(changedNodes, orderDependentBasicEvents);
 					}
 					
+					checkFailState(succ);
 					DFTState equivalentState = getEquivalentState(succ);
 					
 					if (equivalentState == succ) {
@@ -282,7 +284,10 @@ public class DFT2MAConverter {
 						
 						ma.addState(succ);
 						toProcess.offer(succ);
-						checkFailState(succ);
+						
+						if (succ.isFailState) {
+							ma.getFinalStates().add(succ);
+						}
 					}
 					
 					if (markovSucc != null) {
@@ -358,7 +363,6 @@ public class DFT2MAConverter {
 			}
 		}
 		
-		ma.getFinalStates().add(state);
 		state.setFailState(true);
 	}
 	

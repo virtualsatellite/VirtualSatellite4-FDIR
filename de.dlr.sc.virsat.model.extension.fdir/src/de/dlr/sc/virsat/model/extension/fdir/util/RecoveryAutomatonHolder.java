@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -180,7 +181,7 @@ public class RecoveryAutomatonHolder {
 			
 			for (State state : ra.getStates()) {
 				Map<Set<FaultTreeNode>, String> mapGuardToActionLabel = new HashMap<>();
-				List<Transition> outgoingTransitions = getMapStateToOutgoingTransitions().get(state);
+				List<Transition> outgoingTransitions = getMapStateToOutgoingTransitions().getOrDefault(state, Collections.emptyList());
 				for (Transition transition : outgoingTransitions) {
 					String actionLabels = getMapTransitionToActionLabels().get(transition);
 					if (!actionLabels.isEmpty()) {

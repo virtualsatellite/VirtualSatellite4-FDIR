@@ -69,22 +69,13 @@ public interface DftFactory extends EFactory
   Observer createObserver();
 
   /**
-   * Returns a new object of class '<em>Rdep</em>'.
+   * Returns a new object of class '<em>Parametrized</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Rdep</em>'.
+   * @return a new object of class '<em>Parametrized</em>'.
    * @generated
    */
-  Rdep createRdep();
-
-  /**
-   * Returns a new object of class '<em>Delay</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Delay</em>'.
-   * @generated
-   */
-  Delay createDelay();
+  Parametrized createParametrized();
 
   /**
    * Returns the package supported by this factory.

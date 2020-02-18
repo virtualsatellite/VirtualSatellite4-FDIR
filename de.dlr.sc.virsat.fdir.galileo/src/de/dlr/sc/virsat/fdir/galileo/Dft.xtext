@@ -26,7 +26,7 @@ GalileoBasicEvent returns GalileoFaultTreeNode:
 ;
 
 GalileoNodeType:
-	Named | Observer | RDEP| Delay
+	Named | Parametrized | Observer
 ;
 
 Named returns GalileoNodeType:
@@ -37,12 +37,8 @@ Observer returns GalileoNodeType:
 	{Observer} 'observer' (observables+=[GalileoFaultTreeNode|STRING])* 'obsRate' '=' observationRate=Float 
 ;
 
-RDEP returns GalileoNodeType:
-	{Rdep} 'rdep' 'rateFactor' rateFactor=Float
-;
-
-Delay returns GalileoNodeType:
-	{Delay} 'delay' 'time' time=Float
+Parametrized returns GalileoNodeType:
+	{Parametrized} typeName = ('rdep' | 'delay') '=' parameter=Float
 ;
 
 

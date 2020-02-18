@@ -187,7 +187,9 @@ public class FaultTreeNodePlus {
 		if (this.children == null) {
 			this.children = new ArrayList<FaultTreeNodePlus>();
 		}
-		this.children.add(child);
+		// Since the child lists are created with a FIFO (Stack) processing, we are inverting the order of the children
+		// This inversion needs to be remedied by adding the child at the beginning of the list
+		this.children.add(0, child);
 	}
 	
 	/**

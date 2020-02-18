@@ -261,60 +261,41 @@ public interface DftPackage extends EPackage
   int OBSERVER_FEATURE_COUNT = GALILEO_NODE_TYPE_FEATURE_COUNT + 2;
 
   /**
-   * The meta object id for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.RdepImpl <em>Rdep</em>}' class.
+   * The meta object id for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.ParametrizedImpl <em>Parametrized</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.RdepImpl
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getRdep()
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.ParametrizedImpl
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getParametrized()
    * @generated
    */
-  int RDEP = 5;
+  int PARAMETRIZED = 5;
 
   /**
-   * The feature id for the '<em><b>Rate Factor</b></em>' attribute.
+   * The feature id for the '<em><b>Type Name</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int RDEP__RATE_FACTOR = GALILEO_NODE_TYPE_FEATURE_COUNT + 0;
+  int PARAMETRIZED__TYPE_NAME = GALILEO_NODE_TYPE_FEATURE_COUNT + 0;
 
   /**
-   * The number of structural features of the '<em>Rdep</em>' class.
+   * The feature id for the '<em><b>Parameter</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int RDEP_FEATURE_COUNT = GALILEO_NODE_TYPE_FEATURE_COUNT + 1;
+  int PARAMETRIZED__PARAMETER = GALILEO_NODE_TYPE_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.DelayImpl <em>Delay</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DelayImpl
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getDelay()
-   * @generated
-   */
-  int DELAY = 6;
-
-  /**
-   * The feature id for the '<em><b>Time</b></em>' attribute.
+   * The number of structural features of the '<em>Parametrized</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int DELAY__TIME = GALILEO_NODE_TYPE_FEATURE_COUNT + 0;
-
-  /**
-   * The number of structural features of the '<em>Delay</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int DELAY_FEATURE_COUNT = GALILEO_NODE_TYPE_FEATURE_COUNT + 1;
+  int PARAMETRIZED_FEATURE_COUNT = GALILEO_NODE_TYPE_FEATURE_COUNT + 2;
 
 
   /**
@@ -500,46 +481,36 @@ public interface DftPackage extends EPackage
   EAttribute getObserver_ObservationRate();
 
   /**
-   * Returns the meta object for class '{@link de.dlr.sc.virsat.fdir.galileo.dft.Rdep <em>Rdep</em>}'.
+   * Returns the meta object for class '{@link de.dlr.sc.virsat.fdir.galileo.dft.Parametrized <em>Parametrized</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Rdep</em>'.
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.Rdep
+   * @return the meta object for class '<em>Parametrized</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.Parametrized
    * @generated
    */
-  EClass getRdep();
+  EClass getParametrized();
 
   /**
-   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.Rdep#getRateFactor <em>Rate Factor</em>}'.
+   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.Parametrized#getTypeName <em>Type Name</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Rate Factor</em>'.
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.Rdep#getRateFactor()
-   * @see #getRdep()
+   * @return the meta object for the attribute '<em>Type Name</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.Parametrized#getTypeName()
+   * @see #getParametrized()
    * @generated
    */
-  EAttribute getRdep_RateFactor();
+  EAttribute getParametrized_TypeName();
 
   /**
-   * Returns the meta object for class '{@link de.dlr.sc.virsat.fdir.galileo.dft.Delay <em>Delay</em>}'.
+   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.Parametrized#getParameter <em>Parameter</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Delay</em>'.
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.Delay
+   * @return the meta object for the attribute '<em>Parameter</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.Parametrized#getParameter()
+   * @see #getParametrized()
    * @generated
    */
-  EClass getDelay();
-
-  /**
-   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.Delay#getTime <em>Time</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Time</em>'.
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.Delay#getTime()
-   * @see #getDelay()
-   * @generated
-   */
-  EAttribute getDelay_Time();
+  EAttribute getParametrized_Parameter();
 
   /**
    * Returns the factory that creates the instances of the model.
@@ -711,40 +682,30 @@ public interface DftPackage extends EPackage
     EAttribute OBSERVER__OBSERVATION_RATE = eINSTANCE.getObserver_ObservationRate();
 
     /**
-     * The meta object literal for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.RdepImpl <em>Rdep</em>}' class.
+     * The meta object literal for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.ParametrizedImpl <em>Parametrized</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.RdepImpl
-     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getRdep()
+     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.ParametrizedImpl
+     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getParametrized()
      * @generated
      */
-    EClass RDEP = eINSTANCE.getRdep();
+    EClass PARAMETRIZED = eINSTANCE.getParametrized();
 
     /**
-     * The meta object literal for the '<em><b>Rate Factor</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Type Name</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute RDEP__RATE_FACTOR = eINSTANCE.getRdep_RateFactor();
+    EAttribute PARAMETRIZED__TYPE_NAME = eINSTANCE.getParametrized_TypeName();
 
     /**
-     * The meta object literal for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.DelayImpl <em>Delay</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DelayImpl
-     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getDelay()
-     * @generated
-     */
-    EClass DELAY = eINSTANCE.getDelay();
-
-    /**
-     * The meta object literal for the '<em><b>Time</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Parameter</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute DELAY__TIME = eINSTANCE.getDelay_Time();
+    EAttribute PARAMETRIZED__PARAMETER = eINSTANCE.getParametrized_Parameter();
 
   }
 

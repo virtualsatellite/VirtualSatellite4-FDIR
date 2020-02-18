@@ -394,13 +394,17 @@ public class FaultTreeHelper {
 	 */
 	public FaultTreeEdge createFaultTreeEdge(Fault fault, FaultTreeNode from, FaultTreeNode to) {
 		FaultTreeNodeType typeTo = to.getFaultTreeNodeType();
-		switch (typeTo) {
+		
+		if (typeTo.equals(FaultTreeNodeType.MONITOR)) {
+			return connectObserver(fault, from, to);
+		}
+		
+		FaultTreeNodeType typeFrom = from.getFaultTreeNodeType();
+		switch (typeFrom) {
 			case FDEP:
 			case RDEP:
 			case PDEP:
 				return connectDep(fault, from, to);
-			case MONITOR:
-				return connectObserver(fault, from, to);
 			default:
 				return connect(fault, from, to);
 		}

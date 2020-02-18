@@ -27,11 +27,9 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Dft.ecore#//Observer/observables"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Observer/observationRate"/>
     </genClasses>
-    <genClasses ecoreClass="Dft.ecore#//Rdep">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Rdep/rateFactor"/>
-    </genClasses>
-    <genClasses ecoreClass="Dft.ecore#//Delay">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Delay/time"/>
+    <genClasses ecoreClass="Dft.ecore#//Parametrized">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Parametrized/typeName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//Parametrized/parameter"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

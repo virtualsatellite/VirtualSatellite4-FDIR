@@ -101,14 +101,9 @@ public class DftAdapterFactory extends AdapterFactoryImpl
         return createObserverAdapter();
       }
       @Override
-      public Adapter caseRdep(Rdep object)
+      public Adapter caseParametrized(Parametrized object)
       {
-        return createRdepAdapter();
-      }
-      @Override
-      public Adapter caseDelay(Delay object)
-      {
-        return createDelayAdapter();
+        return createParametrizedAdapter();
       }
       @Override
       public Adapter defaultCase(EObject object)
@@ -208,31 +203,16 @@ public class DftAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link de.dlr.sc.virsat.fdir.galileo.dft.Rdep <em>Rdep</em>}'.
+   * Creates a new adapter for an object of class '{@link de.dlr.sc.virsat.fdir.galileo.dft.Parametrized <em>Parametrized</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.Rdep
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.Parametrized
    * @generated
    */
-  public Adapter createRdepAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link de.dlr.sc.virsat.fdir.galileo.dft.Delay <em>Delay</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.Delay
-   * @generated
-   */
-  public Adapter createDelayAdapter()
+  public Adapter createParametrizedAdapter()
   {
     return null;
   }

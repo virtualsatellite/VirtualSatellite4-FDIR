@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInst
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElement;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralFactory;
+import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -160,7 +161,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 	
 	@Test
 	public void testCsp2Repair2() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileoRepair/csp2Repair2.dft");
+		InputStream is = TestActivator.getResourceContentAsString("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();

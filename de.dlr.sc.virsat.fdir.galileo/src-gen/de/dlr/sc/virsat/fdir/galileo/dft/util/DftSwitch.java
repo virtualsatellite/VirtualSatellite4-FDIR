@@ -110,19 +110,11 @@ public class DftSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case DftPackage.RDEP:
+      case DftPackage.PARAMETRIZED:
       {
-        Rdep rdep = (Rdep)theEObject;
-        T result = caseRdep(rdep);
-        if (result == null) result = caseGalileoNodeType(rdep);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case DftPackage.DELAY:
-      {
-        Delay delay = (Delay)theEObject;
-        T result = caseDelay(delay);
-        if (result == null) result = caseGalileoNodeType(delay);
+        Parametrized parametrized = (Parametrized)theEObject;
+        T result = caseParametrized(parametrized);
+        if (result == null) result = caseGalileoNodeType(parametrized);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -211,33 +203,17 @@ public class DftSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Rdep</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Parametrized</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Rdep</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Parametrized</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseRdep(Rdep object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Delay</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Delay</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseDelay(Delay object)
+  public T caseParametrized(Parametrized object)
   {
     return null;
   }
