@@ -1,6 +1,7 @@
 TargetLibrary fdir_dependencies {
 	RepositoryLocation Eclipse url "http://download.eclipse.org/releases/2019-06/" {
 		Unit org.eclipse.linuxtools.docker.feature.feature.group version 4.3.0.201906121603;
+		Unit org.eclipse.swtbot.eclipse.gef.feature.group version 2.8.0.201906121535;
 	}
 
 	RepositoryLocation Birt url "https://sourceforge.net/projects/birt/files/release/4.12.0/" {

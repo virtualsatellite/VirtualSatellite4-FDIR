@@ -35,6 +35,7 @@ addons:
     - libzmq-jni
     - metacity
     - ant
+    - at-spi2-core
     - expect
     
 install:
