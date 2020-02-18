@@ -21,7 +21,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 
 @Suite.SuiteClasses({
-	GraphitiEditorTestCase.class
+	GraphitiEditorTestCase.class,
+	GraphitiEditorTestCaseAddGate.class
 	})
 
 public class ProjectUiAllTests {
