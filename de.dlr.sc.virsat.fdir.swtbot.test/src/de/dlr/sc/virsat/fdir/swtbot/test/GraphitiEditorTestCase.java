@@ -11,8 +11,10 @@
 package de.dlr.sc.virsat.fdir.swtbot.test;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.eclipse.swtbot.eclipse.gef.finder.SWTGefBot;
+import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefConnectionEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditor;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefFigureCanvas;
@@ -58,7 +60,7 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 	}
 	
 	@Test
-	public void startTest() {
+	public void deleteElementConfigurationTest() {
 		dragTreeItemToDiagramEditor(fault2, diagramEditor);
 		diagramEditor.activateTool("Basic Event");		
 		diagramEditor.click("ElementConfiguration.Fault");
@@ -80,6 +82,41 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
  		//Check if associated fault model disappeared from the tree view		
 		Assert.assertFalse(isTreeItemPresentInTreeView(fault2));		
 	}
+	
+	@Test
+	public void addANDGateTest() {
+		dragTreeItemToDiagramEditor(fault2, diagramEditor);
+		diagramEditor.activateTool("Basic Event");		
+		diagramEditor.click("ElementConfiguration.Fault");
+		SWTBotGefEditPart basicEventPart = diagramEditor.getEditPart("BasicEvent");
+		Assert.assertNotNull(basicEventPart);
+		
+		
+		diagramEditor.activateTool("Propagation");
+		diagramEditor.getEditPart("ElementConfiguration.Fault").children().get(0).click();
+		diagramEditor.getEditPart("ConfigurationTree.Fault").children().get(1).click();
+		
+		diagramEditor.activateTool("AND");
+		
+		SWTBotGefConnectionEditPart connection = diagramEditor.getEditPart("ElementConfiguration.Fault").children().get(0).sourceConnections().get(0);
+		connection.click();
+		
+		SWTBotGefConnectionEditPart swtBotGefConnectionEditPart = diagramEditor.getEditPart("AND").children().get(0).sourceConnections().get(0);
+		SWTBotGefConnectionEditPart swtBotGefConnectionEditPart2 = diagramEditor.getEditPart("AND").children().get(1).targetConnections().get(0);
+		
+		Assert.assertNotNull(swtBotGefConnectionEditPart);
+		Assert.assertNotNull(swtBotGefConnectionEditPart2);
+		
+		deleteEditPartInDiagramEditor(diagramEditor, "AND");
+		
+		List<SWTBotGefConnectionEditPart> sourceConnections = diagramEditor.getEditPart("ElementConfiguration.Fault").children().get(0).sourceConnections();
+		List<SWTBotGefConnectionEditPart> targetConnections = diagramEditor.getEditPart("ConfigurationTree.Fault").children().get(1).targetConnections();
+		
+		Assert.assertTrue(sourceConnections.isEmpty());
+		Assert.assertTrue(targetConnections.isEmpty());
+	}
+	
+	
 	
 	private boolean isEditPartPresentInDiagramEditor(SWTBotGefEditor diagramEditor, String editPartName) {
 		return !(diagramEditor.getEditPart(editPartName) == null);
