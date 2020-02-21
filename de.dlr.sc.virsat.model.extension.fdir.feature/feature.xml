@@ -22,6 +22,78 @@ by German Aerospace Center (DLR e.V.)
       %license
    </license>
 
+   <includes
+         id="de.dlr.sc.virsat.graphiti.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.elk.algorithms.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.elk.graphiti.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.elk.ui.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.elk.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.birt"
+         version="0.0.0"/>
+
+   <includes
+         id="de.dlr.sc.virsat.fdir.galileo.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.connectivity.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.doc.user"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.enablement.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.enablement.jdbc.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.modelbase.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.sqldevtools.parsers.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.sqldevtools.results.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.datatools.sqldevtools.sqlbuilder.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="de.dlr.sc.virsat.fdir.storm.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.gef"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.emf"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="de.dlr.sc.virsat.model"/>
@@ -30,7 +102,9 @@ by German Aerospace Center (DLR e.V.)
       <import plugin="de.dlr.sc.virsat.build"/>
       <import plugin="de.dlr.sc.virsat.fdir.galileo"/>
       <import plugin="de.dlr.sc.virsat.model.calculation"/>
-      <import plugin="org.eclipse.elk.conn.graphiti"/>
+      <import plugin="de.dlr.sc.virsat.fdir.storm"/>
+      <import plugin="de.dlr.sc.virsat.external.lib.commons.math"/>
+      <import plugin="de.dlr.sc.virsat.apps.ui"/>
       <import plugin="de.dlr.sc.virsat.project.ui"/>
       <import plugin="de.dlr.sc.virsat.uiengine.ui"/>
       <import plugin="org.eclipse.ui"/>
@@ -41,6 +115,7 @@ by German Aerospace Center (DLR e.V.)
       <import plugin="org.eclipse.emf.transaction"/>
       <import plugin="org.eclipse.graphiti"/>
       <import plugin="org.eclipse.graphiti.ui"/>
+      <import plugin="org.eclipse.elk.conn.graphiti"/>
       <import plugin="org.eclipse.elk.graph"/>
       <import plugin="org.eclipse.elk.core.service"/>
       <import plugin="org.eclipse.elk.alg.layered"/>
@@ -49,7 +124,39 @@ by German Aerospace Center (DLR e.V.)
       <import plugin="de.dlr.sc.virsat.graphiti"/>
       <import plugin="de.dlr.sc.virsat.commons.ui"/>
       <import plugin="com.google.guava"/>
-      <import plugin="com.spotify.docker.client"/>
+      <import plugin="org.eclipse.core.jobs"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.datatools.modelbase.dbdefinition"/>
+      <import plugin="org.eclipse.datatools.modelbase.sql"/>
+      <import plugin="org.eclipse.datatools.connectivity.sqm.core"/>
+      <import plugin="org.eclipse.datatools.connectivity"/>
+      <import plugin="org.apache.batik.util" version="1.9.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.apache.xml.serializer" version="2.7.1" match="compatible"/>
+      <import plugin="com.ibm.icu"/>
+      <import plugin="org.eclipse.datatools.connectivity.ui"/>
+      <import plugin="org.eclipse.ui.navigator"/>
+      <import plugin="org.eclipse.datatools.help"/>
+      <import plugin="org.apache.poi" version="3.9.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.poi.ooxml.schemas" version="3.9.0" match="greaterOrEqual"/>
+      <import plugin="org.dom4j" version="1.6.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.common"/>
+      <import plugin="org.eclipse.datatools.connectivity.sqm.core.ui"/>
+      <import plugin="org.eclipse.datatools.connectivity.sqm.server.ui"/>
+      <import plugin="org.apache.xerces"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.datatools.sqltools.editor.core"/>
+      <import plugin="org.eclipse.datatools.sqltools.sql"/>
+      <import plugin="org.eclipse.datatools.sqltools.db.generic"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.datatools.sqltools.result"/>
+      <import plugin="org.eclipse.datatools.modelbase.sql.query"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.forms"/>
    </requires>
 
    <plugin
@@ -74,37 +181,242 @@ by German Aerospace Center (DLR e.V.)
          unpack="false"/>
 
    <plugin
-         id="de.dlr.sc.virsat.fdir.storm"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.lucene.analyzers-common"
          download-size="0"
          install-size="0"
          version="7.5.0.v20181003-1532"
          unpack="false"/>
-         
+
    <plugin
          id="org.apache.lucene.core"
          download-size="0"
          install-size="0"
          version="7.5.0.v20181003-1532"
          unpack="false"/>
-         
+
    <plugin
          id="org.apache.batik.constants"
          download-size="0"
          install-size="0"
          version="1.9.1.v20180227-1645"
          unpack="false"/>
-         
+
    <plugin
          id="org.apache.batik.i18n"
          download-size="0"
          install-size="0"
          version="1.9.1.v20180227-1645"
          unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.apache.derby"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.apache.derby.dbdefinition"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.dbdefinition.genericJDBC"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.db.generic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.oda.consumer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.oda.profile"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.codec"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.anim"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.gvt"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.script"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.xalan"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.oda"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.oda.design.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.poi.ooxml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.poi.ooxml.schemas"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.dom4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.xmlbeans"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.apache.derby.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.enablement.oda.xml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.enablement.finfo"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.enablement.oda.xml.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.connectivity.oda.design"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.modelbase.derby"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.sqltools.db.derby"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.sqltools.routineeditor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.lpg.lpgjavaruntime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.lucene.misc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.lucene.queryparser"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.datatools.sqltools.result.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.transaction"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
 </feature>

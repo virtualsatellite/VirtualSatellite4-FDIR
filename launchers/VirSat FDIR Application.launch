@@ -68,7 +68,6 @@
 <setEntry value="org.eclipse.ecf.filetransfer.httpclient45.feature:default"/>
 <setEntry value="org.eclipse.ecf.filetransfer.ssl.feature:default"/>
 <setEntry value="org.eclipse.egit:default"/>
-<setEntry value="org.eclipse.elk.algorithms.feature.source:default"/>
 <setEntry value="org.eclipse.elk.algorithms.feature:default"/>
 <setEntry value="org.eclipse.elk.feature:default"/>
 <setEntry value="org.eclipse.elk.graphiti.feature:default"/>
