@@ -61,6 +61,7 @@
 		<unit id="org.eclipse.gef.feature.group" version="3.11.0.201606061308"/>
 		<unit id="org.eclipse.egit.feature.group" version="5.4.0.201906121030-r"/>
 		<unit id="org.eclipse.linuxtools.docker.feature.feature.group" version="4.3.0.201906121603"/>
+		<unit id="org.eclipse.swtbot.eclipse.gef.feature.group" version="2.8.0.201906121535"/>
 		<repository location="http://download.eclipse.org/releases/2019-06"/>
 		</location>              
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">

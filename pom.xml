@@ -50,6 +50,8 @@
 
 				<module>de.dlr.sc.virsat.fdir.branding.ui</module>
 				<module>de.dlr.sc.virsat.fdir.test</module>
+				
+				<module>de.dlr.sc.virsat.fdir.swtbot.test</module>
 			</modules>
 		</profile>
 		<profile>

@@ -55,7 +55,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 
 	@Override
 	protected boolean isSingleClaim() {
-		return false;
+		return propagateWithoutActions;
 	}
 	
 	@Override

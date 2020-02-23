@@ -11,10 +11,12 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -71,11 +73,34 @@ public class PODFTState extends DFTState {
 	public Set<FaultTreeNode> getObservedFailedNodes() {
 		Set<FaultTreeNode> observedFailedNodes = new HashSet<>();
 		for (FaultTreeNode node : ftHolder.getNodes()) {
-			if (isNodeFailObserved(node)) {
+			if (isNodeFailObserved(node) && existsNonFailedObserver(node, true)) {
 				observedFailedNodes.add(node);
 			}
 		}
 		return observedFailedNodes;
+	}
+	
+	/**
+	 * Checks if a node is being observed
+	 * @param node the node to check for observation
+	 * @param allowDelay whether the observer is allowed to have a time delay
+	 * @return true iff the node is being observed
+	 */
+	public boolean existsNonFailedObserver(FaultTreeNode node, boolean allowDelay) {
+		if (node instanceof MONITOR) {
+			return true;
+		}
+		
+		List<MONITOR> observers = ftHolder.getMapNodeToMonitors().get(node);
+		if (observers != null) {
+			for (MONITOR observer : observers) {
+				if (!hasFaultTreeNodeFailed(observer) && (allowDelay || observer.getObservationRate() == 0)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	/**

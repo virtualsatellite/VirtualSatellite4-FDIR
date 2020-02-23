@@ -463,7 +463,8 @@ public class DFTState extends MarkovState {
 		
 		for (FaultTreeNode depTrigger : depTriggers) {
 			if (hasFaultTreeNodeFailed(depTrigger)) {
-				hasChangedNodeState = true;
+				boolean addAffector = false;
+				
 				if (depTrigger instanceof FDEP) {
 					hasChangedNodeState |= setFaultTreeNodeFailed(node, true);
 					
@@ -471,15 +472,24 @@ public class DFTState extends MarkovState {
 					if (permanentNodes.get(nodeIDTrigger)) {
 						int nodeID = ftHolder.getNodeIndex(node);
 						permanentNodes.set(nodeID, true);
+					} else if (hasChangedNodeState) {
+						addAffector = true;
 					}
-				} else if (depTrigger instanceof RDEP) {
-					Set<FaultTreeNode> affectors = mapNodeToAffectors.get(node);
-					if (affectors == null) {
-						affectors = new HashSet<>();
-						mapNodeToAffectors.put(node, affectors);
-					}
+				} else {
+					addAffector = true;
+				}
+				
+				if (addAffector) {
+					Set<FaultTreeNode> affectors = mapNodeToAffectors.computeIfAbsent(node, v -> new HashSet<>());
 					affectors.add(depTrigger);
 				}
+				
+			} else if (getAffectors(node).contains(depTrigger)) {
+				if (depTrigger instanceof FDEP) {
+					hasChangedNodeState |= setFaultTreeNodeFailed(node, false);
+				} 
+				
+				getAffectors(node).remove(depTrigger);
 			}
 		}
 	
@@ -551,11 +561,15 @@ public class DFTState extends MarkovState {
 				return false;
 			}
 		}
-			
+		
 		boolean sameClaims = other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares());	
 		if (sameClaims) {
 			boolean sameFms = orderedBes.size() == other.orderedBes.size() && orderedBes.equals(other.orderedBes);
 			if (sameFms) {
+				if (isFailState != other.isFailState) {
+					return false;
+				}
+				
 				boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
 				return sameFailingNodes;
 			}

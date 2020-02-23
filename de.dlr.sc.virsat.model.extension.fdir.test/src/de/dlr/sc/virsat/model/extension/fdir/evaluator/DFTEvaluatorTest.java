@@ -38,6 +38,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -457,13 +458,14 @@ public class DFTEvaluatorTest extends ATestCase {
 		State s = raHelper.createSingleState(ra, 0);
 		ra.setInitial(s);
 		FaultEventTransition t = raHelper.createFaultEventTransition(ra, s, s);
-		SPARE spareGate = (SPARE) ftHelper.getChildren(fault).get(0);
-		Fault faultA = (Fault) ftHelper.getChildren(spareGate).get(0);
-		BasicEvent be = faultA.getBasicEvents().get(0);
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		SPARE spareGate = ftHolder.getNodeByName("tle", SPARE.class);
+		FaultTreeNode spare = ftHolder.getNodeByName("B", Fault.class);
+		FaultTreeNode be = ftHolder.getNodeByName("A", BasicEvent.class);
 		raHelper.assignInputs(t, be);
 		ClaimAction ca = new ClaimAction(concept);
 		ca.setSpareGate(spareGate);
-		ca.setClaimSpare(ftHelper.getSpares(spareGate).get(0));
+		ca.setClaimSpare(spare);
 		raHelper.assignAction(t, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
@@ -471,6 +473,44 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
+	
+	/*
+	@Test
+	public void testEvaluatePand2ColdSpare1SharedWithRa() throws IOException {
+		Fault fault = createDFT("/resources/galileo/pand2ColdSpare1Shared.dft");
+		
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		SPARE spareGate1 = ftHolder.getNodeByName("SPARE1", SPARE.class);
+		SPARE spareGate2 = ftHolder.getNodeByName("SPARE2", SPARE.class);
+		FaultTreeNode spare = ftHolder.getNodeByName("B", Fault.class);
+		FaultTreeNode beA = ftHolder.getNodeByName("A", BasicEvent.class);
+		FaultTreeNode beC = ftHolder.getNodeByName("A", BasicEvent.class);
+		
+		RecoveryAutomaton ra1 = new RecoveryAutomaton(concept);
+		State s10 = raHelper.createSingleState(ra1, 0);
+		State s11 = raHelper.createSingleState(ra1, 1);
+		ra1.setInitial(s10);
+		
+		FaultEventTransition t01 = raHelper.createFaultEventTransition(ra1, s10, s11);
+		raHelper.assignInputs(t01, beA);
+		ClaimAction ca01 = new ClaimAction(concept);
+		ca01.setSpareGate(spareGate1);
+		ca01.setClaimSpare(spare);
+		raHelper.assignAction(t01, ca01);
+		
+		FaultEventTransition t11 = raHelper.createFaultEventTransition(ra1, s11, s11);
+		raHelper.assignInputs(t01, beC);
+		ClaimAction ca02 = new ClaimAction(concept);
+		ca02.setSpareGate(spareGate2);
+		ca02.setClaimSpare(spare);
+		raHelper.assignAction(t11, ca02);
+		
+		System.out.println(ra1);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra1));
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+	}
+	*/
 	
 	@Test
 	public void testEvaluateColdSpare2WithTimedRa() throws IOException {
@@ -1001,7 +1041,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			0.8897991134702452
 		};
 		
-		final double EXPECTEDSTEADYSTATE = 0.2666906886974718;
+		final double EXPECTEDSTEADYSTATE = 0.22228307985176277;
 		
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Repair1.dft");
 		
