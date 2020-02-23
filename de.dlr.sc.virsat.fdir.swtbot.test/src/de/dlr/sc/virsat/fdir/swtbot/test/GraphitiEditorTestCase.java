@@ -51,7 +51,7 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		super.before();
 		// create the necessary items for the test
 		Concept conceptFDIR = ConceptXmiLoader.loadConceptFromPlugin(de.dlr.sc.virsat.model.extension.fdir.Activator.getPluginId() + "/concept/concept.xmi");
-		repositoryNavigatorItem = bot.tree().expandNode(PROJECTNAME, "Repository");
+		repositoryNavigatorItem = bot.tree().expandNode(SWTBOT_TEST_PROJECTNAME, "Repository");
 		configurationTree = addElement(ConfigurationTree.class, conceptPs, repositoryNavigatorItem);
 		elementConfiguration = addElement(ElementConfiguration.class, conceptPs, configurationTree);
 		fault1 = addElement(Fault.class, conceptFDIR, configurationTree);
