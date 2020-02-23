@@ -182,4 +182,13 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		SWTBotGefEditor editor = gefBot.gefEditor(editorTitle);
 		return editor;
 	}
+	
+	@Override
+	protected void openCorePerspective() {
+		bot.menu("Window").menu("Perspective").menu("Open Perspective").menu("Other...").click();
+		waitForEditingDomainAndUiThread();
+		bot.table().select("FDIR Default");
+		bot.button("Open").click();
+		waitForEditingDomainAndUiThread(); 
+	}
 }
