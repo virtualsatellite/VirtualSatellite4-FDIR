@@ -13,10 +13,8 @@ package de.dlr.sc.virsat.fdir.swtbot.test;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swtbot.eclipse.gef.finder.SWTGefBot;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefConnectionEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditPart;
@@ -35,8 +33,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.ps.model.ConfigurationTree;
 import de.dlr.sc.virsat.model.extension.ps.model.ElementConfiguration;
 import de.dlr.sc.virsat.swtbot.test.ASwtBotTestCase;
-import de.dlr.sc.virsat.swtbot.test.Activator;
-import de.dlr.sc.virsat.swtbot.util.SwtBotDebugHelper;
 
 
 /**
