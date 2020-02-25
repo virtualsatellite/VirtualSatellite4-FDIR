@@ -13,6 +13,10 @@ package de.dlr.sc.virsat.fdir.swtbot.test;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swtbot.eclipse.gef.finder.SWTGefBot;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefConnectionEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditPart;
@@ -24,12 +28,15 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.ps.model.ConfigurationTree;
 import de.dlr.sc.virsat.model.extension.ps.model.ElementConfiguration;
 import de.dlr.sc.virsat.swtbot.test.ASwtBotTestCase;
+import de.dlr.sc.virsat.swtbot.test.Activator;
+import de.dlr.sc.virsat.swtbot.util.SwtBotDebugHelper;
 
 
 /**
@@ -190,5 +197,15 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		bot.table().select("FDIR Default");
 		bot.button("Open").click();
 		waitForEditingDomainAndUiThread(); 
+	}
+	
+	@Override
+	public void tearDown() throws CoreException {
+		if (ENV_VARIABLE_SWTBOT_SCREENSHOT_TRUE.equalsIgnoreCase(System.getenv(ENV_VARIABLE_SWTBOT_SCREENSHOT))) {
+			generateScreenshot();
+		}
+		
+		bot.closeAllEditors();
+		ResourcesPlugin.getWorkspace().getRoot().getProject(SWTBOT_TEST_PROJECTNAME).delete(true, null);
 	}
 }
