@@ -12,6 +12,9 @@
    <feature url="features/de.dlr.sc.virsat.fdir.galileo.feature_4.10.0.qualifier.jar" id="de.dlr.sc.virsat.fdir.galileo.feature" version="4.10.0.qualifier">
       <category name="VirSat_FDIR_Features"/>
    </feature>
+   <feature id="de.dlr.sc.virsat.fdir.storm.feature">
+      <category name="VirSat_FDIR_Features"/>
+   </feature>
    <category-def name="VirSat_FDIR_Features" label="VirSat FDIR Features">
       <description>
          Including FDIR Features
