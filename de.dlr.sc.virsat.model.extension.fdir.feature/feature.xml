@@ -154,9 +154,7 @@ by German Aerospace Center (DLR e.V.)
       <import plugin="org.eclipse.datatools.modelbase.sql.query"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.core.filesystem"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.eclipse.datatools.sqltools.common.ui"/>
    </requires>
 
    <plugin
@@ -417,6 +415,13 @@ by German Aerospace Center (DLR e.V.)
          install-size="0"
          version="0.0.0"
          fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.xml.serializer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
