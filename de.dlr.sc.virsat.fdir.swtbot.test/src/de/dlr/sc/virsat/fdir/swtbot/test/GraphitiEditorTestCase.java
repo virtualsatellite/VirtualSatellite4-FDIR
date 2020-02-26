@@ -13,8 +13,6 @@ package de.dlr.sc.virsat.fdir.swtbot.test;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swtbot.eclipse.gef.finder.SWTGefBot;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefConnectionEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditPart;
@@ -193,15 +191,5 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		bot.table().select("FDIR Default");
 		bot.button("Open").click();
 		waitForEditingDomainAndUiThread(); 
-	}
-	
-	@Override
-	public void tearDown() throws CoreException {
-		if (ENV_VARIABLE_SWTBOT_SCREENSHOT_TRUE.equalsIgnoreCase(System.getenv(ENV_VARIABLE_SWTBOT_SCREENSHOT))) {
-			generateScreenshot();
-		}
-		
-		bot.closeAllEditors();
-		ResourcesPlugin.getWorkspace().getRoot().getProject(SWTBOT_TEST_PROJECTNAME).delete(true, null);
 	}
 }
