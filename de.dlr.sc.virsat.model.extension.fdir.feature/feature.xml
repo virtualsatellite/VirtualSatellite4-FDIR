@@ -22,6 +22,10 @@ by German Aerospace Center (DLR e.V.)
       %license
    </license>
 
+   <includes
+         id="de.dlr.sc.virsat.fdir.storm.feature"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="de.dlr.sc.virsat.model"/>
@@ -74,37 +78,31 @@ by German Aerospace Center (DLR e.V.)
          unpack="false"/>
 
    <plugin
-         id="de.dlr.sc.virsat.fdir.storm"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.lucene.analyzers-common"
          download-size="0"
          install-size="0"
          version="7.5.0.v20181003-1532"
          unpack="false"/>
-         
+
    <plugin
          id="org.apache.lucene.core"
          download-size="0"
          install-size="0"
          version="7.5.0.v20181003-1532"
          unpack="false"/>
-         
+
    <plugin
          id="org.apache.batik.constants"
          download-size="0"
          install-size="0"
          version="1.9.1.v20180227-1645"
          unpack="false"/>
-         
+
    <plugin
          id="org.apache.batik.i18n"
          download-size="0"
          install-size="0"
          version="1.9.1.v20180227-1645"
          unpack="false"/>
+
 </feature>

@@ -64,6 +64,7 @@
 				<module>de.dlr.sc.virsat.fdir.docs.feature</module>
 				
 				<module>de.dlr.sc.virsat.fdir.galileo.feature</module>
+				<module>de.dlr.sc.virsat.fdir.storm.feature</module>
 				<module>de.dlr.sc.virsat.model.extension.fdir.feature</module>
 			</modules>
 		</profile>
