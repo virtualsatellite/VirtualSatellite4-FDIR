@@ -57,7 +57,7 @@
 		<profile>
 			<id>deploy</id>
 			<modules>
-				<!-- <module>de.dlr.sc.virsat.fdir.product</module>  -->
+				<module>de.dlr.sc.virsat.fdir.product</module>
 				<module>de.dlr.sc.virsat.fdir.p2updatesite</module>
 				<module>de.dlr.sc.virsat.fdir.branding.feature</module>
 				<module>de.dlr.sc.virsat.fdir.license.feature</module>
