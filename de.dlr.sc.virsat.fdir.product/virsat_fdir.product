@@ -153,6 +153,7 @@ Germany
       <feature id="org.eclipse.birt.report.designer.editor.xml.wtp" installMode="root"/>
       <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
       <feature id="de.dlr.sc.virsat.excel.feature" installMode="root"/>
+      <feature id="de.dlr.sc.virsat.fdir.storm.feature" installMode="root"/>
    </features>
 
    <configurations>
