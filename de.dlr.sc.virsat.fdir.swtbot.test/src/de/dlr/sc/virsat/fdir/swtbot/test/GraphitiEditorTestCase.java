@@ -24,6 +24,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -51,7 +52,7 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		super.before();
 		// create the necessary items for the test
 		Concept conceptFDIR = ConceptXmiLoader.loadConceptFromPlugin(de.dlr.sc.virsat.model.extension.fdir.Activator.getPluginId() + "/concept/concept.xmi");
-		repositoryNavigatorItem = bot.tree().expandNode(PROJECTNAME, "Repository");
+		repositoryNavigatorItem = bot.tree().expandNode(SWTBOT_TEST_PROJECTNAME, "Repository");
 		configurationTree = addElement(ConfigurationTree.class, conceptPs, repositoryNavigatorItem);
 		elementConfiguration = addElement(ElementConfiguration.class, conceptPs, configurationTree);
 		fault1 = addElement(Fault.class, conceptFDIR, configurationTree);
@@ -181,5 +182,14 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		String editorTitle = bot.editors().get(1).getTitle();				
 		SWTBotGefEditor editor = gefBot.gefEditor(editorTitle);
 		return editor;
+	}
+	
+	@Override
+	protected void openCorePerspective() {
+		bot.menu("Window").menu("Perspective").menu("Open Perspective").menu("Other...").click();
+		waitForEditingDomainAndUiThread();
+		bot.table().select("FDIR Default");
+		bot.button("Open").click();
+		waitForEditingDomainAndUiThread(); 
 	}
 }
