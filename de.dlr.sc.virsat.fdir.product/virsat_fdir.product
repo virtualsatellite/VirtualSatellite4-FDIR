@@ -114,7 +114,6 @@ Germany
       <feature id="org.eclipse.emf.compare"/>
       <feature id="org.eclipse.emf.validation"/>
       <feature id="org.eclipse.ocl"/>
-      <feature id="org.eclipse.linuxtools.docker.feature"/>
       <feature id="org.eclipse.emf.mapping.ecore"/>
       <feature id="org.eclipse.emf.codegen"/>
       <feature id="org.eclipse.wst.xml_ui.feature"/>
