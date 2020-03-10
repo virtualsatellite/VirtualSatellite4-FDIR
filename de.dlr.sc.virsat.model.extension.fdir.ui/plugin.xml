@@ -2368,5 +2368,31 @@
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport">
 		</handler>
 	</extension>
+	
+<!-- FT Generation -->
+
+<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			allPopups="false"
+	        locationURI="menu:de.dlr.sc.virsat.apps.ui.menu.apps?after=additions">
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.softwareFTGenerator"
+			style="push">
+		</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.commands">
+		<command
+			id="de.dlr.sc.virsat.model.extension.fdir.ui.command.softwareFTGenerator"
+			name="Software Fault Tree Generator">
+		</command>
+	</extension>
+<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.SoftwareFTGeneratorHandler"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.softwareFTGenerator">
+		</handler>
+	</extension>
+
 	<!-- Plugin.XML Protected Region End -->
 </plugin>
