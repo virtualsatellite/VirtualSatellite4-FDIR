@@ -62,6 +62,7 @@ callMavenDependencies() {
 checkforMavenProblems() {
 	echo "Check for Maven Problems on Product:"
 	(grep -n "\[\(WARN\|WARNING\|ERROR\)\]" maven.log \
+	| grep -v "\[WARNING\] Ignoring Bundle-ClassPath entry" \
 	| grep -v "\[WARNING\] Checksum validation failed" \
 	| grep -v "\[WARNING\] Could not validate integrity of download" \
 	|| exit 0 && exit 1;)
