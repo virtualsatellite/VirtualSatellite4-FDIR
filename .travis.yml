@@ -35,9 +35,8 @@ addons:
     - libzmq-jni
     - metacity
     - ant
-    - at-spi2-core
     - expect
-    
+
 install:
 - true
 
@@ -56,14 +55,6 @@ env:
   # API Token for access to github
   # ---------------------------------------------
   - secure: "gfvqkOwB4ZDRhOgBeBd+tVPmuSigyxawphN8fNmozwRLWdSbdLlvIoh2VpRET4XxEU9rL1LVHB51bUQVByCAS4hExzzqQy90uwyu7j15okXalXoSwmx1Xx1npfT0zNNVPPBG4PSvrwHOfSj8jPXllmSX0b+5MPXkzXH0gPBiT5sgQSgloiQKbI0RcCN+gIv9Hjd9eyP8J/jbzvnX0pVBzCHEX9IbEJhhBuG5iMv4DwibFmRMIoc/I51I2P3Pmx8hJLrcFDbygUKE0OdhO6oSqVwOA9Zad7uRm+dh8fDvCqeWKvrSDho3qRxQulPd+yu6HnwZV8gL/F1fncw29Sp5JF8w9JYpYlrC0r39H8cZZSkqDevxrPtkRBN1Yj7xHg1PtAjGpUYOm0k/V75WonVuhrJN68R32pEOhGx64n86/mzW6Z7BIi2JD5ruKLI3fV6nPEPd/0xe1qKqP99UOEdaP/KIbRzmq25coa/q/MncVZGud56SlSDNw6FIENGfclBnXAwtiAdPbAwOb7lLfQDvaZ7GRgLr49yiGRnR6RuJppXllDs9GlmHCfwx1EPA8Po0ytbVOIByuWY911TKVO6ZWVzhr6Ef6EW4k/sUXjtPNkZ6h71snBXnXb2RHjB8pIZ/Kzx+MFDt0bcIN11T7xAbNjojoBUTkrWixTiU0diLsCI="
-  # ---------------------------------------------
-  # Setup Overtarget Repository and Version
-  # ---------------------------------------------
-  - OVERTARGET_VERSION=1.1.0.r201903120902
-  - OVERTARGET_REPO=https://sourceforge.net/projects/overtarget/files/release/1.1.0/25/plugins
-  - OVERTARGET_GROUP=de.dlr.sc.overtarget
-  - JUNIT_DEBUG_PROJECT_TEST_CASE=true
-  - SWTBOT_SCREENSHOT=true
 
 before_script:
   # -----------------------------------
@@ -73,9 +64,7 @@ before_script:
   # -------------------------------------------------------------------
   # create adirectory for Overtarget and try to receive language plugin
   # -------------------------------------------------------------------
-  - mkdir -p ./OverTarget
-  - curl -L -o ./OverTarget/OverTarget.jar $OVERTARGET_REPO/$OVERTARGET_GROUP.language_$OVERTARGET_VERSION.jar
-  - mvn install:install-file -Dfile=./OverTarget/OverTarget.jar -DgroupId=$OVERTARGET_GROUP -DartifactId=$OVERTARGET_GROUP.language -Dversion=$OVERTARGET_VERSION -Dpackaging=jar
+  - bash/maven_build.sh -j dependencies -p dependencies
   # --------------------------------------------------------------
   # Setup environment variables for correct linking of vtk and zmq
   # --------------------------------------------------------------
