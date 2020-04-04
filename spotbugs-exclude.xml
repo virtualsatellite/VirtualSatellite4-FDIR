@@ -72,6 +72,9 @@
 			<!-- Ignore this warning, since there is a case where it makes sense to have
 			switch fallthrough. -->
 			<Bug pattern="SF_SWITCH_FALLTHROUGH" />
+			
+			<Bug pattern="EI_EXPOSE_REP" />
+			<Bug pattern="EI_EXPOSE_REP2" />
 		</Or>
 	</Match>
 </FindBugsFilter>

@@ -98,7 +98,7 @@ public class ASynthesizerExperiment {
 		
 		File[] files = folder.listFiles();
 		if (files != null) {
-			for (File file : folder.listFiles()) {
+			for (File file : files) {
 				if (file.isDirectory()) {
 					testFolder(file, folderPath + "/" + file.getName());
 				} else {
