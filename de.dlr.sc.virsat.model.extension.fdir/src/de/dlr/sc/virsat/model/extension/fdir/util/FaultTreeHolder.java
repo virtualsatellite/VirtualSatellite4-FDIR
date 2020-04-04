@@ -321,11 +321,11 @@ public class FaultTreeHolder {
 				Set<FaultTreeNode> allParents = new HashSet<>();
 				mapNodeToAllParents.put(node, allParents);
 				Queue<FaultTreeNode> queue = new LinkedList<>();
-				queue.addAll(mapNodeToParents.get(node));
+				queue.addAll(parents);
 				while (!queue.isEmpty()) {
 					FaultTreeNode parent = queue.poll();
 					if (allParents.add(parent)) {
-						queue.addAll(parents);
+						queue.addAll(mapNodeToParents.get(parent));
 					}
 				}
 			}
