@@ -47,11 +47,11 @@ public abstract class VirSatGraphitiLayoutSetup extends GraphitiLayoutSetup {
 			Collection<?> collection = (Collection<?>) object;
 			for (Object o : collection) {
 				if (o instanceof IPictogramElementEditPart) {
-					IPictogramElementEditPart editPart = (IPictogramElementEditPart) object;
+					IPictogramElementEditPart editPart = (IPictogramElementEditPart) o;
 					diagram = Graphiti.getPeService().getDiagramForPictogramElement(editPart.getPictogramElement());
 					break;
 				} else if (o instanceof PictogramElement) {
-					diagram = Graphiti.getPeService().getDiagramForPictogramElement((PictogramElement) object);
+					diagram = Graphiti.getPeService().getDiagramForPictogramElement((PictogramElement) o);
 					break;
 				}
 			}

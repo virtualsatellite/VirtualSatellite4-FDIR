@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -154,8 +155,9 @@ public  class MCSAnalysis extends AMCSAnalysis {
 	 */
 	private Map<Set<Object>, ModelCheckingResult> computeMinimumCutSetsMetrics(Map<Set<Object>, List<Fault>> mapCutSetToFaults, IFaultTreeEvaluator ftEvaluator) {
 		Map<Set<Object>, ModelCheckingResult> mapMcsToResult = new HashMap<>();
-		for (Set<Object> minCutSet : mapCutSetToFaults.keySet()) {
-			List<Fault> failures = mapCutSetToFaults.get(minCutSet);
+		for (Entry<Set<Object>, List<Fault>> entry : mapCutSetToFaults.entrySet()) {
+			Set<Object> minCutSet = entry.getKey();
+			List<Fault> failures = entry.getValue();
 			Fault failure = failures.get(0);
 			FailableBasicEventsProvider failNodeProvider = new FailableBasicEventsProvider();
 			for (Object obj : minCutSet) {
@@ -186,8 +188,9 @@ public  class MCSAnalysis extends AMCSAnalysis {
 		}
 
 		List<CutSet> generatedEntries = new ArrayList<>();
-		for (Set<Object> minimumCutSet : mapCutSetToFaults.keySet()) {
-			List<Fault> failures = mapCutSetToFaults.get(minimumCutSet);
+		for (Entry<Set<Object>, List<Fault>> entry : mapCutSetToFaults.entrySet()) {
+			Set<Object> minimumCutSet = entry.getKey();
+			List<Fault> failures = entry.getValue();
 			ModelCheckingResult mcsResult = mapMcsToResult.get(minimumCutSet);
 			for (Fault failure : failures) {
 				CutSet cutSet = new CutSet(getConcept());

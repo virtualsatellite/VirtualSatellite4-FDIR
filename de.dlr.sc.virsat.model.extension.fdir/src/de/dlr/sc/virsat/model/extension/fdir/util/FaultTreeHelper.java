@@ -373,7 +373,7 @@ public class FaultTreeHelper {
 					return copyFault(ftnode.getFault());
 				default:
 					FaultTreeNode gateCopy = createGate(fault, type);
-					if (type.equals(FaultTreeNodeType.VOTE)) {
+					if (ftnode instanceof VOTE && gateCopy instanceof VOTE) {
 						VOTE gateCopyAsVote = (VOTE) gateCopy;
 						VOTE originalGateAsVote = (VOTE) ftnode;
 						gateCopyAsVote.setVotingThreshold(originalGateAsVote.getVotingThreshold());

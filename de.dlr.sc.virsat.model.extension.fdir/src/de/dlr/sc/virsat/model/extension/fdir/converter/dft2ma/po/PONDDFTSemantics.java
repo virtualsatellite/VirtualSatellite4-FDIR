@@ -157,6 +157,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 	
 	@Override
 	public Set<FaultTreeNode> extractRecoveryActionInput(FaultTreeHolder ftHolder, DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
+		if (!(pred instanceof PODFTState)) {
+			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + pred);
+		}
+		
 		PODFTState poPred = (PODFTState) pred;
 		
 		Set<FaultTreeNode> observedNodes = new HashSet<>();

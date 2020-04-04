@@ -60,8 +60,12 @@ public class ObservationEvent implements IDFTEvent {
 	@Override
 	public void execute(DFTState state, Set<BasicEvent> orderDependentBasicEvents,
 			Set<FaultTreeNode> transientNodes) {
-		PODFTState poState = (PODFTState) state;
-		poState.setNodeFailObserved(node, !isRepair);
+		if (state instanceof PODFTState) {
+			PODFTState poState = (PODFTState) state;
+			poState.setNodeFailObserved(node, !isRepair);
+		} else {
+			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);
+		}
 	}
 	
 	@Override
@@ -71,22 +75,26 @@ public class ObservationEvent implements IDFTEvent {
 
 	@Override
 	public boolean canOccur(DFTState state) {
-		PODFTState poState = (PODFTState) state;
-		if (isRepair) {
-			if (state.hasFaultTreeNodeFailed(node) || !poState.isNodeFailObserved(node))  {
-				return false;
+		if (state instanceof PODFTState) {
+			PODFTState poState = (PODFTState) state;
+			if (isRepair) {
+				if (state.hasFaultTreeNodeFailed(node) || !poState.isNodeFailObserved(node))  {
+					return false;
+				}
+			} else {
+				if (!state.hasFaultTreeNodeFailed(node) || poState.isNodeFailObserved(node))  {
+					return false;
+				}
+			}
+			
+			List<MONITOR> observers = state.getFTHolder().getMapNodeToMonitors().get(node);
+			for (MONITOR observer : observers) {
+				if (!state.hasFaultTreeNodeFailed(observer)) {
+					return true;
+				}
 			}
 		} else {
-			if (!state.hasFaultTreeNodeFailed(node) || poState.isNodeFailObserved(node))  {
-				return false;
-			}
-		}
-		
-		List<MONITOR> observers = state.getFTHolder().getMapNodeToMonitors().get(node);
-		for (MONITOR observer : observers) {
-			if (!state.hasFaultTreeNodeFailed(observer)) {
-				return true;
-			}
+			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);
 		}
 		return false;
 	}

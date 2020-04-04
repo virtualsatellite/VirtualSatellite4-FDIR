@@ -436,7 +436,7 @@ public class DFTState extends MarkovState {
 			boolean hasClaim = false;
 			for (FaultTreeNode spare : spares) {
 				FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
-				if (oldCLaimingSpareGate != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
+				if (claimingSpareGateOther != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
 					hasClaim = true;
 					break;
 				}

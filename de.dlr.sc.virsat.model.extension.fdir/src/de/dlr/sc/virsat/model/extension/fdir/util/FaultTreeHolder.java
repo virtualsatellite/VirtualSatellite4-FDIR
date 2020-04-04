@@ -314,7 +314,10 @@ public class FaultTreeHolder {
 	public Map<FaultTreeNode, Set<FaultTreeNode>> getMapNodeToAllParents() {
 		if (mapNodeToAllParents == null) {
 			mapNodeToAllParents = new HashMap<>();
-			for (FaultTreeNode node : mapNodeToParents.keySet()) {
+			for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : mapNodeToParents.entrySet()) {
+				FaultTreeNode node = entry.getKey();
+				List<FaultTreeNode> parents = entry.getValue();
+				
 				Set<FaultTreeNode> allParents = new HashSet<>();
 				mapNodeToAllParents.put(node, allParents);
 				Queue<FaultTreeNode> queue = new LinkedList<>();
@@ -322,7 +325,7 @@ public class FaultTreeHolder {
 				while (!queue.isEmpty()) {
 					FaultTreeNode parent = queue.poll();
 					if (allParents.add(parent)) {
-						queue.addAll(mapNodeToParents.get(parent));
+						queue.addAll(parents);
 					}
 				}
 			}

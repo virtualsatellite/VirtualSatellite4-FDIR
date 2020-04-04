@@ -29,7 +29,8 @@ import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
  */
 public class StormScheduler implements IMarkovScheduler<MarkovState> {
 	private StormExecutionEnvironment stormExecutionEnvironment;
-	final double delta = 0.01;
+	private static final double DELTA = 0.01;
+	
 	/**
 	 * 
 	 * @param stormExecutionEnvironment
@@ -43,7 +44,7 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 	public Map<MarkovState, Set<MarkovTransition<MarkovState>>> computeOptimalScheduler(MarkovAutomaton<MarkovState> ma,
 			MarkovState initialMa) {
 
-		Storm storm = new Storm(ma, delta, MTTF.MTTF);
+		Storm storm = new Storm(ma, DELTA, MTTF.MTTF);
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> mapScheduler = new HashMap<>();
 		Map<Integer, Integer> stormResults = runStormScheduler(storm);
 		for (MarkovState fromState : ma.getStates()) {
