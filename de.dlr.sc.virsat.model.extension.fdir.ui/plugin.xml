@@ -2393,6 +2393,5 @@
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.softwareFTGenerator">
 		</handler>
 	</extension>
-
 	<!-- Plugin.XML Protected Region End -->
 </plugin>
