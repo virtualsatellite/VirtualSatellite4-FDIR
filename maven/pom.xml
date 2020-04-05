@@ -105,6 +105,7 @@
 						<configuration>
 							<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 							<includeFilterFile>spotbugs-include.xml</includeFilterFile>
+							<addSourceDirs>true</addSourceDirs>
 						</configuration>
 						<executions>
 							<execution>
