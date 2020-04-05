@@ -4,6 +4,10 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/4.0.0/spotbugs/etc/findbugsfilter.xsd">
 
+	<Match>
+		<Bug code="MALICIOUS_CODE,SECURITY,EXPERIMENTAL,NOISE,I18N"/>
+	</Match>
+
 	<!-- Ignore activators -->
 	<Match>
 		<Or>
@@ -63,11 +67,7 @@
 			where it is not clear if they are good or bad practice or necessary.
 			Should be rechecked in the future. -->
 			<Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
-			
-			<!-- Ignore this warning, since it is not clear if it is a false positive or not.
-			Should be rechecked in the future. -->
-			<Bug pattern="MS_PKGPROTECT" />
-			<Bug pattern="MS_CANNOT_BE_FINAL" />
+
 			
 			<!-- Ignore this warning, since there is a case where it makes sense to have
 			switch fallthrough. -->
