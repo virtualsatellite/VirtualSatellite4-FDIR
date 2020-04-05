@@ -174,8 +174,10 @@ public class DockerHelper {
 						while ((entry = tarStream.getNextTarEntry()) != null) {
 							files.add(entry.getName());
 							if (entry.getName().contains(fileName)) {
-								result = new BufferedReader(new InputStreamReader(tarStream)).lines()
-										.collect(Collectors.joining("\n"));
+								try (BufferedReader reader = new BufferedReader(new InputStreamReader(tarStream))) {
+									result = reader.lines()
+											.collect(Collectors.joining("\n"));
+								}
 							}
 						}
 					}

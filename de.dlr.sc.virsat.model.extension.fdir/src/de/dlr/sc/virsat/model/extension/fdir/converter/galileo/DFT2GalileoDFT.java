@@ -73,17 +73,17 @@ public class DFT2GalileoDFT {
 	
 	/**
 	 * Converts the fault tree induced by the passed fault to a galileo fault tree representation
-	 * @param root the root fault
+	 * @param root the root node
 	 * @return a galileo dft representation
 	 */
-	public GalileoDft convert(Fault root) {
+	public GalileoDft convert(FaultTreeNode root) {
 		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
 		
 		GalileoDft galileoDft = DftFactory.eINSTANCE.createGalileoDft();
 		
 		Map<FaultTreeNode, GalileoFaultTreeNode> mapDftNodeToGalileoNode = new HashMap<>();
 		
-		List<FaultTreeNode> allNodes = ftHelper.getAllNodes(root);
+		List<FaultTreeNode> allNodes = ftHelper.getAllNodes(root.getFault());
 		for (FaultTreeNode node : allNodes) {
 			GalileoFaultTreeNode galileoNode = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
 			galileoNode.setName(getIdentifier(node.getTypeInstance()));

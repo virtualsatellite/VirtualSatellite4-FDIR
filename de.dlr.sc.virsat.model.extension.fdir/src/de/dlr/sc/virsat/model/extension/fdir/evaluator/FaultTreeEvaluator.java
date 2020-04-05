@@ -73,7 +73,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
+		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : null;
 		
 		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, subMonitor, metrics);
 		if (!result.getMinCutSets().isEmpty()) {

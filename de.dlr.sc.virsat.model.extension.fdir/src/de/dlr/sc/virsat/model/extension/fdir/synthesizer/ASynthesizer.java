@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -64,7 +65,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
 		fault = (Fault) conversionResult.getRoot();
 		
-		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
+		RecoveryAutomaton synthesizedRA;
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
 			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
@@ -169,8 +170,10 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	protected Map<FaultTreeNode, FaultTreeNode> createCopyToOriginalNodesMap(Map<FaultTreeNode, FaultTreeNode> mapNewToOriginal, Map<FaultTreeNode, FaultTreeNode> mapNewToCopy) {
 		Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
-		for (FaultTreeNode node : mapNewToCopy.keySet()) {
-			mapCopyToOriginal.put(mapNewToCopy.get(node), mapNewToOriginal.get(node));
+		for (Entry<FaultTreeNode, FaultTreeNode> entry : mapNewToCopy.entrySet()) {
+			FaultTreeNode original = mapNewToOriginal.get(entry.getKey());
+			FaultTreeNode copy = entry.getValue();
+			mapCopyToOriginal.put(copy, original);
 		}
 		return mapCopyToOriginal;
 	}

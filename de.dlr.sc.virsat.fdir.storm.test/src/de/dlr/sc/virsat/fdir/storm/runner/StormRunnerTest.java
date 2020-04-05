@@ -38,7 +38,7 @@ public class StormRunnerTest {
 	 * @author muel_s8
 	 *
 	 */
-	private class MockStormProgram implements IStormProgram<Integer> {
+	private static class MockStormProgram implements IStormProgram<Integer> {
 
 		@Override
 		public String getExecutableName() {

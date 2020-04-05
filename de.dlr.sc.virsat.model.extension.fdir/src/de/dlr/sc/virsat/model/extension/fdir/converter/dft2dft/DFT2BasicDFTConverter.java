@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -126,8 +127,9 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 		}
 
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerators = new HashMap<>();
-		for (FaultTreeNode generator : mapNodes.keySet()) {
-			List<FaultTreeNode> generatedNodes = mapNodes.get(generator);
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : mapNodes.entrySet()) {
+			FaultTreeNode generator = entry.getKey();
+			List<FaultTreeNode> generatedNodes = entry.getValue();
 			for (FaultTreeNode generated : generatedNodes) {
 				mapGeneratedToGenerators.put(generated, generator);
 			}

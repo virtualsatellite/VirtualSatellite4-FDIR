@@ -30,6 +30,10 @@ public class VOTESemantics implements INodeSemantics {
 			FaultTreeHolder ftHolder, GenerationResult generationResult) {
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		
+		if (!(node instanceof VOTE)) {
+			throw new IllegalArgumentException("Expected node of type VOTE but got node " + node);
+		}
+		
 		int failed = 0;
 		int permanentlyFailed = 0;
 		
