@@ -10,16 +10,12 @@
 
 package de.dlr.sc.virsat.fdir.swtbot.test;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.eclipse.swtbot.eclipse.gef.finder.SWTGefBot;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefConnectionEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditPart;
 import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefEditor;
-import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefFigureCanvas;
-import org.eclipse.swtbot.eclipse.gef.finder.widgets.SWTBotGefViewer;
-import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.Assert;
 import org.junit.Before;
@@ -115,60 +111,6 @@ public class GraphitiEditorTestCase extends ASwtBotTestCase {
 		
 		Assert.assertTrue(sourceConnections.isEmpty());
 		Assert.assertTrue(targetConnections.isEmpty());
-	}
-	
-	
-	
-	private boolean isEditPartPresentInDiagramEditor(SWTBotGefEditor diagramEditor, String editPartName) {
-		return !(diagramEditor.getEditPart(editPartName) == null);
-	}
-
-	/**
-	 * @param item Tree item
-	 * @return true if tree item is present in tree view, false otherwise
-	 */
-	protected boolean isTreeItemPresentInTreeView(SWTBotTreeItem item) {
-		try {
-			item.select();
-			return true;
-		} catch (WidgetNotFoundException e) {
-			return false;
-		}
-	}
-
-	/**
-	 * @param diagramEditor Diagram editor on which to perform delete operation
-	 * @param editPartName Name of EditPart to be deleted
-	 */
-	protected void deleteEditPartInDiagramEditor(SWTBotGefEditor diagramEditor, String editPartName) {
-		diagramEditor.getEditPart(editPartName).select();		
-		diagramEditor.clickContextMenu("Delete");
-		waitForEditingDomainAndUiThread();
-		bot.button("Yes").click();
-	}
-
-	/**
-	 * @param item Tree item that is beeing dragged
-	 * @param diagramEditor Graphiti diagram editor which the tree item is beeing dragged onto
-	 */
-	protected void dragTreeItemToDiagramEditor(SWTBotTreeItem item, SWTBotGefEditor diagramEditor) {
-		SWTBotGefViewer viewer = diagramEditor.getSWTBotGefViewer();
-		SWTBotGefFigureCanvas canvas = null;		
-
-		for (Field f : viewer.getClass().getDeclaredFields()) {
-		    if ("canvas".equals(f.getName())) {
-		        f.setAccessible(true);
-		        try {
-		            canvas = (SWTBotGefFigureCanvas) f.get(viewer);
-		        } catch (IllegalArgumentException e) {
-		            e.printStackTrace(); 
-		        } catch (IllegalAccessException e) {
-		            e.printStackTrace(); 
-		        }
-		    }
-		}
-		item.dragAndDrop(canvas);
-		waitForEditingDomainAndUiThread();
 	}
 
 	/**
