@@ -191,6 +191,8 @@ public class POSynthesizer extends ASynthesizer {
 			}
 		}
 		
+		System.out.println(beliefMa.toDot());
+		
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
 		

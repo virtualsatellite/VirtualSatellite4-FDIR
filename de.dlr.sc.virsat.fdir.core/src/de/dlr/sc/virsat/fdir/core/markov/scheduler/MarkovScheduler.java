@@ -126,9 +126,16 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double value = probabilityDistribution[state.getIndex()];			
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
-			}			
+			} else if (ma.getFinalStates().contains(state)) {
+				// To differentiate between fail states we also compute their MTTF
+				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
+				for (MarkovTransition<S> transition : succTransitions) {
+					value += probabilityDistribution[transition.getTo().getIndex()] / transition.getRate();
+				}
+			}
 			resultMap.put(state, value);
 		}
+		
 		return resultMap;
 	}
 	
@@ -142,16 +149,24 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private Set<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, Map<S, Double> results, S state) {
 		Set<MarkovTransition<S>> bestTransitionGroup = null;
 		double bestValue = Double.NEGATIVE_INFINITY;
+		double bestTransitionProbFail = 1;
 		
 		Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 		
 		for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
 			double expectationValue = 0;
+			double transitionGroupProbFail = 0;
+			
 			for (MarkovTransition<S> transition : transitionGroup) {
+				if (ma.getFinalStates().contains(transition.getTo())) {
+					transitionGroupProbFail += transition.getRate();
+				}
 				expectationValue += transition.getRate() * results.get(transition.getTo());
 			}
-			if (expectationValue >= bestValue) {
-				boolean isNewBestTransition = bestTransitionGroup == null || expectationValue > bestValue;
+			
+			if ((transitionGroupProbFail < bestTransitionProbFail)
+					|| (expectationValue >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
+				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue;
 				
 				if (!isNewBestTransition) {
 					// Prefer to keep the fewer actions over any other actions in case of the same value
@@ -175,6 +190,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				if (isNewBestTransition) {
 					bestValue = expectationValue;
 					bestTransitionGroup = transitionGroup;
+					bestTransitionProbFail = transitionGroupProbFail;
 				}
 			}
 		}

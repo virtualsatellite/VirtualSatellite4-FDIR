@@ -158,4 +158,19 @@ public class POSynthesizerTest extends ATestCase {
 		final int EXPECTED_TRANSITION_TIME = 10000;
 		assertEquals(EXPECTED_TRANSITION_TIME, timedTransition.getTime(), TEST_EPSILON);
 	}
+	
+	@Test
+	public void testSynthesizeObsCsp2Repair1() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_TRANSITIONS = 2;
+		final double EXPECTED_MTTF = 1.7;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
 }
