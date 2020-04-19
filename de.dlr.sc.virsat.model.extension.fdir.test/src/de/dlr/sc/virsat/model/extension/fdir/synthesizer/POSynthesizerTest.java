@@ -160,9 +160,58 @@ public class POSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testSynthesizeObsOr2BeCsp2Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObs/obsOr2BeCsp2Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
+		
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 1;
+		final double EXPECTED_MTTF = 1.7;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testSynthesizeObsCsp2Repair1() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_TRANSITIONS = 2;
+		final double EXPECTED_MTTF = 1.7;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsCsp2Repair1Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 5;
+		final int EXPECTED_COUNT_TRANSITIONS = 5;
+		final double EXPECTED_MTTF = 1.0;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsOr2Csp2Repair1() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2Repair1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
