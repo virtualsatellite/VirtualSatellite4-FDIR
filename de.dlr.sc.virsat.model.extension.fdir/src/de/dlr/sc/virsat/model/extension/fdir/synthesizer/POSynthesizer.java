@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,8 +99,7 @@ public class POSynthesizer extends ASynthesizer {
 			Map<PODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 			
 			if (beliefState.isMarkovian()) {
-				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
-					double exitRate = getTotalRate(entry.getValue());
+				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {					
 					BeliefState beliefSucc = new BeliefState(entry.getKey());
 					
 					// obtain all newly observed failed nodes
@@ -122,23 +120,41 @@ public class POSynthesizer extends ASynthesizer {
 						isRepair = !observationSet.isEmpty();
 					}
 					
+					double exitRate = getTotalRate(beliefState, entry.getValue());
+					
 					boolean isMarkovian = true;
 					boolean isFinal = false;
 					for (MarkovTransition<DFTState> transition : entry.getValue()) {
-						double prob = beliefState.mapStateToBelief.get(transition.getFrom()) * transition.getRate() / exitRate;
+						double oldProb = beliefState.mapStateToBelief.get(transition.getFrom());
+						double prob = oldProb * transition.getRate() / exitRate;
+						isFinal |= ma.getFinalStates().contains(transition.getTo());
+						
+						if (observationSet.isEmpty()) {
+							double time = 1 / exitRate;
+							PODFTState residueState = (PODFTState) transition.getFrom();
+							double residueProb = oldProb;
+							
+							double remainProb = Math.exp(-transition.getRate() * time);
+							double exitProb = 1 - remainProb;
+							residueProb *= remainProb;
+							prob *= exitProb;
+							
+							residueProb += beliefSucc.mapStateToBelief.getOrDefault(residueState, 0d);
+							beliefSucc.mapStateToBelief.put(residueState, residueProb);
+						} 
+						
+						prob += beliefSucc.mapStateToBelief.getOrDefault(transition.getTo(), 0d);
 						beliefSucc.mapStateToBelief.put((PODFTState) transition.getTo(), prob);
 						if (!transition.getTo().isMarkovian()) {
 							isMarkovian = false;
 						}
-						
-						isFinal |= ma.getFinalStates().contains(transition.getTo());
 					}
 					
+					beliefSucc.setMarkovian(isMarkovian);
 					normalizeBeliefState(beliefSucc);
 					
 					BeliefState equivalentbeliefSucc = getEquivalentBeliefState(beliefSucc);
 					if (beliefSucc == equivalentbeliefSucc) {
-						beliefSucc.setMarkovian(isMarkovian);
 						beliefMa.addState(beliefSucc);
 						toProcess.offer(beliefSucc);
 						
@@ -147,12 +163,15 @@ public class POSynthesizer extends ASynthesizer {
 						}
 					}
 					
-					Entry<Object, Boolean> genericEvent = new SimpleEntry<>(observationSet, isRepair);
-					beliefMa.addMarkovianTransition(genericEvent, beliefState, equivalentbeliefSucc, exitRate);
+					if (beliefState != equivalentbeliefSucc) {
+						Entry<Object, Boolean> genericEvent = new SimpleEntry<>(observationSet, isRepair);
+						beliefMa.addMarkovianTransition(genericEvent, beliefState, equivalentbeliefSucc, exitRate);
+					}
 				}
 			} else {
 				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 					BeliefState beliefSucc = new BeliefState(entry.getKey());
+					beliefSucc.setMarkovian(true);
 					
 					Set<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 					boolean isFinal = false;
@@ -190,8 +209,6 @@ public class POSynthesizer extends ASynthesizer {
 				}
 			}
 		}
-		
-		System.out.println(beliefMa.toDot());
 		
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
@@ -259,17 +276,20 @@ public class POSynthesizer extends ASynthesizer {
 	
 	/**
 	 * Computes the total rate for a transition set
+	 * @param beliefState the current belief state
 	 * @param transitions a set of transitions
 	 * @return the total rate of the transition set
 	 */
-	private double getTotalRate(Set<MarkovTransition<DFTState>> transitions) {
+	private double getTotalRate(BeliefState beliefState, Set<MarkovTransition<DFTState>> transitions) {
 		double getTotalRate = 0;
 		for (MarkovTransition<DFTState> transition : transitions) {
-			getTotalRate += transition.getRate();
+			getTotalRate += transition.getRate() * beliefState.mapStateToBelief.get(transition.getFrom());
 		}
 		return getTotalRate;
 	}
 
+	private static final double EPSILON = 0.05;
+	
 	/**
 	 * Gets an equivalent belief state
 	 * @param state a belief state
@@ -277,6 +297,10 @@ public class POSynthesizer extends ASynthesizer {
 	 */
 	private BeliefState getEquivalentBeliefState(BeliefState state) {
 		for (BeliefState other : beliefMa.getStates()) {
+			if (state.isMarkovian() != other.isMarkovian()) {
+				continue;
+			}
+			
 			Set<DFTState> dftStates = new HashSet<>(state.mapStateToBelief.keySet());
 			dftStates.addAll(other.mapStateToBelief.keySet());
 			boolean isEquivalent = other.representant.getObservedFailed().equals(state.representant.getObservedFailed()) 
@@ -284,7 +308,12 @@ public class POSynthesizer extends ASynthesizer {
 			
 			if (isEquivalent) {
 				for (DFTState dftState : dftStates) {
-					if (!Objects.equals(state.mapStateToBelief.get(dftState), other.mapStateToBelief.get(dftState))) {
+					
+					double prob = state.mapStateToBelief.getOrDefault(dftState, Double.NaN);
+					double probOther = other.mapStateToBelief.getOrDefault(dftState, Double.NaN);
+					double diff = Math.abs(prob - probOther);
+					
+					if (Double.isNaN(diff) || diff > EPSILON) {
 						isEquivalent = false;
 						break;
 					}

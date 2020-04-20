@@ -31,6 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -83,10 +84,16 @@ public class PONDDFTSemantics extends DFTSemantics {
 	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, DFTState pred,
 			List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
 		
+		if (event.getNode() == null) {
+			// Only update if the event actually affected a node in the tree
+			// e.g. when processing TimeEvents
+			return Collections.emptyList();
+		}
+		
 		boolean anyObservation = false;
 		List<FaultTreeNode> changedNodes = null;
 		Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
-		FaultTreeHelper ftHelper = new FaultTreeHelper(event.getNode().getConcept());
+		FaultTreeHelper ftHelper = new FaultTreeHelper(ftHolder.getRoot().getConcept());
 		
 		if (event instanceof ObservationEvent) {
 			FaultTreeNode observedNode = event.getNode();
@@ -101,15 +108,28 @@ public class PONDDFTSemantics extends DFTSemantics {
 					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 				}
 				
-				for (FaultTreeNode child : ftHolder.getNodes()) {
-					if (child instanceof SPARE) {
-						spareGatesToCheck.add(child);
+				if (succs.get(0).getRecoveryStrategy() == null) {
+					for (FaultTreeNode child : ftHolder.getNodes()) {
+						if (child instanceof SPARE) {
+							spareGatesToCheck.add(child);
+						}
 					}
+				} else {
+					RecoveryStrategy strategy = succs.get(0).getRecoveryStrategy();
+					Queue<FaultTreeNode> worklist = new LinkedList<>();
+					for (RecoveryAction recoveryAction : strategy.getRecoveryActions()) {
+						worklist.addAll(recoveryAction.getAffectedNodes(poState));
+					}
+					
+					changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
 				}
 			}
 		} else {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
 			changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, event);
+		}
+		
+		if (changedNodes != null) {
 			for (DFTState state : succs) {
 				for (FaultTreeNode node : changedNodes) {
 					PODFTState poState = (PODFTState) state;
@@ -122,9 +142,11 @@ public class PONDDFTSemantics extends DFTSemantics {
 							poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 						}
 						
-						for (FaultTreeNode child : ftHelper.getAllNodes(node.getFault())) {
-							if (child instanceof SPARE) {
-								spareGatesToCheck.add(child);
+						if (succs.get(0).getRecoveryStrategy() == null) {
+							for (FaultTreeNode child : ftHelper.getAllNodes(node.getFault())) {
+								if (child instanceof SPARE) {
+									spareGatesToCheck.add(child);
+								}
 							}
 						}
 					}
@@ -161,18 +183,25 @@ public class PONDDFTSemantics extends DFTSemantics {
 			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + pred);
 		}
 		
-		PODFTState poPred = (PODFTState) pred;
 		
 		Set<FaultTreeNode> observedNodes = new HashSet<>();
-		if (poPred.existsNonFailedObserver(event.getNode(), false)) {
-			observedNodes.add(event.getNode());
-		}
 		
-		for (FaultTreeNode node : changedNodes) {
-			if (poPred.existsNonFailedObserver(node, false)) {
-				observedNodes.add(node);
+		if (event instanceof ObservationEvent) {
+			observedNodes.add(event.getNode());
+		} else {
+			PODFTState poPred = (PODFTState) pred;
+			
+			if (poPred.existsNonFailedObserver(event.getNode(), false)) {
+				observedNodes.add(event.getNode());
+			}
+			
+			for (FaultTreeNode node : changedNodes) {
+				if (poPred.existsNonFailedObserver(node, false)) {
+					observedNodes.add(node);
+				}
 			}
 		}
+		
 		return observedNodes;
 	}
 }

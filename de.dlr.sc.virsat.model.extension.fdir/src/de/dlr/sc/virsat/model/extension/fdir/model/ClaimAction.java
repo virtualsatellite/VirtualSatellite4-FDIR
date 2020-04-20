@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.Collections;
+import java.util.List;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
@@ -137,5 +138,17 @@ public  class ClaimAction extends AClaimAction {
 		copyClaimAction.setClaimSpare(getClaimSpare());
 		copyClaimAction.setSpareGate(getSpareGate());
 		return copyClaimAction;
+	}
+
+	@Override
+	public List<FaultTreeNode> getAffectedNodes(DFTState state) {
+		if (spareGate == null) {
+			SPARE spareGateOriginal = getSpareGate();
+			spareGate = state.getFTHolder().getNodes().stream()
+					.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
+					.findFirst().get();
+		}
+		
+		return Collections.singletonList(spareGate);
 	}
 }

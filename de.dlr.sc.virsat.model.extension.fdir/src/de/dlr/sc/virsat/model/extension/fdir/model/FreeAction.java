@@ -126,4 +126,15 @@ public  class FreeAction extends AFreeAction {
 		copyFreeAction.setFreeSpare(getFreeSpare());
 		return copyFreeAction;
 	}
+	
+	@Override
+	public List<FaultTreeNode> getAffectedNodes(DFTState state) {
+		if (freeSpare == null) {
+			FaultTreeNode claimSpareOriginal = getFreeSpare();
+			freeSpare = state.getFTHolder().getNodes().stream()
+					.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
+					.findFirst().get();
+		}
+		return Collections.singletonList(freeSpare);
+	}
 }
