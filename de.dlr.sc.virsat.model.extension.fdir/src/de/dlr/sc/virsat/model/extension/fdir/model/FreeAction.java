@@ -61,13 +61,17 @@ public  class FreeAction extends AFreeAction {
 
 	private FaultTreeNode freeSpare;
 	
+	public FaultTreeNode getFreeSpareByUUID(DFTState state) {
+		FaultTreeNode freeSpareOriginal = getFreeSpare();
+		return state.getFTHolder().getNodes().stream()
+				.filter(node -> node.getUuid().equals(freeSpareOriginal.getUuid()))
+				.findFirst().get();
+	}
+	
 	@Override
 	public void execute(DFTState state) {
 		if (freeSpare == null) {
-			FaultTreeNode claimSpareOriginal = getFreeSpare();
-			freeSpare = state.getFTHolder().getNodes().stream()
-					.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
-					.findFirst().get();
+			freeSpare = getFreeSpareByUUID(state);
 		}
 		
 		FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(freeSpare);
@@ -130,10 +134,7 @@ public  class FreeAction extends AFreeAction {
 	@Override
 	public List<FaultTreeNode> getAffectedNodes(DFTState state) {
 		if (freeSpare == null) {
-			FaultTreeNode claimSpareOriginal = getFreeSpare();
-			freeSpare = state.getFTHolder().getNodes().stream()
-					.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
-					.findFirst().get();
+			getFreeSpareByUUID(state);
 		}
 		return Collections.singletonList(freeSpare);
 	}

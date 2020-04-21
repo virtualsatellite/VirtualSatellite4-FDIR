@@ -76,20 +76,28 @@ public  class ClaimAction extends AClaimAction {
 	private FaultTreeNode claimSpare;
 	private FaultTreeNode spareGate;
 	
+	public FaultTreeNode getClaimSpareByUUID(DFTState state) {
+		FaultTreeNode claimSpareOriginal = getClaimSpare();
+		return state.getFTHolder().getNodes().stream()
+				.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
+				.findFirst().get();
+	}
+	
+	public FaultTreeNode getSpareGateByUUID(DFTState state) {
+		SPARE spareGateOriginal = getSpareGate();
+		return state.getFTHolder().getNodes().stream()
+				.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
+				.findFirst().get();
+	}
+	
 	@Override
 	public void execute(DFTState state) {
 		if (claimSpare == null) {
-			FaultTreeNode claimSpareOriginal = getClaimSpare();
-			claimSpare = state.getFTHolder().getNodes().stream()
-					.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
-					.findFirst().get();
+			claimSpare = getClaimSpareByUUID(state);
 		}
 		
 		if (spareGate == null) {
-			SPARE spareGateOriginal = getSpareGate();
-			spareGate = state.getFTHolder().getNodes().stream()
-					.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
-					.findFirst().get();
+			spareGate = getSpareGateByUUID(state);
 		}
 		
 		state.getSpareClaims().put(claimSpare, spareGate);
@@ -143,10 +151,7 @@ public  class ClaimAction extends AClaimAction {
 	@Override
 	public List<FaultTreeNode> getAffectedNodes(DFTState state) {
 		if (spareGate == null) {
-			SPARE spareGateOriginal = getSpareGate();
-			spareGate = state.getFTHolder().getNodes().stream()
-					.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
-					.findFirst().get();
+			spareGate = getSpareGateByUUID(state);
 		}
 		
 		return Collections.singletonList(spareGate);
