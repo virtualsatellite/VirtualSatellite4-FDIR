@@ -74,39 +74,19 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		raHelper = new RecoveryAutomatonHelper(concept);
 		ra = new RecoveryAutomaton(concept);
 		
-		Queue<MarkovState> toProcess = new LinkedList<>();
+		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(initialMa);
 		List<Transition> createdTransitions = new ArrayList<>();
-		Set<MarkovState> handledNonDetStates = new HashSet<>();
+		Set<S> handledNonDetStates = new HashSet<>();
 		
 		while (!toProcess.isEmpty()) {
-			MarkovState state = toProcess.poll();
+			S state = toProcess.poll();
 			
 			List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
 			
 			if (state.isMarkovian()) {
-				/*
-				 * Provide event synchronization for internal transitions:
-				 * If an event that is only enabled for a later transition occurs,
-				 * it means we have to synchronize the recovery automaton with this event.
-				 * That means we need to create a corresponding transition in the recovery automaton
-				 * to react to the event.
-				 */
-				
-				MarkovState internalState = state;
-				MarkovTransition<S> internalTransition = null;
-				while ((internalTransition = getInternalTransition(internalState)) != null) {
-					internalState = internalTransition.getTo();
-					
-					List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
-					for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
-						if (!isInternalTransition(internalMarkovTransition) && !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
-							MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
-							pseudoTransition.setFrom((S) state);
-							markovianTransitions.add(pseudoTransition);
-						}
-					}
-				}
+				List<MarkovTransition<S>> internalTransitions = getInternalOutgoingTransitions(state);
+				createPseudoSynchronizationTransitions(state, internalTransitions, markovianTransitions);
 			}
 			
 			for (MarkovTransition<S> markovianTransition : markovianTransitions) {
@@ -158,6 +138,41 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		
 		return ra;
 	}
+
+	
+	/**
+	 * Provide event synchronization for internal transitions:
+	 * If an event that is only enabled for a later transition occurs,
+	 * it means we have to synchronize the recovery automaton with this event.
+	 * That means we need to create a corresponding transition in the recovery automaton
+	 * to react to the event.
+	 * @param state the state to create the pseudo transitions for
+	 * @param internalTransitions the internal transitions of the state
+	 * @param markovianTransitions the current markovian transitions
+	 */
+	protected void createPseudoSynchronizationTransitions(S state, List<MarkovTransition<S>> internalTransitions, List<MarkovTransition<S>> markovianTransitions) {
+		Set<S> internalStates = new HashSet<>();
+		internalStates.add(state);
+		Queue<MarkovTransition<S>> internalTransitionsToProcess = new LinkedList<>(internalTransitions);
+		
+		while (!internalTransitionsToProcess.isEmpty()) {
+			MarkovTransition<S> internalTransition = internalTransitionsToProcess.poll();
+			S internalState = internalTransition.getTo();
+			
+			if (internalStates.add(internalState)) {
+				List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
+				for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
+					if (!isInternalTransition(internalMarkovTransition) && !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
+						MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
+						pseudoTransition.setFrom(state);
+						markovianTransitions.add(pseudoTransition);
+					}
+				}
+				
+				internalTransitionsToProcess.addAll(getInternalOutgoingTransitions(internalState));
+			}
+		}
+	}
 	
 	/**
 	 * Checks if a given transition is internal
@@ -177,19 +192,22 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	}
 	
 	/**
-	 * Checks for internal transitions
+	 * Checks for internal transitions. A state can only have up to two internal transitions:
+	 * - A forward internal transition
+	 * - A backward internal transition
 	 * @param state set of markovian state
 	 * @return an internal transition if there is one, null otherwise
 	 */
-	protected MarkovTransition<S> getInternalTransition(MarkovState state) {
+	protected List<MarkovTransition<S>> getInternalOutgoingTransitions(MarkovState state) {
+		List<MarkovTransition<S>> internalTransitions = new ArrayList<>();
 		List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
 		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
 			if (isInternalTransition(markovianTransition)) {
-				return markovianTransition;
+				internalTransitions.add(markovianTransition);
 			}
 		}
 		
-		return null;
+		return internalTransitions;
 	}
 	
 	/**
