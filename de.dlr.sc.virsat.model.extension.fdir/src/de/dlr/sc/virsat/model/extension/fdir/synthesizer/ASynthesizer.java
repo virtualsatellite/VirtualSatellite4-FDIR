@@ -126,7 +126,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @param initial the initial markov automaton state
 	 * @return the schedule represented as a recovery automaton
 	 */
-	protected abstract RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initial);
+	protected abstract RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initial);
 	
 	/**
 	 * Sets the minimizer that will be used to synthesize the recovery automaton
@@ -235,7 +235,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		dft2ma.setSymmetryChecker(null);
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		
-		RecoveryAutomaton ra = computeMarkovAutomatonSchedule(ma, dft2ma.getInitial());
+		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2ma.getInitial());
 		
 		statistics.stateSpaceGenerationStatistics.compose(dft2ma.getStatistics());
 		
