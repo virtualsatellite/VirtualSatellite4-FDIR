@@ -60,6 +60,7 @@ public class MA2BeliefMAConverter {
 			
 			for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 				BeliefState beliefSucc = new BeliefState(beliefMa, entry.getKey());
+				BeliefState equivalentBeliefSucc = null;
 				boolean isFinal = false;
 				
 				if (beliefState.isMarkovian()) {
@@ -67,7 +68,6 @@ public class MA2BeliefMAConverter {
 					double exitRate = getTotalRate(beliefState, entry.getValue());
 					
 					boolean isMarkovian = true;
-					
 					for (MarkovTransition<DFTState> transition : entry.getValue()) {
 						PODFTState fromState = (PODFTState) transition.getFrom();
 						PODFTState toState = (PODFTState) transition.getTo();
@@ -95,21 +95,9 @@ public class MA2BeliefMAConverter {
 							isMarkovian = false;
 						}
 					}
-					
 					beliefSucc.setMarkovian(isMarkovian);
 					
-					beliefSucc.normalize();
-					BeliefState equivalentBeliefSucc = getEquivalentBeliefState(beliefSucc);
-					boolean isSuccNewState = beliefSucc == equivalentBeliefSucc;
-					
-					if (isSuccNewState) {
-						beliefMa.addState(beliefSucc);
-						toProcess.offer(beliefSucc);
-						
-						if (isFinal) {
-							beliefMa.getFinalStates().add(beliefSucc);
-						}
-					}
+					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
 					
 					if (beliefState != equivalentBeliefSucc) {
 						beliefMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
@@ -128,25 +116,40 @@ public class MA2BeliefMAConverter {
 						isFinal |= ma.getFinalStates().contains(succState);
 					}
 					
-					beliefSucc.normalize();
-					BeliefState equivalentBeliefSucc = getEquivalentBeliefState(beliefSucc);
-					boolean isSuccNewState = beliefSucc == equivalentBeliefSucc;
-					
-					if (isSuccNewState) {
-						beliefMa.addState(beliefSucc);
-						toProcess.offer(beliefSucc);
-						
-						if (isFinal) {
-							beliefMa.getFinalStates().add(beliefSucc);
-						}
-					}
-					
+					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
 					addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
+				}
+				
+				if (beliefSucc == equivalentBeliefSucc) {
+					toProcess.add(beliefSucc);
 				}
 			}
 		}
 		
 		return beliefMa;
+	}
+	
+	/**
+	 * Adds the belief state into the belief markov automaton if no equivalent 
+	 * state exists. Otherwise returns the equivalent state
+	 * @param beliefState the belief state
+	 * @param isFinal whether it is a final state
+	 * @return the equivalent belief state
+	 */
+	private BeliefState addBeliefState(BeliefState beliefState, boolean isFinal) {
+		beliefState.normalize();
+		BeliefState equivalentBeliefState = getEquivalentBeliefState(beliefState);
+		boolean isNewState = beliefState == equivalentBeliefState;
+		
+		if (isNewState) {
+			beliefMa.addState(beliefState);
+			
+			if (isFinal) {
+				beliefMa.getFinalStates().add(beliefState);
+			}
+		}
+		
+		return equivalentBeliefState;
 	}
 	
 	/**
