@@ -233,25 +233,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	}
 	
 	/**
-	 * Checks for internal transitions. A state can only have up to two internal transitions:
-	 * - A forward internal transition
-	 * - A backward internal transition
-	 * @param state set of markovian state
-	 * @return an internal transition if there is one, null otherwise
-	 */
-	protected List<MarkovTransition<S>> getInternalIncomingTransitions(MarkovState state) {
-		List<MarkovTransition<S>> internalTransitions = new ArrayList<>();
-		List<MarkovTransition<S>> markovianTransitions = ma.getPredTransitions(state);
-		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
-			if (isInternalTransition(markovianTransition)) {
-				internalTransitions.add(markovianTransition);
-			}
-		}
-		
-		return internalTransitions;
-	}
-	
-	/**
 	 * Checks if a given list of markov transitions has a transition for a specified event
 	 * @param event the event
 	 * @param markovTransitions the list of markov transitions
