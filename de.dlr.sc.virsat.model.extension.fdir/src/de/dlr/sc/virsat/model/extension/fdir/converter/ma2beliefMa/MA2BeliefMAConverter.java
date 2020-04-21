@@ -85,12 +85,11 @@ public class MA2BeliefMAConverter {
 							residueProb *= remainProb;
 							prob *= exitProb;
 							
-							residueProb += beliefSucc.mapStateToBelief.getOrDefault(fromState, 0d);
-							beliefSucc.mapStateToBelief.put(fromState, residueProb);
-						} 
+							beliefSucc.mapStateToBelief.merge(fromState, residueProb, (p1, p2) -> p1 + p2);
+						}
 						
-						prob += beliefSucc.mapStateToBelief.getOrDefault(toState, 0d);
-						beliefSucc.mapStateToBelief.put(toState, prob);
+						beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
+						
 						if (!transition.getTo().isMarkovian()) {
 							isMarkovian = false;
 						}
