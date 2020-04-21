@@ -60,7 +60,6 @@ public class MA2BeliefMAConverter {
 			
 			for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 				BeliefState beliefSucc = new BeliefState(beliefMa, entry.getKey());
-				boolean isSuccNewState = false;
 				boolean isFinal = false;
 				
 				if (beliefState.isMarkovian()) {
@@ -70,13 +69,15 @@ public class MA2BeliefMAConverter {
 					boolean isMarkovian = true;
 					
 					for (MarkovTransition<DFTState> transition : entry.getValue()) {
-						double oldProb = beliefState.mapStateToBelief.get(transition.getFrom());
+						PODFTState fromState = (PODFTState) transition.getFrom();
+						PODFTState toState = (PODFTState) transition.getTo();
+						
+						double oldProb = beliefState.mapStateToBelief.get(fromState);
 						double prob = oldProb * transition.getRate() / exitRate;
 						isFinal |= ma.getFinalStates().contains(transition.getTo());
 						
 						if (observationEvent.getKey().isEmpty()) {
 							double time = 1 / exitRate;
-							PODFTState residueState = (PODFTState) transition.getFrom();
 							double residueProb = oldProb;
 							
 							double remainProb = Math.exp(-transition.getRate() * time);
@@ -84,12 +85,12 @@ public class MA2BeliefMAConverter {
 							residueProb *= remainProb;
 							prob *= exitProb;
 							
-							residueProb += beliefSucc.mapStateToBelief.getOrDefault(residueState, 0d);
-							beliefSucc.mapStateToBelief.put(residueState, residueProb);
+							residueProb += beliefSucc.mapStateToBelief.getOrDefault(fromState, 0d);
+							beliefSucc.mapStateToBelief.put(fromState, residueProb);
 						} 
 						
-						prob += beliefSucc.mapStateToBelief.getOrDefault(transition.getTo(), 0d);
-						beliefSucc.mapStateToBelief.put((PODFTState) transition.getTo(), prob);
+						prob += beliefSucc.mapStateToBelief.getOrDefault(toState, 0d);
+						beliefSucc.mapStateToBelief.put(toState, prob);
 						if (!transition.getTo().isMarkovian()) {
 							isMarkovian = false;
 						}
@@ -99,7 +100,16 @@ public class MA2BeliefMAConverter {
 					
 					beliefSucc.normalize();
 					BeliefState equivalentBeliefSucc = getEquivalentBeliefState(beliefSucc);
-					isSuccNewState = beliefSucc == equivalentBeliefSucc;
+					boolean isSuccNewState = beliefSucc == equivalentBeliefSucc;
+					
+					if (isSuccNewState) {
+						beliefMa.addState(beliefSucc);
+						toProcess.offer(beliefSucc);
+						
+						if (isFinal) {
+							beliefMa.getFinalStates().add(beliefSucc);
+						}
+					}
 					
 					if (beliefState != equivalentBeliefSucc) {
 						beliefMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
@@ -120,18 +130,18 @@ public class MA2BeliefMAConverter {
 					
 					beliefSucc.normalize();
 					BeliefState equivalentBeliefSucc = getEquivalentBeliefState(beliefSucc);
-					isSuccNewState = beliefSucc == equivalentBeliefSucc;
+					boolean isSuccNewState = beliefSucc == equivalentBeliefSucc;
 					
-					addNondeterministicTransitions(succTransitions, beliefSucc, equivalentBeliefSucc);
-				}
-				
-				if (isSuccNewState) {
-					beliefMa.addState(beliefSucc);
-					toProcess.offer(beliefSucc);
-					
-					if (isFinal) {
-						beliefMa.getFinalStates().add(beliefSucc);
+					if (isSuccNewState) {
+						beliefMa.addState(beliefSucc);
+						toProcess.offer(beliefSucc);
+						
+						if (isFinal) {
+							beliefMa.getFinalStates().add(beliefSucc);
+						}
 					}
+					
+					addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
 				}
 			}
 		}

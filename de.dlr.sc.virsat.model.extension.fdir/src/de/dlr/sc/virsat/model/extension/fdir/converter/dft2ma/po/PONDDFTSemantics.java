@@ -32,7 +32,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -92,8 +91,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		
 		boolean anyObservation = false;
 		List<FaultTreeNode> changedNodes = null;
-		Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
-		FaultTreeHelper ftHelper = new FaultTreeHelper(ftHolder.getRoot().getConcept());
+		boolean hasRecoveryStrategy = hasRecoveryStrategy(pred);
 		
 		if (event instanceof ObservationEvent) {
 			FaultTreeNode observedNode = event.getNode();
@@ -108,13 +106,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 				}
 				
-				if (succs.get(0).getRecoveryStrategy() == null) {
-					for (FaultTreeNode child : ftHolder.getNodes()) {
-						if (child instanceof SPARE) {
-							spareGatesToCheck.add(child);
-						}
-					}
-				} else {
+				if (hasRecoveryStrategy) {
 					RecoveryStrategy strategy = succs.get(0).getRecoveryStrategy();
 					Queue<FaultTreeNode> worklist = new LinkedList<>();
 					for (RecoveryAction recoveryAction : strategy.getRecoveryActions()) {
@@ -141,20 +133,20 @@ public class PONDDFTSemantics extends DFTSemantics {
 						for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
 							poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 						}
-						
-						if (succs.get(0).getRecoveryStrategy() == null) {
-							for (FaultTreeNode child : ftHelper.getAllNodes(node.getFault())) {
-								if (child instanceof SPARE) {
-									spareGatesToCheck.add(child);
-								}
-							}
-						}
 					}
 				}
 			}
 		}
 		
-		if (anyObservation && succs.get(0).getRecoveryStrategy() == null) {
+		if (anyObservation && !hasRecoveryStrategy) {
+			Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
+			
+			for (FaultTreeNode child : ftHolder.getNodes()) {
+				if (child instanceof SPARE) {
+					spareGatesToCheck.add(child);
+				}
+			}
+			
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 			Queue<FaultTreeNode> spareGates = new LinkedList<>(spareGatesToCheck);
 			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, spareGates);
@@ -169,7 +161,6 @@ public class PONDDFTSemantics extends DFTSemantics {
 				}
 			}
 		}
-		
 
 		DFTState baseSucc = succs.remove(0);
 		succs.add(baseSucc);
@@ -182,7 +173,6 @@ public class PONDDFTSemantics extends DFTSemantics {
 		if (!(pred instanceof PODFTState)) {
 			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + pred);
 		}
-		
 		
 		Set<FaultTreeNode> observedNodes = new HashSet<>();
 		
@@ -203,5 +193,14 @@ public class PONDDFTSemantics extends DFTSemantics {
 		}
 		
 		return observedNodes;
+	}
+	
+	/**
+	 * Checks if the state is governed by a recovery strategy
+	 * @param pred the current dft state
+	 * @return true iff the dft state has a recovery strategy
+	 */
+	private boolean hasRecoveryStrategy(DFTState pred) {
+		return pred.getRecoveryStrategy() != null;
 	}
 }
