@@ -49,7 +49,7 @@ uploadIntegration() {
 }
 
 uploadRelease() {
-	rsync -e ssh -avP $TRAVIS_BUILD_DIR/deploy/secured/p2/VirSat4_Core_Application/release/  dlrscmns@frs.sourceforge.net:/home/frs/project/virtualsatellite/VirtualSatellite4-Core/release/
+	rsync -e ssh -avP $TRAVIS_BUILD_DIR/deploy/secured/p2/VirSat4_FDIR_Application/release/  dlrscmns@frs.sourceforge.net:/home/frs/project/virtualsatellite/VirtualSatellite4-FDIR/release/
 }
 
 
