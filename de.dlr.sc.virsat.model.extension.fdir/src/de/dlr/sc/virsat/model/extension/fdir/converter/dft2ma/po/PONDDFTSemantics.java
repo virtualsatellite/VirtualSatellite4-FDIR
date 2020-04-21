@@ -121,18 +121,16 @@ public class PONDDFTSemantics extends DFTSemantics {
 			changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, event);
 		}
 		
-		if (changedNodes != null) {
-			for (DFTState state : succs) {
-				for (FaultTreeNode node : changedNodes) {
-					PODFTState poState = (PODFTState) state;
-					boolean isObserved = poState.existsNonFailedObserver(node, false);
-					if (isObserved) {
-						anyObservation = true;
-						poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
-						
-						for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
-							poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
-						}
+		for (DFTState state : succs) {
+			for (FaultTreeNode node : changedNodes) {
+				PODFTState poState = (PODFTState) state;
+				boolean isObserved = poState.existsNonFailedObserver(node, false);
+				if (isObserved) {
+					anyObservation = true;
+					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
+					
+					for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
+						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 					}
 				}
 			}
