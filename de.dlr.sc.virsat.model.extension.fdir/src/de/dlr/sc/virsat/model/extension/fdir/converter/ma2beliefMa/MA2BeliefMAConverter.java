@@ -46,11 +46,8 @@ public class MA2BeliefMAConverter {
 	 */
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialState) {
 		beliefMa = new MarkovAutomaton<>();
-		
-		initialBeliefState = new BeliefState(beliefMa, initialState);
-		initialBeliefState.mapStateToBelief.put(initialState, 1d);
-		beliefMa.addState(initialBeliefState);
-		
+		initialBeliefState = createInitialState(initialState);
+
 		Queue<BeliefState> toProcess = new LinkedList<>();
 		toProcess.offer(initialBeliefState);
 		
@@ -61,23 +58,20 @@ public class MA2BeliefMAConverter {
 			for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 				BeliefState beliefSucc = new BeliefState(beliefMa, entry.getKey());
 				BeliefState equivalentBeliefSucc = null;
-				boolean isFinal = false;
 				Set<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 				
 				if (beliefState.isMarkovian()) {
 					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc);
 					double exitRate = getTotalRate(beliefState, entry.getValue());
-					boolean isInternalTransition = observationEvent.getKey().isEmpty();
 					
-					isFinal = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, isInternalTransition, succTransitions, ma);
+					boolean isFinal = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions, ma);
 					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
 					
 					if (beliefState != equivalentBeliefSucc) {
 						beliefMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
 					}
-					
 				} else {
-					isFinal = fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions, ma);
+					boolean isFinal = fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions, ma);
 					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
 					addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
 				}
@@ -89,6 +83,18 @@ public class MA2BeliefMAConverter {
 		}
 		
 		return beliefMa;
+	}
+	
+	/**
+	 * Creates the initial belief state
+	 * @param initialState the corresponding original initial state
+	 * @return the new intial belief state
+	 */
+	private BeliefState createInitialState(PODFTState initialState) {
+		BeliefState initialBeliefState = new BeliefState(beliefMa, initialState);
+		initialBeliefState.mapStateToBelief.put(initialState, 1d);
+		beliefMa.addState(initialBeliefState);
+		return initialBeliefState;
 	}
 	
 	/**
@@ -119,16 +125,17 @@ public class MA2BeliefMAConverter {
 	 * @param beliefState the current state
 	 * @param beliefSucc the successor
 	 * @param exitRate the exit rate of the current state
-	 * @param isInternalTransition if the transition to the successor is internal
+	 * @param observationEvent the observation event
 	 * @param succTransitions the successor transitions
 	 * @param ma the markov automaton
 	 * @return true iff the successor state is a fail state
 	 */
 	private boolean fillMarkovianStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
-			double exitRate, boolean isInternalTransition, Set<MarkovTransition<DFTState>> succTransitions,
+			double exitRate, Entry<Set<Object>, Boolean> observationEvent, Set<MarkovTransition<DFTState>> succTransitions,
 			MarkovAutomaton<DFTState> ma) {
 		boolean isMarkovian = true;
 		boolean isFinal = false;
+		boolean isInternalTransition = observationEvent.getKey().isEmpty();
 		
 		for (MarkovTransition<DFTState> transition : succTransitions) {
 			PODFTState fromState = (PODFTState) transition.getFrom();
