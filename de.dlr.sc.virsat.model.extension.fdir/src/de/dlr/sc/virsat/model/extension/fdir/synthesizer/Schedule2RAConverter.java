@@ -194,27 +194,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 				internalTransitionsToProcess.addAll(getInternalOutgoingTransitions(internalState));
 			}
 		}
-		
-		internalTransitions = getInternalIncomingTransitions(state);
-		internalTransitionsToProcess = new LinkedList<>(internalTransitions);
-		
-		while (!internalTransitionsToProcess.isEmpty()) {
-			MarkovTransition<S> internalTransition = internalTransitionsToProcess.poll();
-			S internalState = internalTransition.getFrom();
-			
-			if (internalStates.add(internalState)) {
-				List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
-				for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
-					if (!isInternalTransition(internalMarkovTransition) && !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
-						MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
-						pseudoTransition.setFrom(state);
-						markovianTransitions.add(pseudoTransition);
-					}
-				}
-				
-				internalTransitionsToProcess.addAll(getInternalIncomingTransitions(internalState));
-			}
-		}
 	}
 	
 	/**
