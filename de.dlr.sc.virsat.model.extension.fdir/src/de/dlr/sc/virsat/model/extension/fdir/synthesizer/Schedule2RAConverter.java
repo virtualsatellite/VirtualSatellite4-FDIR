@@ -83,27 +83,9 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			S state = toProcess.poll();
 			
 			List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
-			boolean hasInternalTransition = true;
 			
 			if (state.isMarkovian()) {
 				List<MarkovTransition<S>> internalTransitions = getInternalOutgoingTransitions(state);
-				
-				/*
-				 * Search for circles and remove the forward edges if the backwards flow
-				 * is greater than the forward flow.
-				 */
-				
-				for (MarkovTransition<S> internalTransition : internalTransitions) {
-					List<MarkovTransition<S>> succInternalTransitions = getInternalOutgoingTransitions(internalTransition.getTo());
-					for (MarkovTransition<S> succInternalTransition : succInternalTransitions) {
-						if (succInternalTransition.getTo().equals(state)) {
-							if (internalTransition.getRate() <= succInternalTransition.getRate()) {
-								hasInternalTransition = false;
-							}
-						}
-					}
-				}
-				
 				createPseudoSynchronizationTransitions(state, internalTransitions, markovianTransitions);
 			}
 			
@@ -137,10 +119,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 				} else {
 					Transition raTransition;
 					if (isInternalTransition(markovianTransition)) {
-						if (!hasInternalTransition) {
-							continue;
-						}
-						
 						raTransition = createTimedTransition(fromState, toState, 1 / markovianTransition.getRate());
 					} else {
 						raTransition = createFaultEventTransition(fromState, toState, event);
