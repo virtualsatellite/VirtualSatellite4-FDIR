@@ -9,9 +9,11 @@
          Virtual Satellite - FDIR
 Version 4.10.0
 
-Copyright 2015 by German Aerospace Center (DLR) e.V.
+(c) Copyright by DLR (German Aerospace Center) Institute for Software Technology 2020. 
 
-Unauthorized Distribution in any way is not permitted.
+The DLR logo, CEF logo and DLR images are under copyright of DLR (German Aerospace Center), https://www.dlr.de/. 
+The DLR logo, CEF logo and images cannot be altered or used without DLR&apos;s permission. 
+DLR logo and images are provided for the use under the following conditions https://www.dlr.de/EN/Service/Imprint/imprint_node.html
 
 German Aerospace Center (DLR) e.V.
 Lilienthalplatz 7
@@ -55,6 +57,7 @@ Germany
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
+
 
    <plugins>
    </plugins>
@@ -165,6 +168,7 @@ Germany
    </configurations>
 
    <repositories>
+      <repository location="http://community.polarion.com/projects/subversive/download/eclipse/6.0/update-site/" enabled="true" />
       <repository location="http://community.polarion.com/projects/subversive/download/eclipse/6.0/update-site/" enabled="true" />
    </repositories>
 
