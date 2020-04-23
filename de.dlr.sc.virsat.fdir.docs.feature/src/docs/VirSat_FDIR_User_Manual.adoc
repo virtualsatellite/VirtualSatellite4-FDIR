@@ -217,6 +217,35 @@ The probability dependency (PDEP) gate allows to trigger basic events.
 The PDEP gate is equipped with a trigger probability p.
 In the event of any input event occurring, each connected basic event is triggered with probability p.
 
+:node-type: DELAY
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+The DELAY gate can be used to describe time delays in propagation.
+The gate is equipped with a delay parameter d.
+Propagation occurs if any input fails and remains failed for a duration of d time units.
+If the failed inputs are repaired before the DELAY gate perfoms a propagation, then the propagation process is stopped.
+
+:node-type: MONITOR
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+The MONITOR gate is used in fault trees where not all events are observable.
+If a monitor gate is used, the semantics of fault occurrence are changed as follows:
+By default, the observation of a basic event or any further propagated gate, is not guaranteed.
+In order for it to be observed it must propagate to an observation input of a MONITOR gate.
+A MONITOR gate has two types of inputs: Fail inputs and observation inputs.
+Fail inputs work as usual, in the event of any fail input occurring, the MONITOR gate fails as well and propagates.
+Failed MONITOR gates may no longer perform any observations.
+In the case of an observation input occurring, the event is marked as observed.
+Only then can reactive gates such as SPARE gates react and claim a spare.
+The recovery actions in partial observable fault trees are managed by recovery automata.
+A MONITOR gate may also be equipped with an observation rate o.
+In the event of it being 0, all observation events are observed immediately.
+If the observation rate is non-zero, all observation events are observed with time delay o.
+
 ==== The graphical Fault Tree Editor
 
 ===== Creating a new Fault Tree Diagram
