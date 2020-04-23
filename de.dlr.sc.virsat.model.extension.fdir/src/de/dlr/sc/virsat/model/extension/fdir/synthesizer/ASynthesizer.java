@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -64,7 +65,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
 		fault = (Fault) conversionResult.getRoot();
 		
-		RecoveryAutomaton synthesizedRA = new RecoveryAutomaton(fault.getConcept());
+		RecoveryAutomaton synthesizedRA;
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
 			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
@@ -125,7 +126,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @param initial the initial markov automaton state
 	 * @return the schedule represented as a recovery automaton
 	 */
-	protected abstract RecoveryAutomaton computeMarkovAutomatonSchedule(MarkovAutomaton<DFTState> ma, DFTState initial);
+	protected abstract RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initial);
 	
 	/**
 	 * Sets the minimizer that will be used to synthesize the recovery automaton
@@ -169,8 +170,10 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	protected Map<FaultTreeNode, FaultTreeNode> createCopyToOriginalNodesMap(Map<FaultTreeNode, FaultTreeNode> mapNewToOriginal, Map<FaultTreeNode, FaultTreeNode> mapNewToCopy) {
 		Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
-		for (FaultTreeNode node : mapNewToCopy.keySet()) {
-			mapCopyToOriginal.put(mapNewToCopy.get(node), mapNewToOriginal.get(node));
+		for (Entry<FaultTreeNode, FaultTreeNode> entry : mapNewToCopy.entrySet()) {
+			FaultTreeNode original = mapNewToOriginal.get(entry.getKey());
+			FaultTreeNode copy = entry.getValue();
+			mapCopyToOriginal.put(copy, original);
 		}
 		return mapCopyToOriginal;
 	}
@@ -232,7 +235,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		dft2ma.setSymmetryChecker(null);
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		
-		RecoveryAutomaton ra = computeMarkovAutomatonSchedule(ma, dft2ma.getInitial());
+		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2ma.getInitial());
 		
 		statistics.stateSpaceGenerationStatistics.compose(dft2ma.getStatistics());
 		

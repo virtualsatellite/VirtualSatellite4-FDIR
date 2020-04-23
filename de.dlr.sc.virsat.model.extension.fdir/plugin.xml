@@ -8,11 +8,11 @@
 	          xmi="concept/concept.xmi">
 	    </concept>
 	</extension>
-	<extension point="de.dlr.sc.virsat.build.DvlmValidator">
+	<extension point="de.dlr.sc.virsat.model.DvlmValidator">
 		<dvlmValidator>
 			<seiValidator
 				id="de.dlr.sc.virsat.model.extension.fdir"
-				class="de.dlr.sc.virsat.model.extension.fdir.validator.StructuralElementInstanceValidator">
+				class="de.dlr.sc.virsat.model.extension.fdir.validator.FdirValidator">
 			</seiValidator>
 		</dvlmValidator>
 	</extension>

@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.List;
+
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
@@ -76,4 +78,12 @@ public abstract class RecoveryAction extends ARecoveryAction {
 	 * @return action label
 	 */
 	public abstract String getActionLabel();
+	
+	/**
+	 * Gets the nodes whose fail state might be affected
+	 * by the recovery action
+	 * @param state the current states
+	 * @return the list of affected nodes
+	 */
+	public abstract List<FaultTreeNode> getAffectedNodes(DFTState state);
 }

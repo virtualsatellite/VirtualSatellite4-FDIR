@@ -9,12 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.validator;
 
-import java.util.List;
-
-import de.dlr.sc.virsat.build.validator.external.IStructuralElementInstanceValidator;
-import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.dvlm.validator.IStructuralElementInstanceValidator;
 
 
 // *****************************************************************
@@ -22,28 +18,17 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 // *****************************************************************
 
 /**
- * Auto Generated Class inheriting from Generator Gap Class
+ * Auto Generated Abstract Generator Gap Class
  * 
- * This class is generated once, do your changes here
+ * Don't Manually modify this class
  * 
  * VirSat DLR FDIR Concept
  * 
- */
-public class StructuralElementInstanceValidator extends AStructuralElementInstanceValidator implements IStructuralElementInstanceValidator {
+ */	
+public abstract class AFdirValidator implements IStructuralElementInstanceValidator {
 
-	private FaultValidator faultValidator = new FaultValidator();
-	
 	@Override
 	public boolean validate(StructuralElementInstance sei) {
-		boolean allInfoValid = true;
-		
-		BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance(sei);
-		List<Fault> faults = beanSei.getAll(Fault.class);
-		
-		for (Fault fault : faults) {
-			allInfoValid &= faultValidator.validate(fault);
-		}
-		
-		return super.validate(sei) && allInfoValid;
+		return true;
 	}
 }

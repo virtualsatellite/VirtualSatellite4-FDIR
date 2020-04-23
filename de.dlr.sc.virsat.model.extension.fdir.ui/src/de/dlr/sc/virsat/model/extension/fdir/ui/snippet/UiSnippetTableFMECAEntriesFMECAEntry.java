@@ -58,7 +58,7 @@ public class UiSnippetTableFMECAEntriesFMECAEntry extends AUiSnippetTableFMECAEn
 	 * @author muel_s8
 	 *
 	 */
-	private class CriticalityLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
+	private static class CriticalityLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 			implements ITableColorProvider {
 
 		private ITableLabelProvider tableLabelProvider;
@@ -79,7 +79,7 @@ public class UiSnippetTableFMECAEntriesFMECAEntry extends AUiSnippetTableFMECAEn
 			CategoryAssignment ca = cpi.getTypeInstance();
 			
 			if (ca == null) {
-				return tableLabelProvider.getColumnText(ca, columnIndex);
+				return "";
 			}
 			
 			FMECAEntry fmecaEntry = new FMECAEntry(ca);

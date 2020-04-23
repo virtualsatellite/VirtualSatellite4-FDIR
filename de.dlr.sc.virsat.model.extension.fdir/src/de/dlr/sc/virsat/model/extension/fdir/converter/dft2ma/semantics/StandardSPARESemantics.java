@@ -30,37 +30,44 @@ public class StandardSPARESemantics implements INodeSemantics {
 	@Override
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred, FaultTreeHolder ftHolder,
 			GenerationResult generationResult) {
-		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(node);
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+		
+		if (!(node instanceof SPARE)) {
+			throw new IllegalArgumentException("Expected node of type SPARE but instead got node " + node);
+		}
+		
+		SPARE spareGate = (SPARE) node;
+		
+		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(spareGate);
+		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(spareGate);
 		
 		boolean hasPrimaryFailed = hasPrimaryFailed(state, children);
 		boolean currentClaimWorks = !hasPrimaryFailed;
 		for (FaultTreeNode spare : spares) {
-			FaultTreeNode spareGate = state.getMapSpareToClaimedSpares().get(spare);
-			if (spareGate != null && spareGate.equals(node)) {
+			FaultTreeNode spareGateOther = state.getMapSpareToClaimedSpares().get(spare);
+			if (spareGateOther != null && spareGateOther.equals(spareGate)) {
 				if (!currentClaimWorks && !state.hasFaultTreeNodeFailed(spare)) {
 					currentClaimWorks = true;
 					
 					if (!isSingleClaim()) {
-						performFree((SPARE) node, spare, state, generationResult);
+						performFree(spareGate, spare, state, generationResult);
 					}
 				} else {
-					performFree((SPARE) node, spare, state, generationResult);
+					performFree(spareGate, spare, state, generationResult);
 				}
 			}
 		}
 		
 		if (currentClaimWorks && isSingleClaim()) {
-			return state.setFaultTreeNodeFailed(node, false);
+			return state.setFaultTreeNodeFailed(spareGate, false);
 		}
 		
-		boolean canClaim = canClaim(pred, state, node, ftHolder);
+		boolean canClaim = canClaim(pred, state, spareGate, ftHolder);
 		boolean foundSpare = false;
 		
 		if (canClaim) {
 			for (FaultTreeNode spare : spares) {
 				if (!state.hasFaultTreeNodeFailed(spare) && !state.getMapSpareToClaimedSpares().containsKey(spare)) {
-					if (performClaim((SPARE) node, spare, state, generationResult)) {
+					if (performClaim(spareGate, spare, state, generationResult)) {
 						foundSpare = true;
 						break;
 					}
@@ -69,8 +76,8 @@ public class StandardSPARESemantics implements INodeSemantics {
 		}
 		
 		if (hasFailed(foundSpare)) {
-			updatePermanence(state, node, ftHolder);
-			return state.setFaultTreeNodeFailed(node, !currentClaimWorks);
+			updatePermanence(state, spareGate, ftHolder);
+			return state.setFaultTreeNodeFailed(spareGate, !currentClaimWorks);
 		} 
 		
 		if (foundSpare) {

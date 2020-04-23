@@ -14,9 +14,9 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
+
 /**
  * Handles the update of a given fault tree node according to the implemented semantics.
- * @author muel_s8
  *
  */
 

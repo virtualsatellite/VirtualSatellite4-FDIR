@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -18,6 +19,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -69,11 +74,16 @@ public class POSynthesizerTest extends ATestCase {
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
 		final double EXPECTED_MTTF = 1;
+		final double EXPECTED_MTTD = 1.833333;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MTTF.MTTF, MeanTimeToDetection.MTTD);
+		
+		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
 	}
 
 	@Test
@@ -99,7 +109,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 6;
-		final double EXPECTED_MTTF = 1.125;
+		final double EXPECTED_MTTF = 1.15;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -157,5 +167,62 @@ public class POSynthesizerTest extends ATestCase {
 		assertNotNull(timedTransition);
 		final int EXPECTED_TRANSITION_TIME = 10000;
 		assertEquals(EXPECTED_TRANSITION_TIME, timedTransition.getTime(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsOr2BeCsp2Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObs/obsOr2BeCsp2Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 1;
+		final double EXPECTED_MTTF = 0.9090909090909091;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsCsp2Repair1() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+
+		final double EXPECTED_MTTF = 1.7;
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsCsp2Repair1Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 4;
+		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final double EXPECTED_SSA = 0.11104161604626317;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsOr2Csp2Repair1Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2Repair1Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		// SSA computation isnt stable yet, at least guarantee that its non-zero
+		assertNotEquals(0, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
 }

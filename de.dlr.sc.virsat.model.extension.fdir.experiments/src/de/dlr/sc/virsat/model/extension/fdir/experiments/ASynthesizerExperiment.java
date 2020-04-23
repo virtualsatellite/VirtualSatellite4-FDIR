@@ -91,20 +91,22 @@ public class ASynthesizerExperiment {
 	 * @param folderPath the path to the folder
 	 * @throws IOException exception
 	 */
-	protected void testFolder(final File folder, String folderPath) throws IOException {
-		
-		if (!folder.isDirectory()) {
+	protected void testFolder(File folder, String folderPath) throws IOException {
+		if (folder.isDirectory()) {
 			System.out.println("Not a directory: " + folder.getAbsolutePath());
 		}
 		
-		for (final File file : folder.listFiles()) {
-			if (file.isDirectory()) {
-				testFolder(file, folderPath + "/" + file.getName());
-			} else {
-				Fault fault = createDFT(folderPath + "/" + file.getName());
-				System.out.println(fault.getFaultTree().toDot());
-				synthesizer.synthesize(fault);
-				saveStatistics(synthesizer.getStatistics(), file.getName(), "rise/2019/" + folder.getName());
+		File[] files = folder.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					testFolder(file, folderPath + "/" + file.getName());
+				} else {
+					Fault fault = createDFT(folderPath + "/" + file.getName());
+					System.out.println(fault.getFaultTree().toDot());
+					synthesizer.synthesize(fault);
+					saveStatistics(synthesizer.getStatistics(), file.getName(), "rise/2019/" + folder.getName());
+				}
 			}
 		}
 	}
@@ -117,14 +119,19 @@ public class ASynthesizerExperiment {
 	 * @param synthesizer the synthesizer
 	 * @throws IOException exception
 	 */
-	protected void testFile(final File file, String filePath, String saveFileName, BasicSynthesizer synthesizer) throws IOException {
+	protected void testFile(File file, String filePath, String saveFileName, BasicSynthesizer synthesizer) throws IOException {
 		
 		String entireFile = new String(Files.readAllBytes(file.toPath()));
 		
 		for (String filename : entireFile.split("\\r?\\n")) {
 			File parentFolder = file.getParentFile();
 			
-			for (File childFolder : parentFolder.listFiles()) {
+			File[] childFolders = parentFolder.listFiles();
+			if (childFolders == null) {
+				continue;
+			}
+			
+			for (File childFolder : childFolders) {
 				if (childFolder.isDirectory()) {
 					File[] matchingFiles = childFolder.listFiles(new FilenameFilter() {
 						public boolean accept(File dir, String name) {
@@ -132,7 +139,7 @@ public class ASynthesizerExperiment {
 						}
 					});
 				
-					if (matchingFiles.length != 0) {
+					if (matchingFiles != null && matchingFiles.length != 0) {
 						File benchmarkFile = matchingFiles[0];
 						Fault fault = createDFT(filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName());
 						synthesizer.synthesize(fault);
@@ -168,13 +175,12 @@ public class ASynthesizerExperiment {
 	 */
 	protected void saveRA(RecoveryAutomaton ra, String filePath) throws IOException {
 		Path path = Paths.get("resources/results/" + filePath + ".dot");
-		if (!Files.exists(path.getParent())) {
-			Files.createDirectories(path.getParent());
-		}
+		Files.createFile(path);
 		
-		OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
-		PrintStream writer = new PrintStream(outFile);
-		writer.println(ra.toDot());
+		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE); 
+			PrintStream writer = new PrintStream(outFile)) {
+			writer.println(ra.toDot());
+		}
 	}
 	
 	
@@ -187,15 +193,14 @@ public class ASynthesizerExperiment {
 	 */
 	protected static void saveStatistics(SynthesisStatistics statistics, String testName, String filePath) throws IOException {
 		Path path = Paths.get("resources/results/" + filePath + ".txt");
-		if (!Files.exists(path.getParent())) {
-			Files.createDirectories(path.getParent());
-		}
+		Files.createFile(path);
 		
-		OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-		PrintStream writer = new PrintStream(outFile);
-		writer.println(testName);
-		writer.println("===============================================");
-		writer.println(statistics);
-		writer.println();
+		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			PrintStream writer = new PrintStream(outFile)) {
+			writer.println(testName);
+			writer.println("===============================================");
+			writer.println(statistics);
+			writer.println();
+		}
 	}
 }
