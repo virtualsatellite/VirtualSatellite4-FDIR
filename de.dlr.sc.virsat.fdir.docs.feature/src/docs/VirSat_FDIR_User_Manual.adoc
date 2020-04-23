@@ -191,6 +191,32 @@ image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
 -- Description:::
 A Simultaneous AND (SAND) gate propagates if all inputs fail at the same time.
 
+:node-type: FDEP
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+The functional dependency (FDEP) gate allows to trigger basic events.
+In the event of any input event occurring, all connected basic events get triggered.
+
+:node-type: RDEP
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+The rate dependency (RDEP) gate allows to increase the failure rate of a basic event.
+An RDEP is equipped with a rate change parameter r.
+In the event of any input event occurring, the failure rate of all connected basic events is multiplied by r.
+
+:node-type: PDEP
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+The probability dependency (PDEP) gate allows to trigger basic events.
+The PDEP gate is equipped with a trigger probability p.
+In the event of any input event occurring, each connected basic event is triggered with probability p.
+
 ==== The graphical Fault Tree Editor
 
 ===== Creating a new Fault Tree Diagram
