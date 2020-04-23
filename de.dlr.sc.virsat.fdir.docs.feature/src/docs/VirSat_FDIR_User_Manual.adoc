@@ -248,9 +248,35 @@ If the observation rate is non-zero, all observation events are observed with ti
 
 ==== The graphical Fault Tree Editor
 
+Besides the usual table based user interface, VirSat FDIR offers a graphical diagram editor interface.
+Learn in this section how to create new fault tree diagrams and how to use them for building fault tree models.
+Fault tree diagrams can also be used to simply visualize existing fault tree models.
+
 ===== Creating a new Fault Tree Diagram
 
+Each fault tree diagram is associated with a fault.
+The fault locally constitutes a top-level event.
+Note that on a system wide level, the fault might be just an intermediate event.
+A diagram may also contain multiple top-level events, but it is not recommended, as all elements inserted into a fault tree diagram
+are automatically associated with the corresponding fault corresponding to the diagram.
+
+A new diagram can be created by selecting a fault in the navigator and then choosing menu:Context[Open Diagram Editor].
+A new editor window named according to the UUID of the selected fault will pop up and also automatically contain the selected fault. 
+The diagram editor can be opened again using the same process.
+The file of the newly created diagram can be found in the _documents_ folder of the structural element instance the fault is attached to.
+
+[#OpenEditor]
+image::faultTrees/openDiagramEditor.png[Opening the diagram editor, align="center"]
+
 ===== Basic Usage
+
+The diagram editor is based on the same technology as other Virtual Satellite diagrams.
+Previous experience with Virtual Satellite diagram editors should at least partially translate.
+The diagram editor consists of two main areas shown in the figure below:
+The actual modeling canvas (left-hand side) and the modeling palette (right-hand side).
+
+[#DiagramEditor]
+image::faultTrees/diagramEditor.png[Diagram Editor, align="center"]
 
 ===== Using the Auto Layout functionality
 
