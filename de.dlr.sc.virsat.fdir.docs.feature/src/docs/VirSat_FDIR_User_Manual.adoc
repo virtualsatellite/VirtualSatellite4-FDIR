@@ -24,6 +24,8 @@ The software primarily follows the ESA ECSS standards by means of the
 SAVOIR FDIR Handbook (http://savoir.estec.esa.int/SAVOIRDocuments.htm).
 For clarification on vocabulary, further details on FDIR analysis and process, please
 check the SAVOIR FDIR Handbook.
+Accessing the handbook requires registration / login.
+Please note that this in return is restricted to ESA member states.
 
 == Getting Started
 
@@ -53,23 +55,141 @@ Fault Tree Analysis (FTA), and how to use it to build up fault models.
 
 === Modeling Fault Trees
 
-Faults, their propagations, and inhibiting fault propagation through means of FDIR is modeled using Fault Trees.
-Fault Trees are graphical models describing how faults combine with each other, 
+Faults, their propagations, and inhibiting fault propagation through means of FDIR is modeled using fault trees.
+Fault trees are graphical models describing how faults combine with each other, 
 propagate through the system, and eventually turn into a feared event.
-The recombination of faults is modeled via so-called Gates, such as "AND" and "OR".
-In this section you will learn the basics on Fault Tree Analysis, which gates are supported by the software,
-and how to use the graphical editor to create a Fault Tree.
+A fault tree is usually constructed top-down, but is read bottom-up, starting with initiating basic events.
+The recombination of faults is modeled via so-called gates, such as "AND" and "OR".
+In this section, you will learn the basics on fault tree analysis, which gates are supported by the software,
+and how to use the graphical editor to create a fault tree.
 For further in-depth information on how to perform an FTA, we refer to the standards.
 
-==== Fault Trees
+==== Fault Tree Elements
 
-Static Elements
+The following contains a comprehensive list of fault tree elements supported by VirSat FDIR.
+The element descriptions are structured in the following format:
 
-Fault, BE, etc..
+_[Name of the fault tree element]_ [Icon]::
+-- Graphical representation:::
+ [Representation in the graphical editor]
+-- Description:::
+ [Purpose of the element, its propagation behavior, additional parameters, etc.]
 
-Dynamic Elements
+In addition to its inherent parameters, each fault tree node also has a name, a list of inputs, and a list of outputs.
+For gates, the name is by default the type of the node.
 
-SPARE, PAND, etc..
+:node-type: Fault
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+Faults represent logical, named events. 
+They are used either to represent a _top-level event_ of a fault tree or an _intermediate event_. 
+Faults are also the logical containers for all other fault tree elements. 
+As such, deleting a fault also deletes all contained elements such as gates, propagations, analysis information, etc.
+A fault always propagates if at least one input fails.
+It is, however, recommended to only have one input per fault (plus basic events).
+
+:node-type: BasicEvent
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+Basic events typically form the leaf elements of a fault tree.
+They represent basic anomalies that are not further broken down in the course of the fault tree analysis.
+In practice, basic events most commonly correspond to causes of equipment failure.
+A basic event is always directly associated to a fault.
+All fault propagations in a fault tree ultimately originate from basic events.
+Ideally, a basic event is equipped with a failure rate, quantifying its likelihood of occurrence over time.
+The failure rate states how often the basic event is expected to occur within a time unit.
+Optionally, it may also be equipped with a repair rate which conversely captures the likelihood of repair over time.
+Finally, a basic event may also be equipped with a cold failure rate, which comes into play when interacting together with the SPARE gate.
+
+:node-type: Propagation
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+Fault propagations are the edges of a fault tree, and connect the fault tree nodes.
+A fault propagation has a direction.
+It connects the output of a fault tree node with the input of another fault tree node. 
+Since fault trees are acyclic graphs, fault propagations may not create any cycles. 
+
+:node-type: AND
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+A gate that propagates if all inputs have failed.
+
+:node-type: OR
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+A gate that propagates if at least one input has failed.
+
+:node-type: VOTE
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+A gate, that is also equipped with a voting threshold k, and propagates if at least k inputs have failed.
+The voting threshold has to be at least 1.
+
+:node-type: SPARE
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+A gate with two types on inputs: Primaries and spares.
+If at least one primary input fails, the SPARE gate activates and claims one of the spares.
+Should no spares be available or failed, then the SPARE gate propagates.
+All spares are considered to be dormant.
+This means that contained basic events will use their cold failure rate, instead of their hot failure rate, as long as they are unclaimed.
+Once a spare is claimed, it is set to be activated and its hot failure rate is used again.
+Spares are claimed from left to right.
+In the case of a repair, the SPARE gate switches back.
+Spares may be shared between spare gates.
+However, there must not be common nodes between spares or between spares and primaries.
+The only exception of this rule, are functional dependency gates.
+
+:node-type: POR
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+A Priority OR (POR) gate propagates if the left-most input occurs before any other input.
+
+:node-type: PORI
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+An Inclusive Priority OR (PORI) gate propagates if the left-most input occurs before any other input,
+or at the same time as another input. 
+
+:node-type: PAND
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+A Priority AND (PAND) gate propagates if the inputs fail exactly in sequence from left to right.
+
+:node-type: PANDI
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+An Inclusive Priority AND (PANDI) gate propagates if the inputs fail exactly in sequence from left to right,
+or at the same time.
+
+:node-type: SAND
+_{node-type}_ image:faultTrees/{node-type}.png[{node-type} icon]::  
+-- Graphical representation:::
+image:faultTrees/{node-type}_Diagram.png[Representation in graphical editor]
+-- Description:::
+A Simultaneous AND (SAND) gate propagates if all inputs fail at the same time.
 
 ==== The graphical Fault Tree Editor
 
