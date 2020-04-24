@@ -16,7 +16,6 @@ import java.util.Map;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
@@ -36,17 +35,8 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	
 	private Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction = new HashMap<>();
 	private Map<FaultTreeNode, FreeAction> mapNodeToFreeAction = new HashMap<>();
-	private IStateGenerator stateGenerator;
 	
 	protected boolean propagateWithoutActions = false;
-	
-	/**
-	 * Standard constructor
-	 * @param stateGenerator the state generator
-	 */
-	public NDSPARESemantics(IStateGenerator stateGenerator) {
-		this.stateGenerator = stateGenerator;
-	}
 
 	@Override
 	protected boolean hasFailed(boolean foundSpare) {
@@ -70,7 +60,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 		
 		ClaimAction ca = getOrCreateClaimAction(node, spare, mapNodeToNodeToClaimAction);
-		DFTState newState = stateGenerator.generateState(state);
+		DFTState newState = state.copy();
 		ca.execute(newState);
 		newState.setFaultTreeNodeFailed(node, false);
 		List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
@@ -126,7 +116,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 			List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 	
 			FreeAction fa = getOrCreateFreeAction(spare);
-			DFTState newState = stateGenerator.generateState(state);
+			DFTState newState = state.copy();
 			fa.execute(newState);
 	
 			newState.setFaultTreeNodeFailed(node, hasPrimaryFailed(newState, newState.getFTHolder().getMapNodeToChildren().get(node)));

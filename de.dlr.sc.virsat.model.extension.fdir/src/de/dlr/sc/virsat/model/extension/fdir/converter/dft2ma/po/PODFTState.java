@@ -131,4 +131,9 @@ public class PODFTState extends DFTState {
 	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
 		return observedFailed.get(ftHolder.getNodeIndex(node)) && super.removeClaimedSparesOnFailureIfPossible(node);
 	}
+	
+	@Override
+	public DFTState copy() {
+		return new PODFTState(this);
+	}
 }

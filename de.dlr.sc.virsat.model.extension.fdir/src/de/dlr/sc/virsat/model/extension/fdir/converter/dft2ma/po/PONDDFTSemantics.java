@@ -47,14 +47,13 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 */
 	public static DFTSemantics createPONDDFTSemantics() {
 		PONDDFTSemantics semantics = new PONDDFTSemantics();
-		semantics.stateGenerator = new PODFTStateGenerator();
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FAULT, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FDEP, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.RDEP, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.VOTE, new VOTESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new PONDSPARESemantics(semantics.stateGenerator));
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new PONDSPARESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
 		return semantics;
 	}
@@ -80,22 +79,21 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, DFTState pred,
+	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(DFTState pred,
 			List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
 		
 		if (event.getNode() == null) {
 			// Only update if the event actually affected a node in the tree
-			// e.g. when processing TimeEvents
+			// e.g. dont update when processing TimeEvents
 			return Collections.emptyList();
 		}
 		
-		boolean anyObservation = false;
+		FaultTreeHolder ftHolder = pred.getFTHolder();
 		List<FaultTreeNode> changedNodes = null;
 		boolean hasRecoveryStrategy = hasRecoveryStrategy(pred);
 		
 		if (event instanceof ObservationEvent) {
 			FaultTreeNode observedNode = event.getNode();
-			anyObservation = true;
 			changedNodes = new ArrayList<>();
 			
 			for (DFTState state : succs) {
@@ -113,12 +111,12 @@ public class PONDDFTSemantics extends DFTSemantics {
 						worklist.addAll(recoveryAction.getAffectedNodes(poState));
 					}
 					
-					changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, worklist);
+					changedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, worklist);
 				}
 			}
 		} else {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
-			changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, event);
+			changedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, event);
 		}
 		
 		for (DFTState state : succs) {
@@ -126,7 +124,6 @@ public class PONDDFTSemantics extends DFTSemantics {
 				PODFTState poState = (PODFTState) state;
 				boolean isObserved = poState.existsNonFailedObserver(node, false);
 				if (isObserved) {
-					anyObservation = true;
 					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
 					
 					for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
@@ -136,7 +133,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			}
 		}
 		
-		if (anyObservation && !hasRecoveryStrategy) {
+		if (!hasRecoveryStrategy) {
 			Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
 			
 			for (FaultTreeNode child : ftHolder.getNodes()) {
@@ -147,7 +144,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 			Queue<FaultTreeNode> spareGates = new LinkedList<>(spareGatesToCheck);
-			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, spareGates);
+			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, spareGates);
 			
 			for (DFTState state : succs) {
 				for (FaultTreeNode node : repairedNodes) {
@@ -167,7 +164,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public Set<FaultTreeNode> extractRecoveryActionInput(FaultTreeHolder ftHolder, DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
+	public Set<FaultTreeNode> extractRecoveryActionInput(DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
 		if (!(pred instanceof PODFTState)) {
 			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + pred);
 		}
@@ -200,5 +197,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 */
 	private boolean hasRecoveryStrategy(DFTState pred) {
 		return pred.getRecoveryStrategy() != null;
+	}
+	
+	@Override
+	public DFTState generateState(FaultTreeHolder ftHolder) {
+		return new PODFTState(ftHolder);
 	}
 }

@@ -51,7 +51,11 @@ public class MA2BeliefMAConverter {
 		Queue<BeliefState> toProcess = new LinkedList<>();
 		toProcess.offer(initialBeliefState);
 		
+		System.out.println(ma.toDot());
+		
 		while (!toProcess.isEmpty()) {
+			System.out.println(beliefMa.toDot());
+			
 			BeliefState beliefState = toProcess.poll();
 			Map<PODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 			
@@ -81,6 +85,8 @@ public class MA2BeliefMAConverter {
 				}
 			}
 		}
+		
+		System.out.println(beliefMa.toDot());
 		
 		return beliefMa;
 	}
@@ -210,9 +216,15 @@ public class MA2BeliefMAConverter {
 	private Map<PODFTState, Set<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
 		Map<PODFTState, Set<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new HashMap<>();
 		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
-			List<MarkovTransition<DFTState>> succTransitions = ma.getSuccTransitions(entry.getKey());
+			PODFTState fromState = entry.getKey();
+			if (fromState.isMarkovian() != beliefState.isMarkovian()) {
+				continue;
+			}
+			
+			List<MarkovTransition<DFTState>> succTransitions = ma.getSuccTransitions(fromState);
 			for (MarkovTransition<DFTState> succTransition : succTransitions) {
 				PODFTState succState = (PODFTState) succTransition.getTo();
+				
 				Set<MarkovTransition<DFTState>> transitions = null;
 				
 				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {

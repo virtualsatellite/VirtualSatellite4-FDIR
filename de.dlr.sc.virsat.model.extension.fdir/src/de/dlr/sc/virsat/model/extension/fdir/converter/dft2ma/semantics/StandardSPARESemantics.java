@@ -28,13 +28,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class StandardSPARESemantics implements INodeSemantics {
 	
 	@Override
-	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred, FaultTreeHolder ftHolder,
+	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			GenerationResult generationResult) {
 		
 		if (!(node instanceof SPARE)) {
 			throw new IllegalArgumentException("Expected node of type SPARE but instead got node " + node);
 		}
 		
+		FaultTreeHolder ftHolder = state.getFTHolder();
 		SPARE spareGate = (SPARE) node;
 		
 		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(spareGate);

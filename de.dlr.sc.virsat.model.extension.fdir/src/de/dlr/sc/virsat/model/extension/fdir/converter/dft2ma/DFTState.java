@@ -638,5 +638,7 @@ public class DFTState extends MarkovState {
 		return mapParentToSymmetryRequirements;
 	}
 
-
+	public DFTState copy() {
+		return new DFTState(this);
+	}
 }

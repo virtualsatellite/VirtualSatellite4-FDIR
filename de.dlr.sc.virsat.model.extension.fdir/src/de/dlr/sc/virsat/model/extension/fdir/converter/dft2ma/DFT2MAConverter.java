@@ -84,6 +84,8 @@ public class DFT2MAConverter {
 		staticAnalysis();
 		buildMA();
 		
+		System.out.println(ma.toDot());
+		
 		statistics.maxStates = ma.getStates().size();
 		statistics.maxTransitions = ma.getTransitions().size();
 		statistics.time = System.currentTimeMillis() - statistics.time;
@@ -223,28 +225,20 @@ public class DFT2MAConverter {
 				
 				Double rate = event.getRate(state) * multiplier;
 				
-				DFTState baseSucc = dftSemantics.getStateGenerator().generateState(state);
-				baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
-				event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
-				
-				List<DFTState> succs = new ArrayList<>();
-				succs.add(baseSucc);
-				
-				Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
-				mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());
-				
-				List<FaultTreeNode> changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(ftHolder, state, 
-						succs, mapStateToRecoveryActions, event);
+				DFTStateUpdateResult updateResult = updateState(state, event);
+				DFTState baseSucc = updateResult.succs.get(0);
+				List<DFTState> succs = updateResult.succs;
+				List<FaultTreeNode> changedNodes = updateResult.changedNodes;
 				
 				statistics.countGeneratedStates += succs.size();
 				
 				DFTState markovSucc = null;
 				if (recoveryStrategy != null) {
-					Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(ftHolder, baseSucc, event, changedNodes);
+					Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(baseSucc, event, changedNodes);
 					RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
 					
 					if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
-						baseSucc = dftSemantics.getStateGenerator().generateState(state);
+						baseSucc = state.copy();
 						baseSucc.setRecoveryStrategy(recoveryStrategy);
 						
 						event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
@@ -255,14 +249,14 @@ public class DFT2MAConverter {
 						succs.clear();
 						succs.add(baseSucc);
 						
-						changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(ftHolder, state, succs, mapStateToRecoveryActions, event);
+						changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(state, succs, updateResult.mapStateToRecoveryActions, event);
 						
 						statistics.countGeneratedStates += succs.size();
 					} else {
 						baseSucc.setRecoveryStrategy(recoveryStrategy);
 					}
 				} else if (succs.size() > 1) { 
-					markovSucc = dftSemantics.getStateGenerator().generateState(baseSucc);
+					markovSucc = baseSucc.copy();
 					ma.addState(markovSucc);
 					ma.addMarkovianTransition(event, state, markovSucc, rate);	
 				}
@@ -291,7 +285,7 @@ public class DFT2MAConverter {
 					}
 					
 					if (markovSucc != null) {
-						List<RecoveryAction> actions = mapStateToRecoveryActions.get(succ);
+						List<RecoveryAction> actions = updateResult.mapStateToRecoveryActions.get(succ);
 						ma.addNondeterministicTransition(actions, markovSucc, equivalentState);	
 					} else {
 						ma.addMarkovianTransition(event, state, equivalentState, rate);
@@ -305,7 +299,7 @@ public class DFT2MAConverter {
 	 * Creates and initializes the initial state of the Markov Automaton
 	 */
 	private void createInitialState() {
-		initial = dftSemantics.getStateGenerator().generateState(ftHolder);
+		initial = dftSemantics.generateState(ftHolder);
 		mapUnorderedBesToMarkovianDFTStates.put(initial.unorderedBes, new ArrayList<>(Collections.singletonList(initial)));
 		initial.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
@@ -313,6 +307,33 @@ public class DFT2MAConverter {
 		}
 		initial.setRecoveryStrategy(recoveryStrategy);
 		ma.addState(initial);
+	}
+	
+	public static class DFTStateUpdateResult {
+		Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
+		List<DFTState> succs = new ArrayList<>();
+		List<FaultTreeNode> changedNodes;
+	}
+	
+	/**
+	 * Creates updated states after the occurrence of some event
+	 * @param state the base state
+	 * @param event the occurred event
+	 * @return the update result
+	 */
+	private DFTStateUpdateResult updateState(DFTState state, IDFTEvent event) {
+		DFTStateUpdateResult updateResult = new DFTStateUpdateResult();
+		
+		DFTState baseSucc = state.copy();
+		baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
+		event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
+		
+		updateResult.succs.add(baseSucc);
+		updateResult.mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());
+		updateResult.changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(state, 
+				updateResult.succs, updateResult.mapStateToRecoveryActions, event);
+		
+		return updateResult;
 	}
 	
 	/**
