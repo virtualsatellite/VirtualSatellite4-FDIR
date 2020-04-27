@@ -41,7 +41,7 @@ public class BeliefState extends MarkovState {
 	@Override
 	public String toString() {
 		String beliefs = mapStateToBelief.entrySet().stream()
-				.map(entry -> entry.getValue() + ": " +  entry.getKey().getLabel())
+				.map(entry -> String.format("%.2f", entry.getValue()) + ": " +  entry.getKey().getLabel())
 				.collect(Collectors.joining(","));
 		
 		String label = index + " [label=\"[" + index + " " + beliefs + "]\"";

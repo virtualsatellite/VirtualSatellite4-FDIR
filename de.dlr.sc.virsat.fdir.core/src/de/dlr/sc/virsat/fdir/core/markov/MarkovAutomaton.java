@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.fdir.core.markov;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +89,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return a list of transitions
 	 */
 	public List<MarkovTransition<S>> getSuccTransitions(Object state) {
-		return mapStateToSuccTransitions.get(state);
+		return mapStateToSuccTransitions.getOrDefault(state, Collections.emptyList());
 	}
 	
 	/**
@@ -107,7 +108,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return a list of transitions
 	 */
 	public List<MarkovTransition<S>> getPredTransitions(Object state) {
-		return mapStateToPredTransitions.get(state);
+		return mapStateToPredTransitions.getOrDefault(state, Collections.emptyList());
 	}
 	
 	/**

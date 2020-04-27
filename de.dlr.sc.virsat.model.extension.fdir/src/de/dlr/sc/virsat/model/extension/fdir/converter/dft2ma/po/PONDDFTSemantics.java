@@ -91,10 +91,12 @@ public class PONDDFTSemantics extends DFTSemantics {
 		FaultTreeHolder ftHolder = pred.getFTHolder();
 		List<FaultTreeNode> changedNodes = null;
 		boolean hasRecoveryStrategy = hasRecoveryStrategy(pred);
+		boolean anyObservation = false;
 		
 		if (event instanceof ObservationEvent) {
 			FaultTreeNode observedNode = event.getNode();
 			changedNodes = new ArrayList<>();
+			anyObservation = true;
 			
 			for (DFTState state : succs) {
 				PODFTState poState = (PODFTState) state;
@@ -124,6 +126,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 				PODFTState poState = (PODFTState) state;
 				boolean isObserved = poState.existsNonFailedObserver(node, false);
 				if (isObserved) {
+					anyObservation = true;
 					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
 					
 					for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
@@ -133,7 +136,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			}
 		}
 		
-		if (!hasRecoveryStrategy) {
+		if (anyObservation && !hasRecoveryStrategy) {
 			Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
 			
 			for (FaultTreeNode child : ftHolder.getNodes()) {
@@ -202,5 +205,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 	@Override
 	public DFTState generateState(FaultTreeHolder ftHolder) {
 		return new PODFTState(ftHolder);
+	}
+	
+	@Override
+	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
+		return Collections.singletonList(new ObservationEvent(ftHolder.getRoot(), true));
 	}
 }

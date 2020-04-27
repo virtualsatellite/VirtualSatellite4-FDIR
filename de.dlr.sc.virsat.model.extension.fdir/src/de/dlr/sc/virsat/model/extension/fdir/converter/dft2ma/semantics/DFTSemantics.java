@@ -279,4 +279,13 @@ public class DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new NDSPARESemantics());
 		return semantics;
 	}
+
+	/**
+	 * Creates the list of initial events that should be applied to the initial state
+	 * @param ftHolder the fault tree holder
+	 * @return the intitial events for the initial state
+	 */
+	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
+		return Collections.emptyList();
+	}
 }

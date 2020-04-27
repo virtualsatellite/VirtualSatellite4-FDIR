@@ -186,6 +186,10 @@ public class DFTState extends MarkovState {
 		return mapSpareToClaimedSpares;
 	}
 	
+	public void setMapSpareToClaimedSpares(Map<FaultTreeNode, FaultTreeNode> mapSpareToClaimedSpares) {
+		this.mapSpareToClaimedSpares = mapSpareToClaimedSpares;
+	}
+	
 	/**
 	 * Updates the failed state of the given fault tree node and
 	 * returns if there was a state change

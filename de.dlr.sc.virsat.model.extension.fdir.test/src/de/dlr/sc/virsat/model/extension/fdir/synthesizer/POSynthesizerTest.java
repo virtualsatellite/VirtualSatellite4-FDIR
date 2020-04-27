@@ -90,6 +90,8 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsOr2Csp2() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
