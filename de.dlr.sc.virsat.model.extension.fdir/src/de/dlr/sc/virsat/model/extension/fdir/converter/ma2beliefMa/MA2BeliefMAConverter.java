@@ -52,6 +52,8 @@ public class MA2BeliefMAConverter {
 		toProcess.offer(initialBeliefState);
 		
 		while (!toProcess.isEmpty()) {
+			System.out.println(beliefMa.toDot());
+			
 			BeliefState beliefState = toProcess.poll();
 			Map<PODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 			
@@ -96,7 +98,6 @@ public class MA2BeliefMAConverter {
 		BeliefState initialBeliefState = new BeliefState(beliefMa, initialState);
 		initialBeliefState.mapStateToBelief.put(initialState, 1d);
 		beliefMa.addState(initialBeliefState);
-		initialBeliefState.setMarkovian(false);
 		return initialBeliefState;
 	}
 	
@@ -379,14 +380,20 @@ public class MA2BeliefMAConverter {
 		
 		for (Entry<Object, Set<MarkovTransition<DFTState>>> succTransitionGroup : groupedSuccTransitions.entrySet()) {	
 			double prob = 0;
+			
+			Set<DFTState> succStates = new HashSet<>();
+			
 			for (MarkovTransition<DFTState> succTransition : succTransitionGroup.getValue()) {
+				succStates.add(succTransition.getFrom());
 				prob += beliefState.mapStateToBelief.get(succTransition.getFrom());
 			}
 			
 			for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
 				PODFTState state = entry.getKey();
-				if (state.getFailedBasicEvents().isEmpty()) {
-					prob += entry.getValue();
+				if (!succStates.contains(state)) {
+					if (state.getFailedBasicEvents().isEmpty()) {
+						prob += entry.getValue();
+					}
 				}
 			}
 			

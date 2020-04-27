@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,7 +44,12 @@ public class POSynthesizer extends ASynthesizer {
 	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa) {
-		PODFTState initialPo = (PODFTState) initialMa;
+		PODFTState initialPo = (PODFTState) ma.getSuccTransitions(initialMa).stream()
+					.filter(transition -> transition.getEvent().equals(Collections.emptyList()))
+					.map(transition -> transition.getTo())
+					.findAny()
+					.orElse(initialMa);
+		
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMaConverter.convert(ma, initialPo);
 		BeliefState initialBeliefState = ma2BeliefMaConverter.getInitialBeliefState();
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();

@@ -12,7 +12,6 @@ package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -55,17 +54,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				if (bestTransitionGroup != null) {
 					schedule.put(state, bestTransitionGroup);
 					for (MarkovTransition<S> transition : bestTransitionGroup) {
-						S nextState = transition.getTo();
-						if (handledNonDetStates.add(nextState)) {
-							toProcess.offer(nextState);
-						} 
-					}
-				}
-				
-				Map<Object, Set<MarkovTransition<S>>> groupedSuccTransitions = ma.getGroupedSuccTransitions(state);
-				Set<MarkovTransition<S>> emptyTransitionGroup = groupedSuccTransitions.get(Collections.emptyList());
-				if (emptyTransitionGroup != null) {
-					for (MarkovTransition<S> transition : emptyTransitionGroup) {
 						S nextState = transition.getTo();
 						if (handledNonDetStates.add(nextState)) {
 							toProcess.offer(nextState);

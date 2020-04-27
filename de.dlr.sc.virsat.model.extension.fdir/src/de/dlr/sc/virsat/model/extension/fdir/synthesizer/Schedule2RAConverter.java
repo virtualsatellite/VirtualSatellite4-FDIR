@@ -76,14 +76,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		
 		Queue<S> toProcess = new LinkedList<>();
 		
-		if (!initialMa.isMarkovian()) {
-			initialMa = ma.getSuccTransitions(initialMa).stream()
-					.filter(transition -> transition.getEvent().equals(Collections.emptyList()))
-					.map(transition -> transition.getTo())
-					.findAny()
-					.orElse(initialMa);
-		}
-		
 		toProcess.offer(initialMa);
 		List<Transition> createdTransitions = new ArrayList<>();
 		Set<S> handledNonDetStates = new HashSet<>();
