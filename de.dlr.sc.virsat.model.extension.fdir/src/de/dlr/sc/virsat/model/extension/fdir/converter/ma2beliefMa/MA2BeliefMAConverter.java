@@ -316,6 +316,12 @@ public class MA2BeliefMAConverter {
 		return state;
 	}
 	
+	/**
+	 * Checks for already existing equivalent dft state
+	 * @param ma the markov automaton
+	 * @param state the state
+	 * @return the state or an already existing equivalent states
+	 */
 	public PODFTState getEquivalentDFTState(MarkovAutomaton<DFTState> ma, PODFTState state) {
 		for (DFTState otherDftState : ma.getStates()) {
 			PODFTState other = (PODFTState) otherDftState;
