@@ -110,10 +110,7 @@ public class DFTSemantics {
 				succs.add(baseSucc);
 				recoveryActions.clear();
 				recoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
-			} else {
-				DFTState baseSucc = succs.remove(0);
-				succs.add(baseSucc);
-			}
+			} 
 		}
 		
 		return changedNodes;
