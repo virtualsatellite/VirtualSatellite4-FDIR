@@ -146,10 +146,11 @@ public class MA2BeliefMAConverter {
 			isFinal |= ma.getFinalStates().contains(transition.getTo());
 			
 			if (isInternalTransition) {
-				double time = 1 / exitRate;
+				double exitRateFromState = ma.getExitRateForState(fromState);
+				double time = 1 / transition.getRate();
 				double residueProb = oldProb;
 				
-				double remainProb = Math.exp(-transition.getRate() * time);
+				double remainProb = Math.exp(-exitRateFromState * time);
 				double exitProb = 1 - remainProb;
 				residueProb *= remainProb;
 				prob *= exitProb;

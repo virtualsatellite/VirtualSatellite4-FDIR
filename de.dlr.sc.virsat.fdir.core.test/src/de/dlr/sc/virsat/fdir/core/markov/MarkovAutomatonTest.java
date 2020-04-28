@@ -94,7 +94,6 @@ public class MarkovAutomatonTest {
 		MarkovState state3 = new MarkovState();
 		MarkovState state4 = new MarkovState();
 
-		
 		ma.getFinalStates().add(state2);
 		
 		ma.addState(state1);
@@ -108,8 +107,7 @@ public class MarkovAutomatonTest {
 		final double RATE4 = 0.4;
 		final double RATE5 = 0.3;
 		
-		final double EXPECTEDEXITRATE = 1.25;
-
+		final double EXPECTEDEXITRATE = 0.8;
 		
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state1, state2, RATE2);
@@ -118,12 +116,8 @@ public class MarkovAutomatonTest {
 		ma.addMarkovianTransition("c", state3, state4, RATE4);
 		ma.addMarkovianTransition("d", state3, state4, RATE5);
 
-
-		
 		assertEquals(1, ma.getExitRateForState(state1), 0);
 		assertEquals(0, ma.getExitRateForState(state2), 0);
 		assertEquals(EXPECTEDEXITRATE, ma.getExitRateForState(state3), 0);
-
-		
 	}
 }
