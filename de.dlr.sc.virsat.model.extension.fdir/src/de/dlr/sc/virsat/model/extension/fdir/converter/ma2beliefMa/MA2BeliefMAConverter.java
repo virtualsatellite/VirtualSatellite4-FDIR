@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -47,13 +48,11 @@ public class MA2BeliefMAConverter {
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialState) {
 		beliefMa = new MarkovAutomaton<>();
 		initialBeliefState = createInitialState(initialState);
-
+		
 		Queue<BeliefState> toProcess = new LinkedList<>();
 		toProcess.offer(initialBeliefState);
 		
 		while (!toProcess.isEmpty()) {
-			System.out.println(beliefMa.toDot());
-			
 			BeliefState beliefState = toProcess.poll();
 			Map<PODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 			
@@ -65,7 +64,6 @@ public class MA2BeliefMAConverter {
 				if (beliefState.isMarkovian()) {
 					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc);
 					double exitRate = getTotalRate(beliefState, entry.getValue());
-					
 					boolean isFinal = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions, ma);
 					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
 					
@@ -83,8 +81,6 @@ public class MA2BeliefMAConverter {
 				}
 			}
 		}
-		
-		System.out.println(beliefMa.toDot());
 		
 		return beliefMa;
 	}
@@ -158,12 +154,22 @@ public class MA2BeliefMAConverter {
 				residueProb *= remainProb;
 				prob *= exitProb;
 				
-				beliefSucc.mapStateToBelief.merge(fromState, residueProb, (p1, p2) -> p1 + p2);
+				if (residueProb > 0) {
+					beliefSucc.mapStateToBelief.merge(fromState, residueProb, (p1, p2) -> p1 + p2);
+				}
 			}
 			
-			beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
+			if (prob > 0) {
+				if (toState.getFailedBasicEvents().isEmpty() && toState.getObservedFailed().isEmpty()) {
+					toState = (PODFTState) ma.getSuccTransitions(toState).stream()
+							.filter(t -> t.getEvent().equals(Collections.emptyList()))
+							.map(t -> t.getTo())
+							.findFirst().orElse(toState);
+				}
+				beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
+			}
 			
-			if (!transition.getTo().isMarkovian()) {
+			if (!toState.isMarkovian()) {
 				isMarkovian = false;
 			} 
 		}
@@ -198,17 +204,19 @@ public class MA2BeliefMAConverter {
 		}
 		
 		for (PODFTState stateWithNoTransition : statesWithNoTransitions) {
-			PODFTState succState = stateWithNoTransition;
-			boolean isEquivalent = beliefSucc.representant.getMapSpareToClaimedSpares().equals(stateWithNoTransition.getMapSpareToClaimedSpares());
-			
-			if (!isEquivalent) {
-				succState = (PODFTState) stateWithNoTransition.copy();
-				succState.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
-				succState = getEquivalentDFTState(ma, succState);
+			if (stateWithNoTransition.getObservedFailed().equals(beliefSucc.representant.getObservedFailed())) {
+				PODFTState succState = stateWithNoTransition;
+				boolean isEquivalent = beliefSucc.representant.getMapSpareToClaimedSpares().equals(stateWithNoTransition.getMapSpareToClaimedSpares());
+				
+				if (!isEquivalent) {
+					succState = (PODFTState) stateWithNoTransition.copy();
+					succState.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
+					succState = getEquivalentDFTState(ma, succState);
+				}
+				
+				double prob = beliefState.mapStateToBelief.get(stateWithNoTransition);
+				beliefSucc.mapStateToBelief.put(succState, prob);
 			}
-			
-			double prob = beliefState.mapStateToBelief.get(stateWithNoTransition);
-			beliefSucc.mapStateToBelief.put(succState, prob);
 		}
 		
 		return isFinal;
@@ -286,7 +294,7 @@ public class MA2BeliefMAConverter {
 	 */
 	private BeliefState getEquivalentBeliefState(BeliefState state) {
 		for (BeliefState other : beliefMa.getStates()) {
-			if (state.isMarkovian() != other.isMarkovian()) {
+			if (state.isMarkovian() != other.isMarkovian() || state.mapStateToBelief.size() != other.mapStateToBelief.size()) {
 				continue;
 			}
 			

@@ -138,7 +138,7 @@ public class Schedule2RAConverterTest extends ATestCase {
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
 		RecoveryAutomaton ra = converter.convert(schedule, initial1);
-
+		
 		// Expected recovery automaton:
 		// initial --------------- TRANSITION_TIME -------------> timedState
 		// 	   \----- fault : ca1 --> finalState <-- fault : ca2 -----/ 

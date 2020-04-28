@@ -560,6 +560,10 @@ public class DFTState extends MarkovState {
 	 * @return true iff also the claims and the order of the ordered failed basic events match
 	 */
 	public boolean isEquivalent(DFTState other) {
+		if (isMarkovian() != other.isMarkovian()) {
+			return false;
+		}
+		
 		if (recoveryStrategy != null) {
 			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
 				return false;

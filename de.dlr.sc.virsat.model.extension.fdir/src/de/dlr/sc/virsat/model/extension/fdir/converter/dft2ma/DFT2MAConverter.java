@@ -58,7 +58,7 @@ public class DFT2MAConverter {
 	private Collection<IDFTEvent> events;
 	private Set<FaultTreeNode> transientNodes;
 	private Set<BasicEvent> orderDependentBasicEvents;
-	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToMarkovianDFTStates;
+	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToDFTStates;
 	private FaultTreeHolder ftHolder;
 	private RecoveryStrategy recoveryStrategy;
 	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
@@ -105,7 +105,7 @@ public class DFT2MAConverter {
 	 */
 	private void init() {
 		orderDependentBasicEvents = new HashSet<>();
-		mapUnorderedBesToMarkovianDFTStates = new HashMap<>();
+		mapUnorderedBesToDFTStates = new HashMap<>();
 		transientNodes = new HashSet<>();
 		
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
@@ -249,12 +249,21 @@ public class DFT2MAConverter {
 						baseSucc.setRecoveryStrategy(recoveryStrategy);
 					}
 				} else if (succs.size() > 1) { 
-					markovSucc = baseSucc.copy();
-					ma.addState(markovSucc);
-					ma.addMarkovianTransition(event, state, markovSucc, rate);	
+					baseSucc = baseSucc.copy();
+					baseSucc.setMarkovian(false);
+					
+					markovSucc = getEquivalentState(baseSucc);
+					if (markovSucc == baseSucc) {
+						ma.addState(markovSucc);	
+					} else {
+						succs.clear();
+					}
+					ma.addMarkovianTransition(event, state, markovSucc, rate);
 				}
 					
 				for (DFTState succ : succs) {
+					succ.setMarkovian(true);
+					
 					if (allowsDontCareFailing) {
 						succ.failDontCares(changedNodes, orderDependentBasicEvents);
 					}
@@ -293,7 +302,7 @@ public class DFT2MAConverter {
 	 */
 	private void createInitialState() {
 		initial = dftSemantics.generateState(ftHolder);
-		mapUnorderedBesToMarkovianDFTStates.put(initial.unorderedBes, new ArrayList<>(Collections.singletonList(initial)));
+		mapUnorderedBesToDFTStates.put(initial.unorderedBes, new ArrayList<>(Collections.singletonList(initial)));
 		initial.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
 			initial.setNodeActivation(root, true);
@@ -467,11 +476,11 @@ public class DFT2MAConverter {
 	 * @return an equivalent state to the passed one or the state itself if not equivalent state exists
 	 */
 	private DFTState getEquivalentState(DFTState state) {
-		List<DFTState> states = mapUnorderedBesToMarkovianDFTStates.get(state.unorderedBes);
+		List<DFTState> states = mapUnorderedBesToDFTStates.get(state.unorderedBes);
 		if (states == null) {
 			List<DFTState> dftStates = new ArrayList<>();
 			dftStates.add(state);
-			mapUnorderedBesToMarkovianDFTStates.put(state.unorderedBes, dftStates);
+			mapUnorderedBesToDFTStates.put(state.unorderedBes, dftStates);
 			return state;
 		}
 		

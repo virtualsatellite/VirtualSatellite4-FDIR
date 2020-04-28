@@ -107,9 +107,9 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 3;
-		final int EXPECTED_COUNT_TRANSITIONS = 2;
-		final double EXPECTED_MTTF = 1.125;
+		final int EXPECTED_COUNT_STATES = 5;
+		final int EXPECTED_COUNT_TRANSITIONS = 6;
+		final double EXPECTED_MTTF = 1.15;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -122,8 +122,6 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBE.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		
-		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 5;
@@ -141,8 +139,8 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 8;
-		final int EXPECTED_COUNT_TRANSITIONS = 12;
+		final int EXPECTED_COUNT_STATES = 7;
+		final int EXPECTED_COUNT_TRANSITIONS = 10;
 		final double EXPECTED_MTTF = 0.9126984126984126;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
@@ -190,7 +188,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsCsp2Repair1() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-
+		
 		final double EXPECTED_MTTF = 1.7;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
@@ -202,8 +200,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 4;
-		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final int EXPECTED_COUNT_STATES = 25;
+		final int EXPECTED_COUNT_TRANSITIONS = 44;
 		final double EXPECTED_SSA = 0.11104161604626317;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());

@@ -70,7 +70,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	@SuppressWarnings("unchecked")
 	public RecoveryAutomaton convert(Map<S, Set<MarkovTransition<S>>> schedule, S initialMa) {
 		mapMarkovStateToRaState = new HashMap<>();
-		
 		raHelper = new RecoveryAutomatonHelper(concept);
 		ra = new RecoveryAutomaton(concept);
 		
@@ -93,19 +92,12 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			for (MarkovTransition<S> markovianTransition : markovianTransitions) {
 				S toState = markovianTransition.getTo();
 				
-				Transition raTransition = createTransition(markovianTransition);
-				createdTransitions.add(raTransition);
-				
 				if (!markovianTransition.getTo().isMarkovian()) {
 					Set<MarkovTransition<S>> bestTransitionSet = schedule.getOrDefault(toState, Collections.EMPTY_SET);
-					
 					MarkovTransition<S> representativeTransition = bestTransitionSet.iterator().next();
-					toState = representativeTransition.getTo();
-				
-					List<RecoveryAction> recoveryActions = (List<RecoveryAction>) representativeTransition.getEvent();
-					for (RecoveryAction recoveryAction : recoveryActions)  {
-						raTransition.getRecoveryActions().add(recoveryAction.copy());
-					}
+					
+					Transition raTransition = createTransition(markovianTransition, representativeTransition);
+					createdTransitions.add(raTransition);
 					
 					for (MarkovTransition<S> bestTransition : bestTransitionSet) {
 						toState = bestTransition.getTo();
@@ -116,6 +108,9 @@ public class Schedule2RAConverter<S extends MarkovState> {
 						} 
 					}
 				} else if (handledNonDetStates.add(toState)) {
+					Transition raTransition = createTransition(markovianTransition, null);
+					createdTransitions.add(raTransition);
+					
 					toProcess.offer(toState);
 				}
 			}
@@ -220,18 +215,30 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	/**
 	 * Creates a recovery transition in the recovery automaton
 	 * @param markovianTransition the markovian transition
+	 * @param nondetTransition optional nondeterministic transition following the markovian transition
 	 * @return the recovery transition
 	 */
-	protected Transition createTransition(MarkovTransition<S> markovianTransition) {
+	protected Transition createTransition(MarkovTransition<S> markovianTransition, MarkovTransition<S> nondetTransition) {
 		S fromState = markovianTransition.getFrom();
-		S toState = markovianTransition.getTo();
+		S toState = nondetTransition == null ? markovianTransition.getTo() : nondetTransition.getTo();
 		Object event = markovianTransition.getEvent();
 		
+		Transition transition = null;
 		if (isInternalTransition(markovianTransition)) {
-			return createTimedTransition(fromState, toState, 1 / markovianTransition.getRate());
+			transition = createTimedTransition(fromState, toState, 1 / markovianTransition.getRate());
 		} else {
-			return createFaultEventTransition(fromState, toState, event);
+			transition = createFaultEventTransition(fromState, toState, event);
 		}
+		
+		if (nondetTransition != null) {
+			@SuppressWarnings("unchecked")
+			List<RecoveryAction> recoveryActions = (List<RecoveryAction>) nondetTransition.getEvent();
+			for (RecoveryAction recoveryAction : recoveryActions)  {
+				transition.getRecoveryActions().add(recoveryAction.copy());
+			}
+		}
+		
+		return transition;
 	}
 	
 	/**
