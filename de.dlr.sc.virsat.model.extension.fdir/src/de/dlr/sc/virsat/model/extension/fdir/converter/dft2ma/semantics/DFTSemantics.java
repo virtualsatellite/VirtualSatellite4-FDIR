@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -92,28 +93,36 @@ public class DFTSemantics {
 			return Collections.emptyList();
 		}
 		
-		FaultTreeHolder ftHolder = pred.getFTHolder();
+		Queue<FaultTreeNode> worklist = createWorklist(event, succs.get(0));
+		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, worklist);
+		return changedNodes;
+	}
+	
+	/**
+	 * Gets the minimum nodes that need to be checked for an event in a given state
+	 * @param event the last event to occur
+	 * @param baseSucc the base state
+	 * @return an initial worklist of nodes that need to be checked
+	 */
+	public Queue<FaultTreeNode> createWorklist(IDFTEvent event, DFTState baseSucc) {
+		FaultTreeHolder ftHolder = baseSucc.getFTHolder();
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
 		if (event.getNode() instanceof BasicEvent) {
 			worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
 		} else {
 			worklist.addAll(ftHolder.getMapNodeToParents().get(event.getNode()));
 		}
-
-		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, worklist);
-		boolean existsNonTLESucc = existsNonTLE(succs);
 		
-		if (succs.size() > 1) {
-			if (!existsNonTLESucc) {
-				DFTState baseSucc = succs.get(0);
-				succs.clear();
-				succs.add(baseSucc);
-				recoveryActions.clear();
-				recoveryActions.put(baseSucc, new ArrayList<RecoveryAction>());
-			} 
+		if (baseSucc.getRecoveryStrategy() != null) {
+			RecoveryStrategy strategy = baseSucc.getRecoveryStrategy();
+			for (RecoveryAction recoveryAction : strategy.getRecoveryActions()) {
+				for (FaultTreeNode affectedNode : recoveryAction.getAffectedNodes(baseSucc)) {
+					worklist.addAll(ftHolder.getMapNodeToParents().get(affectedNode));
+				}
+			}
 		}
 		
-		return changedNodes;
+		return worklist;
 	}
 	
 	/**
@@ -159,7 +168,7 @@ public class DFTSemantics {
 			return false;
 		}
 		
-		GenerationResult generationResult = new GenerationResult(mapStateToRecoveryActions);
+		GenerationResult generationResult = new GenerationResult(states.get(0), mapStateToRecoveryActions);
 		boolean hasChanged = false;
 		FaultTreeHolder ftHolder = pred.getFTHolder();
 		
@@ -195,23 +204,6 @@ public class DFTSemantics {
 		
 		return hasChanged;
 	}
-	
-	/**
-	 * Checks if in the set of states contains a state without the TLE triggered
-	 * @param states set of states
-	 * @return true iff there exists a node without a failed TLE
-	 */
-	private boolean existsNonTLE(List<DFTState> states) {
-		for (DFTState state : states) {
-			FaultTreeHolder ftHolder = state.getFTHolder();
-			if (!state.hasFaultTreeNodeFailed(ftHolder.getRoot())) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
 	
 	/**
 	 * Extracts the occured event set for recovery strategies

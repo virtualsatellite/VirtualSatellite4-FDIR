@@ -79,16 +79,12 @@ public class RecoveryStrategy {
 	/**
 	 * Executes the current strategy on a state
 	 * @param state the state to execute the strategy on
-	 * @return a new state where all actions of the strategy have been applied
 	 */
-	public DFTState execute(DFTState state) {
-		DFTState succ = state.copy();
-		succ.setRecoveryStrategy(this);
+	public void execute(DFTState state) {
+		state.setRecoveryStrategy(this);
 		for (RecoveryAction ra : getRecoveryActions()) {
-			ra.execute(succ);
+			ra.execute(state);
 		}
-		
-		return succ;
 	}
 
 	/**

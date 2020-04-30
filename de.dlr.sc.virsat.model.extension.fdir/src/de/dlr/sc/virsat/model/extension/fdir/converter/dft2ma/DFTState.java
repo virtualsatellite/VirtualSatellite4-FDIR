@@ -90,6 +90,7 @@ public class DFTState extends MarkovState {
 		failingNodes = (BitSet) other.failingNodes.clone();
 		ftHolder = other.ftHolder;
 		recoveryStrategy = other.recoveryStrategy;
+		index = other.index + 1;
 	}
 	
 	/**
@@ -126,6 +127,8 @@ public class DFTState extends MarkovState {
 		
 		if (isFailState) {
 			res += ", color=\"red\"";
+		} else if (!isMarkovian()) {
+			res += ", color=\"blue\"";
 		}
 		
 		res += "]";
@@ -160,14 +163,6 @@ public class DFTState extends MarkovState {
 	 */
 	public FaultTreeHolder getFTHolder() {
 		return ftHolder;
-	}
-	
-	/**
-	 * Get the map from spare gate to claimed spare
-	 * @return a mapping from spare gates to claimed spares
-	 */
-	public Map<FaultTreeNode, FaultTreeNode> getSpareClaims() {
-		return mapSpareToClaimedSpares;
 	}
 	
 	/**
@@ -410,10 +405,6 @@ public class DFTState extends MarkovState {
 				
 				removeClaimedSparesOnFailureIfPossible(ftn);
 			}
-		}
-		
-		if (recoveryStrategy != null && isFaultTreeNodePermanent(ftHolder.getRoot())) {
-			recoveryStrategy = recoveryStrategy.reset();
 		}
 	}
 	

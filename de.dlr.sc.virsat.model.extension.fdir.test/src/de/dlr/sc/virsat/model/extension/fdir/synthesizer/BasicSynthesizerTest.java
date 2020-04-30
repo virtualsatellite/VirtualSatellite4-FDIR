@@ -154,7 +154,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			3.791112982388163e-05,
 			1.5198531228025698e-04,
 			3.748693875510452e-04,
-			7.984689349664446e-04
+			7.972098117978721E-4
 		};
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -210,8 +210,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		};
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		
-		System.out.println(ra.toDot());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);

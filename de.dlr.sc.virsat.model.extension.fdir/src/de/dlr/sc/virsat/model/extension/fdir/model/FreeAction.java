@@ -80,18 +80,31 @@ public  class FreeAction extends AFreeAction {
 		
 		List<FaultTreeNode> spares = state.getFTHolder().getMapNodeToSpares().getOrDefault(claimingSpareGate, Collections.emptyList());
 		boolean hasClaim = false;
+		boolean hasWorkingUnit = false;
+		
 		for (FaultTreeNode spare : spares) {
 			FaultTreeNode claimingSpareGateOther = state.getMapSpareToClaimedSpares().get(spare);
 			if (claimingSpareGate != null && claimingSpareGate.equals(claimingSpareGateOther)) {
 				hasClaim = true;
-				break;
+				
+				if (!state.hasFaultTreeNodeFailed(spare)) {
+					hasWorkingUnit = true;
+				}
 			}
 		}
 		
 		if (!hasClaim) {
 			for (FaultTreeNode primary : state.getFTHolder().getMapNodeToChildren().getOrDefault(claimingSpareGate, Collections.emptyList())) {
 				state.setNodeActivation(primary, true);
+			
+				if (!state.hasFaultTreeNodeFailed(primary)) {
+					hasWorkingUnit = true;
+				}
 			}
+		}
+		
+		if (claimingSpareGate != null) {
+			state.setFaultTreeNodeFailed(claimingSpareGate, !hasWorkingUnit);
 		}
 	}
 	
@@ -136,6 +149,6 @@ public  class FreeAction extends AFreeAction {
 		if (freeSpare == null) {
 			getFreeSpareByUUID(state);
 		}
-		return Collections.singletonList(freeSpare);
+		return state.getFTHolder().getMapNodeToParents().get(freeSpare);
 	}
 }

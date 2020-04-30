@@ -9,10 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 
@@ -23,14 +22,17 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
  */
 
 public class GenerationResult {
-	private Set<DFTState> generatedStates = new HashSet<>();
+	private List<DFTState> generatedStates = new ArrayList<>();
 	private Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions;
+	private DFTState generatorState;
 	
 	/**
 	 * Standard constructor
+	 * @param generatorState the generator state
 	 * @param mapStateToRecoveryActions injected map
 	 */
-	public GenerationResult(Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions) {
+	public GenerationResult(DFTState generatorState, Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions) {
+		this.generatorState = generatorState;
 		this.mapStateToRecoveryActions = mapStateToRecoveryActions;
 	}
 
@@ -38,8 +40,16 @@ public class GenerationResult {
 	 * Gets the set of states generated during the semantical update
 	 * @return the set of newly generated states
 	 */
-	public Set<DFTState> getGeneratedStates() {
+	public List<DFTState> getGeneratedStates() {
 		return generatedStates;
+	}
+	
+	/**
+	 * Gets the generator state
+	 * @return the generator state
+	 */
+	public DFTState getGeneratorState() {
+		return generatorState;
 	}
 	
 	/**

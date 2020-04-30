@@ -120,7 +120,7 @@ public class PODFTState extends DFTState {
 	@Override
 	public boolean isEquivalent(DFTState other) {
 		PODFTState poState = (PODFTState) other;
-		if (!observedFailed.equals(poState.observedFailed)) {
+		if (!getObservedFailedNodes().equals(poState.getObservedFailedNodes())) {
 			return false;
 		}
 		

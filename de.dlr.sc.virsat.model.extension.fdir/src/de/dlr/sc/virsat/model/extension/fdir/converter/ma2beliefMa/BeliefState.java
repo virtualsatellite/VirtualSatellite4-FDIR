@@ -47,6 +47,8 @@ public class BeliefState extends MarkovState {
 		String label = index + " [label=\"[" + index + " " + beliefs + "]\"";
 		if (beliefMa.getFinalStates().contains(this)) {
 			label += ", color=\"red\"";
+		} else if (!isMarkovian()) {
+			label += ", color=\"blue\"";
 		}
 		label += "]";
 		

@@ -67,7 +67,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 		
 		if (canClaim) {
 			for (FaultTreeNode spare : spares) {
-				if (!state.hasFaultTreeNodeFailed(spare) && !state.getMapSpareToClaimedSpares().containsKey(spare)) {
+				if (!state.hasFaultTreeNodeFailed(spare)) {
 					if (performClaim(spareGate, spare, state, generationResult)) {
 						foundSpare = true;
 						break;
@@ -155,7 +155,11 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state, 
 			GenerationResult generationResult) {
-		state.getSpareClaims().put(spare, node);
+		if (state.getMapSpareToClaimedSpares().containsKey(spare)) {
+			return false;
+		}
+			
+		state.getMapSpareToClaimedSpares().put(spare, node);
 		state.setNodeActivation(spare, true);
 		return true;
 	}

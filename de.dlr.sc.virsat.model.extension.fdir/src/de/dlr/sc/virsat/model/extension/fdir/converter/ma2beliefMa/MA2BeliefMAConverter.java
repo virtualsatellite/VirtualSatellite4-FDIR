@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
@@ -62,7 +63,7 @@ public class MA2BeliefMAConverter {
 				Set<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 				
 				if (beliefState.isMarkovian()) {
-					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc);
+					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc, succTransitions);
 					double exitRate = getTotalRate(beliefState, entry.getValue());
 					boolean isFinal = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions, ma);
 					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
@@ -205,7 +206,7 @@ public class MA2BeliefMAConverter {
 		}
 		
 		for (PODFTState stateWithNoTransition : statesWithNoTransitions) {
-			if (stateWithNoTransition.getObservedFailed().equals(beliefSucc.representant.getObservedFailed())) {
+			if (stateWithNoTransition.getObservedFailedNodes().equals(beliefSucc.representant.getObservedFailedNodes())) {
 				PODFTState succState = stateWithNoTransition;
 				boolean isEquivalent = beliefSucc.representant.getMapSpareToClaimedSpares().equals(stateWithNoTransition.getMapSpareToClaimedSpares());
 				
@@ -255,7 +256,8 @@ public class MA2BeliefMAConverter {
 				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {
 					PODFTState representant = representantEntry.getKey();
 					if (representant.getObservedFailed().equals(succState.getObservedFailed()) 
-							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())) {
+							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())
+							&& representant.isMarkovian() == succState.isMarkovian()) {
 						transitions = representantEntry.getValue();
 					}
 				}
@@ -286,7 +288,7 @@ public class MA2BeliefMAConverter {
 		return getTotalRate;
 	}
 
-	private static final double EPSILON = 0.05;
+	private static final double EPSILON = 0.2;
 	
 	/**
 	 * Gets an equivalent belief state
@@ -351,13 +353,25 @@ public class MA2BeliefMAConverter {
 	/**
 	 * Extracts the set observation event containing the observed events and the information if this is a repair
 	 * event or not
+	 * @param succTransitions the successor transitions from a belief state to the successor belief state
 	 * @return the set of observation event
 	 */
-	private Entry<Set<Object>, Boolean> extractObservationEvent(BeliefState beliefState, BeliefState beliefSucc) {
+	private Entry<Set<Object>, Boolean> extractObservationEvent(BeliefState beliefState, BeliefState beliefSucc, Set<MarkovTransition<DFTState>> succTransitions) {
+		Set<Object> observationSet = new HashSet<>();
+		
+		MarkovTransition<DFTState> representantTransition = succTransitions.iterator().next();
+		Object event = representantTransition.getEvent();
+		if (event instanceof ObservationEvent) {
+			ObservationEvent obsEvent = (ObservationEvent) event;
+			observationSet.add(obsEvent.getNode());
+			Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, obsEvent.getIsRepair());
+			return observationEvent;
+		}
+		
 		// obtain all newly observed failed nodes
 		Set<FaultTreeNode> succObservedFailedNodes = beliefSucc.representant.getObservedFailedNodes();
 		Set<FaultTreeNode> currentObservedFailedNodes = beliefState.representant.getObservedFailedNodes();
-		Set<Object> observationSet = new HashSet<>(succObservedFailedNodes);
+		observationSet.addAll(succObservedFailedNodes);
 		observationSet.removeAll(currentObservedFailedNodes);
 		
 		// obtain all newly observed repaired nodes in the event that no failures were observed

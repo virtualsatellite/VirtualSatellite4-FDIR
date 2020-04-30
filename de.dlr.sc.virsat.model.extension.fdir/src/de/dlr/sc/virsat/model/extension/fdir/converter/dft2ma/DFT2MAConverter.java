@@ -23,6 +23,7 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
@@ -221,80 +222,96 @@ public class DFT2MAConverter {
 					}
 				}
 				
-				Double rate = event.getRate(state) * multiplier;
-				
-				DFTStateUpdateResult updateResult = updateState(state, event);
-				DFTState baseSucc = updateResult.baseSucc;
-				List<DFTState> succs = updateResult.succs;
-				List<FaultTreeNode> changedNodes = updateResult.changedNodes;
-				
-				statistics.countGeneratedStates += succs.size();
-				
-				DFTState markovSucc = null;
-				if (recoveryStrategy != null) {
-					Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(baseSucc, event, changedNodes);
-					RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
-					
-					if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
-						baseSucc = recoveryStrategy.execute(state);
-						event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
-						
-						succs.clear();
-						succs.add(baseSucc);
-						
-						changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(state, succs, updateResult.mapStateToRecoveryActions, event);
-						
-						statistics.countGeneratedStates += succs.size();
-					} else {
-						baseSucc.setRecoveryStrategy(recoveryStrategy);
-					}
-				} else if (succs.size() > 1) { 
-					baseSucc = baseSucc.copy();
-					baseSucc.setMarkovian(false);
-					
-					markovSucc = getEquivalentState(baseSucc);
-					if (markovSucc == baseSucc) {
-						ma.addState(markovSucc);	
-					} else {
-						succs.clear();
-					}
-					ma.addMarkovianTransition(event, state, markovSucc, rate);
-				}
-					
-				for (DFTState succ : succs) {
-					succ.setMarkovian(true);
-					
-					if (allowsDontCareFailing) {
-						succ.failDontCares(changedNodes, orderDependentBasicEvents);
-					}
-					
-					checkFailState(succ);
-					DFTState equivalentState = getEquivalentState(succ);
-					
-					if (equivalentState == succ) {
-						if (symmetryChecker != null) {
-							if (event instanceof FaultEvent) {
-								succ.createSymmetryRequirements(state, (BasicEvent) event.getNode(), symmetryReduction);
-							}
-						}
-						
-						ma.addState(succ);
-						toProcess.offer(succ);
-						
-						if (succ.isFailState) {
-							ma.getFinalStates().add(succ);
-						}
-					}
-					
-					if (markovSucc != null) {
-						List<RecoveryAction> actions = updateResult.mapStateToRecoveryActions.get(succ);
-						ma.addNondeterministicTransition(actions, markovSucc, equivalentState);	
-					} else {
-						ma.addMarkovianTransition(event, state, equivalentState, rate);
-					}
-				}
+				List<DFTState> newSuccs = generateSuccessors(state, event, multiplier);
+				toProcess.addAll(newSuccs);
 			}
 		}
+	}
+	
+	/**
+	 * Generate the successor states when a event occurs in a state
+	 * @param state the current state
+	 * @param event the occurred event
+	 * @param multiplier a rate multiplier for the event
+	 * @return all newly generated successor states
+	 */
+	private List<DFTState> generateSuccessors(DFTState state, IDFTEvent event, int multiplier) {
+		Double rate = event.getRate(state) * multiplier;
+		
+		DFTStateUpdateResult updateResult = updateState(state, event);
+		DFTState baseSucc = updateResult.baseSucc;
+		List<DFTState> succs = updateResult.succs;
+		List<FaultTreeNode> changedNodes = updateResult.changedNodes;
+		
+		statistics.countGeneratedStates += succs.size();
+		
+		DFTState markovSucc = null;
+		if (recoveryStrategy != null) {
+			Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(baseSucc, event, changedNodes);
+			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
+			
+			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
+				baseSucc = state.copy();
+				event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
+				recoveryStrategy.execute(baseSucc);
+				
+				succs.clear();
+				succs.add(baseSucc);
+				
+				changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(state, succs, updateResult.mapStateToRecoveryActions, event);
+				
+				statistics.countGeneratedStates += succs.size();
+			} else {
+				baseSucc.setRecoveryStrategy(recoveryStrategy);
+			}
+		} else if (succs.size() > 1 || event instanceof ObservationEvent) { 
+			baseSucc = baseSucc.copy();
+			baseSucc.setMarkovian(false);
+			
+			markovSucc = getEquivalentState(baseSucc);
+			if (markovSucc == baseSucc) {
+				ma.addState(markovSucc);	
+			} else {
+				succs.clear();
+			}
+			ma.addMarkovianTransition(event, state, markovSucc, rate);
+		}
+		
+		List<DFTState> newSuccs = new ArrayList<>();
+		for (DFTState succ : succs) {
+			succ.setMarkovian(true);
+			
+			if (allowsDontCareFailing) {
+				succ.failDontCares(changedNodes, orderDependentBasicEvents);
+			}
+			
+			checkFailState(succ);
+			DFTState equivalentState = getEquivalentState(succ);
+			
+			if (equivalentState == succ) {
+				if (symmetryChecker != null) {
+					if (event instanceof FaultEvent) {
+						succ.createSymmetryRequirements(state, (BasicEvent) event.getNode(), symmetryReduction);
+					}
+				}
+				
+				ma.addState(succ);
+				newSuccs.add(succ);
+				
+				if (succ.isFailState) {
+					ma.getFinalStates().add(succ);
+				}
+			}
+			
+			if (markovSucc != null) {
+				List<RecoveryAction> actions = updateResult.mapStateToRecoveryActions.get(succ);
+				ma.addNondeterministicTransition(actions, markovSucc, equivalentState);	
+			} else {
+				ma.addMarkovianTransition(event, state, equivalentState, rate);
+			}
+		}
+		
+		return newSuccs;
 	}
 
 	/**
@@ -356,6 +373,7 @@ public class DFT2MAConverter {
 		DFTStateUpdateResult updateResult = new DFTStateUpdateResult();
 		
 		updateResult.baseSucc = state.copy();
+		updateResult.baseSucc.setIndex(ma.getStates().size());
 		updateResult.baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
 		event.execute(updateResult.baseSucc, orderDependentBasicEvents, transientNodes);
 		
@@ -374,11 +392,25 @@ public class DFT2MAConverter {
 	 */
 	private List<IDFTEvent> getOccurableEvents(DFTState state) {
 		List<IDFTEvent> occurableEvents = new ArrayList<>();
+		boolean onlyFailureEvents = true;
 		for (IDFTEvent event : events) {
 			if (event.canOccur(state)) {
 				occurableEvents.add(event);
 			}
+			
+			if (event instanceof FaultEvent) {
+				if (((FaultEvent) event).isRepair()) {
+					onlyFailureEvents = false;
+				}
+			} else if (event instanceof ObservationEvent) {
+				onlyFailureEvents = false;
+			}
 		}
+		
+		if (state.isFailState && onlyFailureEvents) {
+			return Collections.emptyList();
+		}
+		
 		return occurableEvents;
 	}
 	

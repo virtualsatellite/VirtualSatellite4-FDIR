@@ -132,8 +132,13 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			} else if (ma.getFinalStates().contains(state)) {
 				// To differentiate between fail states we also compute their MTTF
 				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
+				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
-					value += probabilityDistribution[transition.getTo().getIndex()] / transition.getRate();
+					MarkovState toState = transition.getTo();
+					if (!ma.getFinalStates().contains(toState)) {
+						double toValue = probabilityDistribution[toState.getIndex()];
+						value += toValue * transition.getRate() / exitRate;
+					}
 				}
 			}
 			resultMap.put(state, value);
@@ -160,11 +165,26 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double expectationValue = 0;
 			double transitionGroupProbFail = 0;
 			
+			boolean hasOnlyFailSuccessors = true;
 			for (MarkovTransition<S> transition : transitionGroup) {
-				if (ma.getFinalStates().contains(transition.getTo())) {
-					transitionGroupProbFail += transition.getRate();
+				if (!ma.getFinalStates().contains(transition.getTo())) {
+					hasOnlyFailSuccessors = false;
+					break;
 				}
-				expectationValue += transition.getRate() * results.get(transition.getTo());
+			}
+			
+			for (MarkovTransition<S> transition : transitionGroup) {
+				double prob = transition.getRate();
+				MarkovState toState = transition.getTo();
+				boolean isFailSuccessor = ma.getFinalStates().contains(toState);
+				if (isFailSuccessor) {
+					transitionGroupProbFail += prob;
+				} 
+				
+				if (!isFailSuccessor || hasOnlyFailSuccessors) {
+					double toValue = results.get(toState);
+					expectationValue += prob * toValue;
+				}
 			}
 			
 			if ((transitionGroupProbFail < bestTransitionProbFail)

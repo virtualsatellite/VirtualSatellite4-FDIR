@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -100,10 +101,14 @@ public  class ClaimAction extends AClaimAction {
 			spareGate = getSpareGateByUUID(state);
 		}
 		
-		state.getSpareClaims().put(claimSpare, spareGate);
+		state.getMapSpareToClaimedSpares().put(claimSpare, spareGate);
 		state.setNodeActivation(claimSpare, true);
 		for (FaultTreeNode primary : state.getFTHolder().getMapNodeToChildren().getOrDefault(spareGate, Collections.emptyList())) {
 			state.setNodeActivation(primary, false);
+		}
+		
+		if (!state.hasFaultTreeNodeFailed(claimSpare)) {
+			state.setFaultTreeNodeFailed(spareGate, false);
 		}
 	}
 	
@@ -154,6 +159,6 @@ public  class ClaimAction extends AClaimAction {
 			spareGate = getSpareGateByUUID(state);
 		}
 		
-		return Collections.singletonList(spareGate);
+		return Arrays.asList(spareGate);
 	}
 }

@@ -72,6 +72,14 @@ public class ObservationEvent implements IDFTEvent {
 	public FaultTreeNode getNode() {
 		return node;
 	}
+	
+	/**
+	 * Is the observation a repair or a fail observation?
+	 * @return observation kind
+	 */
+	public boolean getIsRepair() {
+		return isRepair;
+	}
 
 	@Override
 	public boolean canOccur(DFTState state) {
@@ -82,7 +90,7 @@ public class ObservationEvent implements IDFTEvent {
 					return false;
 				}
 			} else {
-				if (!state.hasFaultTreeNodeFailed(node) || poState.isNodeFailObserved(node))  {
+				if (!state.hasFaultTreeNodeFailed(node)) {
 					return false;
 				}
 			}

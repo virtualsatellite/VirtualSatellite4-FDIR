@@ -31,7 +31,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -101,24 +100,19 @@ public class PONDDFTSemantics extends DFTSemantics {
 			for (DFTState state : succs) {
 				PODFTState poState = (PODFTState) state;
 				boolean observedNodeFail = state.hasFaultTreeNodeFailed(observedNode);
-				poState.setNodeFailObserved(observedNode, observedNodeFail);
-				for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(observedNode)) {
-					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
-				}
-				
-				if (hasRecoveryStrategy) {
-					RecoveryStrategy strategy = succs.get(0).getRecoveryStrategy();
-					Queue<FaultTreeNode> worklist = new LinkedList<>();
-					for (RecoveryAction recoveryAction : strategy.getRecoveryActions()) {
-						worklist.addAll(recoveryAction.getAffectedNodes(poState));
+				boolean failNodeObserved = poState.isNodeFailObserved(observedNode);
+				if (failNodeObserved == observedNodeFail) {
+					for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(observedNode)) {
+						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 					}
-					
-					changedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, worklist);
 				}
 			}
-		} else {
+		} 
+		
+		if (!anyObservation || hasRecoveryStrategy) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
 			changedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, event);
+			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
 		for (DFTState state : succs) {
@@ -145,7 +139,6 @@ public class PONDDFTSemantics extends DFTSemantics {
 				}
 			}
 			
-			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 			Queue<FaultTreeNode> spareGates = new LinkedList<>(spareGatesToCheck);
 			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, spareGates);
 			
@@ -159,9 +152,6 @@ public class PONDDFTSemantics extends DFTSemantics {
 				}
 			}
 		}
-
-		DFTState baseSucc = succs.remove(0);
-		succs.add(baseSucc);
 		
 		return changedNodes;
 	}
