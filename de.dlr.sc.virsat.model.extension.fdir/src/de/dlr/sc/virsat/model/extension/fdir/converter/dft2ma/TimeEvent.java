@@ -9,9 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
-import java.util.Set;
-
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
@@ -48,8 +45,7 @@ public class TimeEvent implements IDFTEvent {
 	}
 
 	@Override
-	public void execute(DFTState state, Set<BasicEvent> orderDependentBasicEvents,
-			Set<FaultTreeNode> transientNodes) {
+	public void execute(DFTState state, DFTStaticAnalysis staticAnalysis) {
 		state.setRecoveryStrategy(state.getRecoveryStrategy().onTime(time));
 	}
 

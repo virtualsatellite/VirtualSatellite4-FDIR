@@ -23,10 +23,10 @@ public class StateUpdate {
 	private IDFTEvent event;
 	private double rate;
 	
-	public StateUpdate(DFTState state, IDFTEvent event, int multiplier) {
+	public StateUpdate(DFTState state, IDFTEvent event, int symmetryMultiplier) {
 		this.state = state;
 		this.event = event;
-		this.rate = event.getRate(state) * multiplier;
+		this.rate = event.getRate(state) * symmetryMultiplier;
 	}
 	
 	public DFTState getState() {

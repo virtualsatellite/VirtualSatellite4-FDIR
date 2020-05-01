@@ -26,7 +26,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -52,7 +52,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
 	private Modularizer modularizer;
-	private FaultTreeSymmetryChecker symmetryChecker;
+	private DFTSymmetryChecker symmetryChecker;
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
 	private DFTEvaluationStatistics statistics;
 	
@@ -188,15 +188,15 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
 		
 		if (dft2MAConverter.getDftSemantics() == poSemantics) {
-			dft2MAConverter.setSymmetryChecker(null);
+			dft2MAConverter.getStaticAnalysis().setSymmetryChecker(null);
 			dft2MAConverter.setAllowsDontCareFailing(false);
 		} else {
-			dft2MAConverter.setSymmetryChecker(new FaultTreeSymmetryChecker());
+			dft2MAConverter.getStaticAnalysis().setSymmetryChecker(new DFTSymmetryChecker());
 			dft2MAConverter.setAllowsDontCareFailing(true);
 		}
 		
 		if (failableBasicEventsProvider != null) {
-			dft2MAConverter.setSymmetryChecker(null);
+			dft2MAConverter.getStaticAnalysis().setSymmetryChecker(null);
 		}
 	}
 	
@@ -272,7 +272,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * Configures the symmetry checker
 	 * @param symmetryChecker the symmetry checker
 	 */
-	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
+	public void setSymmetryChecker(DFTSymmetryChecker symmetryChecker) {
 		this.symmetryChecker = symmetryChecker;
 	}
 }

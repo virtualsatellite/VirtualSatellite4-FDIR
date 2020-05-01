@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -30,7 +29,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSem
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -44,8 +42,9 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  */
 
 public class DFT2MAConverter {
-	private DFTSemantics dftSemantics = DFTSemantics.createNDDFTSemantics();
-	private FaultTreeSymmetryChecker symmetryChecker = new FaultTreeSymmetryChecker();
+	private DFTSemantics semantics = DFTSemantics.createNDDFTSemantics();
+	private DFTStaticAnalysis staticAnalysis = new DFTStaticAnalysis();
+	
 	private FailLabelProvider failLabelProvider;
 	private FailableBasicEventsProvider failableBasicEventsProvider;
 	
@@ -57,12 +56,8 @@ public class DFT2MAConverter {
 	private DFTState initial;
 
 	private Collection<IDFTEvent> events;
-	private Set<FaultTreeNode> transientNodes;
-	private Set<BasicEvent> orderDependentBasicEvents;
 	private FaultTreeHolder ftHolder;
 	private RecoveryStrategy recoveryStrategy;
-	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
-	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted;
 	private DFTStateEquivalence stateEquivalence;
 	private DFT2MAConversionStatistics statistics = new DFT2MAConversionStatistics();
 	
@@ -81,7 +76,6 @@ public class DFT2MAConverter {
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
 		
 		init();
-		staticAnalysis();
 		buildMA();
 		
 		statistics.maxStates = ma.getStates().size();
@@ -105,14 +99,29 @@ public class DFT2MAConverter {
 	 */
 	private void init() {
 		stateEquivalence = new DFTStateEquivalence();
-		orderDependentBasicEvents = new HashSet<>();
-		transientNodes = new HashSet<>();
 		
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
 		ftHolder = new FaultTreeHolder(holderRoot);
+		events = createEvents();
+
+		staticAnalysis.perform(ftHolder);
 		
-		events = dftSemantics.createEvents(ftHolder);
-		
+		if (recoveryStrategy != null) {
+			events.addAll(recoveryStrategy.createEventSet());
+			INodeSemantics spareSemantics = semantics.getMapTypeToSemantics().get(FaultTreeNodeType.SPARE);
+			if (spareSemantics instanceof NDSPARESemantics) {
+				((NDSPARESemantics) spareSemantics).setPropagateWithoutActions(true);
+			}
+		}
+	}
+	
+	/**
+	 * Creates the event list using the semantics class
+	 * Filters events out that cannot occur due to additional settings such as the failable basic events provider
+	 * @return
+	 */
+	private List<IDFTEvent> createEvents() {
+		List<IDFTEvent> events = semantics.createEvents(ftHolder);
 		Set<IDFTEvent> unoccurableEvents = new HashSet<>();
 		for (IDFTEvent event : events) {
 			if (event.getNode() instanceof BasicEvent && failableBasicEventsProvider != null) {
@@ -124,72 +133,7 @@ public class DFT2MAConverter {
 		}
 		events.removeAll(unoccurableEvents);
 		
-		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
-			if (be.isSetRepairRate() && be.getRepairRate() > 0) {
-				transientNodes.add(be);			
-			}
-		}
-		
-		if (recoveryStrategy != null) {
-			events.addAll(recoveryStrategy.createEventSet());
-			INodeSemantics spareSemantics = dftSemantics.getMapTypeToSemantics().get(FaultTreeNodeType.SPARE);
-			if (spareSemantics instanceof NDSPARESemantics) {
-				((NDSPARESemantics) spareSemantics).setPropagateWithoutActions(true);
-			}
-		}
-	}
-	
-	/**
-	 * Perform a static analysis to obtain useful information for improving runtime performance
-	 */
-	private void staticAnalysis() {
-		for (IDFTEvent event : events) {
-			if (event instanceof FaultEvent) {
-				FaultEvent faultEvent = (FaultEvent) event;
-				if (!faultEvent.isRepair()) {
-					if (isOrderDependent(event)) {
-						orderDependentBasicEvents.add((BasicEvent) faultEvent.getNode());
-					}
-				}
-			}
-		}
-		
-		if (symmetryChecker != null) {
-			symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-			symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
-		}
-	}
-	
-	/**
-	 * Checks if a failure mode event does not have a semantically different effect
-	 * if it appears in a different order. E.g. it may not be used in a PAND gate.
-	 * @param event the fault event to check
-	 * @return true iff the failure mode is order dependent
-	 */
-	private boolean isOrderDependent(IDFTEvent event) {
-		Fault fault = event.getNode().getFault();
-		
-		Queue<FaultTreeNode> toProcess = new LinkedList<>();
-		toProcess.add(fault);
-		Set<FaultTreeNode> processed = new HashSet<>();
-		
-		while (!toProcess.isEmpty()) {
-			FaultTreeNode node = toProcess.poll();
-			
-			if (!processed.add(node)) {
-				continue;
-			}
-			
-			FaultTreeNodeType type = node.getFaultTreeNodeType();
-			if (type == FaultTreeNodeType.POR) {
-				return true;
-			}
-			
-			List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().getOrDefault(node, Collections.emptyList());
-			toProcess.addAll(parents);
-		}
-		
-		return false;
+		return events;
 	}
 	
 	/**
@@ -235,15 +179,15 @@ public class DFT2MAConverter {
 			// for this we extract the input from the previous update and then repeat the update with the
 			// determined recovery actions
 			
-			Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
+			Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
 			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
 				baseSucc = stateUpdateResult.reset(state);
-				event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
+				event.execute(baseSucc, staticAnalysis);
 				recoveryStrategy.execute(baseSucc);
 				
-				dftSemantics.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
+				semantics.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
 				
 				statistics.countGeneratedStates += succs.size();
 			} else {
@@ -289,16 +233,16 @@ public class DFT2MAConverter {
 			succ.setMarkovian(true);
 			
 			if (allowsDontCareFailing) {
-				succ.failDontCares(stateUpdateResult.getChangedNodes(), orderDependentBasicEvents);
+				succ.failDontCares(stateUpdateResult.getChangedNodes(), staticAnalysis);
 			}
 			
 			checkFailState(succ);
 			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
 			
 			if (equivalentState == succ) {
-				if (symmetryChecker != null) {
+				if (staticAnalysis.getSymmetryChecker() != null) {
 					if (stateUpdate.getEvent() instanceof FaultEvent) {
-						succ.createSymmetryRequirements(stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode(), symmetryReduction);
+						succ.createSymmetryRequirements(stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode(), staticAnalysis.getSymmetryReduction());
 					}
 				}
 				
@@ -325,7 +269,7 @@ public class DFT2MAConverter {
 	 * Creates and initializes the initial state of the Markov Automaton
 	 */
 	private void createInitialState() {
-		initial = dftSemantics.generateState(ftHolder);
+		initial = semantics.generateState(ftHolder);
 		stateEquivalence.addState(initial);
 		initial.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
@@ -341,7 +285,7 @@ public class DFT2MAConverter {
 	 */
 	private List<DFTState> updateInitial() {
 		List<DFTState> initialStates = new ArrayList<>();
-		List<IDFTEvent> initialEvents = dftSemantics.getInitialEvents(ftHolder);
+		List<IDFTEvent> initialEvents = semantics.getInitialEvents(ftHolder);
 		
 		for (IDFTEvent event : initialEvents) {
 			StateUpdate initialStateUpdate = new StateUpdate(initial, event, 1);
@@ -371,9 +315,9 @@ public class DFT2MAConverter {
 	private StateUpdateResult performUpdate(StateUpdate stateUpdate) {
 		StateUpdateResult stateUpdateResult = new StateUpdateResult(stateUpdate);
 
-		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc(), orderDependentBasicEvents, transientNodes);
+		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc(), staticAnalysis);
 		
-		dftSemantics.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
+		semantics.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
 		
 		statistics.countGeneratedStates += stateUpdateResult.getSuccs().size();
 		
@@ -409,20 +353,11 @@ public class DFT2MAConverter {
 	private List<StateUpdate> getStateUpdates(DFTState state, List<IDFTEvent> occurableEvents) {
 		List<StateUpdate> stateUpdates = new ArrayList<>();
 		for (IDFTEvent event : occurableEvents) {
-			int multiplier = 1;
-			
-			// Very simple symmetry reduction to get started
-			if (symmetryChecker != null) {
-				int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
-				if (countBiggerSymmetricEvents == -1) {
-					continue;
-				} else {
-					multiplier += countBiggerSymmetricEvents;
-				}
+			int symmetryMultiplier = staticAnalysis.getSymmetryMultiplier(event, state);
+			if (symmetryMultiplier != DFTStaticAnalysis.SKIP_EVENT) {
+				StateUpdate stateUpdate = new StateUpdate(state, event, symmetryMultiplier);
+				stateUpdates.add(stateUpdate);
 			}
-			
-			StateUpdate stateUpdate = new StateUpdate(state, event, multiplier);
-			stateUpdates.add(stateUpdate);
 		}
 		
 		return stateUpdates;
@@ -463,58 +398,6 @@ public class DFT2MAConverter {
 		
 		state.setFailState(true);
 	}
-	
-	/**
-	 * Computes the number of events symmetric to the passed one
-	 * @param event the event
-	 * @param state the current state
-	 * @return -1 if there exists a smaller symmetric event, otherwise the number of bigger symmetric events
-	 */
-	private int countBiggerSymmetricEvents(IDFTEvent event, DFTState state) {
-		int symmetryMultiplier = 0;
-		
-		if (event instanceof FaultEvent) {
-			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
-			
-			boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
-			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.getOrDefault(event.getNode(), Collections.emptySet()))) {
-				return -1;
-			}
-			
-			List<FaultTreeNode> symmetricNodes = symmetryReduction.getOrDefault(event.getNode(), Collections.emptyList());
-			for (FaultTreeNode node : symmetricNodes) {
-				if (!failedBasicEvents.contains(node)) {
-					if (isSymmetryReductionApplicable(state, node)) {
-						symmetryMultiplier++;
-					}
-				}
-			}
-		}
-		
-		return symmetryMultiplier;
-	}
-	
-	/**
-	 * Checks if symmetry reduction is applicable for a given node
-	 * @param state the current state
-	 * @param node the node
-	 * @return true iff symmetry reduction is applicable
-	 */
-	private boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
-		Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements = state.getMapParentToSymmetryRequirements();
-		
-		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(node);
-		for (FaultTreeNode parent : allParents) {
-			Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.getOrDefault(parent, Collections.emptySet());
-			for (FaultTreeNode symmetryRequirement : symmetryRequirements) {
-				if (!state.hasFaultTreeNodeFailed(symmetryRequirement)) {
-					return false;
-				}
-			}
-		}
-		
-		return true;
-	}
 
 	/**
 	 * Get the initial state of the markov automaton
@@ -529,7 +412,7 @@ public class DFT2MAConverter {
 	 * @param dftSemantics the node semantics of the dft nodes
 	 */
 	public void setSemantics(DFTSemantics dftSemantics) {
-		this.dftSemantics = dftSemantics;
+		this.semantics = dftSemantics;
 	}
 	
 	/**
@@ -541,13 +424,13 @@ public class DFT2MAConverter {
 	}
 	
 	/**
-	 * Configures the symmetry checker
-	 * @param symmetryChecker the symmetry checker
+	 * Gets the static analysis setup
+	 * @return the static analysis setup
 	 */
-	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
-		this.symmetryChecker = symmetryChecker;
+	public DFTStaticAnalysis getStaticAnalysis() {
+		return staticAnalysis;
 	}
-	
+
 	/**
 	 * Configugres the propertey whether dont care failing is allowed
 	 * @param allowsDontCareFailing set to true to enable dont care failing of states
@@ -569,6 +452,6 @@ public class DFT2MAConverter {
 	 * @return the internal semantics object
 	 */
 	public DFTSemantics getDftSemantics() {
-		return dftSemantics;
+		return semantics;
 	}
 }

@@ -337,9 +337,9 @@ public class DFTState extends MarkovState {
 	 * Makes a DFT state uniform by failing all basic events and nodes about we
 	 * dont care what exact state we have
 	 * @param changedNodes the nodes that have changed in this dft state
-	 * @param orderDependentBasicEvents set of basic events that are dependent
+	 * @param staticAnalysis static anaylsis data
 	 */
-	public void failDontCares(List<FaultTreeNode> changedNodes, Set<BasicEvent> orderDependentBasicEvents) {
+	public void failDontCares(List<FaultTreeNode> changedNodes, DFTStaticAnalysis staticAnalysis) {
 		Stack<FaultTreeNode> toProcess = new Stack<>();
 		toProcess.addAll(changedNodes);
 		
@@ -384,7 +384,7 @@ public class DFTState extends MarkovState {
 					int beID = ftHolder.getNodeIndex(be);
 					failedNodes.set(beID);
 					permanentNodes.set(beID);
-					if (orderDependentBasicEvents.contains(be)) {
+					if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
 						if (!orderedBes.contains(be)) {
 							orderedBes.add((BasicEvent) be);
 						}
@@ -576,7 +576,6 @@ public class DFTState extends MarkovState {
 		
 		return false;
 	}
-	
 	
 	/**
 	 * Creates the symmetry requirements for this state

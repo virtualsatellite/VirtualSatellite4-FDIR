@@ -28,7 +28,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -954,7 +954,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		};
 		final double EXPECTEDMTTF = 0.38349296618324985;
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
-		dftEvaluator.setSymmetryChecker(new FaultTreeSymmetryChecker());
+		dftEvaluator.setSymmetryChecker(new DFTSymmetryChecker());
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);

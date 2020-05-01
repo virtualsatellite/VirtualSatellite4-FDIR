@@ -31,7 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  *
  */
 
-public class FaultTreeSymmetryChecker {
+public class DFTSymmetryChecker {
 	
 	/**
 	 * Enum for different type of edges
