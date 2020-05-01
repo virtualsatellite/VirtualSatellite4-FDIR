@@ -20,7 +20,6 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 public abstract class MatrixIterator implements IMatrixIterator {
 	protected IMatrix matrix;
 	protected double[] values;
-	protected double eps;	
 	
 	/**
 	 * MatrixIterator constructor
@@ -29,10 +28,9 @@ public abstract class MatrixIterator implements IMatrixIterator {
 	 * @param initialValues probabilityDistribution
 	 * @param eps epsilon
 	 */
-	public MatrixIterator(IMatrix matrix, double[] initialValues, double eps) {
+	public MatrixIterator(IMatrix matrix, double[] initialValues) {
 		this.matrix = matrix;
 		this.values = initialValues;
-		this.eps = eps;
 	}
 	
 	@Override

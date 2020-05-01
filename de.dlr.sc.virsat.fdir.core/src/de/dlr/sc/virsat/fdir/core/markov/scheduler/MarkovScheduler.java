@@ -10,7 +10,6 @@
 
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +24,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.MatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -36,6 +35,8 @@ import de.dlr.sc.virsat.fdir.core.matrix.iterator.MatrixIterator;
 
 public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<S> {
 
+	public static final double EPS = 0.0000000001;
+	
 	@Override
 	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
 		Map<S, Double> results = computeValues(ma, initialMa);
@@ -82,51 +83,37 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return a mapping from state to its utility value
 	 */
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
-		boolean converged = false;
-		final double EPS = 0.0000000001;
+		IMatrixIterator valueIterator = createValueIterator(ma);
 		
-		List<S> nondeterministicStates = new ArrayList<S>();
-		
-		MatrixFactory matrixFactory = new MatrixFactory();
-		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
-		
-		double[] probabilityDistribution = BellmanMatrix.getInitialMTTFVector(ma);		
-		MatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, EPS);		
-		
-		for (S state : ma.getStates()) {
-			if (!state.isMarkovian()) {
-				nondeterministicStates.add(state);
-			}
-		}
-		
+		boolean converged = false;		
 		while (!converged) {
-			mxIterator.iterate();
-			for (S nondeterministicState : nondeterministicStates) {
-				double maxValue = Double.NEGATIVE_INFINITY;
-				
-				Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(nondeterministicState);
-				for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
-					double expectationValue = 0;
-					for (MarkovTransition<S> transition : transitionGroup) {
-						double succValue = probabilityDistribution[transition.getTo().getIndex()];
-						expectationValue += transition.getRate() * succValue;
-					}					
-					maxValue = Math.max(expectationValue, maxValue);
-				}
-				
-				probabilityDistribution[nondeterministicState.getIndex()] = maxValue;
-			}
+			valueIterator.iterate();
 			
-			double change = mxIterator.getChange();
+			double change = valueIterator.getChange();
 			if (change < EPS || Double.isNaN(change)) {
 				converged = true;
 			}
 		}
 		
-		probabilityDistribution = mxIterator.getValues();
-		Map<S, Double> resultMap = createResultMap(ma, probabilityDistribution);
+		double[] values = valueIterator.getValues();
+		Map<S, Double> resultMap = createResultMap(ma, values);
 		
 		return resultMap;
+	}
+	
+	/**
+	 * Creates the value iterator for the markov automaton
+	 * @param ma the markov automaton
+	 * @return the value iterator
+	 */
+	private IMatrixIterator createValueIterator(MarkovAutomaton<S> ma) {
+		MatrixFactory matrixFactory = new MatrixFactory();
+		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
+		
+		double[] values = BellmanMatrix.getInitialMTTFVector(ma);
+		IMatrixIterator bellmanIterator = bellmanMatrix.getIterator(values, EPS);		
+		MarkovAutomatonValueIterator<S> valueIterator = new MarkovAutomatonValueIterator<S>(bellmanIterator, ma);
+		return valueIterator;
 	}
 	
 	/**

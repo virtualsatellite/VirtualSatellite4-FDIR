@@ -9,9 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -29,6 +30,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 public class MarkovAutomatonValueIterator<S extends MarkovState> extends DecoratedIterator {
 	
 	private Map<S, Map<Object, Set<MarkovTransition<S>>>> mapNondetStateToTransitionGroups;
+	private List<S> nondeterministicStates;
 	
 	/**
 	 * Standard constructor
@@ -38,6 +40,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma) {
 		super(deterministicIterator);
 		
+		nondeterministicStates = new ArrayList<>();
 		mapNondetStateToTransitionGroups = new HashMap<>();
 		for (S state : ma.getStates()) {
 			if (!state.isMarkovian()) {
@@ -50,11 +53,9 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	@Override
 	public void iterate() {
 		super.iterate();
-		for (Entry<S, Map<Object, Set<MarkovTransition<S>>>> entry : mapNondetStateToTransitionGroups.entrySet()) {
+		for (S nondeterministicState : nondeterministicStates) {
 			double maxValue = Double.NEGATIVE_INFINITY;
-			
-			S nondeterministicState = entry.getKey();
-			Map<Object, Set<MarkovTransition<S>>> transitionGroups = entry.getValue();
+			Map<Object, Set<MarkovTransition<S>>> transitionGroups = mapNondetStateToTransitionGroups.get(nondeterministicState);
 			
 			for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
 				double expectationValue = 0;
@@ -67,6 +68,5 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 			
 			getValues()[nondeterministicState.getIndex()] = maxValue;
 		}
-		
 	}
 }

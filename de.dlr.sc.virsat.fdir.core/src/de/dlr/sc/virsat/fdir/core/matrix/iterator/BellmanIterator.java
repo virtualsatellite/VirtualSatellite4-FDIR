@@ -18,8 +18,8 @@ public class BellmanIterator extends MatrixIterator {
 	private double[] result;
 	private double[] oldValues;
 
-	public BellmanIterator(IMatrix matrix, double[] initialValues, double eps) {
-		super(matrix, initialValues, eps);
+	public BellmanIterator(IMatrix matrix, double[] initialValues) {
+		super(matrix, initialValues);
 		baseMTTFs = initialValues.clone();
 		result = new double[initialValues.length];
 	}

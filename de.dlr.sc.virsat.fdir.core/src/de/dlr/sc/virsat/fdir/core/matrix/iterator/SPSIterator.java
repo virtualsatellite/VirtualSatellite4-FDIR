@@ -36,8 +36,7 @@ public class SPSIterator extends MatrixIterator {
 	private double[] vsum;
 	
 	private int taylorTrim;
-	
-	private IMatrix uniformMatrix;
+	protected double eps;
 	
 	/**
 	 * Implementation of a MatrixIterator using custom sparse matrices
@@ -47,13 +46,13 @@ public class SPSIterator extends MatrixIterator {
 	 * @param eps epsilon
 	 */
 	public SPSIterator(IMatrix tmTerminal, double[] probabilityDistribution, double eps) {
-		super(tmTerminal, probabilityDistribution, eps);		
+		super(tmTerminal, probabilityDistribution);		
 		this.maxEntry = initMaxEntry();
 		this.vsum = probabilityDistribution;
 		this.vpro = new double[probabilityDistribution.length];
 		this.vprotmp = new double[probabilityDistribution.length];
-		
-		initUniformMatrix();
+		this.matrix = initUniformMatrix();
+		this.eps = eps;
 		taylorTrim = findTaylorTrim();
 	}
 	
@@ -90,7 +89,7 @@ public class SPSIterator extends MatrixIterator {
 		}
 		
 		for (int j = 1; j <= taylorTrim; j++) {
-			uniformMatrix.multiply(vpro, vprotmp);
+			matrix.multiply(vpro, vprotmp);
 			
 			double[] tmp = vpro;
 			vpro = vprotmp;
@@ -133,15 +132,17 @@ public class SPSIterator extends MatrixIterator {
 	
 	/**
 	 * Initializes the Uniform Matrix
+	 * @return 
 	 */
-	private void initUniformMatrix() {
-		uniformMatrix = matrix.copy();
+	private IMatrix initUniformMatrix() {
+		IMatrix uniformMatrix = matrix.copy();
 		double[] diag = uniformMatrix.getDiagonal();
 						
 		for (int i = 0; i < diag.length; i++) {
 			diag[i] += maxEntry;
 		}
 		uniformMatrix.setDiagonal(diag);
+		return uniformMatrix;
 	}
 	
 	/**
