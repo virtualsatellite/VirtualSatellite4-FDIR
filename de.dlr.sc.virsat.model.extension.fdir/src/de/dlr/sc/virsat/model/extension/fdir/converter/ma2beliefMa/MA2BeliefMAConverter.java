@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateEquivalence;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -39,6 +40,7 @@ public class MA2BeliefMAConverter {
 	
 	private MarkovAutomaton<BeliefState> beliefMa;
 	private BeliefState initialBeliefState;
+	private DFTStateEquivalence dftStateEquivalence;
 	
 	/**
 	 * Creates a belief markov automaton out of the given markov automaton
@@ -49,6 +51,10 @@ public class MA2BeliefMAConverter {
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialState) {
 		beliefMa = new MarkovAutomaton<>();
 		initialBeliefState = createInitialState(initialState);
+		dftStateEquivalence = new DFTStateEquivalence();
+		for (DFTState dftState : ma.getStates()) {
+			dftStateEquivalence.addState(dftState);
+		}
 		
 		Queue<BeliefState> toProcess = new LinkedList<>();
 		toProcess.offer(initialBeliefState);
@@ -224,9 +230,9 @@ public class MA2BeliefMAConverter {
 				boolean isEquivalent = beliefSucc.representant.getMapSpareToClaimedSpares().equals(stateWithNoTransition.getMapSpareToClaimedSpares());
 				
 				if (!isEquivalent) {
-					succState = (PODFTState) stateWithNoTransition.copy();
-					succState.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
-					succState = getEquivalentDFTState(ma, succState);
+					DFTState copy = stateWithNoTransition.copy();
+					copy.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
+					succState = (PODFTState) dftStateEquivalence.getEquivalentState(copy);
 				}
 				
 				double prob = beliefState.mapStateToBelief.get(stateWithNoTransition);
@@ -332,28 +338,6 @@ public class MA2BeliefMAConverter {
 					}
 				}
 			}
-			
-			if (isEquivalent) {
-				return other;
-			}
-		}
-		
-		return state;
-	}
-	
-	/**
-	 * Checks for already existing equivalent dft state
-	 * @param ma the markov automaton
-	 * @param state the state
-	 * @return the state or an already existing equivalent states
-	 */
-	public PODFTState getEquivalentDFTState(MarkovAutomaton<DFTState> ma, PODFTState state) {
-		for (DFTState otherDftState : ma.getStates()) {
-			PODFTState other = (PODFTState) otherDftState;
-			boolean isEquivalent = other.isMarkovian() == state.isMarkovian()
-					&& other.getObservedFailed().equals(state.getObservedFailed()) 
-					&& other.getMapSpareToClaimedSpares().equals(state.getMapSpareToClaimedSpares())
-					&& other.getFailedBasicEvents().equals(state.getFailedBasicEvents());
 			
 			if (isEquivalent) {
 				return other;
