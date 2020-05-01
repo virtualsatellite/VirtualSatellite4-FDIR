@@ -162,13 +162,7 @@ public class MA2BeliefMAConverter {
 			}
 			
 			if (prob > 0) {
-				if (!toState.isMarkovian() && toState.getFailedBasicEvents().isEmpty() && toState.getObservedFailed().isEmpty()) {
-					List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
-					toState = (PODFTState) transitions.stream()
-							.filter(t -> t.getEvent().equals(Collections.emptyList()))
-							.map(t -> t.getTo())
-							.findFirst().orElse(toState);
-				}
+				toState = getTargetState(ma, toState);
 				beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
 			}
 			
@@ -179,6 +173,24 @@ public class MA2BeliefMAConverter {
 		beliefSucc.setMarkovian(isMarkovian);
 		
 		return isFinal;
+	}
+	
+	/**
+	 * Checks the target state and updates it if necessary
+	 * @param ma the markov automaton
+	 * @param toState the current target state
+	 * @return the updated target state
+	 */
+	private PODFTState getTargetState(MarkovAutomaton<DFTState> ma, PODFTState toState) {
+		if (!toState.isMarkovian() && toState.getFailedBasicEvents().isEmpty() && toState.getObservedFailed().isEmpty()) {
+			List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
+			toState = (PODFTState) transitions.stream()
+					.filter(t -> t.getEvent().equals(Collections.emptyList()))
+					.map(t -> t.getTo())
+					.findFirst().orElse(toState);
+		}
+		
+		return toState;
 	}
 	
 	/**
