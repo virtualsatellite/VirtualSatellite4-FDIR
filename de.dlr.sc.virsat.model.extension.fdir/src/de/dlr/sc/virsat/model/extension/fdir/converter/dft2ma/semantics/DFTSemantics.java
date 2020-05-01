@@ -211,12 +211,12 @@ public class DFTSemantics {
 	 * @param changedNodes the nodes that were affected due to the event
 	 * @return the set of nodes that affect the recovery actions
 	 */
-	public Set<FaultTreeNode> extractRecoveryActionInput(DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
+	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
 		Set<FaultTreeNode> occuredBasicEvents = new HashSet<>();
-		if (event.getNode() instanceof BasicEvent) {
-			occuredBasicEvents.add(event.getNode());
+		if (stateUpdate.getEvent().getNode() instanceof BasicEvent) {
+			occuredBasicEvents.add(stateUpdate.getEvent().getNode());
 		}
-		for (FaultTreeNode node : changedNodes) {
+		for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 			if (node instanceof BasicEvent) {
 				occuredBasicEvents.add(node);
 			}

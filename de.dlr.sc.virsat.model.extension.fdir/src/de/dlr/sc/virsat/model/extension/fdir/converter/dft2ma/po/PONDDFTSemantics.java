@@ -183,23 +183,24 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public Set<FaultTreeNode> extractRecoveryActionInput(DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
-		if (!(pred instanceof PODFTState)) {
-			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + pred);
-		}
-		
+	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
 		Set<FaultTreeNode> observedNodes = new HashSet<>();
+		IDFTEvent event = stateUpdate.getEvent();
 		
 		if (event instanceof ObservationEvent) {
 			observedNodes.add(event.getNode());
 		} else {
-			PODFTState poPred = (PODFTState) pred;
+			if (!(stateUpdate.getState() instanceof PODFTState)) {
+				throw new IllegalArgumentException("Expected state of type PODFTState but got state " + stateUpdate.getState());
+			}
+			
+			PODFTState poPred = (PODFTState) stateUpdate.getState();
 			
 			if (poPred.existsNonFailedObserver(event.getNode(), false)) {
 				observedNodes.add(event.getNode());
 			}
 			
-			for (FaultTreeNode node : changedNodes) {
+			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 				if (poPred.existsNonFailedObserver(node, false)) {
 					observedNodes.add(node);
 				}

@@ -237,7 +237,7 @@ public class DFT2MAConverter {
 			// for this we extract the input from the previous update and then repeat the update with the
 			// determined recovery actions
 			
-			Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(baseSucc, event, stateUpdateResult.getChangedNodes());
+			Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
 			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
