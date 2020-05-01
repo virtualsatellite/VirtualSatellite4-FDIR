@@ -13,12 +13,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DelaySemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.FaultSemantics;
@@ -28,7 +29,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.VOTESema
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -77,38 +77,37 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(DFTState pred,
-			List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
+	public void updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+		IDFTEvent event = stateUpdate.getEvent();
 		
 		if (event.getNode() == null) {
 			// Only update if the event actually affected a node in the tree
 			// e.g. dont update when processing TimeEvents
-			return Collections.emptyList();
+			return;
 		}
 		
+		DFTState pred = stateUpdate.getState();
+		
 		FaultTreeHolder ftHolder = pred.getFTHolder();
-		List<FaultTreeNode> changedNodes = Collections.emptyList();
 		boolean hasRecoveryStrategy = hasRecoveryStrategy(pred);
-		boolean anyObservation = checkObservationEvent(event, succs);
+		boolean anyObservation = checkObservationEvent(event, stateUpdateResult.getSuccs());
 
 		if (!anyObservation || hasRecoveryStrategy) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
-			changedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, event);
+			super.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
-		anyObservation |= propagateObservations(succs, changedNodes);
+		anyObservation |= propagateObservations(stateUpdateResult);
 		
 		if (anyObservation && !hasRecoveryStrategy) {
-			Set<FaultTreeNode> spareGatesToCheck = getNondeterministicGates(ftHolder);
+			Set<FaultTreeNode> nondetGates = getNondeterministicGates(ftHolder);
 			
-			Queue<FaultTreeNode> spareGates = new LinkedList<>(spareGatesToCheck);
-			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, spareGates);
-			
-			propagateObservations(succs, repairedNodes);
+			Queue<FaultTreeNode> worklist = new LinkedList<>(nondetGates);
+			stateUpdateResult.getChangedNodes().clear();
+			super.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult, worklist);
+			propagateObservations(stateUpdateResult);
 		}
-		
-		return changedNodes;
 	}
 	
 	/**
@@ -162,10 +161,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 * @param changedNodes the set of nodes from which we want to propagate
 	 * @return true if an observation was made during the propagation
 	 */
-	private boolean propagateObservations(List<DFTState> succs, List<FaultTreeNode> changedNodes) {
+	private boolean propagateObservations(StateUpdateResult stateUpdateResult) {
 		boolean anyObservation = false;
-		for (DFTState state : succs) {
-			for (FaultTreeNode node : changedNodes) {
+		for (DFTState state : stateUpdateResult.getSuccs()) {
+			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 				PODFTState poState = (PODFTState) state;
 				boolean isObserved = poState.existsNonFailedObserver(node, false);
 				if (isObserved) {
@@ -226,6 +225,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 	
 	@Override
 	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
-		return Collections.singletonList(new ObservationEvent(ftHolder.getRoot(), true));
+		//return Collections.singletonList(new ObservationEvent(ftHolder.getRoot(), true));
+		return super.getInitialEvents(ftHolder);
 	}
 }

@@ -24,6 +24,8 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DelayEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -88,14 +90,11 @@ public class DFTSemantics {
 	 * @param event the occured event
 	 * @return the list of updated nodes
 	 */
-	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(DFTState pred, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
-		if (event.getNode() == null) {
-			return Collections.emptyList();
+	public void updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+		if (stateUpdate.getEvent().getNode() != null) {
+			Queue<FaultTreeNode> worklist = createWorklist(stateUpdate.getEvent(), stateUpdateResult.getBaseSucc());
+			updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult, worklist);
 		}
-		
-		Queue<FaultTreeNode> worklist = createWorklist(event, succs.get(0));
-		List<FaultTreeNode> changedNodes = updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, worklist);
-		return changedNodes;
 	}
 	
 	/**
@@ -133,13 +132,13 @@ public class DFTSemantics {
 	 * @param worklist the initial worklist
 	 * @return the list of updated nodes
 	 */
-	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(DFTState pred, List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, Queue<FaultTreeNode> worklist) {
+	public void updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
 		List<FaultTreeNode> changedNodes = new ArrayList<>();
-		FaultTreeHolder ftHolder = pred.getFTHolder();
+		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
 		
 		while (!worklist.isEmpty()) {
 			FaultTreeNode ftn = worklist.poll();
-			boolean hasChanged = updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, ftn);
+			boolean hasChanged = updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult, ftn);
 			
 			if (hasChanged) {
 				changedNodes.add(ftn);
@@ -152,7 +151,7 @@ public class DFTSemantics {
 			}
 		}
 		
-		return changedNodes;
+		stateUpdateResult.getChangedNodes().addAll(changedNodes);
 	}
 	
 	/**
@@ -163,18 +162,18 @@ public class DFTSemantics {
 	 * @param mapStateToRecoveryActions map from state to recovery actions needed to go to the state from the predecessor
 	 * @return true iff a change occurred in the update
 	 */
-	public boolean updateFaultTreeNodeToFailedMap(DFTState pred, List<DFTState> states, Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions, FaultTreeNode node) {
-		if (pred.isFaultTreeNodePermanent(node)) {
+	public boolean updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, FaultTreeNode node) {
+		if (stateUpdate.getState().isFaultTreeNodePermanent(node)) {
 			return false;
 		}
 		
-		GenerationResult generationResult = new GenerationResult(states.get(0), mapStateToRecoveryActions);
+		GenerationResult generationResult = new GenerationResult(stateUpdateResult.getBaseSucc(), stateUpdateResult.getMapStateToRecoveryActions());
 		boolean hasChanged = false;
-		FaultTreeHolder ftHolder = pred.getFTHolder();
+		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
 		
 		if (node instanceof BasicEvent) {
 			List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().get(node);
-			for (DFTState state : states) {
+			for (DFTState state : stateUpdateResult.getSuccs()) {
 				if (state.handleUpdateTriggers(node, depTriggers)) {
 					hasChanged = true;
 				}
@@ -189,17 +188,17 @@ public class DFTSemantics {
 		}
 		
 		List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().getOrDefault(node, Collections.emptyList());
-		for (DFTState state : states) {
-			if (state.handleUpdateTriggers(node, depTriggers)) {
+		for (DFTState succ : stateUpdateResult.getSuccs()) {
+			if (succ.handleUpdateTriggers(node, depTriggers)) {
 				hasChanged = true;
 			}
 			
-			hasChanged  |= nodeSemantics.handleUpdate(node, state, pred, generationResult);
+			hasChanged  |= nodeSemantics.handleUpdate(node, succ, stateUpdate.getState(), generationResult);
 		}
 		
 		if (!generationResult.getGeneratedStates().isEmpty()) {
 			hasChanged = true;
-			states.addAll(generationResult.getGeneratedStates());
+			stateUpdateResult.getSuccs().addAll(generationResult.getGeneratedStates());
 		}
 		
 		return hasChanged;

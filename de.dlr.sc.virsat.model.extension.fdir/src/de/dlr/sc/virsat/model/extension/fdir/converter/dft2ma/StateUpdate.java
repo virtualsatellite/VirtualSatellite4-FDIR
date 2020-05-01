@@ -41,16 +41,22 @@ public class StateUpdate {
 		return rate;
 	}
 	
+	@Override
+	public String toString() {
+		return state.toString() + " --- " + event.toString() + " : " + rate + " ---> ? ";
+	}
+	
 	/**
 	 * Contains the results from an executed state update
 	 *
 	 */
 	public static class StateUpdateResult {
-		Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
-		DFTState baseSucc;
-		List<DFTState> succs = new ArrayList<>();
-		List<FaultTreeNode> changedNodes;
+		private Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
+		private List<DFTState> succs = new ArrayList<>();
+		private List<FaultTreeNode> changedNodes = new ArrayList<>();
 		
+		private DFTState baseSucc;
+
 		/**
 		 * Standard constructor
 		 * @param state the base state
@@ -61,6 +67,26 @@ public class StateUpdate {
 			
 			succs.add(baseSucc);
 			mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());
+		}
+		
+		public Map<DFTState, List<RecoveryAction>> getMapStateToRecoveryActions() {
+			return mapStateToRecoveryActions;
+		}
+		
+		public List<DFTState> getSuccs() {
+			return succs;
+		}
+		
+		public List<FaultTreeNode> getChangedNodes() {
+			return changedNodes;
+		}
+		
+		public DFTState getBaseSucc() {
+			return baseSucc;
+		}
+		
+		public void setBaseSucc(DFTState baseSucc) {
+			this.baseSucc = baseSucc;
 		}
 	}
 }
