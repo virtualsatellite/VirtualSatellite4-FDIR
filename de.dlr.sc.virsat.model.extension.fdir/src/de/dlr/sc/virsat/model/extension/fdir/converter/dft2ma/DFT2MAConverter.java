@@ -23,6 +23,7 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
@@ -208,22 +209,11 @@ public class DFT2MAConverter {
 		while (!toProcess.isEmpty()) {
 			DFTState state = toProcess.poll();
 			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
+			List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 			
-			for (IDFTEvent event : occurableEvents) {
-				int multiplier = 1;
-				
-				// Very simple symmetry reduction to get started
-				if (symmetryChecker != null) {
-					int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
-					if (countBiggerSymmetricEvents == -1) {
-						continue;
-					} else {
-						multiplier += countBiggerSymmetricEvents;
-					}
-				}
-				
-				DFTStateUpdate stateUpdate = updateState(state, event, multiplier);
-				List<DFTState> newSuccs = handleStateUpdate(state, stateUpdate);
+			for (StateUpdate stateUpdate : stateUpdates) {
+				StateUpdateResult stateUpdateResult = performUpdate(stateUpdate);
+				List<DFTState> newSuccs = handleStateUpdate(state, stateUpdate, stateUpdateResult);
 				toProcess.addAll(newSuccs);
 			}
 		}
@@ -233,12 +223,13 @@ public class DFT2MAConverter {
 	 * Handles the result of a state update and inserts the successors into the markov automaton
 	 * @param state the current state
 	 * @param stateUpdate the state update
+	 * @param stateUpdateResult the result of the state update
 	 * @return all newly generated successor states
 	 */
-	private List<DFTState> handleStateUpdate(DFTState state, DFTStateUpdate stateUpdate) {
-		IDFTEvent event = stateUpdate.event;
-		DFTState baseSucc = stateUpdate.baseSucc;
-		List<DFTState> succs = stateUpdate.succs;
+	private List<DFTState> handleStateUpdate(DFTState state, StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+		IDFTEvent event = stateUpdate.getEvent();
+		DFTState baseSucc = stateUpdateResult.baseSucc;
+		List<DFTState> succs = stateUpdateResult.succs;
 		
 		DFTState markovSucc = null;
 		if (recoveryStrategy != null) {
@@ -246,7 +237,7 @@ public class DFT2MAConverter {
 			// for this we extract the input from the previous update and then repeat the update with the
 			// determined recovery actions
 			
-			Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(baseSucc, event, stateUpdate.changedNodes);
+			Set<FaultTreeNode> occuredEvents = dftSemantics.extractRecoveryActionInput(baseSucc, event, stateUpdateResult.changedNodes);
 			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
@@ -257,7 +248,7 @@ public class DFT2MAConverter {
 				succs.clear();
 				succs.add(baseSucc);
 				
-				stateUpdate.changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(state, succs, stateUpdate.mapStateToRecoveryActions, event);
+				stateUpdateResult.changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(state, succs, stateUpdateResult.mapStateToRecoveryActions, event);
 				
 				statistics.countGeneratedStates += succs.size();
 			} else {
@@ -281,10 +272,10 @@ public class DFT2MAConverter {
 				
 				succs.clear();
 			}
-			ma.addMarkovianTransition(event, state, markovSucc, stateUpdate.rate);
+			ma.addMarkovianTransition(event, state, markovSucc, stateUpdate.getRate());
 		}
 		
-		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdate, state, markovSucc);
+		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdate, stateUpdateResult, markovSucc);
 		return newSuccs;
 	}
 	
@@ -296,14 +287,14 @@ public class DFT2MAConverter {
 	 * @param stateUpdate the update from generating the state
 	 * @return the generated states that are really new
 	 */
-	private List<DFTState> handleGeneratedSuccs(DFTStateUpdate stateUpdate, DFTState state, DFTState markovSucc) {
+	private List<DFTState> handleGeneratedSuccs(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, DFTState markovSucc) {
 		List<DFTState> newSuccs = new ArrayList<>();
 		
-		for (DFTState succ : stateUpdate.succs) {
+		for (DFTState succ : stateUpdateResult.succs) {
 			succ.setMarkovian(true);
 			
 			if (allowsDontCareFailing) {
-				succ.failDontCares(stateUpdate.changedNodes, orderDependentBasicEvents);
+				succ.failDontCares(stateUpdateResult.changedNodes, orderDependentBasicEvents);
 			}
 			
 			checkFailState(succ);
@@ -311,8 +302,8 @@ public class DFT2MAConverter {
 			
 			if (equivalentState == succ) {
 				if (symmetryChecker != null) {
-					if (stateUpdate.event instanceof FaultEvent) {
-						succ.createSymmetryRequirements(state, (BasicEvent) stateUpdate.event.getNode(), symmetryReduction);
+					if (stateUpdate.getEvent() instanceof FaultEvent) {
+						succ.createSymmetryRequirements(stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode(), symmetryReduction);
 					}
 				}
 				
@@ -325,10 +316,10 @@ public class DFT2MAConverter {
 			}
 			
 			if (markovSucc != null) {
-				List<RecoveryAction> actions = stateUpdate.mapStateToRecoveryActions.get(succ);
+				List<RecoveryAction> actions = stateUpdateResult.mapStateToRecoveryActions.get(succ);
 				ma.addNondeterministicTransition(actions, markovSucc, equivalentState);	
 			} else {
-				ma.addMarkovianTransition(stateUpdate.event, state, equivalentState, stateUpdate.rate);
+				ma.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), equivalentState, stateUpdate.getRate());
 			}
 		}
 		
@@ -358,15 +349,16 @@ public class DFT2MAConverter {
 		List<IDFTEvent> initialEvents = dftSemantics.getInitialEvents(ftHolder);
 		
 		for (IDFTEvent event : initialEvents) {
-			DFTStateUpdate initialUpdateResult = updateState(initial, event, 1);
+			StateUpdate initialStateUpdate = new StateUpdate(initial, event, 1);
+			StateUpdateResult initialStateUpdateResult = performUpdate(initialStateUpdate);
 			
-			if (initialUpdateResult.succs.size() > 1) {
-				for (DFTState initialSucc : initialUpdateResult.succs) {
+			if (initialStateUpdateResult.succs.size() > 1) {
+				for (DFTState initialSucc : initialStateUpdateResult.succs) {
 					ma.addState(initialSucc);
-					List<RecoveryAction> actions = initialUpdateResult.mapStateToRecoveryActions.get(initialSucc);
+					List<RecoveryAction> actions = initialStateUpdateResult.mapStateToRecoveryActions.get(initialSucc);
 					ma.addNondeterministicTransition(actions, initial, initialSucc);	
 				}
-				initialStates.addAll(initialUpdateResult.succs);
+				initialStates.addAll(initialStateUpdateResult.succs);
 			}
 		}
 		
@@ -377,40 +369,21 @@ public class DFT2MAConverter {
 		return initialStates;
 	}
 	
-	public static class DFTStateUpdate {
-		Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
-		List<DFTState> succs = new ArrayList<>();
-		List<FaultTreeNode> changedNodes;
-		DFTState baseSucc;
-		double rate;
-		IDFTEvent event;
-	}
-	
 	/**
-	 * Creates updated states after the occurrence of some event
-	 * @param state the base state
-	 * @param event the occurred event
-	 * @param multiplier 
-	 * @return the update result
+	 * Executes a state update
+	 * @return the result of the state update
 	 */
-	private DFTStateUpdate updateState(DFTState state, IDFTEvent event, int multiplier) {
-		DFTStateUpdate stateUpdate = new DFTStateUpdate();
+	private StateUpdateResult performUpdate(StateUpdate stateUpdate) {
+		StateUpdateResult stateUpdateResult = new StateUpdateResult(stateUpdate);
+
+		stateUpdate.getEvent().execute(stateUpdateResult.baseSucc, orderDependentBasicEvents, transientNodes);
 		
-		stateUpdate.event = event;
-		stateUpdate.rate = event.getRate(state) * multiplier;
-		stateUpdate.baseSucc = state.copy();
-		stateUpdate.baseSucc.setIndex(ma.getStates().size());
-		stateUpdate.baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
-		event.execute(stateUpdate.baseSucc, orderDependentBasicEvents, transientNodes);
+		stateUpdateResult.changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(stateUpdate.getState(), 
+				stateUpdateResult.succs, stateUpdateResult.mapStateToRecoveryActions, stateUpdate.getEvent());
 		
-		stateUpdate.succs.add(stateUpdate.baseSucc);
-		stateUpdate.mapStateToRecoveryActions.put(stateUpdate.baseSucc, Collections.emptyList());
-		stateUpdate.changedNodes = dftSemantics.updateFaultTreeNodeToFailedMap(state, 
-				stateUpdate.succs, stateUpdate.mapStateToRecoveryActions, event);
+		statistics.countGeneratedStates += stateUpdateResult.succs.size();
 		
-		statistics.countGeneratedStates += stateUpdate.succs.size();
-		
-		return stateUpdate;
+		return stateUpdateResult;
 	}
 	
 	/**
@@ -440,6 +413,34 @@ public class DFT2MAConverter {
 		}
 		
 		return occurableEvents;
+	}
+	
+	/**
+	 * Creates the state updates from the list of occurable events
+	 * @param state the current state
+	 * @param occurableEvents the currently occurable events
+	 * @return returns the state updates that should be performed due to the events
+	 */
+	private List<StateUpdate> getStateUpdates(DFTState state, List<IDFTEvent> occurableEvents) {
+		List<StateUpdate> stateUpdates = new ArrayList<>();
+		for (IDFTEvent event : occurableEvents) {
+			int multiplier = 1;
+			
+			// Very simple symmetry reduction to get started
+			if (symmetryChecker != null) {
+				int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
+				if (countBiggerSymmetricEvents == -1) {
+					continue;
+				} else {
+					multiplier += countBiggerSymmetricEvents;
+				}
+			}
+			
+			StateUpdate stateUpdate = new StateUpdate(state, event, multiplier);
+			stateUpdates.add(stateUpdate);
+		}
+		
+		return stateUpdates;
 	}
 	
 	/**
