@@ -25,7 +25,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
-import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MatrixIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;

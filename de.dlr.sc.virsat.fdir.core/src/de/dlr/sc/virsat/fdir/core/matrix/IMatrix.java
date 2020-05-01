@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MatrixIterator;
+
 /**
  * Interface for matrices
  * @author piet

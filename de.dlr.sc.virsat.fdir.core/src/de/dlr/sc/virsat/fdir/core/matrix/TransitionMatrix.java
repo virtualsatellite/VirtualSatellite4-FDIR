@@ -10,6 +10,9 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
+
 /**
  * @author piet_ci
  * 

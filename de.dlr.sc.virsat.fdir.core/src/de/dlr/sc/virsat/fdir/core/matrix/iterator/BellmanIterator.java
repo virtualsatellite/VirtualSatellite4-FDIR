@@ -8,7 +8,9 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package de.dlr.sc.virsat.fdir.core.matrix;
+package de.dlr.sc.virsat.fdir.core.matrix.iterator;
+
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 
 public class BellmanIterator extends MatrixIterator {
 	

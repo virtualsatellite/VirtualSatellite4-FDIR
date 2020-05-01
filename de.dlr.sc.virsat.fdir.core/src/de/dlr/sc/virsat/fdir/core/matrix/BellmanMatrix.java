@@ -19,6 +19,8 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MatrixIterator;
 
 public class BellmanMatrix extends TransitionMatrix {
 
