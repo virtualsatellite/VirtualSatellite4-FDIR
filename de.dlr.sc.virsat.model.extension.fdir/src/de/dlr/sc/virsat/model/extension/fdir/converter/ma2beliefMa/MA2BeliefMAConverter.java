@@ -162,8 +162,9 @@ public class MA2BeliefMAConverter {
 			}
 			
 			if (prob > 0) {
-				if (toState.getFailedBasicEvents().isEmpty() && toState.getObservedFailed().isEmpty()) {
-					toState = (PODFTState) ma.getSuccTransitions(toState).stream()
+				if (!toState.isMarkovian() && toState.getFailedBasicEvents().isEmpty() && toState.getObservedFailed().isEmpty()) {
+					List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
+					toState = (PODFTState) transitions.stream()
 							.filter(t -> t.getEvent().equals(Collections.emptyList()))
 							.map(t -> t.getTo())
 							.findFirst().orElse(toState);
