@@ -84,9 +84,18 @@ public class StateUpdate {
 		public DFTState getBaseSucc() {
 			return baseSucc;
 		}
-		
-		public void setBaseSucc(DFTState baseSucc) {
-			this.baseSucc = baseSucc;
+
+		/**
+		 * Resets the result and creates a new clean base successor
+		 * @param baseSucc the new base successor
+		 */
+		public DFTState reset(DFTState state) {
+			this.baseSucc = state.copy();
+			succs.clear();
+			succs.add(baseSucc);
+			changedNodes.clear();
+			
+			return baseSucc;
 		}
 	}
 }

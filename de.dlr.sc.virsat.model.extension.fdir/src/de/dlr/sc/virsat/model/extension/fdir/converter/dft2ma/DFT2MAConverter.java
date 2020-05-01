@@ -12,7 +12,6 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,12 +59,11 @@ public class DFT2MAConverter {
 	private Collection<IDFTEvent> events;
 	private Set<FaultTreeNode> transientNodes;
 	private Set<BasicEvent> orderDependentBasicEvents;
-	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToDFTStates;
 	private FaultTreeHolder ftHolder;
 	private RecoveryStrategy recoveryStrategy;
 	private Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction;
 	private Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted;
-	
+	private DFTStateEquivalence stateEquivalence;
 	private DFT2MAConversionStatistics statistics = new DFT2MAConversionStatistics();
 	
 	/**
@@ -106,8 +104,8 @@ public class DFT2MAConverter {
 	 * Initializes the data structures
 	 */
 	private void init() {
+		stateEquivalence = new DFTStateEquivalence();
 		orderDependentBasicEvents = new HashSet<>();
-		mapUnorderedBesToDFTStates = new HashMap<>();
 		transientNodes = new HashSet<>();
 		
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
@@ -241,14 +239,9 @@ public class DFT2MAConverter {
 			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
-				baseSucc = state.copy();
+				baseSucc = stateUpdateResult.reset(state);
 				event.execute(baseSucc, orderDependentBasicEvents, transientNodes);
 				recoveryStrategy.execute(baseSucc);
-				
-				succs.clear();
-				succs.add(baseSucc);
-				stateUpdateResult.getChangedNodes().clear();
-				stateUpdateResult.setBaseSucc(baseSucc);
 				
 				dftSemantics.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
 				
@@ -261,11 +254,11 @@ public class DFT2MAConverter {
 			// or an obsertvation event for which we generally must provide the ability
 			// to react, then we need an intermediate non-deterministic state
 			
-			baseSucc = baseSucc.copy();
-			baseSucc.setMarkovian(false);
+			DFTState interimState = baseSucc.copy();
+			interimState.setMarkovian(false);
 			
-			markovSucc = getEquivalentState(baseSucc);
-			if (markovSucc == baseSucc) {
+			markovSucc = stateEquivalence.getEquivalentState(interimState);
+			if (markovSucc == interimState) {
 				ma.addState(markovSucc);	
 			} else {
 				// In the event that the intermediate state already exists
@@ -300,7 +293,7 @@ public class DFT2MAConverter {
 			}
 			
 			checkFailState(succ);
-			DFTState equivalentState = getEquivalentState(succ);
+			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
 			
 			if (equivalentState == succ) {
 				if (symmetryChecker != null) {
@@ -333,7 +326,7 @@ public class DFT2MAConverter {
 	 */
 	private void createInitialState() {
 		initial = dftSemantics.generateState(ftHolder);
-		mapUnorderedBesToDFTStates.put(initial.unorderedBes, new ArrayList<>(Collections.singletonList(initial)));
+		stateEquivalence.addState(initial);
 		initial.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
 			initial.setNodeActivation(root, true);
@@ -521,31 +514,6 @@ public class DFT2MAConverter {
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * Check if there is an equivalent state of the passed state and return it.
-	 * @param state the state for which we want to check if an equivalent one exists
-	 * @return an equivalent state to the passed one or the state itself if not equivalent state exists
-	 */
-	private DFTState getEquivalentState(DFTState state) {
-		List<DFTState> states = mapUnorderedBesToDFTStates.get(state.unorderedBes);
-		if (states == null) {
-			List<DFTState> dftStates = new ArrayList<>();
-			dftStates.add(state);
-			mapUnorderedBesToDFTStates.put(state.unorderedBes, dftStates);
-			return state;
-		}
-		
-		for (DFTState other : states) {
-			if (state.isEquivalent(other)) {
-				return other;
-			}
-		}
-		
-		states.add(state);
-		
-		return state;
 	}
 
 	/**
