@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -88,33 +87,83 @@ public class PONDDFTSemantics extends DFTSemantics {
 		}
 		
 		FaultTreeHolder ftHolder = pred.getFTHolder();
-		List<FaultTreeNode> changedNodes = null;
+		List<FaultTreeNode> changedNodes = Collections.emptyList();
 		boolean hasRecoveryStrategy = hasRecoveryStrategy(pred);
-		boolean anyObservation = false;
-		
-		if (event instanceof ObservationEvent) {
-			FaultTreeNode observedNode = event.getNode();
-			changedNodes = new ArrayList<>();
-			anyObservation = true;
-			
-			for (DFTState state : succs) {
-				PODFTState poState = (PODFTState) state;
-				boolean observedNodeFail = state.hasFaultTreeNodeFailed(observedNode);
-				boolean failNodeObserved = poState.isNodeFailObserved(observedNode);
-				if (failNodeObserved == observedNodeFail) {
-					for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(observedNode)) {
-						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
-					}
-				}
-			}
-		} 
-		
+		boolean anyObservation = checkObservationEvent(event, succs);
+
 		if (!anyObservation || hasRecoveryStrategy) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
 			changedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, event);
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
+		anyObservation |= propagateObservations(succs, changedNodes);
+		
+		if (anyObservation && !hasRecoveryStrategy) {
+			Set<FaultTreeNode> spareGatesToCheck = getNondeterministicGates(ftHolder);
+			
+			Queue<FaultTreeNode> spareGates = new LinkedList<>(spareGatesToCheck);
+			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, spareGates);
+			
+			propagateObservations(succs, repairedNodes);
+		}
+		
+		return changedNodes;
+	}
+	
+	/**
+	 * Gets the gates capable of nondeterminism from the fault tree
+	 * @param ftHolder the fault tree holder
+	 * @return the set of nondeterministic nodes
+	 */
+	private Set<FaultTreeNode> getNondeterministicGates(FaultTreeHolder ftHolder) {
+		Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
+		
+		for (FaultTreeNode child : ftHolder.getNodes()) {
+			if (child instanceof SPARE) {
+				spareGatesToCheck.add(child);
+			}
+		}
+		
+		return spareGatesToCheck;
+	}
+	
+	/**
+	 * Handles an observation event
+	 * @param event the event to handle
+	 * @param succs the current successor list
+	 * @return true iff the event was an observation event
+	 */
+	private boolean checkObservationEvent(IDFTEvent event, List<DFTState> succs) {
+		if (event instanceof ObservationEvent) {
+			FaultTreeNode observedNode = event.getNode();
+			
+			for (DFTState state : succs) {
+				PODFTState poState = (PODFTState) state;
+				boolean observedNodeFail = state.hasFaultTreeNodeFailed(observedNode);
+				boolean failNodeObserved = poState.isNodeFailObserved(observedNode);
+				if (failNodeObserved == observedNodeFail) {
+					Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(observedNode);
+					for (FaultTreeNode parent : allParents) {
+						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Handles a propagation step for the observability information
+	 * @param succs the successor states
+	 * @param changedNodes the set of nodes from which we want to propagate
+	 * @return true if an observation was made during the propagation
+	 */
+	private boolean propagateObservations(List<DFTState> succs, List<FaultTreeNode> changedNodes) {
+		boolean anyObservation = false;
 		for (DFTState state : succs) {
 			for (FaultTreeNode node : changedNodes) {
 				PODFTState poState = (PODFTState) state;
@@ -123,37 +172,15 @@ public class PONDDFTSemantics extends DFTSemantics {
 					anyObservation = true;
 					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
 					
-					for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
+					Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(node);
+					for (FaultTreeNode parent : allParents) {
 						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 					}
 				}
 			}
 		}
 		
-		if (anyObservation && !hasRecoveryStrategy) {
-			Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
-			
-			for (FaultTreeNode child : ftHolder.getNodes()) {
-				if (child instanceof SPARE) {
-					spareGatesToCheck.add(child);
-				}
-			}
-			
-			Queue<FaultTreeNode> spareGates = new LinkedList<>(spareGatesToCheck);
-			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(pred, succs, recoveryActions, spareGates);
-			
-			for (DFTState state : succs) {
-				for (FaultTreeNode node : repairedNodes) {
-					PODFTState poState = (PODFTState) state;
-					boolean isObserved = poState.existsNonFailedObserver(node, false);
-					if (isObserved) {
-						poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
-					}
-				}
-			}
-		}
-		
-		return changedNodes;
+		return anyObservation;
 	}
 	
 	@Override

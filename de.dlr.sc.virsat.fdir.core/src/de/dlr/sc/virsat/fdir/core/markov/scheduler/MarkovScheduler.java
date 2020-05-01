@@ -165,13 +165,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double expectationValue = 0;
 			double transitionGroupProbFail = 0;
 			
-			boolean hasOnlyFailSuccessors = true;
-			for (MarkovTransition<S> transition : transitionGroup) {
-				if (!ma.getFinalStates().contains(transition.getTo())) {
-					hasOnlyFailSuccessors = false;
-					break;
-				}
-			}
+			boolean hasOnlyFailSuccessors = hasOnlyFinalSuccessors(ma, transitionGroup);
 			
 			for (MarkovTransition<S> transition : transitionGroup) {
 				double prob = transition.getRate();
@@ -192,22 +186,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue;
 				
 				if (!isNewBestTransition) {
-					// Prefer to keep the fewer actions over any other actions in case of the same value
-					Object event1 = transitionGroup.iterator().next().getEvent();
-					Object event2 = bestTransitionGroup.iterator().next().getEvent();
-					
-					if (event1 instanceof Collection && event2 instanceof Collection) {
-						Collection<?> eventCollection1 = (Collection<?>) event1;
-						Collection<?> eventCollection2 = (Collection<?>) event2;
-						
-						isNewBestTransition = eventCollection2.size() > eventCollection1.size();
-						
-						// To ensure that there is no nondeterminism in the scheduling
-						// the final deciding factor is the string representation of the events
-						if (eventCollection2.size() == eventCollection1.size()) {
-							isNewBestTransition = eventCollection2.toString().compareTo(eventCollection1.toString()) > 0;
-						}
-					}
+					isNewBestTransition = checkMinimality(transitionGroup, bestTransitionGroup);
 				}
 				
 				if (isNewBestTransition) {
@@ -219,5 +198,53 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		}
 	
 		return bestTransitionGroup;
+	}
+	
+	/**
+	 * Checks if every transition in a transition group is going to a final state
+	 * @param ma the markov automaton
+	 * @param transitionGroup a group of transitions
+	 * @return true iff all transitions in the group lead to a final state
+	 */
+	private boolean hasOnlyFinalSuccessors(MarkovAutomaton<S> ma, Set<MarkovTransition<S>> transitionGroup) {
+		for (MarkovTransition<S> transition : transitionGroup) {
+			if (!ma.getFinalStates().contains(transition.getTo())) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Checks if a transition group is considered "smaller" than the currently best transition group.
+	 * This is based on the label of the first transition in the group, which works if all transitions in the group
+	 * have the same label. The label is smaller if there are less entries or if the number of entries is the same
+	 * and the string label is smaller.
+	 * @param transitionGroup a transition group
+	 * @param bestTransitionGroup the currently best transition group
+	 * @return true if the transition group is smaller
+	 */
+	private boolean checkMinimality(Set<MarkovTransition<S>> transitionGroup, Set<MarkovTransition<S>> bestTransitionGroup) {
+		// Prefer to keep the fewer actions over any other actions in case of the same value
+		Object event1 = transitionGroup.iterator().next().getEvent();
+		Object event2 = bestTransitionGroup.iterator().next().getEvent();
+		
+		if (event1 instanceof Collection && event2 instanceof Collection) {
+			Collection<?> eventCollection1 = (Collection<?>) event1;
+			Collection<?> eventCollection2 = (Collection<?>) event2;
+			
+			boolean isSmaller = eventCollection1.size() < eventCollection2.size();
+			
+			// To ensure that there is no nondeterminism in the scheduling
+			// the final deciding factor is the string representation of the events
+			if (eventCollection2.size() == eventCollection1.size()) {
+				isSmaller = eventCollection1.toString().compareTo(eventCollection2.toString()) < 0;
+			}
+			
+			return isSmaller;
+		}
+		
+		return false;
 	}
 }
