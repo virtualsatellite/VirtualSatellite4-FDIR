@@ -226,7 +226,6 @@ public class PONDDFTSemantics extends DFTSemantics {
 	
 	@Override
 	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
-		//return Collections.singletonList(new ObservationEvent(ftHolder.getRoot(), true));
-		return super.getInitialEvents(ftHolder);
+		return Collections.singletonList(new ObservationEvent(ftHolder.getRoot(), true));
 	}
 }
