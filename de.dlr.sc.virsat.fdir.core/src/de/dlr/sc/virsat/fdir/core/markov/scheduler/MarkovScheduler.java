@@ -85,7 +85,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		boolean converged = false;
 		final double EPS = 0.0000000001;
 		
-		Map<S, Double> resultMap = new HashMap<S, Double>();
 		List<S> nondeterministicStates = new ArrayList<S>();
 		
 		MatrixFactory matrixFactory = new MatrixFactory();
@@ -124,9 +123,23 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			}
 		}
 		
-		probabilityDistribution = mxIterator.getProbabilityDistribution();
+		probabilityDistribution = mxIterator.getValues();
+		Map<S, Double> resultMap = createResultMap(ma, probabilityDistribution);
+		
+		return resultMap;
+	}
+	
+	/**
+	 * Transforms the value vector into the value map
+	 * @param ma the markov automaton
+	 * @param values the values from the value iteration
+	 * @return a mapping from states to their value
+	 */
+	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
+		Map<S, Double> resultMap = new HashMap<S, Double>();
+		
 		for (S state : ma.getStates()) {			
-			double value = probabilityDistribution[state.getIndex()];			
+			double value = values[state.getIndex()];			
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
 			} else if (ma.getFinalStates().contains(state)) {
@@ -136,7 +149,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
 					if (!ma.getFinalStates().contains(toState)) {
-						double toValue = probabilityDistribution[toState.getIndex()];
+						double toValue = values[toState.getIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}
 				}

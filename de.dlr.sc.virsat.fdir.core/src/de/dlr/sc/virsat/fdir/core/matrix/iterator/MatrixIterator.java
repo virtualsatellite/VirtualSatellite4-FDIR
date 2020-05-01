@@ -17,40 +17,26 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
  * 
  * Abstract matrix iterator class   
  */
-public abstract class MatrixIterator {
+public abstract class MatrixIterator implements IMatrixIterator {
 	protected IMatrix matrix;
-	protected double[] probabilityDistribution;
+	protected double[] values;
 	protected double eps;	
+	
 	/**
 	 * MatrixIterator constructor
 	 * 
 	 * @param matrix matrix
-	 * @param probabilityDistribution probabilityDistribution
+	 * @param initialValues probabilityDistribution
 	 * @param eps epsilon
 	 */
-	public MatrixIterator(IMatrix matrix, double[] probabilityDistribution, double eps) {
+	public MatrixIterator(IMatrix matrix, double[] initialValues, double eps) {
 		this.matrix = matrix;
-		this.probabilityDistribution = probabilityDistribution;
+		this.values = initialValues;
 		this.eps = eps;
 	}
 	
-	/**
-	 * abstract iterate method for different matrix iterators. Iterate performs one update iteration.
-	 */
-	public abstract void iterate();
-	
-	/**
-	 * @return probability distribution at current time
-	 */
-	public double[] getProbabilityDistribution() {
-		return probabilityDistribution;
-	}
-
-	public double[] getOldProbabilityDistribution() {
-		return null;
-	}
-
-	public double getChange() {
-		return 0;
+	@Override
+	public double[] getValues() {
+		return values;
 	}
 }

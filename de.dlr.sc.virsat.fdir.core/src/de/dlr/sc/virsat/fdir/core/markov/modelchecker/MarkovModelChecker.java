@@ -131,7 +131,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				if (subMonitor != null) {
 					subMonitor.split(1);
 				}
-				probabilityDistribution = mtxIterator.getProbabilityDistribution();
+				probabilityDistribution = mtxIterator.getValues();
 				modelCheckingResult.failRates.add(getFailRate());
 				mtxIterator.iterate();
 			}
@@ -146,7 +146,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				}
 				
 				mtxIterator.iterate();
-				probabilityDistribution = mtxIterator.getProbabilityDistribution();
+				probabilityDistribution = mtxIterator.getValues();
 				double newFailRate = getFailRate();
 				modelCheckingResult.failRates.add(newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
@@ -177,9 +177,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			mxIterator.iterate();			
 			double change = mxIterator.getChange();
 			if (change < eps || Double.isNaN(change)) {
-				probabilityDistribution = mxIterator.getProbabilityDistribution();
+				probabilityDistribution = mxIterator.getValues();
 				convergence = true;				
-				if (Double.isInfinite(mxIterator.getOldProbabilityDistribution()[0])) {
+				if (Double.isInfinite(mxIterator.getOldValues()[0])) {
 					probabilityDistribution[0] = Double.POSITIVE_INFINITY;
 				}				
 			}			
