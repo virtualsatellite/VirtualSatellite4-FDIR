@@ -38,9 +38,12 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 public class MA2BeliefMAConverter {
 	
+	private static final double EPSILON = 0.2;
+	
 	private MarkovAutomaton<BeliefState> beliefMa;
 	private BeliefState initialBeliefState;
 	private DFTStateEquivalence dftStateEquivalence;
+	private BeliefStateEquivalence beliefStateEquivalence;
 	
 	/**
 	 * Creates a belief markov automaton out of the given markov automaton
@@ -50,6 +53,7 @@ public class MA2BeliefMAConverter {
 	 */
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialState) {
 		beliefMa = new MarkovAutomaton<>();
+		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
 		initialBeliefState = createInitialState(initialState);
 		dftStateEquivalence = new DFTStateEquivalence();
 		for (DFTState dftState : ma.getStates()) {
@@ -101,6 +105,7 @@ public class MA2BeliefMAConverter {
 		BeliefState initialBeliefState = new BeliefState(beliefMa, initialState);
 		initialBeliefState.mapStateToBelief.put(initialState, 1d);
 		beliefMa.addState(initialBeliefState);
+		beliefStateEquivalence.addState(initialBeliefState);
 		return initialBeliefState;
 	}
 	
@@ -113,7 +118,7 @@ public class MA2BeliefMAConverter {
 	 */
 	private BeliefState addBeliefState(BeliefState beliefState, boolean isFinal) {
 		beliefState.normalize();
-		BeliefState equivalentBeliefState = getEquivalentBeliefState(beliefState);
+		BeliefState equivalentBeliefState = beliefStateEquivalence.getEquivalentState(beliefState);
 		boolean isNewState = beliefState == equivalentBeliefState;
 		
 		if (isNewState) {
@@ -305,46 +310,6 @@ public class MA2BeliefMAConverter {
 			getTotalRate += transition.getRate() * beliefState.mapStateToBelief.get(transition.getFrom());
 		}
 		return getTotalRate;
-	}
-
-	private static final double EPSILON = 0.2;
-	
-	/**
-	 * Gets an equivalent belief state
-	 * @param state a belief state
-	 * @return an equivalent belief state or the input state if no equivalent state exists
-	 */
-	private BeliefState getEquivalentBeliefState(BeliefState state) {
-		for (BeliefState other : beliefMa.getStates()) {
-			if (state.isMarkovian() != other.isMarkovian() || state.mapStateToBelief.size() != other.mapStateToBelief.size()) {
-				continue;
-			}
-			
-			Set<DFTState> dftStates = new HashSet<>(state.mapStateToBelief.keySet());
-			dftStates.addAll(other.mapStateToBelief.keySet());
-			boolean isEquivalent = other.representant.getObservedFailed().equals(state.representant.getObservedFailed()) 
-					&& other.representant.getMapSpareToClaimedSpares().equals(state.representant.getMapSpareToClaimedSpares());
-			
-			if (isEquivalent) {
-				for (DFTState dftState : dftStates) {
-					
-					double prob = state.mapStateToBelief.getOrDefault(dftState, Double.NaN);
-					double probOther = other.mapStateToBelief.getOrDefault(dftState, Double.NaN);
-					double diff = Math.abs(prob - probOther);
-					
-					if (Double.isNaN(diff) || diff > EPSILON) {
-						isEquivalent = false;
-						break;
-					}
-				}
-			}
-			
-			if (isEquivalent) {
-				return other;
-			}
-		}
-		
-		return state;
 	}
 
 	/**

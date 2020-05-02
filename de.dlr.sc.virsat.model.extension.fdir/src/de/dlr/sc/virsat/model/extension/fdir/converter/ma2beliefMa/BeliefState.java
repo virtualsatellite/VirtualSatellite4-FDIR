@@ -11,11 +11,14 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
 /**
@@ -74,5 +77,38 @@ public class BeliefState extends MarkovState {
 			totalBelief += belief;
 		}
 		return totalBelief;
+	}
+	
+	/**
+	 * Checks if two belief states are belief equivalent
+	 * @param other the other belief state
+	 * @param eps the accuracy
+	 * @return true if the two belief states are belief equivalent
+	 */
+	public boolean isEquivalent(BeliefState other, double eps) {
+		if (isMarkovian() != other.isMarkovian() || mapStateToBelief.size() != other.mapStateToBelief.size()) {
+			return false;
+		}
+		
+		Set<DFTState> dftStates = new HashSet<>(mapStateToBelief.keySet());
+		dftStates.addAll(other.mapStateToBelief.keySet());
+		boolean isEquivalent = other.representant.getObservedFailed().equals(representant.getObservedFailed()) 
+				&& other.representant.getMapSpareToClaimedSpares().equals(representant.getMapSpareToClaimedSpares());
+		
+		if (!isEquivalent) {
+			return false;
+		}
+		
+		for (DFTState dftState : dftStates) {
+			double prob = mapStateToBelief.getOrDefault(dftState, Double.NaN);
+			double probOther = other.mapStateToBelief.getOrDefault(dftState, Double.NaN);
+			double diff = Math.abs(prob - probOther);
+			
+			if (Double.isNaN(diff) || diff > eps) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
