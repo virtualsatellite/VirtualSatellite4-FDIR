@@ -26,7 +26,8 @@ public class DelaySemantics implements INodeSemantics {
 
 	@Override
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
-			FaultTreeHolder ftHolder, GenerationResult generationResult) {
+			GenerationResult generationResult) {
+		FaultTreeHolder ftHolder = state.getFTHolder();
 		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		
 		for (FaultTreeNode child : children) {

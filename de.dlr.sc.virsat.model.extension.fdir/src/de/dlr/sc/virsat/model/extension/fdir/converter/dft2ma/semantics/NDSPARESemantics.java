@@ -16,7 +16,6 @@ import java.util.Map;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
@@ -36,17 +35,8 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	
 	private Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction = new HashMap<>();
 	private Map<FaultTreeNode, FreeAction> mapNodeToFreeAction = new HashMap<>();
-	private IStateGenerator stateGenerator;
 	
 	protected boolean propagateWithoutActions = false;
-	
-	/**
-	 * Standard constructor
-	 * @param stateGenerator the state generator
-	 */
-	public NDSPARESemantics(IStateGenerator stateGenerator) {
-		this.stateGenerator = stateGenerator;
-	}
 
 	@Override
 	protected boolean hasFailed(boolean foundSpare) {
@@ -67,24 +57,45 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state,
 			GenerationResult generationResult) {
 		
+		DFTState newState = null;
+		List<RecoveryAction> extendedRecoveryActions = null;
 		List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 		
+		for (RecoveryAction ra : recoveryActions) {
+			if (ra instanceof ClaimAction) {
+				ClaimAction otherClaimAction = (ClaimAction) ra;
+				if (otherClaimAction.getClaimSpare().equals(spare)) {
+					return false;
+				}
+			}
+		}
+		
+		DFTState generatorState = generationResult.getGeneratorState();
+		FaultTreeNode currentClaimant = generatorState.getMapSpareToClaimedSpares().get(spare);
+		boolean reclaim = currentClaimant != null;
+		
+		if (reclaim && currentClaimant.equals(node)) {
+			return false;
+		}
+		
+		if (reclaim) {
+			performFree(node, spare, state, generationResult);
+			newState = generationResult.getGeneratedStates().get(generationResult.getGeneratedStates().size() - 1);
+			extendedRecoveryActions = generationResult.getMapStateToRecoveryActions().get(newState);
+		} else {
+			newState = state.copy();
+			extendedRecoveryActions = new ArrayList<>(recoveryActions);
+		}
+		
 		ClaimAction ca = getOrCreateClaimAction(node, spare, mapNodeToNodeToClaimAction);
-		DFTState newState = stateGenerator.generateState(state);
 		ca.execute(newState);
-		newState.setFaultTreeNodeFailed(node, false);
-		List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
 
 		extendedRecoveryActions.add(ca);
 		generationResult.getMapStateToRecoveryActions().put(newState, extendedRecoveryActions);
 		
-		newState.setNodeActivation(spare, true);
-		List<FaultTreeNode> primaries = newState.getFTHolder().getMapNodeToChildren().get(node);
-		for (FaultTreeNode primary : primaries) {
-			newState.setNodeActivation(primary, false);
+		if (!reclaim) {
+			generationResult.getGeneratedStates().add(newState);
 		}
-		
-		generationResult.getGeneratedStates().add(newState);
 		
 		return false;
 	}
@@ -126,7 +137,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 			List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 	
 			FreeAction fa = getOrCreateFreeAction(spare);
-			DFTState newState = stateGenerator.generateState(state);
+			DFTState newState = state.copy();
 			fa.execute(newState);
 	
 			newState.setFaultTreeNodeFailed(node, hasPrimaryFailed(newState, newState.getFTHolder().getMapNodeToChildren().get(node)));

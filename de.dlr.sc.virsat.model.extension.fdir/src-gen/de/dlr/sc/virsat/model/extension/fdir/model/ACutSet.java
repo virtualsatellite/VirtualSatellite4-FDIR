@@ -32,8 +32,8 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.SetCommand;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 
 
@@ -49,7 +49,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
  * 
  * 
  */	
-public abstract class ACutSet extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class ACutSet extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.CutSet";
 	

@@ -232,7 +232,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
 		DFT2MAConverter dft2ma = createDFT2MAConverter();
-		dft2ma.setSymmetryChecker(null);
+		dft2ma.getStaticAnalysis().setSymmetryChecker(null);
 		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
 		
 		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2ma.getInitial());

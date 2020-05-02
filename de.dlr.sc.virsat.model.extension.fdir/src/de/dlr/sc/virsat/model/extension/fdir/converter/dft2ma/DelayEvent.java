@@ -9,9 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
-import java.util.Set;
-
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
@@ -45,8 +42,7 @@ public class DelayEvent implements IDFTEvent {
 	}
 
 	@Override
-	public void execute(DFTState state, Set<BasicEvent> orderDependentBasicEvents,
-			Set<FaultTreeNode> transientNodes) {
+	public void execute(DFTState state, DFTStaticAnalysis staticAnalysis) {
 		state.setFaultTreeNodeFailed(delayNode, true);
 		state.setFaultTreeNodeFailing(delayNode, false);
 	}

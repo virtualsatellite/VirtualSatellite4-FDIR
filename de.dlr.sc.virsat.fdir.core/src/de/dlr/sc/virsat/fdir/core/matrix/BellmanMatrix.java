@@ -19,6 +19,8 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 
 public class BellmanMatrix extends TransitionMatrix {
 
@@ -27,8 +29,8 @@ public class BellmanMatrix extends TransitionMatrix {
 	}
 	
 	@Override
-	public MatrixIterator getIterator(double[] probabilityDistribution, double eps) {
-		return new BellmanIterator(this, probabilityDistribution, eps);
+	public IMatrixIterator getIterator(double[] probabilityDistribution, double eps) {
+		return new BellmanIterator(this, probabilityDistribution);
 	}
 		
 	/**
@@ -65,7 +67,7 @@ public class BellmanMatrix extends TransitionMatrix {
 				if (!failableStates.contains(state)) {
 					inititalVector[i] = Double.POSITIVE_INFINITY;
 				} else {
-					inititalVector[i] = mc.getExitRateForState(state);
+					inititalVector[i] = 1 / mc.getExitRateForState(state);
 				}
 			}
 		}

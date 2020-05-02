@@ -27,6 +27,14 @@ public class MarkovState {
 	}
 	
 	/**
+	 * Sets the index of this state
+	 * @param index the index of this state
+	 */
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
+	/**
 	 * Sets whether or not this state is markovian
 	 * @param markovian set to true to make the state markovian, set to false to make it immediate nondeterministic
 	 */

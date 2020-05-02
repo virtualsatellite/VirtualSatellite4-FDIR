@@ -8,7 +8,9 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package de.dlr.sc.virsat.fdir.core.matrix;
+package de.dlr.sc.virsat.fdir.core.matrix.iterator;
+
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 
 /**
  * @author piet_ci
@@ -28,14 +30,10 @@ public class SPSIterator extends MatrixIterator {
 	private static final int RHO_FACTOR = 18;
 	private static final int TAYLOR_TRIM_FACTOR = 3;
 	
-	private double maxEntry;
+	private IteratorParams iteratorParams;
 	private double[] vpro;
 	private double[] vprotmp;
 	private double[] vsum;
-	
-	private int taylorTrim;
-	
-	private IMatrix uniformMatrix;
 	
 	/**
 	 * Implementation of a MatrixIterator using custom sparse matrices
@@ -45,33 +43,19 @@ public class SPSIterator extends MatrixIterator {
 	 * @param eps epsilon
 	 */
 	public SPSIterator(IMatrix tmTerminal, double[] probabilityDistribution, double eps) {
-		super(tmTerminal, probabilityDistribution, eps);		
-		this.maxEntry = initMaxEntry();
+		super(tmTerminal, probabilityDistribution);	
+		this.iteratorParams = new IteratorParams(eps);
+		
 		this.vsum = probabilityDistribution;
 		this.vpro = new double[probabilityDistribution.length];
 		this.vprotmp = new double[probabilityDistribution.length];
-		
-		initUniformMatrix();
-		taylorTrim = findTaylorTrim();
-	}
-	
-	/**
-	 * @return returns truncation point m for trimmed Taylor series
-	 */
-	private int findTaylorTrim() {		
-		double logEps = Math.log(eps);		
-		double atmp = 1 + (Math.sqrt((1 - ((RHO_FACTOR * maxEntry) / logEps))));			
-		double btmp = (logEps / TAYLOR_TRIM_FACTOR) * atmp;
-		double mtmp = maxEntry - btmp - 1;
-		taylorTrim = (int) (Math.ceil(mtmp));
-		return taylorTrim;
+		this.matrix = initUniformMatrix();
 	}
 
 	/**
 	 * Performs one update iteration
 	 */
 	public void iterate() {
-				
 		double b = calcManhattanNorm();
 		double c = 0;
 		
@@ -87,8 +71,8 @@ public class SPSIterator extends MatrixIterator {
 			vpro[i] = vsum[i];
 		}
 		
-		for (int j = 1; j <= taylorTrim; j++) {
-			uniformMatrix.multiply(vpro, vprotmp);
+		for (int j = 1; j <= iteratorParams.taylorTrim; j++) {
+			matrix.multiply(vpro, vprotmp);
 			
 			double[] tmp = vpro;
 			vpro = vprotmp;
@@ -99,7 +83,7 @@ public class SPSIterator extends MatrixIterator {
 				vsum[i] = vsum[i] + vpro[i];
 			}
 			
-			b = b * maxEntry / j;
+			b = b * iteratorParams.maxEntry / j;
 			
 			if (b > BIG) {
 				for (int i = 0; i < vpro.length; i++) {
@@ -111,7 +95,7 @@ public class SPSIterator extends MatrixIterator {
 			}			
 		}
 		
-		double ecr = Math.exp(c - maxEntry);
+		double ecr = Math.exp(c - iteratorParams.maxEntry);
 		for (int i = 0; i < vsum.length; i++) {
 			vsum[i] = vsum[i] * ecr;
 		}
@@ -131,28 +115,54 @@ public class SPSIterator extends MatrixIterator {
 	
 	/**
 	 * Initializes the Uniform Matrix
+	 * @return 
 	 */
-	private void initUniformMatrix() {
-		uniformMatrix = matrix.copy();
+	private IMatrix initUniformMatrix() {
+		IMatrix uniformMatrix = matrix.copy();
 		double[] diag = uniformMatrix.getDiagonal();
 						
 		for (int i = 0; i < diag.length; i++) {
-			diag[i] += maxEntry;
+			diag[i] += iteratorParams.maxEntry;
 		}
 		uniformMatrix.setDiagonal(diag);
+		return uniformMatrix;
 	}
 	
-	/**
-	 * @return returns the initial value for Rho
-	 */
-	private double initMaxEntry() {
-		double maxVal = 0;
-		double[] diag = matrix.getDiagonal();
-		int diagLength = diag.length;
+	private class IteratorParams {
+		private double maxEntry;
+		private int taylorTrim;
+		protected double eps;
 		
-		for (int i = 0; i < diagLength; i++) {
-			maxVal = Math.max(maxVal, Math.abs(diag[i]));    
-		}		
-		return maxVal;
+		IteratorParams(double eps) {
+			this.eps = eps;
+			this.maxEntry = initMaxEntry();
+			this.taylorTrim = findTaylorTrim();
+		}
+		
+		/**
+		 * @return returns the initial value for Rho
+		 */
+		private double initMaxEntry() {
+			double maxVal = 0;
+			double[] diag = matrix.getDiagonal();
+			int diagLength = diag.length;
+			
+			for (int i = 0; i < diagLength; i++) {
+				maxVal = Math.max(maxVal, Math.abs(diag[i]));    
+			}		
+			return maxVal;
+		}
+		
+		/**
+		 * @return returns truncation point m for trimmed Taylor series
+		 */
+		private int findTaylorTrim() {		
+			double logEps = Math.log(eps);		
+			double atmp = 1 + (Math.sqrt((1 - ((RHO_FACTOR * maxEntry) / logEps))));			
+			double btmp = (logEps / TAYLOR_TRIM_FACTOR) * atmp;
+			double mtmp = maxEntry - btmp - 1;
+			taylorTrim = (int) (Math.ceil(mtmp));
+			return taylorTrim;
+		}
 	}
 }

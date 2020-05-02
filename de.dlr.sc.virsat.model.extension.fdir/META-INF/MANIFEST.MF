@@ -6,14 +6,15 @@ Bundle-Version: 4.10.0.qualifier
 Bundle-Vendor: German Aerospace Center (DLR)
 Require-Bundle: org.eclipse.core.runtime,
  de.dlr.sc.virsat.model,
- de.dlr.sc.virsat.model.edit,
  de.dlr.sc.virsat.project,
  de.dlr.sc.virsat.build,
  de.dlr.sc.virsat.fdir.galileo,
  de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.model.calculation,
  de.dlr.sc.virsat.fdir.storm,
- de.dlr.sc.virsat.external.lib.commons.math
+ de.dlr.sc.virsat.external.lib.commons.math,
+ de.dlr.sc.virsat.model.ext.core,
+ de.dlr.sc.virsat.model.edit;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true

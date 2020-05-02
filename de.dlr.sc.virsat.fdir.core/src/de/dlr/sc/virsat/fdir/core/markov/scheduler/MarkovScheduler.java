@@ -10,7 +10,6 @@
 
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +24,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
-import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -36,6 +35,8 @@ import de.dlr.sc.virsat.fdir.core.matrix.MatrixIterator;
 
 public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<S> {
 
+	public static final double EPS = 0.0000000001;
+	
 	@Override
 	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
 		Map<S, Double> results = computeValues(ma, initialMa);
@@ -48,26 +49,29 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
 			
-			for (MarkovTransition<S> markovianTransition : ma.getSuccTransitions(state)) {
-				if (!state.isMarkovian()) {
-					Set<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, results, state);
-					
-					if (bestTransitionGroup != null) {
-						schedule.put(state, bestTransitionGroup);
-						for (MarkovTransition<S> transition : bestTransitionGroup) {
-							S nextState = transition.getTo();
-							if (handledNonDetStates.add(nextState)) {
-								toProcess.offer(nextState);
-							} 
-						}
+			if (!state.isMarkovian()) {
+				Set<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, results, state);
+				
+				if (bestTransitionGroup != null) {
+					schedule.put(state, bestTransitionGroup);
+					for (MarkovTransition<S> transition : bestTransitionGroup) {
+						S nextState = transition.getTo();
+						if (handledNonDetStates.add(nextState)) {
+							toProcess.offer(nextState);
+						} 
 					}
-				} else {
+				}
+			} else {
+				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
+				for (MarkovTransition<S> markovianTransition : succTransitions) {
 					S nextState = markovianTransition.getTo();
 					if (handledNonDetStates.add(nextState)) {
 						toProcess.offer(nextState);
 					} 
 				}
 			}
+			
+
 		}	
 		return schedule;
 	}
@@ -79,58 +83,62 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return a mapping from state to its utility value
 	 */
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
-		boolean converged = false;
-		final double EPS = 0.0000000001;
+		IMatrixIterator valueIterator = createValueIterator(ma);
 		
-		Map<S, Double> resultMap = new HashMap<S, Double>();
-		List<S> nondeterministicStates = new ArrayList<S>();
-		
-		MatrixFactory matrixFactory = new MatrixFactory();
-		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
-		
-		double[] probabilityDistribution = BellmanMatrix.getInitialMTTFVector(ma);		
-		MatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, EPS);		
-		
-		for (S state : ma.getStates()) {
-			if (!state.isMarkovian()) {
-				nondeterministicStates.add(state);
-			}
-		}
-		
+		boolean converged = false;		
 		while (!converged) {
-			mxIterator.iterate();
-			for (S nondeterministicState : nondeterministicStates) {
-				double maxValue = Double.NEGATIVE_INFINITY;
-				
-				Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(nondeterministicState);
-				for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
-					double expectationValue = 0;
-					for (MarkovTransition<S> transition : transitionGroup) {
-						double succValue = probabilityDistribution[transition.getTo().getIndex()];
-						expectationValue += transition.getRate() * succValue;
-					}					
-					maxValue = Math.max(expectationValue, maxValue);
-				}
-				
-				probabilityDistribution[nondeterministicState.getIndex()] = maxValue;
-			}
+			valueIterator.iterate();
 			
-			double change = mxIterator.getChange();
+			double change = valueIterator.getChange();
 			if (change < EPS || Double.isNaN(change)) {
 				converged = true;
 			}
 		}
 		
-		probabilityDistribution = mxIterator.getProbabilityDistribution();
+		double[] values = valueIterator.getValues();
+		Map<S, Double> resultMap = createResultMap(ma, values);
+		
+		return resultMap;
+	}
+	
+	/**
+	 * Creates the value iterator for the markov automaton
+	 * @param ma the markov automaton
+	 * @return the value iterator
+	 */
+	private IMatrixIterator createValueIterator(MarkovAutomaton<S> ma) {
+		MatrixFactory matrixFactory = new MatrixFactory();
+		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
+		
+		double[] values = BellmanMatrix.getInitialMTTFVector(ma);
+		IMatrixIterator bellmanIterator = bellmanMatrix.getIterator(values, EPS);		
+		MarkovAutomatonValueIterator<S> valueIterator = new MarkovAutomatonValueIterator<S>(bellmanIterator, ma);
+		return valueIterator;
+	}
+	
+	/**
+	 * Transforms the value vector into the value map
+	 * @param ma the markov automaton
+	 * @param values the values from the value iteration
+	 * @return a mapping from states to their value
+	 */
+	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
+		Map<S, Double> resultMap = new HashMap<S, Double>();
+		
 		for (S state : ma.getStates()) {			
-			double value = probabilityDistribution[state.getIndex()];			
+			double value = values[state.getIndex()];			
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
 			} else if (ma.getFinalStates().contains(state)) {
 				// To differentiate between fail states we also compute their MTTF
 				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
+				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
-					value += probabilityDistribution[transition.getTo().getIndex()] / transition.getRate();
+					MarkovState toState = transition.getTo();
+					if (!ma.getFinalStates().contains(toState)) {
+						double toValue = values[toState.getIndex()];
+						value += toValue * transition.getRate() / exitRate;
+					}
 				}
 			}
 			resultMap.put(state, value);
@@ -157,11 +165,20 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double expectationValue = 0;
 			double transitionGroupProbFail = 0;
 			
+			boolean hasOnlyFailSuccessors = hasOnlyFinalSuccessors(ma, transitionGroup);
+			
 			for (MarkovTransition<S> transition : transitionGroup) {
-				if (ma.getFinalStates().contains(transition.getTo())) {
-					transitionGroupProbFail += transition.getRate();
+				double prob = transition.getRate();
+				MarkovState toState = transition.getTo();
+				boolean isFailSuccessor = ma.getFinalStates().contains(toState);
+				if (isFailSuccessor) {
+					transitionGroupProbFail += prob;
+				} 
+				
+				if (!isFailSuccessor || hasOnlyFailSuccessors) {
+					double toValue = results.get(toState);
+					expectationValue += prob * toValue;
 				}
-				expectationValue += transition.getRate() * results.get(transition.getTo());
 			}
 			
 			if ((transitionGroupProbFail < bestTransitionProbFail)
@@ -169,22 +186,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue;
 				
 				if (!isNewBestTransition) {
-					// Prefer to keep the fewer actions over any other actions in case of the same value
-					Object event1 = transitionGroup.iterator().next().getEvent();
-					Object event2 = bestTransitionGroup.iterator().next().getEvent();
-					
-					if (event1 instanceof Collection && event2 instanceof Collection) {
-						Collection<?> eventCollection1 = (Collection<?>) event1;
-						Collection<?> eventCollection2 = (Collection<?>) event2;
-						
-						isNewBestTransition = eventCollection2.size() > eventCollection1.size();
-						
-						// To ensure that there is no nondeterminism in the scheduling
-						// the final deciding factor is the string representation of the events
-						if (eventCollection2.size() == eventCollection1.size()) {
-							isNewBestTransition = eventCollection2.toString().compareTo(eventCollection1.toString()) > 0;
-						}
-					}
+					isNewBestTransition = checkMinimality(transitionGroup, bestTransitionGroup);
 				}
 				
 				if (isNewBestTransition) {
@@ -196,5 +198,53 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		}
 	
 		return bestTransitionGroup;
+	}
+	
+	/**
+	 * Checks if every transition in a transition group is going to a final state
+	 * @param ma the markov automaton
+	 * @param transitionGroup a group of transitions
+	 * @return true iff all transitions in the group lead to a final state
+	 */
+	private boolean hasOnlyFinalSuccessors(MarkovAutomaton<S> ma, Set<MarkovTransition<S>> transitionGroup) {
+		for (MarkovTransition<S> transition : transitionGroup) {
+			if (!ma.getFinalStates().contains(transition.getTo())) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Checks if a transition group is considered "smaller" than the currently best transition group.
+	 * This is based on the label of the first transition in the group, which works if all transitions in the group
+	 * have the same label. The label is smaller if there are less entries or if the number of entries is the same
+	 * and the string label is smaller.
+	 * @param transitionGroup a transition group
+	 * @param bestTransitionGroup the currently best transition group
+	 * @return true if the transition group is smaller
+	 */
+	private boolean checkMinimality(Set<MarkovTransition<S>> transitionGroup, Set<MarkovTransition<S>> bestTransitionGroup) {
+		// Prefer to keep the fewer actions over any other actions in case of the same value
+		Object event1 = transitionGroup.iterator().next().getEvent();
+		Object event2 = bestTransitionGroup.iterator().next().getEvent();
+		
+		if (event1 instanceof Collection && event2 instanceof Collection) {
+			Collection<?> eventCollection1 = (Collection<?>) event1;
+			Collection<?> eventCollection2 = (Collection<?>) event2;
+			
+			boolean isSmaller = eventCollection1.size() < eventCollection2.size();
+			
+			// To ensure that there is no nondeterminism in the scheduling
+			// the final deciding factor is the string representation of the events
+			if (eventCollection2.size() == eventCollection1.size()) {
+				isSmaller = eventCollection1.toString().compareTo(eventCollection2.toString()) < 0;
+			}
+			
+			return isSmaller;
+		}
+		
+		return false;
 	}
 }

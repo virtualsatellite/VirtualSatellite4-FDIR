@@ -10,6 +10,9 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
+
 /**
  * @author piet_ci
  * 
@@ -102,7 +105,7 @@ public class TransitionMatrix implements IMatrix {
 
 
 	@Override
-	public MatrixIterator getIterator(double[] probabilityDistribution, double eps) {
+	public IMatrixIterator getIterator(double[] probabilityDistribution, double eps) {
 		return new SPSIterator(this, probabilityDistribution, eps);
 	}
 
