@@ -25,10 +25,8 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 	
 	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder) {
-		statistics = new MinimizationStatistics();
 		for (ARecoveryAutomatonMinimizer minimizer : minimizers) {
 			minimizer.minimize(raHolder);
-			statistics.compose(minimizer.getStatistics());
 		}
 	}
 	

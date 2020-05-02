@@ -37,22 +37,13 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 	private Map<State, List<State>> mapStateToBlock;
 	
 	@Override
-	public void minimize(RecoveryAutomatonHolder raHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder) {
 		this.ra = raHolder.getRa();
 		this.raHolder = raHolder;
-		
-		statistics = new MinimizationStatistics();
-		statistics.time = System.currentTimeMillis();
-		statistics.removedStates = ra.getStates().size();
-		statistics.removedTransitions = ra.getTransitions().size();
 
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
 		mergeBlocks(blocks);
-		
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		statistics.removedStates = statistics.removedStates - ra.getStates().size();
-		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 	
 	/**

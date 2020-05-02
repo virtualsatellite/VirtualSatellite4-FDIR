@@ -28,11 +28,6 @@ public class CleanMinimizer extends ARecoveryAutomatonMinimizer {
 	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder) {
 		RecoveryAutomaton ra = raHolder.getRa();
-		
-		statistics = new MinimizationStatistics();
-		statistics.time = System.currentTimeMillis();
-		statistics.removedStates = ra.getStates().size();
-		statistics.removedTransitions = ra.getTransitions().size();
 
 		Map<State, List<Transition>> mapStateToOutgoingTransitions = raHolder.getMapStateToOutgoingTransitions();
 		Map<State, List<Transition>> mapStateToIncomingTransitions = raHolder.getMapStateToIncomingTransitions();
@@ -65,9 +60,5 @@ public class CleanMinimizer extends ARecoveryAutomatonMinimizer {
 		}
 		 
 		ra.getTransitions().removeAll(transitionsToRemove); 
-		
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		statistics.removedStates = statistics.removedStates - ra.getStates().size();
-		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 }

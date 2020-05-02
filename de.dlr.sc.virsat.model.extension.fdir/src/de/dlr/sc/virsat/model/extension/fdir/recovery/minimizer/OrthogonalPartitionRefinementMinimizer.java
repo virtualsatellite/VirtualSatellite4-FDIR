@@ -46,14 +46,9 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	private Set<FaultTreeNode> repeatedEvents;
 	
 	@Override
-	public void minimize(RecoveryAutomatonHolder raHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder) {
 		this.ra = raHolder.getRa();
 		this.raHolder = raHolder;
-		
-		statistics = new MinimizationStatistics();
-		statistics.time = System.currentTimeMillis();
-		statistics.removedStates = ra.getStates().size();
-		statistics.removedTransitions = ra.getTransitions().size();
 		
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		repairableEvents = raHelper.computeRepairableEvents(raHolder);
@@ -63,10 +58,6 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
 		mergeBlocks(blocks);
-		
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		statistics.removedStates = statistics.removedStates - ra.getStates().size();
-		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 	
 	/**
