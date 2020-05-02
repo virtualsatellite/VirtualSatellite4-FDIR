@@ -20,6 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
@@ -308,5 +309,57 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		
 		assertEquals(RESULTING_STATES, ra.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+	}
+	
+	@Test
+	public void testTimedEquivalent() {
+		final int INITIAL_STATES = 2;
+		final int RESULTING_STATES = 1; 
+		final int RESULTING_TRANSITIONS = 0; 
+		
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raHelper.createStates(ra, INITIAL_STATES); 
+		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
+		
+		System.out.println(ra.toDot());
+		
+		minimizer.minimize(ra);
+		
+		assertEquals(RESULTING_STATES, ra.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+	}
+	
+	@Test
+	public void testTimedSuccessiveEquivalent() {
+		final int INITIAL_STATES = 3;
+		final int RESULTING_STATES = 2; 
+		final int RESULTING_TRANSITIONS = 2; 
+		
+		Fault fault = new Fault(concept);
+		
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raHelper.createStates(ra, INITIAL_STATES); 
+		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
+		raHelper.createTimedTransition(ra, ra.getStates().get(1), ra.getStates().get(2), 1);
+		
+		ClaimAction action = new ClaimAction(concept);
+		FaultEventTransition transition22 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(2));
+		raHelper.assignInputs(transition22, fault);
+		raHelper.assignAction(transition22, action);
+		
+		System.out.println(ra.toDot());
+		
+		minimizer.minimize(ra);
+		
+		assertEquals(RESULTING_STATES, ra.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+		
+		TimedTransition timedTransition = (TimedTransition) ra.getTransitions()
+				.stream()
+				.filter(transition -> transition.getFrom().equals(ra.getInitial()) && transition.getTo().equals(ra.getStates().get(1)))
+				.findFirst().get();
+		
+		final double EXPECTED_TIMEOUT = 2;
+		assertEquals(EXPECTED_TIMEOUT, timedTransition.getTime(), 0);
 	}
 }

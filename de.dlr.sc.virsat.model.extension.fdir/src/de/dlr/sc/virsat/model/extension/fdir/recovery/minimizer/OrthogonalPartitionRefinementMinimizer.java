@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+- * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -14,12 +14,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
@@ -36,19 +34,17 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  *
  */
 
-public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
+public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinementMinimizer {
 	private RecoveryAutomaton ra;
-	private RecoveryAutomatonHolder raHolder;
 	
-	private Map<State, List<State>> mapStateToBlock;
 	private Map<State, Map<FaultTreeNode, Boolean>> mapStateToDisabledInputs;
 	private Set<FaultTreeNode> repairableEvents;
 	private Set<FaultTreeNode> repeatedEvents;
 	
 	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder) {
+		super.minimize(raHolder);
 		this.ra = raHolder.getRa();
-		this.raHolder = raHolder;
 		
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		repairableEvents = raHelper.computeRepairableEvents(raHolder);
@@ -129,56 +125,8 @@ public class OrthogonalPartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		return blocks;
 	}
 	
-	/**
-	 * Refines the given partitions until no more refinement is possible.
-	 * A partition needs to be split into refined partitions if at least two states
-	 * have a different transition profile.
-	 * @param blocks the partitions to be refined
-	 */
-	private void refineBlocks(Set<List<State>> blocks) {
-		Queue<List<State>> blocksToProcess = new LinkedList<>(blocks); 
-		while (!blocksToProcess.isEmpty()) {
-			List<State> block = blocksToProcess.poll();
-		
-			if (block.size() <= 1) {
-				continue;
-			}
-			
-			List<List<State>> refinedBlocks = refineBlock(block);
-			if (refinedBlocks.size() > 1) {
-				blocks.remove(block);
-				
-				for (List<State> refinedBlock : refinedBlocks) {
-					blocks.add(refinedBlock);
-					for (State state : refinedBlock) {
-						mapStateToBlock.put(state, refinedBlock);
-					}
-				}
-				
-				// Get the predecessor blocks and check if we now have to refine them
-				for (List<State> refinedBlock : refinedBlocks) {
-					for (State state : refinedBlock) {
-						List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
-						for (Transition transition : incomingTransitions) {
-							List<State> fromBlock = mapStateToBlock.get(transition.getFrom());
-							if (!blocksToProcess.contains(fromBlock)) {
-								blocksToProcess.offer(fromBlock);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Performs one refinement step on a given partition.
-	 * The contained states in the partition are refined into partitions with different transition profile.
-	 * A transition profile is a mapping input -> partition
-	 * @param block the partition to refine
-	 * @return a list of refined partitions
-	 */
-	private List<List<State>> refineBlock(List<State> block) {
+	@Override
+	protected List<List<State>> refineBlock(List<State> block) {
 		Map<Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>>, List<State>> mapBlockReachabilityMapToRefinedBlock = new HashMap<>();
 		List<List<State>> refinedBlocks = new ArrayList<>();
 		
