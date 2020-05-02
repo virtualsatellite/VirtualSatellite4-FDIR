@@ -77,7 +77,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public void updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	public void propgateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
 		IDFTEvent event = stateUpdate.getEvent();
 		
 		if (event.getNode() == null) {
@@ -94,7 +94,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 
 		if (!anyObservation || hasRecoveryStrategy) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
-			super.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
+			super.propgateStateUpdate(stateUpdate, stateUpdateResult);
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
@@ -105,7 +105,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			Queue<FaultTreeNode> worklist = new LinkedList<>(nondetGates);
 			stateUpdateResult.getChangedNodes().clear();
-			super.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult, worklist);
+			super.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
 			propagateObservations(stateUpdateResult);
 		}
 	}
@@ -157,8 +157,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 	
 	/**
 	 * Handles a propagation step for the observability information
-	 * @param succs the successor states
-	 * @param changedNodes the set of nodes from which we want to propagate
+	 * @param stateUpdateResult accumulator for saving results from the update
 	 * @return true if an observation was made during the propagation
 	 */
 	private boolean propagateObservations(StateUpdateResult stateUpdateResult) {

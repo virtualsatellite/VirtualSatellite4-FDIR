@@ -41,6 +41,7 @@ public class MA2BeliefMAConverter {
 	private static final double EPSILON = 0.2;
 	
 	private MarkovAutomaton<BeliefState> beliefMa;
+	
 	private BeliefState initialBeliefState;
 	private DFTStateEquivalence dftStateEquivalence;
 	private BeliefStateEquivalence beliefStateEquivalence;
@@ -52,13 +53,8 @@ public class MA2BeliefMAConverter {
 	 * @return the belief markov automaton
 	 */
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialState) {
-		beliefMa = new MarkovAutomaton<>();
-		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
+		init(ma);
 		initialBeliefState = createInitialState(initialState);
-		dftStateEquivalence = new DFTStateEquivalence();
-		for (DFTState dftState : ma.getStates()) {
-			dftStateEquivalence.addState(dftState);
-		}
 		
 		Queue<BeliefState> toProcess = new LinkedList<>();
 		toProcess.offer(initialBeliefState);
@@ -74,7 +70,7 @@ public class MA2BeliefMAConverter {
 				
 				if (beliefState.isMarkovian()) {
 					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc, succTransitions);
-					double exitRate = getTotalRate(beliefState, entry.getValue());
+					double exitRate = beliefState.getTotalRate(entry.getValue());
 					boolean isFinal = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions, ma);
 					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
 					
@@ -94,6 +90,19 @@ public class MA2BeliefMAConverter {
 		}
 		
 		return beliefMa;
+	}
+	
+	/**
+	 * Initializes the belief markov automaton and other necessary data structures
+	 * @param ma original markov automaton
+	 */
+	private void init(MarkovAutomaton<DFTState> ma) {
+		beliefMa = new MarkovAutomaton<>();
+		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
+		dftStateEquivalence = new DFTStateEquivalence();
+		for (DFTState dftState : ma.getStates()) {
+			dftStateEquivalence.addState(dftState);
+		}
 	}
 	
 	/**
@@ -296,20 +305,6 @@ public class MA2BeliefMAConverter {
 		}
 		
 		return mapRepresentantToTransitions;
-	}
-	
-	/**
-	 * Computes the total rate for a transition set
-	 * @param beliefState the current belief state
-	 * @param transitions a set of transitions
-	 * @return the total rate of the transition set
-	 */
-	private double getTotalRate(BeliefState beliefState, Set<MarkovTransition<DFTState>> transitions) {
-		double getTotalRate = 0;
-		for (MarkovTransition<DFTState> transition : transitions) {
-			getTotalRate += transition.getRate() * beliefState.mapStateToBelief.get(transition.getFrom());
-		}
-		return getTotalRate;
 	}
 
 	/**

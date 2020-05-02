@@ -83,17 +83,15 @@ public class DFTSemantics {
 	}
 	
 	/**
-	 * Updates the changes in the fault tree due to the change of a basic event state
-	 * @param pred the predecessor state
-	 * @param succs a set of successor states
-	 * @param recoveryActions list of recovery actions
-	 * @param event the occured event
+	 * Propagates the changes from the state update
+	 * @param stateUpdate the state update
+	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	public void propgateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
 		if (stateUpdate.getEvent().getNode() != null) {
 			Queue<FaultTreeNode> worklist = createWorklist(stateUpdate.getEvent(), stateUpdateResult.getBaseSucc());
-			updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult, worklist);
+			propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
 		}
 	}
 	
@@ -125,20 +123,18 @@ public class DFTSemantics {
 	}
 	
 	/**
-	 * Updates the changes in the fault tree due to the change of a basic event state
-	 * @param pred the predecessor state
-	 * @param succs a set of successor states
-	 * @param recoveryActions list of recovery actions
-	 * @param worklist the initial worklist
+	 * Propagates the changes from the state update
+	 * @param stateUpdate the state update
+	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
 		List<FaultTreeNode> changedNodes = new ArrayList<>();
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
 		
 		while (!worklist.isEmpty()) {
 			FaultTreeNode ftn = worklist.poll();
-			boolean hasChanged = updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult, ftn);
+			boolean hasChanged = propagateStateUpdateToNode(stateUpdate, stateUpdateResult, ftn);
 			
 			if (hasChanged) {
 				changedNodes.add(ftn);
@@ -155,14 +151,13 @@ public class DFTSemantics {
 	}
 	
 	/**
-	 * Evaluates the fault tree node for every state in a set of given states
-	 * @param pred the predecessor state
-	 * @param states a set of states, may increase due to nondeterminism
+	 * Propagates the changes from the state update to a single node
+	 * @param stateUpdate the state update
+	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @param node the node we want to check
-	 * @param mapStateToRecoveryActions map from state to recovery actions needed to go to the state from the predecessor
 	 * @return true iff a change occurred in the update
 	 */
-	public boolean updateFaultTreeNodeToFailedMap(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, FaultTreeNode node) {
+	public boolean propagateStateUpdateToNode(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, FaultTreeNode node) {
 		if (stateUpdate.getState().isFaultTreeNodePermanent(node)) {
 			return false;
 		}
@@ -206,9 +201,8 @@ public class DFTSemantics {
 	
 	/**
 	 * Extracts the occured event set for recovery strategies
-	 * @param pred the predecessor state
-	 * @param event the event that actually occured
-	 * @param changedNodes the nodes that were affected due to the event
+	 * @param stateUpdate the state update
+	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the set of nodes that affect the recovery actions
 	 */
 	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
@@ -77,6 +78,19 @@ public class BeliefState extends MarkovState {
 			totalBelief += belief;
 		}
 		return totalBelief;
+	}
+	
+	/**
+	 * Computes the total rate for a transition set
+	 * @param transitions a set of transitions
+	 * @return the total rate of the transition set
+	 */
+	public double getTotalRate(Set<MarkovTransition<DFTState>> transitions) {
+		double getTotalRate = 0;
+		for (MarkovTransition<DFTState> transition : transitions) {
+			getTotalRate += transition.getRate() * mapStateToBelief.get(transition.getFrom());
+		}
+		return getTotalRate;
 	}
 	
 	/**

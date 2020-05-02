@@ -187,7 +187,7 @@ public class DFT2MAConverter {
 				event.execute(baseSucc, staticAnalysis);
 				recoveryStrategy.execute(baseSucc);
 				
-				semantics.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
+				semantics.propgateStateUpdate(stateUpdate, stateUpdateResult);
 				
 				statistics.countGeneratedStates += succs.size();
 			} else {
@@ -317,7 +317,7 @@ public class DFT2MAConverter {
 
 		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc(), staticAnalysis);
 		
-		semantics.updateFaultTreeNodeToFailedMap(stateUpdate, stateUpdateResult);
+		semantics.propgateStateUpdate(stateUpdate, stateUpdateResult);
 		
 		statistics.countGeneratedStates += stateUpdateResult.getSuccs().size();
 		
