@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateEquivalence;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
@@ -35,8 +38,13 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 public class MA2BeliefMAConverter {
 	
+	private static final double EPSILON = 0.2;
+	
 	private MarkovAutomaton<BeliefState> beliefMa;
+	
 	private BeliefState initialBeliefState;
+	private DFTStateEquivalence dftStateEquivalence;
+	private BeliefStateEquivalence beliefStateEquivalence;
 	
 	/**
 	 * Creates a belief markov automaton out of the given markov automaton
@@ -45,9 +53,9 @@ public class MA2BeliefMAConverter {
 	 * @return the belief markov automaton
 	 */
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialState) {
-		beliefMa = new MarkovAutomaton<>();
+		init(ma);
 		initialBeliefState = createInitialState(initialState);
-
+		
 		Queue<BeliefState> toProcess = new LinkedList<>();
 		toProcess.offer(initialBeliefState);
 		
@@ -61,9 +69,8 @@ public class MA2BeliefMAConverter {
 				Set<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 				
 				if (beliefState.isMarkovian()) {
-					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc);
-					double exitRate = getTotalRate(beliefState, entry.getValue());
-					
+					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc, succTransitions);
+					double exitRate = beliefState.getTotalRate(entry.getValue());
 					boolean isFinal = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions, ma);
 					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
 					
@@ -86,6 +93,19 @@ public class MA2BeliefMAConverter {
 	}
 	
 	/**
+	 * Initializes the belief markov automaton and other necessary data structures
+	 * @param ma original markov automaton
+	 */
+	private void init(MarkovAutomaton<DFTState> ma) {
+		beliefMa = new MarkovAutomaton<>();
+		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
+		dftStateEquivalence = new DFTStateEquivalence();
+		for (DFTState dftState : ma.getStates()) {
+			dftStateEquivalence.addState(dftState);
+		}
+	}
+	
+	/**
 	 * Creates the initial belief state
 	 * @param initialState the corresponding original initial state
 	 * @return the new intial belief state
@@ -94,6 +114,7 @@ public class MA2BeliefMAConverter {
 		BeliefState initialBeliefState = new BeliefState(beliefMa, initialState);
 		initialBeliefState.mapStateToBelief.put(initialState, 1d);
 		beliefMa.addState(initialBeliefState);
+		beliefStateEquivalence.addState(initialBeliefState);
 		return initialBeliefState;
 	}
 	
@@ -106,7 +127,7 @@ public class MA2BeliefMAConverter {
 	 */
 	private BeliefState addBeliefState(BeliefState beliefState, boolean isFinal) {
 		beliefState.normalize();
-		BeliefState equivalentBeliefState = getEquivalentBeliefState(beliefState);
+		BeliefState equivalentBeliefState = beliefStateEquivalence.getEquivalentState(beliefState);
 		boolean isNewState = beliefState == equivalentBeliefState;
 		
 		if (isNewState) {
@@ -146,26 +167,50 @@ public class MA2BeliefMAConverter {
 			isFinal |= ma.getFinalStates().contains(transition.getTo());
 			
 			if (isInternalTransition) {
-				double time = 1 / exitRate;
+				double exitRateFromState = ma.getExitRateForState(fromState);
+				double time = 1 / transition.getRate();
 				double residueProb = oldProb;
 				
-				double remainProb = Math.exp(-transition.getRate() * time);
+				double remainProb = Math.exp(-exitRateFromState * time);
 				double exitProb = 1 - remainProb;
 				residueProb *= remainProb;
 				prob *= exitProb;
 				
-				beliefSucc.mapStateToBelief.merge(fromState, residueProb, (p1, p2) -> p1 + p2);
+				if (residueProb > 0) {
+					beliefSucc.mapStateToBelief.merge(fromState, residueProb, (p1, p2) -> p1 + p2);
+				}
 			}
 			
-			beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
+			if (prob > 0) {
+				toState = getTargetState(ma, toState);
+				beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
+			}
 			
-			if (!transition.getTo().isMarkovian()) {
+			if (!toState.isMarkovian()) {
 				isMarkovian = false;
-			}
+			} 
 		}
 		beliefSucc.setMarkovian(isMarkovian);
 		
 		return isFinal;
+	}
+	
+	/**
+	 * Checks the target state and updates it if necessary
+	 * @param ma the markov automaton
+	 * @param toState the current target state
+	 * @return the updated target state
+	 */
+	private PODFTState getTargetState(MarkovAutomaton<DFTState> ma, PODFTState toState) {
+		if (!toState.isMarkovian() && toState.getFailedBasicEvents().isEmpty() && toState.getObservedFailed().isEmpty()) {
+			List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
+			toState = (PODFTState) transitions.stream()
+					.filter(t -> t.getEvent().equals(Collections.emptyList()))
+					.map(t -> t.getTo())
+					.findFirst().orElse(toState);
+		}
+		
+		return toState;
 	}
 	
 	/**
@@ -179,14 +224,34 @@ public class MA2BeliefMAConverter {
 	private boolean fillNonDeterministicStateSucc(BeliefState beliefState, BeliefState beliefSucc, Set<MarkovTransition<DFTState>> succTransitions, MarkovAutomaton<DFTState> ma) {
 		boolean isFinal = false;
 		
+		Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
+		
 		beliefSucc.setMarkovian(true);
 		for (MarkovTransition<DFTState> succTransition : succTransitions) {
 			PODFTState succState = (PODFTState) succTransition.getTo();
+			PODFTState fromState = (PODFTState) succTransition.getFrom();
 			
-			double prob = succTransition.getRate() * beliefState.mapStateToBelief.get(succTransition.getFrom());
+			double prob = succTransition.getRate() * beliefState.mapStateToBelief.get(fromState);
 			beliefSucc.mapStateToBelief.put(succState, prob);
 			
+			statesWithNoTransitions.remove(fromState);
 			isFinal |= ma.getFinalStates().contains(succState);
+		}
+		
+		for (PODFTState stateWithNoTransition : statesWithNoTransitions) {
+			if (stateWithNoTransition.getObservedFailedNodes().equals(beliefSucc.representant.getObservedFailedNodes())) {
+				PODFTState succState = stateWithNoTransition;
+				boolean isEquivalent = beliefSucc.representant.getMapSpareToClaimedSpares().equals(stateWithNoTransition.getMapSpareToClaimedSpares());
+				
+				if (!isEquivalent) {
+					DFTState copy = stateWithNoTransition.copy();
+					copy.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
+					succState = (PODFTState) dftStateEquivalence.getEquivalentState(copy);
+				}
+				
+				double prob = beliefState.mapStateToBelief.get(stateWithNoTransition);
+				beliefSucc.mapStateToBelief.put(succState, prob);
+			}
 		}
 		
 		return isFinal;
@@ -210,15 +275,22 @@ public class MA2BeliefMAConverter {
 	private Map<PODFTState, Set<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
 		Map<PODFTState, Set<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new HashMap<>();
 		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
-			List<MarkovTransition<DFTState>> succTransitions = ma.getSuccTransitions(entry.getKey());
+			PODFTState fromState = entry.getKey();
+			if (fromState.isMarkovian() != beliefState.isMarkovian()) {
+				continue;
+			}
+			
+			List<MarkovTransition<DFTState>> succTransitions = ma.getSuccTransitions(fromState);
 			for (MarkovTransition<DFTState> succTransition : succTransitions) {
 				PODFTState succState = (PODFTState) succTransition.getTo();
+				
 				Set<MarkovTransition<DFTState>> transitions = null;
 				
 				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {
 					PODFTState representant = representantEntry.getKey();
 					if (representant.getObservedFailed().equals(succState.getObservedFailed()) 
-							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())) {
+							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())
+							&& representant.isMarkovian() == succState.isMarkovian()) {
 						transitions = representantEntry.getValue();
 					}
 				}
@@ -234,71 +306,29 @@ public class MA2BeliefMAConverter {
 		
 		return mapRepresentantToTransitions;
 	}
-	
-	/**
-	 * Computes the total rate for a transition set
-	 * @param beliefState the current belief state
-	 * @param transitions a set of transitions
-	 * @return the total rate of the transition set
-	 */
-	private double getTotalRate(BeliefState beliefState, Set<MarkovTransition<DFTState>> transitions) {
-		double getTotalRate = 0;
-		for (MarkovTransition<DFTState> transition : transitions) {
-			getTotalRate += transition.getRate() * beliefState.mapStateToBelief.get(transition.getFrom());
-		}
-		return getTotalRate;
-	}
-
-	private static final double EPSILON = 0.05;
-	
-	/**
-	 * Gets an equivalent belief state
-	 * @param state a belief state
-	 * @return an equivalent belief state or the input state if no equivalent state exists
-	 */
-	private BeliefState getEquivalentBeliefState(BeliefState state) {
-		for (BeliefState other : beliefMa.getStates()) {
-			if (state.isMarkovian() != other.isMarkovian()) {
-				continue;
-			}
-			
-			Set<DFTState> dftStates = new HashSet<>(state.mapStateToBelief.keySet());
-			dftStates.addAll(other.mapStateToBelief.keySet());
-			boolean isEquivalent = other.representant.getObservedFailed().equals(state.representant.getObservedFailed()) 
-					&& other.representant.getMapSpareToClaimedSpares().equals(state.representant.getMapSpareToClaimedSpares());
-			
-			if (isEquivalent) {
-				for (DFTState dftState : dftStates) {
-					
-					double prob = state.mapStateToBelief.getOrDefault(dftState, Double.NaN);
-					double probOther = other.mapStateToBelief.getOrDefault(dftState, Double.NaN);
-					double diff = Math.abs(prob - probOther);
-					
-					if (Double.isNaN(diff) || diff > EPSILON) {
-						isEquivalent = false;
-						break;
-					}
-				}
-			}
-			
-			if (isEquivalent) {
-				return other;
-			}
-		}
-		
-		return state;
-	}
 
 	/**
 	 * Extracts the set observation event containing the observed events and the information if this is a repair
 	 * event or not
+	 * @param succTransitions the successor transitions from a belief state to the successor belief state
 	 * @return the set of observation event
 	 */
-	private Entry<Set<Object>, Boolean> extractObservationEvent(BeliefState beliefState, BeliefState beliefSucc) {
+	private Entry<Set<Object>, Boolean> extractObservationEvent(BeliefState beliefState, BeliefState beliefSucc, Set<MarkovTransition<DFTState>> succTransitions) {
+		Set<Object> observationSet = new HashSet<>();
+		
+		MarkovTransition<DFTState> representantTransition = succTransitions.iterator().next();
+		Object event = representantTransition.getEvent();
+		if (event instanceof ObservationEvent) {
+			ObservationEvent obsEvent = (ObservationEvent) event;
+			observationSet.add(obsEvent.getNode());
+			Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, obsEvent.getIsRepair());
+			return observationEvent;
+		}
+		
 		// obtain all newly observed failed nodes
 		Set<FaultTreeNode> succObservedFailedNodes = beliefSucc.representant.getObservedFailedNodes();
 		Set<FaultTreeNode> currentObservedFailedNodes = beliefState.representant.getObservedFailedNodes();
-		Set<Object> observationSet = new HashSet<>(succObservedFailedNodes);
+		observationSet.addAll(succObservedFailedNodes);
 		observationSet.removeAll(currentObservedFailedNodes);
 		
 		// obtain all newly observed repaired nodes in the event that no failures were observed
@@ -330,9 +360,23 @@ public class MA2BeliefMAConverter {
 		
 		for (Entry<Object, Set<MarkovTransition<DFTState>>> succTransitionGroup : groupedSuccTransitions.entrySet()) {	
 			double prob = 0;
+			
+			Set<DFTState> succStates = new HashSet<>();
+			
 			for (MarkovTransition<DFTState> succTransition : succTransitionGroup.getValue()) {
+				succStates.add(succTransition.getFrom());
 				prob += beliefState.mapStateToBelief.get(succTransition.getFrom());
 			}
+			
+			for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
+				PODFTState state = entry.getKey();
+				if (!succStates.contains(state)) {
+					if (state.getFailedBasicEvents().isEmpty()) {
+						prob += entry.getValue();
+					}
+				}
+			}
+			
 			beliefMa.addNondeterministicTransition(succTransitionGroup.getKey(), beliefState, beliefSucc, prob);
 		}
 	}

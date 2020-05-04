@@ -28,13 +28,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class StandardSPARESemantics implements INodeSemantics {
 	
 	@Override
-	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred, FaultTreeHolder ftHolder,
+	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			GenerationResult generationResult) {
 		
 		if (!(node instanceof SPARE)) {
 			throw new IllegalArgumentException("Expected node of type SPARE but instead got node " + node);
 		}
 		
+		FaultTreeHolder ftHolder = state.getFTHolder();
 		SPARE spareGate = (SPARE) node;
 		
 		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(spareGate);
@@ -66,7 +67,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 		
 		if (canClaim) {
 			for (FaultTreeNode spare : spares) {
-				if (!state.hasFaultTreeNodeFailed(spare) && !state.getMapSpareToClaimedSpares().containsKey(spare)) {
+				if (!state.hasFaultTreeNodeFailed(spare)) {
 					if (performClaim(spareGate, spare, state, generationResult)) {
 						foundSpare = true;
 						break;
@@ -154,7 +155,11 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state, 
 			GenerationResult generationResult) {
-		state.getSpareClaims().put(spare, node);
+		if (state.getMapSpareToClaimedSpares().containsKey(spare)) {
+			return false;
+		}
+			
+		state.getMapSpareToClaimedSpares().put(spare, node);
 		state.setNodeActivation(spare, true);
 		return true;
 	}

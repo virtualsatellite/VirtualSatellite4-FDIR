@@ -27,12 +27,14 @@ public class VOTESemantics implements INodeSemantics {
 
 	@Override
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
-			FaultTreeHolder ftHolder, GenerationResult generationResult) {
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+			GenerationResult generationResult) {
 		
 		if (!(node instanceof VOTE)) {
 			throw new IllegalArgumentException("Expected node of type VOTE but got node " + node);
 		}
+		
+		FaultTreeHolder ftHolder = state.getFTHolder();
+		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		
 		int failed = 0;
 		int permanentlyFailed = 0;

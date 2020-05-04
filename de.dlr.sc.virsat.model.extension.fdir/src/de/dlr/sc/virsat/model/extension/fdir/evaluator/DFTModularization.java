@@ -18,7 +18,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -50,7 +50,7 @@ public class DFTModularization {
 	 * @param ftHolder the fault tree holder
 	 * @param symmetryChecker optionally a symmetry checker
 	 */
-	public DFTModularization(Modularizer modularizer, FaultTreeHolder ftHolder, FaultTreeSymmetryChecker symmetryChecker) {
+	public DFTModularization(Modularizer modularizer, FaultTreeHolder ftHolder, DFTSymmetryChecker symmetryChecker) {
 		Fault rootFault = (Fault) ftHolder.getRoot();
 		modules = modularizer.getModules(rootFault.getFaultTree());
 		
@@ -95,7 +95,7 @@ public class DFTModularization {
 	 * @param symmetryChecker the symmetry checker
 	 * @return a mapping from a node to the symmetric representant
 	 */
-	private Map<FaultTreeNode, FaultTreeNode> createMapNodeToRepresentant(FaultTreeHolder ftHolder, FaultTreeSymmetryChecker symmetryChecker) {
+	private Map<FaultTreeNode, FaultTreeNode> createMapNodeToRepresentant(FaultTreeHolder ftHolder, DFTSymmetryChecker symmetryChecker) {
 		Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = new HashMap<>();
 		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);

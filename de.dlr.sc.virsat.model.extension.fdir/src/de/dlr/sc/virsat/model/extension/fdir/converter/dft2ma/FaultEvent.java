@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
@@ -65,28 +64,23 @@ public class FaultEvent implements IDFTEvent {
 		}
 	}
 	
-	/**
-	 * Executes a single basic event
-	 * @param state the current state
-	 * @param orderDependentBasicEvents set of all basic events that are order dependent 
-	 * @param transientNodes set of all transient nodes
-	 */
-	public void execute(DFTState state, Set<BasicEvent> orderDependentBasicEvents, Set<FaultTreeNode> transientNodes) {
+	@Override
+	public void execute(DFTState state, DFTStaticAnalysis staticAnalysis) {
 		if (isRepair) {
-			if (orderDependentBasicEvents.contains(be)) {
+			if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
 				state.orderedBes.remove(be);
 			} else {
 				state.unorderedBes.remove(be);
 			}
 			state.setFaultTreeNodeFailed(be, false);
 		} else {
-			if (orderDependentBasicEvents.contains(be)) {
+			if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
 				state.orderedBes.add(be);
 			} else {
 				state.unorderedBes.add(be);
 			}
 			state.setFaultTreeNodeFailed(be, true);
-			if (!transientNodes.contains(be)) {
+			if (!staticAnalysis.getTransientNodes().contains(be)) {
 				state.setFaultTreeNodePermanent(be, true);
 			}
 		}

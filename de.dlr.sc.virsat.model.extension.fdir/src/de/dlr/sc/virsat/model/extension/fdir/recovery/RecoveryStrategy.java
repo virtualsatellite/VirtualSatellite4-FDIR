@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.TimeEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
@@ -73,6 +74,17 @@ public class RecoveryStrategy {
 	@Override
 	public String toString() {
 		return currentState.toString();
+	}
+	
+	/**
+	 * Executes the current strategy on a state
+	 * @param state the state to execute the strategy on
+	 */
+	public void execute(DFTState state) {
+		state.setRecoveryStrategy(this);
+		for (RecoveryAction ra : getRecoveryActions()) {
+			ra.execute(state);
+		}
 	}
 
 	/**

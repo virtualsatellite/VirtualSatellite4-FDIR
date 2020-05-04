@@ -13,6 +13,7 @@ Export-Package: de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.fdir.core.markov.modelchecker,
  de.dlr.sc.virsat.fdir.core.markov.scheduler,
  de.dlr.sc.virsat.fdir.core.matrix,
+ de.dlr.sc.virsat.fdir.core.matrix.iterator,
  de.dlr.sc.virsat.fdir.core.metrics
 Eclipse-ExtensibleAPI: true
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.core

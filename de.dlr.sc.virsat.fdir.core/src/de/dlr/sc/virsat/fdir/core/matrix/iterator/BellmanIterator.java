@@ -8,38 +8,40 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package de.dlr.sc.virsat.fdir.core.matrix;
+package de.dlr.sc.virsat.fdir.core.matrix.iterator;
+
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 
 public class BellmanIterator extends MatrixIterator {
 	
 	private double[] baseMTTFs;
 	private double[] result;
-	private double[] oldProbabilityDistribution;
+	private double[] oldValues;
 
-	public BellmanIterator(IMatrix matrix, double[] probabilityDistribution, double eps) {
-		super(matrix, probabilityDistribution, eps);
-		baseMTTFs = probabilityDistribution.clone();
-		result = new double[probabilityDistribution.length];
+	public BellmanIterator(IMatrix matrix, double[] initialValues) {
+		super(matrix, initialValues);
+		baseMTTFs = initialValues.clone();
+		result = new double[initialValues.length];
 	}
 
 	@Override
 	public void iterate() {
-		oldProbabilityDistribution = probabilityDistribution.clone();
-		matrix.multiply(probabilityDistribution, result);
+		oldValues = values.clone();
+		matrix.multiply(values, result);
 		
 		for (int i = 0; i < baseMTTFs.length; ++i) {
 			result[i] += baseMTTFs[i];
 		}
-		probabilityDistribution = result.clone();	
+		values = result.clone();	
 	}
 	
 	@Override
-	public double[] getOldProbabilityDistribution() {
-		return oldProbabilityDistribution;
+	public double[] getOldValues() {
+		return oldValues;
 	}
 	
 	@Override
 	public double getChange() {
-		return Math.abs(oldProbabilityDistribution[0] - probabilityDistribution[0]);	
+		return Math.abs(oldValues[0] - values[0]);	
 	}
 }

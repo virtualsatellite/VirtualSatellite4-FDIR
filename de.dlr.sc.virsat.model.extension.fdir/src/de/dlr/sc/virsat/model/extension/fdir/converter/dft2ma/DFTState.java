@@ -90,6 +90,7 @@ public class DFTState extends MarkovState {
 		failingNodes = (BitSet) other.failingNodes.clone();
 		ftHolder = other.ftHolder;
 		recoveryStrategy = other.recoveryStrategy;
+		index = other.index + 1;
 	}
 	
 	/**
@@ -126,6 +127,8 @@ public class DFTState extends MarkovState {
 		
 		if (isFailState) {
 			res += ", color=\"red\"";
+		} else if (!isMarkovian()) {
+			res += ", color=\"blue\"";
 		}
 		
 		res += "]";
@@ -163,14 +166,6 @@ public class DFTState extends MarkovState {
 	}
 	
 	/**
-	 * Get the map from spare gate to claimed spare
-	 * @return a mapping from spare gates to claimed spares
-	 */
-	public Map<FaultTreeNode, FaultTreeNode> getSpareClaims() {
-		return mapSpareToClaimedSpares;
-	}
-	
-	/**
 	 * Get the set of nodes that have failed
 	 * @return set of failed nodes
 	 */
@@ -184,6 +179,10 @@ public class DFTState extends MarkovState {
 	 */
 	public Map<FaultTreeNode, FaultTreeNode> getMapSpareToClaimedSpares() {
 		return mapSpareToClaimedSpares;
+	}
+	
+	public void setMapSpareToClaimedSpares(Map<FaultTreeNode, FaultTreeNode> mapSpareToClaimedSpares) {
+		this.mapSpareToClaimedSpares = mapSpareToClaimedSpares;
 	}
 	
 	/**
@@ -338,9 +337,9 @@ public class DFTState extends MarkovState {
 	 * Makes a DFT state uniform by failing all basic events and nodes about we
 	 * dont care what exact state we have
 	 * @param changedNodes the nodes that have changed in this dft state
-	 * @param orderDependentBasicEvents set of basic events that are dependent
+	 * @param staticAnalysis static anaylsis data
 	 */
-	public void failDontCares(List<FaultTreeNode> changedNodes, Set<BasicEvent> orderDependentBasicEvents) {
+	public void failDontCares(List<FaultTreeNode> changedNodes, DFTStaticAnalysis staticAnalysis) {
 		Stack<FaultTreeNode> toProcess = new Stack<>();
 		toProcess.addAll(changedNodes);
 		
@@ -385,7 +384,7 @@ public class DFTState extends MarkovState {
 					int beID = ftHolder.getNodeIndex(be);
 					failedNodes.set(beID);
 					permanentNodes.set(beID);
-					if (orderDependentBasicEvents.contains(be)) {
+					if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
 						if (!orderedBes.contains(be)) {
 							orderedBes.add((BasicEvent) be);
 						}
@@ -406,10 +405,6 @@ public class DFTState extends MarkovState {
 				
 				removeClaimedSparesOnFailureIfPossible(ftn);
 			}
-		}
-		
-		if (recoveryStrategy != null && isFaultTreeNodePermanent(ftHolder.getRoot())) {
-			recoveryStrategy = recoveryStrategy.reset();
 		}
 	}
 	
@@ -556,6 +551,10 @@ public class DFTState extends MarkovState {
 	 * @return true iff also the claims and the order of the ordered failed basic events match
 	 */
 	public boolean isEquivalent(DFTState other) {
+		if (isMarkovian() != other.isMarkovian()) {
+			return false;
+		}
+		
 		if (recoveryStrategy != null) {
 			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
 				return false;
@@ -577,7 +576,6 @@ public class DFTState extends MarkovState {
 		
 		return false;
 	}
-	
 	
 	/**
 	 * Creates the symmetry requirements for this state
@@ -638,5 +636,7 @@ public class DFTState extends MarkovState {
 		return mapParentToSymmetryRequirements;
 	}
 
-
+	public DFTState copy() {
+		return new DFTState(this);
+	}
 }
