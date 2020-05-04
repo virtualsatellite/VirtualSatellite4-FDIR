@@ -71,7 +71,13 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		}
 		
 		DFTState generatorState = generationResult.getGeneratorState();
-		FaultTreeNode currentClaimant = generatorState.getMapSpareToClaimedSpares().get(spare);
+		FaultTreeNode currentClaimantGenerator = generatorState.getMapSpareToClaimedSpares().get(spare);
+		
+		if (currentClaimantGenerator != null && currentClaimantGenerator.equals(node)) {
+			return false;
+		}
+		
+		FaultTreeNode currentClaimant = state.getMapSpareToClaimedSpares().get(spare);
 		boolean reclaim = currentClaimant != null;
 		
 		if (reclaim && currentClaimant.equals(node)) {

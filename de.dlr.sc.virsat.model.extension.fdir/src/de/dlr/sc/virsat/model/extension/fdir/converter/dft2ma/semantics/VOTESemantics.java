@@ -50,14 +50,16 @@ public class VOTESemantics implements INodeSemantics {
 		
 		long votingThreshold = ((VOTE) node).getVotingThreshold();
 		boolean hasFailed = failed >= votingThreshold;
+		boolean hasChanged = false;
 		
 		if (hasFailed) {
 			boolean hasPermanentlyFailed = permanentlyFailed >= votingThreshold;
 			if (hasPermanentlyFailed) {
-				state.setFaultTreeNodePermanent(node, true);
+				hasChanged |= state.setFaultTreeNodePermanent(node, true);
 			} 
 		}
 		
-		return state.setFaultTreeNodeFailed(node, hasFailed);
+		hasChanged |= state.setFaultTreeNodeFailed(node, hasFailed);
+		return hasChanged;
 	}
 }

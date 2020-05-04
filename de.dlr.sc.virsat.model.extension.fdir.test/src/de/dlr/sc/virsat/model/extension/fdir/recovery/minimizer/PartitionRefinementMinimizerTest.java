@@ -354,9 +354,11 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		assertEquals(RESULTING_STATES, ra.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
 		
+		System.out.println(ra.toDot());
+		
 		TimedTransition timedTransition = (TimedTransition) ra.getTransitions()
 				.stream()
-				.filter(transition -> transition.getFrom().equals(ra.getInitial()) && transition.getTo().equals(ra.getStates().get(1)))
+				.filter(transition -> transition.getFrom().equals(ra.getStates().get(0)) && transition.getTo().equals(ra.getStates().get(1)))
 				.findFirst().get();
 		
 		final double EXPECTED_TIMEOUT = 2;

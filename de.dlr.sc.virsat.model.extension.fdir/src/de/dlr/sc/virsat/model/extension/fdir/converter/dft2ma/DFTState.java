@@ -50,9 +50,9 @@ public class DFTState extends MarkovState {
 	
 	private Set<Fault> activeFaults;
 	
-	private BitSet failedNodes;
-	private BitSet permanentNodes;
-	private BitSet failingNodes;
+	protected BitSet failedNodes;
+	protected BitSet permanentNodes;
+	protected BitSet failingNodes;
 	
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
 	
@@ -260,10 +260,13 @@ public class DFTState extends MarkovState {
 	 * Updates the permanent state of the given fault tree
 	 * @param node the node to modify
 	 * @param permanent the permanence of the node state
+	 * @return true iff the permanence was changed
 	 */
-	public void setFaultTreeNodePermanent(FaultTreeNode node, boolean permanent) {
+	public boolean setFaultTreeNodePermanent(FaultTreeNode node, boolean permanent) {
 		int nodeID = ftHolder.getNodeIndex(node);
+		boolean hasChanged = permanentNodes.get(nodeID) != permanent;
 		permanentNodes.set(nodeID, permanent);
+		return hasChanged;
 	}
 	
 	/**
@@ -377,7 +380,6 @@ public class DFTState extends MarkovState {
 						}
 					}
 				}
-				
 				
 				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(ftn, Collections.emptyList());
 				for (FaultTreeNode be : basicEvents) {

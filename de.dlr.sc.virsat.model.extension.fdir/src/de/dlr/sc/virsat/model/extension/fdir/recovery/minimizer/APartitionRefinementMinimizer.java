@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,27 +54,44 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 			if (refinedBlocks.size() > 1) {
 				blocks.remove(block);
 				
-				for (List<State> refinedBlock : refinedBlocks) {
-					blocks.add(refinedBlock);
-					for (State state : refinedBlock) {
-						mapStateToBlock.put(state, refinedBlock);
-					}
-				}
-				
-				// Get the predecessor blocks and check if we now have to refine them
-				for (List<State> refinedBlock : refinedBlocks) {
-					for (State state : refinedBlock) {
-						List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
-						for (Transition transition : incomingTransitions) {
-							List<State> fromBlock = mapStateToBlock.get(transition.getFrom());
-							if (!blocksToProcess.contains(fromBlock)) {
-								blocksToProcess.offer(fromBlock);
-							}
-						}
+				List<List<State>> outdatedBlocks = handleRefinement(blocks, refinedBlocks);
+				for (List<State> outdatedBlock  : outdatedBlocks) {
+					if (!blocksToProcess.contains(outdatedBlock)) {
+						blocksToProcess.offer(outdatedBlock);
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Updates the current partitions with the new refinement
+	 * @param blocks the current partitions
+	 * @param refinedBlocks the refinement of a block
+	 * @return the new blocks that need to be considered to refinement
+	 */
+	private List<List<State>> handleRefinement(Set<List<State>> blocks, List<List<State>> refinedBlocks) {
+		List<List<State>> outdatedBlocks = new ArrayList<>();
+		
+		for (List<State> refinedBlock : refinedBlocks) {
+			blocks.add(refinedBlock);
+			for (State state : refinedBlock) {
+				mapStateToBlock.put(state, refinedBlock);
+			}
+		}
+		
+		// Get the predecessor blocks and check if we now have to refine them
+		for (List<State> refinedBlock : refinedBlocks) {
+			for (State state : refinedBlock) {
+				List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
+				for (Transition transition : incomingTransitions) {
+					List<State> fromBlock = mapStateToBlock.get(transition.getFrom());
+					outdatedBlocks.add(fromBlock);
+				}
+			}
+		}
+		
+		return outdatedBlocks;
 	}
 	
 	/**

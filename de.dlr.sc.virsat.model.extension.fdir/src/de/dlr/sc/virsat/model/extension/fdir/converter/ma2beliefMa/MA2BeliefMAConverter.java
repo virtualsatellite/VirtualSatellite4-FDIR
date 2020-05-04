@@ -164,7 +164,6 @@ public class MA2BeliefMAConverter {
 			
 			double oldProb = beliefState.mapStateToBelief.get(fromState);
 			double prob = oldProb * transition.getRate() / exitRate;
-			isFinal |= ma.getFinalStates().contains(transition.getTo());
 			
 			if (isInternalTransition) {
 				double exitRateFromState = ma.getExitRateForState(fromState);
@@ -182,9 +181,13 @@ public class MA2BeliefMAConverter {
 			}
 			
 			if (prob > 0) {
-				toState = getTargetState(ma, toState);
+				if (isInternalTransition) {
+					toState = getTargetState(ma, toState);
+				}
 				beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
 			}
+			
+			isFinal |= ma.getFinalStates().contains(toState);
 			
 			if (!toState.isMarkovian()) {
 				isMarkovian = false;
@@ -202,7 +205,7 @@ public class MA2BeliefMAConverter {
 	 * @return the updated target state
 	 */
 	private PODFTState getTargetState(MarkovAutomaton<DFTState> ma, PODFTState toState) {
-		if (!toState.isMarkovian() && toState.getFailedBasicEvents().isEmpty() && toState.getObservedFailed().isEmpty()) {
+		if (!toState.isMarkovian()) {
 			List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
 			toState = (PODFTState) transitions.stream()
 					.filter(t -> t.getEvent().equals(Collections.emptyList()))

@@ -1,0 +1,7 @@
+toplevel "tle";
+"tle" or "s" "c";
+"s" csp "a" "b";
+"a" lambda=1;
+"b" lambda=1;
+"c" lambda=2;
+"O" observer "tle" obsRate=10;

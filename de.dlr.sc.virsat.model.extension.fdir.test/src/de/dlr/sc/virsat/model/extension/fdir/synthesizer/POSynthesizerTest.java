@@ -108,6 +108,23 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals(EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
 	}
+	
+	@Test
+	public void testSynthesizeObsOr2Csp2BEDelayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2BEDelayed.dft");
+		POSynthesizer synthesizer = new POSynthesizer();
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 1;
+		final double EXPECTED_MTTF = 0.333333333333;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
 
 	@Test
 	public void testSynthesizeObsOr2Csp2() throws IOException {
@@ -117,6 +134,8 @@ public class POSynthesizerTest extends ATestCase {
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		final double EXPECTED_MTTF = 1.125;
+		
+		System.out.println(ra.toDot());
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -130,6 +149,10 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		System.out.println(ra.toDot());
+		
+		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_TRANSITIONS = 3;
 		final double EXPECTED_MTTF = 0.5;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
@@ -157,6 +180,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBEDelayed.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 6;
