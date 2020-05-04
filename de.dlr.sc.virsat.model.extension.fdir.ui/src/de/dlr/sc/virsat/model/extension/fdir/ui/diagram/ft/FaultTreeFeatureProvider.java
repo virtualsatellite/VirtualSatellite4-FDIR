@@ -206,6 +206,9 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 	public IFeature[] getDragAndDropFeatures(IPictogramElementContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		
+		
+		List<ICreateConnectionFeature> featuresResult = new ArrayList<ICreateConnectionFeature>();
+		
 		ICreateConnectionFeature[] createConnectionFeatures = getCreateConnectionFeatures();
 		for (ICreateConnectionFeature createConnectionFeature : createConnectionFeatures) {
 			CreateConnectionContext connectionContext = new CreateConnectionContext();
@@ -217,13 +220,14 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 			} else if (pictogramElement instanceof AnchorContainer) {
 				anchor = Graphiti.getPeService().getChopboxAnchor((AnchorContainer) pictogramElement);
 			}
+
 			connectionContext.setSourceAnchor(anchor);
 			
 			if (createConnectionFeature.isAvailable(connectionContext) && createConnectionFeature.canStartConnection(connectionContext)) {
-				return new IFeature[] {createConnectionFeature};
+				featuresResult.add(createConnectionFeature);
 			}			
 		}
-		return null;
+		return featuresResult.toArray(new IFeature[featuresResult.size()]);
 	}
 	
 	@Override
