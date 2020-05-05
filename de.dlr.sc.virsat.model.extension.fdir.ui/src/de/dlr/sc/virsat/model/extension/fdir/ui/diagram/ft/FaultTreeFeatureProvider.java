@@ -43,7 +43,6 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
-import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -205,24 +204,14 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 	@Override
 	public IFeature[] getDragAndDropFeatures(IPictogramElementContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
-		
-		
 		List<ICreateConnectionFeature> featuresResult = new ArrayList<ICreateConnectionFeature>();
 		
 		ICreateConnectionFeature[] createConnectionFeatures = getCreateConnectionFeatures();
 		for (ICreateConnectionFeature createConnectionFeature : createConnectionFeatures) {
 			CreateConnectionContext connectionContext = new CreateConnectionContext();
-			connectionContext.setSourcePictogramElement(pictogramElement);
-			
-			Anchor anchor = null;
-			if (pictogramElement instanceof Anchor) {
-				anchor = (Anchor) pictogramElement;
-			} else if (pictogramElement instanceof AnchorContainer) {
-				anchor = Graphiti.getPeService().getChopboxAnchor((AnchorContainer) pictogramElement);
-			}
-
-			connectionContext.setSourceAnchor(anchor);
-			
+			connectionContext.setSourcePictogramElement(pictogramElement);			
+			Anchor anchor = AnchorUtil.getAnchorForPictogramElement(pictogramElement);			
+			connectionContext.setSourceAnchor(anchor);			
 			if (createConnectionFeature.isAvailable(connectionContext) && createConnectionFeature.canStartConnection(connectionContext)) {
 				featuresResult.add(createConnectionFeature);
 			}			
