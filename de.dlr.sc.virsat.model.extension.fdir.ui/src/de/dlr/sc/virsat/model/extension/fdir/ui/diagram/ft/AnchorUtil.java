@@ -19,6 +19,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -160,6 +161,21 @@ public class AnchorUtil {
 				break;
 		}
 		
+		return anchor;
+	}
+	
+	/**
+	 * Gets anchor for given pictogram element
+	 * @param pictogramElement the pictogram element
+	 * @return the anchor for given pictogram element. Null if no anchor is present for given pictogram element
+	 */
+	public static Anchor getAnchorForPictogramElement(PictogramElement pictogramElement) {
+		Anchor anchor = null;
+		if (pictogramElement instanceof Anchor) {
+			anchor = (Anchor) pictogramElement;
+		} else if (pictogramElement instanceof AnchorContainer) {
+			anchor = Graphiti.getPeService().getChopboxAnchor((AnchorContainer) pictogramElement);
+		}
 		return anchor;
 	}
 }
