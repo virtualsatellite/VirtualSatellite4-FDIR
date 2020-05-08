@@ -78,6 +78,8 @@ _[Name of the fault tree element]_ [Icon]::
 In addition to its inherent parameters, each fault tree node also has a name, a list of inputs, and a list of outputs.
 For gates, the name is by default the type of the node.
 
+'''
+
 :type: Fault
 _{type}_ image:faultTrees/{type}.png[{type} icon]::
 -- Description:::
@@ -98,12 +100,22 @@ They represent basic anomalies that are not further broken down in the course of
 In practice, basic events most commonly correspond to causes of equipment failure.
 A basic event is always directly associated to a fault.
 All fault propagations in a fault tree ultimately originate from basic events.
-Ideally, a basic event is equipped with a failure rate, quantifying its likelihood of occurrence over time.
-The failure rate states how often the basic event is expected to occur within a time unit.
-Optionally, it may also be equipped with a repair rate which conversely captures the likelihood of repair over time.
-Finally, a basic event may also be equipped with a cold failure rate, which comes into play when interacting together with the SPARE gate.
+A basic event supports the following additional properties:
+* `failureRate`: 
+At minimum, a basic event must have a failure rate for quantitative evaluation such as reliability analysis.
+The failure rate states how often the basic event is expected to occur within a time unit,
+quantifying its likelihood of occurrence over time.
+* `repairRate`: 
+Optionally, it may also be equipped with a repair rate, 
+which conversely captures the likelihood of repair over time.
+* `coldFailureRate`: 
+A basic event may also be equipped with a cold failure rate, 
+which comes into play when interacting together with the SPARE gate.
+It states the modified failure rate that is used when a basic event is dormant.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
+
+'''
 
 :type: Propagation
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
@@ -115,12 +127,16 @@ Since fault trees are acyclic graphs, fault propagations may not create any cycl
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 
+'''
+
 :type: AND
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
 -- Description:::
 A gate that propagates if all inputs have failed.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
+
+'''
 
 :type: OR
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
@@ -129,13 +145,19 @@ A gate that propagates if at least one input has failed.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 
+'''
+
 :type: VOTE
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
 -- Description:::
-A gate, that is also equipped with a voting threshold k, and propagates if at least k inputs have failed.
+A gate that only propagates if a certain number of inputs have failed.
+A VOTE gate is equipped with a `votingThreshold` property, 
+and propagates if at least `votingThreshold` many inputs have failed.
 The voting threshold has to be at least 1.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
+
+'''
 
 :type: SPARE
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
@@ -161,6 +183,8 @@ A Priority OR (POR) gate propagates if the left-most input occurs before any oth
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 
+'''
+
 :type: PORI
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
 -- Description:::
@@ -169,12 +193,16 @@ or at the same time as another input.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 
+'''
+
 :type: PAND
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
 -- Description:::
 A Priority AND (PAND) gate propagates if the inputs fail exactly in sequence from left to right.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
+
+'''
 
 :type: PANDI
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
@@ -191,6 +219,8 @@ A Simultaneous AND (SAND) gate propagates if all inputs fail at the same time.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 
+'''
+
 :type: FDEP
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
 -- Description:::
@@ -199,14 +229,18 @@ In the event of any input event occurring, all connected basic events get trigge
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 
+'''
+
 :type: RDEP
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
 -- Description:::
 The rate dependency (RDEP) gate allows to increase the failure rate of a basic event.
-An RDEP is equipped with a rate change parameter r.
-In the event of any input event occurring, the failure rate of all connected basic events is multiplied by r.
+An RDEP is equipped with a rate change property `rateChange`.
+In the event of any input event occurring, the failure rate of all connected basic events is multiplied by `rateChange`.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
+
+'''
 
 :type: PDEP
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
@@ -214,18 +248,23 @@ _{type}_ image:faultTrees/{type}.png[{type} icon]::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 -- Description:::
 The probability dependency (PDEP) gate allows to trigger basic events.
-The PDEP gate is equipped with a trigger probability p.
-In the event of any input event occurring, each connected basic event is triggered with probability p.
+The PDEP gate is equipped with a trigger probability `probability`.
+In the event of any input event occurring, each connected basic event is triggered with probability `probability`.
+The PDEP propagation is checked every time an input fails.
+
+'''
 
 :type: DELAY
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
 -- Description:::
 The DELAY gate can be used to describe time delays in propagation.
-The gate is equipped with a delay parameter d.
-Propagation occurs if any input fails and remains failed for a duration of d time units.
-If the failed inputs are repaired before the DELAY gate perfoms a propagation, then the propagation process is stopped.
+The gate is equipped with a delay parameter `delay`.
+Propagation occurs if any input fails and remains failed for a duration of `delay` time units.
+If the failed inputs are repaired before the DELAY gate performs a propagation, then the propagation process is stopped.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
+
+'''
 
 :type: MONITOR
 _{type}_ image:faultTrees/{type}.png[{type} icon]::  
@@ -240,19 +279,21 @@ Failed MONITOR gates may no longer perform any observations.
 In the case of an observation input occurring, the event is marked as observed.
 Only then can reactive gates such as SPARE gates react and claim a spare.
 The recovery actions in partial observable fault trees are managed by recovery automata.
-A MONITOR gate may also be equipped with an observation rate o.
+A MONITOR gate is also equipped with an `observationRate` property.
 In the event of it being 0, all observation events are observed immediately.
-If the observation rate is non-zero, all observation events are observed with time delay o.
+If `observationRate` is non-zero, all observation events are observed with the time delay given by the inverse of `observationRate`.
 -- Graphical representation:::
 image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
 
-==== The graphical Fault Tree Editor
+'''
+
+==== The Graphical Fault Tree Editor
 
 Besides the usual table based user interface, VirSat FDIR offers a graphical diagram editor interface.
 Learn in this section how to create new fault tree diagrams and how to use them for building fault tree models.
 Fault tree diagrams can also be used to simply visualize existing fault tree models.
 
-===== Creating a new Fault Tree Diagram
+===== Creating a New Fault Tree Diagram
 
 Each fault tree diagram is associated with a fault.
 The fault locally constitutes a top-level event.
@@ -395,10 +436,11 @@ Learn in this section how the recovery automaton model is structured, and how to
 === Modeling Recovery Automata
 
 A recovery automaton (RA) is a finite, deterministic state machine without timed transitions.
-An RA contains is constituted of two main elements: States and transitions.
-States represent a recovery internal state of knowledge.
-Each RA must have an initial state specified.
-Transitions state the actual recovery behavior.
+An RA contains is constituted of the following properties:
+
+* `states`: States represent a recovery internal state of knowledge.
+* `initial`: Each RA must have an initial state specified.
+* `transitions`: Transitions state the actual recovery behavior.
 They are labeled with a list of *guards* that states the condition that triggers the transition and a list of recovery actions,
 which are then executed.
 RAs operate under maximum progress assumption, i.e., whenever a transition is enabled it must be taken.
@@ -417,6 +459,8 @@ _[Name of the recovery automaton element]_ [Icon]::
 If there is no applicable graphic representation, the item is left out.
 Like all Virtual Satellite elements, in addition to its parameters, every recovery element also has a name.
 
+'''
+
 :type: State
 _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::  
 -- Description:::
@@ -427,6 +471,8 @@ _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::
 -- Graphical representation:::
 image:recoveryAutomata/{type}_Diagram.png[Representation in graphical editor]
 
+'''
+
 :type: FaultEventTransition
 _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::  
 -- Description:::
@@ -435,6 +481,8 @@ _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::
  As a transition, is is also equipped with a list of recovery actions, executed upon triggering the transition.
 -- Graphical representation:::
 image:recoveryAutomata/{type}_Diagram.png[Representation in graphical editor]
+
+'''
 
 :type: TimedTransition
 _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::  
@@ -452,18 +500,43 @@ _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::
 -- Description:::
  The free action is a recovery action, describing that all claims on a specified spare should be cleared.
  
+'''
+ 
 :type: ClaimAction
 _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::  
 -- Description:::
- THe claim action is a recovery action, describing that some SPARE gate should claim the specified spare.
+ The claim action is a recovery action, describing that some SPARE gate should claim the specified spare.
+
+'''
 
 ==== The Graphical Recovery Automaton Editor
 
+Recovery automata can be visualized and graphically modified using the recovery automaton diagram editor.
+The editor operates similarly to the fault tree diagram editor.
+The following sections thus refer to the fault tree diagram sections, if applicable,
+and otherwise focuses on the aspects where the diagram editor usage differs.
+
+Each RA diagram is associated to exactly one recovery automaton, identified by the UUID in the diagram.
+The recovery automaton object itself is not represented in the diagram.
+Instead, it only contains the items contained by the RA, i.e., states and transitions.
+
 ===== Creating a New Recovery Automaton Diagram
+
+The process to creating a new recovery automaton diagram is analogous to creating a fault tree diagram.
+However, here, the user selects a RecoveryAutomaton object and then proceeds as usual by
+choosing menu:Context[Open Diagram Editor].
 
 ===== Basic Usage
 
+The basic usage of the recovery automaton diagram editor is similar to the fault tree diagram editor.
+States can be directly connected via Transitions.
+To set or unset the initial state, select a state and after opening the context menu via right click, 
+tick or untick the box in menu:Context[initial state].
+An initial state is marked by an incoming arrow from the left (see the graphical representation of states for reference).
+
 ===== Using the Auto Layout functionality
+
+Auto layouting is also enabled for recovery automata diagrams.
 
 == FDIR Analysis
 
