@@ -540,11 +540,131 @@ Auto layouting is also enabled for recovery automata diagrams.
 
 == FDIR Analysis
 
+Once faults model and optionally recovery models have been created, 
+they can be directly evaluated within VirSat FDIR using the available analysis procedures.
+There a main two types for analysis procedures.
+
+Those which primarily focus on non-numerical information such as: 
+* Are all single points of failures covered?
+* Which combinations of faults lead to a failure?
+are referred to as _qualitatie analysis_. 
+In VirSat FDIR most qualitative analysis procedures also supply additional useful information.
+For example, for fault combinations, VirSat FDIR also computes the mean time to failure (MTTF).
+Qualitative analysis procedures are typically added to structural element instances.
+
+The second type focuses on numerical information such as:
+* What is the reliability after time t?
+* What is the mean time to failure?
+* What is the expected time until observation of a failure?
+This type of analysis is referred to as _quantitative analysis_.
+Quantitative analysis procedures can be added to faults.
+
+Learn in this section how to setup analysis procedures, configure them,
+and how read their results.
+
 === Configuring Analysis information
+
+Contextual information required by analysis procedures must be provided on the root level of the model.
+The *FDIRParameters* category allows the user to define the necessary contextual parameters.
+It provides the following properties:
+
+* `missionTime` gives the time frame of analysis.
+All analysis procedures requiring this parameter have by default a link to this property.
+* `timestep` determines the time granularity of the analysis output.
+E.g. is it desired to know the current reliability every day, month, year, etc.
+All analysis procedures requiring this parameter have by default a link to this property.
+Note that this value should be chosen sensibly large.
+Choosing a `timestep` of a second for a multi year mission means having several millions points of analysis in the model.
+This might not be desireable.
+* `probabilityLevels` define what is considered a probable or unlikely event.
+The default levels are taken from the standard ECSS-Q-ST-30-02C.
+* `detectionLevels` define what is considered to be a likely detected event or an unlikely detected event.
+The default levels are taken from the standard ECSS-Q-ST-30-02C.
+* `criticalityMatrices` define whether triples consisting of probability level, a detection level, and a severity level is considered critical.
+The default criticality matrices are taken from the standard ECSS-Q-ST-30-02C.
+A criticality matrix is defined for each detection level.
+An entry in a criticality matrix is called a criticality level.
+It is determined by the product `probabilityLevel * severityLevel * detectionLevel`.
+Each criticality level can be edited using a provided table.
+Select an entry in the table and select `true` if it defined to be critical.
+Set it to `false` if the entry is not critical.
+Critical triples are marked with orange, non-critical triples are marked with green.
+[#CriticalityMatrix]
+image::analysis/CriticalityMatrix_Table.png[Editing the criticality levels, align="center"]
+
+NOTE: Some analysis information such as `missionTime` and `timestep` can be later overridden at the individual analysis level.
+
+NOTE: Criticality matrices for fault trees without partial observability only require the criticality matrix for the detection level `VeryLikely`.
+The remaining criticality matrices can then be ignored.
 
 === Qualitative Analysis
 
+VirSat FDIR provides the qualitative analysis procedures described in the following.
+They can be attached to any structural element instance.
+
+FMECA::
+Failure Modes and Effects Analysis (FMECA) interprets the fault model in the way that any basic event can cause the top level event.
+AND, SPARE, etc. gates, locally defined repair actions are interpreted as compensation.
+In order to generate an FMECA, attach the FMECA category to the desired structural element instance (e.g. the FDIR subsystem), and press the *Perform Analysis* button.
+A list of FMECAEntries will then be generated.
+An FMECAEntry has the following properties:
+
+* `failure` is the local top-level failure event.
+* `failureMode` is the event that can cause the failure.
+* `failureCause` is the event that can cause the `failureMode`.
+Might not be applicable if `failureMode` is a basic event without functional dependencies.
+* `failureEffects` are the events that can be caused as a consequence of the occurrence o f the `failure` event.
+Might not be applicable if `failure` is globally a top-level event.
+* `severity` is the severity level as defined in the `failure` event.
+* `probability` is the probability level as defined in the FDIRParameters.
+* `criticality` is the criticality level defined by the product of `severity * probability`.
+* `meanTimeToFailure` is the MTTF of the `failure` event when only considering events in the sub-trees of to the `failureCause` (or `failureMode` if there is no `failureCause`).
+The inverse of this property is used for classification of the probability level.
+* `compensation` are any defined fault tree nodes or properties that inhibit or fix the fault propagation.
+
+MCSAnalysis::
+A cut set is a set of basic events, that causes a top-level event.
+A minimum cut set (MCS) is a cut set, where removing any element does not cause the top-level element to fail.
+An MCSAnalysis can be attached to a structural element instance, 
+and computes all MCS that cause any of the top-level events attached to the same structural element instance.
+The analysis is executed by pressing the *Perform Analysis* button.
+An MCSAnalysis has the following properties:
+
+* `maxMinimumCutSetSize` defines the maximum MCS size that should be considered.
+If 0 or no value is defined, then the maximum size is not restricted.
+* `faultTolerance` is the number of basic events that need to occur for any failure to occur.
+It is determined by the size of the smallest MCS determined by the analysis minus one.
+This field is filled by the analysis.
+* `minimumCutSets` are the computed MCS. Each MCS in return has the following properties:
+** `failure` the local top-level failure event caused by this MCS.
+** `basicEvents` the basic events that cause the `failure` event.
+** `severity` the severity level as defined in the `failure` event.
+** `probability` the probability level as defined in the FDIRParameters.
+** `detection` is the detection level as defined in the FDIRParameters.
+** `criticality` is the criticality level defined by the product of `severity * detection * probability`.
+** `meanTimeToFailure` is the MTTF of the `failure` event when only considering the `basicEvents`.
+The inverse of this property is used for classification of the probability level.
+** `steadyStateDetectability` is the long-term detectability of the `failure` event.
+** `meanTimeToDetection` is the mean time that passes between the occurrence of the `failure` event and the detection of the `failure` event.
+
+NOTE: The number of MCS can increase exponentially with the number of basic events in the fault tree.
+It is therefore recommended to set the `maxMinimumCutSetSize` to a value of interest to the analyst.
+For example, if the MCSAnalysis is carried out to perform a Double Failure Analysis (i.e. only combinations of two basic events), 
+then the `maxMinimumCutSetSize` can be set to 2.
+
 === Quantitative Analysis
+
+VirSat FDIR provides the quantitative analysis procedures described in the following.
+They can be attached to any fault. 
+
+ReliabilityAnalysis::
+a
+
+AvailabilityAnalysis::
+b
+
+ObservabilityAnalysis::
+c
 
 === Using STORM
 
