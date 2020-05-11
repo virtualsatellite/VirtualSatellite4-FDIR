@@ -658,15 +658,76 @@ VirSat FDIR provides the quantitative analysis procedures described in the follo
 They can be attached to any fault. 
 
 ReliabilityAnalysis::
-a
+The reliability analysis computes metrics for judging reliability.
+It is executed with the *Perform Analysis* button.
+
+* `remainingMissionTime` is the duration time frame of the analysis.
+It is by default set to the missionTime defined in the FDIRParameters.
+* `timestep` is the granularity of the anaylsis.
+A reliability value will be computed for each `timestep`.
+* `reliability` is the probability that the fault has not occurred once after time `remainingMissionTime`.
+* `meanTimeToFailure` is the expected amount of time until the fault occurs.
+* `reliabilityCurve` is a list of reliability values.
+A point is generated for each `timestep` up to the `remainingMissionTime`.
 
 AvailabilityAnalysis::
-b
+The availability analysis computes metrics for judging availability.
+It is executed with the *Perform Analysis* button.
+
+* `remainingMissionTime` is the duration time frame of the analysis.
+It is by default set to the missionTime defined in the FDIRParameters.
+* `timestep` is the granularity of the anaylsis.
+An availability value will be computed for each `timestep`.
+* `availability` is the probability that the fault has currently failed at time `remainingMissionTime`.
+* `steadyStateAvailability` is the long-term availability.
+* `availabilityCurve` is a list of availability values.
+A point is generated for each `timestep` up to the `remainingMissionTime`.
 
 ObservabilityAnalysis::
-c
+The observability analysis computes metrics for judging observability.
+It is executed with the *Perform Analysis* button.
+
+* `remainingMissionTime` is the duration time frame of the analysis.
+It is by default set to the missionTime defined in the FDIRParameters.
+* `timestep` is the granularity of the anaylsis.
+An availability value will be computed for each `timestep`.
+* `detectability` is the probability that the fault has currently occurred and is currently observed at time `remainingMissionTime`.
+* `steadyStateDetectability` is the long-term detectability.
+* `detectabilityCurve` is a list of detectability values.
+A point is generated for each `timestep` up to the `remainingMissionTime`.
 
 === Using STORM
+
+VirSat FDIR ships with its own native model checking engine for performing anaylsis.
+However, for highly complex models it might be desirable to use a dedicated model checking engine.
+Natively, VirSat FDIR supports the STORM model checker (http://www.stormchecker.org/) as analysis engine.
+The analysis engine can be configured in the FDIR preferences page.
+It can be accessed as follows:
+
+* Open the Eclipse Preferences Page via menu:Window[Preferences].
+* Go  to menu:Virtual Satellite[FDIR].
+
+The engine configuration has the following properties:
+
+* `Execution Engine` determines the model checking engine. 
+It has the following options:
+** `Custom` is the default engine.
+Here, the native model checking engine is used.
+No further setup is required.
+** `STORM DFT` is the fault tree model checker of STORM.
+The fault tree is passed to STORM and analysed there.
+Requires a setup STORM execution environment.
+** `Custom + STORM` uses native algorithms for pre-processing fault trees,
+and turning them into mathematical models (Markov Chains or Markov Automata).
+The mathematical models are passed to STORM and analysed there.
+Requires a setup STORM execution environment.
+* `Execution Environment` determines the STORM execution environment,
+if an execution engine requiring STORM is selected.
+The following options are available:
+** `Docker` STORM will be downloaded as a docker image and started within a docker container.
+Requires an active docker installation.
+** `Local` STORM will be locally executed.
+Requires a local installation of STORM.
 
 == FDIR Reporting
 
