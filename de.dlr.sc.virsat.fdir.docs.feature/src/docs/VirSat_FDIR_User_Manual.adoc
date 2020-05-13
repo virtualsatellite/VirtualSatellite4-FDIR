@@ -817,9 +817,44 @@ To use it, navigate to a table in an editor, and then press the *Export to Excel
 
 == FDIR Synthesis
 
-=== Fault Tree Generation
+VirSat FDIR offers a couple of services for generating model artifacts.
+Learn in this section how these services can be used, what they can do for you, and what their limitations are.
+
+WARNING: All features in this section are of experimental research nature!
+It is not recommended to use them in production if the accompanied risks are not acceptable!
+
+=== Fault Tree Generation App
+
+The fault tree generation app can generate complex fault tree models.
+It takes as input a simple model called the _bare_ model, which purely models the fault relations.
+Also, it requires a set of _FDIR service_ models.
+Each FDIR service model is a fault tree model, modeling how the propagation of a fault can be inhibited by
+the FDIR service.
+Each FDIR service must be defined within an ElementDefinition from the _Product Structures_ concept.
+Furthermore, the user must supply an _FDIR configuration_ via a dialog.
+Here, he can choose which service should be applied to which fault.
+
+Out of all the given inputs, the fault tree generator will create a model,
+that extends the bare model with the FDIR service calls.
+Effectively, this means that the generated fault tree models the complete fault model with the logic FDIR services inhibiting
+fault propagation, and also failing to do so.
+
+In order to add the app to your project, select your project and then menu:Apps[Software Fault Tree Generator].
+Note that apps must be enabled your four project.
+Add the requested dependencies to your project and then you can call the app by executing _FaultTreeWithFDIRMechanismGenerator_.
 
 === Recovery Automata Synthesis
+
+While recovery automata may be designed by hand, it is also possible to generate recovery automata which are optimal with respect to maximizing the system mean time to failure.
+The user must have prepared a fault tree model in order to use the recovery automaton synthesis.
+To call the synthesis procedure, go to a structural element instance (e.g. the FDIR subsystem),
+and in the section *FDIR Generation* press the *Generate Recovery Automaton* button.
+A new recovery automaton will be created and attached to the same structural element instance.
+
+Details on how the synthesis algorithm operates can be found at the following locations:
+
+* https://elib.dlr.de/123787/ 
+* https://elib.dlr.de/126675/
 
 [colophone]
 == Legal - License & Copyright
