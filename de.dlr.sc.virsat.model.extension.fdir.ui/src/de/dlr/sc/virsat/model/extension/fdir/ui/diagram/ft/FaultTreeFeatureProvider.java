@@ -20,6 +20,7 @@ import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
+import org.eclipse.graphiti.features.IFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveAnchorFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
@@ -34,11 +35,14 @@ import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IMoveAnchorContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -195,6 +199,24 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 		}
 		
 		return super.getDeleteFeature(context);
+	}
+	
+	@Override
+	public IFeature[] getDragAndDropFeatures(IPictogramElementContext context) {
+		PictogramElement pictogramElement = context.getPictogramElement();
+		List<ICreateConnectionFeature> featuresResult = new ArrayList<ICreateConnectionFeature>();
+		
+		ICreateConnectionFeature[] createConnectionFeatures = getCreateConnectionFeatures();
+		for (ICreateConnectionFeature createConnectionFeature : createConnectionFeatures) {
+			CreateConnectionContext connectionContext = new CreateConnectionContext();
+			connectionContext.setSourcePictogramElement(pictogramElement);			
+			Anchor anchor = AnchorUtil.getAnchorForPictogramElement(pictogramElement);			
+			connectionContext.setSourceAnchor(anchor);			
+			if (createConnectionFeature.isAvailable(connectionContext) && createConnectionFeature.canStartConnection(connectionContext)) {
+				featuresResult.add(createConnectionFeature);
+			}			
+		}
+		return featuresResult.toArray(new IFeature[featuresResult.size()]);
 	}
 	
 	@Override
