@@ -321,7 +321,51 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.createStates(ra, INITIAL_STATES); 
 		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
 		
-		System.out.println(ra.toDot());
+		minimizer.minimize(ra);
+		
+		assertEquals(RESULTING_STATES, ra.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+	}
+	
+	@Test
+	public void testTimedNotEquivalent() {
+		final int INITIAL_STATES = 6;
+		final int RESULTING_STATES = 6; 
+		final int RESULTING_TRANSITIONS = 6; 
+		
+		Fault fault1 = new Fault(concept);
+		Fault fault2 = new Fault(concept);
+		Fault fault3 = new Fault(concept);
+		
+		ClaimAction action1 = new ClaimAction(concept);
+		action1.setClaimSpare(fault1);
+		
+		ClaimAction action2 = new ClaimAction(concept);
+		action1.setClaimSpare(fault2);
+		
+		//CHECKSTYLE:OFF
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raHelper.createStates(ra, INITIAL_STATES); 
+		
+		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		raHelper.assignInputs(transition01, fault1);
+		raHelper.assignAction(transition01, action1.copy());
+		
+		FaultEventTransition transition02 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
+		raHelper.assignInputs(transition02, fault2);
+		raHelper.assignAction(transition02, action2.copy());
+		
+		raHelper.createTimedTransition(ra, ra.getStates().get(1), ra.getStates().get(3), 1);
+		raHelper.createTimedTransition(ra, ra.getStates().get(2), ra.getStates().get(4), 2);
+		
+		FaultEventTransition transition35 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(5));
+		raHelper.assignInputs(transition35, fault3);
+		raHelper.assignAction(transition35, action1.copy());
+		
+		FaultEventTransition transition45 = raHelper.createFaultEventTransition(ra, ra.getStates().get(4), ra.getStates().get(5));
+		raHelper.assignInputs(transition45, fault3);
+		raHelper.assignAction(transition45, action2.copy());
+		//CHECKSTYLE:ON
 		
 		minimizer.minimize(ra);
 		
@@ -337,31 +381,29 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		
 		Fault fault = new Fault(concept);
 		
+		//CHECKSTYLE:OFF
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		raHelper.createStates(ra, INITIAL_STATES); 
 		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
-		raHelper.createTimedTransition(ra, ra.getStates().get(1), ra.getStates().get(2), 1);
+		raHelper.createTimedTransition(ra, ra.getStates().get(1), ra.getStates().get(2), 2);
 		
 		ClaimAction action = new ClaimAction(concept);
 		FaultEventTransition transition22 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(2));
 		raHelper.assignInputs(transition22, fault);
 		raHelper.assignAction(transition22, action);
-		
-		System.out.println(ra.toDot());
+		//CHECKSTYLE:ON
 		
 		minimizer.minimize(ra);
 		
 		assertEquals(RESULTING_STATES, ra.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
 		
-		System.out.println(ra.toDot());
-		
 		TimedTransition timedTransition = (TimedTransition) ra.getTransitions()
 				.stream()
 				.filter(transition -> transition.getFrom().equals(ra.getStates().get(0)) && transition.getTo().equals(ra.getStates().get(1)))
 				.findFirst().get();
 		
-		final double EXPECTED_TIMEOUT = 2;
+		final double EXPECTED_TIMEOUT = 3;
 		assertEquals(EXPECTED_TIMEOUT, timedTransition.getTime(), 0);
 	}
 }

@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
@@ -93,5 +94,14 @@ public abstract class Transition extends ATransition {
 				&& Objects.equals(getTo(), transition.getTo()) 
 				&& hasEquivalentRecoveryActions(transition);
 
+	}
+	
+	/**
+	 * Gets a string representation for the actions of this transition
+	 * @return a string representing the actions that should be performed upon executing this transition
+	 */
+	public String getActionLabels() {
+		return getRecoveryActions().stream()
+				.map(RecoveryAction::getActionLabel).collect(Collectors.joining());
 	}
 }

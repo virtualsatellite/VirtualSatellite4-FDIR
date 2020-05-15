@@ -129,19 +129,7 @@ public class PODFTState extends DFTState {
 	
 	@Override
 	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
-		boolean isPermanenceObserved = observedFailed.get(ftHolder.getNodeIndex(node));
-		
-		if (!isPermanenceObserved) {
-			Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(node);
-			for (FaultTreeNode parent : allParents) {
-				int parentIndex = ftHolder.getNodeIndex(parent);
-				if (permanentNodes.get(parentIndex) && observedFailed.get(parentIndex)) {
-					isPermanenceObserved = true;
-					break;
-				}
-			}
-		}
-		return isPermanenceObserved && super.removeClaimedSparesOnFailureIfPossible(node);
+		return false;
 	}
 	
 	@Override

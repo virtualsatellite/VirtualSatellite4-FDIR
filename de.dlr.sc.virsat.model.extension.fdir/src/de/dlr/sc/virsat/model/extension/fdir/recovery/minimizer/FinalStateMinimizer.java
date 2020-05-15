@@ -60,12 +60,14 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 								ra.getTransitions().remove(incomingTransition);
 							} else {
 								incomingTransition.setTo(state1);
+								raHolder.getMapTransitionToTo().put(incomingTransition, state1);
 							}
 						}
 					}
 					
 					for (Transition outgoingTransition1 : outgoingTransitions1) {
 						outgoingTransition1.setTo(state1);
+						raHolder.getMapTransitionToTo().put(outgoingTransition1, state1);
 					}
 					
 					for (Transition transition : transitionsToRemove) {

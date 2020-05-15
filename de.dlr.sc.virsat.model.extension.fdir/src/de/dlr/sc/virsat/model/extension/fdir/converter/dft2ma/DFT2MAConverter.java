@@ -201,7 +201,7 @@ public class DFT2MAConverter {
 			DFTState interimState = baseSucc.copy();
 			interimState.setMarkovian(false);
 			
-			markovSucc = stateEquivalence.getEquivalentState(interimState);
+			markovSucc = stateEquivalence.getEquivalentState(interimState, true);
 			if (markovSucc == interimState) {
 				ma.addState(markovSucc);	
 			} else {
@@ -237,7 +237,7 @@ public class DFT2MAConverter {
 			}
 			
 			checkFailState(succ);
-			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
+			DFTState equivalentState = stateEquivalence.getEquivalentState(succ, true);
 			
 			if (equivalentState == succ) {
 				if (staticAnalysis.getSymmetryChecker() != null) {

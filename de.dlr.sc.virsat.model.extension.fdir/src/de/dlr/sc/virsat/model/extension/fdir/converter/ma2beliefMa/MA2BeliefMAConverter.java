@@ -71,15 +71,15 @@ public class MA2BeliefMAConverter {
 				if (beliefState.isMarkovian()) {
 					Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc, succTransitions);
 					double exitRate = beliefState.getTotalRate(entry.getValue());
-					boolean isFinal = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions, ma);
-					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
+					fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions, ma);
+					equivalentBeliefSucc = addBeliefState(beliefSucc, ma);
 					
 					if (beliefState != equivalentBeliefSucc) {
 						beliefMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
 					}
 				} else {
-					boolean isFinal = fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions, ma);
-					equivalentBeliefSucc = addBeliefState(beliefSucc, isFinal);
+					fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions, ma);
+					equivalentBeliefSucc = addBeliefState(beliefSucc, ma);
 					addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
 				}
 				
@@ -122,11 +122,18 @@ public class MA2BeliefMAConverter {
 	 * Adds the belief state into the belief markov automaton if no equivalent 
 	 * state exists. Otherwise returns the equivalent state
 	 * @param beliefState the belief state
+	 * @param ma the markov automaton
 	 * @param isFinal whether it is a final state
 	 * @return the equivalent belief state
 	 */
-	private BeliefState addBeliefState(BeliefState beliefState, boolean isFinal) {
+	private BeliefState addBeliefState(BeliefState beliefState, MarkovAutomaton<DFTState> ma) {
 		beliefState.normalize();
+		
+		boolean isFinal = true;
+		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
+			isFinal &= ma.getFinalStates().contains(entry.getKey());
+		}
+		
 		BeliefState equivalentBeliefState = beliefStateEquivalence.getEquivalentState(beliefState);
 		boolean isNewState = beliefState == equivalentBeliefState;
 		
@@ -149,21 +156,22 @@ public class MA2BeliefMAConverter {
 	 * @param observationEvent the observation event
 	 * @param succTransitions the successor transitions
 	 * @param ma the markov automaton
-	 * @return true iff the successor state is a fail state
 	 */
-	private boolean fillMarkovianStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
+	private void fillMarkovianStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
 			double exitRate, Entry<Set<Object>, Boolean> observationEvent, Set<MarkovTransition<DFTState>> succTransitions,
 			MarkovAutomaton<DFTState> ma) {
 		boolean isMarkovian = true;
-		boolean isFinal = false;
 		boolean isInternalTransition = observationEvent.getKey().isEmpty();
+		
+		Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
 		
 		for (MarkovTransition<DFTState> transition : succTransitions) {
 			PODFTState fromState = (PODFTState) transition.getFrom();
 			PODFTState toState = (PODFTState) transition.getTo();
+			statesWithNoTransitions.remove(fromState);
 			
 			double oldProb = beliefState.mapStateToBelief.get(fromState);
-			double prob = oldProb * transition.getRate() / exitRate;
+			double prob = oldProb * (oldProb * transition.getRate() / exitRate);
 			
 			if (isInternalTransition) {
 				double exitRateFromState = ma.getExitRateForState(fromState);
@@ -187,15 +195,17 @@ public class MA2BeliefMAConverter {
 				beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
 			}
 			
-			isFinal |= ma.getFinalStates().contains(toState);
-			
 			if (!toState.isMarkovian()) {
 				isMarkovian = false;
 			} 
 		}
 		beliefSucc.setMarkovian(isMarkovian);
 		
-		return isFinal;
+		if (isInternalTransition) {
+			for (PODFTState state : statesWithNoTransitions) {
+				beliefSucc.mapStateToBelief.merge(state, beliefState.mapStateToBelief.get(state), (p1, p2) -> p1 + p2);
+			}
+		}
 	}
 	
 	/**
@@ -222,11 +232,8 @@ public class MA2BeliefMAConverter {
 	 * @param beliefSucc the successor state
 	 * @param succTransitions the transitions to reach the successor state
 	 * @param ma the markov automaton
-	 * @return true iff the successor state is a fail state
 	 */
-	private boolean fillNonDeterministicStateSucc(BeliefState beliefState, BeliefState beliefSucc, Set<MarkovTransition<DFTState>> succTransitions, MarkovAutomaton<DFTState> ma) {
-		boolean isFinal = false;
-		
+	private void fillNonDeterministicStateSucc(BeliefState beliefState, BeliefState beliefSucc, Set<MarkovTransition<DFTState>> succTransitions, MarkovAutomaton<DFTState> ma) {
 		Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
 		
 		beliefSucc.setMarkovian(true);
@@ -238,26 +245,23 @@ public class MA2BeliefMAConverter {
 			beliefSucc.mapStateToBelief.put(succState, prob);
 			
 			statesWithNoTransitions.remove(fromState);
-			isFinal |= ma.getFinalStates().contains(succState);
 		}
 		
 		for (PODFTState stateWithNoTransition : statesWithNoTransitions) {
 			if (stateWithNoTransition.getObservedFailedNodes().equals(beliefSucc.representant.getObservedFailedNodes())) {
 				PODFTState succState = stateWithNoTransition;
-				boolean isEquivalent = beliefSucc.representant.getMapSpareToClaimedSpares().equals(stateWithNoTransition.getMapSpareToClaimedSpares());
 				
-				if (!isEquivalent) {
-					DFTState copy = stateWithNoTransition.copy();
-					copy.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
-					succState = (PODFTState) dftStateEquivalence.getEquivalentState(copy);
+				DFTState copy = stateWithNoTransition.copy();
+				copy.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
+				succState = (PODFTState) dftStateEquivalence.getEquivalentState(copy, false);
+				if (succState == copy) {
+					continue;
 				}
 				
 				double prob = beliefState.mapStateToBelief.get(stateWithNoTransition);
 				beliefSucc.mapStateToBelief.put(succState, prob);
 			}
 		}
-		
-		return isFinal;
 	}
 	
 	/**

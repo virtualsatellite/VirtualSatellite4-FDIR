@@ -115,7 +115,7 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
 		final double EXPECTED_MTTF = 0.333333333333;
 		
@@ -131,11 +131,41 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		final double EXPECTED_MTTF = 1.125;
 		
-		System.out.println(ra.toDot());
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsOr2Csp2SharedSafePrimaryDelayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2SharedSafePrimaryDelayed.dft");
+		POSynthesizer synthesizer = new POSynthesizer();
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 1;
+		final double EXPECTED_MTTF = 1;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsOr2Csp2SharedSafeSpareDelayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2SharedSafeSpareDelayed.dft");
+		POSynthesizer synthesizer = new POSynthesizer();
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final double EXPECTED_MTTF = 0.5;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -145,16 +175,16 @@ public class POSynthesizerTest extends ATestCase {
 	
 	@Test
 	public void testSynthesizeObsOr2Csp2SharedDelayed() throws IOException {
-		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2SharedDelayed.dft");
+		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2SharedSafeSpareDelayed.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		
-		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 3;
 		final double EXPECTED_MTTF = 0.5;
 		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
 	}
@@ -239,13 +269,19 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		System.out.println(ra.toDot());
+		
 		final double EXPECTED_MTTF = 1.7;
 		final double EXPECTED_SSA = 0.3333997640435906;
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}

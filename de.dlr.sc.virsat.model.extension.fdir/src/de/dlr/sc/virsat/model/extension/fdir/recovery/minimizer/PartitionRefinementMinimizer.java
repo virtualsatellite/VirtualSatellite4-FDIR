@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -31,13 +30,15 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  */
 
 public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer {
+	public static final String TIMED_TRANSITION_SYMBOLD = "t";
+	
 	private RecoveryAutomaton ra;
 	
 	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder) {
 		super.minimize(raHolder);
 		this.ra = raHolder.getRa();
-
+		
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
 		mergeBlocks(blocks);
@@ -78,11 +79,30 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 			Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock = new HashMap<>();
 			
 			for (Transition transition : outgoingTransitions) {
-				if (transition instanceof FaultEventTransition) {
-					List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
-					if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
-						mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
+				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
+				if (transition instanceof TimedTransition) {
+					Set<State> visitedStates = new HashSet<>();
+					State internalState = raHolder.getMapTransitionToTo().get(transition);
+					while (toBlock == block) {
+						List<Transition> internalTransitions = raHolder.getMapStateToOutgoingTransitions().get(internalState);
+						boolean hasTimeoutTransition = false;
+						for (Transition internalTransition : internalTransitions) {
+							if (internalTransition instanceof TimedTransition) {
+								internalState = raHolder.getMapTransitionToTo().get(internalTransition);
+								toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(internalTransition));
+								hasTimeoutTransition = true;
+								break;
+							}
+						}
+						
+						if (!hasTimeoutTransition || !visitedStates.add(internalState)) {
+							break;
+						}
 					}
+				}
+				
+				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
+					mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
 				}
 			}
 			
@@ -184,6 +204,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 			raHolder.getMapStateToOutgoingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToIncomingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
+			raHolder.getTransitions().removeAll(transitionsToRemove);
 			
 			ra.getTransitions().removeAll(transitionsToRemove);
 			ra.getStates().removeAll(block);
