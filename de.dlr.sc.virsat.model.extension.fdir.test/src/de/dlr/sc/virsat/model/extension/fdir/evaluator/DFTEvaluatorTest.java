@@ -514,10 +514,10 @@ public class DFTEvaluatorTest extends ATestCase {
 		ftEvaluator = FaultTreeEvaluator.decorateFaultTreeEvaluator(new DFTEvaluator(DFTSemantics.createNDDFTSemantics(), null, new MarkovModelChecker(DELTA, TEST_EPSILON * TEST_EPSILON)));
 		
 		final double[] EXPECTED = {
-			0.0099009,
-			0.0196078,
-			0.0291264,
-			0.0384621
+			0.009950496269093282,
+			0.019803940608651274,
+			0.029563200854332623,
+			0.039231059328855136
 		};
 		final double EXPECTEDMTTF = 1.25;
 		

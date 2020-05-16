@@ -28,18 +28,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGenerator> {
 	
 	/**
-	 * Converts a fault tree with the passed node as a root to a
-	 * Markov automaton.
+	 * Converts a fault tree with the passed node as a root to a Markov automaton.
 	 * @param root a fault tree node used as a root node for the conversion
 	 * @param failableBasicEventsProvider the nodes that need to fail
 	 * @param failLabelProvider the fail label criterion
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, FailLabelProvider failLabelProvider) {
-		stateSpaceGenerator.setRoot(root);
-		stateSpaceGenerator.setFailableBasicEventsProvider(failableBasicEventsProvider);
-		stateSpaceGenerator.setFailLabelProvider(failLabelProvider);
-		
+		stateSpaceGenerator.configure(root, failLabelProvider, failableBasicEventsProvider);
 		MarkovAutomaton<DFTState> ma = maBuilder.build();
 		
 		return ma;

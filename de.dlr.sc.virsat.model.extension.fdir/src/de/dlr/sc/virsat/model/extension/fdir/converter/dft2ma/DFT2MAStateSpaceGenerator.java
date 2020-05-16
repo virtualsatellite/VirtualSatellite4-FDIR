@@ -55,26 +55,14 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private DFTStateEquivalence stateEquivalence;
 	
 	/**
-	 * Sets the root
+	 * Configures the state space generator
 	 * @param root a fault tree node used as a root node for the state space generation
-	 */
-	public void setRoot(FaultTreeNode root) {
-		this.root = root;
-	}
-	
-	/**
-	 * Sets the fail criteria
 	 * @param failLabelProvider the fail label criterion
-	 */
-	public void setFailLabelProvider(FailLabelProvider failLabelProvider) {
-		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : DEFAULT_FAIL_LABEL_PROVIDER;
-	}
-	
-	/**
-	 * Sets restrictions on which basic events in the tree are allowed to fail
 	 * @param failableBasicEventsProvider the nodes that need to fail
 	 */
-	public void setFailableBasicEventsProvider(FailableBasicEventsProvider failableBasicEventsProvider) {
+	public void configure(FaultTreeNode root, FailLabelProvider failLabelProvider, FailableBasicEventsProvider failableBasicEventsProvider) {
+		this.root = root;
+		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : DEFAULT_FAIL_LABEL_PROVIDER;
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
 	}
 	

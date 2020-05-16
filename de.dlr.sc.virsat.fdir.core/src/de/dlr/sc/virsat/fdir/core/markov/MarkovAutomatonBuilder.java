@@ -51,8 +51,6 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		statistics.maxTransitions = ma.getTransitions().size();
 		statistics.time = System.currentTimeMillis() - statistics.time;
 		
-		System.out.println(ma.toDot());
-		
 		return ma;
 	}
 	

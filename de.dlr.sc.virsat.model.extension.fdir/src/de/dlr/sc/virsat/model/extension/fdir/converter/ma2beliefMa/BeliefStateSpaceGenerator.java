@@ -39,11 +39,8 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private DFTStateEquivalence dftStateEquivalence;
 	private BeliefStateEquivalence beliefStateEquivalence;
 	
-	public void setMa(MarkovAutomaton<DFTState> ma) {
+	public void configure(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa) {
 		this.ma = ma;
-	}
-	
-	public void setInitialStateMa(PODFTState initialStateMa) {
 		this.initialStateMa = initialStateMa;
 	}
 	
