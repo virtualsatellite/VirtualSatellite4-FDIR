@@ -41,4 +41,9 @@ public class MarkovState {
 	public boolean isMarkovian() {
 		return markovian;
 	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(index);
+	}
 }
