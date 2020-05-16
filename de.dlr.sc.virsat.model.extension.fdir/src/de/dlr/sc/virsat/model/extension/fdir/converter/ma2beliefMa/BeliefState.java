@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,10 +83,10 @@ public class BeliefState extends MarkovState {
 	
 	/**
 	 * Computes the total rate for a transition set
-	 * @param transitions a set of transitions
+	 * @param transitions a list of transitions
 	 * @return the total rate of the transition set
 	 */
-	public double getTotalRate(Set<MarkovTransition<DFTState>> transitions) {
+	public double getTotalRate(List<MarkovTransition<DFTState>> transitions) {
 		double getTotalRate = 0;
 		for (MarkovTransition<DFTState> transition : transitions) {
 			getTotalRate += transition.getRate() * mapStateToBelief.get(transition.getFrom());

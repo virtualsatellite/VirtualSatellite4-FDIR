@@ -14,7 +14,7 @@ package de.dlr.sc.virsat.fdir.core.markov;
  * @author muel_s8
  *
  */
-public class MarkovState {
+public class MarkovState implements Comparable<MarkovState> {
 	protected int index;
 	private boolean markovian = true;
 	
@@ -45,5 +45,10 @@ public class MarkovState {
 	@Override
 	public String toString() {
 		return String.valueOf(index);
+	}
+
+	@Override
+	public int compareTo(MarkovState other) {
+		return Integer.compare(index, other.index);
 	}
 }

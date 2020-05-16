@@ -35,6 +35,8 @@ public class MA2BeliefMAConverter  extends A2MAConverter<BeliefState, BeliefStat
 		stateSpaceGenerator.configure(ma, initialStateMa);
 		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build(stateSpaceGenerator, monitor);
 		
+		System.out.println(beliefMa);
+		
 		return beliefMa;
 	}
 

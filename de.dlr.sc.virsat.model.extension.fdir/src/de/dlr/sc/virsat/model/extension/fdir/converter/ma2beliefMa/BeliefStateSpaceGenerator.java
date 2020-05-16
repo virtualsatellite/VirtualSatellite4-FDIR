@@ -12,12 +12,12 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.markov.AStateSpaceGenerator;
@@ -66,12 +66,12 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	@Override
 	public List<BeliefState> generateSuccs(BeliefState beliefState) {
 		List<BeliefState> generatedSuccs = new ArrayList<>();
-		Map<PODFTState, Set<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
+		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 		
-		for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
+		for (Entry<PODFTState, List<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 			BeliefState beliefSucc = new BeliefState(targetMa, entry.getKey());
 			BeliefState equivalentBeliefSucc = null;
-			Set<MarkovTransition<DFTState>> succTransitions = entry.getValue();
+			List<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 			
 			if (beliefState.isMarkovian()) {
 				Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc, succTransitions);
@@ -104,8 +104,8 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param ma the markov automaton
 	 * @return a mapping from an observation set to the transitions that lead to states with this observation set
 	 */
-	private Map<PODFTState, Set<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
-		Map<PODFTState, Set<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new HashMap<>();
+	private Map<PODFTState, List<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
+		Map<PODFTState, List<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new TreeMap<>();
 		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
 			PODFTState fromState = entry.getKey();
 			if (fromState.isMarkovian() != beliefState.isMarkovian()) {
@@ -116,9 +116,9 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			for (MarkovTransition<DFTState> succTransition : succTransitions) {
 				PODFTState succState = (PODFTState) succTransition.getTo();
 				
-				Set<MarkovTransition<DFTState>> transitions = null;
+				List<MarkovTransition<DFTState>> transitions = null;
 				
-				for (Entry<PODFTState, Set<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {
+				for (Entry<PODFTState, List<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {
 					PODFTState representant = representantEntry.getKey();
 					if (representant.getObservedFailed().equals(succState.getObservedFailed()) 
 							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())
@@ -128,7 +128,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 				
 				if (transitions == null) {
-					transitions = new HashSet<>();
+					transitions = new ArrayList<>();
 					mapRepresentantToTransitions.put(succState, transitions);
 				}
 			
@@ -145,7 +145,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param succTransitions the successor transitions from a belief state to the successor belief state
 	 * @return the set of observation event
 	 */
-	private Entry<Set<Object>, Boolean> extractObservationEvent(BeliefState beliefState, BeliefState beliefSucc, Set<MarkovTransition<DFTState>> succTransitions) {
+	private Entry<Set<Object>, Boolean> extractObservationEvent(BeliefState beliefState, BeliefState beliefSucc, List<MarkovTransition<DFTState>> succTransitions) {
 		Set<Object> observationSet = new HashSet<>();
 		
 		MarkovTransition<DFTState> representantTransition = succTransitions.iterator().next();
@@ -186,11 +186,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param beliefState the current state
 	 * @param beliefSucc the successor state
 	 */
-	private void addNondeterministicTransitions(Set<MarkovTransition<DFTState>> succTransitions, BeliefState beliefState, BeliefState beliefSucc) {
-		Map<Object, Set<MarkovTransition<DFTState>>> groupedSuccTransitions = succTransitions
-				.stream().collect(Collectors.groupingBy(MarkovTransition::getEvent, Collectors.toSet()));
+	private void addNondeterministicTransitions(List<MarkovTransition<DFTState>> succTransitions, BeliefState beliefState, BeliefState beliefSucc) {
+		Map<Object, List<MarkovTransition<DFTState>>> groupedSuccTransitions = succTransitions
+				.stream().collect(Collectors.groupingBy(MarkovTransition::getEvent, Collectors.toList()));
 		
-		for (Entry<Object, Set<MarkovTransition<DFTState>>> succTransitionGroup : groupedSuccTransitions.entrySet()) {	
+		for (Entry<Object, List<MarkovTransition<DFTState>>> succTransitionGroup : groupedSuccTransitions.entrySet()) {	
 			double prob = 0;
 			
 			Set<DFTState> succStates = new HashSet<>();
@@ -222,7 +222,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param succTransitions the successor transitions
 	 */
 	private void fillMarkovianStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
-			double exitRate, Entry<Set<Object>, Boolean> observationEvent, Set<MarkovTransition<DFTState>> succTransitions) {
+			double exitRate, Entry<Set<Object>, Boolean> observationEvent, List<MarkovTransition<DFTState>> succTransitions) {
 		boolean isMarkovian = true;
 		boolean isInternalTransition = observationEvent.getKey().isEmpty();
 		
@@ -295,7 +295,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param beliefSucc the successor state
 	 * @param succTransitions the transitions to reach the successor state
 	 */
-	private void fillNonDeterministicStateSucc(BeliefState beliefState, BeliefState beliefSucc, Set<MarkovTransition<DFTState>> succTransitions) {
+	private void fillNonDeterministicStateSucc(BeliefState beliefState, BeliefState beliefSucc, List<MarkovTransition<DFTState>> succTransitions) {
 		Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
 		
 		beliefSucc.setMarkovian(true);

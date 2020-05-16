@@ -18,7 +18,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
  * @author muel_s8
  *
  */
-public interface IDFTEvent {
+public interface IDFTEvent extends Comparable<IDFTEvent> {
 	
 	/**
 	 * Gets the occurence rate of this event
@@ -46,4 +46,9 @@ public interface IDFTEvent {
 	 * @return the related dft node
 	 */
 	FaultTreeNode getNode();
+	
+	@Override
+	default int compareTo(IDFTEvent other) {
+		return toString().compareTo(other.toString());
+	}
 }

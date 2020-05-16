@@ -25,39 +25,58 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 	 * @return the new markov automaton
 	 */
 	public MarkovAutomaton<S> build(AStateSpaceGenerator<S> stateSpaceGenerator, SubMonitor monitor) {
-		statistics = new MarkovAutomatonBuildStatistics();
-		statistics.time = System.currentTimeMillis();
+		beginStatisticsRecord();
 		
+		// Create a new markov automaton and inform the state space generator about it
 		MarkovAutomaton<S> ma = new MarkovAutomaton<>();
 		stateSpaceGenerator.init(ma);
 		
+		// Generate the initial state
 		initialState = stateSpaceGenerator.createInitialState();
 		ma.addState(initialState);
 		
-		Queue<S> toProcess = new LinkedList<>();
+		// Generate the starting states (which might be more than the initial state)
 		List<S> startingStates = stateSpaceGenerator.getStartingStates(initialState);
 		statistics.countGeneratedStates += startingStates.size();
-		
 		monitor = SubMonitor.convert(monitor, startingStates.size());
 		monitor.setTaskName("Generating Markov automaton state space");
 		
+		Queue<S> toProcess = new LinkedList<>();
 		toProcess.addAll(startingStates);
 		
+		// Actual state space generation loop
 		while (!toProcess.isEmpty()) {
+			// Eclipse trick for doing progress updates with unknown ending time
+			final int PROGRESS_COUNT = 100;
+			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+			
 			S state = toProcess.poll();
 			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state);
 			toProcess.addAll(generatedNewSuccs);
 			statistics.countGeneratedStates += generatedNewSuccs.size();
-			
-			final int PROGRESS_COUNT = 100;
-			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 		}
 		
+		endStatisticsRecord(ma);
+		
+		return ma;
+	}
+	
+	/**
+	 * Starts a new statistics measurement
+	 */
+	private void beginStatisticsRecord() {
+		statistics = new MarkovAutomatonBuildStatistics();
+		statistics.time = System.currentTimeMillis();
+	}
+	
+	/**
+	 * Finishes an ongoing statistics measurement
+	 * @param ma the finished markov automaton
+	 */
+	private void endStatisticsRecord(MarkovAutomaton<S> ma) {
 		statistics.maxStates = ma.getStates().size();
 		statistics.maxTransitions = ma.getTransitions().size();
 		statistics.time = System.currentTimeMillis() - statistics.time;
-		
-		return ma;
 	}
 	
 	/**
