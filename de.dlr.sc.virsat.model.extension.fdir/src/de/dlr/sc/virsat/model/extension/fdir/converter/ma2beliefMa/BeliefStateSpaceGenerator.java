@@ -75,6 +75,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			
 			if (beliefState.isMarkovian()) {
 				Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc, succTransitions);
+				
 				double exitRate = beliefState.getTotalRate(entry.getValue());
 				fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
 				equivalentBeliefSucc = addBeliefState(beliefSucc);

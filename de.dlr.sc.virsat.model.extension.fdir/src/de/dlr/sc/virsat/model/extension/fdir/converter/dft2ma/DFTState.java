@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
@@ -107,6 +108,22 @@ public class DFTState extends MarkovState {
 	 */
 	public RecoveryStrategy getRecoveryStrategy() {
 		return recoveryStrategy;
+	}
+	
+	/**
+	 * Gets the ordered bes that have occured in this state
+	 * @return a list of ordered bes
+	 */
+	public List<BasicEvent> getOrderedBes() {
+		return orderedBes;
+	}
+	
+	/**
+	 * Gets the unordered bes that have occured in this state
+	 * @return a set of unordered bes
+	 */
+	public Set<BasicEvent> getUnorderedBes() {
+		return unorderedBes;
 	}
 	
 	/**

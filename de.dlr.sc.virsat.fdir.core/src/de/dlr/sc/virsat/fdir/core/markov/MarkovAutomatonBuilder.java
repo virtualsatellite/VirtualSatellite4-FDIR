@@ -25,6 +25,7 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 	 * @return the new markov automaton
 	 */
 	public MarkovAutomaton<S> build(AStateSpaceGenerator<S> stateSpaceGenerator, SubMonitor monitor) {
+		statistics = new MarkovAutomatonBuildStatistics();
 		statistics.time = System.currentTimeMillis();
 		
 		MarkovAutomaton<S> ma = new MarkovAutomaton<>();

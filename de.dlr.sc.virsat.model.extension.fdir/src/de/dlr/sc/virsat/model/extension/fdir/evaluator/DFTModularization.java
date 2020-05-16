@@ -18,7 +18,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTSymmetryChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
