@@ -293,15 +293,11 @@ public class POSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		final double EXPECTED_SSA = 0.33346629003963735;
-		final int EXPECTED_COUNT_STATES = 2;
-		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
 	
