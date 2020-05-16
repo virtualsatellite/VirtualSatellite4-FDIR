@@ -125,8 +125,8 @@ public class DFTStaticAnalysis {
 		if (event instanceof FaultEvent) {
 			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
-			boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
-			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.getOrDefault(event.getNode(), Collections.emptySet()))) {
+			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(symmetryReductionInverted.getOrDefault(event.getNode(), Collections.emptySet()));
+			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, event.getNode())) {
 				return -1;
 			}
 			

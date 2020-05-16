@@ -592,9 +592,11 @@ public class DFTState extends MarkovState {
 			mapParentToSymmetryRequirements.putAll(predecessor.getMapParentToSymmetryRequirements());
 		}
 		
+		Set<FaultTreeNode> checkedNodes = new HashSet<>();
 		Queue<FaultTreeNode> queue = new LinkedList<>();
 		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
 		queue.add(basicEvent);
+		checkedNodes.add(basicEvent);
 		
 		while (!queue.isEmpty()) {
 			FaultTreeNode node = queue.poll();
@@ -619,7 +621,7 @@ public class DFTState extends MarkovState {
 						}
 					}
 					
-					if (continueToParent) {
+					if (continueToParent && checkedNodes.add(parent)) {
 						queue.add(parent);
 					}
 				}

@@ -101,7 +101,7 @@ public class MA2BeliefMAConverter {
 		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
 		dftStateEquivalence = new DFTStateEquivalence();
 		for (DFTState dftState : ma.getStates()) {
-			dftStateEquivalence.addState(dftState);
+			dftStateEquivalence.getEquivalentState(dftState, true);
 		}
 	}
 	

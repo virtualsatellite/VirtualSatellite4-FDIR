@@ -126,10 +126,8 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		System.out.println(ra.toDot());
-		
-		final int NUM_STATES = 4;
-		//assertEquals(NUM_STATES, ra.getStates().size());
+		final int NUM_STATES = 1;
+		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
@@ -146,6 +144,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		final int NUM_STATES = 2;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
@@ -160,6 +161,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		};
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int NUM_STATES = 2;
+		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
@@ -176,6 +180,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		final int NUM_STATES = 4;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	} 
@@ -183,8 +190,21 @@ public class BasicSynthesizerTest extends ATestCase {
 	
 	@Test
 	public void testSynthesizeVGS1() throws IOException {
+		final double[] EXPECTED = {
+			4.920028708951688E-8,
+			9.840114835741478E-8,
+			1.4760258380271557E-7,
+			1.968045934244401E-7
+		};
+		
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
-		synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int NUM_STATES = 1;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
 	}
 	
 	@Test

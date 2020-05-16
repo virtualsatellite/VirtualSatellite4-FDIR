@@ -270,7 +270,7 @@ public class DFT2MAConverter {
 	 */
 	private void createInitialState() {
 		initial = semantics.generateState(ftHolder);
-		stateEquivalence.addState(initial);
+		stateEquivalence.getEquivalentState(initial, true);
 		initial.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
 			initial.setNodeActivation(root, true);
