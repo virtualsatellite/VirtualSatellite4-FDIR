@@ -9,28 +9,35 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
+import de.dlr.sc.virsat.fdir.core.markov.A2MAConverter;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
-public class MA2BeliefMAConverter {
-	private BeliefStateSpaceGenerator beliefStateSpaceGenerator = new BeliefStateSpaceGenerator();
-	private MarkovAutomatonBuilder<BeliefState> maBuilder = new MarkovAutomatonBuilder<>(beliefStateSpaceGenerator);
+/**
+ * This class creates a belief markov automaton out of a regular markov automaton.
+ * A belief markov automaton has a state space where each state holds
+ * a probability distribution over a set of states of the original markov automaton.
+ *
+ */
+public class MA2BeliefMAConverter  extends A2MAConverter<BeliefState, BeliefStateSpaceGenerator> {
 	
+	/**
+	 * Creates a belief markov automaton out of the given markov automaton
+	 * @param ma the markov automaton
+	 * @param initialState the initial state of the markov automaton
+	 * @return the belief markov automaton
+	 */
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa) {
-		beliefStateSpaceGenerator.setMa(ma);
-		beliefStateSpaceGenerator.setInitialStateMa(initialStateMa);
+		stateSpaceGenerator.setMa(ma);
+		stateSpaceGenerator.setInitialStateMa(initialStateMa);
 		
 		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build();
 		return beliefMa;
 	}
-	
-	public MarkovAutomatonBuilder<BeliefState> getMaBuilder() {
-		return maBuilder;
-	}
-	
-	public BeliefStateSpaceGenerator getBeliefStateSpaceGenerator() {
-		return beliefStateSpaceGenerator;
+
+	@Override
+	protected BeliefStateSpaceGenerator createStateSpaceGenerator() {
+		return new BeliefStateSpaceGenerator();
 	}
 }

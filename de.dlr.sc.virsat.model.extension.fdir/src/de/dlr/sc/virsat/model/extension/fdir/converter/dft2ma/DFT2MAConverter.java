@@ -9,8 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
+import de.dlr.sc.virsat.fdir.core.markov.A2MAConverter;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuilder;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
@@ -20,10 +20,21 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvid
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
-public class DFT2MAConverter {
-	private DFT2MAStateSpaceGenerator stateSpaceGenerator = new DFT2MAStateSpaceGenerator();
-	private MarkovAutomatonBuilder<DFTState> maBuilder = new MarkovAutomatonBuilder<DFTState>(stateSpaceGenerator);
+/**
+ * Constructs a markov automaton from a DFT.
+ * @author muel_s8
+ *
+ */
+public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGenerator> {
 	
+	/**
+	 * Converts a fault tree with the passed node as a root to a
+	 * Markov automaton.
+	 * @param root a fault tree node used as a root node for the conversion
+	 * @param failableBasicEventsProvider the nodes that need to fail
+	 * @param failLabelProvider the fail label criterion
+	 * @return the generated Markov automaton resulting from the conversion
+	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, FailLabelProvider failLabelProvider) {
 		stateSpaceGenerator.setRoot(root);
 		stateSpaceGenerator.setFailableBasicEventsProvider(failableBasicEventsProvider);
@@ -34,16 +45,14 @@ public class DFT2MAConverter {
 		return ma;
 	}
 	
+	/**
+	 * Converts a fault tree with the passed node as a root to a
+	 * Markov automaton.
+	 * @param root a fault tree node used as a root node for the conversion
+	 * @return the generated Markov automaton resulting from the conversion
+	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
 		return convert(root, null, null);
-	}
-	
-	public DFT2MAStateSpaceGenerator getStateSpaceGenerator() {
-		return stateSpaceGenerator;
-	}
-	
-	public MarkovAutomatonBuilder<DFTState> getMaBuilder() {
-		return maBuilder;
 	}
 	
 	/**
@@ -82,5 +91,10 @@ public class DFT2MAConverter {
 		}
 		
 		return false;
+	}
+
+	@Override
+	protected DFT2MAStateSpaceGenerator createStateSpaceGenerator() {
+		return new DFT2MAStateSpaceGenerator();
 	}
 }
