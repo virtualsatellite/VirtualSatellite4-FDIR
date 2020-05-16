@@ -9,7 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConversionStatistics;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
 
 /**
@@ -23,7 +23,7 @@ public class SynthesisStatistics {
 	public int countTrimmedModules;
 	public int maxModuleSize;
 	public int maxModuleRaSize;
-	public final DFT2MAConversionStatistics stateSpaceGenerationStatistics = new DFT2MAConversionStatistics();
+	public final MarkovAutomatonBuildStatistics maBuildStatistics = new MarkovAutomatonBuildStatistics();
 	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics();
 	//CHECKSTYLE:ON
 	
@@ -36,7 +36,7 @@ public class SynthesisStatistics {
 		sb.append("\t* #Trimmed         :\t\t" 		+ countTrimmedModules + "\n");
 		sb.append("\t* Largest Module   :\t\t" 		+ maxModuleSize + "\n");
 		sb.append("\t* Largest Module RA:\t\t" 		+ maxModuleRaSize + "\n");
-		sb.append(stateSpaceGenerationStatistics);
+		sb.append(maBuildStatistics);
 		sb.append(minimizationStatistics);
 		return sb.toString();
 	}

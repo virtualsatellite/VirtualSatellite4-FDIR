@@ -34,18 +34,22 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private static final double EPSILON = 0.2;
 	
 	private MarkovAutomaton<DFTState> ma;
-	private PODFTState initialState;
+	private PODFTState initialStateMa;
 
 	private DFTStateEquivalence dftStateEquivalence;
 	private BeliefStateEquivalence beliefStateEquivalence;
 	
-	/**
-	 * Standard constructor
-	 * @param ma the base markov automaton
-	 */
-	public BeliefStateSpaceGenerator(MarkovAutomaton<DFTState> ma, PODFTState initialState) {
+	public void setMa(MarkovAutomaton<DFTState> ma) {
 		this.ma = ma;
-		this.initialState = initialState;
+	}
+	
+	public void setInitialStateMa(PODFTState initialStateMa) {
+		this.initialStateMa = initialStateMa;
+	}
+	
+	@Override
+	public void init(MarkovAutomaton<BeliefState> targetMa) {
+		super.init(targetMa);
 		
 		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
 		dftStateEquivalence = new DFTStateEquivalence();
@@ -56,8 +60,8 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	@Override
 	public BeliefState createInitialState() {
-		BeliefState initialBeliefState = new BeliefState(targetMa, initialState);
-		initialBeliefState.mapStateToBelief.put(initialState, 1d);
+		BeliefState initialBeliefState = new BeliefState(targetMa, initialStateMa);
+		initialBeliefState.mapStateToBelief.put(initialStateMa, 1d);
 		targetMa.addState(initialBeliefState);
 		beliefStateEquivalence.addState(initialBeliefState);
 		return initialBeliefState;

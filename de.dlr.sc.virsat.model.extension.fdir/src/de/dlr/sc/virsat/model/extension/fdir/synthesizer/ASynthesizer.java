@@ -115,8 +115,8 @@ public abstract class ASynthesizer implements ISynthesizer {
 	}
 	
 	/**
-	 * Creates the state space generator
-	 * @return the state space generator
+	 * Creates the converter for creating markov automata out of dft
+	 * @return the converter
 	 */
 	protected abstract DFT2MAConverter createDFT2MAConverter();
 
@@ -231,13 +231,13 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @return the recovery automaton
 	 */
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
-		DFT2MAConverter dft2ma = createDFT2MAConverter();
-		dft2ma.getStaticAnalysis().setSymmetryChecker(null);
-		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
+		DFT2MAConverter dft2maConverter = createDFT2MAConverter();
+		dft2maConverter.getStateSpaceGenerator().getStaticAnalysis().setSymmetryChecker(null);
+		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(root);
 		
-		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2ma.getInitial());
+		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2maConverter.getMaBuilder().getInitialState());
 		
-		statistics.stateSpaceGenerationStatistics.compose(dft2ma.getStatistics());
+		statistics.maBuildStatistics.compose(dft2maConverter.getMaBuilder().getStatistics());
 		
 		return ra;
 	}

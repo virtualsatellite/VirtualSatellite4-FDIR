@@ -125,7 +125,7 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 			BasicSynthesizer synthesizer = new BasicSynthesizer();
 			RecoveryAutomaton ra = synthesizer.synthesize(tle);
 
-			int statesMa = synthesizer.getStatistics().stateSpaceGenerationStatistics.maxStates;
+			int statesMa = synthesizer.getStatistics().maBuildStatistics.maxStates;
 			int statesMinimizedRa = ra.getStates().size();
 			int statesUnminimizedRa = statesMinimizedRa + synthesizer.getStatistics().minimizationStatistics.removedStates;
 			

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuilder;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovScheduler;
@@ -23,7 +22,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.BeliefState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.BeliefStateSpaceGenerator;
+import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.MA2BeliefMAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 /**
@@ -34,6 +33,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 public class POSynthesizer extends ASynthesizer {
 
+	private MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
+	
 	/**
 	 * Default constructor
 	 */
@@ -49,13 +50,9 @@ public class POSynthesizer extends ASynthesizer {
 					.findAny()
 					.orElse(initialMa);
 		
-		// Create the builder for the belief ma
-		BeliefStateSpaceGenerator beliefStateSpaceGenerator = new BeliefStateSpaceGenerator(ma, initialPo);
-		MarkovAutomatonBuilder<BeliefState> maBuilder = new MarkovAutomatonBuilder<>(beliefStateSpaceGenerator);
-		
 		// Build the actual belief ma
-		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build();
-		BeliefState initialBeliefState = maBuilder.getInitialState();
+		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, initialPo);
+		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
@@ -66,8 +63,8 @@ public class POSynthesizer extends ASynthesizer {
 	
 	@Override
 	protected DFT2MAConverter createDFT2MAConverter() {
-		DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
-		dft2MAConverter.setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
-		return dft2MAConverter;
+		DFT2MAConverter dft2MaConverter = new DFT2MAConverter();
+		dft2MaConverter.getStateSpaceGenerator().setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
+		return dft2MaConverter;
 	}
 }
