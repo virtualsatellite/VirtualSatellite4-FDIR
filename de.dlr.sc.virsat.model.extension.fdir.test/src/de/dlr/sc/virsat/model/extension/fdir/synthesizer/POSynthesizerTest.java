@@ -94,7 +94,7 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsCsp2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
 		final double EXPECTED_MTTF = 1;
 		final double EXPECTED_MTTD = 2.5;
@@ -147,7 +147,7 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
 		final double EXPECTED_MTTF = 1;
 		
@@ -163,8 +163,8 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 3;
-		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		final double EXPECTED_MTTF = 0.5;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
@@ -179,8 +179,8 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 3;
-		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		final double EXPECTED_MTTF = 0.5;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
@@ -195,8 +195,8 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 4;
-		final int EXPECTED_COUNT_TRANSITIONS = 5;
+		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_TRANSITIONS = 4;
 		final double EXPECTED_MTTF = 0.916666;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
@@ -211,10 +211,8 @@ public class POSynthesizerTest extends ATestCase {
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		System.out.println(ra.toDot());
-		
 		final int EXPECTED_COUNT_STATES = 5;
-		final int EXPECTED_COUNT_TRANSITIONS = 6;
+		final int EXPECTED_COUNT_TRANSITIONS = 5;
 		final double EXPECTED_MTTF = 1.15;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
@@ -228,9 +226,18 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
 		POSynthesizer synthesizer = new POSynthesizer();
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+	
+		System.out.println(ra.toDot());
+		
+		final int EXPECTED_COUNT_STATES = 7;
+		final int EXPECTED_COUNT_TRANSITIONS = 10;
+		final double EXPECTED_MTTF = 0.9126984126984126;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertNotEquals(0, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
