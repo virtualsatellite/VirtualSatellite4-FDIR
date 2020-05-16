@@ -44,13 +44,14 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 			S state = toProcess.poll();
 			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state);
 			toProcess.addAll(generatedNewSuccs);
+			statistics.countGeneratedStates += generatedNewSuccs.size();
 		}
-		
-		System.out.println(ma.toDot());
 		
 		statistics.maxStates = ma.getStates().size();
 		statistics.maxTransitions = ma.getTransitions().size();
 		statistics.time = System.currentTimeMillis() - statistics.time;
+		
+		System.out.println(ma.toDot());
 		
 		return ma;
 	}
