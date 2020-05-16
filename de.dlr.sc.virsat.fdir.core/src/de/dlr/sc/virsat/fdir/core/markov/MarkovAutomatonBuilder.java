@@ -35,6 +35,7 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		stateSpaceGenerator.init(ma);
 		
 		initialState = stateSpaceGenerator.createInitialState();
+		ma.addState(initialState);
 		
 		Queue<S> toProcess = new LinkedList<>();
 		List<S> startingStates = stateSpaceGenerator.getStartingStates(initialState);

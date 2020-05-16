@@ -75,7 +75,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			initialState.setNodeActivation(root, true);
 		}
 		initialState.setRecoveryStrategy(recoveryStrategy);
-		targetMa.addState(initialState);
 		
 		return initialState;
 	}

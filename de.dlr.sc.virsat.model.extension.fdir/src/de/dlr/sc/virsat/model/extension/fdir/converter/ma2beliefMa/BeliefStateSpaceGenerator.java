@@ -59,7 +59,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	public BeliefState createInitialState() {
 		BeliefState initialBeliefState = new BeliefState(targetMa, initialStateMa);
 		initialBeliefState.mapStateToBelief.put(initialStateMa, 1d);
-		targetMa.addState(initialBeliefState);
 		beliefStateEquivalence.addState(initialBeliefState);
 		return initialBeliefState;
 	}
