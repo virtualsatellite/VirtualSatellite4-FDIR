@@ -17,6 +17,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
@@ -196,6 +197,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			1.4760258380271557E-7,
 			1.968045934244401E-7
 		};
+		final double EXPECTED_MTTF = 24404.807713861;
 		
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -204,7 +206,11 @@ public class BasicSynthesizerTest extends ATestCase {
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
+		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	}
 	
 	@Test
