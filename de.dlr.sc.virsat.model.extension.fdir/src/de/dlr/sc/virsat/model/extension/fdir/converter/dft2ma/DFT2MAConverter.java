@@ -150,15 +150,28 @@ public class DFT2MAConverter {
 		
 		while (!toProcess.isEmpty()) {
 			DFTState state = toProcess.poll();
-			List<IDFTEvent> occurableEvents = getOccurableEvents(state);
-			List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
-			
-			for (StateUpdate stateUpdate : stateUpdates) {
-				StateUpdateResult stateUpdateResult = performUpdate(stateUpdate);
-				List<DFTState> newSuccs = handleStateUpdate(state, stateUpdate, stateUpdateResult);
-				toProcess.addAll(newSuccs);
-			}
+			List<DFTState> newSuccs = generateSuccs(state);
+			toProcess.addAll(newSuccs);
 		}
+	}
+	
+	/**
+	 * Constructs the successor states for a given dft state
+	 * @param state the dft state
+	 * @return the successor states
+	 */
+	private List<DFTState> generateSuccs(DFTState state) {
+		List<DFTState> newSuccs = new ArrayList<>();
+		List<IDFTEvent> occurableEvents = getOccurableEvents(state);
+		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
+		
+		for (StateUpdate stateUpdate : stateUpdates) {
+			StateUpdateResult stateUpdateResult = performUpdate(stateUpdate);
+			List<DFTState> newSuccsStateUpdate = handleStateUpdate(state, stateUpdate, stateUpdateResult);
+			newSuccs.addAll(newSuccsStateUpdate);
+		}
+		
+		return newSuccs;
 	}
 	
 	/**

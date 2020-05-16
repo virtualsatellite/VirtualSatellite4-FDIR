@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuilder;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovScheduler;
@@ -22,7 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.BeliefState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.MA2BeliefMAConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.BeliefStateSpaceGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 /**
@@ -40,8 +41,6 @@ public class POSynthesizer extends ASynthesizer {
 		modularizer = null;
 	}
 	
-	private MA2BeliefMAConverter ma2BeliefMaConverter = new MA2BeliefMAConverter();
-	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa) {
 		PODFTState initialPo = (PODFTState) ma.getSuccTransitions(initialMa).stream()
@@ -50,8 +49,15 @@ public class POSynthesizer extends ASynthesizer {
 					.findAny()
 					.orElse(initialMa);
 		
-		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMaConverter.convert(ma, initialPo);
-		BeliefState initialBeliefState = ma2BeliefMaConverter.getInitialBeliefState();
+		// Create the builder for the belief ma
+		BeliefStateSpaceGenerator beliefStateSpaceGenerator = new BeliefStateSpaceGenerator(ma, initialPo);
+		MarkovAutomatonBuilder<BeliefState> maBuilder = new MarkovAutomatonBuilder<>(beliefStateSpaceGenerator);
+		
+		// Build the actual belief ma
+		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build();
+		BeliefState initialBeliefState = maBuilder.getInitialState();
+		
+		// Create the optimal schedule on the belief ma
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
 		
