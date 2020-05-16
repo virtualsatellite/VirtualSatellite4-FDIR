@@ -30,7 +30,7 @@ public class MA2BeliefMAConverter  extends A2MAConverter<BeliefState, BeliefStat
 	 */
 	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa) {
 		stateSpaceGenerator.configure(ma, initialStateMa);
-		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build();
+		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build(stateSpaceGenerator);
 		return beliefMa;
 	}
 

@@ -16,19 +16,13 @@ import java.util.Queue;
 public class MarkovAutomatonBuilder<S extends MarkovState> {
 	
 	private MarkovAutomatonBuildStatistics statistics = new MarkovAutomatonBuildStatistics();
-	
-	private AStateSpaceGenerator<S> stateSpaceGenerator;
 	private S initialState;
-	
-	public MarkovAutomatonBuilder(AStateSpaceGenerator<S> stateSpaceGenerator) {
-		this.stateSpaceGenerator = stateSpaceGenerator;
-	}
-	
+
 	/**
 	 * Builds a markov automaton using the provided state space generator
 	 * @return the new markov automaton
 	 */
-	public MarkovAutomaton<S> build() {
+	public MarkovAutomaton<S> build(AStateSpaceGenerator<S> stateSpaceGenerator) {
 		statistics.time = System.currentTimeMillis();
 		
 		MarkovAutomaton<S> ma = new MarkovAutomaton<>();
@@ -39,6 +33,7 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		
 		Queue<S> toProcess = new LinkedList<>();
 		List<S> startingStates = stateSpaceGenerator.getStartingStates(initialState);
+		statistics.countGeneratedStates += startingStates.size();
 		toProcess.addAll(startingStates);
 		
 		while (!toProcess.isEmpty()) {

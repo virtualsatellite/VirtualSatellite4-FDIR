@@ -19,7 +19,7 @@ package de.dlr.sc.virsat.fdir.core.markov;
  */
 public abstract class A2MAConverter<S extends MarkovState, G extends AStateSpaceGenerator<S>> {
 	protected G stateSpaceGenerator = createStateSpaceGenerator();
-	protected MarkovAutomatonBuilder<S> maBuilder = new MarkovAutomatonBuilder<S>(stateSpaceGenerator);
+	protected MarkovAutomatonBuilder<S> maBuilder = new MarkovAutomatonBuilder<S>();
 	
 	protected abstract G createStateSpaceGenerator();
 	

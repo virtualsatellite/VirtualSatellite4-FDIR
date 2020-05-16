@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,35 +24,42 @@ import org.junit.Test;
  *
  */
 public class MarkovAutomatonBuilderTest {
-
-	private MarkovState initialState = new MarkovState();
-	private List<MarkovState> initialStateSuccs = Arrays.asList(new MarkovState(), new MarkovState());
-	
-	private AStateSpaceGenerator<MarkovState> mockStateSpaceGenerator = new AStateSpaceGenerator<MarkovState>() {
-		@Override
-		public List<MarkovState> generateSuccs(MarkovState state) {
-			if (state == initialState) {
-				for (MarkovState succ : initialStateSuccs) {
-					targetMa.addState(succ);
-					targetMa.addMarkovianTransition(null, state, succ, 1);
-				}
-				return initialStateSuccs;
-			} else {
-				return Collections.emptyList();
-			}
-		}
-		
-		@Override
-		public MarkovState createInitialState() {
-			return initialState;
-		}
-	};
-	
-	private MarkovAutomatonBuilder<MarkovState> maBuilder = new MarkovAutomatonBuilder<MarkovState>(mockStateSpaceGenerator);
 	
 	@Test
 	public void testBuild() {
-		MarkovAutomaton<MarkovState> ma = maBuilder.build();
+		MarkovAutomatonBuilder<MarkovState> maBuilder = new MarkovAutomatonBuilder<MarkovState>();
+		
+		MarkovState initialState = new MarkovState();
+		List<MarkovState> initialStateSuccs = Arrays.asList(new MarkovState(), new MarkovState());
+		
+		AStateSpaceGenerator<MarkovState> mockStateSpaceGenerator = new AStateSpaceGenerator<MarkovState>() {
+			@Override
+			public List<MarkovState> generateSuccs(MarkovState state) {
+				try {
+					final long SLEEP_TIME = 100;
+					Thread.sleep(SLEEP_TIME);
+				} catch (InterruptedException e) {
+					// Nothing to do here
+				}
+				
+				if (state == initialState) {
+					for (MarkovState succ : initialStateSuccs) {
+						targetMa.addState(succ);
+						targetMa.addMarkovianTransition(null, state, succ, 1);
+					}
+					return initialStateSuccs;
+				} else {
+					return Collections.emptyList();
+				}
+			}
+			
+			@Override
+			public MarkovState createInitialState() {
+				return initialState;
+			}
+		};
+		
+		MarkovAutomaton<MarkovState> ma = maBuilder.build(mockStateSpaceGenerator);
 		
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
@@ -61,6 +69,6 @@ public class MarkovAutomatonBuilderTest {
 		assertEquals("Correct number of states logged in statistics", EXPECTED_COUNT_STATES, maBuilder.getStatistics().countGeneratedStates);
 		assertEquals("Correct number of states logged in statistics", EXPECTED_COUNT_STATES, maBuilder.getStatistics().maxStates);
 		assertEquals("Correct number of transitions logged in statistics", EXPECTED_COUNT_TRANSITIONS, maBuilder.getStatistics().maxTransitions);
+		assertNotEquals("Logged that some time has passed", maBuilder.getStatistics().time);
 	}
-
 }
