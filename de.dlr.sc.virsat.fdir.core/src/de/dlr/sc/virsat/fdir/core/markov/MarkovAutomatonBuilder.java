@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 public class MarkovAutomatonBuilder<S extends MarkovState> {
 	
 	private MarkovAutomatonBuildStatistics statistics = new MarkovAutomatonBuildStatistics();
@@ -22,7 +24,7 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 	 * Builds a markov automaton using the provided state space generator
 	 * @return the new markov automaton
 	 */
-	public MarkovAutomaton<S> build(AStateSpaceGenerator<S> stateSpaceGenerator) {
+	public MarkovAutomaton<S> build(AStateSpaceGenerator<S> stateSpaceGenerator, SubMonitor monitor) {
 		statistics.time = System.currentTimeMillis();
 		
 		MarkovAutomaton<S> ma = new MarkovAutomaton<>();
@@ -34,6 +36,10 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		Queue<S> toProcess = new LinkedList<>();
 		List<S> startingStates = stateSpaceGenerator.getStartingStates(initialState);
 		statistics.countGeneratedStates += startingStates.size();
+		
+		monitor = SubMonitor.convert(monitor, startingStates.size());
+		monitor.setTaskName("Generating Markov automaton state space");
+		
 		toProcess.addAll(startingStates);
 		
 		while (!toProcess.isEmpty()) {
@@ -41,6 +47,9 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state);
 			toProcess.addAll(generatedNewSuccs);
 			statistics.countGeneratedStates += generatedNewSuccs.size();
+			
+			final int PROGRESS_COUNT = 100;
+			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 		}
 		
 		statistics.maxStates = ma.getStates().size();

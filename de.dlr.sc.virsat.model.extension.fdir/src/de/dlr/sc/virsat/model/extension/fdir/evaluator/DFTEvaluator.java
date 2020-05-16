@@ -81,17 +81,18 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
 		dft2MaConverter.configure(ftHolder, chooseSemantics(ftHolder), metrics, failableBasicEventsProvider);
-		
 		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
-		
 		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(metrics, modularization != null);
-	
+		subMonitor = SubMonitor.convert(subMonitor, partitioning.size());
+		
 		Map<FailLabelProvider, ModelCheckingResult> baseResults = new HashMap<>();
 		for (Entry<FailLabelProvider, IMetric[]> metricPartition : partitioning.entrySet()) {
 			if (!metricPartition.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
 				IBaseMetric[] baseMetrics = (IBaseMetric[]) metricPartition.getValue();
-				ModelCheckingResult result = evaluateFaultTree(ftHolder, failableBasicEventsProvider, metricPartition.getKey(), modularization, subMonitor, baseMetrics);
+				ModelCheckingResult result = evaluateFaultTree(ftHolder, failableBasicEventsProvider, metricPartition.getKey(), modularization, subMonitor.split(1), baseMetrics);
 				baseResults.put(metricPartition.getKey(), result);
+			} else {
+				subMonitor.split(1);
 			}
 		}
 		
@@ -184,8 +185,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @return the result object containing the metrics
 	 */
 	private ModelCheckingResult modelCheck(FaultTreeNode root, SubMonitor subMonitor, IBaseMetric[] metrics, FailableBasicEventsProvider failableBasicEventsProvider, FailLabelProvider failLabelProvider) {
-		mc = dft2MaConverter.convert(root, failableBasicEventsProvider, failLabelProvider);
-		ModelCheckingResult result = markovModelChecker.checkModel(mc, subMonitor, metrics);
+		final int COUNT_WORK = 2;
+		subMonitor = SubMonitor.convert(subMonitor, COUNT_WORK);
+		
+		mc = dft2MaConverter.convert(root, failableBasicEventsProvider, failLabelProvider, subMonitor.split(1));
+		ModelCheckingResult result = markovModelChecker.checkModel(mc, subMonitor.split(1), metrics);
 			
 		statistics.maBuildStatistics.compose(dft2MaConverter.getMaBuilder().getStatistics());
 		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());	

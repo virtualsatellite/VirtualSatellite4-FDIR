@@ -59,7 +59,7 @@ public class MarkovAutomatonBuilderTest {
 			}
 		};
 		
-		MarkovAutomaton<MarkovState> ma = maBuilder.build(mockStateSpaceGenerator);
+		MarkovAutomaton<MarkovState> ma = maBuilder.build(mockStateSpaceGenerator, null);
 		
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;

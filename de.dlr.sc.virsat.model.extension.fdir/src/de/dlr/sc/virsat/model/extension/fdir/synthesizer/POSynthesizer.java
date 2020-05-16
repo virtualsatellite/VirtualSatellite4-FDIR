@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
@@ -43,7 +45,7 @@ public class POSynthesizer extends ASynthesizer {
 	}
 	
 	@Override
-	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa) {
+	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
 		PODFTState initialPo = (PODFTState) ma.getSuccTransitions(initialMa).stream()
 					.filter(transition -> transition.getEvent().equals(Collections.emptyList()))
 					.map(transition -> transition.getTo())
@@ -51,7 +53,7 @@ public class POSynthesizer extends ASynthesizer {
 					.orElse(initialMa);
 		
 		// Build the actual belief ma
-		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, initialPo);
+		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, initialPo, subMonitor);
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma

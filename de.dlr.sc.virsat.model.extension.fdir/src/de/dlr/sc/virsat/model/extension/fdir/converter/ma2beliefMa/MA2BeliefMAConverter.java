@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.A2MAConverter;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -26,11 +28,12 @@ public class MA2BeliefMAConverter  extends A2MAConverter<BeliefState, BeliefStat
 	 * Creates a belief markov automaton out of the given markov automaton
 	 * @param ma the markov automaton
 	 * @param initialState the initial state of the markov automaton
+	 * @param monitor the monitor
 	 * @return the belief markov automaton
 	 */
-	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa) {
+	public MarkovAutomaton<BeliefState> convert(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa, SubMonitor monitor) {
 		stateSpaceGenerator.configure(ma, initialStateMa);
-		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build(stateSpaceGenerator);
+		MarkovAutomaton<BeliefState> beliefMa = maBuilder.build(stateSpaceGenerator, monitor);
 		return beliefMa;
 	}
 

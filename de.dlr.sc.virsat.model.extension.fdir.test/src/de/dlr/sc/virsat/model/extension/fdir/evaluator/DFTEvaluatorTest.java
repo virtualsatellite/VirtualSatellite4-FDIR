@@ -1000,13 +1000,14 @@ public class DFTEvaluatorTest extends ATestCase {
 	/*
 	@Test
 	public void testFTPP4() throws IOException {
+		for (int i = 0; i < 1000; ++i) {
 		final double EXPECTEDMTTF = 4595.0333844;
 		Fault fault = createDFT("/resources/galileo/ftpp4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	*/
-	
+		
 	@Test
 	public void testEvaluateAnd2Repair1() throws IOException {
 		final double[] EXPECTED = {
