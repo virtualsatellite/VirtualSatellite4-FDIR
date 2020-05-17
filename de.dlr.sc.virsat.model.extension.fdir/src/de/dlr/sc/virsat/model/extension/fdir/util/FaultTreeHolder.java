@@ -160,21 +160,12 @@ public class FaultTreeHolder {
 				mapFaultToBasicEvents.put(node, new ArrayList<>(node.getFault().getBasicEvents()));
 				for (BasicEvent basicEvent : node.getFault().getBasicEvents()) {
 					mapBasicEventToFault.put(basicEvent, node.getFault());
-					try {
-						mapBasicEventToHotFailRate.put(basicEvent, basicEvent.getHotFailureRateBean().getValueToBaseUnit());
-					} catch (NullPointerException e) {
-						mapBasicEventToHotFailRate.put(basicEvent, Double.NaN);
-					}
-					try {
-						mapBasicEventToColdFailRate.put(basicEvent, basicEvent.getColdFailureRateBean().getValueToBaseUnit());
-					} catch (NullPointerException e) {
-						mapBasicEventToHotFailRate.put(basicEvent, Double.NaN);
-					}
-					try {
-						mapBasicEventToRepairRate.put(basicEvent, basicEvent.getRepairRateBean().getValueToBaseUnit());
-					} catch (NullPointerException e) {
-						mapBasicEventToHotFailRate.put(basicEvent, Double.NaN);
-					}
+					mapBasicEventToHotFailRate.put(basicEvent, basicEvent.getHotFailureRateBean().isSet() 
+							? basicEvent.getHotFailureRateBean().getValueToBaseUnit() : Double.NaN);
+					mapBasicEventToColdFailRate.put(basicEvent, basicEvent.getColdFailureRateBean().isSet() 
+							? basicEvent.getColdFailureRateBean().getValueToBaseUnit() : Double.NaN);
+					mapBasicEventToRepairRate.put(basicEvent, basicEvent.getRepairRateBean().isSet() 
+							? basicEvent.getRepairRateBean().getValueToBaseUnit() : Double.NaN);
 					mapNodeToParents.put(basicEvent, Collections.singletonList(node.getFault()));
 				}
 			}

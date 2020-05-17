@@ -245,6 +245,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			oldUnavailability = newUnavailability;
 		}
 		
+		// Due to numerical inaccuracies, it possible to end up with a ssa very slightly below 0 (in the area of epsilon).
+		// Limit the lower bound to 0, to prevent this.
 		double ssa = Math.max(0, 1 - getFailRate());
 		modelCheckingResult.setSteadyStateAvailability(ssa);
 	}
