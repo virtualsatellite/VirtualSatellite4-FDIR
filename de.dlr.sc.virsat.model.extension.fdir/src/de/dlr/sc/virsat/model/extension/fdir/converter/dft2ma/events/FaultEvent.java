@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
-import java.util.Collections;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
@@ -18,6 +17,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
 
 /**
  * This class represents a single fault event (e.g. failure or repair)
@@ -98,7 +98,7 @@ public class FaultEvent implements IDFTEvent {
 		
 		if (isRepair) {
 			// Disable repair events while there is a failed FDEP trigger
-			List<FaultTreeNode> depTriggers = state.getFTHolder().getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+			List<FaultTreeNode> depTriggers = state.getFTHolder().getNodes(be, EdgeType.DEP);
 			for (FaultTreeNode depTrigger : depTriggers) {
 				if (state.hasFaultTreeNodeFailed(depTrigger)) {
 					return false;
@@ -108,7 +108,7 @@ public class FaultEvent implements IDFTEvent {
 			boolean isFailedDueToFDEP = state.getAffectors(be).stream().filter(affector -> affector instanceof FDEP).findAny().isPresent();
 			return hasAlreadyFailed && !isFailedDueToFDEP;
 		} else {
-			boolean isParentNodeActive = state.isNodeActive(state.getFTHolder().getMapBasicEventToFault().get(be));
+			boolean isParentNodeActive = state.isNodeActive(state.getFTHolder().getFault(be));
 			return !hasAlreadyFailed && (isParentNodeActive || coldFailRate != 0);
 		} 
 	}

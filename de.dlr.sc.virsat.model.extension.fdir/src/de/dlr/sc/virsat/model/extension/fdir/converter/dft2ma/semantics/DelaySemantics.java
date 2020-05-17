@@ -15,6 +15,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
 
 /**
  * Simple propagation semantics. A node with this semantics fails iff a child fails.
@@ -28,7 +29,7 @@ public class DelaySemantics implements INodeSemantics {
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			GenerationResult generationResult) {
 		FaultTreeHolder ftHolder = state.getFTHolder();
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
 		
 		for (FaultTreeNode child : children) {
 			if (state.hasFaultTreeNodeFailed(child)) {

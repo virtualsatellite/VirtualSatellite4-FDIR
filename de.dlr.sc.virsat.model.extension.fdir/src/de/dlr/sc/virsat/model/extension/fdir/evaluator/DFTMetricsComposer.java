@@ -127,6 +127,12 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	@Override
 	public void visit(MTTF mttfMetric) {
 		int countFailRates = composedResult.getFailRates().size();
+		
+		if (countFailRates == 1) {
+			composedResult.setMeanTimeToFailure(Double.POSITIVE_INFINITY);
+			return;
+		}
+		
 		double[] x = new double[countFailRates];
 		for (int i = 0; i < countFailRates; ++i) {
 			x[i] = i;

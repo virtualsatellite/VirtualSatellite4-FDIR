@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
 
 /**
  *
@@ -93,7 +94,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			FaultTreeNode newNodeOutputNode = newNodeList.get(FaultTreeHelper.NODE_INDEX);
 			Fault fault = newNodeOutputNode.getFault();
 
-			List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(node);
+			List<FaultTreeNode> spares = ftHolder.getNodes(node, EdgeType.SPARE);
 			for (int i = 0; i < spares.size(); ++i) {
 				FaultTreeNode spare = spares.get(i);
 				List<FaultTreeNode> newChildNodeList = mapNodes.get(spare);
@@ -101,21 +102,21 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 				ftHelper.connectSpare(fault, newSpareOutputNode, newNodeOutputNode);
 			}
 
-			List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().get(node);
+			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
 			for (int i = 0; i < monitors.size(); ++i) {
-				MONITOR monitor = monitors.get(i);
+				FaultTreeNode monitor = monitors.get(i);
 				List<FaultTreeNode> newChildNodeList = mapNodes.get(monitor);
 				FaultTreeNode newMonitorOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
 				ftHelper.connectObserver(fault, newNodeOutputNode, newMonitorOutputNode);
 			}
 			
-			List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+			List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
 
 			createEdges(fault, newNodeList, newNodeOutputNode, node.getFaultTreeNodeType(), children);
 			
 			if (node instanceof Fault) {
 				for (BasicEvent be : node.getFault().getBasicEvents()) {
-					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+					List<FaultTreeNode> deps = ftHolder.getNodes(be, EdgeType.DEP);
 					for (int i = 0; i < deps.size(); ++i) {
 						FaultTreeNode dep = deps.get(i);
 						List<FaultTreeNode> newChildNodeList = mapNodes.get(dep);
@@ -231,7 +232,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 	private void convertNode(FaultTreeNode node) {
 		Fault oldFault = node.getFault();
 		Fault newFault = (Fault) mapNodes.get(oldFault).get(0);
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
 
 		FaultTreeNodeType type = node.getFaultTreeNodeType();
 		List<FaultTreeNode> nodesList = new ArrayList<FaultTreeNode>();

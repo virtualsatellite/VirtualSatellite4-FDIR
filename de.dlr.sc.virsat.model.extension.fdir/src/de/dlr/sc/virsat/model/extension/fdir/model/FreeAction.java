@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import java.util.Collections;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
@@ -20,6 +19,7 @@ import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
 
 // *****************************************************************
 // * Class Declaration
@@ -78,7 +78,7 @@ public  class FreeAction extends AFreeAction {
 		state.getMapSpareToClaimedSpares().remove(freeSpare);
 		state.setNodeActivation(freeSpare, false);
 		
-		List<FaultTreeNode> spares = state.getFTHolder().getMapNodeToSpares().getOrDefault(claimingSpareGate, Collections.emptyList());
+		List<FaultTreeNode> spares = state.getFTHolder().getNodes(claimingSpareGate, EdgeType.SPARE);
 		boolean hasClaim = false;
 		boolean hasWorkingUnit = false;
 		
@@ -94,7 +94,7 @@ public  class FreeAction extends AFreeAction {
 		}
 		
 		if (!hasClaim) {
-			for (FaultTreeNode primary : state.getFTHolder().getMapNodeToChildren().getOrDefault(claimingSpareGate, Collections.emptyList())) {
+			for (FaultTreeNode primary : state.getFTHolder().getNodes(claimingSpareGate, EdgeType.CHILD)) {
 				state.setNodeActivation(primary, true);
 			
 				if (!state.hasFaultTreeNodeFailed(primary)) {
@@ -149,6 +149,6 @@ public  class FreeAction extends AFreeAction {
 		if (freeSpare == null) {
 			getFreeSpareByUUID(state);
 		}
-		return state.getFTHolder().getMapNodeToParents().get(freeSpare);
+		return state.getFTHolder().getNodes(freeSpare, EdgeType.PARENT);
 	}
 }

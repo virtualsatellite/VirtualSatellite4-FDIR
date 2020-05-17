@@ -34,6 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
 
 /**
  * This class bundles a set of DFT node semantics and handles updating a set of states
@@ -90,7 +91,7 @@ public class DFTSemantics {
 	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
 		List<IDFTEvent> faultEvents = new ArrayList<>();
 		
-		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
+		for (BasicEvent be : ftHolder.getBasicEvents()) {
 			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() != 0) {
 				faultEvents.add(new FaultEvent(be, true, ftHolder));					
 			}
@@ -147,16 +148,16 @@ public class DFTSemantics {
 		FaultTreeHolder ftHolder = baseSucc.getFTHolder();
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
 		if (event.getNode() instanceof BasicEvent) {
-			worklist.add(ftHolder.getMapBasicEventToFault().get(event.getNode()));
+			worklist.add(ftHolder.getFault((BasicEvent) event.getNode()));
 		} else {
-			worklist.addAll(ftHolder.getMapNodeToParents().get(event.getNode()));
+			worklist.addAll(ftHolder.getNodes(event.getNode(), EdgeType.PARENT));
 		}
 		
 		if (baseSucc.getRecoveryStrategy() != null) {
 			RecoveryStrategy strategy = baseSucc.getRecoveryStrategy();
 			for (RecoveryAction recoveryAction : strategy.getRecoveryActions()) {
 				for (FaultTreeNode affectedNode : recoveryAction.getAffectedNodes(baseSucc)) {
-					worklist.addAll(ftHolder.getMapNodeToParents().get(affectedNode));
+					worklist.addAll(ftHolder.getNodes(affectedNode, EdgeType.PARENT));
 				}
 			}
 		}
@@ -180,7 +181,7 @@ public class DFTSemantics {
 			
 			if (hasChanged) {
 				changedNodes.add(ftn);
-				List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(ftn);
+				List<FaultTreeNode> parents = ftHolder.getNodes(ftn, EdgeType.PARENT);
 				for (FaultTreeNode parent : parents) {
 					if (!worklist.contains(parent)) {
 						worklist.add(parent);
@@ -209,7 +210,7 @@ public class DFTSemantics {
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
 		
 		if (node instanceof BasicEvent) {
-			List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().get(node);
+			List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 			for (DFTState state : stateUpdateResult.getSuccs()) {
 				if (state.handleUpdateTriggers(node, depTriggers)) {
 					hasChanged = true;
@@ -224,7 +225,7 @@ public class DFTSemantics {
 			throw new RuntimeException("The current semantics configuration doesnt support " +  node.getFaultTreeNodeType() + " as basic node type!");
 		}
 		
-		List<FaultTreeNode> depTriggers = ftHolder.getMapNodeToDEPTriggers().getOrDefault(node, Collections.emptyList());
+		List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
 			if (succ.handleUpdateTriggers(node, depTriggers)) {
 				hasChanged = true;

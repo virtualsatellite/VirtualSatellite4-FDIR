@@ -24,6 +24,7 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
 
 /**
  * Checks a Fault Tree for symmetry
@@ -32,15 +33,6 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  */
 
 public class DFTSymmetryChecker {
-	
-	/**
-	 * Enum for different type of edges
-	 * @author muel_s8
-	 *
-	 */
-	private enum EdgeType {
-		CHILD, BE, SPARE, DEP, PARENT
-	}
 	
 	/**
 	 * Computes a symmetry reduction between two FTs
@@ -55,8 +47,6 @@ public class DFTSymmetryChecker {
 		Queue<Set<Entry<FaultTreeNode, FaultTreeNode>>> toProcess = new LinkedList<>();
 		Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> generated = new HashSet<>();
 		
-		Map<EdgeType, Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>>> mapEdgeTypeToLookUp = createMapEdgeTypeToLookUp(ftHolder1, ftHolder2);
-
 		// For the trees to be symmetric, at least the root nodes have to be isomorphic
 		Set<Entry<FaultTreeNode, FaultTreeNode>> initialCandidates = new HashSet<>();
 		Entry<FaultTreeNode, FaultTreeNode> initialEntry = new SimpleEntry<>(ftHolder1.getRoot(), ftHolder2.getRoot());
@@ -89,11 +79,10 @@ public class DFTSymmetryChecker {
 				Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> allSubCandidatePairs = new HashSet<>();
 				if (node1.getFaultTreeNodeType().isOrderDependent()) {
 					for (EdgeType edgeType : EdgeType.values()) {
-						Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>> lookup = mapEdgeTypeToLookUp.get(edgeType);
 						Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> allCandidatePairs = createMapNodeToPairsOrderDependent(
 								parentPairs,
-								lookup.getKey().getOrDefault(node1, Collections.emptyList()), 
-								lookup.getValue().getOrDefault(node2, Collections.emptyList()));
+								ftHolder1.getNodes(node1, edgeType),
+								ftHolder2.getNodes(node2, edgeType));
 						if (allCandidatePairs == null) {
 							incorrectPairs.add(pair);
 							continue nextPair;
@@ -102,11 +91,10 @@ public class DFTSymmetryChecker {
 					}
 				} else {
 					for (EdgeType edgeType : EdgeType.values()) {
-						Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>> lookup = mapEdgeTypeToLookUp.get(edgeType);
 						Set<Set<Entry<FaultTreeNode, FaultTreeNode>>> allCandidatePairs = createMapNodeToNodePairs(
 								parentPairs,
-								lookup.getKey().getOrDefault(node1, Collections.emptyList()), 
-								lookup.getValue().getOrDefault(node2, Collections.emptyList()));
+								ftHolder1.getNodes(node1, edgeType),
+								ftHolder2.getNodes(node2, edgeType));
 						if (allCandidatePairs == null) {
 							incorrectPairs.add(pair);
 							continue nextPair;
@@ -176,22 +164,6 @@ public class DFTSymmetryChecker {
 		}
 		
 		return false;
-	}
-	
-	/**
-	 * Batches the edges of the two fault tree holders according to their edge types
-	 * @param ftHolder1 the holder of the first fault tree
-	 * @param ftHolder2 the holder of the second fault tree
-	 * @return the batched edges according to type
-	 */
-	private Map<EdgeType, Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>>> createMapEdgeTypeToLookUp(FaultTreeHolder ftHolder1, FaultTreeHolder ftHolder2) {
-		Map<EdgeType, Entry<Map<FaultTreeNode, List<FaultTreeNode>>, Map<FaultTreeNode, List<FaultTreeNode>>>> mapEdgeTypeToLookUp = new HashMap<>();
-		mapEdgeTypeToLookUp.put(EdgeType.CHILD, new SimpleEntry<>(ftHolder1.getMapNodeToChildren(), ftHolder2.getMapNodeToChildren()));
-		mapEdgeTypeToLookUp.put(EdgeType.BE, new SimpleEntry<>(ftHolder1.getMapFaultToBasicEvents(), ftHolder2.getMapFaultToBasicEvents()));
-		mapEdgeTypeToLookUp.put(EdgeType.SPARE, new SimpleEntry<>(ftHolder1.getMapNodeToSpares(), ftHolder2.getMapNodeToSpares()));
-		mapEdgeTypeToLookUp.put(EdgeType.DEP, new SimpleEntry<>(ftHolder1.getMapNodeToDEPTriggers(), ftHolder2.getMapNodeToDEPTriggers()));
-		mapEdgeTypeToLookUp.put(EdgeType.PARENT, new SimpleEntry<>(ftHolder1.getMapNodeToParents(), ftHolder2.getMapNodeToParents()));
-		return mapEdgeTypeToLookUp;
 	}
 	
 	/**

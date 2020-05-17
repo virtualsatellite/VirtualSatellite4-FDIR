@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
@@ -21,6 +20,7 @@ import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
 
 // *****************************************************************
 // * Class Declaration
@@ -103,7 +103,7 @@ public  class ClaimAction extends AClaimAction {
 		
 		state.getMapSpareToClaimedSpares().put(claimSpare, spareGate);
 		state.setNodeActivation(claimSpare, true);
-		for (FaultTreeNode primary : state.getFTHolder().getMapNodeToChildren().getOrDefault(spareGate, Collections.emptyList())) {
+		for (FaultTreeNode primary : state.getFTHolder().getNodes(spareGate, EdgeType.CHILD)) {
 			state.setNodeActivation(primary, false);
 		}
 		
