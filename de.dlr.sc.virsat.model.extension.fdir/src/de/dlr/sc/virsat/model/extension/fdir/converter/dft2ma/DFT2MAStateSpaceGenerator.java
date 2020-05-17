@@ -89,7 +89,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
-			StateUpdateResult stateUpdateResult = performUpdate(stateUpdate);
+			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate, staticAnalysis);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(state, stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
@@ -254,8 +254,8 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<IDFTEvent> initialEvents = semantics.getInitialEvents(ftHolder);
 		
 		for (IDFTEvent event : initialEvents) {
-			StateUpdate initialStateUpdate = new StateUpdate(initialState, event, 1);
-			StateUpdateResult initialStateUpdateResult = performUpdate(initialStateUpdate);
+			StateUpdate initialStateUpdate = new StateUpdate(initialState, event);
+			StateUpdateResult initialStateUpdateResult = semantics.performUpdate(initialStateUpdate, staticAnalysis);
 			
 			if (initialStateUpdateResult.getSuccs().size() > 1) {
 				for (DFTState initialSucc : initialStateUpdateResult.getSuccs()) {
@@ -272,20 +272,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		}
 		
 		return initialStates;
-	}
-	
-	/**
-	 * Executes a state update
-	 * @return the result of the state update
-	 */
-	private StateUpdateResult performUpdate(StateUpdate stateUpdate) {
-		StateUpdateResult stateUpdateResult = new StateUpdateResult(stateUpdate);
-
-		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc(), staticAnalysis);
-		
-		semantics.propgateStateUpdate(stateUpdate, stateUpdateResult);
-		
-		return stateUpdateResult;
 	}
 	
 	/**

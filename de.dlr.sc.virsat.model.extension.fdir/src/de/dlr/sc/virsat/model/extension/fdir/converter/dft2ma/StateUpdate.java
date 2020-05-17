@@ -30,6 +30,10 @@ public class StateUpdate {
 		this.rate = event.getRate(state) * symmetryMultiplier;
 	}
 	
+	public StateUpdate(DFTState state, IDFTEvent event) {
+		this(state, event, 1);
+	}
+	
 	public DFTState getState() {
 		return state;
 	}
@@ -47,11 +51,15 @@ public class StateUpdate {
 		return state.toString() + " --- " + event.toString() + " : " + rate + " ---> ? ";
 	}
 	
+	public StateUpdateResult createResultContainer() {
+		return new StateUpdateResult();
+	}
+	
 	/**
 	 * Contains the results from an executed state update
 	 *
 	 */
-	public static class StateUpdateResult {
+	public class StateUpdateResult {
 		private Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
 		private List<DFTState> succs = new ArrayList<>();
 		private List<FaultTreeNode> changedNodes = new ArrayList<>();
@@ -62,9 +70,9 @@ public class StateUpdate {
 		 * Standard constructor
 		 * @param state the base state
 		 */
-		StateUpdateResult(StateUpdate stateUpdate) {
-			baseSucc = stateUpdate.state.copy();
-			baseSucc.setRecoveryStrategy(stateUpdate.state.getRecoveryStrategy());
+		StateUpdateResult() {
+			baseSucc = state.copy();
+			baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
 			
 			succs.add(baseSucc);
 			mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());

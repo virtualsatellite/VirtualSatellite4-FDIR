@@ -1047,5 +1047,36 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 		assertEquals("Steady State Availability has correct value", EXPECTEDSTEADYSTATE, result.getSteadyStateAvailability(), TEST_EPSILON);
-	}	
+	}
+	
+	@Test
+	public void testObsCsp2WithRa() throws IOException {		
+		Fault root = (Fault) createBasicDFT("/resources/galileoObs/obsCsp2.dft");
+		final double[] EXPECTED = {
+			9.9e-05,
+			0.0003921,
+			0.0008735,
+			0.0015375
+		};
+		
+		// Hand create the recovery automaton
+		// -> initial ------------- TLE : Claim(TLE, b) ----------> FAIL
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raHelper.createStates(ra, 2);
+		ra.setInitial(ra.getStates().get(0));
+		
+		FaultEventTransition transition = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+		
+		ClaimAction ca = new ClaimAction(concept);
+		ca.setSpareGate(ftHolder.getNodeByName("tle", SPARE.class));
+		ca.setClaimSpare(ftHolder.getNodeByName("b", Fault.class));
+		
+		raHelper.assignInputs(transition, ftHolder.getNodeByName("tle", SPARE.class));
+		raHelper.assignAction(transition, ca);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Reliability.UNIT_RELIABILITY);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
+	}
 }

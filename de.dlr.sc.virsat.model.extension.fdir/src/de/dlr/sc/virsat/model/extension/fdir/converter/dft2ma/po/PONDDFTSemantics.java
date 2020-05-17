@@ -43,7 +43,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 * Creates a partial observable nondeterministic DFT semantics
 	 * @return creates a partial observable nondeterministic DFT semantics
 	 */
-	public static DFTSemantics createPONDDFTSemantics() {
+	public static PONDDFTSemantics createPONDDFTSemantics() {
 		PONDDFTSemantics semantics = new PONDDFTSemantics();
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FAULT, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FDEP, new FaultSemantics());
@@ -165,7 +165,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		for (DFTState state : stateUpdateResult.getSuccs()) {
 			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 				PODFTState poState = (PODFTState) state;
-				boolean isObserved = poState.existsNonFailedObserver(node, false);
+				boolean isObserved = poState.existsObserver(node, false, false);
 				if (isObserved) {
 					anyObservation = true;
 					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
@@ -195,12 +195,12 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			PODFTState poPred = (PODFTState) stateUpdate.getState();
 			
-			if (poPred.existsNonFailedObserver(event.getNode(), false)) {
+			if (poPred.existsObserver(event.getNode(), false, false)) {
 				observedNodes.add(event.getNode());
 			}
 			
 			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
-				if (poPred.existsNonFailedObserver(node, false)) {
+				if (poPred.existsObserver(node, false, false)) {
 					observedNodes.add(node);
 				}
 			}
