@@ -55,6 +55,7 @@ public class FaultTreeHolder {
 	 */
 	public FaultTreeHolder(FaultTreeNode root) {
 		this.root = root;
+		
 		initDataStructures();
 		collectFaultTrees();
 		processFaultTree();
@@ -289,14 +290,6 @@ public class FaultTreeHolder {
 	}
 	
 	/**
-	 * Gets all fault trees and sub fault trees contained in it
-	 * @return set of a all fault trees making up the overall fault tree
-	 */
-	public Set<FaultTree> getFaultTrees() {
-		return faultTrees;
-	}
-	
-	/**
 	 * Gets all nodes in the fault tree
 	 * @return set containing all nodes
 	 */
@@ -422,9 +415,7 @@ public class FaultTreeHolder {
 	 */
 	public Set<FaultEvent> getFailureModes(Fault fault) {
 		Set<FaultEvent> failureModes = new HashSet<>(getChildFaults(fault));
-		if (fault instanceof Fault) {
-			failureModes.addAll(fault.getBasicEvents());
-		}
+		failureModes.addAll(fault.getBasicEvents());
 		return failureModes;
 	}
 }
