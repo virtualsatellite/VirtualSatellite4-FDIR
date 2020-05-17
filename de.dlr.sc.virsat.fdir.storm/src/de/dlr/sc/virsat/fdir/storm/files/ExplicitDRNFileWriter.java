@@ -51,7 +51,7 @@ public class ExplicitDRNFileWriter implements IExplicitFileWriter {
 	}
 
 	@Override
-	public void writeFile() {
+	public void writeFile() throws IOException {
 		String rewardModel = "";
 		String setOneReward = "";
 		String setZeroReward = "";
@@ -62,59 +62,53 @@ public class ExplicitDRNFileWriter implements IExplicitFileWriter {
 				setZeroReward = " [0]";
 			}
 		}
-		try {
-			FileWriter fileWriter = new FileWriter(instanceFilePath);
-			PrintWriter printWriter = new PrintWriter(fileWriter);
-			printWriter.print("@type: " + getModelType() + "\n");
-			printWriter.print("@parameters\n" + "\n");
-			printWriter.print("@reward_models\n" + rewardModel + "\n");
-			printWriter.print("@nr_states" + "\n");
-			printWriter.print(ma.getStates().size() + "\n");
 
-			printWriter.print("@model" + "\n");
-			for (MarkovState state : ma.getStates()) {
-				double exitRate = 0;
-				boolean isFinalState = ma.getFinalStates().contains(state);
-				if (state.isMarkovian()) {
-					Map<MarkovState, Double> mapTargetStateToRate = new HashMap<>();
-					for (MarkovTransition<? extends MarkovState> transition : ma.getSuccTransitions(state)) {
-						exitRate += transition.getRate();
-						MarkovState targetState = transition.getTo();
-						double oldRate = mapTargetStateToRate.getOrDefault(targetState, 0d);
-						mapTargetStateToRate.put(targetState, oldRate + transition.getRate());
-					}
-					if (isFinalState && ma.getSuccTransitions(state).isEmpty()) {
-						printWriter
-								.print("state " + state.getIndex() + " !1.0 " + setZeroReward + getLabel(state) + "\n");
-						printWriter.print("\taction 0" + setZeroReward + "\n");
-						printWriter.print("\t\t" + state.getIndex() + " : 1.0\n");
-
-					} else {
-						String stateReward = isFinalState ? setZeroReward : setOneReward;
-						printWriter.print("state " + state.getIndex() + " !" + exitRate + stateReward + " "
-								+ getLabel(state) + "\n");
-						printWriter.print("\taction 0" + setZeroReward + "\n");
-						for (Entry<MarkovState, Double> entry : mapTargetStateToRate.entrySet()) {
-							double rate = (state.isMarkovian()) ? (entry.getValue() / exitRate) : 1;
-							printWriter.print("\t\t" + entry.getKey().getIndex() + " : " + rate + "\n");
-						}
-					}
+		FileWriter fileWriter = new FileWriter(instanceFilePath);
+		PrintWriter printWriter = new PrintWriter(fileWriter);
+		printWriter.print("@type: " + getModelType() + "\n");
+		printWriter.print("@parameters\n" + "\n");
+		printWriter.print("@reward_models\n" + rewardModel + "\n");
+		printWriter.print("@nr_states" + "\n");
+		printWriter.print(ma.getStates().size() + "\n");
+		printWriter.print("@model" + "\n");
+		
+		for (MarkovState state : ma.getStates()) {
+			boolean isFinalState = ma.getFinalStates().contains(state);
+			
+			if (state.isMarkovian()) {
+				double exitRate = ma.getExitRateForState(state);
+				Map<MarkovState, Double> mapTargetStateToRate = new HashMap<>();
+				for (MarkovTransition<? extends MarkovState> transition : ma.getSuccTransitions(state)) {
+					MarkovState targetState = transition.getTo();
+					mapTargetStateToRate.merge(targetState, transition.getRate(), (r1, r2) -> r1 + r2);
+				}
+				
+				if (isFinalState && ma.getSuccTransitions(state).isEmpty()) {
+					printWriter.print("state " + state.getIndex() + " !1.0 " + setZeroReward + getLabel(state) + "\n");
+					printWriter.print("\taction 0" + setZeroReward + "\n");
+					printWriter.print("\t\t" + state.getIndex() + " : 1.0\n");
 				} else {
-
-					printWriter.print("state " + state.getIndex() + " !" + exitRate + " " + getLabel(state) + "\n");
-					int choice = 0;
-					for (MarkovTransition<? extends MarkovState> transition : ma.getSuccTransitions(state)) {
-						printWriter.print("\taction " + choice + setZeroReward + "\n");
-						printWriter.print("\t\t" + transition.getTo().getIndex() + " : 1\n");
-						choice++;
+					String stateReward = isFinalState ? setZeroReward : setOneReward;
+					printWriter.print("state " + state.getIndex() + " !" + exitRate + stateReward + " "
+							+ getLabel(state) + "\n");
+					printWriter.print("\taction 0" + setZeroReward + "\n");
+					for (Entry<MarkovState, Double> entry : mapTargetStateToRate.entrySet()) {
+						double rate = (state.isMarkovian()) ? (entry.getValue() / exitRate) : 1;
+						printWriter.print("\t\t" + entry.getKey().getIndex() + " : " + rate + "\n");
 					}
 				}
+			} else {
+				printWriter.print("state " + state.getIndex() + " !0.0 " + getLabel(state) + "\n");
+				int choice = 0;
+				for (MarkovTransition<? extends MarkovState> transition : ma.getSuccTransitions(state)) {
+					printWriter.print("\taction " + choice + setZeroReward + "\n");
+					printWriter.print("\t\t" + transition.getTo().getIndex() + " : 1\n");
+					choice++;
+				}
 			}
-			printWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-
+		
+		printWriter.close();
 	}
 
 	/**
