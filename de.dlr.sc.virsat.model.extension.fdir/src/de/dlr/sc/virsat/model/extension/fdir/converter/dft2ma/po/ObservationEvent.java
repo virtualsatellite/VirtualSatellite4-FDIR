@@ -16,7 +16,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder.EdgeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 
 /**
  * This class represents a single observation event (e.g. observation of failure or repair)

@@ -55,18 +55,17 @@ public class FaultTreeHolder {
 	 */
 	public FaultTreeHolder(FaultTreeNode root) {
 		this.root = root;
-		init();
+		initDataStructures();
+		collectFaultTrees();
+		processFaultTree();
 		indexNodes();
 	}
 	
 	/**
-	 * Initializes the inferred data
+	 * Builds the actual data
 	 */
-	private void init() {
+	private void processFaultTree() {
 		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
-		
-		initDataStructures();
-		collectFaultTrees();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
@@ -79,65 +78,109 @@ public class FaultTreeHolder {
 			}
 			
 			faultTrees.add(node.getFault().getFaultTree());
-			List<FaultTreeNode> children = ftHelper.getChildren(node, faultTrees);
-			List<FaultTreeNode> spares = ftHelper.getSpares(node, faultTrees);
+			toProcess.addAll(processNode(node, ftHelper));
+		}
+	}
+	
+	/**
+	 * Processes a single fault tree node
+	 * @param node the fault tree node to process
+	 * @param ftHelper a fault tree helper
+	 * @return a list of nodes that need to be queued
+	 */
+	private List<FaultTreeNode> processNode(FaultTreeNode node, FaultTreeHelper ftHelper) {
+		List<FaultTreeNode> toProcess = new ArrayList<>();
+		
+		List<FaultTreeNode> children = ftHelper.getChildren(node, faultTrees);
+		List<FaultTreeNode> spares = ftHelper.getSpares(node, faultTrees);
+		
+		NodeHolder nodeHolder = getNodeHolder(node);
+		nodeHolder.mapEdgeTypeToNodes.put(EdgeType.CHILD, children);
+		nodeHolder.mapEdgeTypeToNodes.put(EdgeType.SPARE, spares);
+		
+		for (FaultTreeNode spare : spares) {
+			NodeHolder spareHolder = getNodeHolder(spare);
+			spareHolder.getNodes(EdgeType.PARENT).add(node);
+		}
+		
+		for (FaultTreeNode child : children) {
+			NodeHolder childHolder = getNodeHolder(child);
+			childHolder.getNodes(EdgeType.PARENT).add(node);
+		}
+		
+		if (node instanceof Fault) {
+			Fault fault = (Fault) node;
+			toProcess.addAll(processDeps(fault));
+			toProcess.addAll(processMonitors(fault));
 			
-			NodeHolder nodeHolder = getNodeHolder(node);
-			nodeHolder.mapEdgeTypeToNodes.put(EdgeType.CHILD, children);
-			nodeHolder.mapEdgeTypeToNodes.put(EdgeType.SPARE, spares);
+			nodeHolder.mapEdgeTypeToNodes.put(EdgeType.BE, new ArrayList<>(fault.getBasicEvents()));
+			processBasicEvents(fault);
+		}
+		
+		toProcess.addAll(children);
+		toProcess.addAll(spares);
+		
+		return toProcess;
+	}
+	
+	/**
+	 * Processes the dep edges in a fault
+	 * @param fault the fault
+	 * @return a list of dep gates that need to be queued
+	 */
+	private List<FaultTreeNode> processDeps(Fault fault) {
+		List<FaultTreeNode> depGates = new ArrayList<>();
+		for (FaultTreeEdge dep : fault.getFaultTree().getDeps()) {
+			FaultTreeNode depGate = dep.getFrom();
+			FaultTreeNode dependentEvent = dep.getTo();
 			
-			for (FaultTreeNode spare : spares) {
-				NodeHolder spareHolder = getNodeHolder(spare);
-				spareHolder.getNodes(EdgeType.PARENT).add(node);
-			}
+			NodeHolder dependentHolder = getNodeHolder(dependentEvent);
+			dependentHolder.getNodes(EdgeType.DEP).add(depGate);
 			
-			for (FaultTreeNode child : children) {
-				NodeHolder childHolder = getNodeHolder(child);
-				childHolder.getNodes(EdgeType.PARENT).add(node);
-			}
+			NodeHolder parentHolder = getNodeHolder(depGate);
+			parentHolder.getNodes(EdgeType.PARENT).add(dependentEvent);
 			
-			if (node instanceof Fault) {
-				Fault fault = (Fault) node;
-				
-				for (FaultTreeEdge dep : fault.getFaultTree().getDeps()) {
-					FaultTreeNode depGate = dep.getFrom();
-					FaultTreeNode dependentEvent = dep.getTo();
-					
-					NodeHolder dependentHolder = getNodeHolder(dependentEvent);
-					dependentHolder.getNodes(EdgeType.DEP).add(depGate);
-					
-					NodeHolder parentHolder = getNodeHolder(depGate);
-					parentHolder.getNodes(EdgeType.PARENT).add(dependentEvent);
-					
-					toProcess.add(depGate);
-				}
-				
-				for (FaultTreeEdge obs : fault.getFaultTree().getObservations()) {
-					MONITOR monitor = (MONITOR) obs.getTo();
-					FaultTreeNode monitored = obs.getFrom();
-					
-					NodeHolder monitorHolder = getNodeHolder(monitored);
-					monitorHolder.getNodes(EdgeType.MONITOR).add(monitor);
+			depGates.add(depGate);
+		}
+		
+		return depGates;
+	}
+	
+	/**
+	 * Processes the observation edges in a fault
+	 * @param fault the fault
+	 * @return a list of monitor gates that need to be queued
+	 */
+	private List<FaultTreeNode> processMonitors(Fault fault) {
+		List<FaultTreeNode> monitorGates = new ArrayList<>();
+		for (FaultTreeEdge obs : fault.getFaultTree().getObservations()) {
+			MONITOR monitor = (MONITOR) obs.getTo();
+			FaultTreeNode monitored = obs.getFrom();
+			
+			NodeHolder monitorHolder = getNodeHolder(monitored);
+			monitorHolder.getNodes(EdgeType.MONITOR).add(monitor);
 
-					NodeHolder parentHolder = getNodeHolder(monitor);
-					parentHolder.getNodes(EdgeType.PARENT).add(monitored);
-					
-					toProcess.add(monitor);
-				}
-				
-				nodeHolder.mapEdgeTypeToNodes.put(EdgeType.BE, new ArrayList<>(node.getFault().getBasicEvents()));
-				for (BasicEvent basicEvent : fault.getBasicEvents()) {
-					BasicEventHolder beHolder = new BasicEventHolder(basicEvent);
-					beHolder.fault = fault;
-					mapBEToBEHolders.put(basicEvent, beHolder);
-							
-					NodeHolder parentHolder = getNodeHolder(basicEvent);
-					parentHolder.getNodes(EdgeType.PARENT).add(fault);
-				}
-			}
+			NodeHolder parentHolder = getNodeHolder(monitor);
+			parentHolder.getNodes(EdgeType.PARENT).add(monitored);
 			
-			toProcess.addAll(children);
-			toProcess.addAll(spares);
+			monitorGates.add(monitor);
+		}
+		
+		return monitorGates;
+	}
+	
+	/**
+	 * Processes the basic events attached to a fault
+	 * @param fault the fault
+	 */
+	private void processBasicEvents(Fault fault) {
+		for (BasicEvent basicEvent : fault.getBasicEvents()) {
+			BasicEventHolder beHolder = new BasicEventHolder(basicEvent);
+			beHolder.fault = fault;
+			mapBEToBEHolders.put(basicEvent, beHolder);
+					
+			NodeHolder parentHolder = getNodeHolder(basicEvent);
+			parentHolder.getNodes(EdgeType.PARENT).add(fault);
 		}
 	}
 	
