@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -125,8 +128,8 @@ public class DFTStaticAnalysis {
 		if (event instanceof FaultEvent) {
 			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
-			boolean isSymmetryReductionApplicable = isSymmetryReductionApplicable(state, event.getNode());
-			if (isSymmetryReductionApplicable && !failedBasicEvents.containsAll(symmetryReductionInverted.getOrDefault(event.getNode(), Collections.emptySet()))) {
+			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(symmetryReductionInverted.getOrDefault(event.getNode(), Collections.emptySet()));
+			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, event.getNode())) {
 				return -1;
 			}
 			

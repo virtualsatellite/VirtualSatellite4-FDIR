@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
@@ -33,6 +35,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 public class POSynthesizer extends ASynthesizer {
 
+	private MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
+	
 	/**
 	 * Default constructor
 	 */
@@ -40,18 +44,19 @@ public class POSynthesizer extends ASynthesizer {
 		modularizer = null;
 	}
 	
-	private MA2BeliefMAConverter ma2BeliefMaConverter = new MA2BeliefMAConverter();
-	
 	@Override
-	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa) {
+	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
 		PODFTState initialPo = (PODFTState) ma.getSuccTransitions(initialMa).stream()
 					.filter(transition -> transition.getEvent().equals(Collections.emptyList()))
 					.map(transition -> transition.getTo())
 					.findAny()
 					.orElse(initialMa);
 		
-		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMaConverter.convert(ma, initialPo);
-		BeliefState initialBeliefState = ma2BeliefMaConverter.getInitialBeliefState();
+		// Build the actual belief ma
+		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, initialPo, subMonitor);
+		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
+		
+		// Create the optimal schedule on the belief ma
 		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, Set<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
 		
@@ -60,8 +65,8 @@ public class POSynthesizer extends ASynthesizer {
 	
 	@Override
 	protected DFT2MAConverter createDFT2MAConverter() {
-		DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
-		dft2MAConverter.setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
-		return dft2MAConverter;
+		DFT2MAConverter dft2MaConverter = new DFT2MAConverter();
+		dft2MaConverter.getStateSpaceGenerator().setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
+		return dft2MaConverter;
 	}
 }

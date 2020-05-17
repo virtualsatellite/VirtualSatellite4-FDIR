@@ -96,8 +96,15 @@ public class SPSIterator extends MatrixIterator {
 		}
 		
 		double ecr = Math.exp(c - iteratorParams.maxEntry);
+		
 		for (int i = 0; i < vsum.length; i++) {
 			vsum[i] = vsum[i] * ecr;
+		}
+		
+		// Ensure that the total probability mass is always 1 also after numerical instabilites
+		double probabilityMass = calcManhattanNorm();
+		for (int i = 0; i < vsum.length; ++i) {
+			vsum[i] /= probabilityMass;
 		}
 	}
 	

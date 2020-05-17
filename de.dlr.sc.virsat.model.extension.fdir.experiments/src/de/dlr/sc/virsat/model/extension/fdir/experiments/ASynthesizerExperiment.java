@@ -80,8 +80,8 @@ public class ASynthesizerExperiment {
 	protected void printStateStatistics(FaultTreeEvaluator ftEvaluator) {
 		if (ftEvaluator.getEvaluator() instanceof DFTEvaluator) {
 			DFTEvaluator dftEvaluator = (DFTEvaluator) ftEvaluator.getEvaluator();
-			System.out.println("MC #States: " + dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxStates);
-			System.out.println("MC #Transitions: " + dftEvaluator.getStatistics().stateSpaceGenerationStatistics.maxTransitions);
+			System.out.println("MC #States: " + dftEvaluator.getStatistics().maBuildStatistics.maxStates);
+			System.out.println("MC #Transitions: " + dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
 		}
 	}
 	

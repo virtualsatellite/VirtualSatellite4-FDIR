@@ -7,11 +7,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
 import java.util.Collections;
 import java.util.List;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -68,16 +70,16 @@ public class FaultEvent implements IDFTEvent {
 	public void execute(DFTState state, DFTStaticAnalysis staticAnalysis) {
 		if (isRepair) {
 			if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
-				state.orderedBes.remove(be);
+				state.getOrderedBes().remove(be);
 			} else {
-				state.unorderedBes.remove(be);
+				state.getUnorderedBes().remove(be);
 			}
 			state.setFaultTreeNodeFailed(be, false);
 		} else {
 			if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
-				state.orderedBes.add(be);
+				state.getOrderedBes().add(be);
 			} else {
-				state.unorderedBes.add(be);
+				state.getUnorderedBes().add(be);
 			}
 			state.setFaultTreeNodeFailed(be, true);
 			if (!staticAnalysis.getTransientNodes().contains(be)) {
@@ -96,7 +98,7 @@ public class FaultEvent implements IDFTEvent {
 		
 		if (isRepair) {
 			// Disable repair events while there is a failed FDEP trigger
-			List<FaultTreeNode> depTriggers = state.ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+			List<FaultTreeNode> depTriggers = state.getFTHolder().getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
 			for (FaultTreeNode depTrigger : depTriggers) {
 				if (state.hasFaultTreeNodeFailed(depTrigger)) {
 					return false;

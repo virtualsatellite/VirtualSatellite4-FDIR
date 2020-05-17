@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -26,9 +28,9 @@ public class DelegateSynthesizer implements ISynthesizer {
 	protected ISynthesizer poSynthesizer = new POSynthesizer();
 
 	@Override
-	public RecoveryAutomaton synthesize(Fault fault) {
+	public RecoveryAutomaton synthesize(Fault fault, SubMonitor subMonitor) {
 		ISynthesizer delegate = chooseSynthesizer(fault);
-		return delegate.synthesize(fault);
+		return delegate.synthesize(fault, subMonitor);
 	}
 	
 	/**

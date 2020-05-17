@@ -7,8 +7,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;

@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov;
 
+import java.util.Comparator;
+
 /**
  * Abstract class for representing a state in a Markov structure
  * @author muel_s8
@@ -27,14 +29,6 @@ public class MarkovState {
 	}
 	
 	/**
-	 * Sets the index of this state
-	 * @param index the index of this state
-	 */
-	public void setIndex(int index) {
-		this.index = index;
-	}
-	
-	/**
 	 * Sets whether or not this state is markovian
 	 * @param markovian set to true to make the state markovian, set to false to make it immediate nondeterministic
 	 */
@@ -49,4 +43,19 @@ public class MarkovState {
 	public boolean isMarkovian() {
 		return markovian;
 	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(index);
+	}
+	
+	/**
+	 * Standard comparator for MarkovStates.
+	 * Usefule for sorting lists and ensuring deterministic behavior.
+	 */
+	public static final Comparator<MarkovState> MARKOVSTATE_COMPARATOR = new Comparator<MarkovState>() {
+		public int compare(MarkovState state1, MarkovState state2) {
+			return Integer.compare(state1.index, state2.index);
+		};
+	};
 }

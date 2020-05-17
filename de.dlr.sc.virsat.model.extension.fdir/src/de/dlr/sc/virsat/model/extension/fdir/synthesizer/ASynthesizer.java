@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
@@ -55,7 +57,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	protected SynthesisStatistics statistics;
 	
 	@Override
-	public RecoveryAutomaton synthesize(Fault fault) {
+	public RecoveryAutomaton synthesize(Fault fault, SubMonitor subMonitor) {
 		statistics = new SynthesisStatistics();
 		statistics.time = System.currentTimeMillis();
 		
@@ -79,7 +81,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 			for (Module module : trimmedModules) {
 				statistics.maxModuleSize = Math.max(statistics.maxModuleSize, module.getNodes().size());
 				
-				RecoveryAutomaton ra = convertToRecoveryAutomaton(module);
+				RecoveryAutomaton ra = convertToRecoveryAutomaton(module, subMonitor);
 				
 				if (minimizer != null) {
 					minimizer.minimize(ra);
@@ -99,7 +101,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 			statistics.countModules = 1;
 			statistics.maxModuleSize = conversionResult.getMapGeneratedToGenerator().values().size();
 			
-			synthesizedRA = convertToRecoveryAutomaton(fault);
+			synthesizedRA = convertToRecoveryAutomaton(fault, subMonitor);
 			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 			
 			if (minimizer != null) {
@@ -115,8 +117,8 @@ public abstract class ASynthesizer implements ISynthesizer {
 	}
 	
 	/**
-	 * Creates the state space generator
-	 * @return the state space generator
+	 * Creates the converter for creating markov automata out of dft
+	 * @return the converter
 	 */
 	protected abstract DFT2MAConverter createDFT2MAConverter();
 
@@ -124,9 +126,10 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * Performs the actual synthesis of the recovery automaton by optimizing the ma scheduler
 	 * @param ma the markov automaton
 	 * @param initial the initial markov automaton state
+	 * @param subMonitor the monitor
 	 * @return the schedule represented as a recovery automaton
 	 */
-	protected abstract RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initial);
+	protected abstract RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initial, SubMonitor subMonitor);
 	
 	/**
 	 * Sets the minimizer that will be used to synthesize the recovery automaton
@@ -219,25 +222,27 @@ public abstract class ASynthesizer implements ISynthesizer {
 	/**
 	 * Convert a module to recovery automaton
 	 * @param module the module
+	 * @param subMonitor the progress monitor
 	 * @return the recovery automaton
 	 */
-	private RecoveryAutomaton convertToRecoveryAutomaton(Module module) {
-		return convertToRecoveryAutomaton(module.getRootNodeCopy());
+	private RecoveryAutomaton convertToRecoveryAutomaton(Module module, SubMonitor subMonitor) {
+		return convertToRecoveryAutomaton(module.getRootNodeCopy(), subMonitor);
 	}
 	
 	/**
 	 * Convert a fault tree to recovery automaton
 	 * @param root  the root of the fault tree
+	 * @param subMonitor the progress monitor
 	 * @return the recovery automaton
 	 */
-	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root) {
-		DFT2MAConverter dft2ma = createDFT2MAConverter();
-		dft2ma.getStaticAnalysis().setSymmetryChecker(null);
-		MarkovAutomaton<DFTState> ma = dft2ma.convert(root);
+	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root, SubMonitor subMonitor) {
+		DFT2MAConverter dft2maConverter = createDFT2MAConverter();
+		dft2maConverter.getStateSpaceGenerator().getStaticAnalysis().setSymmetryChecker(null);
+		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(root);
 		
-		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2ma.getInitial());
+		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2maConverter.getMaBuilder().getInitialState(), subMonitor);
 		
-		statistics.stateSpaceGenerationStatistics.compose(dft2ma.getStatistics());
+		statistics.maBuildStatistics.compose(dft2maConverter.getMaBuilder().getStatistics());
 		
 		return ra;
 	}

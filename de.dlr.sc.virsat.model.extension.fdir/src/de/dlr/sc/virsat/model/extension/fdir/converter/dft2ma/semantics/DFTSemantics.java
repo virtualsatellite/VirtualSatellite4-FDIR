@@ -19,13 +19,14 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DelayEvent;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.DelayEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -45,6 +46,33 @@ public class DFTSemantics {
 	
 	protected Map<FaultTreeNodeType, INodeSemantics> mapTypeToSemantics = new EnumMap<>(FaultTreeNodeType.class);
 	protected boolean allowsRepairEvents = true;
+	
+	/**
+	 * Creates a standard DFT semantics
+	 * @return standard DFT semantics
+	 */
+	public static DFTSemantics createStandardDFTSemantics() {
+		DFTSemantics semantics = new DFTSemantics();
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FAULT, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FDEP, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.RDEP, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.VOTE, new VOTESemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new StandardSPARESemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
+		return semantics;
+	}
+	
+	/**
+	 * Creates a nondeterministic DFT semantics
+	 * @return creates a nondeterministic DFT semantics
+	 */
+	public static DFTSemantics createNDDFTSemantics() {
+		DFTSemantics semantics = createStandardDFTSemantics();
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new NDSPARESemantics());
+		return semantics;
+	}
 	
 	/**
 	 * Configures whether the semantics should create repair events
@@ -83,6 +111,20 @@ public class DFTSemantics {
 	}
 	
 	/**
+	 * Executes a state update
+	 * @return the result of the state update
+	 */
+	public StateUpdateResult performUpdate(StateUpdate stateUpdate, DFTStaticAnalysis staticAnalysis) {
+		StateUpdateResult stateUpdateResult = stateUpdate.createResultContainer();
+
+		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc(), staticAnalysis);
+		
+		propgateStateUpdate(stateUpdate, stateUpdateResult);
+		
+		return stateUpdateResult;
+	}
+	
+	/**
 	 * Propagates the changes from the state update
 	 * @param stateUpdate the state update
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
@@ -101,7 +143,7 @@ public class DFTSemantics {
 	 * @param baseSucc the base state
 	 * @return an initial worklist of nodes that need to be checked
 	 */
-	public Queue<FaultTreeNode> createWorklist(IDFTEvent event, DFTState baseSucc) {
+	private Queue<FaultTreeNode> createWorklist(IDFTEvent event, DFTState baseSucc) {
 		FaultTreeHolder ftHolder = baseSucc.getFTHolder();
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
 		if (event.getNode() instanceof BasicEvent) {
@@ -128,7 +170,7 @@ public class DFTSemantics {
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+	protected void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
 		List<FaultTreeNode> changedNodes = new ArrayList<>();
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
 		
@@ -157,7 +199,7 @@ public class DFTSemantics {
 	 * @param node the node we want to check
 	 * @return true iff a change occurred in the update
 	 */
-	public boolean propagateStateUpdateToNode(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, FaultTreeNode node) {
+	private boolean propagateStateUpdateToNode(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, FaultTreeNode node) {
 		if (stateUpdate.getState().isFaultTreeNodePermanent(node)) {
 			return false;
 		}
@@ -233,33 +275,6 @@ public class DFTSemantics {
 	 */
 	public Map<FaultTreeNodeType, INodeSemantics> getMapTypeToSemantics() {
 		return mapTypeToSemantics;
-	}
-	
-	/**
-	 * Creates a standard DFT semantics
-	 * @return standard DFT semantics
-	 */
-	public static DFTSemantics createStandardDFTSemantics() {
-		DFTSemantics semantics = new DFTSemantics();
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FAULT, new FaultSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FDEP, new FaultSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.RDEP, new FaultSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.VOTE, new VOTESemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new StandardSPARESemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
-		return semantics;
-	}
-	
-	/**
-	 * Creates a nondeterministic DFT semantics
-	 * @return creates a nondeterministic DFT semantics
-	 */
-	public static DFTSemantics createNDDFTSemantics() {
-		DFTSemantics semantics = createStandardDFTSemantics();
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new NDSPARESemantics());
-		return semantics;
 	}
 
 	/**

@@ -222,7 +222,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	
 	@Override
 	public String toString() {
-		return getTransitions().stream().map(MarkovTransition::toString).collect(Collectors.joining("\n"));
+		return toDot();
 	}
 	
 	/**

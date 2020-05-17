@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
@@ -50,9 +51,9 @@ public class DFTState extends MarkovState {
 	
 	private Set<Fault> activeFaults;
 	
-	private BitSet failedNodes;
-	private BitSet permanentNodes;
-	private BitSet failingNodes;
+	protected BitSet failedNodes;
+	protected BitSet permanentNodes;
+	protected BitSet failingNodes;
 	
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
 	
@@ -107,6 +108,22 @@ public class DFTState extends MarkovState {
 	 */
 	public RecoveryStrategy getRecoveryStrategy() {
 		return recoveryStrategy;
+	}
+	
+	/**
+	 * Gets the ordered bes that have occured in this state
+	 * @return a list of ordered bes
+	 */
+	public List<BasicEvent> getOrderedBes() {
+		return orderedBes;
+	}
+	
+	/**
+	 * Gets the unordered bes that have occured in this state
+	 * @return a set of unordered bes
+	 */
+	public Set<BasicEvent> getUnorderedBes() {
+		return unorderedBes;
 	}
 	
 	/**
@@ -260,10 +277,13 @@ public class DFTState extends MarkovState {
 	 * Updates the permanent state of the given fault tree
 	 * @param node the node to modify
 	 * @param permanent the permanence of the node state
+	 * @return true iff the permanence was changed
 	 */
-	public void setFaultTreeNodePermanent(FaultTreeNode node, boolean permanent) {
+	public boolean setFaultTreeNodePermanent(FaultTreeNode node, boolean permanent) {
 		int nodeID = ftHolder.getNodeIndex(node);
+		boolean hasChanged = permanentNodes.get(nodeID) != permanent;
 		permanentNodes.set(nodeID, permanent);
+		return hasChanged;
 	}
 	
 	/**
@@ -377,7 +397,6 @@ public class DFTState extends MarkovState {
 						}
 					}
 				}
-				
 				
 				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(ftn, Collections.emptyList());
 				for (FaultTreeNode be : basicEvents) {
@@ -590,9 +609,11 @@ public class DFTState extends MarkovState {
 			mapParentToSymmetryRequirements.putAll(predecessor.getMapParentToSymmetryRequirements());
 		}
 		
+		Set<FaultTreeNode> checkedNodes = new HashSet<>();
 		Queue<FaultTreeNode> queue = new LinkedList<>();
 		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
 		queue.add(basicEvent);
+		checkedNodes.add(basicEvent);
 		
 		while (!queue.isEmpty()) {
 			FaultTreeNode node = queue.poll();
@@ -617,7 +638,7 @@ public class DFTState extends MarkovState {
 						}
 					}
 					
-					if (continueToParent) {
+					if (continueToParent && checkedNodes.add(parent)) {
 						queue.add(parent);
 					}
 				}

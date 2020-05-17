@@ -98,7 +98,7 @@ public class AIAA2018Experiments extends ASynthesizerExperiment {
 			
 			FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 			ndDFTftEvaluator.evaluateFaultTree(tle);
-			int statesMc = ((DFTEvaluator) ndDFTftEvaluator.getEvaluator()).getStatistics().stateSpaceGenerationStatistics.maxStates;
+			int statesMc = ((DFTEvaluator) ndDFTftEvaluator.getEvaluator()).getStatistics().maBuildStatistics.maxStates;
 			System.out.println(i + " " + statesMc);
 		}
 	}

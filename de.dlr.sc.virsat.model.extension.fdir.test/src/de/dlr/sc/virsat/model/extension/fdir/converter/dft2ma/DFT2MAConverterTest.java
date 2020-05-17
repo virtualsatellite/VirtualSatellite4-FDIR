@@ -29,19 +29,19 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 public class DFT2MAConverterTest extends ATestCase {
 	
-	protected DFT2MAConverter converter;
+	protected DFT2MAConverter dft2MaConverter;
 	
 	@Before
 	public void setup() {
-		converter = new DFT2MAConverter();
-		converter.setSemantics(DFTSemantics.createStandardDFTSemantics());
+		dft2MaConverter = new DFT2MAConverter();
+		dft2MaConverter.getStateSpaceGenerator().setSemantics(DFTSemantics.createStandardDFTSemantics());
 	}
 	
 	@Test
 	public void testEvaluateTransientOrPermanent() throws IOException {
 		Fault fault = createDFT("/resources/galileoRepair/transientOrPermanent.dft");
 		
-		MarkovAutomaton<DFTState> ma = converter.convert(fault);
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
 		final int EXPECTED_COUNT_STATES = 3;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 	}
@@ -50,7 +50,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	public void testEvaluateTransientToPermanentConversion() throws IOException {
 		Fault fault = createDFT("/resources/galileoRepair/transientToPermanentConversion.dft");
 		
-		MarkovAutomaton<DFTState> ma = converter.convert(fault);
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
 		final int EXPECTED_COUNT_STATES = 3;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 	}
@@ -59,7 +59,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	public void testEvaluateCsp2Repair2() throws IOException {
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		
-		MarkovAutomaton<DFTState> ma = converter.convert(fault);
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 7;

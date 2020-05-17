@@ -9,8 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConversionStatistics;
 
 /**
  * This class holds the internal statistics of a call to the DFTEvaluator
@@ -21,7 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConversionSt
 public class DFTEvaluationStatistics {
 	// CHECKSTYLE:OFF
 	public long time;
-	public final DFT2MAConversionStatistics stateSpaceGenerationStatistics = new DFT2MAConversionStatistics();
+	public final MarkovAutomatonBuildStatistics maBuildStatistics = new MarkovAutomatonBuildStatistics();
 	public final ModelCheckingStatistics modelCheckingStatistics = new ModelCheckingStatistics();
 	// CHECKSYTLE:ON
 	
@@ -29,7 +29,7 @@ public class DFTEvaluationStatistics {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DFT Evaluation Statistics: \n");
-		sb.append(stateSpaceGenerationStatistics);
+		sb.append(maBuildStatistics);
 		sb.append(modelCheckingStatistics);
 		return sb.toString();
 	}

@@ -135,7 +135,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
-					if (!ma.getFinalStates().contains(toState)) {
+					if (!ma.getFinalStates().contains(toState) && toState.isMarkovian()) {
 						double toValue = values[toState.getIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}

@@ -7,8 +7,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Comparator;
+
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 /**
@@ -44,4 +48,14 @@ public interface IDFTEvent {
 	 * @return the related dft node
 	 */
 	FaultTreeNode getNode();
+	
+	/**
+	 * Standard comparator for IDFTEvents.
+	 * Usefule for sorting lists and ensuring deterministic behavior.
+	 */
+	Comparator<IDFTEvent> IDFTEVENT_COMPARATOR = new Comparator<IDFTEvent>() {
+		public int compare(IDFTEvent event1, IDFTEvent event2) {
+			return event1.toString().compareTo(event2.toString());
+		};
+	};
 }

@@ -27,7 +27,7 @@ import de.dlr.sc.virsat.fdir.storm.runner.StormModelChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.IDFT2DFTConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;

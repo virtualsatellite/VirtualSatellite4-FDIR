@@ -18,8 +18,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.TimeEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.TimeEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;

@@ -73,7 +73,7 @@ public class PODFTState extends DFTState {
 	public Set<FaultTreeNode> getObservedFailedNodes() {
 		Set<FaultTreeNode> observedFailedNodes = new HashSet<>();
 		for (FaultTreeNode node : ftHolder.getNodes()) {
-			if (isNodeFailObserved(node) && existsNonFailedObserver(node, true)) {
+			if (isNodeFailObserved(node) && existsObserver(node, true, true)) {
 				observedFailedNodes.add(node);
 			}
 		}
@@ -84,9 +84,10 @@ public class PODFTState extends DFTState {
 	 * Checks if a node is being observed
 	 * @param node the node to check for observation
 	 * @param allowDelay whether the observer is allowed to have a time delay
+	 * @param allowFailed if a failed observer is allowed for consideration
 	 * @return true iff the node is being observed
 	 */
-	public boolean existsNonFailedObserver(FaultTreeNode node, boolean allowDelay) {
+	public boolean existsObserver(FaultTreeNode node, boolean allowDelay, boolean allowFailed) {
 		if (node instanceof MONITOR) {
 			return true;
 		}
@@ -94,7 +95,8 @@ public class PODFTState extends DFTState {
 		List<MONITOR> observers = ftHolder.getMapNodeToMonitors().get(node);
 		if (observers != null) {
 			for (MONITOR observer : observers) {
-				if (!hasFaultTreeNodeFailed(observer) && (allowDelay || observer.getObservationRate() == 0)) {
+				if ((allowFailed || !hasFaultTreeNodeFailed(observer)) 
+						&& (allowDelay || observer.getObservationRate() == 0)) {
 					return true;
 				}
 			}
@@ -129,7 +131,7 @@ public class PODFTState extends DFTState {
 	
 	@Override
 	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
-		return observedFailed.get(ftHolder.getNodeIndex(node)) && super.removeClaimedSparesOnFailureIfPossible(node);
+		return false;
 	}
 	
 	@Override

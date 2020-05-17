@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.eclipse.core.runtime.SubMonitor;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -43,7 +44,7 @@ public class DelegateSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		ISynthesizer mockSynthesizer = new ISynthesizer() {
 			@Override
-			public RecoveryAutomaton synthesize(Fault fault) {
+			public RecoveryAutomaton synthesize(Fault fault, SubMonitor subMonitor) {
 				return ra;
 			}
 		};

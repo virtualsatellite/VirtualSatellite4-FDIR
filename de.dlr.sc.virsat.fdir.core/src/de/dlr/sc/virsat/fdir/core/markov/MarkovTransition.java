@@ -118,7 +118,7 @@ public class MarkovTransition<S> {
 	
 	@Override
 	public String toString() {
-		return  from.toString() + " --- " + event.toString() + ", " + rate + " ---> "  + to.toString();
+		return from.toString() + " --- " + event.toString() + ", " + rate + " ---> " + to.toString();
 	}
 	
 	/**

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 
@@ -27,6 +28,10 @@ public class StateUpdate {
 		this.state = state;
 		this.event = event;
 		this.rate = event.getRate(state) * symmetryMultiplier;
+	}
+	
+	public StateUpdate(DFTState state, IDFTEvent event) {
+		this(state, event, 1);
 	}
 	
 	public DFTState getState() {
@@ -46,11 +51,15 @@ public class StateUpdate {
 		return state.toString() + " --- " + event.toString() + " : " + rate + " ---> ? ";
 	}
 	
+	public StateUpdateResult createResultContainer() {
+		return new StateUpdateResult();
+	}
+	
 	/**
 	 * Contains the results from an executed state update
 	 *
 	 */
-	public static class StateUpdateResult {
+	public class StateUpdateResult {
 		private Map<DFTState, List<RecoveryAction>> mapStateToRecoveryActions = new HashMap<>();
 		private List<DFTState> succs = new ArrayList<>();
 		private List<FaultTreeNode> changedNodes = new ArrayList<>();
@@ -61,9 +70,9 @@ public class StateUpdate {
 		 * Standard constructor
 		 * @param state the base state
 		 */
-		StateUpdateResult(StateUpdate stateUpdate) {
-			baseSucc = stateUpdate.state.copy();
-			baseSucc.setRecoveryStrategy(stateUpdate.state.getRecoveryStrategy());
+		StateUpdateResult() {
+			baseSucc = state.copy();
+			baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
 			
 			succs.add(baseSucc);
 			mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());

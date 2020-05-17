@@ -5,6 +5,7 @@
 **/Activator.java
 **/ui/**
 *.test/**
+*.experiments/**
 **/migrator/**
 **/validator/**
 **/externalLib/**

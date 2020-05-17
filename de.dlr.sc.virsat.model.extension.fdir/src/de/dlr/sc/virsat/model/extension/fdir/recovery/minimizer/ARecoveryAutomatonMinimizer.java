@@ -21,7 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 public abstract class ARecoveryAutomatonMinimizer {
 
-	protected MinimizationStatistics statistics;
+	private MinimizationStatistics statistics;
 
 	/**
 	 * Main method to override and perform the actual minimization
@@ -34,7 +34,16 @@ public abstract class ARecoveryAutomatonMinimizer {
 	 * @param ra the recovery automaton to be minimized
 	 */
 	public void minimize(RecoveryAutomaton ra) {
+		statistics = new MinimizationStatistics();
+		statistics.time = System.currentTimeMillis();
+		statistics.removedStates = ra.getStates().size();
+		statistics.removedTransitions = ra.getTransitions().size();
+		
 		minimize(new RecoveryAutomatonHolder(ra));
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.removedStates = statistics.removedStates - ra.getStates().size();
+		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 	
 	/**

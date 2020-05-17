@@ -12,15 +12,14 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
@@ -30,29 +29,19 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  *
  */
 
-public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
-	private RecoveryAutomaton ra;
-	private RecoveryAutomatonHolder raHolder;
+public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer {
+	public static final String TIMED_TRANSITION_SYMBOLD = "t";
 	
-	private Map<State, List<State>> mapStateToBlock;
+	private RecoveryAutomaton ra;
 	
 	@Override
-	public void minimize(RecoveryAutomatonHolder raHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder) {
+		super.minimize(raHolder);
 		this.ra = raHolder.getRa();
-		this.raHolder = raHolder;
 		
-		statistics = new MinimizationStatistics();
-		statistics.time = System.currentTimeMillis();
-		statistics.removedStates = ra.getStates().size();
-		statistics.removedTransitions = ra.getTransitions().size();
-
 		Set<List<State>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
 		mergeBlocks(blocks);
-		
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		statistics.removedStates = statistics.removedStates - ra.getStates().size();
-		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
 	}
 	
 	/**
@@ -80,56 +69,8 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 		return blocks;
 	}
 	
-	/**
-	 * Refines the given partitions until no more refinement is possible.
-	 * A partition needs to be split into refined partitions if at least two states
-	 * have a different transition profile.
-	 * @param blocks the partitions to be refined
-	 */
-	private void refineBlocks(Set<List<State>> blocks) {
-		Queue<List<State>> blocksToProcess = new LinkedList<>(blocks); 
-		while (!blocksToProcess.isEmpty()) {
-			List<State> block = blocksToProcess.poll();
-		
-			if (block.size() <= 1) {
-				continue;
-			}
-			
-			List<List<State>> refinedBlocks = refineBlock(block);
-			if (refinedBlocks.size() > 1) {
-				blocks.remove(block);
-				
-				for (List<State> refinedBlock : refinedBlocks) {
-					blocks.add(refinedBlock);
-					for (State state : refinedBlock) {
-						mapStateToBlock.put(state, refinedBlock);
-					}
-				}
-				
-				// Get the predecessor blocks and check if we now have to refine them
-				for (List<State> refinedBlock : refinedBlocks) {
-					for (State state : refinedBlock) {
-						List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
-						for (Transition transition : incomingTransitions) {
-							List<State> fromBlock = mapStateToBlock.get(transition.getFrom());
-							if (!blocksToProcess.contains(fromBlock)) {
-								blocksToProcess.offer(fromBlock);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Performs one refinement step on a given partition.
-	 * The contained states in the partition are refined into partitions with different transition profile.
-	 * A transition profile is a mapping input -> partition
-	 * @param block the partition to refine
-	 * @return a list of refined partitions
-	 */
-	private List<List<State>> refineBlock(List<State> block) {
+	@Override
+	protected List<List<State>> refineBlock(List<State> block) {
 		Map<Map<Set<FaultTreeNode>, List<State>>, List<State>> mapBlockReachabilityMapToRefinedBlock = new HashMap<>();
 		List<List<State>> refinedBlocks = new ArrayList<>();
 		
@@ -139,6 +80,27 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 			
 			for (Transition transition : outgoingTransitions) {
 				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
+				if (transition instanceof TimedTransition) {
+					Set<State> visitedStates = new HashSet<>();
+					State internalState = raHolder.getMapTransitionToTo().get(transition);
+					while (toBlock == block) {
+						List<Transition> internalTransitions = raHolder.getMapStateToOutgoingTransitions().get(internalState);
+						boolean hasTimeoutTransition = false;
+						for (Transition internalTransition : internalTransitions) {
+							if (internalTransition instanceof TimedTransition) {
+								internalState = raHolder.getMapTransitionToTo().get(internalTransition);
+								toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(internalTransition));
+								hasTimeoutTransition = true;
+								break;
+							}
+						}
+						
+						if (!hasTimeoutTransition || !visitedStates.add(internalState)) {
+							break;
+						}
+					}
+				}
+				
 				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
 					mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
 				}
@@ -162,8 +124,28 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 	 * @param blocks the partitions in which the states should be merged
 	 */
 	private void mergeBlocks(Set<List<State>> blocks) {
+		// Redirect all transitions between blocks so that they are between the block represenatatives
 		for (List<State> block : blocks) {
 			State state = block.get(0);
+			
+			// Get the target of the timout transitions and the total timeout time
+			double blockTimeout = 0;
+			State blockTimeoutTarget = null;
+			for (State other : block) {
+				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(other);
+				for (Transition transition : outgoingTransitions) {
+					if (transition instanceof TimedTransition) {
+						TimedTransition timedTransition = (TimedTransition) transition;
+						blockTimeout += timedTransition.getTime();
+						
+						State stateTo = raHolder.getMapTransitionToTo().get(transition);
+						List<State> blockTarget = mapStateToBlock.get(stateTo);
+						if (block != blockTarget && other != state) {
+							blockTimeoutTarget = blockTarget.get(0);
+						}
+					}
+				}
+			}
 			
 			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
 			for (Transition transition : outgoingTransitions) {
@@ -180,6 +162,19 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 						otherIncomingTransitions = raHolder.getMapStateToIncomingTransitions().get(blockRepresentative);
 						otherIncomingTransitions.add(transition);
 					}
+					
+					if (transition instanceof TimedTransition) {
+						TimedTransition timedTransition = (TimedTransition) transition;
+						timedTransition.setTime(blockTimeout);
+						
+						if (blockTimeoutTarget != null) {
+							timedTransition.setTo(blockTimeoutTarget);
+							
+							raHolder.getMapTransitionToTo().put(timedTransition, blockTimeoutTarget);
+							raHolder.getMapStateToIncomingTransitions().get(stateTo).remove(timedTransition);
+							raHolder.getMapStateToIncomingTransitions().get(blockTimeoutTarget).add(timedTransition);
+						}
+					}
 				}
 			}
 			
@@ -188,11 +183,12 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 			}
 		}
 		
+		List<Transition> transitionsToRemove = new ArrayList<>();
+		
+		// Now remove all the non-representative states and all their transitions
 		for (List<State> block : blocks) {
 			State state = block.get(0);
 			block.remove(state);
-			
-			List<Transition> transitionsToRemove = new ArrayList<>();
 			
 			for (State removedState : block) {
 				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(removedState);
@@ -203,6 +199,7 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 					if (otherIncomingTransitions != null) {
 						otherIncomingTransitions.remove(transition);
 					}
+					
 					transitionsToRemove.add(transition);
 				}
 				
@@ -215,17 +212,17 @@ public class PartitionRefinementMinimizer extends ARecoveryAutomatonMinimizer {
 				}
 			}
 			
-			raHolder.getMapTransitionToActionLabels().keySet().removeAll(transitionsToRemove);
-			raHolder.getMapTransitionToTo().keySet().removeAll(transitionsToRemove);
-			raHolder.getMapTransitionToGuards().keySet().removeAll(transitionsToRemove);
-			
 			raHolder.getMapStateToOutgoingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToIncomingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
-			
-			ra.getTransitions().removeAll(transitionsToRemove);
 			ra.getStates().removeAll(block);
 		}
+		
+		raHolder.getMapTransitionToActionLabels().keySet().removeAll(transitionsToRemove);
+		raHolder.getMapTransitionToTo().keySet().removeAll(transitionsToRemove);
+		raHolder.getMapTransitionToGuards().keySet().removeAll(transitionsToRemove);
+		raHolder.getTransitions().removeAll(transitionsToRemove);
+		ra.getTransitions().removeAll(transitionsToRemove);
 	}
 	
 	/**

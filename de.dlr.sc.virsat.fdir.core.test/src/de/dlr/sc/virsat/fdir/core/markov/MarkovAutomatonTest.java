@@ -120,4 +120,26 @@ public class MarkovAutomatonTest {
 		assertEquals(0, ma.getExitRateForState(state2), 0);
 		assertEquals(EXPECTEDEXITRATE, ma.getExitRateForState(state3), 0);
 	}
+	
+	@Test
+	public void testToString() {
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		MarkovState state1 = new MarkovState();
+		MarkovState state2 = new MarkovState();
+		
+		ma.addState(state1);
+		ma.addState(state2);
+		
+		ma.addNondeterministicTransition("a", state1, state2);
+		
+		String dotRepresentation = ma.toString();
+		final String EXPECTED_DOT_REPRESENTATION = 
+				"digraph ma {\n" 
+			+		"0\n" 
+			+		"1\n" 
+			+		"0->1 [label=\"a : 1.0\"]\n"
+			+ 	"}";
+		
+		assertEquals("Correct dot representation", EXPECTED_DOT_REPRESENTATION, dotRepresentation);
+	}
 }
