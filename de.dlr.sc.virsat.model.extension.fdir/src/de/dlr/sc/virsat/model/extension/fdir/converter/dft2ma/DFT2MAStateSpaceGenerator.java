@@ -240,7 +240,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			if (markovSucc != null) {
 				List<RecoveryAction> actions = stateUpdateResult.getMapStateToRecoveryActions().get(succ);
 				targetMa.addNondeterministicTransition(actions, markovSucc, equivalentState);	
-			} else {
+			} else if (stateUpdate.getState() != equivalentState) {
 				targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), equivalentState, stateUpdate.getRate());
 			}
 		}

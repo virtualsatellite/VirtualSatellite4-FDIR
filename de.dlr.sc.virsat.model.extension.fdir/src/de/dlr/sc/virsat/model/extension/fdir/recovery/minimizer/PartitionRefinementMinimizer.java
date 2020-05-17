@@ -124,8 +124,28 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 	 * @param blocks the partitions in which the states should be merged
 	 */
 	private void mergeBlocks(Set<List<State>> blocks) {
+		// Redirect all transitions between blocks so that they are between the block represenatatives
 		for (List<State> block : blocks) {
 			State state = block.get(0);
+			
+			// Get the target of the timout transitions and the total timeout time
+			double blockTimeout = 0;
+			State blockTimeoutTarget = null;
+			for (State other : block) {
+				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(other);
+				for (Transition transition : outgoingTransitions) {
+					if (transition instanceof TimedTransition) {
+						TimedTransition timedTransition = (TimedTransition) transition;
+						blockTimeout += timedTransition.getTime();
+						
+						State stateTo = raHolder.getMapTransitionToTo().get(transition);
+						List<State> blockTarget = mapStateToBlock.get(stateTo);
+						if (block != blockTarget && other != state) {
+							blockTimeoutTarget = blockTarget.get(0);
+						}
+					}
+				}
+			}
 			
 			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
 			for (Transition transition : outgoingTransitions) {
@@ -142,6 +162,19 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 						otherIncomingTransitions = raHolder.getMapStateToIncomingTransitions().get(blockRepresentative);
 						otherIncomingTransitions.add(transition);
 					}
+					
+					if (transition instanceof TimedTransition) {
+						TimedTransition timedTransition = (TimedTransition) transition;
+						timedTransition.setTime(blockTimeout);
+						
+						if (blockTimeoutTarget != null) {
+							timedTransition.setTo(blockTimeoutTarget);
+							
+							raHolder.getMapTransitionToTo().put(timedTransition, blockTimeoutTarget);
+							raHolder.getMapStateToIncomingTransitions().get(stateTo).remove(timedTransition);
+							raHolder.getMapStateToIncomingTransitions().get(blockTimeoutTarget).add(timedTransition);
+						}
+					}
 				}
 			}
 			
@@ -150,22 +183,12 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 			}
 		}
 		
+		List<Transition> transitionsToRemove = new ArrayList<>();
+		
+		// Now remove all the non-representative states and all their transitions
 		for (List<State> block : blocks) {
-			double blockTimeout = 0;
-			for (State removedState : block) {
-				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(removedState);
-				for (Transition transition : outgoingTransitions) {
-					if (transition instanceof TimedTransition) {
-						TimedTransition timedTransition = (TimedTransition) transition;
-						blockTimeout += timedTransition.getTime();
-					}
-				}
-			}
-			
 			State state = block.get(0);
 			block.remove(state);
-			
-			List<Transition> transitionsToRemove = new ArrayList<>();
 			
 			for (State removedState : block) {
 				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(removedState);
@@ -177,15 +200,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 						otherIncomingTransitions.remove(transition);
 					}
 					
-					List<State> targetBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
-					if (transition instanceof TimedTransition && targetBlock != block) {
-						TimedTransition timedTransition = (TimedTransition) transition;
-						timedTransition.setTime(blockTimeout);
-						timedTransition.setFrom(state);
-						raHolder.getMapStateToOutgoingTransitions().get(state).add(timedTransition);
-					} else {
-						transitionsToRemove.add(transition);
-					}
+					transitionsToRemove.add(transition);
 				}
 				
 				for (Transition transition : incomingTransitions) {
@@ -197,18 +212,17 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 				}
 			}
 			
-			raHolder.getMapTransitionToActionLabels().keySet().removeAll(transitionsToRemove);
-			raHolder.getMapTransitionToTo().keySet().removeAll(transitionsToRemove);
-			raHolder.getMapTransitionToGuards().keySet().removeAll(transitionsToRemove);
-			
 			raHolder.getMapStateToOutgoingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToIncomingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
-			raHolder.getTransitions().removeAll(transitionsToRemove);
-			
-			ra.getTransitions().removeAll(transitionsToRemove);
 			ra.getStates().removeAll(block);
 		}
+		
+		raHolder.getMapTransitionToActionLabels().keySet().removeAll(transitionsToRemove);
+		raHolder.getMapTransitionToTo().keySet().removeAll(transitionsToRemove);
+		raHolder.getMapTransitionToGuards().keySet().removeAll(transitionsToRemove);
+		raHolder.getTransitions().removeAll(transitionsToRemove);
+		ra.getTransitions().removeAll(transitionsToRemove);
 	}
 	
 	/**

@@ -66,7 +66,7 @@ public class MarkovModelCheckerTest {
 	@Test
 	public void testAvailability() {
 		final List<Double> EXPECTED_POINT_AVAILABILITY = new ArrayList<>();
-		final double AVAIL_RATE = 0.5453633159017502;
+		final double AVAIL_RATE = 0.5453611068892465;
 		EXPECTED_POINT_AVAILABILITY.add((double) 1);
 		EXPECTED_POINT_AVAILABILITY.add(AVAIL_RATE);
 		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.5;

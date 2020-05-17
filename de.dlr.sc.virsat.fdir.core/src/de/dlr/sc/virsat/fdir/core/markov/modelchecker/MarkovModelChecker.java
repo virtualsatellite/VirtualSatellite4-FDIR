@@ -239,12 +239,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			double newUnavailability = getFailRate();
 			difference = Math.abs(newUnavailability - oldUnavailability) / newUnavailability;
 
-			if (difference < eps / Math.max(1, delta) || Double.isNaN(difference)) {
+			if (difference < (eps) / Math.max(1, delta) || Double.isNaN(difference)) {
 				convergence = true;
 			}
 			oldUnavailability = newUnavailability;
 		}
-		modelCheckingResult.setSteadyStateAvailability(1 - getFailRate());
+		
+		double ssa = Math.max(0, 1 - getFailRate());
+		modelCheckingResult.setSteadyStateAvailability(ssa);
 	}
 
 	@SuppressWarnings("unchecked")
