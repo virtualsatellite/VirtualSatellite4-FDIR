@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -40,61 +39,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
  */
 
 public class FaultTreeHolder {
-	/**
-	 * Enum for different type of edges
-	 * @author muel_s8
-	 *
-	 */
-	public enum EdgeType {
-		CHILD, BE, SPARE, DEP, PARENT, MONITOR
-	}
-	
-	private static class NodeHolder {
-		int index;
-		Map<EdgeType, List<FaultTreeNode>> mapEdgeTypeToNodes;
-		
-		/**
-		 * Standard consturctor.
-		 * Inititalizes all internal datastructures.
-		 */
-		NodeHolder() {
-			mapEdgeTypeToNodes = new HashMap<>();
-			for (EdgeType edgeType : EdgeType.values()) {
-				mapEdgeTypeToNodes.put(edgeType, new ArrayList<>());
-			}
-		}
-		
-		/**
-		 * Gets the adjacent nodes in the fault tree graph of the given edge types
-		 * @param edgeTypes the edge types
-		 * @return the adjacent nodes
-		 */
-		List<FaultTreeNode> getNodes(EdgeType... edgeTypes) {
-			if (edgeTypes.length == 0) {
-				return Collections.emptyList();
-			} else if (edgeTypes.length == 1) {
-				return mapEdgeTypeToNodes.get(edgeTypes[0]);
-			} else {
-				ArrayList<FaultTreeNode> nodes = new ArrayList<>();
-				for (EdgeType edgeType : edgeTypes) {
-					nodes.addAll(getNodes(edgeType));
-				}
-				return nodes;
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return String.valueOf(index);
-		}
-	}
-	
-	private static class BasicEventHolder {
-		Fault fault;
-		double hotFailureRate;
-		double coldFailureRate;
-		double repairRate;
-	}
 	
 	private FaultTreeNode root;
 	private Set<FaultTreeNode> nodes;
@@ -112,6 +56,7 @@ public class FaultTreeHolder {
 	public FaultTreeHolder(FaultTreeNode root) {
 		this.root = root;
 		init();
+		indexNodes();
 	}
 	
 	/**
@@ -182,14 +127,8 @@ public class FaultTreeHolder {
 				
 				nodeHolder.mapEdgeTypeToNodes.put(EdgeType.BE, new ArrayList<>(node.getFault().getBasicEvents()));
 				for (BasicEvent basicEvent : fault.getBasicEvents()) {
-					BasicEventHolder beHolder = new BasicEventHolder();
+					BasicEventHolder beHolder = new BasicEventHolder(basicEvent);
 					beHolder.fault = fault;
-					beHolder.hotFailureRate = basicEvent.getHotFailureRateBean().isSet() 
-							? basicEvent.getHotFailureRateBean().getValueToBaseUnit() : Double.NaN;
-					beHolder.coldFailureRate = basicEvent.getColdFailureRateBean().isSet() 
-							? basicEvent.getColdFailureRateBean().getValueToBaseUnit() : Double.NaN;
-					beHolder.repairRate =  basicEvent.getRepairRateBean().isSet() 
-							? basicEvent.getRepairRateBean().getValueToBaseUnit() : Double.NaN;
 					mapBEToBEHolders.put(basicEvent, beHolder);
 							
 					NodeHolder parentHolder = getNodeHolder(basicEvent);
@@ -200,8 +139,6 @@ public class FaultTreeHolder {
 			toProcess.addAll(children);
 			toProcess.addAll(spares);
 		}
-		
-		indexNodes();
 	}
 	
 	/**
