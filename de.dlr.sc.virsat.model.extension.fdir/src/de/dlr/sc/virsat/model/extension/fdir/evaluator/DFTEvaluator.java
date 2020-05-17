@@ -81,23 +81,53 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
 		dft2MaConverter.configure(ftHolder, chooseSemantics(ftHolder), metrics, failableBasicEventsProvider);
-		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
-		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(metrics, modularization != null);
-		subMonitor = SubMonitor.convert(subMonitor, partitioning.size());
 		
+		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
+		
+		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(metrics, modularization != null);
+		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitioning.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
+		
+		subMonitor = SubMonitor.convert(subMonitor, partitioning.size());
+		Map<FailLabelProvider, ModelCheckingResult> baseResults = computeBaseResults(partitioning, failableBasicEventsProvider, ftHolder, modularization, subMonitor);
+		ModelCheckingResult result = composer.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
+		
+		int steps = getUniformStepCount(metrics);
+		result.limitPointMetrics(steps);
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		return result;
+	}
+	
+	/**
+	 * Evaluates all base modules
+	 * @param partitioning a partitioning of metrics to which fail labels are required to compute them
+	 * @param failableBasicEventsProvider the set of basic events that is allowed to fail
+	 * @param ftHolder the fault tree 
+	 * @param modularization a modularization of the dft
+	 * @param subMonitor a progress monitor
+	 * @return the model checking result for each fail criteria
+	 */
+	private Map<FailLabelProvider, ModelCheckingResult> computeBaseResults(Map<FailLabelProvider, IMetric[]> partitioning, FailableBasicEventsProvider failableBasicEventsProvider, 
+			FaultTreeHolder ftHolder, DFTModularization modularization, SubMonitor subMonitor) {
 		Map<FailLabelProvider, ModelCheckingResult> baseResults = new HashMap<>();
 		for (Entry<FailLabelProvider, IMetric[]> metricPartition : partitioning.entrySet()) {
+			SubMonitor partitionMonitor = subMonitor.split(1);
 			if (!metricPartition.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
 				IBaseMetric[] baseMetrics = (IBaseMetric[]) metricPartition.getValue();
-				ModelCheckingResult result = evaluateFaultTree(ftHolder, failableBasicEventsProvider, metricPartition.getKey(), modularization, subMonitor.split(1), baseMetrics);
+				ModelCheckingResult result = evaluateFaultTree(ftHolder, failableBasicEventsProvider, metricPartition.getKey(), modularization, partitionMonitor, baseMetrics);
 				baseResults.put(metricPartition.getKey(), result);
-			} else {
-				subMonitor.split(1);
 			}
 		}
 		
-		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitioning.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
-		ModelCheckingResult result = composer.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
+		return baseResults;
+	}
+	
+	/**
+	 * Computes the uniform step count for curve type metrics
+	 * @param metrics the metrics to consider
+	 * @return the number of points each curve metric should have
+	 */
+	private int getUniformStepCount(IMetric[] metrics) {
 		int steps = 0;
 		for (IMetric metric : metrics) {
 			if (metric instanceof AProbabilityCurve) {
@@ -105,12 +135,9 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 				steps = Math.max(steps, (int) (time / markovModelChecker.getDelta()) + 1);
 			}
 		}
-		result.limitPointMetrics(steps);
 		
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		return result;
+		return steps;
 	}
-	
 	
 	/**
 	 * Performs a DFT evaluation for the given base metrics with and the given fail criteria
