@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.markov.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateEquivalence;
@@ -105,7 +106,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @return a mapping from an observation set to the transitions that lead to states with this observation set
 	 */
 	private Map<PODFTState, List<MarkovTransition<DFTState>>> createMapRepresentantToTransitions(MarkovAutomaton<DFTState> ma, BeliefState beliefState) {
-		Map<PODFTState, List<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new TreeMap<>();
+		Map<PODFTState, List<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new TreeMap<>(MarkovState.MARKOVSTATE_COMPARATOR);
 		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
 			PODFTState fromState = entry.getKey();
 			if (fromState.isMarkovian() != beliefState.isMarkovian()) {

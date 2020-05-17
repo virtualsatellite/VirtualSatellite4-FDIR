@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Comparator;
+
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -18,7 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
  * @author muel_s8
  *
  */
-public interface IDFTEvent extends Comparable<IDFTEvent> {
+public interface IDFTEvent {
 	
 	/**
 	 * Gets the occurence rate of this event
@@ -47,8 +49,13 @@ public interface IDFTEvent extends Comparable<IDFTEvent> {
 	 */
 	FaultTreeNode getNode();
 	
-	@Override
-	default int compareTo(IDFTEvent other) {
-		return toString().compareTo(other.toString());
-	}
+	/**
+	 * Standard comparator for IDFTEvents.
+	 * Usefule for sorting lists and ensuring deterministic behavior.
+	 */
+	Comparator<IDFTEvent> IDFTEVENT_COMPARATOR = new Comparator<IDFTEvent>() {
+		public int compare(IDFTEvent event1, IDFTEvent event2) {
+			return event1.toString().compareTo(event2.toString());
+		};
+	};
 }

@@ -141,7 +141,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		// Sort the list so that we always have the same ordering of events
 		// during all executions. This is to ensure that repeated executions
 		// of the state space generator give the same state space.
-		Collections.sort(events);
+		Collections.sort(events, IDFTEvent.IDFTEVENT_COMPARATOR);
 		
 		return events;
 	}

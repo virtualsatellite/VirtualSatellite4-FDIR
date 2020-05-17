@@ -9,12 +9,14 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov;
 
+import java.util.Comparator;
+
 /**
  * Abstract class for representing a state in a Markov structure
  * @author muel_s8
  *
  */
-public class MarkovState implements Comparable<MarkovState> {
+public class MarkovState {
 	protected int index;
 	private boolean markovian = true;
 	
@@ -46,9 +48,14 @@ public class MarkovState implements Comparable<MarkovState> {
 	public String toString() {
 		return String.valueOf(index);
 	}
-
-	@Override
-	public int compareTo(MarkovState other) {
-		return Integer.compare(index, other.index);
-	}
+	
+	/**
+	 * Standard comparator for MarkovStates.
+	 * Usefule for sorting lists and ensuring deterministic behavior.
+	 */
+	public static final Comparator<MarkovState> MARKOVSTATE_COMPARATOR = new Comparator<MarkovState>() {
+		public int compare(MarkovState state1, MarkovState state2) {
+			return Integer.compare(state1.index, state2.index);
+		};
+	};
 }
