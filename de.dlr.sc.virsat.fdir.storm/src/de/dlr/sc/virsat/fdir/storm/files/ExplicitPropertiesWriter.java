@@ -41,7 +41,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	 * @param metrics
 	 *            the metrics
 	 */
-	public ExplicitPropertiesWriter(double delta, String instancePath, IBaseMetric[] metrics) {
+	public ExplicitPropertiesWriter(double delta, String instancePath, IBaseMetric... metrics) {
 		this.delta = delta;
 		this.instancePath = instancePath;
 		this.metrics = metrics;

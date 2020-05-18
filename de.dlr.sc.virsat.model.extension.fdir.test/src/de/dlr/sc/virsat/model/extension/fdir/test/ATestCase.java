@@ -18,6 +18,7 @@ import java.util.List;
 import org.junit.Before;
 
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
+import de.dlr.sc.virsat.fdir.core.test.TestResourceGetter;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.Activator;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
@@ -39,6 +40,7 @@ public abstract class ATestCase {
 	protected Concept concept;
 	protected FaultTreeHelper ftHelper;
 	protected RecoveryAutomatonHelper raHelper; 
+	protected static TestResourceGetter resourceGetter = new TestResourceGetter(Activator.getPluginId());
 	
 	@Before
 	public void setUp() throws Exception {
@@ -81,7 +83,7 @@ public abstract class ATestCase {
 	 * @throws IOException 
 	 */
 	public static Fault createDFT(String resourcePath, Concept concept) throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString(resourcePath);
+		InputStream is = resourceGetter.getResourceContentAsStream(resourcePath);
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is);
 		return converter.convert();
 	}

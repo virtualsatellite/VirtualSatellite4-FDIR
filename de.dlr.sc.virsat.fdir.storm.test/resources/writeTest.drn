@@ -1,0 +1,18 @@
+@type: Markov Automaton
+@parameters
+
+@reward_models
+
+@nr_states
+3
+@model
+state 0 !20.0 init
+	action 0
+		2 : 0.5
+		1 : 0.5
+state 1 !1.0 failed
+	action 0
+		1 : 1.0
+state 2 !0.0 other
+	action 0
+		1 : 1
