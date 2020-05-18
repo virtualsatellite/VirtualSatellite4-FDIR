@@ -12,9 +12,9 @@ package de.dlr.sc.virsat.fdir.storm.files;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
@@ -84,7 +84,7 @@ public class ExplicitDRNFileWriter implements IExplicitFileWriter {
 			
 			if (state.isMarkovian()) {
 				double exitRate = ma.getExitRateForState(state);
-				Map<MarkovState, Double> mapTargetStateToRate = new HashMap<>();
+				Map<MarkovState, Double> mapTargetStateToRate = new TreeMap<>(MarkovState.MARKOVSTATE_COMPARATOR);
 				for (MarkovTransition<? extends MarkovState> transition : ma.getSuccTransitions(state)) {
 					MarkovState targetState = transition.getTo();
 					mapTargetStateToRate.merge(targetState, transition.getRate(), (r1, r2) -> r1 + r2);
