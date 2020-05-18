@@ -88,6 +88,8 @@ public abstract class ASynthesizer implements ISynthesizer {
 					statistics.minimizationStatistics.compose(minimizer.getStatistics());
 				}
 				
+				System.out.println(ra.toDot());
+				
 				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
 				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
 				ras.add(ra);
@@ -140,21 +142,19 @@ public abstract class ASynthesizer implements ISynthesizer {
 	}
 	
 	/**
-	 * Sets the minimizer that will be used to synthesize the recovery automaton
-	 * @param beOptimizationOn true if optimization is on, false if off
-	 */
-	public void setBEOptimizationOn(boolean beOptimizationOn) {
-		if (this.modularizer != null) {
-			this.modularizer.setBEOptimization(beOptimizationOn);
-		}
-	}
-	
-	/**
 	 * Sets the modularizer that will be used to modularize the fault tree
 	 * @param modularizer the modularizer
 	 */
 	public void setModularizer(Modularizer modularizer) {
 		this.modularizer = modularizer;
+	}
+	
+	/**
+	 * Gets the equipped modularizer
+	 * @return the equipped modularizer
+	 */
+	public Modularizer getModularizer() {
+		return modularizer;
 	}
 	
 	/**

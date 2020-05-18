@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -117,6 +118,11 @@ public class MarkovSchedulerTest {
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice1));
 		assertFalse(schedule.get(initial).contains(falseChoice2));
+		
+		Map<MarkovState, Double> values = scheduler.getResults();
+		assertEquals(values.get(initial), 1, 0);
+		assertEquals(values.get(good), 1, 0);
+		assertEquals(values.get(bad), 0, 0);
 	}
 	
 	@Test

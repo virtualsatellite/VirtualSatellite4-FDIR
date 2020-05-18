@@ -42,6 +42,7 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 			FailLabelProvider failLabelProvider, SubMonitor monitor) {
 		stateSpaceGenerator.configure(root, failLabelProvider, failableBasicEventsProvider);
 		MarkovAutomaton<DFTState> ma = maBuilder.build(stateSpaceGenerator, monitor);
+		System.out.println(ma.toDot());
 		return ma;
 	}
 	
