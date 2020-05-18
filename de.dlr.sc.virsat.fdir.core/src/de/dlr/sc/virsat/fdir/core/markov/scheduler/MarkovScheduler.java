@@ -43,6 +43,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
 		results = computeValues(ma, initialMa);
+		//results.forEach((state, value) -> System.out.println(state.getIndex() + ": " + value));
 		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(initialMa);
@@ -57,7 +58,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				
 				if (bestTransitionGroup != null) {
 					schedule.put(state, bestTransitionGroup);
-					for (MarkovTransition<S> transition : bestTransitionGroup) {
+					for (MarkovTransition<S> transition : ma.getSuccTransitions(state)) {
 						S nextState = transition.getTo();
 						if (handledNonDetStates.add(nextState)) {
 							toProcess.offer(nextState);

@@ -94,23 +94,14 @@ public class MatrixFactory {
 	 * @return the matrix representing the fixpoint iteration
 	 */
 	public BellmanMatrix createBellmanMatrix(BellmanMatrix tm) {
-		int countStates = mc.getStates().size();
-
-		for (int i = 0; i < countStates; ++i) {
-			MarkovState state = mc.getStates().get(i);
+		for (MarkovState state : mc.getStates()) {
 			List<?> transitions = mc.getSuccTransitions(state);
 
-			tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
-			tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
-
-			if (!mc.getFinalStates().contains(state)) {
-				double exitRate = 0;
-				for (int j = 0; j < transitions.size(); ++j) {
-					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					exitRate += transition.getRate();
-				}
+			if (state.isMarkovian() && !mc.getFinalStates().contains(state)) {
+				tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
+				tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
+				
+				double exitRate = mc.getExitRateForState(state);
 
 				for (int j = 0; j < transitions.size(); ++j) {
 					@SuppressWarnings("unchecked")
@@ -119,6 +110,9 @@ public class MatrixFactory {
 					tm.getStatePredIndices()[state.getIndex()][j] = transition.getTo().getIndex();
 					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() / exitRate;
 				}
+			} else {
+				tm.getStatePredIndices()[state.getIndex()] = new int[0];
+				tm.getStatePredRates()[state.getIndex()] = new double[0];
 			}
 		}
 		return tm;
