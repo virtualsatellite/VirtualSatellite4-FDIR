@@ -88,8 +88,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 					statistics.minimizationStatistics.compose(minimizer.getStatistics());
 				}
 				
-				System.out.println(ra.toDot());
-				
 				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = this.createCopyToOriginalNodesMap(conversionResult.getMapGeneratedToGenerator(), module.getMapOriginalToCopy());
 				remapToGeneratorNodes(ra, mapGeneratedToGenerator);
 				ras.add(ra);

@@ -13,6 +13,7 @@ package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return a mapping from states to their value
 	 */
 	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
-		Map<S, Double> resultMap = new HashMap<S, Double>();
+		Map<S, Double> resultMap = new LinkedHashMap<S, Double>();
 		
 		for (S state : ma.getStates()) {			
 			double value = values[state.getIndex()];			
@@ -145,7 +146,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
-					if (!ma.getFinalStates().contains(toState) && toState.isMarkovian()) {
+					if (!ma.getFinalStates().contains(toState)) {
 						double toValue = values[toState.getIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}
@@ -174,8 +175,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double expectationValue = 0;
 			double transitionGroupProbFail = 0;
 			
-			boolean hasOnlyFailSuccessors = hasOnlyFinalSuccessors(ma, transitionGroup);
-			
 			for (MarkovTransition<S> transition : transitionGroup) {
 				double prob = transition.getRate();
 				MarkovState toState = transition.getTo();
@@ -184,10 +183,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 					transitionGroupProbFail += prob;
 				} 
 				
-				if (!isFailSuccessor || hasOnlyFailSuccessors) {
-					double toValue = results.get(toState);
-					expectationValue += prob * toValue;
-				}
+				double toValue = results.get(toState);
+				expectationValue += prob * toValue;
 			}
 			
 			if ((transitionGroupProbFail < bestTransitionProbFail)
@@ -207,22 +204,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		}
 	
 		return bestTransitionGroup;
-	}
-	
-	/**
-	 * Checks if every transition in a transition group is going to a final state
-	 * @param ma the markov automaton
-	 * @param transitionGroup a group of transitions
-	 * @return true iff all transitions in the group lead to a final state
-	 */
-	private boolean hasOnlyFinalSuccessors(MarkovAutomaton<S> ma, Set<MarkovTransition<S>> transitionGroup) {
-		for (MarkovTransition<S> transition : transitionGroup) {
-			if (!ma.getFinalStates().contains(transition.getTo())) {
-				return false;
-			}
-		}
-		
-		return true;
 	}
 	
 	/**

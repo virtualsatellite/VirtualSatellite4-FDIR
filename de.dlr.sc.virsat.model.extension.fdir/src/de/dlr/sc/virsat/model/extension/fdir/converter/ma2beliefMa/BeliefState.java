@@ -10,11 +10,11 @@
 
 package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -29,7 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
  *
  */
 public class BeliefState extends MarkovState {
-	Map<PODFTState, Double> mapStateToBelief = new HashMap<>();
+	Map<PODFTState, Double> mapStateToBelief = new TreeMap<>(MarkovState.MARKOVSTATE_COMPARATOR);
 	PODFTState representant;
 	MarkovAutomaton<BeliefState> beliefMa;
 	
