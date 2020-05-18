@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 
@@ -225,8 +226,8 @@ public class Modularizer implements IModularizer {
 	 */
 	private List<FaultTreeNodePlus> getChildren(FaultTreeNodePlus node) {
 		List<FaultTreeNode> children = new ArrayList<>(ftHolder.getMapNodeToSubNodes().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
-		children.addAll(ftHolder.getMapFaultToBasicEvents().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
-		children.addAll(ftHolder.getMapNodeToDEPTriggers().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
+		children.addAll(ftHolder.getNodes(node.getFaultTreeNode(), EdgeType.BE));
+		children.addAll(ftHolder.getNodes(node.getFaultTreeNode(), EdgeType.DEP));
 		
 		return children.stream()
 					.map(ftNode -> getOrCreateFaultTreeNodePlus(ftNode, node.getDepth() + 1))

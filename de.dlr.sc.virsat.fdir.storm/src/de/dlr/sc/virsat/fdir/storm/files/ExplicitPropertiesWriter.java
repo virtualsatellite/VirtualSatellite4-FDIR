@@ -48,18 +48,13 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	}
 
 	@Override
-	public void writeFile() {
-		try {
-			FileWriter fileWriter = new FileWriter(instancePath);
-			printWriter = new PrintWriter(fileWriter);
-			for (IBaseMetric metric : metrics) {
-				metric.accept(this, null);
-			}
-			printWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void writeFile() throws IOException {
+		FileWriter fileWriter = new FileWriter(instancePath);
+		printWriter = new PrintWriter(fileWriter);
+		for (IBaseMetric metric : metrics) {
+			metric.accept(this, null);
 		}
-
+		printWriter.close();
 	}
 
 	@Override

@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.storm.files;
 
+import java.io.IOException;
+
 /**
  * 
  * @author yoge_re
@@ -21,6 +23,7 @@ public interface IExplicitFileWriter {
 	
 	/**
 	 * create the explicit file
+	 * @throws IOException 
 	 */
-	void writeFile();
+	void writeFile() throws IOException;
 }

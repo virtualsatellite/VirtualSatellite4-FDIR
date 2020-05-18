@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFTStaticAnalysis {
@@ -46,7 +47,7 @@ public class DFTStaticAnalysis {
 		orderDependentBasicEvents = new HashSet<>();
 		transientNodes = new HashSet<>();
 		
-		for (BasicEvent be : ftHolder.getMapBasicEventToFault().keySet()) {
+		for (BasicEvent be : ftHolder.getBasicEvents()) {
 			if (isOrderDependent(be)) {
 				orderDependentBasicEvents.add(be);
 			}
@@ -87,7 +88,7 @@ public class DFTStaticAnalysis {
 				return true;
 			}
 			
-			List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().getOrDefault(node, Collections.emptyList());
+			List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
 			toProcess.addAll(parents);
 		}
 		

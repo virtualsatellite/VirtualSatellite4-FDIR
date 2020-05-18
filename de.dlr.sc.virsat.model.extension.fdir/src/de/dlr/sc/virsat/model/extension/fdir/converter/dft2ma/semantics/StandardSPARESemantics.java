@@ -9,13 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
-import java.util.Collections;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -38,8 +38,8 @@ public class StandardSPARESemantics implements INodeSemantics {
 		FaultTreeHolder ftHolder = state.getFTHolder();
 		SPARE spareGate = (SPARE) node;
 		
-		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(spareGate);
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(spareGate);
+		List<FaultTreeNode> spares = ftHolder.getNodes(spareGate, EdgeType.SPARE);
+		List<FaultTreeNode> children = ftHolder.getNodes(spareGate, EdgeType.CHILD);
 		
 		boolean hasPrimaryFailed = hasPrimaryFailed(state, children);
 		boolean currentClaimWorks = !hasPrimaryFailed;
@@ -111,7 +111,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @param ftHolder the fault tree holder
 	 */
 	protected void updatePermanence(DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		if (state.areFaultTreeNodesPermanent(ftHolder.getMapNodeToChildren().get(node))) {
+		if (state.areFaultTreeNodesPermanent(ftHolder.getNodes(node, EdgeType.CHILD))) {
 			state.setFaultTreeNodePermanent(node, true);
 		}
 	}
@@ -176,7 +176,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 		state.getMapSpareToClaimedSpares().remove(spare);
 		state.setNodeActivation(spare, false);
 		
-		for (FaultTreeNode primary : state.getFTHolder().getMapNodeToChildren().getOrDefault(claimingSpareGate, Collections.emptyList())) {
+		for (FaultTreeNode primary : state.getFTHolder().getNodes(claimingSpareGate, EdgeType.CHILD)) {
 			state.setNodeActivation(primary, true);
 		}
 	}

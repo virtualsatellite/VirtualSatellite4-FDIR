@@ -142,14 +142,15 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				mtxIterator.iterate();
 				probabilityDistribution = mtxIterator.getValues();
 				double newFailRate = getFailRate();
-				modelCheckingResult.failRates.add(newFailRate);
 				double change = Math.abs(newFailRate - oldFailRate);
 				oldFailRate = newFailRate;
 				double relativeChange = change / newFailRate;
 											
-				if (relativeChange < eps || !Double.isFinite(change)) {
+				if (relativeChange < eps || !Double.isFinite(change) || change == 0) {
 					convergence = true;
 					subMonitor.split(PROGRESS_COUNT);
+				} else {
+					modelCheckingResult.failRates.add(newFailRate);
 				}
 			}
 		}

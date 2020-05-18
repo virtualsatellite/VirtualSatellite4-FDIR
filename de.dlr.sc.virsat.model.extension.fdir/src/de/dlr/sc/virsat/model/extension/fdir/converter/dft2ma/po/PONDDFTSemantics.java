@@ -30,6 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -61,10 +62,10 @@ public class PONDDFTSemantics extends DFTSemantics {
 		List<IDFTEvent> events = super.createEvents(ftHolder);
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
-			List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
+			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
 			double observationRate = 0;
-			for (MONITOR observer : monitors) {
-				observationRate += observer.getObservationRateBean().getValueToBaseUnit();
+			for (FaultTreeNode observer : monitors) {
+				observationRate += ((MONITOR) observer).getObservationRateBean().getValueToBaseUnit();
 			}
 			
 			if (observationRate > 0) {

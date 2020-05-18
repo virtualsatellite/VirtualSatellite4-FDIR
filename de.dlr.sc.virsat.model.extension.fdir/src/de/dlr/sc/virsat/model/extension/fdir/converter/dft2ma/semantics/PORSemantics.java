@@ -14,6 +14,7 @@ import java.util.List;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -28,7 +29,7 @@ public class PORSemantics implements INodeSemantics {
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			GenerationResult generationResult) {
 		FaultTreeHolder ftHolder = state.getFTHolder();
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
 		
 		boolean firstChildFailed = state.hasFaultTreeNodeFailed(children.get(0));
 		boolean existsOtherChildThatFailed = false;

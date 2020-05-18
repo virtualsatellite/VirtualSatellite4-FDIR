@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -146,7 +147,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 			DFTState newState = state.copy();
 			fa.execute(newState);
 	
-			newState.setFaultTreeNodeFailed(node, hasPrimaryFailed(newState, newState.getFTHolder().getMapNodeToChildren().get(node)));
+			newState.setFaultTreeNodeFailed(node, hasPrimaryFailed(newState, newState.getFTHolder().getNodes(node, EdgeType.CHILD)));
 			List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
 	
 			extendedRecoveryActions.add(fa);

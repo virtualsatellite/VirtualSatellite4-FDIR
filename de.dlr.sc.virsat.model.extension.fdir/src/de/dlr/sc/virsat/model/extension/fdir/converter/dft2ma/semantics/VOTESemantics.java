@@ -15,6 +15,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -34,7 +35,7 @@ public class VOTESemantics implements INodeSemantics {
 		}
 		
 		FaultTreeHolder ftHolder = state.getFTHolder();
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
 		
 		int failed = 0;
 		int permanentlyFailed = 0;

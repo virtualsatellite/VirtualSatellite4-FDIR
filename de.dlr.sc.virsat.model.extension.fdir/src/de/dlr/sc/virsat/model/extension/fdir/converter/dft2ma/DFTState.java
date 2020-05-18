@@ -29,9 +29,9 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -311,25 +311,24 @@ public class DFTState extends MarkovState {
 		}
 		
 		if (node instanceof Fault) {
+			Fault fault = (Fault) node;
 			if (activation) {
-				activeFaults.add((Fault) node);
+				activeFaults.add(fault);
 			} else {
-				activeFaults.remove((Fault) node);
+				activeFaults.remove(fault);
 			}
 			
-			// All depenency gates in a fault are considered activated as soon as the parent fault is activated 
-			if (!ftHolder.getMapNodeToDEPTriggers().isEmpty()) {
-				for (FaultTreeNode gate : node.getFault().getFaultTree().getGates()) {
-					if (gate instanceof ADEP) {
-						if (activeFaults.contains(gate) ^ activation) {
-							setNodeActivation(gate, activation);
-						}
+			// All depenency gates in a fault are considered activated as soon as the parent fault is activated
+			for (FaultTreeNode gate : fault.getFaultTree().getGates()) {
+				if (gate instanceof ADEP) {
+					if (activeFaults.contains(gate) ^ activation) {
+						setNodeActivation(gate, activation);
 					}
 				}
 			}
 			
-			for (FaultTreeNode be : ftHolder.getMapFaultToBasicEvents().getOrDefault(node, Collections.emptyList())) {
-				for (FaultTreeNode trigger : ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList())) {
+			for (FaultTreeNode be : ftHolder.getNodes(node, EdgeType.BE)) {
+				for (FaultTreeNode trigger : ftHolder.getNodes(be, EdgeType.DEP)) {
 					if (activeFaults.contains(trigger) ^ activation) {
 						setNodeActivation(trigger, activation);
 					}
@@ -337,19 +336,14 @@ public class DFTState extends MarkovState {
 			}
 		}
 		
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().getOrDefault(node, Collections.emptyList());
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD, EdgeType.MONITOR);
 		for (FaultTreeNode child : children) {
-			if (node instanceof ADEP && ftHolder.getMapNodeToParents().get(child).size() > 1) {
+			if (node instanceof ADEP && ftHolder.getNodes(child, EdgeType.PARENT).size() > 1) {
 				continue;
 			}
 			if (!activeFaults.contains(child)) {
 				setNodeActivation(child, activation);
 			}
-		}
-		
-		List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
-		for (MONITOR monitor : monitors) {
-			setNodeActivation(monitor, activation);
 		}
 	}
 	
@@ -365,7 +359,7 @@ public class DFTState extends MarkovState {
 		
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode ftn = toProcess.pop();
-			List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(ftn);
+			List<FaultTreeNode> parents = ftHolder.getNodes(ftn, EdgeType.PARENT);
 
 			boolean allParentsPermanent = !parents.isEmpty();
 			for (FaultTreeNode parent : parents) {
@@ -398,7 +392,7 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(ftn, Collections.emptyList());
+				List<FaultTreeNode> basicEvents = ftHolder.getNodes(ftn, EdgeType.BE);
 				for (FaultTreeNode be : basicEvents) {
 					int beID = ftHolder.getNodeIndex(be);
 					failedNodes.set(beID);
@@ -411,7 +405,7 @@ public class DFTState extends MarkovState {
 						unorderedBes.add((BasicEvent) be);
 					}
 					
-					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
+					List<FaultTreeNode> deps = ftHolder.getNodes(be, EdgeType.DEP);
 					for (FaultTreeNode dep : deps) {
 						if (!toProcess.contains(dep)) {
 							int depID = ftHolder.getNodeIndex(dep);
@@ -438,7 +432,7 @@ public class DFTState extends MarkovState {
 			return false;
 		}
 		
-		for (FaultTreeNode parent : getFTHolder().getMapNodeToParents().get(node)) {
+		for (FaultTreeNode parent : ftHolder.getNodes(node, EdgeType.PARENT)) {
 			if (!isFaultTreeNodePermanent(parent)) {
 				return false;
 			}
@@ -446,7 +440,7 @@ public class DFTState extends MarkovState {
 		
 		FaultTreeNode oldCLaimingSpareGate = mapSpareToClaimedSpares.remove(node);
 		if (oldCLaimingSpareGate != null) {
-			List<FaultTreeNode> spares = getFTHolder().getMapNodeToSpares().get(oldCLaimingSpareGate);
+			List<FaultTreeNode> spares = ftHolder.getNodes(oldCLaimingSpareGate, EdgeType.SPARE);
 			boolean hasClaim = false;
 			for (FaultTreeNode spare : spares) {
 				FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
@@ -457,7 +451,7 @@ public class DFTState extends MarkovState {
 			}
 			
 			if (!hasClaim) {
-				for (FaultTreeNode primary : getFTHolder().getMapNodeToChildren().getOrDefault(oldCLaimingSpareGate, Collections.emptyList())) {
+				for (FaultTreeNode primary : ftHolder.getNodes(oldCLaimingSpareGate, EdgeType.CHILD)) {
 					setNodeActivation(primary, true);
 				}
 			}
@@ -619,18 +613,18 @@ public class DFTState extends MarkovState {
 			FaultTreeNode node = queue.poll();
 			List<FaultTreeNode> biggerNodes = symmetryReduction.get(node);
 			if (biggerNodes != null && !biggerNodes.isEmpty()) {
-				List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
+				List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
 				for (FaultTreeNode parent : parents) {
 					boolean continueToParent = hasFaultTreeNodeFailed(parent);
 					
 					if (!continueToParent) {
 						Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
 						for (FaultTreeNode biggerNode : biggerNodes) {
-							List<FaultTreeNode> biggerParents = ftHolder.getMapNodeToParents().get(biggerNode);
+							List<FaultTreeNode> biggerParents = ftHolder.getNodes(biggerNode, EdgeType.PARENT);
 							for (FaultTreeNode biggerParent : biggerParents) {
 								if (processedBiggerParents.add(biggerParent)) {
 									if (!allParents.contains(biggerParent)) {
-										Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, v -> new HashSet<>());
+										Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, key -> new HashSet<>());
 										continueToParent |= symmetryRequirements.add(biggerNode);
 									}
 								}
