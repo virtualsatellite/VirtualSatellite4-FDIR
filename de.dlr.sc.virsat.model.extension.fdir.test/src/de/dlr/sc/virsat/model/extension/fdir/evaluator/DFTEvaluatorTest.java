@@ -28,7 +28,6 @@ import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -944,23 +943,6 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals("SSA has correct value", EXPECTEDSSA, result.getSteadyStateAvailability(), TEST_EPSILON);
-	}
-	
-	@Test
-	public void testEvaluateCM4WithDFTSymmetry() throws IOException {
-		final double[] EXPECTED = {
-			3.581002068280633E-5,
-			1.4251151037843218E-4,
-			3.202047837711682E-4,
-			5.73300404984077E-4
-		};
-		final double EXPECTEDMTTF = 0.38349296618324985;
-		Fault fault = createDFT("/resources/galileo/cm4.dft");
-		dftEvaluator.setSymmetryChecker(new DFTSymmetryChecker());
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
-		
-		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
