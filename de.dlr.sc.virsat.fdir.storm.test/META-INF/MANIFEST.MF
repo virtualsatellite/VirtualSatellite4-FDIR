@@ -6,7 +6,6 @@ Bundle-Version: 4.10.0.qualifier
 Fragment-Host: de.dlr.sc.virsat.fdir.storm
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.storm.test
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Eclipse-ExtensibleAPI: true
 Require-Bundle: org.junit
 Bundle-Vendor: DLR (German Aerospace Center)
 Export-Package: de.dlr.sc.virsat.fdir.storm.docker,

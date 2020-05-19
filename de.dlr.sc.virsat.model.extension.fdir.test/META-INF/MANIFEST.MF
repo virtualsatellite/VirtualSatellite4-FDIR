@@ -26,3 +26,4 @@ Require-Bundle: org.junit,
  de.dlr.sc.virsat.concept.unittest.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: de.dlr.sc.virsat.model.extension.fdir.test
+Import-Package: de.dlr.sc.virsat.fdir.core.test
