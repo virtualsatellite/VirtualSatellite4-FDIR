@@ -157,16 +157,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
 		
 		for (Module module : modularization.getModulesToModelCheck()) {
-			if (modularization.getMapNodeToRepresentant() != null) {
-				FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(module.getRootNode());
-				Module representantModule =  modularization.getModule(representant);
-				ModelCheckingResult representantResult = mapModuleToResult
-						.computeIfAbsent(representantModule, key -> modelCheck(key.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider));
-				mapModuleToResult.put(module, representantResult);
-			} else {
-				ModelCheckingResult moduleResult = modelCheck(module.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider);
-				mapModuleToResult.put(module, moduleResult);
-			}
+			FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(module.getRootNode());
+			Module representantModule =  modularization.getModule(representant);
+			ModelCheckingResult representantResult = mapModuleToResult
+					.computeIfAbsent(representantModule, key -> modelCheck(key.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider));
+			mapModuleToResult.put(module, representantResult);
 		}
 		
 		composer.composeModuleResults(topLevelModule, modularization, subMonitor, baseMetrics, mapModuleToResult);
