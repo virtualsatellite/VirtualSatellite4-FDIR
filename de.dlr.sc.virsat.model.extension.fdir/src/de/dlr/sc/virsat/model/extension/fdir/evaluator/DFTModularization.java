@@ -58,7 +58,7 @@ public class DFTModularization {
 			topLevelModule = getModule(rootFault);
 			modulesToModelCheck = computeModulesToModelCheck();
 			
-			if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
+			if (modulesToModelCheck.size() > 1) {
 				mapNodeToRepresentant = createMapNodeToRepresentant(ftHolder, symmetryChecker);
 			}
 		}
