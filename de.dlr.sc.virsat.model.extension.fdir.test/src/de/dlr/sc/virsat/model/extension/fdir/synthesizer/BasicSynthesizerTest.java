@@ -266,6 +266,9 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		final int NUM_STATES = 3;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
@@ -282,26 +285,42 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.9991478706086724, 
 			0.9985122259438284
 		};
+		final double EXPECTED_SSA = 0.5897721459363314;
+		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		final int NUM_STATES = 6;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 	}
 	
 	@Test
 	public void testSynthesizeCsp2Repair2BadSpare() throws IOException {
 		final double[] EXPECTED = {
-			0.9999018128802991,
-			0.9996143421328886, 
-			0.9991478706086724, 
-			0.9985122259438284
+			0.9999503353883044,
+			0.9998026990915827, 
+			0.9995591618462207, 
+			0.9992218375543195
 		};
+		final double EXPECTED_SSA = 0.7613760616641098;
+		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadSpare.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
+		final int NUM_STATES = 5;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 	}
 	
 	@Test
@@ -311,11 +330,20 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.9976596933453932, 
 			0.9962533670570343
 		};
+		final double EXPECTED_SSA = 0.606161048084501;
+		
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		final int NUM_STATES = 8;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY).getAvailability(), EXPECTED);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 	}
 	
 	@Test
