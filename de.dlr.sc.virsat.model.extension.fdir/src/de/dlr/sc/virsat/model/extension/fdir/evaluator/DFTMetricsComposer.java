@@ -234,25 +234,18 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 		List<Module> subModules = children.stream()
 				.map(child -> modularization.getModule(child.getFaultTreeNode()))
 				.collect(Collectors.toList());
+		
 		List<ModelCheckingResult> subModuleResults = new ArrayList<>();
 		for (Module subModule : subModules) {
-			if (modularization.getMapNodeToRepresentant() != null) {
-				FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(subModule.getRootNode());
-				Module representantSubModule = modularization.getModule(representant);
-				ModelCheckingResult representantSubModuleResult = mapModuleToResult.get(subModule);
-				if (representantSubModuleResult == null) {
-					composeModuleResults(representantSubModule, modularization, subMonitor, metrics, mapModuleToResult);
-					representantSubModuleResult = mapModuleToResult.get(subModule);
-				}
-				mapModuleToResult.put(subModule, representantSubModuleResult);
+			FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(subModule.getRootNode());
+			Module representantSubModule = modularization.getModule(representant);
+			ModelCheckingResult representantSubModuleResult = mapModuleToResult.get(subModule);
+			if (representantSubModuleResult == null) {
+				composeModuleResults(representantSubModule, modularization, subMonitor, metrics, mapModuleToResult);
+				representantSubModuleResult = mapModuleToResult.get(subModule);
 			}
-			
-			ModelCheckingResult subModuleResult = mapModuleToResult.get(subModule);
-			if (subModuleResult == null) {
-				composeModuleResults(subModule, modularization, subMonitor, metrics, mapModuleToResult);
-				subModuleResult = mapModuleToResult.get(subModule);
-			}
-			subModuleResults.add(subModuleResult);
+			mapModuleToResult.put(subModule, representantSubModuleResult);
+			subModuleResults.add(representantSubModuleResult);
 		}
 		
 		if (subModuleResults.size() > 1) {
