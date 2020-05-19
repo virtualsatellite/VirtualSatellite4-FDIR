@@ -43,7 +43,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
 		results = computeValues(ma, initialMa);
-		//results.forEach((state, value) -> System.out.println(state.getIndex() + ": " + value));
 		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(initialMa);
@@ -58,7 +57,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				
 				if (bestTransitionGroup != null) {
 					schedule.put(state, bestTransitionGroup);
-					for (MarkovTransition<S> transition : ma.getSuccTransitions(state)) {
+					for (MarkovTransition<S> transition : bestTransitionGroup) {
 						S nextState = transition.getTo();
 						if (handledNonDetStates.add(nextState)) {
 							toProcess.offer(nextState);
@@ -137,8 +136,9 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
 		Map<S, Double> resultMap = new LinkedHashMap<S, Double>();
 		
-		for (S state : ma.getStates()) {			
-			double value = values[state.getIndex()];			
+		for (int i = ma.getStates().size() - 1; i >= 0; --i) {	
+			S state = ma.getStates().get(i);
+			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
 			} else if (ma.getFinalStates().contains(state)) {
@@ -189,7 +189,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			}
 			
 			if ((transitionGroupProbFail < bestTransitionProbFail)
-					|| (expectationValue >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
+					|| (expectationValue + EPS >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
 				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue;
 				
 				if (!isNewBestTransition) {

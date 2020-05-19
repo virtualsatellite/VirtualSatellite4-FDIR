@@ -222,8 +222,6 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		System.out.println(ra.toDot());
-		
 		final int EXPECTED_COUNT_STATES = 7;
 		final int EXPECTED_COUNT_TRANSITIONS = 10;
 		final double EXPECTED_MTTF = 0.9126984126984126;
