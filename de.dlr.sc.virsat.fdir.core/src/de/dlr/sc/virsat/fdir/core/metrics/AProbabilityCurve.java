@@ -48,6 +48,32 @@ public abstract class AProbabilityCurve implements IQuantitativeMetric {
 	 */
 	public void composeProbabilityCurve(List<List<Double>> probabilityCurves, List<Double> resultCurve, long k,
 			double stopValue) {
+		int countProbabilites = getComposedProbabilityCurveSize(probabilityCurves, k);
+
+		double[] childProbabilities = new double[probabilityCurves.size()];
+		for (int i = 0; i < countProbabilites; ++i) {
+
+			for (int j = 0; j < probabilityCurves.size(); ++j) {
+				List<Double> probabilityCurve = probabilityCurves.get(j);
+				childProbabilities[j] = i < probabilityCurve.size() ? probabilityCurve.get(i) : 1;
+			}
+
+			double composedProbability = IQuantitativeMetric.composeProbabilities(childProbabilities, k);
+			resultCurve.add(composedProbability);
+
+			if (composedProbability == stopValue) {
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * Computes the needed size of the composed probability curve, when given a list of probability curves.
+	 * @param probabilityCurves the probability curves to compose
+	 * @param k the distribution parameter
+	 * @return the needed length of the composed probability curve
+	 */
+	private int getComposedProbabilityCurveSize(List<List<Double>> probabilityCurves, long k) {
 		int countProbabilites = 0;
 		if (k == 1) {
 			countProbabilites = Integer.MAX_VALUE;
@@ -59,25 +85,7 @@ public abstract class AProbabilityCurve implements IQuantitativeMetric {
 				countProbabilites = Math.max(countProbabilites, probabilityCurve.size());
 			}
 		}
-
-		double[] childProbabilities = new double[probabilityCurves.size()];
-		for (int i = 0; i < countProbabilites; ++i) {
-
-			for (int j = 0; j < probabilityCurves.size(); ++j) {
-				List<Double> probabilityCurve = probabilityCurves.get(j);
-				if (i < probabilityCurve.size()) {
-					childProbabilities[j] = probabilityCurve.get(i);
-				} else {
-					childProbabilities[j] = 1;
-				}
-			}
-
-			double composedProbability = IQuantitativeMetric.composeProbabilities(childProbabilities, k);
-			resultCurve.add(composedProbability);
-
-			if (composedProbability == stopValue) {
-				break;
-			}
-		}
+		
+		return countProbabilites;
 	}
 }

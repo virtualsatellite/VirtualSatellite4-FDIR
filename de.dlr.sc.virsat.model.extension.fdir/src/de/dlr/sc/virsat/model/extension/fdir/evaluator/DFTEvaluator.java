@@ -49,8 +49,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private MarkovAutomaton<DFTState> mc;
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MaConverter = new DFT2MAConverter();
-	private Modularizer modularizer;
-	private DFTSymmetryChecker symmetryChecker;
+	private Modularizer modularizer = new Modularizer();
+	private DFTSymmetryChecker symmetryChecker = new DFTSymmetryChecker();
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
 	private DFTEvaluationStatistics statistics;
 	
@@ -65,7 +65,6 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		this.defaultSemantics = defaultSemantics;
 		this.poSemantics = poSemantics;
 		this.markovModelChecker = markovModelChecker;
-		this.modularizer = new Modularizer();
 		this.modularizer.setBEOptimization(false);
 	}
 
@@ -150,31 +149,23 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @return the model checking result
 	 */
 	private ModelCheckingResult evaluateFaultTree(FaultTreeHolder ftHolder, FailableBasicEventsProvider failableBasicEventsProvider, FailLabelProvider failLabelProvider, DFTModularization modularization, SubMonitor subMonitor, IBaseMetric... baseMetrics) {
-		if (modularization != null) {
-			Module topLevelModule = modularization.getTopLevelModule();
-			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
-			
-			for (Module module : modularization.getModulesToModelCheck()) {
-				if (modularization.getMapNodeToRepresentant() != null) {
-					FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(module.getRootNode());
-					Module representantModule =  modularization.getModule(representant);
-					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
-					if (representantResult == null) {
-						representantResult = modelCheck(representantModule.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider);
-						mapModuleToResult.put(representantModule, representantResult);
-					}
-					mapModuleToResult.put(module, representantResult);
-				} else {
-					ModelCheckingResult moduleResult = modelCheck(module.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider);
-					mapModuleToResult.put(module, moduleResult);
-				}
-			}
-			
-			composer.composeModuleResults(topLevelModule, modularization, subMonitor, baseMetrics, mapModuleToResult);
-			return mapModuleToResult.get(modularization.getTopLevelModule());
-		} else {
+		if (modularization == null) {
 			return modelCheck(ftHolder.getRoot(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider);
 		}
+		
+		Module topLevelModule = modularization.getTopLevelModule();
+		Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
+		
+		for (Module module : modularization.getModulesToModelCheck()) {
+			FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(module.getRootNode());
+			Module representantModule =  modularization.getModule(representant);
+			ModelCheckingResult representantResult = mapModuleToResult
+					.computeIfAbsent(representantModule, key -> modelCheck(key.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider));
+			mapModuleToResult.put(module, representantResult);
+		}
+		
+		composer.composeModuleResults(topLevelModule, modularization, subMonitor, baseMetrics, mapModuleToResult);
+		return mapModuleToResult.get(modularization.getTopLevelModule());
 	}
 	
 	/**
@@ -184,8 +175,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @return the modularization
 	 */
 	private DFTModularization getModularization(FaultTreeHolder ftHolder, FailableBasicEventsProvider failNodeProvider) {
-		boolean canModularize = modularizer != null 
-				&& ftHolder.getRoot() instanceof Fault
+		boolean canModularize = ftHolder.getRoot() instanceof Fault
 				&& dft2MaConverter.getStateSpaceGenerator().getDftSemantics() != poSemantics
 				&& failNodeProvider == null;
 		
@@ -240,21 +230,5 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	@Override
 	public DFTEvaluationStatistics getStatistics() {
 		return statistics;
-	}
-	
-	/**
-	 * Configures the modularizer
-	 * @param modularizer the modularizer
-	 */
-	public void setModularizer(Modularizer modularizer) {
-		this.modularizer = modularizer;
-	}
-	
-	/**
-	 * Configures the symmetry checker
-	 * @param symmetryChecker the symmetry checker
-	 */
-	public void setSymmetryChecker(DFTSymmetryChecker symmetryChecker) {
-		this.symmetryChecker = symmetryChecker;
 	}
 }

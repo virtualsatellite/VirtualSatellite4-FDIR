@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -30,6 +31,19 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 
 public class MarkovSchedulerTest {
 
+	private MarkovScheduler<MarkovState> scheduler = new MarkovScheduler<MarkovState>();
+	
+	@Test
+	public void testScheduleNoTransitions() {
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		MarkovState initial = new MarkovState();
+		initial.setMarkovian(false);
+		ma.addState(initial);
+		
+		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
+		assertTrue(schedule.isEmpty());
+	}
+	
 	@Test
 	public void testScheduleOnlyNondet() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
@@ -50,7 +64,6 @@ public class MarkovSchedulerTest {
 		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);
 		
-		MarkovScheduler<MarkovState> scheduler = new MarkovScheduler<>();
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice));
@@ -81,7 +94,6 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("a", good, sink, 1);
 		ma.addMarkovianTransition("b", bad, sink, 2);
 		
-		MarkovScheduler<MarkovState> scheduler = new MarkovScheduler<>();
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice));
@@ -112,15 +124,19 @@ public class MarkovSchedulerTest {
 		
 		ma.addMarkovianTransition("c", good, bad, 1);
 		
-		MarkovScheduler<MarkovState> scheduler = new MarkovScheduler<>();
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice1));
 		assertFalse(schedule.get(initial).contains(falseChoice2));
+		
+		Map<MarkovState, Double> values = scheduler.getResults();
+		assertEquals(values.get(initial), 1, 0);
+		assertEquals(values.get(good), 1, 0);
+		assertEquals(values.get(bad), 0, 0);
 	}
 	
 	@Test
-	public void testNoActionOverAction() {
+	public void testScheduleNoActionOverAction() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		
 		MarkovState initial = new MarkovState();
@@ -137,7 +153,6 @@ public class MarkovSchedulerTest {
 		Object correctChoice = ma.addNondeterministicTransition(Collections.emptyList(), initial, bad, 1);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad, 1);
 		
-		MarkovScheduler<MarkovState> scheduler = new MarkovScheduler<>();
 		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice));

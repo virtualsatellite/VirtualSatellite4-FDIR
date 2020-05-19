@@ -611,26 +611,11 @@ public class DFTState extends MarkovState {
 		
 		while (!queue.isEmpty()) {
 			FaultTreeNode node = queue.poll();
-			List<FaultTreeNode> biggerNodes = symmetryReduction.get(node);
-			if (biggerNodes != null && !biggerNodes.isEmpty()) {
+			List<FaultTreeNode> biggerNodes = symmetryReduction.getOrDefault(node, Collections.emptyList());
+			if (!biggerNodes.isEmpty()) {
 				List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
 				for (FaultTreeNode parent : parents) {
-					boolean continueToParent = hasFaultTreeNodeFailed(parent);
-					
-					if (!continueToParent) {
-						Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
-						for (FaultTreeNode biggerNode : biggerNodes) {
-							List<FaultTreeNode> biggerParents = ftHolder.getNodes(biggerNode, EdgeType.PARENT);
-							for (FaultTreeNode biggerParent : biggerParents) {
-								if (processedBiggerParents.add(biggerParent)) {
-									if (!allParents.contains(biggerParent)) {
-										Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, key -> new HashSet<>());
-										continueToParent |= symmetryRequirements.add(biggerNode);
-									}
-								}
-							}
-						}
-					}
+					boolean continueToParent = updateSymmetryRequirements(parent, biggerNodes, allParents);
 					
 					if (continueToParent && checkedNodes.add(parent)) {
 						queue.add(parent);
@@ -638,6 +623,35 @@ public class DFTState extends MarkovState {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Updates the symmetry requirements of a parent node
+	 * @param parent the parent node
+	 * @param biggerNodes the symmetrically bigger nodes according to the symmetry reduction (smallerNode <= biggerNode)
+	 * @param allParents all parents of a basic event
+	 * @return true iff the parent nodes parents should also update their summetry requirements, either
+	 * because the node is failed or because new symmetry requirements were added to this node
+	 */
+	private boolean updateSymmetryRequirements(FaultTreeNode parent, List<FaultTreeNode> biggerNodes, Set<FaultTreeNode> allParents) {
+		if (hasFaultTreeNodeFailed(parent)) {
+			return true;
+		}
+		
+		boolean continueToParent = false;
+		Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
+		
+		for (FaultTreeNode biggerNode : biggerNodes) {
+			List<FaultTreeNode> biggerParents = ftHolder.getNodes(biggerNode, EdgeType.PARENT);
+			for (FaultTreeNode biggerParent : biggerParents) {
+				if (processedBiggerParents.add(biggerParent) && !allParents.contains(biggerParent)) {
+					Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, key -> new HashSet<>());
+					continueToParent |= symmetryRequirements.add(biggerNode);
+				}
+			}
+		}
+		
+		return continueToParent;
 	}
 	
 	/**

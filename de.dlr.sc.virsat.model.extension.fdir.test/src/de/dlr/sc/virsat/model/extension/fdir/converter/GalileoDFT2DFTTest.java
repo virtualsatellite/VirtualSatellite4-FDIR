@@ -30,7 +30,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
-import de.dlr.sc.virsat.model.extension.fdir.test.TestActivator;
 
 /**
  * Tests the conversion from a galileo DFT to a VirSat DFT.
@@ -53,7 +52,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 	
 	@Test
 	public void testConvertToplevel() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/failureMode.dft");
+		InputStream is = resourceGetter.getResourceContentAsStream("/resources/galileo/failureMode.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();
@@ -64,7 +63,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 	
 	@Test
 	public void testConvert2of3() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/2of3.dft");
+		InputStream is = resourceGetter.getResourceContentAsStream("/resources/galileo/2of3.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();
@@ -108,7 +107,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 	
 	@Test
 	public void testSF() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/sf.dft");
+		InputStream is = resourceGetter.getResourceContentAsStream("/resources/galileo/sf.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();
@@ -123,7 +122,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 	
 	@Test
 	public void testFDEP1() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileo/fdep1.dft");
+		InputStream is = resourceGetter.getResourceContentAsStream("/resources/galileo/fdep1.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();
@@ -144,7 +143,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 
 	@Test
 	public void testObsCsp() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileoObs/obsCsp2.dft");
+		InputStream is = resourceGetter.getResourceContentAsStream("/resources/galileoObs/obsCsp2.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();
@@ -161,7 +160,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 	
 	@Test
 	public void testCsp2Repair2() throws IOException {
-		InputStream is = TestActivator.getResourceContentAsString("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
+		InputStream is = resourceGetter.getResourceContentAsStream("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
 		
 		converter.convert();

@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.fdir.core.metrics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,42 +46,34 @@ public interface IMetric {
 		
 		while (!toProcess.isEmpty()) {
 			IMetric metric = toProcess.poll();
-			if (metric instanceof IDerivedMetric) {
-				if (metric instanceof IBaseMetric && !deriveIfPossible) {
-					partitioningWithList.computeIfAbsent(new FailLabelProvider(FailLabel.FAILED), v -> new ArrayList<>()).add(metric);
-				} else {
-					IDerivedMetric derivedMetric = (IDerivedMetric) metric;
-					partitioningWithList.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER).add(metric); 
+			if (metric instanceof IBaseMetric && !(metric instanceof IDerivedMetric && deriveIfPossible)) {
+				partitioningWithList.computeIfAbsent(new FailLabelProvider(FailLabel.FAILED), v -> new ArrayList<>()).add(metric);
+			} else if (metric instanceof IDerivedMetric) {
+				IDerivedMetric derivedMetric = (IDerivedMetric) metric;
+				partitioningWithList.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER).add(metric); 
+				
+				for (Entry<FailLabelProvider, Set<IMetric>> entry : derivedMetric.getDerivedFrom().entrySet()) {
+					List<IMetric> existingMetrics = partitioningWithList.getOrDefault(entry.getKey(), Collections.emptyList());
+					for (IMetric existingMetric : entry.getValue()) {
+						existingMetrics.removeIf(existingMetricOther -> existingMetricOther.getClass().equals(existingMetric.getClass()));
+					}
 					
-					for (Entry<FailLabelProvider, Set<IMetric>> entry : derivedMetric.getDerivedFrom().entrySet()) {						
-						List<IMetric> existingMetrics = partitioningWithList.get(entry.getKey());
-						if (existingMetrics != null) {
-							for (IMetric existingMetric : entry.getValue()) {
-								existingMetrics.removeIf(existingMetricOther -> existingMetricOther.getClass().equals(existingMetric.getClass()));
-							}
-						}
-						
-						for (IMetric derivingMetric : entry.getValue()) {
-							if (derivingMetric instanceof IBaseMetric) {
-								partitioningWithList.computeIfAbsent(entry.getKey(), v -> new ArrayList<>()).add(derivingMetric);
-							} else {
-								toProcess.add(derivingMetric);
-							}
+					for (IMetric derivingMetric : entry.getValue()) {
+						if (derivingMetric instanceof IBaseMetric) {
+							partitioningWithList.computeIfAbsent(entry.getKey(), v -> new ArrayList<>()).add(derivingMetric);
+						} else {
+							toProcess.add(derivingMetric);
 						}
 					}
 				}
-			} else if (metric instanceof IBaseMetric) {
-				partitioningWithList.computeIfAbsent(new FailLabelProvider(FailLabel.FAILED), v -> new ArrayList<>()).add(metric);
-			}
+			} 
 		}
 		
 		Map<FailLabelProvider, IMetric[]> partitioningWithArray = new HashMap<>();
 		for (Entry<FailLabelProvider, List<IMetric>> entry : partitioningWithList.entrySet()) {
-			if (entry.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
-				partitioningWithArray.put(entry.getKey(), entry.getValue().toArray(new IDerivedMetric[0]));
-			} else {
-				partitioningWithArray.put(entry.getKey(), entry.getValue().toArray(new IBaseMetric[0]));
-			}
+			IMetric[] arrayType = entry.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER) 
+					? new IDerivedMetric[0] : new IBaseMetric[0];
+			partitioningWithArray.put(entry.getKey(), entry.getValue().toArray(arrayType));
 		}
 		return partitioningWithArray;
 	}

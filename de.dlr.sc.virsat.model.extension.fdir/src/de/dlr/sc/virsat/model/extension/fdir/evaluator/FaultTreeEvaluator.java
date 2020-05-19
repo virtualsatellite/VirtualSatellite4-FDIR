@@ -146,15 +146,6 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	public void addPreprocessConverter(IDFT2DFTConverter dft2DftConverter) {
 		preprocessConverters.add(dft2DftConverter);
 	}
-
-	/**
-	 * Creates a fault tree evaluator with a default setup
-	 * @param isNondeterministic whether the evaluator uses Non-deterministic fault trees
-	 * @return a fault tree evaluator
-	 */
-	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic) {
-		return createDefaultFaultTreeEvaluator(isNondeterministic, DEFAULT_DELTA, DEFAULT_EPS);
-	}
 	
 	/**
 	 * Creates a fault tree evaluator with a recovery automaton

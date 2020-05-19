@@ -13,6 +13,7 @@ package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +38,11 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 
 	public static final double EPS = 0.0000000001;
 	
+	private Map<S, Double> results;
+	
 	@Override
 	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
-		Map<S, Double> results = computeValues(ma, initialMa);
+		results = computeValues(ma, initialMa);
 		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(initialMa);
@@ -50,7 +53,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			S state = toProcess.poll();
 			
 			if (!state.isMarkovian()) {
-				Set<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, results, state);
+				Set<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, state);
 				
 				if (bestTransitionGroup != null) {
 					schedule.put(state, bestTransitionGroup);
@@ -74,6 +77,14 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 
 		}	
 		return schedule;
+	}
+	
+	/**
+	 * Gets the computed values for each state from the last call to the scheduler
+	 * @return the computed values
+	 */
+	public Map<S, Double> getResults() {
+		return results;
 	}
 	
 	/**
@@ -123,10 +134,11 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return a mapping from states to their value
 	 */
 	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
-		Map<S, Double> resultMap = new HashMap<S, Double>();
+		Map<S, Double> resultMap = new LinkedHashMap<S, Double>();
 		
-		for (S state : ma.getStates()) {			
-			double value = values[state.getIndex()];			
+		for (int i = ma.getStates().size() - 1; i >= 0; --i) {	
+			S state = ma.getStates().get(i);
+			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
 			} else if (ma.getFinalStates().contains(state)) {
@@ -135,7 +147,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
-					if (!ma.getFinalStates().contains(toState) && toState.isMarkovian()) {
+					if (!ma.getFinalStates().contains(toState)) {
 						double toValue = values[toState.getIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}
@@ -150,11 +162,10 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	/**
 	 * Selects the optimal transition group for a given state
 	 * @param ma the markov automaton
-	 * @param results the utility valuation
 	 * @param state the state
 	 * @return the optimal transition group of successor states
 	 */
-	private Set<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, Map<S, Double> results, S state) {
+	private Set<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, S state) {
 		Set<MarkovTransition<S>> bestTransitionGroup = null;
 		double bestValue = Double.NEGATIVE_INFINITY;
 		double bestTransitionProbFail = 1;
@@ -165,8 +176,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double expectationValue = 0;
 			double transitionGroupProbFail = 0;
 			
-			boolean hasOnlyFailSuccessors = hasOnlyFinalSuccessors(ma, transitionGroup);
-			
 			for (MarkovTransition<S> transition : transitionGroup) {
 				double prob = transition.getRate();
 				MarkovState toState = transition.getTo();
@@ -175,14 +184,12 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 					transitionGroupProbFail += prob;
 				} 
 				
-				if (!isFailSuccessor || hasOnlyFailSuccessors) {
-					double toValue = results.get(toState);
-					expectationValue += prob * toValue;
-				}
+				double toValue = results.get(toState);
+				expectationValue += prob * toValue;
 			}
 			
 			if ((transitionGroupProbFail < bestTransitionProbFail)
-					|| (expectationValue >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
+					|| (expectationValue + EPS >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
 				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue;
 				
 				if (!isNewBestTransition) {
@@ -198,22 +205,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		}
 	
 		return bestTransitionGroup;
-	}
-	
-	/**
-	 * Checks if every transition in a transition group is going to a final state
-	 * @param ma the markov automaton
-	 * @param transitionGroup a group of transitions
-	 * @return true iff all transitions in the group lead to a final state
-	 */
-	private boolean hasOnlyFinalSuccessors(MarkovAutomaton<S> ma, Set<MarkovTransition<S>> transitionGroup) {
-		for (MarkovTransition<S> transition : transitionGroup) {
-			if (!ma.getFinalStates().contains(transition.getTo())) {
-				return false;
-			}
-		}
-		
-		return true;
 	}
 	
 	/**
@@ -234,15 +225,13 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			Collection<?> eventCollection1 = (Collection<?>) event1;
 			Collection<?> eventCollection2 = (Collection<?>) event2;
 			
-			boolean isSmaller = eventCollection1.size() < eventCollection2.size();
-			
 			// To ensure that there is no nondeterminism in the scheduling
 			// the final deciding factor is the string representation of the events
 			if (eventCollection2.size() == eventCollection1.size()) {
-				isSmaller = eventCollection1.toString().compareTo(eventCollection2.toString()) < 0;
+				return eventCollection1.toString().compareTo(eventCollection2.toString()) < 0;
+			} else {
+				return eventCollection1.size() < eventCollection2.size();
 			}
-			
-			return isSmaller;
 		}
 		
 		return false;

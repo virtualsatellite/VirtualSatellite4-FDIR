@@ -42,6 +42,7 @@ public class MeanTimeToDetection implements IDerivedMetric {
 		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED), Collections.singleton(MTTF.MTTF));
 		return mapFailLabelProviderToMetrics;
 	}
+	
 	@Override
 	public void accept(IDerivedMetricVisitor visitor) {
 		visitor.visit(this);

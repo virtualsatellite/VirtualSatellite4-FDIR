@@ -66,10 +66,9 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		System.out.println("--------------------- Experiment: Memory2  ---------------------");
 		Fault tle = createDFT("/resources/aiaa/2017/memory2.dft");
 		
-		FaultTreeEvaluator dftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(false);
-		ModelCheckingResult result = dftEvaluator.evaluateFaultTree(tle);
-		
 		final float DELTA = 0.01f;
+		FaultTreeEvaluator dftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(false, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
+		ModelCheckingResult result = dftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for Memory2 with DFT ---------------------");
 		printResults(dftEvaluator, result, DELTA);
