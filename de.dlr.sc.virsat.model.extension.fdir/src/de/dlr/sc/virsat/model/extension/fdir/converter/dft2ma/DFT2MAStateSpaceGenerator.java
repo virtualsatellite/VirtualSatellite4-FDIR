@@ -225,7 +225,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			if (equivalentState == succ) {
 				if (staticAnalysis.getSymmetryChecker() != null) {
 					if (stateUpdate.getEvent() instanceof FaultEvent) {
-						succ.createSymmetryRequirements(stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode(), staticAnalysis.getSymmetryReduction());
+						staticAnalysis.createSymmetryRequirements(succ, stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode());
 					}
 				}
 				

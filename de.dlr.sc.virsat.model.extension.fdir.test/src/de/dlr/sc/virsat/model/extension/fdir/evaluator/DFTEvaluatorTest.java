@@ -142,6 +142,36 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertEquals("Number of MinCut sets correct", EXPECTED_COUNT_MINCUTS, result.getMinCutSets().size());
 		assertThat("MinCut sets correct", result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList(a, b))));
 	}
+
+	@Test
+	public void testEvaluateAnd2Symmetric() throws IOException {
+		final double[] EXPECTED = {
+			2.487536380342687E-5, 
+			9.900580841919508E-5, 
+			2.21654342382854E-4, 
+			3.9209253881260497E-4,
+		};
+		final double EXPECTEDMTTF = 3;
+		final int EXPECTEDSTATES = 3;
+		final int EXPECTEDTRANSITIONS = 2;
+		
+		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
+		
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		BasicEvent a = ftHolder.getNodeByName("A", BasicEvent.class);
+		BasicEvent b = ftHolder.getNodeByName("B", BasicEvent.class);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, MinimumCutSet.MINCUTSET);
+		
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		
+		final int EXPECTED_COUNT_MINCUTS = 1;
+		assertEquals("Number of MinCut sets correct", EXPECTED_COUNT_MINCUTS, result.getMinCutSets().size());
+		assertThat("MinCut sets correct", result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList(a, b))));
+	}
 	
 	@Test
 	public void testEvaluateOr2And() throws IOException {

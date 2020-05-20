@@ -15,10 +15,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -588,70 +586,6 @@ public class DFTState extends MarkovState {
 		}
 		
 		return false;
-	}
-	
-	/**
-	 * Creates the symmetry requirements for this state
-	 * @param predecessor the predecessor state
-	 * @param basicEvent the basic event that has failed
-	 * @param symmetryReduction the symmetry reduction
-	 */
-	public void createSymmetryRequirements(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
-		if (mapParentToSymmetryRequirements == null) {
-			mapParentToSymmetryRequirements = new HashMap<>(predecessor.getMapParentToSymmetryRequirements());
-		} else {
-			mapParentToSymmetryRequirements.putAll(predecessor.getMapParentToSymmetryRequirements());
-		}
-		
-		Set<FaultTreeNode> checkedNodes = new HashSet<>();
-		Queue<FaultTreeNode> queue = new LinkedList<>();
-		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
-		queue.add(basicEvent);
-		checkedNodes.add(basicEvent);
-		
-		while (!queue.isEmpty()) {
-			FaultTreeNode node = queue.poll();
-			List<FaultTreeNode> biggerNodes = symmetryReduction.getOrDefault(node, Collections.emptyList());
-			if (!biggerNodes.isEmpty()) {
-				List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
-				for (FaultTreeNode parent : parents) {
-					boolean continueToParent = updateSymmetryRequirements(parent, biggerNodes, allParents);
-					
-					if (continueToParent && checkedNodes.add(parent)) {
-						queue.add(parent);
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Updates the symmetry requirements of a parent node
-	 * @param parent the parent node
-	 * @param biggerNodes the symmetrically bigger nodes according to the symmetry reduction (smallerNode <= biggerNode)
-	 * @param allParents all parents of a basic event
-	 * @return true iff the parent nodes parents should also update their summetry requirements, either
-	 * because the node is failed or because new symmetry requirements were added to this node
-	 */
-	private boolean updateSymmetryRequirements(FaultTreeNode parent, List<FaultTreeNode> biggerNodes, Set<FaultTreeNode> allParents) {
-		if (hasFaultTreeNodeFailed(parent)) {
-			return true;
-		}
-		
-		boolean continueToParent = false;
-		Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
-		
-		for (FaultTreeNode biggerNode : biggerNodes) {
-			List<FaultTreeNode> biggerParents = ftHolder.getNodes(biggerNode, EdgeType.PARENT);
-			for (FaultTreeNode biggerParent : biggerParents) {
-				if (processedBiggerParents.add(biggerParent) && !allParents.contains(biggerParent)) {
-					Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, key -> new HashSet<>());
-					continueToParent |= symmetryRequirements.add(biggerNode);
-				}
-			}
-		}
-		
-		return continueToParent;
 	}
 	
 	/**
