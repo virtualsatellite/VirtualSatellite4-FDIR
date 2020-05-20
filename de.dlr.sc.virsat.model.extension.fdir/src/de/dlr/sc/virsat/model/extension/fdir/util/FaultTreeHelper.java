@@ -28,11 +28,9 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 
 /**
- * 
+ * Helper functions for work with static/dynamic fault trees;
  * @author lapi_an
  * 
- *         Helper functions for work with static/dynamic fault trees;
- *
  */
 public class FaultTreeHelper {
 	

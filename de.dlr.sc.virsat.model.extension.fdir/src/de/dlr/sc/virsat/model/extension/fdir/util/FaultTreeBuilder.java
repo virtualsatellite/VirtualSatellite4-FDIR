@@ -40,6 +40,11 @@ import de.dlr.sc.virsat.model.extension.fdir.model.SAND;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 
+/**
+ * This class provides utlity functionality for modifying and creating fault trees.
+ * @author muel_s8
+ *
+ */
 public class FaultTreeBuilder {
 	public static final int NODE_INDEX = 0;
 
