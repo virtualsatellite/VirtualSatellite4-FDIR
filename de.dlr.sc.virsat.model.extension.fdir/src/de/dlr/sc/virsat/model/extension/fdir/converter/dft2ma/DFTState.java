@@ -548,26 +548,30 @@ public class DFTState extends MarkovState {
 			return false;
 		}
 		
-		if (recoveryStrategy != null) {
-			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
-				return false;
-			}
+		if (recoveryStrategy != null && !recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
+			return false;
 		}
 		
 		boolean sameClaims = other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares());	
-		if (sameClaims) {
-			boolean sameFms = orderedBes.size() == other.orderedBes.size() && orderedBes.equals(other.orderedBes);
-			if (sameFms) {
-				if (isFailState != other.isFailState) {
-					return false;
-				}
-				
-				boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
-				return sameFailingNodes;
-			}
+		if (!sameClaims) {
+			return false;
 		}
 		
-		return false;
+		boolean sameFms = orderedBes.size() == other.orderedBes.size() && orderedBes.equals(other.orderedBes);
+		if (!sameFms) {
+			return false;
+		}
+		
+		if (isFailState != other.isFailState) {
+			return false;
+		}
+				
+		boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
+		if (!sameFailingNodes) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
