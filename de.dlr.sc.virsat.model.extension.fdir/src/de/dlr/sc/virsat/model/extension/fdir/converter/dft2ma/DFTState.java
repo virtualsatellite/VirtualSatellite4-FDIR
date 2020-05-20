@@ -360,9 +360,7 @@ public class DFTState extends MarkovState {
 				permanentNodes.set(nodeID);
 				activeFaults.remove(ftn);
 				
-				if (removeClaimedSparesOnPermanentFailureIfPossible(ftn)) {
-					mapSpareToClaimedSpares.remove(ftn);
-				}
+				removeClaimedSparesOnPermanentFailureIfPossible(ftn);
 			}
 			
 			if (permanentNodes.get(nodeID)) {
@@ -378,31 +376,28 @@ public class DFTState extends MarkovState {
 				
 				List<FaultTreeNode> basicEvents = ftHolder.getNodes(ftn, EdgeType.BE);
 				for (FaultTreeNode be : basicEvents) {
-					int beID = ftHolder.getNodeIndex(be);
-					failedNodes.set(beID);
-					permanentNodes.set(beID);
-					if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
-						if (!orderedBes.contains(be)) {
-							orderedBes.add((BasicEvent) be);
-						}
-					} else {
-						unorderedBes.add((BasicEvent) be);
-					}
-					
-					List<FaultTreeNode> deps = ftHolder.getNodes(be, EdgeType.DEP);
-					for (FaultTreeNode dep : deps) {
-						if (!toProcess.contains(dep)) {
-							int depID = ftHolder.getNodeIndex(dep);
-							if (!permanentNodes.get(depID)) {
-								toProcess.push(dep);
-							}
-						}
-					}
+					executeBasicEvent((BasicEvent) be, false, staticAnalysis.getOrderDependentBasicEvents().contains(be), false);
 				}
 				
 				removeClaimedSparesOnPermanentFailureIfPossible(ftn);
 			}
 		}
+	}
+	
+	/**
+	 * Executes a single basic event in the current state
+	 * @param be the basic event to execute
+	 * @param isRepair whether its the repair or a failure event
+	 * @param isOrderDependent whether the event has order depencies
+	 * @param isTransient whether the event occurss transiently or permanently
+	 * @return true iff the basic event successfully caused some change
+	 */
+	public boolean executeBasicEvent(BasicEvent be, boolean isRepair, boolean isOrderDependent, boolean isTransient) {
+		Collection<BasicEvent> beCollection = isOrderDependent ? getOrderedBes() : getUnorderedBes();
+		setFaultTreeNodeFailed(be, !isRepair);
+		setFaultTreeNodePermanent(be, !isTransient);
+		
+		return isRepair ? beCollection.remove(be) : beCollection.add(be);
 	}
 	
 	/**
@@ -418,20 +413,20 @@ public class DFTState extends MarkovState {
 			}
 		}
 		
-		FaultTreeNode oldCLaimingSpareGate = mapSpareToClaimedSpares.remove(node);
-		if (oldCLaimingSpareGate != null) {
-			List<FaultTreeNode> spares = ftHolder.getNodes(oldCLaimingSpareGate, EdgeType.SPARE);
+		FaultTreeNode oldClaimingSpareGate = mapSpareToClaimedSpares.remove(node);
+		if (oldClaimingSpareGate != null) {
+			List<FaultTreeNode> spares = ftHolder.getNodes(oldClaimingSpareGate, EdgeType.SPARE);
 			boolean hasClaim = false;
 			for (FaultTreeNode spare : spares) {
 				FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
-				if (claimingSpareGateOther != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
+				if (claimingSpareGateOther != null && oldClaimingSpareGate.equals(claimingSpareGateOther)) {
 					hasClaim = true;
 					break;
 				}
 			}
 			
 			if (!hasClaim) {
-				for (FaultTreeNode primary : ftHolder.getNodes(oldCLaimingSpareGate, EdgeType.CHILD)) {
+				for (FaultTreeNode primary : ftHolder.getNodes(oldClaimingSpareGate, EdgeType.CHILD)) {
 					setNodeActivation(primary, true);
 				}
 			}

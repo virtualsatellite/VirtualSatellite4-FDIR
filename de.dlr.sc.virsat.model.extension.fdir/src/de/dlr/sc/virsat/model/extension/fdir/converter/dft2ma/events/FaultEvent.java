@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -90,17 +89,7 @@ public class FaultEvent implements IDFTEvent {
 	
 	@Override
 	public void execute(DFTState state) {
-		Collection<BasicEvent> beCollection = isOrderDependent ? state.getOrderedBes() : state.getUnorderedBes();
-		state.setFaultTreeNodeFailed(be, !isRepair);
-		
-		if (isRepair) {
-			beCollection.remove(be);
-		} else {
-			beCollection.add(be);
-			if (!isTransient) {
-				state.setFaultTreeNodePermanent(be, true);
-			}
-		}
+		state.executeBasicEvent(be, isRepair, isOrderDependent, isTransient);
 	}
 	
 	@Override
