@@ -59,8 +59,8 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		BasicEvent beA = ftHolder.getNodeByName("a", BasicEvent.class);
 		BasicEvent beC = ftHolder.getNodeByName("c", BasicEvent.class);
 		
-		FaultEvent failA = new FaultEvent(beA, false, ftHolder);
-		FaultEvent failC = new FaultEvent(beC, false, ftHolder);
+		FaultEvent failA = new FaultEvent(beA, false, ftHolder, staticAnalysis);
+		FaultEvent failC = new FaultEvent(beC, false, ftHolder, staticAnalysis);
 		
 		PODFTState initial = new PODFTState(ftHolder);
 		
@@ -74,7 +74,7 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		
 		// First fail a while it can be observed		
 		StateUpdate stateUpdate = new StateUpdate(initial, failA);
-		StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate, staticAnalysis);
+		StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
 		PODFTState succ = (PODFTState) stateUpdateResult.getSuccs().get(0);
 		
 		assertTrue("Observed the failure of a", succ.isNodeFailObserved(faultA));
@@ -83,7 +83,7 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		
 		// Now fail the observer first and then a
 		stateUpdate = new StateUpdate(initial, failC);
-		stateUpdateResult = semantics.performUpdate(stateUpdate, staticAnalysis);
+		stateUpdateResult = semantics.performUpdate(stateUpdate);
 		succ = (PODFTState) stateUpdateResult.getSuccs().get(0);
 		
 		assertFalse("Observed the failure of a", succ.isNodeFailObserved(faultA));
@@ -91,7 +91,7 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		assertFalse("Observed the failure of tle", succ.isNodeFailObserved(tle));
 		
 		stateUpdate = new StateUpdate(succ, failA);
-		stateUpdateResult = semantics.performUpdate(stateUpdate, staticAnalysis);
+		stateUpdateResult = semantics.performUpdate(stateUpdate);
 		succ = (PODFTState) stateUpdateResult.getSuccs().get(0);
 		
 		// Since the observer is failed, we expect that we could not observe the failure of a

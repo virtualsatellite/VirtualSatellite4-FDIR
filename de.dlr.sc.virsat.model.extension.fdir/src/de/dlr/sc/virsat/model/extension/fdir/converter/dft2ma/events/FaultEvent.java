@@ -9,13 +9,16 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -34,19 +37,25 @@ public class FaultEvent implements IDFTEvent {
 	private double hotFailRate;
 	private double coldFailRate;
 	
+	private boolean isOrderDependent;
+	private boolean isTransient;
+	
 	/**
 	 * The default constructor
 	 * @param be the failure mode
 	 * @param isRepair true iff this event is a repair event. If false, then this event is a fail event.
 	 * @param ftHolder the fault tree
 	 */
-	public FaultEvent(BasicEvent be, boolean isRepair, FaultTreeHolder ftHolder) {
+	public FaultEvent(BasicEvent be, boolean isRepair, FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
 		this.be = be;
 		this.isRepair = isRepair;
 		
 		this.repairRate = ftHolder.getRepairRate(be);
 		this.hotFailRate = ftHolder.getHotFailRate(be);
 		this.coldFailRate = ftHolder.getColdFailRate(be);
+		
+		isOrderDependent = staticAnalysis.getOrderDependentBasicEvents().contains(be);
+		isTransient = staticAnalysis.getTransientNodes().contains(be);
 	}
 	
 	@Override
@@ -62,27 +71,38 @@ public class FaultEvent implements IDFTEvent {
 		if (isRepair) {
 			return repairRate;
 		} else {
-			return state.getExtraRateFactor(be) * (isParentNodeActive ? hotFailRate : coldFailRate);
+			return getExtraRateFactor(state) * (isParentNodeActive ? hotFailRate : coldFailRate);
 		}
 	}
 	
+	/**
+	 * Gets the extra fail rate factor for a given basic event
+	 * @param state the state
+	 * @param be the basic event
+	 * @return the extra fail rate factor
+	 */
+	private double getExtraRateFactor(DFTState state) {
+		Set<FaultTreeNode> affectors = state.getAffectors(be);
+		double extraRateFactor = 1;
+		for (FaultTreeNode affector : affectors) {
+			if (affector instanceof RDEP) {
+				RDEP rdep = (RDEP) affector;
+				extraRateFactor += rdep.getRateChangeBean().getValueToBaseUnit() - 1;
+			}
+		}
+		return extraRateFactor;
+	}
+	
 	@Override
-	public void execute(DFTState state, DFTStaticAnalysis staticAnalysis) {
+	public void execute(DFTState state) {
+		Collection<BasicEvent> beCollection = isOrderDependent ? state.getOrderedBes() : state.getUnorderedBes();
+		state.setFaultTreeNodeFailed(be, !isRepair);
+		
 		if (isRepair) {
-			if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
-				state.getOrderedBes().remove(be);
-			} else {
-				state.getUnorderedBes().remove(be);
-			}
-			state.setFaultTreeNodeFailed(be, false);
+			beCollection.remove(be);
 		} else {
-			if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
-				state.getOrderedBes().add(be);
-			} else {
-				state.getUnorderedBes().add(be);
-			}
-			state.setFaultTreeNodeFailed(be, true);
-			if (!staticAnalysis.getTransientNodes().contains(be)) {
+			beCollection.add(be);
+			if (!isTransient) {
 				state.setFaultTreeNodePermanent(be, true);
 			}
 		}

@@ -86,18 +86,19 @@ public class DFTSemantics {
 	/**
 	 * Creates the list of occurable events
 	 * @param ftHolder the fault tree holder
+	 * @param staticAnalysis the static analysis of the fault tree
 	 * @return the list of all occurable events
 	 */
-	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
+	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
 		List<IDFTEvent> faultEvents = new ArrayList<>();
 		
 		for (BasicEvent be : ftHolder.getBasicEvents()) {
 			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() != 0) {
-				faultEvents.add(new FaultEvent(be, true, ftHolder));					
+				faultEvents.add(new FaultEvent(be, true, ftHolder, staticAnalysis));					
 			}
 			
 			if (be.isSetHotFailureRate() && be.getHotFailureRate() != 0) {
-				faultEvents.add(new FaultEvent(be, false, ftHolder));
+				faultEvents.add(new FaultEvent(be, false, ftHolder, staticAnalysis));
 			}
 		}
 		
@@ -115,10 +116,10 @@ public class DFTSemantics {
 	 * Executes a state update
 	 * @return the result of the state update
 	 */
-	public StateUpdateResult performUpdate(StateUpdate stateUpdate, DFTStaticAnalysis staticAnalysis) {
+	public StateUpdateResult performUpdate(StateUpdate stateUpdate) {
 		StateUpdateResult stateUpdateResult = stateUpdate.createResultContainer();
 
-		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc(), staticAnalysis);
+		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc());
 		
 		propgateStateUpdate(stateUpdate, stateUpdateResult);
 		

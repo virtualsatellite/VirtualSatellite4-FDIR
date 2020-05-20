@@ -89,7 +89,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
-			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate, staticAnalysis);
+			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(state, stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
@@ -105,11 +105,10 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
 		ftHolder = new FaultTreeHolder(holderRoot);
-		events = createEvents();
-
-		targetMa.getEvents().addAll(events);
-		
 		staticAnalysis.perform(ftHolder);
+		
+		events = createEvents();
+		targetMa.getEvents().addAll(events);
 		
 		if (recoveryStrategy != null) {
 			events.addAll(recoveryStrategy.createEventSet());
@@ -126,7 +125,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return
 	 */
 	private List<IDFTEvent> createEvents() {
-		List<IDFTEvent> events = semantics.createEvents(ftHolder);
+		List<IDFTEvent> events = semantics.createEvents(ftHolder, staticAnalysis);
 		Set<IDFTEvent> unoccurableEvents = new HashSet<>();
 		for (IDFTEvent event : events) {
 			if (event.getNode() instanceof BasicEvent && failableBasicEventsProvider != null) {
@@ -169,7 +168,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
 				baseSucc = stateUpdateResult.reset(state);
-				event.execute(baseSucc, staticAnalysis);
+				event.execute(baseSucc);
 				recoveryStrategy.execute(baseSucc);
 				
 				semantics.propgateStateUpdate(stateUpdate, stateUpdateResult);
@@ -255,7 +254,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		for (IDFTEvent event : initialEvents) {
 			StateUpdate initialStateUpdate = new StateUpdate(initialState, event);
-			StateUpdateResult initialStateUpdateResult = semantics.performUpdate(initialStateUpdate, staticAnalysis);
+			StateUpdateResult initialStateUpdateResult = semantics.performUpdate(initialStateUpdate);
 			
 			if (initialStateUpdateResult.getSuccs().size() > 1) {
 				for (DFTState initialSucc : initialStateUpdateResult.getSuccs()) {

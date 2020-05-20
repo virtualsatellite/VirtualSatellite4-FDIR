@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.List;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -58,7 +57,7 @@ public class ObservationEvent implements IDFTEvent {
 	}
 
 	@Override
-	public void execute(DFTState state, DFTStaticAnalysis staticAnalysis) {
+	public void execute(DFTState state) {
 		if (state instanceof PODFTState) {
 			PODFTState poState = (PODFTState) state;
 			poState.setNodeFailObserved(node, !isRepair);

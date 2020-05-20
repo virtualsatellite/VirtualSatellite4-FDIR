@@ -27,7 +27,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -509,23 +508,6 @@ public class DFTState extends MarkovState {
 	 */
 	public Set<FaultTreeNode> getAffectors(FaultTreeNode node) {
 		return mapNodeToAffectors.getOrDefault(node, Collections.emptySet());
-	}
-	
-	/**
-	 * Gets the extra fail rate factor for a given basic event
-	 * @param be the basic event
-	 * @return the extra fail rate factor
-	 */
-	public double getExtraRateFactor(BasicEvent be) {
-		Set<FaultTreeNode> affectors = getAffectors(be);
-		double extraRateFactor = 1;
-		for (FaultTreeNode affector : affectors) {
-			if (affector instanceof RDEP) {
-				RDEP rdep = (RDEP) affector;
-				extraRateFactor += rdep.getRateChangeBean().getValueToBaseUnit() - 1;
-			}
-		}
-		return extraRateFactor;
 	}
 	
 	/**
