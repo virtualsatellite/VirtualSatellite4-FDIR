@@ -20,6 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryC
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -40,7 +41,9 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, 
 			FailLabelProvider failLabelProvider, SubMonitor monitor) {
-		stateSpaceGenerator.configure(root, failLabelProvider, failableBasicEventsProvider);
+		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
+		FaultTreeHolder ftHolder = new FaultTreeHolder(holderRoot);
+		stateSpaceGenerator.configure(ftHolder, failLabelProvider, failableBasicEventsProvider);
 		MarkovAutomaton<DFTState> ma = maBuilder.build(stateSpaceGenerator, monitor);
 		return ma;
 	}

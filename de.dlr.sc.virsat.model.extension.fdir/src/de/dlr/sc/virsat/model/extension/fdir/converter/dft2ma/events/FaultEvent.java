@@ -19,6 +19,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -31,12 +32,9 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class FaultEvent implements IDFTEvent {
 
 	private BasicEvent be;
+	private BasicEventHolder beHolder;
+	
 	private boolean isRepair;
-	
-	private double repairRate;
-	private double hotFailRate;
-	private double coldFailRate;
-	
 	private boolean isOrderDependent;
 	private boolean isTransient;
 	
@@ -49,10 +47,7 @@ public class FaultEvent implements IDFTEvent {
 	public FaultEvent(BasicEvent be, boolean isRepair, FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
 		this.be = be;
 		this.isRepair = isRepair;
-		
-		this.repairRate = ftHolder.getRepairRate(be);
-		this.hotFailRate = ftHolder.getHotFailRate(be);
-		this.coldFailRate = ftHolder.getColdFailRate(be);
+		this.beHolder = ftHolder.getBasicEventHolder(be);
 		
 		isOrderDependent = staticAnalysis.getOrderDependentBasicEvents().contains(be);
 		isTransient = staticAnalysis.getTransientNodes().contains(be);
@@ -66,12 +61,12 @@ public class FaultEvent implements IDFTEvent {
 
 	@Override
 	public double getRate(DFTState state) {
-		boolean isParentNodeActive = state.isNodeActive(be.getFault());
-		
 		if (isRepair) {
-			return repairRate;
+			return beHolder.getRepairRate();
 		} else {
-			return getExtraRateFactor(state) * (isParentNodeActive ? hotFailRate : coldFailRate);
+			boolean isParentNodeActive = state.isNodeActive(beHolder.getFault());
+			double rate = isParentNodeActive ? beHolder.getHotFailureRate() : beHolder.getColdFailureRate();
+			return getExtraRateFactor(state) * rate;
 		}
 	}
 	
@@ -128,8 +123,8 @@ public class FaultEvent implements IDFTEvent {
 			boolean isFailedDueToFDEP = state.getAffectors(be).stream().filter(affector -> affector instanceof FDEP).findAny().isPresent();
 			return hasAlreadyFailed && !isFailedDueToFDEP;
 		} else {
-			boolean isParentNodeActive = state.isNodeActive(state.getFTHolder().getFault(be));
-			return !hasAlreadyFailed && (isParentNodeActive || coldFailRate != 0);
+			boolean isParentNodeActive = state.isNodeActive(beHolder.getFault());
+			return !hasAlreadyFailed && (isParentNodeActive || beHolder.getColdFailureRate() != 0);
 		} 
 	}
 

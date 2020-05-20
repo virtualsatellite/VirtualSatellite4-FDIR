@@ -59,12 +59,13 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	
 	/**
 	 * Configures the state space generator
-	 * @param root a fault tree node used as a root node for the state space generation
+	 * @param ftHolder the fault tree holder
 	 * @param failLabelProvider the fail label criterion
 	 * @param failableBasicEventsProvider the nodes that need to fail
 	 */
-	public void configure(FaultTreeNode root, FailLabelProvider failLabelProvider, FailableBasicEventsProvider failableBasicEventsProvider) {
-		this.root = root;
+	public void configure(FaultTreeHolder ftHolder, FailLabelProvider failLabelProvider, FailableBasicEventsProvider failableBasicEventsProvider) {
+		this.ftHolder = ftHolder;
+		this.root = ftHolder.getRoot();
 		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : DEFAULT_FAIL_LABEL_PROVIDER;
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
 	}
@@ -102,9 +103,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		super.init(targetMa);
 		
 		stateEquivalence = new DFTStateEquivalence();
-		
-		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
-		ftHolder = new FaultTreeHolder(holderRoot);
 		staticAnalysis.perform(ftHolder);
 		
 		events = createEvents();

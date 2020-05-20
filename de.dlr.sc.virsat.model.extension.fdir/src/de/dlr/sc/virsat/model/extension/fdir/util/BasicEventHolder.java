@@ -18,21 +18,38 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
  *
  */
 public class BasicEventHolder {
-	Fault fault;
-	double hotFailureRate;
-	double coldFailureRate;
-	double repairRate;
+	private Fault fault;
+	private double hotFailureRate;
+	private double coldFailureRate;
+	private double repairRate;
 	
 	/**
 	 * Standard constructor
 	 * @param basicEvent the basic event
 	 */
 	BasicEventHolder(BasicEvent basicEvent) {
+		fault = basicEvent.getFault();
 		hotFailureRate = basicEvent.getHotFailureRateBean().isSet() 
 				? basicEvent.getHotFailureRateBean().getValueToBaseUnit() : Double.NaN;
 		coldFailureRate = basicEvent.getColdFailureRateBean().isSet() 
 				? basicEvent.getColdFailureRateBean().getValueToBaseUnit() : Double.NaN;
 		repairRate =  basicEvent.getRepairRateBean().isSet() 
 				? basicEvent.getRepairRateBean().getValueToBaseUnit() : Double.NaN;
+	}
+	
+	public Fault getFault() {
+		return fault;
+	}
+	
+	public double getHotFailureRate() {
+		return hotFailureRate;
+	}
+	
+	public double getColdFailureRate() {
+		return coldFailureRate;
+	}
+	
+	public double getRepairRate() {
+		return repairRate;
 	}
 }
