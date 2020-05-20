@@ -233,78 +233,79 @@ public class FaultTreeHelper {
 
 		return nodesList;
 	}
-
+	
 	/**
-	 * Sets a fault propagation link from a source fault tree node to a target
-	 * fault tree node
-	 * 
-	 * @param fault
-	 *            The fault containing the fault propagation edge
-	 * @param from
-	 *            The source fault tree node
-	 * @param to
-	 *            The target fault tree node
-	 * @return the created fault tree edge
+	 * Gets the edge list corresponding to the edge type from the fault tree
+	 * @param edgeType an edge type
+	 * @param faultTree the fault tree
+	 * @return the edge list of the fault tree containing the edges of the desired type
 	 */
-	public FaultTreeEdge connect(Fault fault, FaultTreeNode from, FaultTreeNode to) {
+	public List<FaultTreeEdge> getEdges(EdgeType edgeType, FaultTree faultTree) {
+		switch (edgeType) {
+			case CHILD:
+			case PARENT:
+				return faultTree.getPropagations();
+			case MONITOR:
+				return faultTree.getObservations();
+			case DEP:
+				return faultTree.getDeps();
+			case SPARE:
+				return faultTree.getSpares();
+			default:
+				return Collections.emptyList();
+		}
+	}
+	
+	public FaultTreeEdge connect(Fault fault, EdgeType edgeType, FaultTreeNode from, FaultTreeNode to) {
 		FaultTreeEdge fte = new FaultTreeEdge(concept);
 		fte.setFrom(from);
 		fte.setTo(to);
-		fault.getFaultTree().getPropagations().add(fte);
+		getEdges(edgeType, fault.getFaultTree()).add(fte);
 		return fte;
 	}
-	
+
 	/**
-	 * Connects dependencies
-	 * 
-	 * @param fault
-	 *            The fault containing the fault propagation edge
-	 * @param from
-	 *            The source fault tree node
-	 * @param to
-	 *            The target fault tree node
-	 * @return the created dep
+	 * Connects the source node to the target node
+	 * @param fault where the edge should be stored
+	 * @param from the source node
+	 * @param to the target node
+	 * @return the created edge
 	 */
-	public FaultTreeEdge connectDep(Fault fault, FaultTreeNode from, FaultTreeNode to) {
-		FaultTreeEdge dep = new FaultTreeEdge(concept);
-		dep.setFrom(from);
-		dep.setTo(to);
-		fault.getFaultTree().getDeps().add(dep);
-		return dep;
+	public FaultTreeEdge connect(Fault fault, FaultTreeNode from, FaultTreeNode to) {
+		return connect(fault, EdgeType.CHILD, from, to);
 	}
 	
 	/**
-	 * Sets an observation link from an observation node to a fault tree node
-	 * @param fault the fault into which this link will be inserted
-	 * @param from the observer node
-	 * @param to the observable node
+	 * Connects the source node as a functional dependency trigger to the target node
+	 * @param fault where the edge should be stored
+	 * @param from the source node
+	 * @param to the target node
+	 * @return the created edge
+	 */
+	public FaultTreeEdge connectDep(Fault fault, FaultTreeNode from, FaultTreeNode to) {
+		return connect(fault, EdgeType.DEP, from, to);
+	}
+	
+	/**
+	 * Connects the source node as observation input the target node
+	 * @param fault where the edge should be stored
+	 * @param from the source node
+	 * @param to the target node
 	 * @return the created edge
 	 */
 	public FaultTreeEdge connectObserver(Fault fault, FaultTreeNode from, FaultTreeNode to) {
-		FaultTreeEdge obs = new FaultTreeEdge(concept);
-		obs.setFrom(from);
-		obs.setTo(to);
-		fault.getFaultTree().getObservations().add(obs);
-		return obs;
+		return connect(fault, EdgeType.MONITOR, from, to);
 	}
 	
 	/**
-	 * Sets a spare to a spare gate
-	 * 
-	 * @param fault
-	 *            The fault containing the spare link
-	 * @param from
-	 *            The spare fault tree node
-	 * @param to
-	 *            The spare gate fault tree node
-	 * @return the created fault tree edge
+	 * Connects the source node as a spare to the target node
+	 * @param fault where the edge should be stored
+	 * @param from the source node
+	 * @param to the target node
+	 * @return the created edge
 	 */
 	public FaultTreeEdge connectSpare(Fault fault, FaultTreeNode from, FaultTreeNode to) {
-		FaultTreeEdge fte = new FaultTreeEdge(concept);
-		fte.setFrom(from);
-		fte.setTo(to);
-		fault.getFaultTree().getSpares().add(fte);
-		return fte;
+		return connect(fault, EdgeType.SPARE, from, to);
 	}
 
 	/**
@@ -506,40 +507,7 @@ public class FaultTreeHelper {
 				throw new RuntimeException("Cannot create FaultTree Gate: Unknown type " + type); 
 		}
 	}
-
-	/**
-	 * Get the children of a node
-	 * 
-	 * @param node
-	 *            the node want to know the children of
-	 * @return a list of children
-	 */
-	public List<FaultTreeNode> getSpares(FaultTreeNode node) {
-		return getSpares(node, Collections.singleton(node.getFault().getFaultTree()));
-	}
 	
-	/**
-	 * Get the children of a node
-	 * 
-	 * @param node
-	 *            the node want to know the children of
-	 * @param faultTrees the fault trees containing the edges
-	 * @return a list of children
-	 */
-	public List<FaultTreeNode> getSpares(FaultTreeNode node, Set<FaultTree> faultTrees) {
-		List<FaultTreeNode> spares = new ArrayList<FaultTreeNode>();
-
-		for (FaultTree faultTree : faultTrees) {
-			for (FaultTreeEdge edge : faultTree.getSpares()) {
-				if (edge.getTo().equals(node)) {
-					spares.add(edge.getFrom());
-				}
-			}
-		}
-
-		return spares;
-	}
-
 	/**
 	 * @param newFault
 	 *            the fault tree that potentially has syntactic sugar
@@ -547,7 +515,6 @@ public class FaultTreeHelper {
 	 * @return true if the fault tree contains syntactic sugar and false
 	 *         otherwise
 	 */
-
 	public boolean checkSyntacticSugar(FaultTreeNode newFault) {
 		IBeanList<Gate> faultTree = newFault.getFault().getFaultTree().getGates();
 
@@ -564,100 +531,34 @@ public class FaultTreeHelper {
 	}
 
 	/**
-	 * Get the children of a node
-	 * 
-	 * @param node
-	 *            the node want to know the children of
-	 * @return a list of children
+	 * Gets all nodes that have an edge of the given type to the desired node
+	 * @param edgeType the edge type
+	 * @param node the node
+	 * @param faultTrees the fault trees
+	 * @return a list of nodes at the end of the desired edges
 	 */
-	public List<FaultTreeNode> getChildren(FaultTreeNode node) {
-		return getChildren(node, Collections.singleton(node.getFault().getFaultTree()));
-	}
-	
-	/**
-	 * Get the children of a node
-	 * 
-	 * @param node
-	 *            the node want to know the children of
-	 * @param faultTrees the fault trees containing the edges
-	 * @return a list of children
-	 */
-	public List<FaultTreeNode> getChildren(FaultTreeNode node, Set<FaultTree> faultTrees) {
-		List<FaultTreeNode> children = new ArrayList<FaultTreeNode>();
+	public List<FaultTreeNode> getNodes(EdgeType edgeType, FaultTreeNode node, Set<FaultTree> faultTrees) {
+		List<FaultTreeNode> nodes = new ArrayList<FaultTreeNode>();
 
 		for (FaultTree faultTree : faultTrees) {
-			for (FaultTreeEdge edge : faultTree.getPropagations()) {
+			for (FaultTreeEdge edge : getEdges(edgeType, faultTree)) {
 				if (edge.getTo().equals(node)) {
-					children.add(edge.getFrom());
+					nodes.add(edge.getFrom());
 				}
 			}
 		}
-		return children;
+		
+		return nodes;
 	}
 	
 	/**
-	 * Get the dependencies of a node
-	 * 
-	 * @param node
-	 *            the node want to know the dependencies of
-	 * @return a list of dependencies
+	 * Gets all nodes that have an edge of the given type to the desired node
+	 * @param edgeType the edge type
+	 * @param node the node
+	 * @return a list of nodes at the end of the desired edges
 	 */
-	public List<FaultTreeNode> getDeps(FaultTreeNode node) {
-		return getDeps(node, Collections.singleton(node.getFault().getFaultTree()));
-	}
-	
-	/**
-	 * Get the dependencies of a node
-	 * 
-	 * @param node
-	 *            the node want to know the dependencies of
-	 * @param faultTrees the fault trees containing the edges
-	 * @return a list of dependencies
-	 */
-	public List<FaultTreeNode> getDeps(FaultTreeNode node, Set<FaultTree> faultTrees) {
-		List<FaultTreeNode> deps = new ArrayList<FaultTreeNode>();
-
-		for (FaultTree faultTree : faultTrees) {
-			for (FaultTreeEdge edge : faultTree.getDeps()) {
-				if (edge.getTo().equals(node)) {
-					deps.add(edge.getFrom());
-				}
-			}
-		}
-
-		return deps;
-	}
-	
-	/**
-	 * Gets the nodes observed by this node
-	 * 
-	 * @param node
-	 *            the node want to know the observables of
-	 * @return a list of observables
-	 */
-	public List<FaultTreeNode> getObservables(FaultTreeNode node) {
-		return getObservables(node, Collections.singleton(node.getFault().getFaultTree()));
-	}
-	
-	/**
-	 * Gets the nodes observed by this node
-	 * 
-	 * @param node
-	 *            the node want to know the observables of
-	 * @param faultTrees the fault trees containing the edges
-	 * @return a list of observables
-	 */
-	public List<FaultTreeNode> getObservables(FaultTreeNode node, Set<FaultTree> faultTrees) {
-		List<FaultTreeNode> observables = new ArrayList<FaultTreeNode>();
-
-		for (FaultTree faultTree : faultTrees) {
-			for (FaultTreeEdge edge : faultTree.getObservations()) {
-				if (edge.getFrom().equals(node)) {
-					observables.add(edge.getFrom());
-				}
-			}
-		}
-		return observables;
+	public List<FaultTreeNode> getNodes(EdgeType edgeType, FaultTreeNode node) {
+		return getNodes(edgeType, node, Collections.singleton(node.getFault().getFaultTree()));
 	}
 	
 	/**
@@ -679,8 +580,8 @@ public class FaultTreeHelper {
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
 			List<FaultTreeNode> nodes = new ArrayList<>();
-			nodes.addAll(getChildren(node));
-			nodes.addAll(getSpares(node));
+			nodes.addAll(getNodes(EdgeType.CHILD, node));
+			nodes.addAll(getNodes(EdgeType.SPARE, node));
 			
 			if (node instanceof Fault) {
 				nodes.addAll(((Fault) node).getBasicEvents());

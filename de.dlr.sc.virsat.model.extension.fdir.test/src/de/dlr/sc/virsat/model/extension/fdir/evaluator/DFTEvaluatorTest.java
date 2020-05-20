@@ -40,6 +40,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -561,13 +562,13 @@ public class DFTEvaluatorTest extends ATestCase {
 		raHelper.createTimedTransition(ra, s0, s1, 1);
 		
 		FaultEventTransition t1 = raHelper.createFaultEventTransition(ra, s1, s1);
-		SPARE spareGate = (SPARE) ftHelper.getChildren(fault).get(0);
-		Fault faultA = (Fault) ftHelper.getChildren(spareGate).get(0);
+		SPARE spareGate = (SPARE) ftHelper.getNodes(EdgeType.CHILD, fault).get(0);
+		Fault faultA = (Fault) ftHelper.getNodes(EdgeType.CHILD, spareGate).get(0);
 		BasicEvent be = faultA.getBasicEvents().get(0);
 		raHelper.assignInputs(t1, be);
 		ClaimAction ca = new ClaimAction(concept);
 		ca.setSpareGate(spareGate);
-		ca.setClaimSpare(ftHelper.getSpares(spareGate).get(0));
+		ca.setClaimSpare(ftHelper.getNodes(EdgeType.SPARE, spareGate).get(0));
 		raHelper.assignAction(t1, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));

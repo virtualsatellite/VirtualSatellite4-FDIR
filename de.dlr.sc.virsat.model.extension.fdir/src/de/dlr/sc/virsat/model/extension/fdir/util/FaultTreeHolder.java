@@ -92,8 +92,8 @@ public class FaultTreeHolder {
 	private List<FaultTreeNode> processNode(FaultTreeNode node, FaultTreeHelper ftHelper) {
 		List<FaultTreeNode> toProcess = new ArrayList<>();
 		
-		List<FaultTreeNode> children = ftHelper.getChildren(node, faultTrees);
-		List<FaultTreeNode> spares = ftHelper.getSpares(node, faultTrees);
+		List<FaultTreeNode> children = ftHelper.getNodes(EdgeType.CHILD, node, faultTrees);
+		List<FaultTreeNode> spares = ftHelper.getNodes(EdgeType.SPARE, node, faultTrees);
 		
 		NodeHolder nodeHolder = getNodeHolder(node);
 		nodeHolder.mapEdgeTypeToNodes.put(EdgeType.CHILD, children);

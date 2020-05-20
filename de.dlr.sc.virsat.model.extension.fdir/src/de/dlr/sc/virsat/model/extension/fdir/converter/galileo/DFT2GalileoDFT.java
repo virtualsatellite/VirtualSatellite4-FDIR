@@ -30,6 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 /**
@@ -96,7 +97,7 @@ public class DFT2GalileoDFT {
 				
 				if (node instanceof VOTE) {
 					VOTE vote = (VOTE) node;
-					nodeType.setTypeName(vote.getVotingThreshold() + "of" +  ftHelper.getChildren(vote).size());
+					nodeType.setTypeName(vote.getVotingThreshold() + "of" +  ftHelper.getNodes(EdgeType.CHILD, vote).size());
 				} else if (node instanceof SPARE) {
 					nodeType.setTypeName("wsp");
 				} else {
@@ -127,14 +128,14 @@ public class DFT2GalileoDFT {
 		for (FaultTreeNode node : allNodes) {
 			GalileoFaultTreeNode galileoNode = mapDftNodeToGalileoNode.get(node);
 			List<FaultTreeNode> allChildren = new ArrayList<>();
-			allChildren.addAll(ftHelper.getChildren(node));
-			allChildren.addAll(ftHelper.getSpares(node));
+			allChildren.addAll(ftHelper.getNodes(EdgeType.CHILD, node));
+			allChildren.addAll(ftHelper.getNodes(EdgeType.SPARE, node));
 			
 			if (node instanceof Fault) {
 				Fault fault = (Fault) node;
 				allChildren.addAll(fault.getBasicEvents());
 			} else if (node instanceof MONITOR) {
-				List<FaultTreeNode> observables = ftHelper.getObservables(node);
+				List<FaultTreeNode> observables = ftHelper.getNodes(EdgeType.MONITOR, node);
 				for (FaultTreeNode observable : observables) {
 					GalileoFaultTreeNode galileoChild = mapDftNodeToGalileoNode.get(observable);
 					((Observer) galileoNode.getType()).getObservables().add(galileoChild);

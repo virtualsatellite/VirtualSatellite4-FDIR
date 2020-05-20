@@ -38,7 +38,7 @@ public class FaultTreeHelperTest extends ATestCase {
 		assertNotEquals(rootcsp2, copy);
 		assertEquals(rootcsp2.getName(), copy.getName());
 		assertEquals(rootcsp2.getUuid(), copy.getUuid());
-		assertTrue(ftHelper.getChildren(copy).isEmpty());
+		assertTrue(ftHelper.getNodes(EdgeType.CHILD, copy).isEmpty());
 	}
 	
 	@Test
