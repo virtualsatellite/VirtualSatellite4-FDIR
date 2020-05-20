@@ -61,8 +61,6 @@ public class ObservationEvent implements IDFTEvent {
 		if (state instanceof PODFTState) {
 			PODFTState poState = (PODFTState) state;
 			poState.setNodeFailObserved(node, !isRepair);
-		} else {
-			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);
 		}
 	}
 	
@@ -93,15 +91,9 @@ public class ObservationEvent implements IDFTEvent {
 				}
 			}
 			
-			List<FaultTreeNode> observers = state.getFTHolder().getNodes(node, EdgeType.MONITOR);
-			for (FaultTreeNode observer : observers) {
-				if (!state.hasFaultTreeNodeFailed(observer)) {
-					return true;
-				}
-			}
-		} else {
-			throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);
-		}
+			return poState.existsObserver(node, true, false);
+		} 
+		
 		return false;
 	}
 }

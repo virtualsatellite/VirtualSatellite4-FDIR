@@ -28,41 +28,15 @@ public class FaultSemantics implements INodeSemantics {
 	@Override
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			GenerationResult generationResult) {
-		FaultTreeHolder ftHolder = state.getFTHolder();
-		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
 		boolean hasFailed = false;
 		
-		List<FaultTreeNode> basicEvents = ftHolder.getNodes(node, EdgeType.BE);
-		for (FaultTreeNode be : basicEvents) {
-			int nodeID = ftHolder.getNodeIndex(be);
-			if (state.getFailedNodes().get(nodeID)) {
-				hasFailed = true;
-				break;
-			}
-		}
-		
-		if (hasFailed) {
-			boolean hasPermanentlyFailed = false;
-			
-			for (FaultTreeNode be : basicEvents) {
-				if (state.isFaultTreeNodePermanent(be)) {
-					hasPermanentlyFailed = true;
-					break;
-				}
-			}
-			
-			if (hasPermanentlyFailed) {
-				state.setFaultTreeNodePermanent(node, true);
-				return state.setFaultTreeNodeFailed(node, true);
-			}
-		}
-		
+		FaultTreeHolder ftHolder = state.getFTHolder();
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.BE, EdgeType.CHILD);
 		for (FaultTreeNode child : children) {
 			if (state.hasFaultTreeNodeFailed(child)) {
 				hasFailed = true;
 				if (state.isFaultTreeNodePermanent(child)) {
-					state.setFaultTreeNodePermanent(node, true);
-					return state.setFaultTreeNodeFailed(node, true);
+					return state.setFaultTreeNodePermanent(node, true) | state.setFaultTreeNodeFailed(node, true);
 				}
 			}
 		}
