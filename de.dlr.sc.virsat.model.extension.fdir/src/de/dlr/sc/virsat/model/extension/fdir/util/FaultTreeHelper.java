@@ -444,13 +444,8 @@ public class FaultTreeHelper {
 	 * @return the newly created basic event
 	 */
 	public BasicEvent copyBasicEvent(BasicEvent basicEvent, Fault fault) {
-		BasicEventHolder beHolder = new BasicEventHolder(basicEvent);
-		BasicEvent copyBe = new BasicEvent(concept);
-		copyBe.getHotFailureRateBean().setValueAsBaseUnit(beHolder.getHotFailureRate());
-		copyBe.getColdFailureRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
-		copyBe.getRepairRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
-		copyBe.setName(basicEvent.getName());
-		copyBe.getTypeInstance().setUuid(basicEvent.getTypeInstance().getUuid());
+		CategoryAssignment copyCa = EcoreUtil.copy(basicEvent.getTypeInstance());
+		BasicEvent copyBe = new BasicEvent(copyCa);
 		fault.getBasicEvents().add(copyBe);
 		return copyBe;
 	}

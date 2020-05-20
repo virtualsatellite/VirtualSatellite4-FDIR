@@ -163,7 +163,6 @@ public class Module {
 		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode();
 		Fault rootFault = new Fault(originalRoot.getConcept());
 		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, rootFault.getFault());
-		rootCopy.setName(originalRoot.getName());
 		this.moduleRootCopy = rootFault;
 		fthelp.connect(rootFault, rootCopy, rootFault);
 
