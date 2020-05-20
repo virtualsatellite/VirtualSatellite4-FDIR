@@ -52,7 +52,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
 		dftStateEquivalence = new DFTStateEquivalence();
 		for (DFTState dftState : ma.getStates()) {
-			dftStateEquivalence.getEquivalentState(dftState, true);
+			dftStateEquivalence.getEquivalentState(dftState);
 		}
 	}
 	

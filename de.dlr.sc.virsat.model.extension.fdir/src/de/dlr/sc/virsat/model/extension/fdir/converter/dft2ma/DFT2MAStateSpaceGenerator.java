@@ -74,7 +74,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	@Override
 	public DFTState createInitialState() {
 		initialState = semantics.generateState(ftHolder);
-		stateEquivalence.getEquivalentState(initialState, true);
+		stateEquivalence.getEquivalentState(initialState);
 		initialState.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
 			initialState.setNodeActivation(root, true);
@@ -182,7 +182,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			DFTState interimState = baseSucc.copy();
 			interimState.setMarkovian(false);
 			
-			markovSucc = stateEquivalence.getEquivalentState(interimState, true);
+			markovSucc = stateEquivalence.getEquivalentState(interimState);
 			if (markovSucc == interimState) {
 				targetMa.addState(markovSucc);	
 			} else {
@@ -218,7 +218,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			}
 			
 			checkFailState(succ);
-			DFTState equivalentState = stateEquivalence.getEquivalentState(succ, true);
+			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
 			
 			if (equivalentState == succ) {
 				SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
