@@ -17,8 +17,13 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.Activator;
 import de.dlr.sc.virsat.model.extension.fdir.model.AND;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
@@ -363,23 +368,24 @@ public class FaultTreeHelper {
 	 * @return the copy
 	 */
 	public FaultTreeNode copyFaultTreeNode(FaultTreeNode ftnode, Fault fault) {
-		if (fault == null) {
+		if (fault == null || ftnode instanceof Fault) {
 			return copyFault(ftnode.getFault());
 		} else {
-			FaultTreeNodeType type = ftnode.getFaultTreeNodeType();
-			switch (type) {
-				case FAULT:
-				case BASIC_EVENT:
-					return copyFault(ftnode.getFault());
-				default:
-					FaultTreeNode gateCopy = createGate(fault, type);
-					if (ftnode instanceof VOTE && gateCopy instanceof VOTE) {
-						VOTE gateCopyAsVote = (VOTE) gateCopy;
-						VOTE originalGateAsVote = (VOTE) ftnode;
-						gateCopyAsVote.setVotingThreshold(originalGateAsVote.getVotingThreshold());
-					}
-					gateCopy.setName(ftnode.getName());
-					return gateCopy;
+			try {
+				CategoryAssignment copyCa = EcoreUtil.copy(ftnode.getTypeInstance());
+				FaultTreeNode copyBean = ftnode.getClass().newInstance();
+				copyBean.setTypeInstance(copyCa);
+				
+				if (copyBean instanceof BasicEvent) {
+					fault.getBasicEvents().add((BasicEvent) copyBean);
+				} else {
+					fault.getFaultTree().getGates().add((Gate) copyBean);
+				}
+				
+				return copyBean;
+			} catch (InstantiationException | IllegalAccessException e) {
+				Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.getPluginId(), "Failed to copy a fault tree node!", e));
+				return null;
 			}
 		}
 	}
@@ -425,17 +431,28 @@ public class FaultTreeHelper {
 		copy.getTypeInstance().setUuid(fault.getTypeInstance().getUuid());
 
 		for (BasicEvent be : fault.getBasicEvents()) {
-			BasicEventHolder beHolder = new BasicEventHolder(be);
-			BasicEvent copyBe = new BasicEvent(concept);
-			copyBe.getHotFailureRateBean().setValueAsBaseUnit(beHolder.getHotFailureRate());
-			copyBe.getColdFailureRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
-			copyBe.getRepairRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
-			copyBe.setName(be.getName());
-			copyBe.getTypeInstance().setUuid(be.getTypeInstance().getUuid());
-			copy.getBasicEvents().add(copyBe);
+			copyBasicEvent(be, copy);
 		}
 
 		return copy;
+	}
+	
+	/**
+	 * Copies a basic event
+	 * @param basicEvent the basic event to copy
+	 * @param fault the fault that will contain it
+	 * @return the newly created basic event
+	 */
+	public BasicEvent copyBasicEvent(BasicEvent basicEvent, Fault fault) {
+		BasicEventHolder beHolder = new BasicEventHolder(basicEvent);
+		BasicEvent copyBe = new BasicEvent(concept);
+		copyBe.getHotFailureRateBean().setValueAsBaseUnit(beHolder.getHotFailureRate());
+		copyBe.getColdFailureRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
+		copyBe.getRepairRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
+		copyBe.setName(basicEvent.getName());
+		copyBe.getTypeInstance().setUuid(basicEvent.getTypeInstance().getUuid());
+		fault.getBasicEvents().add(copyBe);
+		return copyBe;
 	}
 
 	/**
