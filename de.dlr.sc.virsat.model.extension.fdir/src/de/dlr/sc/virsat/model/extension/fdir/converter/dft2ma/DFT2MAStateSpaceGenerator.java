@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
@@ -220,9 +221,10 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			DFTState equivalentState = stateEquivalence.getEquivalentState(succ, true);
 			
 			if (equivalentState == succ) {
-				if (staticAnalysis.getSymmetryChecker() != null) {
+				SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
+				if (symmetryReduction != null) {
 					if (stateUpdate.getEvent() instanceof FaultEvent) {
-						staticAnalysis.createSymmetryRequirements(succ, stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode());
+						symmetryReduction.createSymmetryRequirements(succ, stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode());
 					}
 				}
 				
@@ -300,8 +302,9 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private List<StateUpdate> getStateUpdates(DFTState state, List<IDFTEvent> occurableEvents) {
 		List<StateUpdate> stateUpdates = new ArrayList<>();
 		for (IDFTEvent event : occurableEvents) {
-			int symmetryMultiplier = staticAnalysis.getSymmetryMultiplier(event, state);
-			if (symmetryMultiplier != DFTStaticAnalysis.SKIP_EVENT) {
+			SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
+			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event, state) : 1;
+			if (symmetryMultiplier != SymmetryReduction.SKIP_EVENT) {
 				StateUpdate stateUpdate = new StateUpdate(state, event, symmetryMultiplier);
 				stateUpdates.add(stateUpdate);
 			}

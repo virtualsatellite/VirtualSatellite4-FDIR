@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +39,7 @@ public class DFTSymmetryChecker {
 	 * @param ftHolder2 the second ft
 	 * @return a symmetry reduction
 	 */
-	public Map<FaultTreeNode, List<FaultTreeNode>> computeSymmetryReduction(FaultTreeHolder ftHolder1, FaultTreeHolder ftHolder2) {
+	public SymmetryReduction computeSymmetryReduction(FaultTreeHolder ftHolder1, FaultTreeHolder ftHolder2) {
 		Set<Entry<FaultTreeNode, FaultTreeNode>> pairs = new HashSet<>();
 		Map<Entry<FaultTreeNode, FaultTreeNode>, Set<Entry<FaultTreeNode, FaultTreeNode>>> mapChildPairToParentPairs = new HashMap<>();
 		Map<Entry<FaultTreeNode, FaultTreeNode>, Set<Entry<FaultTreeNode, FaultTreeNode>>> mapPairToPairSet = new HashMap<>();
@@ -147,7 +146,7 @@ public class DFTSymmetryChecker {
 			}
 		}
 		
-		return computeSymmetryReduction(pairs);
+		return new SymmetryReduction(pairs);
 	}
 	
 	/**
@@ -165,27 +164,7 @@ public class DFTSymmetryChecker {
 		
 		return false;
 	}
-	
-	/**
-	 * Compute a symmetry reduction from a set of isomorphisms
-	 * @param pairs ismorphic node pairs
-	 * @return the symmetry reduction
-	 */
-	private Map<FaultTreeNode, List<FaultTreeNode>> computeSymmetryReduction(Set<Entry<FaultTreeNode, FaultTreeNode>> pairs) {
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = new HashMap<>();	
-		for (Entry<FaultTreeNode, FaultTreeNode> pair : pairs) {
-			boolean isBigger = !symmetryReduction.getOrDefault(pair.getValue(), Collections.emptyList()).contains(pair.getKey());
-			if (isBigger) {
-				if (!pair.getValue().equals(pair.getKey())) {
-					symmetryReduction.computeIfAbsent(pair.getKey(), v -> new ArrayList<>()).add(pair.getValue());
-				} else {
-					symmetryReduction.computeIfAbsent(pair.getKey(), v -> new ArrayList<>());
-				}
-			}
-		}
-		
-		return symmetryReduction;
-	}
+
 	
 	/**
 	 * Helper method to create permutations between nodes of two given lists
@@ -273,25 +252,5 @@ public class DFTSymmetryChecker {
 		}
 		
 		return mapNodeToNodePairs;
-	}
-	
-	/**
-	 * Computes the inverse mapping for a given symmetry reduction
-	 * @param symmetryReduction the symmetry reduction
-	 * @return the inverted symmetry reduction
-	 */
-	public Map<FaultTreeNode, Set<FaultTreeNode>> invertSymmetryReduction(Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
-		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = new HashMap<>();
-		for (FaultTreeNode node : symmetryReduction.keySet()) {
-			symmetryReductionInverted.put(node, new HashSet<>());
-		}
-		
-		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
-			for (FaultTreeNode node : entry.getValue()) {
-				symmetryReductionInverted.get(node).add(entry.getKey());
-			}
-		}
-		
-		return symmetryReductionInverted;
 	}
 }
