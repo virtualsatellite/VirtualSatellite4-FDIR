@@ -34,6 +34,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
  */
 public class FaultTreeHelper {
 	
+	public static final EdgeType[] EDGE_TYPES = { EdgeType.CHILD, EdgeType.MONITOR, EdgeType.DEP, EdgeType.SPARE }; 
+	
 	/**
 	 * Gets the edge list corresponding to the edge type from the fault tree
 	 * @param edgeType an edge type
@@ -218,43 +220,25 @@ public class FaultTreeHelper {
 	}
 	
 	/**
-	 * Gets all the dependencies in the fault tree of the passed fault
-	 * including all dependencies in the sub trees
+	 * Gets all the edges in the fault tree of the passed fault
+	 * including all the edges in the sub trees
 	 * @param fault the root fault of a fault tree
-	 * @return all dependencies in the entire fault tree
+	 * @return all edges in the entire fault tree
 	 */
-	public List<FaultTreeEdge> getAllDeps(Fault fault) {
+	public List<FaultTreeEdge> getAllEdges(Fault fault, EdgeType... edgeTypes) {
 		List<FaultTreeNode> allNodes = getAllNodes(fault);
-		List<FaultTreeEdge> allDependencies = new ArrayList<>();
+		List<FaultTreeEdge> allEdges = new ArrayList<>();
 		
 		allNodes.forEach(node -> {
 			if (node instanceof Fault) {
 				Fault child = (Fault) node;
-				allDependencies.addAll(child.getFaultTree().getDeps());
+				for (EdgeType edgeType : edgeTypes) {
+					allEdges.addAll(getEdges(edgeType, child.getFaultTree()));
+				}
 			}
 		});
 		
-		return allDependencies;
-	}
-	
-	/**
-	 * Gets all the observations in the fault tree of the passed fault
-	 * including all observations in the sub trees
-	 * @param fault the root fault of a fault tree
-	 * @return all observations in the entire fault tree
-	 */
-	public List<FaultTreeEdge> getAllObservations(Fault fault) {
-		List<FaultTreeNode> allNodes = getAllNodes(fault);
-		List<FaultTreeEdge> allObservations = new ArrayList<>();
-		
-		allNodes.forEach(node -> {
-			if (node instanceof Fault) {
-				Fault child = (Fault) node;
-				allObservations.addAll(child.getFaultTree().getObservations());
-			}
-		});
-		
-		return allObservations;
+		return allEdges;
 	}
 	
 	/**
@@ -264,12 +248,7 @@ public class FaultTreeHelper {
 	 * @return all edges in the entire fault tree
 	 */
 	public List<FaultTreeEdge> getAllEdges(Fault fault) {
-		List<FaultTreeEdge> allEdges = new ArrayList<>();
-		allEdges.addAll(getAllPropagations(fault));
-		allEdges.addAll(getAllSpares(fault));
-		allEdges.addAll(getAllDeps(fault));
-		allEdges.addAll(getAllObservations(fault));
-		return allEdges;
+		return getAllEdges(fault, EDGE_TYPES);
 	}
 	
 	/**
@@ -279,10 +258,9 @@ public class FaultTreeHelper {
 	 */
 	public List<FaultTreeEdge> getEdges(Fault fault) {
 		List<FaultTreeEdge> edges = new ArrayList<>();
-		edges.addAll(fault.getFaultTree().getPropagations());
-		edges.addAll(fault.getFaultTree().getSpares());
-		edges.addAll(fault.getFaultTree().getDeps());
-		edges.addAll(fault.getFaultTree().getObservations());
+		for (EdgeType edgeType : EDGE_TYPES) {
+			edges.addAll(getEdges(edgeType, fault.getFaultTree()));
+		}
 		return edges;
 	}
 
