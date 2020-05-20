@@ -123,7 +123,7 @@ public class SymmetryReduction {
 			
 			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(getSmallerNodes(event.getNode()));
 			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, event.getNode())) {
-				return -1;
+				return SKIP_EVENT;
 			}
 			
 			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(event.getNode(), Collections.emptyList());

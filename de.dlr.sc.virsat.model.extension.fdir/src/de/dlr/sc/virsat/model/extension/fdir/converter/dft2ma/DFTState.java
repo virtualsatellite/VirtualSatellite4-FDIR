@@ -298,15 +298,6 @@ public class DFTState extends MarkovState {
 	 * @param activation true to activate, false to deactivate
 	 */
 	public void setNodeActivation(FaultTreeNode node, boolean activation) {
-		if (node instanceof BasicEvent) {
-			if (activation) {
-				activeFaults.add(node.getFault());
-			} else {
-				activeFaults.remove(node.getFault());
-			}
-			return;
-		}
-		
 		if (node instanceof Fault) {
 			Fault fault = (Fault) node;
 			if (activation) {
@@ -373,7 +364,7 @@ public class DFTState extends MarkovState {
 				permanentNodes.set(nodeID);
 				activeFaults.remove(ftn);
 				
-				if (removeClaimedSparesOnFailureIfPossible(ftn)) {
+				if (removeClaimedSparesOnPermanentFailureIfPossible(ftn)) {
 					mapSpareToClaimedSpares.remove(ftn);
 				}
 			}
@@ -413,7 +404,7 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				removeClaimedSparesOnFailureIfPossible(ftn);
+				removeClaimedSparesOnPermanentFailureIfPossible(ftn);
 			}
 		}
 	}
@@ -424,11 +415,7 @@ public class DFTState extends MarkovState {
 	 * @param node the node to check
 	 * @return per default true for all permanent nodes
 	 */
-	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
-		if (!isFaultTreeNodePermanent(node)) {
-			return false;
-		}
-		
+	protected boolean removeClaimedSparesOnPermanentFailureIfPossible(FaultTreeNode node) {
 		for (FaultTreeNode parent : ftHolder.getNodes(node, EdgeType.PARENT)) {
 			if (!isFaultTreeNodePermanent(parent)) {
 				return false;
@@ -508,22 +495,6 @@ public class DFTState extends MarkovState {
 	 */
 	public Set<FaultTreeNode> getAffectors(FaultTreeNode node) {
 		return mapNodeToAffectors.getOrDefault(node, Collections.emptySet());
-	}
-	
-	/**
-	 * Checks if the fail state of any node in the given list is different in the given two states
-	 * @param stateOther another state
-	 * @param nodes list of nodes to be checked
-	 * @return true iff there exists a fault tree node such that state1 and state2 do not agree on the fail state of that fault tree node
-	 */
-	public boolean hasFailStateChanged(DFTState stateOther, List<FaultTreeNode> nodes) {
-		for (FaultTreeNode node : nodes) {
-			if (hasFaultTreeNodeFailed(node) != stateOther.hasFaultTreeNodeFailed(node)) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 
 	/**

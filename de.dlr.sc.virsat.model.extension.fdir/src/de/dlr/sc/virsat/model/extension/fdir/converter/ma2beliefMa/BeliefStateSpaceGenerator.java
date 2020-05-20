@@ -204,7 +204,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
 				PODFTState state = entry.getKey();
 				if (!succStates.contains(state)) {
-					if (state.getFailedBasicEvents().isEmpty()) {
+					if (state.getOrderedBes().isEmpty() && state.getUnorderedBes().isEmpty()) {
 						prob += entry.getValue();
 					}
 				}
