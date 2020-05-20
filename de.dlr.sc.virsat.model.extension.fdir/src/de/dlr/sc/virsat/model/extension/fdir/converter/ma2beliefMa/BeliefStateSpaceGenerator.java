@@ -109,14 +109,10 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapRepresentantToTransitions = new TreeMap<>(MarkovState.MARKOVSTATE_COMPARATOR);
 		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
 			PODFTState fromState = entry.getKey();
-			if (fromState.isMarkovian() != beliefState.isMarkovian()) {
-				continue;
-			}
 			
 			List<MarkovTransition<DFTState>> succTransitions = ma.getSuccTransitions(fromState);
 			for (MarkovTransition<DFTState> succTransition : succTransitions) {
 				PODFTState succState = (PODFTState) succTransition.getTo();
-				
 				List<MarkovTransition<DFTState>> transitions = null;
 				
 				for (Entry<PODFTState, List<MarkovTransition<DFTState>>> representantEntry : mapRepresentantToTransitions.entrySet()) {
@@ -193,21 +189,8 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		
 		for (Entry<Object, List<MarkovTransition<DFTState>>> succTransitionGroup : groupedSuccTransitions.entrySet()) {	
 			double prob = 0;
-			
-			Set<DFTState> succStates = new HashSet<>();
-			
 			for (MarkovTransition<DFTState> succTransition : succTransitionGroup.getValue()) {
-				succStates.add(succTransition.getFrom());
 				prob += beliefState.mapStateToBelief.get(succTransition.getFrom());
-			}
-			
-			for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
-				PODFTState state = entry.getKey();
-				if (!succStates.contains(state)) {
-					if (state.getOrderedBes().isEmpty() && state.getUnorderedBes().isEmpty()) {
-						prob += entry.getValue();
-					}
-				}
 			}
 			
 			targetMa.addNondeterministicTransition(succTransitionGroup.getKey(), beliefState, beliefSucc, prob);
@@ -297,8 +280,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param succTransitions the transitions to reach the successor state
 	 */
 	private void fillNonDeterministicStateSucc(BeliefState beliefState, BeliefState beliefSucc, List<MarkovTransition<DFTState>> succTransitions) {
-		Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
-		
 		beliefSucc.setMarkovian(true);
 		for (MarkovTransition<DFTState> succTransition : succTransitions) {
 			PODFTState succState = (PODFTState) succTransition.getTo();
@@ -306,24 +287,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			
 			double prob = succTransition.getRate() * beliefState.mapStateToBelief.get(fromState);
 			beliefSucc.mapStateToBelief.put(succState, prob);
-			
-			statesWithNoTransitions.remove(fromState);
-		}
-		
-		for (PODFTState stateWithNoTransition : statesWithNoTransitions) {
-			if (stateWithNoTransition.getObservedFailedNodes().equals(beliefSucc.representant.getObservedFailedNodes())) {
-				PODFTState succState = stateWithNoTransition;
-				
-				DFTState copy = stateWithNoTransition.copy();
-				copy.setMapSpareToClaimedSpares(beliefSucc.representant.getMapSpareToClaimedSpares());
-				succState = (PODFTState) dftStateEquivalence.getEquivalentState(copy, false);
-				if (succState == copy) {
-					continue;
-				}
-				
-				double prob = beliefState.mapStateToBelief.get(stateWithNoTransition);
-				beliefSucc.mapStateToBelief.put(succState, prob);
-			}
 		}
 	}
 	
