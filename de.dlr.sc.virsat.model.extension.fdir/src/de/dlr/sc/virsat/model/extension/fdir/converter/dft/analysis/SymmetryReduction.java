@@ -128,10 +128,8 @@ public class SymmetryReduction {
 			
 			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(event.getNode(), Collections.emptyList());
 			for (FaultTreeNode node : symmetricNodes) {
-				if (!failedBasicEvents.contains(node)) {
-					if (isSymmetryReductionApplicable(state, node)) {
-						symmetryMultiplier++;
-					}
+				if (!failedBasicEvents.contains(node) && isSymmetryReductionApplicable(state, node)) {
+					symmetryMultiplier++;
 				}
 			}
 		}
