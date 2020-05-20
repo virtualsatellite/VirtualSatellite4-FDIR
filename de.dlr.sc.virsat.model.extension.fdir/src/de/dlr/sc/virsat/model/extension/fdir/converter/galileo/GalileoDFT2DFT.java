@@ -35,7 +35,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 /**
  * Converts a DFT from the galileo DFT model to a VirSat DFT and embeds the resulting objects into an FMECA table.
@@ -52,7 +52,7 @@ public class GalileoDFT2DFT {
 	private final InputStream is;
 	private final Concept concept;
 	private final ABeanStructuralElementInstance parent;
-	private final FaultTreeHelper ftHelper;
+	private final FaultTreeBuilder ftBuilder;
 	
 	private Fault fault;
 	
@@ -70,7 +70,7 @@ public class GalileoDFT2DFT {
 		this.is = is;
 		this.concept = concept;
 		this.parent = parent;
-		ftHelper = new FaultTreeHelper(concept);
+		ftBuilder = new FaultTreeBuilder(concept);
 	}
 	
 	/**
@@ -160,15 +160,15 @@ public class GalileoDFT2DFT {
 					if (primaryAdded) {
 						// DEPs always trigger the basic events directly
 						ftnChild = mapGalileoFaultTreeNodeToBasicEvent.get(child);
-						ftHelper.connectDep(fault, ftnParent, ftnChild);
+						ftBuilder.connectDep(fault, ftnParent, ftnChild);
 					} else {
-						ftHelper.connect(fault, ftnChild, ftnParent);
+						ftBuilder.connect(fault, ftnChild, ftnParent);
 					}	
 				} else {
 					if (ftnParent.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE) && primaryAdded) {
-						ftHelper.connectSpare(fault, ftnChild, ftnParent);
+						ftBuilder.connectSpare(fault, ftnChild, ftnParent);
 					} else {
-						ftHelper.connect(fault, ftnChild, ftnParent);
+						ftBuilder.connect(fault, ftnChild, ftnParent);
 					}
 				}
 				
@@ -180,7 +180,7 @@ public class GalileoDFT2DFT {
 				for (GalileoFaultTreeNode observable : observables) {
 					FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
 					FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
-					ftHelper.connectObserver(fault, ftnFrom, ftnTo);
+					ftBuilder.connectObserver(fault, ftnFrom, ftnTo);
 				}
 			}
 		}
@@ -200,7 +200,7 @@ public class GalileoDFT2DFT {
 		
 		if (galileoType != null) {
 			FaultTreeNodeType type = galileoNodeType2FaultTreeNodeType(galileoType);
-			Gate gate = ftHelper.createGate(type);
+			Gate gate = ftBuilder.createGate(type);
 			
 			if (type.equals(FaultTreeNodeType.VOTE)) {
 				String[] split = ((Named) galileoType).getTypeName().split(GALILEO_VOTE);

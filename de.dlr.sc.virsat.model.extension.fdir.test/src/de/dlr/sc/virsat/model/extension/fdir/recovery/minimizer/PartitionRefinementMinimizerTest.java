@@ -88,7 +88,7 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition01, fault1, fault2);
 		raHelper.assignInputs(transition11, fault2, fault1);
 		
-		FaultTreeNode spare = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
 		ClaimAction action = new ClaimAction(concept);
 		action.setClaimSpare(spare);
 		
@@ -131,8 +131,8 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition20, fault1);
 		raHelper.assignInputs(transition21, fault2);
 		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action0 = new ClaimAction(concept);
 		action0.setClaimSpare(spare1);
@@ -188,8 +188,8 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition33, fault1);
 		raHelper.assignInputs(transition32, fault2);
 		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action0 = new ClaimAction(concept);
 		action0.setClaimSpare(spare1);
@@ -283,9 +283,9 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition44_2, fault2);
 		raHelper.assignInputs(transition44_3, fault3);
 		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare3 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare3 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);

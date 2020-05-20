@@ -28,7 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -39,7 +39,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 
 	private Concept concept;
-	private FaultTreeHelper ftHelper;
+	private FaultTreeBuilder ftBuilder;
 	private FaultTreeHolder ftHolder;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodes;
 
@@ -58,7 +58,7 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
 		
-		ftHelper = new FaultTreeHelper(concept);
+		ftBuilder = new FaultTreeBuilder(concept);
 		ftHolder = new FaultTreeHolder(holderRoot);
 		mapNodes = new HashMap<>();
 
@@ -66,8 +66,8 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			if (node instanceof Fault) {
 				Fault fault = (Fault) node;
 				List<FaultTreeNode> nodesList = new ArrayList<FaultTreeNode>();
-				Fault copy = ftHelper.copyFault(fault);
-				nodesList.add(FaultTreeHelper.NODE_INDEX, copy);
+				Fault copy = ftBuilder.copyFault(fault);
+				nodesList.add(FaultTreeBuilder.NODE_INDEX, copy);
 				mapNodes.put(node, nodesList);
 				
 				for (int i = 0; i < copy.getBasicEvents().size(); ++i) {
@@ -91,23 +91,23 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			List<FaultTreeNode> newNodeList = mapNodes.get(node);
-			FaultTreeNode newNodeOutputNode = newNodeList.get(FaultTreeHelper.NODE_INDEX);
+			FaultTreeNode newNodeOutputNode = newNodeList.get(FaultTreeBuilder.NODE_INDEX);
 			Fault fault = newNodeOutputNode.getFault();
 
 			List<FaultTreeNode> spares = ftHolder.getNodes(node, EdgeType.SPARE);
 			for (int i = 0; i < spares.size(); ++i) {
 				FaultTreeNode spare = spares.get(i);
 				List<FaultTreeNode> newChildNodeList = mapNodes.get(spare);
-				FaultTreeNode newSpareOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-				ftHelper.connectSpare(fault, newSpareOutputNode, newNodeOutputNode);
+				FaultTreeNode newSpareOutputNode = newChildNodeList.get(FaultTreeBuilder.NODE_INDEX);
+				ftBuilder.connectSpare(fault, newSpareOutputNode, newNodeOutputNode);
 			}
 
 			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
 			for (int i = 0; i < monitors.size(); ++i) {
 				FaultTreeNode monitor = monitors.get(i);
 				List<FaultTreeNode> newChildNodeList = mapNodes.get(monitor);
-				FaultTreeNode newMonitorOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-				ftHelper.connectObserver(fault, newNodeOutputNode, newMonitorOutputNode);
+				FaultTreeNode newMonitorOutputNode = newChildNodeList.get(FaultTreeBuilder.NODE_INDEX);
+				ftBuilder.connectObserver(fault, newNodeOutputNode, newMonitorOutputNode);
 			}
 			
 			List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
@@ -120,8 +120,8 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 					for (int i = 0; i < deps.size(); ++i) {
 						FaultTreeNode dep = deps.get(i);
 						List<FaultTreeNode> newChildNodeList = mapNodes.get(dep);
-						FaultTreeNode newDepOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
-						ftHelper.connectDep(fault, newDepOutputNode, mapNodes.get(be).get(0));
+						FaultTreeNode newDepOutputNode = newChildNodeList.get(FaultTreeBuilder.NODE_INDEX);
+						ftBuilder.connectDep(fault, newDepOutputNode, mapNodes.get(be).get(0));
 					}
 				}
 			}
@@ -160,65 +160,65 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 		for (int i = 0; i < toNodes.size(); ++i) {
 			FaultTreeNode toNode = toNodes.get(i);
 			List<FaultTreeNode> newChildNodeList = mapNodes.get(toNode);
-			FaultTreeNode newChildOutputNode = newChildNodeList.get(FaultTreeHelper.NODE_INDEX);
+			FaultTreeNode newChildOutputNode = newChildNodeList.get(FaultTreeBuilder.NODE_INDEX);
 
 			if (type.equals(FaultTreeNodeType.SAND)) {
-				ftHelper.connectToBasicSandGate(fault, newChildOutputNode, newNodeList);
+				ftBuilder.connectToBasicSandGate(fault, newChildOutputNode, newNodeList);
 			} else if (type.equals(FaultTreeNodeType.POR_I)) {
 				if (i == 0) {
-					FaultTreeNode por = newNodeList.get(FaultTreeHelper.INCLUSIVE_POR_POR_GATE);
-					ftHelper.connect(fault, newChildOutputNode, por);
-					ftHelper.connectToBasicSandGate(fault, newChildOutputNode, newNodeList,
-							FaultTreeHelper.INCLUSIVE_POR_SAND_GATE);
+					FaultTreeNode por = newNodeList.get(FaultTreeBuilder.INCLUSIVE_POR_POR_GATE);
+					ftBuilder.connect(fault, newChildOutputNode, por);
+					ftBuilder.connectToBasicSandGate(fault, newChildOutputNode, newNodeList,
+							FaultTreeBuilder.INCLUSIVE_POR_SAND_GATE);
 				} else {
-					FaultTreeNode por = newNodeList.get(FaultTreeHelper.INCLUSIVE_POR_POR_GATE);
-					FaultTreeNode or = newNodeList.get(FaultTreeHelper.INCLUSIVE_POR_LOWER_OR_GATE);
-					ftHelper.connect(fault, newChildOutputNode, por);
-					ftHelper.connect(fault, newChildOutputNode, or);
+					FaultTreeNode por = newNodeList.get(FaultTreeBuilder.INCLUSIVE_POR_POR_GATE);
+					FaultTreeNode or = newNodeList.get(FaultTreeBuilder.INCLUSIVE_POR_LOWER_OR_GATE);
+					ftBuilder.connect(fault, newChildOutputNode, por);
+					ftBuilder.connect(fault, newChildOutputNode, or);
 				}
 			} else if (type.equals(FaultTreeNodeType.PAND)) {
 				if (i == 0) {
-					FaultTreeNode por = newNodeList.get(FaultTreeHelper.PAND_POR_GATE_INDEX);
-					ftHelper.connect(fault, newChildOutputNode, por);
+					FaultTreeNode por = newNodeList.get(FaultTreeBuilder.PAND_POR_GATE_INDEX);
+					ftBuilder.connect(fault, newChildOutputNode, por);
 				} else if (i == toNodes.size() - 1) {
-					FaultTreeNode porLeft = newNodeList.get(FaultTreeHelper.PAND_POR_GATE_INDEX + i - 1);
-					FaultTreeNode and = newNodeList.get(FaultTreeHelper.PAND_AND_GATE_INDEX);
-					ftHelper.connect(fault, newChildOutputNode, porLeft);
-					ftHelper.connect(fault, newChildOutputNode, and);
+					FaultTreeNode porLeft = newNodeList.get(FaultTreeBuilder.PAND_POR_GATE_INDEX + i - 1);
+					FaultTreeNode and = newNodeList.get(FaultTreeBuilder.PAND_AND_GATE_INDEX);
+					ftBuilder.connect(fault, newChildOutputNode, porLeft);
+					ftBuilder.connect(fault, newChildOutputNode, and);
 				} else {
-					FaultTreeNode porLeft = newNodeList.get(FaultTreeHelper.PAND_POR_GATE_INDEX + i - 1);
-					FaultTreeNode porRight = newNodeList.get(FaultTreeHelper.PAND_POR_GATE_INDEX + i);
-					ftHelper.connect(fault, newChildOutputNode, porLeft);
-					ftHelper.connect(fault, newChildOutputNode, porRight);
+					FaultTreeNode porLeft = newNodeList.get(FaultTreeBuilder.PAND_POR_GATE_INDEX + i - 1);
+					FaultTreeNode porRight = newNodeList.get(FaultTreeBuilder.PAND_POR_GATE_INDEX + i);
+					ftBuilder.connect(fault, newChildOutputNode, porLeft);
+					ftBuilder.connect(fault, newChildOutputNode, porRight);
 				}
 			} else if (type.equals(FaultTreeNodeType.PAND_I)) {
 				if (i == 0) {
 					FaultTreeNode sandLowerOr = newNodeList
-							.get(FaultTreeHelper.INCLUSIVE_PAND_SAND_LOWER_OR_GATE_INDEX);
+							.get(FaultTreeBuilder.INCLUSIVE_PAND_SAND_LOWER_OR_GATE_INDEX);
 					FaultTreeNode sandLowerAnd = newNodeList
-							.get(FaultTreeHelper.INCLUSIVE_PAND_SAND_LOWER_AND_GATE_INDEX);
-					FaultTreeNode pandPor = newNodeList.get(FaultTreeHelper.INCLUSIVE_PAND_EXCLUSIVE_PAND_POR_GATE);
+							.get(FaultTreeBuilder.INCLUSIVE_PAND_SAND_LOWER_AND_GATE_INDEX);
+					FaultTreeNode pandPor = newNodeList.get(FaultTreeBuilder.INCLUSIVE_PAND_EXCLUSIVE_PAND_POR_GATE);
 
-					ftHelper.connect(fault, newChildOutputNode, pandPor);
-					ftHelper.connect(fault, newChildOutputNode, sandLowerAnd);
-					ftHelper.connect(fault, newChildOutputNode, sandLowerOr);
+					ftBuilder.connect(fault, newChildOutputNode, pandPor);
+					ftBuilder.connect(fault, newChildOutputNode, sandLowerAnd);
+					ftBuilder.connect(fault, newChildOutputNode, sandLowerOr);
 
 				} else {
 					FaultTreeNode sandLowerOr = newNodeList
-							.get(FaultTreeHelper.INCLUSIVE_PAND_SAND_LOWER_OR_GATE_INDEX);
+							.get(FaultTreeBuilder.INCLUSIVE_PAND_SAND_LOWER_OR_GATE_INDEX);
 					FaultTreeNode sandLowerAnd = newNodeList
-							.get(FaultTreeHelper.INCLUSIVE_PAND_SAND_LOWER_AND_GATE_INDEX);
+							.get(FaultTreeBuilder.INCLUSIVE_PAND_SAND_LOWER_AND_GATE_INDEX);
 					FaultTreeNode pandPor = newNodeList
-							.get(FaultTreeHelper.INCLUSIVE_PAND_EXCLUSIVE_PAND_POR_GATE + i - 1);
-					FaultTreeNode pandAnd = newNodeList.get(FaultTreeHelper.INCLUSIVE_PAND_EXCLUSIVE_PAND_AND_GATE);
+							.get(FaultTreeBuilder.INCLUSIVE_PAND_EXCLUSIVE_PAND_POR_GATE + i - 1);
+					FaultTreeNode pandAnd = newNodeList.get(FaultTreeBuilder.INCLUSIVE_PAND_EXCLUSIVE_PAND_AND_GATE);
 
-					ftHelper.connect(fault, newChildOutputNode, pandPor);
-					ftHelper.connect(fault, newChildOutputNode, pandAnd);
-					ftHelper.connect(fault, newChildOutputNode, sandLowerAnd);
-					ftHelper.connect(fault, newChildOutputNode, sandLowerOr);
+					ftBuilder.connect(fault, newChildOutputNode, pandPor);
+					ftBuilder.connect(fault, newChildOutputNode, pandAnd);
+					ftBuilder.connect(fault, newChildOutputNode, sandLowerAnd);
+					ftBuilder.connect(fault, newChildOutputNode, sandLowerOr);
 				}
 			} else {
-				ftHelper.connect(fault, newChildOutputNode, newNodeOutputNode);
+				ftBuilder.connect(fault, newChildOutputNode, newNodeOutputNode);
 			}
 		}
 	}
@@ -238,26 +238,26 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 		List<FaultTreeNode> nodesList = new ArrayList<FaultTreeNode>();
 
 		if (type.equals(FaultTreeNodeType.OR)) {
-			Gate gate = ftHelper.createBasicOrGate(newFault);
-			nodesList.add(FaultTreeHelper.NODE_INDEX, gate);
+			Gate gate = ftBuilder.createBasicOrGate(newFault);
+			nodesList.add(FaultTreeBuilder.NODE_INDEX, gate);
 		} else if (type.equals(FaultTreeNodeType.AND)) {
-			Gate gate = ftHelper.createBasicAndGate(newFault, children.size());
-			nodesList.add(FaultTreeHelper.NODE_INDEX, gate);
+			Gate gate = ftBuilder.createBasicAndGate(newFault, children.size());
+			nodesList.add(FaultTreeBuilder.NODE_INDEX, gate);
 		} else if (type.equals(FaultTreeNodeType.SAND)) {
-			List<FaultTreeNode> sandGate = ftHelper.createBasicSAndGate(newFault, children.size());
+			List<FaultTreeNode> sandGate = ftBuilder.createBasicSAndGate(newFault, children.size());
 			nodesList.addAll(sandGate);
 		} else if (type.equals(FaultTreeNodeType.PAND)) {
-			List<FaultTreeNode> pandGate = ftHelper.createBasicPAndGate(newFault, children.size());
+			List<FaultTreeNode> pandGate = ftBuilder.createBasicPAndGate(newFault, children.size());
 			nodesList.addAll(pandGate);
 		} else if (type.equals(FaultTreeNodeType.POR_I)) {
-			List<FaultTreeNode> gates = ftHelper.createBasicInclusivePorGate(newFault);
+			List<FaultTreeNode> gates = ftBuilder.createBasicInclusivePorGate(newFault);
 			nodesList.addAll(gates);
 		} else if (type.equals(FaultTreeNodeType.PAND_I)) {
-			List<FaultTreeNode> gates = ftHelper.createBasicInclusivePandGate(newFault, children.size());
+			List<FaultTreeNode> gates = ftBuilder.createBasicInclusivePandGate(newFault, children.size());
 			nodesList.addAll(gates);
 		} else {
 			Gate oldGate = (Gate) node;
-			Gate gate = ftHelper.createGate(newFault, type);
+			Gate gate = ftBuilder.createGate(newFault, type);
 			if (gate instanceof VOTE) {
 				((VOTE) gate).setVotingThreshold(((VOTE) oldGate).getVotingThreshold());
 			} else if (gate instanceof MONITOR) {
@@ -269,11 +269,11 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			}
 			
 			gate.setName(oldGate.getName());
-			nodesList.add(FaultTreeHelper.NODE_INDEX, gate);
+			nodesList.add(FaultTreeBuilder.NODE_INDEX, gate);
 		}
 
-		nodesList.get(FaultTreeHelper.NODE_INDEX).setName(node.getName());
-		nodesList.get(FaultTreeHelper.NODE_INDEX).getATypeInstance().setUuid(node.getATypeInstance().getUuid());
+		nodesList.get(FaultTreeBuilder.NODE_INDEX).setName(node.getName());
+		nodesList.get(FaultTreeBuilder.NODE_INDEX).getATypeInstance().setUuid(node.getATypeInstance().getUuid());
 
 		mapNodes.put(node, nodesList);
 	}

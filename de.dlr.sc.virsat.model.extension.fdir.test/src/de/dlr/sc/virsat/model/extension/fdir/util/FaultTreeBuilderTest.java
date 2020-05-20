@@ -28,12 +28,12 @@ import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
  * @author jord_ad
  *
  */
-public class FaultTreeHelperTest extends ATestCase {
+public class FaultTreeBuilderTest extends ATestCase {
 
 	@Test
 	public void testCopyNode() throws IOException {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
-		FaultTreeNode copy = ftHelper.copyFaultTreeNode(rootcsp2, null);
+		FaultTreeNode copy = ftBuilder.copyFaultTreeNode(rootcsp2, null);
 		
 		assertNotEquals(rootcsp2, copy);
 		assertEquals(rootcsp2.getName(), copy.getName());
@@ -48,7 +48,7 @@ public class FaultTreeHelperTest extends ATestCase {
 		assertEquals(FaultTreeNodeType.SPARE, spareGate.getFaultTreeNodeType());
 		
 		Fault rootCopy = new Fault(concept);
-		FaultTreeNode copy = ftHelper.copyFaultTreeNode(spareGate, rootCopy);
+		FaultTreeNode copy = ftBuilder.copyFaultTreeNode(spareGate, rootCopy);
 		
 		assertEquals(FaultTreeNodeType.SPARE, copy.getFaultTreeNodeType());
 	}
@@ -58,10 +58,10 @@ public class FaultTreeHelperTest extends ATestCase {
 		Fault rootand2or = createDFT("/resources/galileo/and2or.dft");
 		FaultTreeNode orGate = ftHelper.getAllNodes(rootand2or).get(2);
 		
-		FaultTreeNode rootCopy = ftHelper.copyFaultTreeNode(rootand2or, null);
-		FaultTreeNode orGateCopy = ftHelper.copyFaultTreeNode(orGate, rootCopy.getFault());
+		FaultTreeNode rootCopy = ftBuilder.copyFaultTreeNode(rootand2or, null);
+		FaultTreeNode orGateCopy = ftBuilder.copyFaultTreeNode(orGate, rootCopy.getFault());
 		
-		ftHelper.createFaultTreeEdge(rootCopy.getFault(), orGateCopy, rootCopy);
+		ftBuilder.createFaultTreeEdge(rootCopy.getFault(), orGateCopy, rootCopy);
 		
 		assertEquals(1, ftHelper.getAllPropagations(rootCopy.getFault()).size());
 	}
@@ -72,13 +72,13 @@ public class FaultTreeHelperTest extends ATestCase {
 		FaultTreeNode spareGate = ftHelper.getAllSpares(rootcsp2).get(0).getTo();
 		FaultTreeNode spare = ftHelper.getAllSpares(rootcsp2).get(0).getFrom();
 		
-		FaultTreeNode spareGateCopy = ftHelper.copyFaultTreeNode(spareGate, null);
+		FaultTreeNode spareGateCopy = ftBuilder.copyFaultTreeNode(spareGate, null);
 		FaultTreeNode primary = new Fault(rootcsp2.getConcept());
 		primary.setName("PRIMARY");
-		FaultTreeNode spareCopy = ftHelper.copyFaultTreeNode(spare, null);
+		FaultTreeNode spareCopy = ftBuilder.copyFaultTreeNode(spare, null);
 
-		ftHelper.connectSpare(spareGateCopy.getFault(), spareCopy, spareGateCopy);
-		ftHelper.createFaultTreeEdge(spareGateCopy.getFault(), primary, spareGateCopy);
+		ftBuilder.connectSpare(spareGateCopy.getFault(), spareCopy, spareGateCopy);
+		ftBuilder.createFaultTreeEdge(spareGateCopy.getFault(), primary, spareGateCopy);
 		
 		assertEquals(1, ftHelper.getAllPropagations(spareGateCopy.getFault()).size());
 		assertEquals(1, ftHelper.getAllSpares(spareGateCopy.getFault()).size());
@@ -86,21 +86,21 @@ public class FaultTreeHelperTest extends ATestCase {
 
 	@Test
 	public void testRemoveNullEdge() {
-		FaultTreeNode root = ftHelper.createBasicFault("ROOT", 0, 0);
-		FaultTreeNode child = ftHelper.createBasicFault("CHILD", 0, 0);
-		ftHelper.createFaultTreeEdge(root.getFault(), child, root);
+		FaultTreeNode root = ftBuilder.createBasicFault("ROOT", 0, 0);
+		FaultTreeNode child = ftBuilder.createBasicFault("CHILD", 0, 0);
+		ftBuilder.createFaultTreeEdge(root.getFault(), child, root);
 		
-		boolean removeEdge = ftHelper.removeEdgeFromFaultTree(null, root.getFault().getFaultTree());
+		boolean removeEdge = ftBuilder.removeEdgeFromFaultTree(null, root.getFault().getFaultTree());
 		assertFalse(removeEdge);
 	}
 	
 	@Test
 	public void testRemoveOneEdge() {
-		FaultTreeNode root = ftHelper.createBasicFault("ROOT", 0, 0);
-		FaultTreeNode child = ftHelper.createBasicFault("CHILD", 0, 0);
-		ftHelper.createFaultTreeEdge(root.getFault(), child, root);
+		FaultTreeNode root = ftBuilder.createBasicFault("ROOT", 0, 0);
+		FaultTreeNode child = ftBuilder.createBasicFault("CHILD", 0, 0);
+		ftBuilder.createFaultTreeEdge(root.getFault(), child, root);
 		
-		boolean removeEdge = ftHelper.removeEdgeFromFaultTree(root.getFault().getFaultTree().getPropagations().get(0), root.getFault().getFaultTree());
+		boolean removeEdge = ftBuilder.removeEdgeFromFaultTree(root.getFault().getFaultTree().getPropagations().get(0), root.getFault().getFaultTree());
 		assertTrue(removeEdge);
 	}
 

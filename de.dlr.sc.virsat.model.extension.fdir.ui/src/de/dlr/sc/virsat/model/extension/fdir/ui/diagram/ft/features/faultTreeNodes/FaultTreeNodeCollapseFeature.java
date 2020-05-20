@@ -59,7 +59,7 @@ public class FaultTreeNodeCollapseFeature extends AbstractCustomFeature {
 		
 		for (PictogramElement pe : context.getPictogramElements()) {
 			Fault fault = (Fault) getBusinessObjectForPictogramElement(pe);
-			FaultTreeHelper ftHelper = new FaultTreeHelper(fault.getConcept());
+			FaultTreeHelper ftHelper = new FaultTreeHelper();
 			
 			if (isCollapse) {
 				List<FaultTreeNode> allSubNodes = ftHelper.getAllNodes(fault);

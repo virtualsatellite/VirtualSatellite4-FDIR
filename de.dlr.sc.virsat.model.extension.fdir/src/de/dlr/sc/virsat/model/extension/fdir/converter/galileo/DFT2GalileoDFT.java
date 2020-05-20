@@ -78,7 +78,7 @@ public class DFT2GalileoDFT {
 	 * @return a galileo dft representation
 	 */
 	public GalileoDft convert(FaultTreeNode root) {
-		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
+		FaultTreeHelper ftHelper = new FaultTreeHelper();
 		
 		GalileoDft galileoDft = DftFactory.eINSTANCE.createGalileoDft();
 		

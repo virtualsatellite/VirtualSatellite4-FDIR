@@ -11,12 +11,13 @@ package de.dlr.sc.virsat.model.extension.fdir.trimmer;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 /**
  * Class for trimming fault trees
@@ -75,17 +76,17 @@ public class FaultTreeTrimmer {
 	 */
 	public Set<Module> trimDeterministicNodes(Set<Module> modules) {
 		if (!modules.isEmpty()) {
-			FaultTreeHelper fthelp = new FaultTreeHelper(modules.iterator().next().getRootNode().getConcept());
+			FaultTreeBuilder ftBuilder = new FaultTreeBuilder(modules.iterator().next().getRootNode().getConcept());
 		
 			for (Module module : modules) {
-				for (FaultTreeEdge edge : fthelp.getAllEdges(module.getRootNodeCopy().getFault())) {
+				for (FaultTreeEdge edge : ftBuilder.getFtHelper().getAllEdges(module.getRootNodeCopy().getFault())) {
 					FaultTreeNode from = edge.getFrom();
 					
 					if (!module.hasPriorityAbove(from)
 							&& !module.hasSpareBelow(from)
 							&& !module.hasSpareAbove(from)
 							&& !from.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE)) {
-						fthelp.removeEdgeFromFaultTree(edge, module.getRootNodeCopy().getFault().getFaultTree());
+						ftBuilder.removeEdgeFromFaultTree(edge, module.getRootNodeCopy().getFault().getFaultTree());
 					}
 				}
 			}

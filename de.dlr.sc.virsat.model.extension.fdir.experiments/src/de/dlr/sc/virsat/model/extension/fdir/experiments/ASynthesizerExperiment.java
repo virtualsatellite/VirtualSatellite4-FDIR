@@ -33,7 +33,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
 /**
@@ -48,13 +48,13 @@ public class ASynthesizerExperiment {
 	protected BasicSynthesizer synthesizer;
 	
 	protected Concept concept;
-	protected FaultTreeHelper ftHelper;
+	protected FaultTreeBuilder ftBuilder;
 	protected RecoveryAutomatonHelper raHelper;
 	
 	@Before
 	public void setUp() {
 		concept = ConceptXmiLoader.loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
-		this.ftHelper = new FaultTreeHelper(concept);
+		this.ftBuilder = new FaultTreeBuilder(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
 		this.synthesizer = new BasicSynthesizer();
 	}

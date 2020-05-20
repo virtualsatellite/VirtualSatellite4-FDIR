@@ -52,11 +52,11 @@ public class FaultTreeHolderTest extends ATestCase {
 		Fault grandchild = new Fault(concept);
 		Fault notAChild = new Fault(concept);
 		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
-		ftHelper.connect(root, intermediateNode, root);
-		ftHelper.connect(root, child, intermediateNode);
-		ftHelper.connect(child, grandchild, child);
-		ftHelper.connect(root, grandchild, notAChild);
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
+		ftBuilder.connect(root, intermediateNode, root);
+		ftBuilder.connect(root, child, intermediateNode);
+		ftBuilder.connect(child, grandchild, child);
+		ftBuilder.connect(root, grandchild, notAChild);
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
 		Set<Fault> childFaults = ftHolder.getChildFaults(root);

@@ -66,7 +66,7 @@ public class FaultTreeHolder {
 	 * Builds the actual data
 	 */
 	private void processFaultTree() {
-		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
+		FaultTreeHelper ftHelper = new FaultTreeHelper();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
