@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -34,7 +35,10 @@ public class FaultTreeHelperTest extends ATestCase {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
 		FaultTreeNode copy = ftHelper.copyFaultTreeNode(rootcsp2, null);
 		
-		assertEquals(0, ftHelper.getAllChildren(copy, copy.getFault().getFaultTree()).size());
+		assertNotEquals(rootcsp2, copy);
+		assertEquals(rootcsp2.getName(), copy.getName());
+		assertEquals(rootcsp2.getUuid(), copy.getUuid());
+		assertTrue(ftHelper.getChildren(copy).isEmpty());
 	}
 	
 	@Test

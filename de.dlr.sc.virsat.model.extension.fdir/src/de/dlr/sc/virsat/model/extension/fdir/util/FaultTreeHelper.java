@@ -424,26 +424,15 @@ public class FaultTreeHelper {
 		copy.setName(fault.getName());
 		copy.getTypeInstance().setUuid(fault.getTypeInstance().getUuid());
 
-		for (BasicEvent fm : fault.getBasicEvents()) {
-			BasicEvent newFm = new BasicEvent(concept);
-			try {
-				newFm.getHotFailureRateBean().setValueAsBaseUnit(fm.getHotFailureRateBean().getValueToBaseUnit());
-			} catch (NullPointerException e) {
-				newFm.getHotFailureRateBean().setValueAsBaseUnit(Double.NaN);
-			}
-			try {
-				newFm.getColdFailureRateBean().setValueAsBaseUnit(fm.getColdFailureRateBean().getValueToBaseUnit());
-			} catch (NullPointerException e) {
-				newFm.getColdFailureRateBean().setValueAsBaseUnit(Double.NaN);
-			}
-			try {
-				newFm.getRepairRateBean().setValueAsBaseUnit(fm.getRepairRateBean().getValueToBaseUnit());
-			} catch (NullPointerException e) {
-				newFm.getRepairRateBean().setValueAsBaseUnit(Double.NaN);
-			}
-			newFm.setName(fm.getName());
-			newFm.getTypeInstance().setUuid(fm.getTypeInstance().getUuid());
-			copy.getBasicEvents().add(newFm);
+		for (BasicEvent be : fault.getBasicEvents()) {
+			BasicEventHolder beHolder = new BasicEventHolder(be);
+			BasicEvent copyBe = new BasicEvent(concept);
+			copyBe.getHotFailureRateBean().setValueAsBaseUnit(beHolder.getHotFailureRate());
+			copyBe.getColdFailureRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
+			copyBe.getRepairRateBean().setValueAsBaseUnit(beHolder.getColdFailureRate());
+			copyBe.setName(be.getName());
+			copyBe.getTypeInstance().setUuid(be.getTypeInstance().getUuid());
+			copy.getBasicEvents().add(copyBe);
 		}
 
 		return copy;
@@ -505,37 +494,6 @@ public class FaultTreeHelper {
 				throw new RuntimeException("Cannot create FaultTree Gate: Unknown type " + type); 
 		}
 	}
-	
-	
-	/**
-	 * Get ALL children of a node (events, spares, dependencies, observations, faults)
-	 * @param node the node you want to find the children of
-	 * @param ft the fault tree
-	 * @return the list of children
-	 */
-	public List<FaultTreeNode> getAllChildren(FaultTreeNode node, FaultTree ft) {
-		List<FaultTreeNode> children = new ArrayList<FaultTreeNode>();
-		/* get children, spares, and dependencies and compile one big list */
-			
-		List<FaultTreeEdge> allEdges = new ArrayList<FaultTreeEdge>(ft.getPropagations());
-		allEdges.addAll(ft.getDeps());
-		allEdges.addAll(ft.getSpares());
-		allEdges.addAll(ft.getObservations());
-		
-		for (FaultTreeEdge edge : allEdges) {
-			if (edge.getTo().equals(node)) {
-				children.add(edge.getFrom());
-			}
-		}
-		
-		if (node instanceof Fault) {
-			children.addAll(((Fault) node).getBasicEvents());
-		}
-		
-		return children;
-	}
-	
-	
 
 	/**
 	 * Get the children of a node
