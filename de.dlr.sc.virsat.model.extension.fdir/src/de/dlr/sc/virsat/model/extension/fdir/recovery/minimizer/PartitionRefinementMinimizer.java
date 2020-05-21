@@ -19,7 +19,7 @@ import java.util.Set;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
@@ -80,14 +80,14 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 			
 			for (Transition transition : outgoingTransitions) {
 				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
-				if (transition instanceof TimedTransition) {
+				if (transition instanceof TimeoutTransition) {
 					Set<State> visitedStates = new HashSet<>();
 					State internalState = raHolder.getMapTransitionToTo().get(transition);
 					while (toBlock == block) {
 						List<Transition> internalTransitions = raHolder.getMapStateToOutgoingTransitions().get(internalState);
 						boolean hasTimeoutTransition = false;
 						for (Transition internalTransition : internalTransitions) {
-							if (internalTransition instanceof TimedTransition) {
+							if (internalTransition instanceof TimeoutTransition) {
 								internalState = raHolder.getMapTransitionToTo().get(internalTransition);
 								toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(internalTransition));
 								hasTimeoutTransition = true;
@@ -134,9 +134,9 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 			for (State other : block) {
 				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(other);
 				for (Transition transition : outgoingTransitions) {
-					if (transition instanceof TimedTransition) {
-						TimedTransition timedTransition = (TimedTransition) transition;
-						blockTimeout += timedTransition.getTime();
+					if (transition instanceof TimeoutTransition) {
+						TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
+						blockTimeout += timeoutTransition.getTime();
 						
 						State stateTo = raHolder.getMapTransitionToTo().get(transition);
 						List<State> blockTarget = mapStateToBlock.get(stateTo);
@@ -163,16 +163,16 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 						otherIncomingTransitions.add(transition);
 					}
 					
-					if (transition instanceof TimedTransition) {
-						TimedTransition timedTransition = (TimedTransition) transition;
-						timedTransition.setTime(blockTimeout);
+					if (transition instanceof TimeoutTransition) {
+						TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
+						timeoutTransition.setTime(blockTimeout);
 						
 						if (blockTimeoutTarget != null) {
-							timedTransition.setTo(blockTimeoutTarget);
+							timeoutTransition.setTo(blockTimeoutTarget);
 							
-							raHolder.getMapTransitionToTo().put(timedTransition, blockTimeoutTarget);
-							raHolder.getMapStateToIncomingTransitions().get(stateTo).remove(timedTransition);
-							raHolder.getMapStateToIncomingTransitions().get(blockTimeoutTarget).add(timedTransition);
+							raHolder.getMapTransitionToTo().put(timeoutTransition, blockTimeoutTarget);
+							raHolder.getMapStateToIncomingTransitions().get(stateTo).remove(timeoutTransition);
+							raHolder.getMapStateToIncomingTransitions().get(blockTimeoutTarget).add(timeoutTransition);
 						}
 					}
 				}

@@ -23,7 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
@@ -94,14 +94,14 @@ public class RecoveryAutomatonHelperTest extends ATestCase {
 		raHelper.createStates(ra, NUMBER_STATES);
 		
 		raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
+		raHelper.createTimeoutTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
 		
 		RecoveryAutomaton raCopy = raHelper.copyRA(ra);
 		
 		assertEquals(ra.getStates().size(), raCopy.getStates().size());
 		assertEquals(ra.getTransitions().size(), raCopy.getTransitions().size());
 		assertTrue(ra.getTransitions().get(0) instanceof FaultEventTransition);
-		assertTrue(ra.getTransitions().get(1) instanceof TimedTransition);
+		assertTrue(ra.getTransitions().get(1) instanceof TimeoutTransition);
 	}
 
 }

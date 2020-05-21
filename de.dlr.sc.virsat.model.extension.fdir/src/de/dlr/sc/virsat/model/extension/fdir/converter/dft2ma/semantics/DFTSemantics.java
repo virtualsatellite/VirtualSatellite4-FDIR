@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -276,14 +275,5 @@ public class DFTSemantics {
 	 */
 	public Map<FaultTreeNodeType, INodeSemantics> getMapTypeToSemantics() {
 		return mapTypeToSemantics;
-	}
-
-	/**
-	 * Creates the list of initial events that should be applied to the initial state
-	 * @param ftHolder the fault tree holder
-	 * @return the intitial events for the initial state
-	 */
-	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
-		return Collections.emptyList();
 	}
 }

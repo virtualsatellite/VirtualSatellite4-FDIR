@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEventTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrixTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTETest;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v0Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysisTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransitionTest;
@@ -42,6 +43,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVectorTest;
+import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v2Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FMECATest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
@@ -53,7 +55,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.SANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntryTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
@@ -98,9 +99,10 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	FreeActionTest.class,
 	StateTest.class,
 	FaultEventTransitionTest.class,
-	TimedTransitionTest.class,
+	TimeoutTransitionTest.class,
 	Migrator1v0Test.class,
 	Migrator1v1Test.class,
+	Migrator1v2Test.class,
 	FdirValidatorTest.class,
 				})
 

@@ -19,7 +19,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
  * @author muel_s8
  *
  */
-public class TimeEvent implements IDFTEvent {
+public class TimeoutEvent implements IDFTEvent {
 
 	private double time;
 	private State raState;
@@ -29,7 +29,7 @@ public class TimeEvent implements IDFTEvent {
 	 * @param time the time
 	 * @param raState the raState required for the event to be active
 	 */
-	public TimeEvent(double time, State raState) {
+	public TimeoutEvent(double time, State raState) {
 		this.time = time;
 		this.raState = raState;
 	}
@@ -47,7 +47,7 @@ public class TimeEvent implements IDFTEvent {
 
 	@Override
 	public void execute(DFTState state) {
-		state.setRecoveryStrategy(state.getRecoveryStrategy().onTime(time));
+		state.setRecoveryStrategy(state.getRecoveryStrategy().onTimeout(time));
 	}
 
 	@Override

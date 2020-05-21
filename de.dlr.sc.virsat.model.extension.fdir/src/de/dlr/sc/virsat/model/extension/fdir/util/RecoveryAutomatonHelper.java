@@ -25,7 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 
@@ -98,8 +98,8 @@ public class RecoveryAutomatonHelper {
 	 * @param time the time guard
 	 * @return transition between the present and the successor states
 	 */
-	public TimedTransition createTimedTransition(RecoveryAutomaton ra, State presentState, State successorState, double time) {
-		TimedTransition transition = new TimedTransition(concept);
+	public TimeoutTransition createTimeoutTransition(RecoveryAutomaton ra, State presentState, State successorState, double time) {
+		TimeoutTransition transition = new TimeoutTransition(concept);
 		
 		transition.setFrom(presentState);
 		transition.setTo(successorState);
@@ -356,8 +356,8 @@ public class RecoveryAutomatonHelper {
 			
 			if (transition instanceof FaultEventTransition) {
 				newTransition = copyFaultEventTransition((FaultEventTransition) transition);
-			} else if (transition instanceof TimedTransition) {
-				newTransition = copyTimedTransition((TimedTransition) transition);
+			} else if (transition instanceof TimeoutTransition) {
+				newTransition = copyTimeoutTransition((TimeoutTransition) transition);
 			} else {
 				throw new RuntimeException("Unknown transition type " +  transition);
 			}
@@ -397,8 +397,8 @@ public class RecoveryAutomatonHelper {
 	 * @param transition the transition to copy
 	 * @return a copy
 	 */
-	public TimedTransition copyTimedTransition(TimedTransition transition) {
-		TimedTransition newTransition = new TimedTransition(concept);
+	public TimeoutTransition copyTimeoutTransition(TimeoutTransition transition) {
+		TimeoutTransition newTransition = new TimeoutTransition(concept);
 		
 		newTransition.setTime(transition.getTimeBean().getValueToBaseUnit());
 		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {

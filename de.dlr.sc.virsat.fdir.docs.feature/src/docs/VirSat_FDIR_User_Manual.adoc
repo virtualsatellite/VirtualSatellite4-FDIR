@@ -484,13 +484,13 @@ image:recoveryAutomata/{type}_Diagram.png[Representation in graphical editor]
 
 '''
 
-:type: TimedTransition
+:type: TimoutTransition
 _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::  
 -- Description:::
- A timed transition has a `time` property.
+ A timeout transition has a `time` property.
  It is used as the guard for the transition.
  As a transition, is is also equipped with a list of recovery actions, executed upon triggering the transition.
- Every state may be equipped with at most *one* timed transition.
+ Every state may be equipped with at most *one* timeout transition.
  If multiple are declared, only the one with the smallest time property is used due to the maximum progress assumption.
 -- Graphical representation:::
 image:recoveryAutomata/{type}_Diagram.png[Representation in graphical editor]

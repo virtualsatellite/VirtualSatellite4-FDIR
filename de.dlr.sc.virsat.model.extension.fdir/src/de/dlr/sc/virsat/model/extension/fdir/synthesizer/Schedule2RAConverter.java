@@ -32,7 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -243,7 +243,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		
 		Transition transition = null;
 		if (isInternalTransition(markovianTransition)) {
-			transition = createTimedTransition(fromState, toState, 1 / markovianTransition.getRate());
+			transition = createTimeoutTransition(fromState, toState, 1 / markovianTransition.getRate());
 		} else {
 			transition = createFaultEventTransition(fromState, toState, event);
 		}
@@ -266,10 +266,10 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * @param time the time
 	 * @return the created RA transition
 	 */
-	protected TimedTransition createTimedTransition(S from, S to, double time) {
+	protected TimeoutTransition createTimeoutTransition(S from, S to, double time) {
 		State fromRaState = getOrCreateRecoveryAutomatonState(ra, from);
 		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
-		TimedTransition raTransition = raHelper.createTimedTransition(ra, fromRaState, toRaState, time);
+		TimeoutTransition raTransition = raHelper.createTimeoutTransition(ra, fromRaState, toRaState, time);
 		raTransition.setName(fromRaState.getName() + toRaState.getName());
 		return raTransition;
 	}

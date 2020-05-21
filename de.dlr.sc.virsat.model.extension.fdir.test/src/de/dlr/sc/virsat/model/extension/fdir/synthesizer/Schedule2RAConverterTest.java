@@ -30,7 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -159,13 +159,13 @@ public class Schedule2RAConverterTest extends ATestCase {
 				.filter(state -> !state.equals(ra.getInitial()) && !state.equals(finalState))
 				.findFirst().get();
 		
-		TimedTransition timedTransition = (TimedTransition) ra.getTransitions()
+		TimeoutTransition timeoutTransition = (TimeoutTransition) ra.getTransitions()
 				.stream()
 				.filter(transition -> transition.getFrom().equals(ra.getInitial()) && transition.getTo().equals(timedState))
 				.findFirst().get();
 		
 		final double EXPTED_TRANSITION_TIME = 1 / RATE_INTERNAL;
-		assertEquals(EXPTED_TRANSITION_TIME, timedTransition.getTime(), TEST_EPSILON);
+		assertEquals(EXPTED_TRANSITION_TIME, timeoutTransition.getTime(), TEST_EPSILON);
 		assertTrue(raHelper.isConnected(ra, ra.getInitial(), finalState));
 		assertTrue(raHelper.isConnected(ra, timedState, finalState));
 	}
