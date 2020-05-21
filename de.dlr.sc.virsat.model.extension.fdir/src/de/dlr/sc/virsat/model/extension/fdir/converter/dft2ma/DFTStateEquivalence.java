@@ -27,10 +27,10 @@ public class DFTStateEquivalence {
 	 * @return the existing equivalence class
 	 */
 	private List<DFTState> addStateClass(DFTState state) {
-		List<DFTState> dftStates = mapUnorderedBesToDFTStates.get(state.unorderedBes);
+		List<DFTState> dftStates = mapUnorderedBesToDFTStates.get(state.getUnorderedBes());
 		if (dftStates == null) {
 			dftStates = new ArrayList<>();
-			mapUnorderedBesToDFTStates.put(state.unorderedBes, dftStates);
+			mapUnorderedBesToDFTStates.put(state.getUnorderedBes(), dftStates);
 		}
 		
 		return dftStates;

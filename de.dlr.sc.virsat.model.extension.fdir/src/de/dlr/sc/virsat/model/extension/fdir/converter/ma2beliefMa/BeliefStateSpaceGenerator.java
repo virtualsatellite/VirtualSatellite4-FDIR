@@ -50,7 +50,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	@Override
 	public BeliefState createInitialState() {
-		BeliefState initialBeliefState = new BeliefState(targetMa, initialStateMa);
+		BeliefState initialBeliefState = new BeliefState(initialStateMa);
 		initialBeliefState.mapStateToBelief.put(initialStateMa, 1d);
 		beliefStateEquivalence.addState(initialBeliefState);
 		return initialBeliefState;
@@ -62,7 +62,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 		
 		for (Entry<PODFTState, List<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
-			BeliefState beliefSucc = new BeliefState(targetMa, entry.getKey());
+			BeliefState beliefSucc = new BeliefState(entry.getKey());
 			BeliefState equivalentBeliefSucc = null;
 			List<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 			
@@ -292,12 +292,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private BeliefState addBeliefState(BeliefState beliefState) {
 		beliefState.normalize();
 		
-		double failProb = 0;
-		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
-			if (ma.getFinalStates().contains(entry.getKey())) {
-				failProb += entry.getValue();
-			}
-		}
+		double failProb = beliefState.getFailProb();
 		
 		BeliefState equivalentBeliefState = beliefStateEquivalence.getEquivalentState(beliefState);
 		boolean isNewState = beliefState == equivalentBeliefState;

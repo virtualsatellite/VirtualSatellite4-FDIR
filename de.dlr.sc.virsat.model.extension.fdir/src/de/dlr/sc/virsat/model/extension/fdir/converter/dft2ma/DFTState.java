@@ -38,8 +38,8 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  */
 
 public class DFTState extends MarkovState {
-	protected boolean isFailState;
-	protected RecoveryStrategy recoveryStrategy;
+	private boolean isFailState;
+	private RecoveryStrategy recoveryStrategy;
 	
 	protected FaultTreeHolder ftHolder;
 	
@@ -48,14 +48,14 @@ public class DFTState extends MarkovState {
 	
 	private Set<Fault> activeFaults;
 	
-	protected BitSet failedNodes;
-	protected BitSet permanentNodes;
-	protected BitSet failingNodes;
+	private BitSet failedNodes;
+	private BitSet permanentNodes;
+	private BitSet failingNodes;
 	
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
 	
-	List<BasicEvent> orderedBes;
-	Set<BasicEvent> unorderedBes;
+	private List<BasicEvent> orderedBes;
+	private Set<BasicEvent> unorderedBes;
 	
 	/**
 	 * Default Constructor
@@ -129,6 +129,14 @@ public class DFTState extends MarkovState {
 	 */
 	public void setFailState(boolean isFailState) {
 		this.isFailState = isFailState;
+	}
+	
+	/**
+	 * Whether this state is a fail state
+	 * @return true iff this state is a fail state
+	 */
+	public boolean getFailState() {
+		return isFailState;
 	}
 	
 	@Override

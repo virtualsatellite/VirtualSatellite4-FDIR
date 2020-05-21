@@ -13,11 +13,11 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -31,15 +31,12 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 public class BeliefState extends MarkovState {
 	Map<PODFTState, Double> mapStateToBelief = new TreeMap<>(MarkovState.MARKOVSTATE_COMPARATOR);
 	PODFTState representant;
-	MarkovAutomaton<BeliefState> beliefMa;
 	
 	/**
 	 * Standard constructor
-	 * @param the associated belief ma
 	 * @param representant the representant
 	 */
-	BeliefState(MarkovAutomaton<BeliefState> beliefMa, PODFTState representant) {
-		this.beliefMa = beliefMa;
+	BeliefState(PODFTState representant) {
 		this.representant = representant;
 	}
 	
@@ -50,7 +47,7 @@ public class BeliefState extends MarkovState {
 				.collect(Collectors.joining(","));
 		
 		String label = index + " [label=\"[" + index + " " + beliefs + "]\"";
-		if (beliefMa.getFinalStates().contains(this)) {
+		if (getFailProb() > 0) {
 			label += ", color=\"red\"";
 		} else if (!isMarkovian()) {
 			label += ", color=\"blue\"";
@@ -125,5 +122,19 @@ public class BeliefState extends MarkovState {
 		}
 		
 		return true;
+	}
+
+	/**
+	 * Gets the total probability of currently being in a fail state
+	 * @return the probability of being in a fail state
+	 */
+	public double getFailProb() {
+		double failProb = 0;
+		for (Entry<PODFTState, Double> entry : mapStateToBelief.entrySet()) {
+			if (entry.getKey().getFailState()) {
+				failProb += entry.getValue();
+			}
+		}
+		return failProb;
 	}
 }

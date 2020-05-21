@@ -228,7 +228,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 					}
 				}
 				
-				targetMa.addState(succ, succ.isFailState ? 1 : 0);
+				targetMa.addState(succ, succ.getFailState() ? 1 : 0);
 				newSuccs.add(succ);
 			}
 			
@@ -275,7 +275,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return the list of all events that can occur
 	 */
 	private List<IDFTEvent> getOccurableEvents(DFTState state) {
-		if (state.isFailState && state.isFaultTreeNodePermanent(root)) {
+		if (state.getFailState() && state.isFaultTreeNodePermanent(root)) {
 			return Collections.emptyList();
 		}
 		
