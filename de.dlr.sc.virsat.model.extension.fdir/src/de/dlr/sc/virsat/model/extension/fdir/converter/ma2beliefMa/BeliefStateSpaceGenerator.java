@@ -229,7 +229,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			
 			if (prob > 0) {
 				if (isInternalTransition) {
-					toState = getTargetState(ma, toState);
+					toState = getTargetState(toState);
 				}
 				beliefSucc.addBelief(toState, prob);
 			}
@@ -249,11 +249,10 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 
 	/**
 	 * Checks the target state and updates it if necessary
-	 * @param ma the markov automaton
 	 * @param toState the current target state
 	 * @return the updated target state
 	 */
-	private PODFTState getTargetState(MarkovAutomaton<DFTState> ma, PODFTState toState) {
+	private PODFTState getTargetState(PODFTState toState) {
 		if (!toState.isMarkovian()) {
 			List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
 			toState = (PODFTState) transitions.stream()
