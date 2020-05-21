@@ -59,7 +59,7 @@ public class MarkovSchedulerTest {
 		ma.getEvents().add("a");
 		ma.getEvents().add("b");
 		
-		ma.getFinalStates().add(bad);
+		ma.getFinalStateProbs().put(bad, 1d);
 		
 		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);
@@ -86,7 +86,7 @@ public class MarkovSchedulerTest {
 		ma.getEvents().add("a");
 		ma.getEvents().add("b");
 		
-		ma.getFinalStates().add(sink);
+		ma.getFinalStateProbs().put(sink, 1d);
 		
 		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);
@@ -114,7 +114,7 @@ public class MarkovSchedulerTest {
 		ma.getEvents().add("a");
 		ma.getEvents().add("b");
 		
-		ma.getFinalStates().add(bad);
+		ma.getFinalStateProbs().put(bad, 1d);
 		
 		Object correctChoice = ma.addNondeterministicTransition("a", initial, good, 1);
 		// CHECKSTYLE:OFF
@@ -148,7 +148,7 @@ public class MarkovSchedulerTest {
 		ma.getEvents().add(Collections.emptyList());
 		ma.getEvents().add("b");
 		
-		ma.getFinalStates().add(bad);
+		ma.getFinalStateProbs().put(bad, 1d);
 		
 		Object correctChoice = ma.addNondeterministicTransition(Collections.emptyList(), initial, bad, 1);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad, 1);

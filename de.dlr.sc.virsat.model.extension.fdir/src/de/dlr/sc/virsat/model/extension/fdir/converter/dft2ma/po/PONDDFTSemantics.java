@@ -9,13 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
@@ -58,8 +58,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
-		List<IDFTEvent> events = super.createEvents(ftHolder);
+	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
+		List<IDFTEvent> events = super.createEvents(ftHolder, staticAnalysis);
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
@@ -222,10 +222,5 @@ public class PONDDFTSemantics extends DFTSemantics {
 	@Override
 	public DFTState generateState(FaultTreeHolder ftHolder) {
 		return new PODFTState(ftHolder);
-	}
-	
-	@Override
-	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
-		return Collections.singletonList(new ObservationEvent(ftHolder.getRoot(), true));
 	}
 }

@@ -40,6 +40,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -126,6 +127,36 @@ public class DFTEvaluatorTest extends ATestCase {
 		final int EXPECTEDTRANSITIONS = 4;
 		
 		Fault fault = createDFT("/resources/galileo/and2.dft");
+		
+		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+		BasicEvent a = ftHolder.getNodeByName("A", BasicEvent.class);
+		BasicEvent b = ftHolder.getNodeByName("B", BasicEvent.class);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, MinimumCutSet.MINCUTSET);
+		
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		
+		final int EXPECTED_COUNT_MINCUTS = 1;
+		assertEquals("Number of MinCut sets correct", EXPECTED_COUNT_MINCUTS, result.getMinCutSets().size());
+		assertThat("MinCut sets correct", result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList(a, b))));
+	}
+
+	@Test
+	public void testEvaluateAnd2Symmetric() throws IOException {
+		final double[] EXPECTED = {
+			2.487536380342687E-5, 
+			9.900580841919508E-5, 
+			2.21654342382854E-4, 
+			3.9209253881260497E-4,
+		};
+		final double EXPECTEDMTTF = 3;
+		final int EXPECTEDSTATES = 3;
+		final int EXPECTEDTRANSITIONS = 2;
+		
+		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		BasicEvent a = ftHolder.getNodeByName("A", BasicEvent.class);
@@ -531,13 +562,13 @@ public class DFTEvaluatorTest extends ATestCase {
 		raHelper.createTimedTransition(ra, s0, s1, 1);
 		
 		FaultEventTransition t1 = raHelper.createFaultEventTransition(ra, s1, s1);
-		SPARE spareGate = (SPARE) ftHelper.getChildren(fault).get(0);
-		Fault faultA = (Fault) ftHelper.getChildren(spareGate).get(0);
+		SPARE spareGate = (SPARE) ftHelper.getNodes(EdgeType.CHILD, fault).get(0);
+		Fault faultA = (Fault) ftHelper.getNodes(EdgeType.CHILD, spareGate).get(0);
 		BasicEvent be = faultA.getBasicEvents().get(0);
 		raHelper.assignInputs(t1, be);
 		ClaimAction ca = new ClaimAction(concept);
 		ca.setSpareGate(spareGate);
-		ca.setClaimSpare(ftHelper.getSpares(spareGate).get(0));
+		ca.setClaimSpare(ftHelper.getNodes(EdgeType.SPARE, spareGate).get(0));
 		raHelper.assignAction(t1, ca);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));

@@ -266,6 +266,8 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		System.out.println(ra.toDot());
+		
 		final int NUM_STATES = 3;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		

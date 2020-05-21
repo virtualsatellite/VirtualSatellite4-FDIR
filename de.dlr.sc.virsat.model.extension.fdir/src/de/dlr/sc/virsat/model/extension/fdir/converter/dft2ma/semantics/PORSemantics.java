@@ -30,31 +30,33 @@ public class PORSemantics implements INodeSemantics {
 			GenerationResult generationResult) {
 		FaultTreeHolder ftHolder = state.getFTHolder();
 		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
+		boolean hasChanged = false;
 		
-		boolean firstChildFailed = state.hasFaultTreeNodeFailed(children.get(0));
-		boolean existsOtherChildThatFailed = false;
+		FaultTreeNode firstChild = children.get(0);
+		boolean firstChildFailed = state.hasFaultTreeNodeFailed(firstChild);
+		
 		if (!pred.hasFaultTreeNodeFailed(node)) {
 			for (int i = 1; i < children.size(); ++i) {
 				if (state.hasFaultTreeNodeFailed(children.get(i))) {
-					existsOtherChildThatFailed = true;
+					// There exists another child besides the fist one that has failed
+					hasChanged |= state.setFaultTreeNodeFailed(node, false);
 					if (state.isFaultTreeNodePermanent(children.get(i))) {
-						state.setFaultTreeNodePermanent(node, true);
+						hasChanged |= state.setFaultTreeNodePermanent(node, true);
 					}
-					break;
+					return hasChanged;
 				}
 			}
 		}
 		
-		if (existsOtherChildThatFailed) {
-			return state.setFaultTreeNodeFailed(node, false);
-		} else if (firstChildFailed) {
-			if (state.isFaultTreeNodePermanent(children.get(0))) {
-				state.setFaultTreeNodePermanent(node, true);
+		
+		if (firstChildFailed) {
+			if (state.isFaultTreeNodePermanent(firstChild)) {
+				hasChanged |= state.setFaultTreeNodePermanent(node, true);
 			}
-			return state.setFaultTreeNodeFailed(node, true);
+			hasChanged |= state.setFaultTreeNodeFailed(node, true);
 		}
 		
-		return false;
+		return hasChanged;
 	}
 
 }

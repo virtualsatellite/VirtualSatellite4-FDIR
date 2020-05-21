@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class MarkovAutomaton<S extends MarkovState> {
 	private List<S> states = new ArrayList<>();
-	private Set<S> finalStates = new HashSet<>();
+	private Map<S, Double> finalStateProbs = new HashMap<>();
 	private Set<Object> events = new HashSet<>();
 	private Map<Object, List<MarkovTransition<S>>> mapEventToTransitions = new HashMap<>();
 	private Map<S, List<MarkovTransition<S>>> mapStateToSuccTransitions = new HashMap<>();
@@ -47,7 +47,15 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return a set of final states
 	 */
 	public Set<S> getFinalStates() {
-		return finalStates;
+		return finalStateProbs.keySet();
+	}
+	
+	/**
+	 * Gets the mapping from state to the probability of being a final state
+	 * @return the final state probablity
+	 */
+	public Map<S, Double> getFinalStateProbs() {
+		return finalStateProbs;
 	}
 	
 	/**
@@ -124,6 +132,20 @@ public class MarkovAutomaton<S extends MarkovState> {
 	}
 	
 	/**
+	 * Adds a state with the given final prob.
+	 * If the final prob is non-zero, the state is added to the final states.
+	 * @param state the state to add
+	 * @param finalProb the final state prob
+	 */
+	public void addState(S state, double finalProb) {
+		addState(state);
+		
+		if (finalProb > 0) {
+			getFinalStateProbs().put(state, finalProb);
+		}
+	}
+	
+	/**
 	 * Add a new markov transition to the automaton
 	 * @param event the transition event
 	 * @param from the starting state of the transition
@@ -135,6 +157,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	private MarkovTransition<S> addTransition(Object event, S from, S to, double rate, boolean isMarkovian) {
 		MarkovTransition<S> t = new MarkovTransition<>(from, to, rate, event, isMarkovian);
 		List<MarkovTransition<S>> transitions = getTransitions(event);
+		
 		transitions.add(t);
 		from.setMarkovian(isMarkovian);
 		
@@ -185,7 +208,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 */
 	public void removeState(S state) {
 		states.remove(state);
-		finalStates.remove(state);
+		finalStateProbs.remove(state);
 		
 		List<MarkovTransition<S>> succTransitions = getSuccTransitions(state);
 		for (MarkovTransition<S> transition : succTransitions) {

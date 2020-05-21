@@ -20,7 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 /**
  * Contains information for modules of the fault tree
@@ -155,19 +155,18 @@ public class Module {
 	 * Create the fault tree copy that is required for conversion to markov automata, with only the edges in the module
 	 */
 	public void constructFaultTreeCopy() {
-		FaultTreeHelper fthelp = new FaultTreeHelper(this.moduleRoot.getFaultTreeNode().getConcept());
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(this.moduleRoot.getFaultTreeNode().getConcept());
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
 		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		this.mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
 		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode();
 		Fault rootFault = new Fault(originalRoot.getConcept());
-		FaultTreeNode rootCopy = fthelp.copyFaultTreeNode(originalRoot, rootFault.getFault());
-		rootCopy.setName(originalRoot.getName());
+		FaultTreeNode rootCopy = ftBuilder.copyFaultTreeNode(originalRoot, rootFault.getFault());
 		this.moduleRootCopy = rootFault;
-		fthelp.connect(rootFault, rootCopy, rootFault);
+		ftBuilder.connect(rootFault, rootCopy, rootFault);
 
-		List<FaultTreeNode> sparesInOriginalFaultTree = fthelp.getAllSpareNodes(originalRoot.getFault());
+		List<FaultTreeNode> sparesInOriginalFaultTree = ftBuilder.getFtHelper().getAllSpareNodes(originalRoot.getFault());
 		mapOriginalToCopy.put(originalRoot, rootCopy);
 		mapCopyToOriginal.put(rootCopy, originalRoot);
 		dfsStack.push(originalRoot);
@@ -181,7 +180,7 @@ public class Module {
 				FaultTreeNode child = childPlus.getFaultTreeNode();
 				FaultTreeNode childCopy;
 				if (mapOriginalToCopy.get(child) == null) {
-					childCopy = fthelp.copyFaultTreeNode(child, currCopy.getFault());
+					childCopy = ftBuilder.copyFaultTreeNode(child, currCopy.getFault());
 					mapOriginalToCopy.put(child, childCopy);
 					mapCopyToOriginal.put(childCopy, child);
 					
@@ -204,9 +203,9 @@ public class Module {
 				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
 				if (moduleContainsCurrAndChild && !child.getFaultTreeNodeType().equals(FaultTreeNodeType.BASIC_EVENT)) {
 					if (sparesInOriginalFaultTree.contains(child)) {
-						fthelp.connectSpare(currCopy.getFault(), childCopy, currCopy);
+						ftBuilder.connectSpare(currCopy.getFault(), childCopy, currCopy);
 					} else {
-						fthelp.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);
+						ftBuilder.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);
 					}
 				}
 			}

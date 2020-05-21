@@ -29,7 +29,7 @@ public class FailLabelProvider {
 	 *
 	 */
 	public enum FailLabel {
-		FAILED, OBSERVED, UNOBSERVED, PERMANENT
+		FAILED, OBSERVED, UNOBSERVED
 	}
 
 	private Set<FailLabel> failLabels;

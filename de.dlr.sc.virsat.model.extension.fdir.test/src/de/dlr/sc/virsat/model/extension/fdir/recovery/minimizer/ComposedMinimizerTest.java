@@ -83,8 +83,8 @@ public class ComposedMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition33, fault1);
 		raHelper.assignInputs(transition33_2, fault2);
 
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
@@ -169,9 +169,9 @@ public class ComposedMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition44_2, fault2);
 		raHelper.assignInputs(transition44_3, fault3);
 
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare3 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare3 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);

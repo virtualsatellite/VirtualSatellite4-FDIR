@@ -59,7 +59,7 @@ public class FaultTreeDiagramToolBehaviorProvider extends DefaultToolBehaviorPro
 			if (iCustomFeature instanceof FaultTreeNodeCollapseFeature) {
 				Fault fault = (Fault) getFeatureProvider().getBusinessObjectForPictogramElement(pe);
 				
-				FaultTreeHelper ftHelper = new FaultTreeHelper(fault.getConcept());
+				FaultTreeHelper ftHelper = new FaultTreeHelper();
 				List<Object> allLocalSubObjects = new ArrayList<>(ftHelper.getAllLocalNodes(fault));
 				allLocalSubObjects.remove(fault);
 				allLocalSubObjects.addAll(fault.getFaultTree().getPropagations());

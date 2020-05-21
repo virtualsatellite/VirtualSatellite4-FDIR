@@ -129,7 +129,7 @@ public class PODFTState extends DFTState {
 	}
 	
 	@Override
-	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
+	protected boolean removeClaimedSparesOnPermanentFailureIfPossible(FaultTreeNode node) {
 		return false;
 	}
 	

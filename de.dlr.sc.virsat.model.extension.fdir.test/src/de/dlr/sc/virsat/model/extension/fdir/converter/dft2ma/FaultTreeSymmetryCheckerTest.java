@@ -43,17 +43,17 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, List<FaultTreeNode>> relation = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder).getBiggerRelation();
 		
 		BasicEvent a = ftHolder.getNodeByName("A",  BasicEvent.class);
 		BasicEvent b = ftHolder.getNodeByName("B",  BasicEvent.class);
 		Fault faultA = ftHolder.getNodeByName("A",  Fault.class);
 		Fault faultB = ftHolder.getNodeByName("B",  Fault.class);
 		
-		assertTrue(symmetryReduction.get(a).isEmpty());
-		assertTrue(symmetryReduction.get(b).isEmpty());
-		assertTrue(symmetryReduction.get(faultA).isEmpty());
-		assertTrue(symmetryReduction.get(faultB).isEmpty());
+		assertTrue(relation.get(a).isEmpty());
+		assertTrue(relation.get(b).isEmpty());
+		assertTrue(relation.get(faultA).isEmpty());
+		assertTrue(relation.get(faultB).isEmpty());
 	}
 	
 	@Test
@@ -61,17 +61,17 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/pand4.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, List<FaultTreeNode>> relation = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder).getBiggerRelation();
 		
 		BasicEvent a = ftHolder.getNodeByName("A",  BasicEvent.class);
 		BasicEvent b = ftHolder.getNodeByName("B",  BasicEvent.class);
 		BasicEvent c = ftHolder.getNodeByName("C",  BasicEvent.class);
 		BasicEvent d = ftHolder.getNodeByName("D",  BasicEvent.class);
 		
-		assertTrue(symmetryReduction.get(a).isEmpty());
-		assertTrue(symmetryReduction.get(b).isEmpty());
-		assertTrue(symmetryReduction.get(c).isEmpty());
-		assertTrue(symmetryReduction.get(d).isEmpty());
+		assertTrue(relation.get(a).isEmpty());
+		assertTrue(relation.get(b).isEmpty());
+		assertTrue(relation.get(c).isEmpty());
+		assertTrue(relation.get(d).isEmpty());
 	}
 	
 	@Test
@@ -79,13 +79,13 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2Symmetric.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, List<FaultTreeNode>> relation = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder).getBiggerRelation();
 
-		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
-		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 0).findFirst().get();
+		FaultTreeNode min = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 1).findFirst().get();
+		FaultTreeNode max = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 0).findFirst().get();
 		
-		assertThat(symmetryReduction.get(min), hasItems(max));
-		assertTrue(symmetryReduction.get(max).isEmpty());
+		assertThat(relation.get(min), hasItems(max));
+		assertTrue(relation.get(max).isEmpty());
 	}
 	
 	@Test
@@ -93,17 +93,17 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and3Symmetric.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, List<FaultTreeNode>> relation = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder).getBiggerRelation();
 		
 		//CHECKSTYLE:OFF
-		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 2).findFirst().get();
-		FaultTreeNode mid = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
-		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 0).findFirst().get();
+		FaultTreeNode min = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 2).findFirst().get();
+		FaultTreeNode mid = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 1).findFirst().get();
+		FaultTreeNode max = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 0).findFirst().get();
 		//CHECKSTYLE:ON
 		
-		assertThat(symmetryReduction.get(min), hasItems(mid, max));
-		assertThat(symmetryReduction.get(mid), hasItems(max));
-		assertTrue(symmetryReduction.get(max).isEmpty());
+		assertThat(relation.get(min), hasItems(mid, max));
+		assertThat(relation.get(mid), hasItems(max));
+		assertTrue(relation.get(max).isEmpty());
 	}
 	
 	@Test
@@ -111,23 +111,23 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2Symmetric.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, List<FaultTreeNode>> relation = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder).getBiggerRelation();
 
 		//CHECKSTYLE:OFF
-		FaultTreeNode min1 = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
-		FaultTreeNode min2 = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).skip(1).findFirst().get();
-		FaultTreeNode max1 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min1).contains(k) && symmetryReduction.get(k).size() == 0).findFirst().get();
-		FaultTreeNode max2 = symmetryReduction.keySet().stream().filter(k -> symmetryReduction.get(min2).contains(k) && symmetryReduction.get(k).size() == 0).findFirst().get();
+		FaultTreeNode min1 = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 1).findFirst().get();
+		FaultTreeNode min2 = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 1).skip(1).findFirst().get();
+		FaultTreeNode max1 = relation.keySet().stream().filter(k -> relation.get(min1).contains(k) && relation.get(k).size() == 0).findFirst().get();
+		FaultTreeNode max2 = relation.keySet().stream().filter(k -> relation.get(min2).contains(k) && relation.get(k).size() == 0).findFirst().get();
 		FaultTreeNode minParent = ftHolder.getNodes(min1, EdgeType.PARENT).get(0);
 		FaultTreeNode maxParent = ftHolder.getNodes(max1, EdgeType.PARENT).get(0);
 		//CHECKSTYLE:ON
 		
-		assertThat(symmetryReduction.get(min1), hasItems(max1));
-		assertThat(symmetryReduction.get(min2), hasItems(max2));
-		assertThat(symmetryReduction.get(minParent), hasItems(maxParent));
-		assertTrue(symmetryReduction.get(max1).isEmpty());
-		assertTrue(symmetryReduction.get(max2).isEmpty());
-		assertTrue(symmetryReduction.get(maxParent).isEmpty());
+		assertThat(relation.get(min1), hasItems(max1));
+		assertThat(relation.get(min2), hasItems(max2));
+		assertThat(relation.get(minParent), hasItems(maxParent));
+		assertTrue(relation.get(max1).isEmpty());
+		assertTrue(relation.get(max2).isEmpty());
+		assertTrue(relation.get(maxParent).isEmpty());
 	}
 	
 	@Test
@@ -135,15 +135,15 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/beOrAnd2Symmetric.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, List<FaultTreeNode>> relation = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder).getBiggerRelation();
 
 		BasicEvent a = ftHolder.getNodeByName("A",  BasicEvent.class);
-		FaultTreeNode min = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 1).findFirst().get();
-		FaultTreeNode max = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 0 && !k.equals(a)).findFirst().get();
+		FaultTreeNode min = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 1).findFirst().get();
+		FaultTreeNode max = relation.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 0 && !k.equals(a)).findFirst().get();
 		
-		assertTrue(symmetryReduction.get(a).isEmpty());
-		assertThat(symmetryReduction.get(min), hasItems(max));
-		assertTrue(symmetryReduction.get(max).isEmpty());
+		assertTrue(relation.get(a).isEmpty());
+		assertThat(relation.get(min), hasItems(max));
+		assertTrue(relation.get(max).isEmpty());
 	}
 	
 	@Test
@@ -151,10 +151,12 @@ public class FaultTreeSymmetryCheckerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2SharedSymmetric.dft");
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
+		Map<FaultTreeNode, List<FaultTreeNode>> relation = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder).getBiggerRelation();
 		
 		//CHECKSTYLE:OFF
-		FaultTreeNode allSymmetric = symmetryReduction.keySet().stream().filter(k -> k instanceof BasicEvent && symmetryReduction.get(k).size() == 3).findFirst().orElse(null);
+		FaultTreeNode allSymmetric = relation
+				.keySet().stream().filter(k -> k instanceof BasicEvent && relation.get(k).size() == 3)
+				.findFirst().orElse(null);
 		//CHECKSTYLE:ON
 		
 		assertNull("Since 1 of the BEs is shared, at most the 2 non shared BEs may be symmetric!", allSymmetric);

@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
@@ -48,9 +49,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private FailableBasicEventsProvider failableBasicEventsProvider;
 	
 	private boolean allowsDontCareFailing = true;
-	
-	private FaultTreeNode root;
-	private DFTState initialState;
 
 	private Collection<IDFTEvent> events;
 	private FaultTreeHolder ftHolder;
@@ -59,20 +57,21 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	
 	/**
 	 * Configures the state space generator
-	 * @param root a fault tree node used as a root node for the state space generation
+	 * @param ftHolder the fault tree holder
 	 * @param failLabelProvider the fail label criterion
 	 * @param failableBasicEventsProvider the nodes that need to fail
 	 */
-	public void configure(FaultTreeNode root, FailLabelProvider failLabelProvider, FailableBasicEventsProvider failableBasicEventsProvider) {
-		this.root = root;
+	public void configure(FaultTreeHolder ftHolder, FailLabelProvider failLabelProvider, FailableBasicEventsProvider failableBasicEventsProvider) {
+		this.ftHolder = ftHolder;
 		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : DEFAULT_FAIL_LABEL_PROVIDER;
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
 	}
 	
 	@Override
 	public DFTState createInitialState() {
-		initialState = semantics.generateState(ftHolder);
-		stateEquivalence.getEquivalentState(initialState, true);
+		DFTState initialState = semantics.generateState(ftHolder);
+		stateEquivalence.getEquivalentState(initialState);
+		FaultTreeNode root = ftHolder.getRoot();
 		initialState.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
 			initialState.setNodeActivation(root, true);
@@ -89,7 +88,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
-			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate, staticAnalysis);
+			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(state, stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
@@ -102,14 +101,10 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		super.init(targetMa);
 		
 		stateEquivalence = new DFTStateEquivalence();
-		
-		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
-		ftHolder = new FaultTreeHolder(holderRoot);
-		events = createEvents();
-
-		targetMa.getEvents().addAll(events);
-		
 		staticAnalysis.perform(ftHolder);
+		
+		events = createEvents();
+		targetMa.getEvents().addAll(events);
 		
 		if (recoveryStrategy != null) {
 			events.addAll(recoveryStrategy.createEventSet());
@@ -126,7 +121,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return
 	 */
 	private List<IDFTEvent> createEvents() {
-		List<IDFTEvent> events = semantics.createEvents(ftHolder);
+		List<IDFTEvent> events = semantics.createEvents(ftHolder, staticAnalysis);
 		Set<IDFTEvent> unoccurableEvents = new HashSet<>();
 		for (IDFTEvent event : events) {
 			if (event.getNode() instanceof BasicEvent && failableBasicEventsProvider != null) {
@@ -169,7 +164,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
 				baseSucc = stateUpdateResult.reset(state);
-				event.execute(baseSucc, staticAnalysis);
+				event.execute(baseSucc);
 				recoveryStrategy.execute(baseSucc);
 				
 				semantics.propgateStateUpdate(stateUpdate, stateUpdateResult);
@@ -184,7 +179,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			DFTState interimState = baseSucc.copy();
 			interimState.setMarkovian(false);
 			
-			markovSucc = stateEquivalence.getEquivalentState(interimState, true);
+			markovSucc = stateEquivalence.getEquivalentState(interimState);
 			if (markovSucc == interimState) {
 				targetMa.addState(markovSucc);	
 			} else {
@@ -220,21 +215,18 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			}
 			
 			checkFailState(succ);
-			DFTState equivalentState = stateEquivalence.getEquivalentState(succ, true);
+			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
 			
 			if (equivalentState == succ) {
-				if (staticAnalysis.getSymmetryChecker() != null) {
+				SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
+				if (symmetryReduction != null) {
 					if (stateUpdate.getEvent() instanceof FaultEvent) {
-						succ.createSymmetryRequirements(stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode(), staticAnalysis.getSymmetryReduction());
+						symmetryReduction.createSymmetryRequirements(succ, stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode());
 					}
 				}
 				
-				targetMa.addState(succ);
+				targetMa.addState(succ, succ.getFailState() ? 1 : 0);
 				newSuccs.add(succ);
-				
-				if (succ.isFailState) {
-					targetMa.getFinalStates().add(succ);
-				}
 			}
 			
 			if (markovSucc != null) {
@@ -250,28 +242,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	
 	@Override
 	public List<DFTState> getStartingStates(DFTState initialState) {
-		List<DFTState> initialStates = new ArrayList<>();
-		List<IDFTEvent> initialEvents = semantics.getInitialEvents(ftHolder);
-		
-		for (IDFTEvent event : initialEvents) {
-			StateUpdate initialStateUpdate = new StateUpdate(initialState, event);
-			StateUpdateResult initialStateUpdateResult = semantics.performUpdate(initialStateUpdate, staticAnalysis);
-			
-			if (initialStateUpdateResult.getSuccs().size() > 1) {
-				for (DFTState initialSucc : initialStateUpdateResult.getSuccs()) {
-					targetMa.addState(initialSucc);
-					List<RecoveryAction> actions = initialStateUpdateResult.getMapStateToRecoveryActions().get(initialSucc);
-					targetMa.addNondeterministicTransition(actions, initialState, initialSucc);	
-				}
-				initialStates.addAll(initialStateUpdateResult.getSuccs());
-			}
-		}
-		
-		if (initialStates.isEmpty()) {
-			initialStates.add(initialState);
-		}
-		
-		return initialStates;
+		return Collections.singletonList(initialState);
 	}
 	
 	/**
@@ -280,7 +251,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return the list of all events that can occur
 	 */
 	private List<IDFTEvent> getOccurableEvents(DFTState state) {
-		if (state.isFailState && state.isFaultTreeNodePermanent(root)) {
+		if (state.getFailState() && state.isFaultTreeNodePermanent(ftHolder.getRoot())) {
 			return Collections.emptyList();
 		}
 		
@@ -303,8 +274,9 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private List<StateUpdate> getStateUpdates(DFTState state, List<IDFTEvent> occurableEvents) {
 		List<StateUpdate> stateUpdates = new ArrayList<>();
 		for (IDFTEvent event : occurableEvents) {
-			int symmetryMultiplier = staticAnalysis.getSymmetryMultiplier(event, state);
-			if (symmetryMultiplier != DFTStaticAnalysis.SKIP_EVENT) {
+			SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
+			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event, state) : 1;
+			if (symmetryMultiplier != SymmetryReduction.SKIP_EVENT) {
 				StateUpdate stateUpdate = new StateUpdate(state, event, symmetryMultiplier);
 				stateUpdates.add(stateUpdate);
 			}
@@ -336,25 +308,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 						return;
 					}
 					break;
-				case PERMANENT:
-					if (!state.isFaultTreeNodePermanent(root)) {
-						return;
-					}
-					break;
 				default:
 					break;
 			}
 		}
 		
 		state.setFailState(true);
-	}
-
-	/**
-	 * Get the initial state of the markov automaton
-	 * @return the initial state of the markov automaton
-	 */
-	public DFTState getInitial() {
-		return initialState;
 	}
 	
 	/**

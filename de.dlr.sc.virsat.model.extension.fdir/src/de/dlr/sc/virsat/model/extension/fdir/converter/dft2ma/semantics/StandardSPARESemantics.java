@@ -117,7 +117,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	}
 	
 	/**
-	 * Only spares gates whose spares / children have changed their state are allowed to claim
+	 * Override to restrict when a spare gate is allowed to claim
 	 * @param pred predecessor state
 	 * @param state current state
 	 * @param node the node that needs claiming
@@ -125,7 +125,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @return true iff the node is allowed to perform a claim
 	 */
 	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		return state.hasFailStateChanged(pred, ftHolder.getMapNodeToSubNodes().get(node));
+		return true;
 	}
 	
 	/**

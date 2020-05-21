@@ -68,6 +68,11 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 				if (otherClaimAction.getClaimSpare().equals(spare)) {
 					return false;
 				}
+			} else if (ra instanceof FreeAction) {
+				FreeAction freeAction = (FreeAction) ra;
+				if (freeAction.getFreeSpare().equals(spare)) {
+					return false;
+				}
 			}
 		}
 		
@@ -80,10 +85,6 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		
 		FaultTreeNode currentClaimant = state.getMapSpareToClaimedSpares().get(spare);
 		boolean reclaim = currentClaimant != null;
-		
-		if (reclaim && currentClaimant.equals(node)) {
-			return false;
-		}
 		
 		if (reclaim) {
 			performFree(node, spare, state, generationResult);

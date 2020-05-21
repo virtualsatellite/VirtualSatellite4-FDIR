@@ -66,7 +66,7 @@ public class FaultTreeHolder {
 	 * Builds the actual data
 	 */
 	private void processFaultTree() {
-		FaultTreeHelper ftHelper = new FaultTreeHelper(root.getConcept());
+		FaultTreeHelper ftHelper = new FaultTreeHelper();
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
@@ -92,8 +92,8 @@ public class FaultTreeHolder {
 	private List<FaultTreeNode> processNode(FaultTreeNode node, FaultTreeHelper ftHelper) {
 		List<FaultTreeNode> toProcess = new ArrayList<>();
 		
-		List<FaultTreeNode> children = ftHelper.getChildren(node, faultTrees);
-		List<FaultTreeNode> spares = ftHelper.getSpares(node, faultTrees);
+		List<FaultTreeNode> children = ftHelper.getNodes(EdgeType.CHILD, node, faultTrees);
+		List<FaultTreeNode> spares = ftHelper.getNodes(EdgeType.SPARE, node, faultTrees);
 		
 		NodeHolder nodeHolder = getNodeHolder(node);
 		nodeHolder.mapEdgeTypeToNodes.put(EdgeType.CHILD, children);
@@ -177,7 +177,6 @@ public class FaultTreeHolder {
 	private void processBasicEvents(Fault fault) {
 		for (BasicEvent basicEvent : fault.getBasicEvents()) {
 			BasicEventHolder beHolder = new BasicEventHolder(basicEvent);
-			beHolder.fault = fault;
 			mapBEToBEHolders.put(basicEvent, beHolder);
 					
 			NodeHolder parentHolder = getNodeHolder(basicEvent);
@@ -315,38 +314,20 @@ public class FaultTreeHolder {
 	}
 	
 	/**
+	 * Gets the basic event holder for a basic event
+	 * @param be the basic event
+	 * @return the basic event holder
+	 */
+	public BasicEventHolder getBasicEventHolder(BasicEvent be) {
+		return mapBEToBEHolders.get(be);
+	}
+	
+	/**
 	 * Gets a mapping from any basic event to its owning fault
 	 * @return map basic event to fault
 	 */
 	public Fault getFault(BasicEvent be) {
-		return mapBEToBEHolders.get(be).fault;
-	}
-	
-	/**
-	 * Gets the cached cold failure rate of a basic event in the basic unit
-	 * @param be the basic event
-	 * @return the cold fail rate
-	 */
-	public double getColdFailRate(BasicEvent be) {
-		return mapBEToBEHolders.get(be).coldFailureRate;
-	}
-	
-	/**
-	 * Gets the cached hot failure rate of a basic event in the basic unit
-	 * @param be the basic event
-	 * @return the hot fail rate
-	 */
-	public double getHotFailRate(BasicEvent be) {
-		return mapBEToBEHolders.get(be).hotFailureRate;
-	}
-	
-	/**
-	 * Gets the cached repair rate of a basic event in the basic unit
-	 * @param be the basic event
-	 * @return the repair rate
-	 */
-	public double getRepairRate(BasicEvent be) {
-		return mapBEToBEHolders.get(be).repairRate;
+		return getBasicEventHolder(be).getFault();
 	}
 	
 	/**

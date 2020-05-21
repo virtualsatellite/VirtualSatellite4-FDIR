@@ -162,6 +162,6 @@ public  class FaultTree extends AFaultTree {
 	 * @return the dot representation
 	 */
 	public String toDot() {
-		return new FaultTreeHelper(concept).toDot(this);
+		return new FaultTreeHelper().toDot(this);
 	}
 }

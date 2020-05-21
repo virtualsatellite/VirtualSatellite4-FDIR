@@ -81,7 +81,7 @@ public abstract class Transition extends ATransition {
 	 * @return true if contains, false otherwise 
 	 */
 	public boolean hasEquivalentRecoveryActions(Transition transition) {
-		return new FaultTreeHelper(concept).hasEquivalentRecoveryActions(getRecoveryActions(), transition.getRecoveryActions());
+		return new FaultTreeHelper().hasEquivalentRecoveryActions(getRecoveryActions(), transition.getRecoveryActions());
 	}
 	
 	/**

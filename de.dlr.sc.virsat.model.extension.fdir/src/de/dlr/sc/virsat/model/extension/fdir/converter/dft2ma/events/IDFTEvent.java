@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
 import java.util.Comparator;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
@@ -39,9 +38,8 @@ public interface IDFTEvent {
 	/**
 	 * Executes a single basic event
 	 * @param state the current state
-	 * @param staticAnalysis the static analysis data
 	 */
-	void execute(DFTState state, DFTStaticAnalysis staticAnalysis);
+	void execute(DFTState state);
 	
 	/**
 	 * Gets the related DFT node

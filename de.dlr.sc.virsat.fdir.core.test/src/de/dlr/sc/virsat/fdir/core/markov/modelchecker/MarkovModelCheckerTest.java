@@ -53,7 +53,7 @@ public class MarkovModelCheckerTest {
 		ma.getEvents().add("b");
 		ma.addState(state1);
 		ma.addState(state2);
-		ma.getFinalStates().add(state2);
+		ma.getFinalStateProbs().put(state2, 1d);
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		ma.addMarkovianTransition("b", state2, state1, 1);
 		ModelCheckingResult result = modelChecker.checkModel(ma, null, Reliability.UNIT_RELIABILITY, MTTF.MTTF);
@@ -79,7 +79,7 @@ public class MarkovModelCheckerTest {
 		MarkovState state2 = new MarkovState();
 		ma.addState(state1);
 		ma.addState(state2);
-		ma.getFinalStates().add(state2);
+		ma.getFinalStateProbs().put(state2, 1d);
 
 		final double RATE1 = 1.2;
 		final double RATE2 = 1.2;
@@ -109,7 +109,7 @@ public class MarkovModelCheckerTest {
 		ma.addState(init);
 		ma.addState(fail);
 		ma.addState(inter);
-		ma.getFinalStates().add(fail);
+		ma.getFinalStateProbs().put(fail, 1d);
 		
 		ma.addMarkovianTransition("c", init, fail, 1);
 		ma.addMarkovianTransition("b", init, inter, 1);

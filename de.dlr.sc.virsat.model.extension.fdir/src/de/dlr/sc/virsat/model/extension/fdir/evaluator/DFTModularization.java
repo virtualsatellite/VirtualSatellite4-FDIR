@@ -14,11 +14,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -97,11 +98,10 @@ public class DFTModularization {
 	 */
 	private Map<FaultTreeNode, FaultTreeNode> createMapNodeToRepresentant(FaultTreeHolder ftHolder, DFTSymmetryChecker symmetryChecker) {
 		Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = new HashMap<>();
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
+		SymmetryReduction symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 				
-		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
-			if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.getBiggerRelation().entrySet()) {
+			if (symmetryReduction.getSmallerNodes(entry.getKey()).isEmpty()) {
 				mapNodeToRepresentant.put(entry.getKey(), entry.getKey());
 				for (FaultTreeNode biggerNode : entry.getValue()) {
 					mapNodeToRepresentant.put(biggerNode, entry.getKey());

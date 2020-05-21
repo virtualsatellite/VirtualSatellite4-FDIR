@@ -18,7 +18,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil.AnchorType;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 /**
  * This feature creates a fault propagation
@@ -38,16 +38,16 @@ public class PropagationCreateFeature extends AbstractConnectionCreateFeature {
 
 	@Override
 	protected FaultTreeEdge addFaultTreeEdge(Fault fault, FaultTreeNode from, FaultTreeNode to, Concept concept, ICreateConnectionContext context) {
-		FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
 		
 		AnchorType type = AnchorUtil.getAnchorType(context.getTargetAnchor());
 		
 		if (type.equals(AnchorType.SPARE)) {
-			return ftHelper.connectSpare(fault, from, to);
+			return ftBuilder.connectSpare(fault, from, to);
 		} else if (type.equals(AnchorType.OBSERVER)) {
-			return ftHelper.connectObserver(fault, from, to);
+			return ftBuilder.connectObserver(fault, from, to);
 		} else {
-			return ftHelper.connect(fault, from, to);
+			return ftBuilder.connect(fault, from, to);
 		}
 	}
 }

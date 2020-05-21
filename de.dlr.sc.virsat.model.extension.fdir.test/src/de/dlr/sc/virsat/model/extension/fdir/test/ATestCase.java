@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConve
 import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -38,6 +39,7 @@ public abstract class ATestCase {
 	protected static final double TEST_EPSILON =  0.000001;
 	
 	protected Concept concept;
+	protected FaultTreeBuilder ftBuilder;
 	protected FaultTreeHelper ftHelper;
 	protected RecoveryAutomatonHelper raHelper; 
 	protected static TestResourceGetter resourceGetter = new TestResourceGetter(Activator.getPluginId());
@@ -45,7 +47,8 @@ public abstract class ATestCase {
 	@Before
 	public void setUp() throws Exception {
 	    concept = ConceptXmiLoader.loadConceptFromPlugin(Activator.getPluginId() + "/concept/concept.xmi");
-	    ftHelper = new FaultTreeHelper(concept);
+	    ftBuilder = new FaultTreeBuilder(concept);
+	    ftHelper = ftBuilder.getFtHelper();
 	    raHelper = new RecoveryAutomatonHelper(concept);
 	}
 	

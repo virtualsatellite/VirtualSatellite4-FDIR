@@ -94,7 +94,7 @@ public class MarkovAutomatonTest {
 		MarkovState state3 = new MarkovState();
 		MarkovState state4 = new MarkovState();
 
-		ma.getFinalStates().add(state2);
+		ma.getFinalStateProbs().put(state2, 1d);
 		
 		ma.addState(state1);
 		ma.addState(state2);

@@ -15,10 +15,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -29,7 +27,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -41,8 +38,8 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  */
 
 public class DFTState extends MarkovState {
-	protected boolean isFailState;
-	protected RecoveryStrategy recoveryStrategy;
+	private boolean isFailState;
+	private RecoveryStrategy recoveryStrategy;
 	
 	protected FaultTreeHolder ftHolder;
 	
@@ -51,14 +48,14 @@ public class DFTState extends MarkovState {
 	
 	private Set<Fault> activeFaults;
 	
-	protected BitSet failedNodes;
-	protected BitSet permanentNodes;
-	protected BitSet failingNodes;
+	private BitSet failedNodes;
+	private BitSet permanentNodes;
+	private BitSet failingNodes;
 	
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
 	
-	List<BasicEvent> orderedBes;
-	Set<BasicEvent> unorderedBes;
+	private List<BasicEvent> orderedBes;
+	private Set<BasicEvent> unorderedBes;
 	
 	/**
 	 * Default Constructor
@@ -134,6 +131,14 @@ public class DFTState extends MarkovState {
 		this.isFailState = isFailState;
 	}
 	
+	/**
+	 * Whether this state is a fail state
+	 * @return true iff this state is a fail state
+	 */
+	public boolean getFailState() {
+		return isFailState;
+	}
+	
 	@Override
 	public String toString() {
 		String res = index + " [label=\"";
@@ -183,23 +188,11 @@ public class DFTState extends MarkovState {
 	}
 	
 	/**
-	 * Get the set of nodes that have failed
-	 * @return set of failed nodes
-	 */
-	public BitSet getFailedNodes() {
-		return failedNodes;
-	}
-	
-	/**
 	 * Get the map from fault node tree to their claimed spares
 	 * @return a mapping from nodes to their claimed spares
 	 */
 	public Map<FaultTreeNode, FaultTreeNode> getMapSpareToClaimedSpares() {
 		return mapSpareToClaimedSpares;
-	}
-	
-	public void setMapSpareToClaimedSpares(Map<FaultTreeNode, FaultTreeNode> mapSpareToClaimedSpares) {
-		this.mapSpareToClaimedSpares = mapSpareToClaimedSpares;
 	}
 	
 	/**
@@ -301,15 +294,6 @@ public class DFTState extends MarkovState {
 	 * @param activation true to activate, false to deactivate
 	 */
 	public void setNodeActivation(FaultTreeNode node, boolean activation) {
-		if (node instanceof BasicEvent) {
-			if (activation) {
-				activeFaults.add(node.getFault());
-			} else {
-				activeFaults.remove(node.getFault());
-			}
-			return;
-		}
-		
 		if (node instanceof Fault) {
 			Fault fault = (Fault) node;
 			if (activation) {
@@ -376,9 +360,7 @@ public class DFTState extends MarkovState {
 				permanentNodes.set(nodeID);
 				activeFaults.remove(ftn);
 				
-				if (removeClaimedSparesOnFailureIfPossible(ftn)) {
-					mapSpareToClaimedSpares.remove(ftn);
-				}
+				removeClaimedSparesOnPermanentFailureIfPossible(ftn);
 			}
 			
 			if (permanentNodes.get(nodeID)) {
@@ -394,31 +376,28 @@ public class DFTState extends MarkovState {
 				
 				List<FaultTreeNode> basicEvents = ftHolder.getNodes(ftn, EdgeType.BE);
 				for (FaultTreeNode be : basicEvents) {
-					int beID = ftHolder.getNodeIndex(be);
-					failedNodes.set(beID);
-					permanentNodes.set(beID);
-					if (staticAnalysis.getOrderDependentBasicEvents().contains(be)) {
-						if (!orderedBes.contains(be)) {
-							orderedBes.add((BasicEvent) be);
-						}
-					} else {
-						unorderedBes.add((BasicEvent) be);
-					}
-					
-					List<FaultTreeNode> deps = ftHolder.getNodes(be, EdgeType.DEP);
-					for (FaultTreeNode dep : deps) {
-						if (!toProcess.contains(dep)) {
-							int depID = ftHolder.getNodeIndex(dep);
-							if (!permanentNodes.get(depID)) {
-								toProcess.push(dep);
-							}
-						}
-					}
+					executeBasicEvent((BasicEvent) be, false, staticAnalysis.getOrderDependentBasicEvents().contains(be), false);
 				}
 				
-				removeClaimedSparesOnFailureIfPossible(ftn);
+				removeClaimedSparesOnPermanentFailureIfPossible(ftn);
 			}
 		}
+	}
+	
+	/**
+	 * Executes a single basic event in the current state
+	 * @param be the basic event to execute
+	 * @param isRepair whether its the repair or a failure event
+	 * @param isOrderDependent whether the event has order depencies
+	 * @param isTransient whether the event occurss transiently or permanently
+	 * @return true iff the basic event successfully caused some change
+	 */
+	public boolean executeBasicEvent(BasicEvent be, boolean isRepair, boolean isOrderDependent, boolean isTransient) {
+		Collection<BasicEvent> beCollection = isOrderDependent ? getOrderedBes() : getUnorderedBes();
+		setFaultTreeNodeFailed(be, !isRepair);
+		setFaultTreeNodePermanent(be, !isTransient);
+		
+		return isRepair ? beCollection.remove(be) : beCollection.add(be);
 	}
 	
 	/**
@@ -427,31 +406,27 @@ public class DFTState extends MarkovState {
 	 * @param node the node to check
 	 * @return per default true for all permanent nodes
 	 */
-	protected boolean removeClaimedSparesOnFailureIfPossible(FaultTreeNode node) {
-		if (!isFaultTreeNodePermanent(node)) {
-			return false;
-		}
-		
+	protected boolean removeClaimedSparesOnPermanentFailureIfPossible(FaultTreeNode node) {
 		for (FaultTreeNode parent : ftHolder.getNodes(node, EdgeType.PARENT)) {
 			if (!isFaultTreeNodePermanent(parent)) {
 				return false;
 			}
 		}
 		
-		FaultTreeNode oldCLaimingSpareGate = mapSpareToClaimedSpares.remove(node);
-		if (oldCLaimingSpareGate != null) {
-			List<FaultTreeNode> spares = ftHolder.getNodes(oldCLaimingSpareGate, EdgeType.SPARE);
+		FaultTreeNode oldClaimingSpareGate = mapSpareToClaimedSpares.remove(node);
+		if (oldClaimingSpareGate != null) {
+			List<FaultTreeNode> spares = ftHolder.getNodes(oldClaimingSpareGate, EdgeType.SPARE);
 			boolean hasClaim = false;
 			for (FaultTreeNode spare : spares) {
 				FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
-				if (claimingSpareGateOther != null && oldCLaimingSpareGate.equals(claimingSpareGateOther)) {
+				if (claimingSpareGateOther != null && oldClaimingSpareGate.equals(claimingSpareGateOther)) {
 					hasClaim = true;
 					break;
 				}
 			}
 			
 			if (!hasClaim) {
-				for (FaultTreeNode primary : ftHolder.getNodes(oldCLaimingSpareGate, EdgeType.CHILD)) {
+				for (FaultTreeNode primary : ftHolder.getNodes(oldClaimingSpareGate, EdgeType.CHILD)) {
 					setNodeActivation(primary, true);
 				}
 			}
@@ -512,39 +487,6 @@ public class DFTState extends MarkovState {
 	public Set<FaultTreeNode> getAffectors(FaultTreeNode node) {
 		return mapNodeToAffectors.getOrDefault(node, Collections.emptySet());
 	}
-	
-	/**
-	 * Gets the extra fail rate factor for a given basic event
-	 * @param be the basic event
-	 * @return the extra fail rate factor
-	 */
-	public double getExtraRateFactor(BasicEvent be) {
-		Set<FaultTreeNode> affectors = getAffectors(be);
-		double extraRateFactor = 1;
-		for (FaultTreeNode affector : affectors) {
-			if (affector instanceof RDEP) {
-				RDEP rdep = (RDEP) affector;
-				extraRateFactor += rdep.getRateChangeBean().getValueToBaseUnit() - 1;
-			}
-		}
-		return extraRateFactor;
-	}
-	
-	/**
-	 * Checks if the fail state of any node in the given list is different in the given two states
-	 * @param stateOther another state
-	 * @param nodes list of nodes to be checked
-	 * @return true iff there exists a fault tree node such that state1 and state2 do not agree on the fail state of that fault tree node
-	 */
-	public boolean hasFailStateChanged(DFTState stateOther, List<FaultTreeNode> nodes) {
-		for (FaultTreeNode node : nodes) {
-			if (hasFaultTreeNodeFailed(node) != stateOther.hasFaultTreeNodeFailed(node)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
 
 	/**
 	 * Gets the set of all failed basic events
@@ -568,90 +510,30 @@ public class DFTState extends MarkovState {
 			return false;
 		}
 		
-		if (recoveryStrategy != null) {
-			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
-				return false;
-			}
+		if (recoveryStrategy != null && !recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
+			return false;
 		}
 		
 		boolean sameClaims = other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares());	
-		if (sameClaims) {
-			boolean sameFms = orderedBes.size() == other.orderedBes.size() && orderedBes.equals(other.orderedBes);
-			if (sameFms) {
-				if (isFailState != other.isFailState) {
-					return false;
-				}
+		if (!sameClaims) {
+			return false;
+		}
+		
+		boolean sameFms = orderedBes.size() == other.orderedBes.size() && orderedBes.equals(other.orderedBes);
+		if (!sameFms) {
+			return false;
+		}
+		
+		if (isFailState != other.isFailState) {
+			return false;
+		}
 				
-				boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
-				return sameFailingNodes;
-			}
+		boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
+		if (!sameFailingNodes) {
+			return false;
 		}
 		
-		return false;
-	}
-	
-	/**
-	 * Creates the symmetry requirements for this state
-	 * @param predecessor the predecessor state
-	 * @param basicEvent the basic event that has failed
-	 * @param symmetryReduction the symmetry reduction
-	 */
-	public void createSymmetryRequirements(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
-		if (mapParentToSymmetryRequirements == null) {
-			mapParentToSymmetryRequirements = new HashMap<>(predecessor.getMapParentToSymmetryRequirements());
-		} else {
-			mapParentToSymmetryRequirements.putAll(predecessor.getMapParentToSymmetryRequirements());
-		}
-		
-		Set<FaultTreeNode> checkedNodes = new HashSet<>();
-		Queue<FaultTreeNode> queue = new LinkedList<>();
-		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
-		queue.add(basicEvent);
-		checkedNodes.add(basicEvent);
-		
-		while (!queue.isEmpty()) {
-			FaultTreeNode node = queue.poll();
-			List<FaultTreeNode> biggerNodes = symmetryReduction.getOrDefault(node, Collections.emptyList());
-			if (!biggerNodes.isEmpty()) {
-				List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
-				for (FaultTreeNode parent : parents) {
-					boolean continueToParent = updateSymmetryRequirements(parent, biggerNodes, allParents);
-					
-					if (continueToParent && checkedNodes.add(parent)) {
-						queue.add(parent);
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Updates the symmetry requirements of a parent node
-	 * @param parent the parent node
-	 * @param biggerNodes the symmetrically bigger nodes according to the symmetry reduction (smallerNode <= biggerNode)
-	 * @param allParents all parents of a basic event
-	 * @return true iff the parent nodes parents should also update their summetry requirements, either
-	 * because the node is failed or because new symmetry requirements were added to this node
-	 */
-	private boolean updateSymmetryRequirements(FaultTreeNode parent, List<FaultTreeNode> biggerNodes, Set<FaultTreeNode> allParents) {
-		if (hasFaultTreeNodeFailed(parent)) {
-			return true;
-		}
-		
-		boolean continueToParent = false;
-		Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
-		
-		for (FaultTreeNode biggerNode : biggerNodes) {
-			List<FaultTreeNode> biggerParents = ftHolder.getNodes(biggerNode, EdgeType.PARENT);
-			for (FaultTreeNode biggerParent : biggerParents) {
-				if (processedBiggerParents.add(biggerParent) && !allParents.contains(biggerParent)) {
-					Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, key -> new HashSet<>());
-					continueToParent |= symmetryRequirements.add(biggerNode);
-				}
-			}
-		}
-		
-		return continueToParent;
+		return true;
 	}
 	
 	/**

@@ -27,10 +27,10 @@ public class DFTStateEquivalence {
 	 * @return the existing equivalence class
 	 */
 	private List<DFTState> addStateClass(DFTState state) {
-		List<DFTState> dftStates = mapUnorderedBesToDFTStates.get(state.unorderedBes);
+		List<DFTState> dftStates = mapUnorderedBesToDFTStates.get(state.getUnorderedBes());
 		if (dftStates == null) {
 			dftStates = new ArrayList<>();
-			mapUnorderedBesToDFTStates.put(state.unorderedBes, dftStates);
+			mapUnorderedBesToDFTStates.put(state.getUnorderedBes(), dftStates);
 		}
 		
 		return dftStates;
@@ -39,10 +39,9 @@ public class DFTStateEquivalence {
 	/**
 	 * Check if there is an equivalent state of the passed state and return it.
 	 * @param state the state for which we want to check if an equivalent one exists
-	 * @param whether the state should be inserted if no equivalent state exists
 	 * @return an equivalent state to the passed one or the state itself if not equivalent state exists
 	 */
-	public DFTState getEquivalentState(DFTState state, boolean insert) {
+	public DFTState getEquivalentState(DFTState state) {
 		List<DFTState> states = addStateClass(state);
 		
 		for (DFTState other : states) {
@@ -51,10 +50,8 @@ public class DFTStateEquivalence {
 			}
 		}
 		
-		if (insert) {
-			states.add(state);
-		}
-		
+	
+		states.add(state);
 		return state;
 	}
 }

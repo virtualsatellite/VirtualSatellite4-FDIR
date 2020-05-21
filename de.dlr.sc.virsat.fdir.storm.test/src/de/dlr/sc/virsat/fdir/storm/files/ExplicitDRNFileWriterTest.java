@@ -49,7 +49,7 @@ public class ExplicitDRNFileWriterTest {
 		ma.addState(fail);
 		ma.addState(nondet);
 		
-		ma.getFinalStates().add(fail);
+		ma.getFinalStateProbs().put(fail, 1d);
 		
 		final double RATE = 10;
 		ma.addMarkovianTransition("a", init, fail, RATE);

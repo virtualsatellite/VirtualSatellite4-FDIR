@@ -99,28 +99,28 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		System.out.println("--------------------- Experiment: Memory2 and N Backups  ---------------------");
 		Fault tle = new Fault(concept);
 		
-		FaultTreeNode or = ftHelper.createGate(tle, FaultTreeNodeType.OR);
-		FaultTreeNode spare1 = ftHelper.createGate(tle, FaultTreeNodeType.SPARE);
+		FaultTreeNode or = ftBuilder.createGate(tle, FaultTreeNodeType.OR);
+		FaultTreeNode spare1 = ftBuilder.createGate(tle, FaultTreeNodeType.SPARE);
 		spare1.setName("SPARE1");
-		FaultTreeNode spare2 = ftHelper.createGate(tle, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(tle, FaultTreeNodeType.SPARE);
 		spare2.setName("SPARE2");
 		final float FAILURE_RATE = 1f;
-		Fault memory1 = ftHelper.createBasicFault("B1", FAILURE_RATE, 0);
-		Fault memory2 = ftHelper.createBasicFault("B2", FAILURE_RATE, 0);
+		Fault memory1 = ftBuilder.createBasicFault("B1", FAILURE_RATE, 0);
+		Fault memory2 = ftBuilder.createBasicFault("B2", FAILURE_RATE, 0);
 		
-		ftHelper.connect(tle, or, tle);
-		ftHelper.connect(tle, spare1, or);
-		ftHelper.connect(tle, spare2, or);
+		ftBuilder.connect(tle, or, tle);
+		ftBuilder.connect(tle, spare1, or);
+		ftBuilder.connect(tle, spare2, or);
 
-		ftHelper.connect(tle, memory1, spare1);
-		ftHelper.connect(tle, memory2, spare2);
+		ftBuilder.connect(tle, memory1, spare1);
+		ftBuilder.connect(tle, memory2, spare2);
 		
 		final int MAX_BACKUPS = 20;
 		
 		for (int i = 1; i <= MAX_BACKUPS; ++i) {
-			Fault backup = ftHelper.createBasicFault("B" + (i + 2), FAILURE_RATE, 0);
-			ftHelper.connectSpare(tle, backup, spare1);
-			ftHelper.connectSpare(tle, backup, spare2);
+			Fault backup = ftBuilder.createBasicFault("B" + (i + 2), FAILURE_RATE, 0);
+			ftBuilder.connectSpare(tle, backup, spare1);
+			ftBuilder.connectSpare(tle, backup, spare2);
 			
 			BasicSynthesizer synthesizer = new BasicSynthesizer();
 			RecoveryAutomaton ra = synthesizer.synthesize(tle);

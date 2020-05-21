@@ -45,7 +45,7 @@ public class StormSchedulerTest {
 		ma.getEvents().add("a");
 		ma.getEvents().add("b");
 		
-		ma.getFinalStates().add(sink);
+		ma.getFinalStateProbs().put(sink, 1d);
 		
 		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);
