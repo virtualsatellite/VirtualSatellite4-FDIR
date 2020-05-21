@@ -256,13 +256,10 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private PODFTState getTargetState(MarkovAutomaton<DFTState> ma, PODFTState toState) {
 		if (!toState.isMarkovian()) {
 			List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
-			PODFTState newToState = (PODFTState) transitions.stream()
+			toState = (PODFTState) transitions.stream()
 					.filter(t -> t.getEvent().equals(Collections.emptyList()))
 					.map(t -> t.getTo())
 					.findFirst().orElse(toState);
-			if (newToState != toState) {
-				toState = newToState;
-			}
 		}
 		
 		return toState;
