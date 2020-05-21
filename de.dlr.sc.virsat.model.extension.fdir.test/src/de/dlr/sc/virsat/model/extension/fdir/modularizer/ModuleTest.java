@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 
 /**
  * Class to test Modules
@@ -91,6 +92,6 @@ public class ModuleTest extends ATestCase {
 		final int NUM_SPARES = 3;
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
 		assertEquals(NUM_NODES, ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size());
-		assertEquals(NUM_SPARES, ftHelper.getAllSpares(module.getRootNodeCopy().getFault()).size());
+		assertEquals(NUM_SPARES, ftHelper.getAllEdges(module.getRootNodeCopy().getFault(), EdgeType.SPARE).size());
 	}
 }

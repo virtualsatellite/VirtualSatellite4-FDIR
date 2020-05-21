@@ -169,53 +169,13 @@ public class FaultTreeHelper {
 	}
 	
 	/**
-	 * Gets all the propagations in the fault tree of the passed fault
-	 * including all propagations in sub trees
-	 * @param fault the root fault of a fault tree
-	 * @return all propagations in the entire fault tree
-	 */
-	public List<FaultTreeEdge> getAllPropagations(Fault fault) {
-		List<FaultTreeNode> allNodes = getAllNodes(fault);
-		List<FaultTreeEdge> allPropagations = new ArrayList<>();
-		
-		allNodes.forEach(node -> {
-			if (node instanceof Fault) {
-				Fault child = (Fault) node;
-				allPropagations.addAll(child.getFaultTree().getPropagations());
-			}
-		});
-		
-		return allPropagations;
-	}
-	
-	/**
-	 * Gets all the spares in the fault tree of the passed fault
-	 * including all spares in the sub trees
-	 * @param fault the root fault of a fault tree
-	 * @return all spares in the entire fault tree
-	 */
-	public List<FaultTreeEdge> getAllSpares(Fault fault) {
-		List<FaultTreeNode> allNodes = getAllNodes(fault);
-		List<FaultTreeEdge> allSpares = new ArrayList<>();
-		
-		allNodes.forEach(node -> {
-			if (node instanceof Fault) {
-				Fault child = (Fault) node;
-				allSpares.addAll(child.getFaultTree().getSpares());
-			}
-		});
-		
-		return allSpares;
-	}
-	
-	/**
 	 * get all spare NODES in the fault tree
 	 * @param fault the fault containing the fault tree
 	 * @return a list of all the spare nodes in the tree
 	 */
 	public List<FaultTreeNode> getAllSpareNodes(Fault fault) {
 		List<FaultTreeNode> spareNodes = new ArrayList<FaultTreeNode>();
-		this.getAllSpares(fault).stream().forEach(edge -> spareNodes.add(edge.getFrom()));
+		this.getAllEdges(fault, EdgeType.SPARE).stream().forEach(edge -> spareNodes.add(edge.getFrom()));
 		return spareNodes;
 	}
 	
