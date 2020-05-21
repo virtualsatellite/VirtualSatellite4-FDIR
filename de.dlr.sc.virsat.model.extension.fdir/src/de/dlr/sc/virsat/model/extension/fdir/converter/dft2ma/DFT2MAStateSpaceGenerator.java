@@ -49,9 +49,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private FailableBasicEventsProvider failableBasicEventsProvider;
 	
 	private boolean allowsDontCareFailing = true;
-	
-	private FaultTreeNode root;
-	private DFTState initialState;
 
 	private Collection<IDFTEvent> events;
 	private FaultTreeHolder ftHolder;
@@ -66,15 +63,15 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 */
 	public void configure(FaultTreeHolder ftHolder, FailLabelProvider failLabelProvider, FailableBasicEventsProvider failableBasicEventsProvider) {
 		this.ftHolder = ftHolder;
-		this.root = ftHolder.getRoot();
 		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : DEFAULT_FAIL_LABEL_PROVIDER;
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
 	}
 	
 	@Override
 	public DFTState createInitialState() {
-		initialState = semantics.generateState(ftHolder);
+		DFTState initialState = semantics.generateState(ftHolder);
 		stateEquivalence.getEquivalentState(initialState);
+		FaultTreeNode root = ftHolder.getRoot();
 		initialState.setNodeActivation(root.getFault(), true);
 		if (!root.equals(root.getFault())) {
 			initialState.setNodeActivation(root, true);
@@ -254,7 +251,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return the list of all events that can occur
 	 */
 	private List<IDFTEvent> getOccurableEvents(DFTState state) {
-		if (state.getFailState() && state.isFaultTreeNodePermanent(root)) {
+		if (state.getFailState() && state.isFaultTreeNodePermanent(ftHolder.getRoot())) {
 			return Collections.emptyList();
 		}
 		
@@ -311,25 +308,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 						return;
 					}
 					break;
-				case PERMANENT:
-					if (!state.isFaultTreeNodePermanent(root)) {
-						return;
-					}
-					break;
 				default:
 					break;
 			}
 		}
 		
 		state.setFailState(true);
-	}
-
-	/**
-	 * Get the initial state of the markov automaton
-	 * @return the initial state of the markov automaton
-	 */
-	public DFTState getInitial() {
-		return initialState;
 	}
 	
 	/**
