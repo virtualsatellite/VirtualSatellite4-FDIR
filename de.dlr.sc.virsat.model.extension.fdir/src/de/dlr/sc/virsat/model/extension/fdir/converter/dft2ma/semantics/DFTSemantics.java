@@ -114,13 +114,12 @@ public class DFTSemantics {
 	
 	/**
 	 * Executes a state update
+	 * @param stateUpdate the state update to execute
 	 * @return the result of the state update
 	 */
 	public StateUpdateResult performUpdate(StateUpdate stateUpdate) {
 		StateUpdateResult stateUpdateResult = stateUpdate.createResultContainer();
-
 		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc());
-		
 		propgateStateUpdate(stateUpdate, stateUpdateResult);
 		
 		return stateUpdateResult;
