@@ -30,8 +30,6 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  */
 
 public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer {
-	public static final String TIMED_TRANSITION_SYMBOLD = "t";
-	
 	private RecoveryAutomaton ra;
 	
 	@Override
@@ -81,24 +79,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 			for (Transition transition : outgoingTransitions) {
 				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
 				if (transition instanceof TimeoutTransition) {
-					Set<State> visitedStates = new HashSet<>();
-					State internalState = raHolder.getMapTransitionToTo().get(transition);
-					while (toBlock == block) {
-						List<Transition> internalTransitions = raHolder.getMapStateToOutgoingTransitions().get(internalState);
-						boolean hasTimeoutTransition = false;
-						for (Transition internalTransition : internalTransitions) {
-							if (internalTransition instanceof TimeoutTransition) {
-								internalState = raHolder.getMapTransitionToTo().get(internalTransition);
-								toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(internalTransition));
-								hasTimeoutTransition = true;
-								break;
-							}
-						}
-						
-						if (!hasTimeoutTransition || !visitedStates.add(internalState)) {
-							break;
-						}
-					}
+					toBlock = getTimeoutBlock(block, state);
 				}
 				
 				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
@@ -117,6 +98,36 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		}
 		
 		return refinedBlocks;
+	}
+
+	/**
+	 * Gets the block that will be entered if a all successive timeouts occurs starting with the given state in the block.
+	 * @param block the current block
+	 * @param state the current state
+	 * @return the block that will be eventually reached when all successive timeouts have occurred
+	 */
+	private List<State> getTimeoutBlock(List<State> block, State state) {
+		Set<State> visitedStates = new HashSet<>();
+		State internalState = state;
+		List<State> toBlock = block;
+		
+		while (toBlock == block) {
+			List<Transition> internalTransitions = raHolder.getMapStateToOutgoingTransitions().get(internalState);
+			boolean hasTimeoutTransition = false;
+			for (Transition internalTransition : internalTransitions) {
+				if (internalTransition instanceof TimeoutTransition) {
+					internalState = raHolder.getMapTransitionToTo().get(internalTransition);
+					toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(internalTransition));
+					hasTimeoutTransition = true;
+					break;
+				}
+			}
+			
+			if (!hasTimeoutTransition || !visitedStates.add(internalState)) {
+				break;
+			}
+		}
+		return toBlock;
 	}
 	
 	/**
