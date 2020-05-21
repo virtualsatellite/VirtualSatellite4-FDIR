@@ -484,7 +484,7 @@ image:recoveryAutomata/{type}_Diagram.png[Representation in graphical editor]
 
 '''
 
-:type: TimoutTransition
+:type: TimeoutTransition
 _{type}_ image:recoveryAutomata/{type}.png[{type} icon]::  
 -- Description:::
  A timeout transition has a `time` property.
