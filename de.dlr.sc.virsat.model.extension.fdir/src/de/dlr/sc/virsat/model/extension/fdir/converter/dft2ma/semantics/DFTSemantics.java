@@ -205,15 +205,14 @@ public class DFTSemantics {
 		}
 		
 		GenerationResult generationResult = new GenerationResult(stateUpdateResult.getBaseSucc(), stateUpdateResult.getMapStateToRecoveryActions());
-		boolean hasChanged = false;
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
+		
+		boolean hasChanged = false;
 		
 		if (node instanceof BasicEvent) {
 			List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 			for (DFTState state : stateUpdateResult.getSuccs()) {
-				if (state.handleUpdateTriggers(node, depTriggers)) {
-					hasChanged = true;
-				}
+				hasChanged |= state.handleUpdateTriggers(node, depTriggers);
 			}
 			
 			return hasChanged;
@@ -224,12 +223,7 @@ public class DFTSemantics {
 			throw new RuntimeException("The current semantics configuration doesnt support " +  node.getFaultTreeNodeType() + " as basic node type!");
 		}
 		
-		List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
-			if (succ.handleUpdateTriggers(node, depTriggers)) {
-				hasChanged = true;
-			}
-			
 			hasChanged  |= nodeSemantics.handleUpdate(node, succ, stateUpdate.getState(), generationResult);
 		}
 		
