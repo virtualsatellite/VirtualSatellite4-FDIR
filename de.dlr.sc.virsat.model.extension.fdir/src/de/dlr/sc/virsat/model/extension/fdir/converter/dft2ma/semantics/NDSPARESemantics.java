@@ -86,10 +86,6 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		FaultTreeNode currentClaimant = state.getMapSpareToClaimedSpares().get(spare);
 		boolean reclaim = currentClaimant != null;
 		
-		if (reclaim && currentClaimant.equals(node)) {
-			return false;
-		}
-		
 		if (reclaim) {
 			performFree(node, spare, state, generationResult);
 			newState = generationResult.getGeneratedStates().get(generationResult.getGeneratedStates().size() - 1);
