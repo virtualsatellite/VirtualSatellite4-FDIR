@@ -303,11 +303,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		boolean isNewState = beliefState == equivalentBeliefState;
 		
 		if (isNewState) {
-			targetMa.addState(beliefState);
-			
-			if (failProb > 0) {
-				targetMa.getFinalStateProbs().put(beliefState, failProb);
-			}
+			targetMa.addState(beliefState, failProb);
 		}
 		
 		return equivalentBeliefState;

@@ -132,6 +132,20 @@ public class MarkovAutomaton<S extends MarkovState> {
 	}
 	
 	/**
+	 * Adds a state with the given final prob.
+	 * If the final prob is non-zero, the state is added to the final states.
+	 * @param state the state to add
+	 * @param finalProb the final state prob
+	 */
+	public void addState(S state, double finalProb) {
+		addState(state);
+		
+		if (finalProb > 0) {
+			getFinalStateProbs().put(state, finalProb);
+		}
+	}
+	
+	/**
 	 * Add a new markov transition to the automaton
 	 * @param event the transition event
 	 * @param from the starting state of the transition

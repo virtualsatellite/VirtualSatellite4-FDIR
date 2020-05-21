@@ -228,12 +228,8 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 					}
 				}
 				
-				targetMa.addState(succ);
+				targetMa.addState(succ, succ.isFailState ? 1 : 0);
 				newSuccs.add(succ);
-				
-				if (succ.isFailState) {
-					targetMa.getFinalStateProbs().put(succ, 1d);
-				}
 			}
 			
 			if (markovSucc != null) {
