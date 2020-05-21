@@ -25,7 +25,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateEquivalence;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -36,8 +35,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	private MarkovAutomaton<DFTState> ma;
 	private PODFTState initialStateMa;
-
-	private DFTStateEquivalence dftStateEquivalence;
 	private BeliefStateEquivalence beliefStateEquivalence;
 	
 	public void configure(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa) {
@@ -48,12 +45,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	@Override
 	public void init(MarkovAutomaton<BeliefState> targetMa) {
 		super.init(targetMa);
-		
 		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
-		dftStateEquivalence = new DFTStateEquivalence();
-		for (DFTState dftState : ma.getStates()) {
-			dftStateEquivalence.getEquivalentState(dftState);
-		}
 	}
 	
 	@Override
@@ -300,9 +292,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private BeliefState addBeliefState(BeliefState beliefState) {
 		beliefState.normalize();
 		
-		boolean isFinal = true;
+		double failProb = 0;
 		for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
-			isFinal &= ma.getFinalStates().contains(entry.getKey());
+			if (ma.getFinalStates().contains(entry.getKey())) {
+				failProb += entry.getValue();
+			}
 		}
 		
 		BeliefState equivalentBeliefState = beliefStateEquivalence.getEquivalentState(beliefState);
@@ -311,8 +305,8 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		if (isNewState) {
 			targetMa.addState(beliefState);
 			
-			if (isFinal) {
-				targetMa.getFinalStates().add(beliefState);
+			if (failProb > 0) {
+				targetMa.getFinalStateProbs().put(beliefState, failProb);
 			}
 		}
 		

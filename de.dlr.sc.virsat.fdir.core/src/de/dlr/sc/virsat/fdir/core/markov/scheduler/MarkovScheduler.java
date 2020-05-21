@@ -149,7 +149,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 					MarkovState toState = transition.getTo();
 					if (!ma.getFinalStates().contains(toState)) {
 						double toValue = values[toState.getIndex()];
-						value += toValue * transition.getRate() / exitRate;
+						value += (1 - ma.getFinalStateProbs().getOrDefault(toState, 0d)) * toValue * transition.getRate() / exitRate;
 					}
 				}
 			}
@@ -179,10 +179,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			for (MarkovTransition<S> transition : transitionGroup) {
 				double prob = transition.getRate();
 				MarkovState toState = transition.getTo();
-				boolean isFailSuccessor = ma.getFinalStates().contains(toState);
-				if (isFailSuccessor) {
-					transitionGroupProbFail += prob;
-				} 
+				double failProb = ma.getFinalStateProbs().getOrDefault(toState, 0d);
+				transitionGroupProbFail += prob * failProb;
 				
 				double toValue = results.get(toState);
 				expectationValue += prob * toValue;

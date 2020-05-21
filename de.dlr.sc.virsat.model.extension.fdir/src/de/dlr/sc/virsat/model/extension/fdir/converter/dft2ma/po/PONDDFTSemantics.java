@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -223,10 +222,5 @@ public class PONDDFTSemantics extends DFTSemantics {
 	@Override
 	public DFTState generateState(FaultTreeHolder ftHolder) {
 		return new PODFTState(ftHolder);
-	}
-	
-	@Override
-	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
-		return Collections.singletonList(new ObservationEvent(ftHolder.getRoot(), true));
 	}
 }

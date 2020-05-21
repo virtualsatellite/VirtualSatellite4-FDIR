@@ -68,6 +68,11 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 				if (otherClaimAction.getClaimSpare().equals(spare)) {
 					return false;
 				}
+			} else if (ra instanceof FreeAction) {
+				FreeAction freeAction = (FreeAction) ra;
+				if (freeAction.getFreeSpare().equals(spare)) {
+					return false;
+				}
 			}
 		}
 		

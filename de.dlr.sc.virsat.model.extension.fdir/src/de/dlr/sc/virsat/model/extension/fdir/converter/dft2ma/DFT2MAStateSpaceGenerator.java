@@ -232,7 +232,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 				newSuccs.add(succ);
 				
 				if (succ.isFailState) {
-					targetMa.getFinalStates().add(succ);
+					targetMa.getFinalStateProbs().put(succ, 1d);
 				}
 			}
 			
