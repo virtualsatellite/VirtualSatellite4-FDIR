@@ -223,7 +223,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				prob *= exitProb;
 				
 				if (residueProb > 0) {
-					beliefSucc.mapStateToBelief.merge(fromState, residueProb, (p1, p2) -> p1 + p2);
+					beliefSucc.addBelief(fromState, residueProb);
 				}
 			}
 			
@@ -231,7 +231,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				if (isInternalTransition) {
 					toState = getTargetState(ma, toState);
 				}
-				beliefSucc.mapStateToBelief.merge(toState, prob, (p1, p2) -> p1 + p2);
+				beliefSucc.addBelief(toState, prob);
 			}
 			
 			if (!toState.isMarkovian()) {
@@ -242,11 +242,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		
 		if (isInternalTransition) {
 			for (PODFTState state : statesWithNoTransitions) {
-				beliefSucc.mapStateToBelief.merge(state, beliefState.mapStateToBelief.get(state), (p1, p2) -> p1 + p2);
+				beliefSucc.addBelief(state, beliefState.mapStateToBelief.get(state));
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks the target state and updates it if necessary
 	 * @param ma the markov automaton
@@ -256,10 +256,13 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private PODFTState getTargetState(MarkovAutomaton<DFTState> ma, PODFTState toState) {
 		if (!toState.isMarkovian()) {
 			List<MarkovTransition<DFTState>> transitions = ma.getSuccTransitions(toState);
-			toState = (PODFTState) transitions.stream()
+			PODFTState newToState = (PODFTState) transitions.stream()
 					.filter(t -> t.getEvent().equals(Collections.emptyList()))
 					.map(t -> t.getTo())
 					.findFirst().orElse(toState);
+			if (newToState != toState) {
+				toState = newToState;
+			}
 		}
 		
 		return toState;
@@ -292,12 +295,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private BeliefState addBeliefState(BeliefState beliefState) {
 		beliefState.normalize();
 		
-		double failProb = beliefState.getFailProb();
-		
 		BeliefState equivalentBeliefState = beliefStateEquivalence.getEquivalentState(beliefState);
 		boolean isNewState = beliefState == equivalentBeliefState;
 		
 		if (isNewState) {
+			double failProb = beliefState.getFailProb();
 			targetMa.addState(beliefState, failProb);
 		}
 		

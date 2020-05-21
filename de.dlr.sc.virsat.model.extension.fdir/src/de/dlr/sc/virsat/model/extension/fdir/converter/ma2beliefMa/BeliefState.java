@@ -137,4 +137,13 @@ public class BeliefState extends MarkovState {
 		}
 		return failProb;
 	}
+
+	/** 
+	 * Adds belief of being in a concrete state.
+	 * @param state the state we believe to be in
+	 * @param belief the probability of being in the state
+	 */
+	void addBelief(PODFTState state, double belief) {
+		mapStateToBelief.merge(state, belief, (p1, p2) -> p1 + p2);
+	}
 }
