@@ -188,14 +188,6 @@ public class DFTState extends MarkovState {
 	}
 	
 	/**
-	 * Get the set of nodes that have failed
-	 * @return set of failed nodes
-	 */
-	public BitSet getFailedNodes() {
-		return failedNodes;
-	}
-	
-	/**
 	 * Get the map from fault node tree to their claimed spares
 	 * @return a mapping from nodes to their claimed spares
 	 */
