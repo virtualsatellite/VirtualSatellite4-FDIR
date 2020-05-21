@@ -47,7 +47,7 @@ public class TimeoutEvent implements IDFTEvent {
 
 	@Override
 	public void execute(DFTState state) {
-		state.setRecoveryStrategy(state.getRecoveryStrategy().onTimeout(time));
+		state.setRecoveryStrategy(state.getRecoveryStrategy().onTimeout());
 	}
 
 	@Override

@@ -118,17 +118,14 @@ public class RecoveryStrategy {
 	 * @param time the time event
 	 * @return the recovery strategy after reading the time event
 	 */
-	public RecoveryStrategy onTimeout(double time) {
+	public RecoveryStrategy onTimeout() {
 		if (raHolder.getMapStateToOutgoingTransitions().get(currentState) != null) {
 			for (Transition transition : raHolder.getMapStateToOutgoingTransitions().get(currentState)) {
 				if (transition instanceof TimeoutTransition) {
-					TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
-					if (timeoutTransition.getTimeBean().getValueToBaseUnit() == time) {
-						RecoveryStrategy ras = new RecoveryStrategy(this,
-								raHolder.getMapTransitionToTo().get(transition), 
-								raHolder.getMapTransitionToRecoveryActions().get(transition));
-						return ras;
-					}
+					RecoveryStrategy ras = new RecoveryStrategy(this,
+							raHolder.getMapTransitionToTo().get(transition), 
+							raHolder.getMapTransitionToRecoveryActions().get(transition));
+					return ras;
 				}
 			}
 		}
