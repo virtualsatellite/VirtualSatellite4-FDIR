@@ -245,28 +245,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	
 	@Override
 	public List<DFTState> getStartingStates(DFTState initialState) {
-		List<DFTState> initialStates = new ArrayList<>();
-		List<IDFTEvent> initialEvents = semantics.getInitialEvents(ftHolder);
-		
-		for (IDFTEvent event : initialEvents) {
-			StateUpdate initialStateUpdate = new StateUpdate(initialState, event);
-			StateUpdateResult initialStateUpdateResult = semantics.performUpdate(initialStateUpdate);
-			
-			if (initialStateUpdateResult.getSuccs().size() > 1) {
-				for (DFTState initialSucc : initialStateUpdateResult.getSuccs()) {
-					targetMa.addState(initialSucc);
-					List<RecoveryAction> actions = initialStateUpdateResult.getMapStateToRecoveryActions().get(initialSucc);
-					targetMa.addNondeterministicTransition(actions, initialState, initialSucc);	
-				}
-				initialStates.addAll(initialStateUpdateResult.getSuccs());
-			}
-		}
-		
-		if (initialStates.isEmpty()) {
-			initialStates.add(initialState);
-		}
-		
-		return initialStates;
+		return Collections.singletonList(initialState);
 	}
 	
 	/**
