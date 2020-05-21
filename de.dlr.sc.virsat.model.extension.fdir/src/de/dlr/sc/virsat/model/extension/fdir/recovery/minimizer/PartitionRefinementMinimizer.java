@@ -73,31 +73,54 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		List<List<State>> refinedBlocks = new ArrayList<>();
 		
 		for (State state : block) {
-			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
-			Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock = new HashMap<>();
+			Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock = createBlockReachabiliyMap(block, state);
 			
-			for (Transition transition : outgoingTransitions) {
-				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
-				if (transition instanceof TimeoutTransition) {
-					toBlock = getTimeoutBlock(block, state);
-				}
-				
-				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
-					mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
-				}
-			}
-			
-			List<State> refinedBlock = mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlock);
+			List<State> refinedBlock = getEquivalentBlock(mapBlockReachabilityMapToRefinedBlock, mapGuardsToBlock);
 			if (refinedBlock == null) {
 				refinedBlock = new ArrayList<State>();
 				refinedBlocks.add(refinedBlock);
+				mapBlockReachabilityMapToRefinedBlock.put(mapGuardsToBlock, refinedBlock);
 			}
 			
 			refinedBlock.add(state);
-			mapBlockReachabilityMapToRefinedBlock.put(mapGuardsToBlock, refinedBlock);
 		}
 		
 		return refinedBlocks;
+	}
+
+	/**
+	 * Checks if in the current set of reachability maps there exists one, that is equivalent, 
+	 * to the reachability map of a a given state
+	 * @param mapBlockReachabilityMapToRefinedBlock the reachability maps computed until now
+	 * @param state the current state 
+	 * @param mapGuardsToBlock the reachability map of the state
+	 * @return a refined block with an orthogoally equivalent reachability map or null if none exists
+	 */
+	private List<State> getEquivalentBlock(Map<Map<Set<FaultTreeNode>, List<State>>, List<State>> mapBlockReachabilityMapToRefinedBlock, Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock) {
+		List<State> refinedBlock = mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlock);
+		return refinedBlock;
+	}
+
+	/**
+	 * Creates a transition profile profile for a given state, mapping guards to the reached blocks
+	 * @param block the current block
+	 * @param state the current state
+	 * @return a block level transition profile for the current state
+	 */
+	private Map<Set<FaultTreeNode>, List<State>> createBlockReachabiliyMap(List<State> block, State state) {
+		Map<Set<FaultTreeNode>, List<State>> mapGuardsToBlock = new HashMap<>();
+		List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
+		for (Transition transition : outgoingTransitions) {
+			List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
+			if (transition instanceof TimeoutTransition) {
+				toBlock = getTimeoutBlock(block, state);
+			}
+			
+			if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
+				mapGuardsToBlock.put(raHolder.getMapTransitionToGuards().get(transition), toBlock);
+			}
+		}
+		return mapGuardsToBlock;
 	}
 
 	/**

@@ -131,46 +131,8 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		List<List<State>> refinedBlocks = new ArrayList<>();
 		
 		for (State state : block) {
-			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
-			Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock = new HashMap<>();
-			
-			for (Transition transition : outgoingTransitions) {
-				List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
-				if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
-					Entry<Set<FaultTreeNode>, Boolean> guards = new SimpleEntry<>(raHolder.getMapTransitionToGuards().get(transition), false);
-					
-					if (transition instanceof FaultEventTransition) {
-						FaultEventTransition fte = (FaultEventTransition) transition;
-						guards.setValue(fte.getIsRepair());
-					}
-					
-					mapGuardsToBlock.put(guards, toBlock);
-				}
-			}
-			
-			List<State> refinedBlock = null;
-			for (Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlockOther : mapBlockReachabilityMapToRefinedBlock.keySet()) {
-				boolean isEqual = true;
-				Set<Entry<Set<FaultTreeNode>, Boolean>> allGuards = new HashSet<>(mapGuardsToBlock.keySet());
-				allGuards.addAll(mapGuardsToBlockOther.keySet());
-				
-				equalityCheck: for (Entry<Set<FaultTreeNode>, Boolean> guards : allGuards) {
-					if (mapGuardsToBlock.get(guards) != mapGuardsToBlockOther.get(guards)) {
-						for (State stateOther : mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther)) {
-							if (!isOrthogonalWithRespectToGuards(state, stateOther, guards.getKey(), guards.getValue())) {
-								isEqual = false;
-								break equalityCheck;
-							}
-						}
-					}
-				}
-				
-				if (isEqual) {
-					refinedBlock = mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther);
-					break;
-				}
-			}
-			
+			Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock = createReachabilityProfile(block, state);
+			List<State> refinedBlock = getEquivalentBlock(mapBlockReachabilityMapToRefinedBlock, state, mapGuardsToBlock);
 			if (refinedBlock == null) {
 				refinedBlock = new ArrayList<State>();
 				refinedBlocks.add(refinedBlock);
@@ -181,6 +143,79 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		}
 		
 		return refinedBlocks;
+	}
+
+	/**
+	 * Creates the reachability profile for a state in the given block.
+	 * @param block the block of the state
+	 * @param state the current state
+	 * @return the reachability profile of the state
+	 */
+	private Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> createReachabilityProfile(List<State> block, State state) {
+		Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock = new HashMap<>();
+		List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
+		for (Transition transition : outgoingTransitions) {
+			List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
+			if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
+				Entry<Set<FaultTreeNode>, Boolean> guards = new SimpleEntry<>(raHolder.getMapTransitionToGuards().get(transition), false);
+				
+				if (transition instanceof FaultEventTransition) {
+					FaultEventTransition fte = (FaultEventTransition) transition;
+					guards.setValue(fte.getIsRepair());
+				}
+				
+				mapGuardsToBlock.put(guards, toBlock);
+			}
+		}
+		return mapGuardsToBlock;
+	}
+
+	/**
+	 * Checks if in the current set of reachability maps there exists one, that is equivalent, 
+	 * to the reachability map of a a given state
+	 * @param mapBlockReachabilityMapToRefinedBlock the reachability maps computed until now
+	 * @param state the current state 
+	 * @param mapGuardsToBlock the reachability map of the state
+	 * @return a refined block with an orthogoally equivalent reachability map or null if none exists
+	 */
+	private List<State> getEquivalentBlock(Map<Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>>, List<State>> mapBlockReachabilityMapToRefinedBlock,
+			State state, Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock) {
+		
+		for (Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlockOther : mapBlockReachabilityMapToRefinedBlock.keySet()) {
+			List<State> blockOther = mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther);
+			if (isOrthogonallyEqivalent(state, mapGuardsToBlock, mapGuardsToBlockOther, blockOther)) {
+				return mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if the reachability profile of a state is orthogonally equivalent to the
+	 * reachability profile of another state.
+	 * I.e. for all transitions with matching guards the same blocks must be reached
+	 * or the guards must be orthogonal.
+	 * 
+	 * @param state the current state
+	 * @param mapGuardsToBlock the reachability profile of the state
+	 * @param mapGuardsToBlockOther the reachability profile of another block
+	 * @param blockOther another block
+	 * @return true iff the reachability profile of the other block is orthogonally equivalent.
+	 */
+	private boolean isOrthogonallyEqivalent(State state, Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock,
+			Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlockOther, List<State> blockOther) {
+		Set<Entry<Set<FaultTreeNode>, Boolean>> allGuards = new HashSet<>(mapGuardsToBlock.keySet());
+		allGuards.addAll(mapGuardsToBlockOther.keySet());
+		for (Entry<Set<FaultTreeNode>, Boolean> guards : allGuards) {
+			if (mapGuardsToBlock.get(guards) != mapGuardsToBlockOther.get(guards)) {
+				for (State stateOther : blockOther) {
+					if (!isOrthogonalWithRespectToGuards(state, stateOther, guards.getKey(), guards.getValue())) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -315,7 +350,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 * @param state0 the first state
 	 * @param state1 the second state
 	 * @param guards the guards
-	 * @param 
+	 * @param isRepair whether the guards are repair guards
 	 * @return true iff state0 and state1 are orthogonal with respect to the set of guards transition
 	 */
 	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards, boolean isRepair) {
