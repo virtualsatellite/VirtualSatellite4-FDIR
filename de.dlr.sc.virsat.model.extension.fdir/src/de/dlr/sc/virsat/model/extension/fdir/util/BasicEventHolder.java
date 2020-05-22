@@ -108,15 +108,6 @@ public class BasicEventHolder {
 	public double getColdFailureRate() {
 		return coldFailureRate;
 	}
-	
-	/**
-	 * Gets the repair rate for transient repair
-	 * @return the transient repair rate
-	 */
-	public double getRepairRate() {
-		return repairRates.get(Collections.emptyList());
-	}
-	
 	/**
 	 * Gets all repair rates
 	 * @return a mapping from required obersvations to repair rates
