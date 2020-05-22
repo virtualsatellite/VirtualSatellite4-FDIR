@@ -52,4 +52,12 @@ public  class TimeoutTransition extends ATimeoutTransition {
 	public TimeoutTransition(CategoryAssignment categoryAssignment) {
 		super(categoryAssignment);
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(); 
+		sb.append(getTimeBean().getValueWithUnit());
+		sb.append(super.toString());
+		return sb.toString();
+	}
 }
