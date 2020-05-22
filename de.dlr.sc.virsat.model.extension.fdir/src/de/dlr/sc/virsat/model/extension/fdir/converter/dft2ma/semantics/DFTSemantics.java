@@ -32,6 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -92,11 +93,13 @@ public class DFTSemantics {
 		List<IDFTEvent> faultEvents = new ArrayList<>();
 		
 		for (BasicEvent be : ftHolder.getBasicEvents()) {
-			if (allowsRepairEvents && be.isSetRepairRate() && be.getRepairRate() != 0) {
+			BasicEventHolder beHolder = ftHolder.getBasicEventHolder(be);
+			double repairRate = beHolder.getRepairRate();
+			if (allowsRepairEvents && Double.isFinite(repairRate) && repairRate > 0) {
 				faultEvents.add(new FaultEvent(be, true, ftHolder, staticAnalysis));					
 			}
 			
-			if (be.isSetHotFailureRate() && be.getHotFailureRate() != 0) {
+			if (beHolder.isFailureDefined()) {
 				faultEvents.add(new FaultEvent(be, false, ftHolder, staticAnalysis));
 			}
 		}

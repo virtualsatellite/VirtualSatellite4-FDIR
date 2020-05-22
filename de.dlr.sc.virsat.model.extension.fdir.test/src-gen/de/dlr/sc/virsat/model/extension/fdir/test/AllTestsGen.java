@@ -42,6 +42,7 @@ import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairActionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVectorTest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v2Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
@@ -83,6 +84,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	FaultTreeEdgeTest.class,
 	FaultTreeTest.class,
 	FaultTest.class,
+	RepairActionTest.class,
 	BasicEventTest.class,
 	CutSetTest.class,
 	CriticalityVectorTest.class,

@@ -104,6 +104,10 @@
 		pathToImage="resources/icons/Fault.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.RepairAction"
+		pathToImage="resources/icons/RepairAction.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.BasicEvent"
 		pathToImage="resources/icons/BasicEvent.gif">
 	</conceptImage>
@@ -252,6 +256,10 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFault"
 		name="Add Fault">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction"
+		name="Add RepairAction">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddBasicEvent"
@@ -414,6 +422,11 @@
 	      icon="resources/icons/Fault.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction"
+	      disabledIcon="resources/icons/RepairAction_disabled.gif"
+	      icon="resources/icons/RepairAction.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddBasicEvent"
 	      disabledIcon="resources/icons/BasicEvent_disabled.gif"
 	      icon="resources/icons/BasicEvent.gif">
@@ -571,6 +584,10 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFaultHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFault">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddRepairActionHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddBasicEventHandler"
@@ -1061,6 +1078,28 @@
 		</command>
 		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFault"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1759,6 +1798,21 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultDetectabilityAnalysisDetectabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRepairAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRepairAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetRepairAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionRepairAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRepairActionMonitors"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRepairActionMonitors">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEvent"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableBasicEvent">
@@ -1767,6 +1821,11 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetBasicEvent"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionBasicEvent">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEventRepairActionsRepairAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableBasicEventRepairActionsRepairAction">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCutSet"

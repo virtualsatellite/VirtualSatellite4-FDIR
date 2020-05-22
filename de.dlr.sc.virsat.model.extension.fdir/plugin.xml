@@ -90,6 +90,10 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.Fault">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.RepairAction"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.RepairAction">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.BasicEvent"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent">
 		</CategoryAssignmentBean>

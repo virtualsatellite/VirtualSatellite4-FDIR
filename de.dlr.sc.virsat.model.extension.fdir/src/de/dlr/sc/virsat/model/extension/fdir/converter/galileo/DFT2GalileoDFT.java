@@ -30,6 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
@@ -110,12 +111,12 @@ public class DFT2GalileoDFT {
 				nodeType.setTypeName(FaultTreeNodeType.OR.name().toLowerCase());
 				galileoDft.getGates().add(galileoNode);
 			} else if (node instanceof BasicEvent) {
-				BasicEvent basicEvent = (BasicEvent) node;
-				galileoNode.setName(getIdentifier(basicEvent.getTypeInstance()));
-				galileoNode.setLambda(String.valueOf(basicEvent.getHotFailureRateBean().getValueToBaseUnit()));
-				galileoNode.setDorm(String.valueOf(basicEvent.getColdFailureRateBean().getValueToBaseUnit()));
-				if (basicEvent.getRepairRate() != 0) {
-					galileoNode.setRepair(String.valueOf(basicEvent.getRepairRateBean().getValueToBaseUnit()));
+				BasicEventHolder beHolder = new BasicEventHolder((BasicEvent) node);
+				galileoNode.setName(getIdentifier(node.getTypeInstance()));
+				galileoNode.setLambda(String.valueOf(beHolder.getHotFailureRate()));
+				galileoNode.setDorm(String.valueOf(beHolder.getColdFailureRate()));
+				if (beHolder.isRepairDefined()) {
+					galileoNode.setRepair(String.valueOf(beHolder.getRepairRate()));
 				}
 				galileoDft.getBasicEvents().add(galileoNode);
 			} 

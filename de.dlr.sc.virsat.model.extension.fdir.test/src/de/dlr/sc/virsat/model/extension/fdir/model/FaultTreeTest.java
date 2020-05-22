@@ -120,11 +120,14 @@ public class FaultTreeTest extends AFaultTreeTest {
 		ftBuilder.connect(root, child, spareGate);
 		ftBuilder.connectSpare(root, spare, spareGate);
 		root.getBasicEvents().add(be);
-		be.setRepairAction("Restart");
+		
+		RepairAction repairAction = new RepairAction(concept);
+		repairAction.setName("Reset");
+		be.getRepairActions().add(repairAction);
 		
 		List<String> potentialRecoveryActions = root.getFaultTree().getPotentialRecoveryActions();
 		
 		assertEquals(2, potentialRecoveryActions.size());
-		assertThat(potentialRecoveryActions, hasItem(be.getRepairAction()));
+		assertThat(potentialRecoveryActions, hasItem(repairAction.getName()));
 	}
 }

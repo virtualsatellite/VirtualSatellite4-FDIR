@@ -9,8 +9,17 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 
 /**
  * This class provides simple access to basic data relevant for basic events
@@ -21,20 +30,48 @@ public class BasicEventHolder {
 	private Fault fault;
 	private double hotFailureRate;
 	private double coldFailureRate;
-	private double repairRate;
+	private Map<List<MONITOR>, Double> repairRates;
 	
 	/**
 	 * Standard constructor
 	 * @param basicEvent the basic event
 	 */
-	BasicEventHolder(BasicEvent basicEvent) {
+	public BasicEventHolder(BasicEvent basicEvent) {
+		repairRates = new HashMap<>();
 		fault = basicEvent.getFault();
-		hotFailureRate = basicEvent.getHotFailureRateBean().isSet() 
-				? basicEvent.getHotFailureRateBean().getValueToBaseUnit() : Double.NaN;
-		coldFailureRate = basicEvent.getColdFailureRateBean().isSet() 
-				? basicEvent.getColdFailureRateBean().getValueToBaseUnit() : Double.NaN;
-		repairRate =  basicEvent.getRepairRateBean().isSet() 
-				? basicEvent.getRepairRateBean().getValueToBaseUnit() : Double.NaN;
+		hotFailureRate = getRateValue(basicEvent.getHotFailureRateBean());
+		coldFailureRate = getRateValue(basicEvent.getColdFailureRateBean());
+		
+		double repairRate = getRateValue(basicEvent.getRepairRateBean());
+		repairRates.put(Collections.emptyList(), repairRate);
+				
+		for (RepairAction repairAction : basicEvent.getRepairActions()) {
+			List<MONITOR> monitors = new ArrayList<>(repairAction.getMonitors());
+			repairRate = getRateValue(repairAction.getRepairRateBean());
+			repairRates.put(monitors, repairRate);
+		}
+	}
+	
+	public static boolean isRateDefined(double rate) {
+		return Double.isFinite(rate) && rate > 0;
+	}
+	
+	public static double getRateValue(BeanPropertyFloat rateBean) {
+		return rateBean.isSet() ? rateBean.getValueToBaseUnit() : Double.NaN;
+	}
+	
+	public boolean isFailureDefined() {
+		return isRateDefined(hotFailureRate) || isRateDefined(coldFailureRate);
+	}
+	
+	public boolean isRepairDefined() {
+		for (double repairRate : repairRates.values()) {
+			if (isRateDefined(repairRate)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public Fault getFault() {
@@ -50,6 +87,10 @@ public class BasicEventHolder {
 	}
 	
 	public double getRepairRate() {
-		return repairRate;
+		return repairRates.get(Collections.emptyList());
+	}
+	
+	public Map<List<MONITOR>, Double> getRepairRates() {
+		return repairRates;
 	}
 }

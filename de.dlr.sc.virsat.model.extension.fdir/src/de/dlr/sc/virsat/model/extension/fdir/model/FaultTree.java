@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropert
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -140,9 +141,12 @@ public  class FaultTree extends AFaultTree {
 		basicEvents.addAll(getRoot().getBasicEvents());
 		
 		for (BasicEvent be : basicEvents) {
-			String repairAction = be.getRepairAction();
-			if (repairAction != null && !repairAction.equals("")) {
-				potentialRecoveryActions.add(repairAction);
+			double transientRepairRate = BasicEventHolder.getRateValue(be.getRepairRateBean());
+			if (BasicEventHolder.isRateDefined(transientRepairRate)) {
+				potentialRecoveryActions.add("Transient Failure");
+			}
+			for (RepairAction repairAction : be.getRepairActions()) {
+				potentialRecoveryActions.add(repairAction.getName());
 			}
 		}
 		
