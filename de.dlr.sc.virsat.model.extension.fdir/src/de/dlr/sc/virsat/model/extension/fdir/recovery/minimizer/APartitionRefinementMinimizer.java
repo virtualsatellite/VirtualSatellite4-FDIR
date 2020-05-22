@@ -54,7 +54,8 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 			if (refinedBlocks.size() > 1) {
 				blocks.remove(block);
 				
-				List<List<State>> outdatedBlocks = handleRefinement(blocks, refinedBlocks);
+				applyRefinement(blocks, refinedBlocks);
+				List<List<State>> outdatedBlocks = getOutDatedBlocks(refinedBlocks);
 				for (List<State> outdatedBlock  : outdatedBlocks) {
 					if (!blocksToProcess.contains(outdatedBlock)) {
 						blocksToProcess.offer(outdatedBlock);
@@ -63,24 +64,14 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 			}
 		}
 	}
-	
+
 	/**
-	 * Updates the current partitions with the new refinement
-	 * @param blocks the current partitions
-	 * @param refinedBlocks the refinement of a block
-	 * @return the new blocks that need to be considered to refinement
+	 * Gets the blocks that now have to be rechecked after the given refinement has been applied
+	 * @param refinedBlocks a refinement of the partitions
+	 * @return all outdated blocks that need to be rechecked for refinement
 	 */
-	private List<List<State>> handleRefinement(Set<List<State>> blocks, List<List<State>> refinedBlocks) {
+	private List<List<State>> getOutDatedBlocks(List<List<State>> refinedBlocks) {
 		List<List<State>> outdatedBlocks = new ArrayList<>();
-		
-		for (List<State> refinedBlock : refinedBlocks) {
-			blocks.add(refinedBlock);
-			for (State state : refinedBlock) {
-				mapStateToBlock.put(state, refinedBlock);
-			}
-		}
-		
-		// Get the predecessor blocks and check if we now have to refine them
 		for (List<State> refinedBlock : refinedBlocks) {
 			for (State state : refinedBlock) {
 				List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
@@ -92,6 +83,20 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		}
 		
 		return outdatedBlocks;
+	}
+
+	/**
+	 * Updates the the current partitions with the new refined blocks 
+	 * @param blocks the current partitions
+	 * @param refinedBlocks a list of refined blocks
+	 */
+	private void applyRefinement(Set<List<State>> blocks, List<List<State>> refinedBlocks) {
+		for (List<State> refinedBlock : refinedBlocks) {
+			blocks.add(refinedBlock);
+			for (State state : refinedBlock) {
+				mapStateToBlock.put(state, refinedBlock);
+			}
+		}
 	}
 	
 	/**

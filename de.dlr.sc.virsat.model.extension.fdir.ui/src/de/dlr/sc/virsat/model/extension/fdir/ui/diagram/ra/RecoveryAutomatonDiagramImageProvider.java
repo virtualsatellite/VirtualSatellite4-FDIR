@@ -14,11 +14,11 @@ import org.eclipse.graphiti.ui.platform.AbstractImageProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageFaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageRecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageState;
-import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageTimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.ui.PluginXml.conceptImages.ConceptImageTimeoutTransition;
 
 /**
  * Makes icons available for Graphiti.
@@ -32,7 +32,7 @@ public class RecoveryAutomatonDiagramImageProvider extends AbstractImageProvider
 		addImageFilePath(RecoveryAutomaton.FULL_QUALIFIED_CATEGORY_NAME, ConceptImageRecoveryAutomaton.PATHTOIMAGE);
 		addImageFilePath(State.FULL_QUALIFIED_CATEGORY_NAME, ConceptImageState.PATHTOIMAGE);
 		addImageFilePath(FaultEventTransition.FULL_QUALIFIED_CATEGORY_NAME, ConceptImageFaultEventTransition.PATHTOIMAGE);
-		addImageFilePath(TimedTransition.FULL_QUALIFIED_CATEGORY_NAME, ConceptImageTimedTransition.PATHTOIMAGE);
+		addImageFilePath(TimeoutTransition.FULL_QUALIFIED_CATEGORY_NAME, ConceptImageTimeoutTransition.PATHTOIMAGE);
 		addImageFilePath("OpenEditor", "platform:/plugin/de.dlr.sc.virsat.uiengine.ui/icons/VirSat_Component_Edit.png");
 		addImageFilePath(RecoveryAutomaton.PROPERTY_INITIAL, "resources/icons/InitialState.gif");
 		addImageFilePath("Checked", "resources/icons/Checked.gif");

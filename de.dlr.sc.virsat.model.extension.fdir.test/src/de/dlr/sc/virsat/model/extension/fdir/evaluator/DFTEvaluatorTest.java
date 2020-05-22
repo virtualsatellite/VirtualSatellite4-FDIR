@@ -559,7 +559,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		ra.setInitial(s0);
 		State s1 = raHelper.createSingleState(ra, 1);
 		
-		raHelper.createTimedTransition(ra, s0, s1, 1);
+		raHelper.createTimeoutTransition(ra, s0, s1, 1);
 		
 		FaultEventTransition t1 = raHelper.createFaultEventTransition(ra, s1, s1);
 		SPARE spareGate = (SPARE) ftHelper.getNodes(EdgeType.CHILD, fault).get(0);

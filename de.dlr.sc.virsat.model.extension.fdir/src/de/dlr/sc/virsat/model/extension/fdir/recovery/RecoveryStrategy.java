@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.TimeEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.TimeoutEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
@@ -118,17 +118,14 @@ public class RecoveryStrategy {
 	 * @param time the time event
 	 * @return the recovery strategy after reading the time event
 	 */
-	public RecoveryStrategy onTime(double time) {
+	public RecoveryStrategy onTimeout() {
 		if (raHolder.getMapStateToOutgoingTransitions().get(currentState) != null) {
 			for (Transition transition : raHolder.getMapStateToOutgoingTransitions().get(currentState)) {
-				if (transition instanceof TimedTransition) {
-					TimedTransition timedTransition = (TimedTransition) transition;
-					if (timedTransition.getTimeBean().getValueToBaseUnit() == time) {
-						RecoveryStrategy ras = new RecoveryStrategy(this,
-								raHolder.getMapTransitionToTo().get(transition), 
-								raHolder.getMapTransitionToRecoveryActions().get(transition));
-						return ras;
-					}
+				if (transition instanceof TimeoutTransition) {
+					RecoveryStrategy ras = new RecoveryStrategy(this,
+							raHolder.getMapTransitionToTo().get(transition), 
+							raHolder.getMapTransitionToRecoveryActions().get(transition));
+					return ras;
 				}
 			}
 		}
@@ -145,9 +142,9 @@ public class RecoveryStrategy {
 		List<IDFTEvent> timeEvents = new ArrayList<>();
 		for (Entry<State, List<Transition>> entry : raHolder.getMapStateToOutgoingTransitions().entrySet()) {
 			for (Transition transition : entry.getValue()) {
-				if (transition instanceof TimedTransition) {
-					TimedTransition timedTranstion = (TimedTransition) transition;
-					TimeEvent timeEvent = new TimeEvent(timedTranstion.getTimeBean().getValueToBaseUnit(), entry.getKey());
+				if (transition instanceof TimeoutTransition) {
+					TimeoutTransition timeoutTranstion = (TimeoutTransition) transition;
+					TimeoutEvent timeEvent = new TimeoutEvent(timeoutTranstion.getTimeBean().getValueToBaseUnit(), entry.getKey());
 					timeEvents.add(timeEvent);
 				}
 			}

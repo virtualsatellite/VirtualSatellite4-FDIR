@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -206,15 +205,14 @@ public class DFTSemantics {
 		}
 		
 		GenerationResult generationResult = new GenerationResult(stateUpdateResult.getBaseSucc(), stateUpdateResult.getMapStateToRecoveryActions());
-		boolean hasChanged = false;
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
+		
+		boolean hasChanged = false;
 		
 		if (node instanceof BasicEvent) {
 			List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 			for (DFTState state : stateUpdateResult.getSuccs()) {
-				if (state.handleUpdateTriggers(node, depTriggers)) {
-					hasChanged = true;
-				}
+				hasChanged |= state.handleUpdateTriggers(node, depTriggers);
 			}
 			
 			return hasChanged;
@@ -225,12 +223,7 @@ public class DFTSemantics {
 			throw new RuntimeException("The current semantics configuration doesnt support " +  node.getFaultTreeNodeType() + " as basic node type!");
 		}
 		
-		List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
-			if (succ.handleUpdateTriggers(node, depTriggers)) {
-				hasChanged = true;
-			}
-			
 			hasChanged  |= nodeSemantics.handleUpdate(node, succ, stateUpdate.getState(), generationResult);
 		}
 		
@@ -276,14 +269,5 @@ public class DFTSemantics {
 	 */
 	public Map<FaultTreeNodeType, INodeSemantics> getMapTypeToSemantics() {
 		return mapTypeToSemantics;
-	}
-
-	/**
-	 * Creates the list of initial events that should be applied to the initial state
-	 * @param ftHolder the fault tree holder
-	 * @return the intitial events for the initial state
-	 */
-	public List<IDFTEvent> getInitialEvents(FaultTreeHolder ftHolder) {
-		return Collections.emptyList();
 	}
 }

@@ -12,7 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions
 import org.eclipse.graphiti.features.IFeatureProvider;
 
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 /**
@@ -21,24 +21,24 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
  *
  */
 
-public class TimedTransitionCreateFeature extends TransitionCreateFeature {
+public class TimeoutTransitionCreateFeature extends TransitionCreateFeature {
 
 	/**
 	 * Default constructor.
 	 * @param fp the feature provider.
 	 */
 	
-	public TimedTransitionCreateFeature(IFeatureProvider fp) {
+	public TimeoutTransitionCreateFeature(IFeatureProvider fp) {
 		super(fp, "Timed Transition", "Create a transition guarded by time");
 	}
 
 	@Override
 	public String getCreateImageId() {
-		return TimedTransition.FULL_QUALIFIED_CATEGORY_NAME;
+		return TimeoutTransition.FULL_QUALIFIED_CATEGORY_NAME;
 	}
 
 	@Override
 	public Transition createTransition(Concept concept) {
-		return new TimedTransition(concept);
+		return new TimeoutTransition(concept);
 	}
 }

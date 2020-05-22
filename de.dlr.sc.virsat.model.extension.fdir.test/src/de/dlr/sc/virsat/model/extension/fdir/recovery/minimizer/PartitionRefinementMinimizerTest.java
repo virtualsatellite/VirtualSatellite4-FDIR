@@ -20,7 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
@@ -319,7 +319,7 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		raHelper.createStates(ra, INITIAL_STATES); 
-		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
+		raHelper.createTimeoutTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
 		
 		minimizer.minimize(ra);
 		
@@ -355,8 +355,8 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition02, fault2);
 		raHelper.assignAction(transition02, action2.copy());
 		
-		raHelper.createTimedTransition(ra, ra.getStates().get(1), ra.getStates().get(3), 1);
-		raHelper.createTimedTransition(ra, ra.getStates().get(2), ra.getStates().get(4), 2);
+		raHelper.createTimeoutTransition(ra, ra.getStates().get(1), ra.getStates().get(3), 1);
+		raHelper.createTimeoutTransition(ra, ra.getStates().get(2), ra.getStates().get(4), 2);
 		
 		FaultEventTransition transition35 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(5));
 		raHelper.assignInputs(transition35, fault3);
@@ -384,8 +384,8 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		//CHECKSTYLE:OFF
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		raHelper.createStates(ra, INITIAL_STATES); 
-		raHelper.createTimedTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
-		raHelper.createTimedTransition(ra, ra.getStates().get(1), ra.getStates().get(2), 2);
+		raHelper.createTimeoutTransition(ra, ra.getStates().get(0), ra.getStates().get(1), 1);
+		raHelper.createTimeoutTransition(ra, ra.getStates().get(1), ra.getStates().get(2), 2);
 		
 		ClaimAction action = new ClaimAction(concept);
 		FaultEventTransition transition22 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(2));
@@ -398,12 +398,12 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		assertEquals(RESULTING_STATES, ra.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
 		
-		TimedTransition timedTransition = (TimedTransition) ra.getTransitions()
+		TimeoutTransition timeoutTransition = (TimeoutTransition) ra.getTransitions()
 				.stream()
 				.filter(transition -> transition.getFrom().equals(ra.getStates().get(0)) && transition.getTo().equals(ra.getStates().get(1)))
 				.findFirst().get();
 		
 		final double EXPECTED_TIMEOUT = 3;
-		assertEquals(EXPECTED_TIMEOUT, timedTransition.getTime(), 0);
+		assertEquals(EXPECTED_TIMEOUT, timeoutTransition.getTime(), 0);
 	}
 }

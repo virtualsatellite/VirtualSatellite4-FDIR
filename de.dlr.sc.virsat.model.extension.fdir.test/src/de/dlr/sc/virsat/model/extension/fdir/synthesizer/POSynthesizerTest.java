@@ -28,7 +28,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
@@ -254,16 +254,16 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final int EXPECTED_NUMBER_TRANSITIONS = 3;
 		assertEquals(EXPECTED_NUMBER_TRANSITIONS, transitions.size());
-		TimedTransition timedTransition = null;
+		TimeoutTransition timeoutTransition = null;
 		for (Transition transition : transitions) {
-			if (transition instanceof TimedTransition) {
-				timedTransition = (TimedTransition) transition;
+			if (transition instanceof TimeoutTransition) {
+				timeoutTransition = (TimeoutTransition) transition;
 			}
 		}
 		
-		assertNotNull(timedTransition);
+		assertNotNull(timeoutTransition);
 		final int EXPECTED_TRANSITION_TIME = 10000;
-		assertEquals(EXPECTED_TRANSITION_TIME, timedTransition.getTime(), TEST_EPSILON);
+		assertEquals(EXPECTED_TRANSITION_TIME, timeoutTransition.getTime(), TEST_EPSILON);
 	}
 	
 	@Test
