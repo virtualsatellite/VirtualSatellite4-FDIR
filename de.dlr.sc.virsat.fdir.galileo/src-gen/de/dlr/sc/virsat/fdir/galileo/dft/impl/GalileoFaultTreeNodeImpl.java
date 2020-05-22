@@ -6,6 +6,7 @@ package de.dlr.sc.virsat.fdir.galileo.dft.impl;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftPackage;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
+import de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction;
 
 import java.util.Collection;
 
@@ -20,7 +21,9 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -35,7 +38,7 @@ import org.eclipse.emf.ecore.util.EObjectResolvingEList;
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getChildren <em>Children</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getLambda <em>Lambda</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getDorm <em>Dorm</em>}</li>
- *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getRepair <em>Repair</em>}</li>
+ *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getRepairActions <em>Repair Actions</em>}</li>
  * </ul>
  *
  * @generated
@@ -123,24 +126,14 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
   protected String dorm = DORM_EDEFAULT;
 
   /**
-   * The default value of the '{@link #getRepair() <em>Repair</em>}' attribute.
+   * The cached value of the '{@link #getRepairActions() <em>Repair Actions</em>}' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getRepair()
+   * @see #getRepairActions()
    * @generated
    * @ordered
    */
-  protected static final String REPAIR_EDEFAULT = null;
-
-  /**
-   * The cached value of the '{@link #getRepair() <em>Repair</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getRepair()
-   * @generated
-   * @ordered
-   */
-  protected String repair = REPAIR_EDEFAULT;
+  protected EList<GalileoRepairAction> repairActions;
 
   /**
    * <!-- begin-user-doc -->
@@ -309,23 +302,13 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
    * @generated
    */
   @Override
-  public String getRepair()
+  public EList<GalileoRepairAction> getRepairActions()
   {
-    return repair;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  @Override
-  public void setRepair(String newRepair)
-  {
-    String oldRepair = repair;
-    repair = newRepair;
-    if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR, oldRepair, repair));
+    if (repairActions == null)
+    {
+      repairActions = new EObjectContainmentEList<GalileoRepairAction>(GalileoRepairAction.class, this, DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS);
+    }
+    return repairActions;
   }
 
   /**
@@ -340,6 +323,8 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
     {
       case DftPackage.GALILEO_FAULT_TREE_NODE__TYPE:
         return basicSetType(null, msgs);
+      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS:
+        return ((InternalEList<?>)getRepairActions()).basicRemove(otherEnd, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -364,8 +349,8 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
         return getLambda();
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         return getDorm();
-      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR:
-        return getRepair();
+      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS:
+        return getRepairActions();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -397,8 +382,9 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         setDorm((String)newValue);
         return;
-      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR:
-        setRepair((String)newValue);
+      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS:
+        getRepairActions().clear();
+        getRepairActions().addAll((Collection<? extends GalileoRepairAction>)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -429,8 +415,8 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         setDorm(DORM_EDEFAULT);
         return;
-      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR:
-        setRepair(REPAIR_EDEFAULT);
+      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS:
+        getRepairActions().clear();
         return;
     }
     super.eUnset(featureID);
@@ -456,8 +442,8 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
         return LAMBDA_EDEFAULT == null ? lambda != null : !LAMBDA_EDEFAULT.equals(lambda);
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         return DORM_EDEFAULT == null ? dorm != null : !DORM_EDEFAULT.equals(dorm);
-      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR:
-        return REPAIR_EDEFAULT == null ? repair != null : !REPAIR_EDEFAULT.equals(repair);
+      case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS:
+        return repairActions != null && !repairActions.isEmpty();
     }
     return super.eIsSet(featureID);
   }
@@ -479,8 +465,6 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
     result.append(lambda);
     result.append(", dorm: ");
     result.append(dorm);
-    result.append(", repair: ");
-    result.append(repair);
     result.append(')');
     return result.toString();
   }

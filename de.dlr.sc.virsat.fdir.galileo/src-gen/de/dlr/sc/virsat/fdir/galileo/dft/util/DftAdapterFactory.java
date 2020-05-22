@@ -86,6 +86,11 @@ public class DftAdapterFactory extends AdapterFactoryImpl
         return createGalileoFaultTreeNodeAdapter();
       }
       @Override
+      public Adapter caseGalileoRepairAction(GalileoRepairAction object)
+      {
+        return createGalileoRepairActionAdapter();
+      }
+      @Override
       public Adapter caseGalileoNodeType(GalileoNodeType object)
       {
         return createGalileoNodeTypeAdapter();
@@ -153,6 +158,21 @@ public class DftAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createGalileoFaultTreeNodeAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction <em>Galileo Repair Action</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction
+   * @generated
+   */
+  public Adapter createGalileoRepairActionAdapter()
   {
     return null;
   }

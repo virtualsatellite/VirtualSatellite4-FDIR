@@ -41,7 +41,9 @@ public class DftParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getGalileoGateAccess().getGroup(), "rule__GalileoGate__Group__0");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getGroup(), "rule__GalileoBasicEvent__Group__0");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getGroup_4(), "rule__GalileoBasicEvent__Group_4__0");
-			builder.put(grammarAccess.getGalileoBasicEventAccess().getGroup_5(), "rule__GalileoBasicEvent__Group_5__0");
+			builder.put(grammarAccess.getGalileoRepairActionAccess().getGroup(), "rule__GalileoRepairAction__Group__0");
+			builder.put(grammarAccess.getGalileoRepairActionAccess().getGroup_3(), "rule__GalileoRepairAction__Group_3__0");
+			builder.put(grammarAccess.getGalileoRepairActionAccess().getGroup_3_1(), "rule__GalileoRepairAction__Group_3_1__0");
 			builder.put(grammarAccess.getNamedAccess().getGroup(), "rule__Named__Group__0");
 			builder.put(grammarAccess.getObserverAccess().getGroup(), "rule__Observer__Group__0");
 			builder.put(grammarAccess.getParametrizedAccess().getGroup(), "rule__Parametrized__Group__0");
@@ -57,7 +59,10 @@ public class DftParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getNameAssignment_0(), "rule__GalileoBasicEvent__NameAssignment_0");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getLambdaAssignment_3(), "rule__GalileoBasicEvent__LambdaAssignment_3");
 			builder.put(grammarAccess.getGalileoBasicEventAccess().getDormAssignment_4_2(), "rule__GalileoBasicEvent__DormAssignment_4_2");
-			builder.put(grammarAccess.getGalileoBasicEventAccess().getRepairAssignment_5_2(), "rule__GalileoBasicEvent__RepairAssignment_5_2");
+			builder.put(grammarAccess.getGalileoBasicEventAccess().getRepairActionsAssignment_5(), "rule__GalileoBasicEvent__RepairActionsAssignment_5");
+			builder.put(grammarAccess.getGalileoRepairActionAccess().getRepairAssignment_2(), "rule__GalileoRepairAction__RepairAssignment_2");
+			builder.put(grammarAccess.getGalileoRepairActionAccess().getNameAssignment_3_0(), "rule__GalileoRepairAction__NameAssignment_3_0");
+			builder.put(grammarAccess.getGalileoRepairActionAccess().getObservartionsAssignment_3_1_1(), "rule__GalileoRepairAction__ObservartionsAssignment_3_1_1");
 			builder.put(grammarAccess.getNamedAccess().getTypeNameAssignment_1(), "rule__Named__TypeNameAssignment_1");
 			builder.put(grammarAccess.getObserverAccess().getObservablesAssignment_2(), "rule__Observer__ObservablesAssignment_2");
 			builder.put(grammarAccess.getObserverAccess().getObservationRateAssignment_5(), "rule__Observer__ObservationRateAssignment_5");

@@ -313,33 +313,112 @@ ruleGalileoBasicEvent returns [EObject current=null]
 			)
 		)?
 		(
-			otherlv_7='repair'
-			{
-				newLeafNode(otherlv_7, grammarAccess.getGalileoBasicEventAccess().getRepairKeyword_5_0());
-			}
-			otherlv_8='='
-			{
-				newLeafNode(otherlv_8, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_5_1());
-			}
+			(
+				{
+					newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getRepairActionsGalileoRepairActionParserRuleCall_5_0());
+				}
+				lv_repairActions_7_0=ruleGalileoRepairAction
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
+					}
+					add(
+						$current,
+						"repairActions",
+						lv_repairActions_7_0,
+						"de.dlr.sc.virsat.fdir.galileo.Dft.GalileoRepairAction");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)*
+	)
+;
+
+// Entry rule entryRuleGalileoRepairAction
+entryRuleGalileoRepairAction returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getGalileoRepairActionRule()); }
+	iv_ruleGalileoRepairAction=ruleGalileoRepairAction
+	{ $current=$iv_ruleGalileoRepairAction.current; }
+	EOF;
+
+// Rule GalileoRepairAction
+ruleGalileoRepairAction returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		otherlv_0='repair'
+		{
+			newLeafNode(otherlv_0, grammarAccess.getGalileoRepairActionAccess().getRepairKeyword_0());
+		}
+		otherlv_1='='
+		{
+			newLeafNode(otherlv_1, grammarAccess.getGalileoRepairActionAccess().getEqualsSignKeyword_1());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getGalileoRepairActionAccess().getRepairFloatParserRuleCall_2_0());
+				}
+				lv_repair_2_0=ruleFloat
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getGalileoRepairActionRule());
+					}
+					set(
+						$current,
+						"repair",
+						lv_repair_2_0,
+						"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		(
 			(
 				(
+					lv_name_3_0=RULE_STRING
 					{
-						newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getRepairFloatParserRuleCall_5_2_0());
+						newLeafNode(lv_name_3_0, grammarAccess.getGalileoRepairActionAccess().getNameSTRINGTerminalRuleCall_3_0_0());
 					}
-					lv_repair_9_0=ruleFloat
 					{
 						if ($current==null) {
-							$current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
+							$current = createModelElement(grammarAccess.getGalileoRepairActionRule());
 						}
-						set(
+						setWithLastConsumed(
 							$current,
-							"repair",
-							lv_repair_9_0,
-							"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
-						afterParserOrEnumRuleCall();
+							"name",
+							lv_name_3_0,
+							"org.eclipse.xtext.common.Terminals.STRING");
 					}
 				)
 			)
+			(
+				otherlv_4='['
+				{
+					newLeafNode(otherlv_4, grammarAccess.getGalileoRepairActionAccess().getLeftSquareBracketKeyword_3_1_0());
+				}
+				(
+					(
+						{
+							if ($current==null) {
+								$current = createModelElement(grammarAccess.getGalileoRepairActionRule());
+							}
+						}
+						otherlv_5=RULE_STRING
+						{
+							newLeafNode(otherlv_5, grammarAccess.getGalileoRepairActionAccess().getObservartionsGalileoFaultTreeNodeCrossReference_3_1_1_0());
+						}
+					)
+				)
+			)*
+			otherlv_6=']'
+			{
+				newLeafNode(otherlv_6, grammarAccess.getGalileoRepairActionAccess().getRightSquareBracketKeyword_3_2());
+			}
 		)?
 	)
 ;

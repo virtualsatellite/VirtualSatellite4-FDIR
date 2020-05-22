@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.dlr.sc.virsat.fdir.galileo.dft.DftFactory;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
+import de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction;
 import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
@@ -114,10 +116,7 @@ public class DFT2GalileoDFT {
 				BasicEventHolder beHolder = new BasicEventHolder((BasicEvent) node);
 				galileoNode.setName(getIdentifier(node.getTypeInstance()));
 				galileoNode.setLambda(String.valueOf(beHolder.getHotFailureRate()));
-				galileoNode.setDorm(String.valueOf(beHolder.getColdFailureRate()));
-				if (beHolder.isRepairDefined()) {
-					galileoNode.setRepair(String.valueOf(beHolder.getRepairRate()));
-				}
+				galileoNode.setDorm(String.valueOf(beHolder.getColdFailureRate()));				
 				galileoDft.getBasicEvents().add(galileoNode);
 			} 
 			
@@ -140,6 +139,18 @@ public class DFT2GalileoDFT {
 				for (FaultTreeNode observable : observables) {
 					GalileoFaultTreeNode galileoChild = mapDftNodeToGalileoNode.get(observable);
 					((Observer) galileoNode.getType()).getObservables().add(galileoChild);
+				}
+			} else if (node instanceof BasicEvent) {
+				BasicEvent be = (BasicEvent) node;
+				BasicEventHolder beHolder = new BasicEventHolder(be);
+				for (Entry<List<FaultTreeNode>, Double> repairAction : beHolder.getRepairRates().entrySet()) {
+					GalileoRepairAction galileoRepairAction = DftFactory.eINSTANCE.createGalileoRepairAction();
+					galileoNode.getRepairActions().add(galileoRepairAction);
+					galileoRepairAction.setRepair(repairAction.getValue().toString());
+					for (FaultTreeNode observation : repairAction.getKey()) {
+						GalileoFaultTreeNode galileoObservation = mapDftNodeToGalileoNode.get(observation);
+						galileoRepairAction.getObservartions().add(galileoObservation);
+					}
 				}
 			}
 			

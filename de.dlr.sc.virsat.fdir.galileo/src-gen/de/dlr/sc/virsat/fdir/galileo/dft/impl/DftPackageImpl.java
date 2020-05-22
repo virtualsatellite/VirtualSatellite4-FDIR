@@ -8,6 +8,7 @@ import de.dlr.sc.virsat.fdir.galileo.dft.DftPackage;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
+import de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction;
 import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
 import de.dlr.sc.virsat.fdir.galileo.dft.Parametrized;
@@ -40,6 +41,13 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   private EClass galileoFaultTreeNodeEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass galileoRepairActionEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -248,9 +256,53 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
    * @generated
    */
   @Override
-  public EAttribute getGalileoFaultTreeNode_Repair()
+  public EReference getGalileoFaultTreeNode_RepairActions()
   {
-    return (EAttribute)galileoFaultTreeNodeEClass.getEStructuralFeatures().get(5);
+    return (EReference)galileoFaultTreeNodeEClass.getEStructuralFeatures().get(5);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EClass getGalileoRepairAction()
+  {
+    return galileoRepairActionEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EAttribute getGalileoRepairAction_Repair()
+  {
+    return (EAttribute)galileoRepairActionEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EAttribute getGalileoRepairAction_Name()
+  {
+    return (EAttribute)galileoRepairActionEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getGalileoRepairAction_Observartions()
+  {
+    return (EReference)galileoRepairActionEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -394,7 +446,12 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     createEReference(galileoFaultTreeNodeEClass, GALILEO_FAULT_TREE_NODE__CHILDREN);
     createEAttribute(galileoFaultTreeNodeEClass, GALILEO_FAULT_TREE_NODE__LAMBDA);
     createEAttribute(galileoFaultTreeNodeEClass, GALILEO_FAULT_TREE_NODE__DORM);
-    createEAttribute(galileoFaultTreeNodeEClass, GALILEO_FAULT_TREE_NODE__REPAIR);
+    createEReference(galileoFaultTreeNodeEClass, GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS);
+
+    galileoRepairActionEClass = createEClass(GALILEO_REPAIR_ACTION);
+    createEAttribute(galileoRepairActionEClass, GALILEO_REPAIR_ACTION__REPAIR);
+    createEAttribute(galileoRepairActionEClass, GALILEO_REPAIR_ACTION__NAME);
+    createEReference(galileoRepairActionEClass, GALILEO_REPAIR_ACTION__OBSERVARTIONS);
 
     galileoNodeTypeEClass = createEClass(GALILEO_NODE_TYPE);
 
@@ -455,7 +512,12 @@ public class DftPackageImpl extends EPackageImpl implements DftPackage
     initEReference(getGalileoFaultTreeNode_Children(), this.getGalileoFaultTreeNode(), null, "children", null, 0, -1, GalileoFaultTreeNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getGalileoFaultTreeNode_Lambda(), ecorePackage.getEString(), "lambda", null, 0, 1, GalileoFaultTreeNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getGalileoFaultTreeNode_Dorm(), ecorePackage.getEString(), "dorm", null, 0, 1, GalileoFaultTreeNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getGalileoFaultTreeNode_Repair(), ecorePackage.getEString(), "repair", null, 0, 1, GalileoFaultTreeNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getGalileoFaultTreeNode_RepairActions(), this.getGalileoRepairAction(), null, "repairActions", null, 0, -1, GalileoFaultTreeNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(galileoRepairActionEClass, GalileoRepairAction.class, "GalileoRepairAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getGalileoRepairAction_Repair(), ecorePackage.getEString(), "repair", null, 0, 1, GalileoRepairAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getGalileoRepairAction_Name(), ecorePackage.getEString(), "name", null, 0, 1, GalileoRepairAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getGalileoRepairAction_Observartions(), this.getGalileoFaultTreeNode(), null, "observartions", null, 0, -1, GalileoRepairAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(galileoNodeTypeEClass, GalileoNodeType.class, "GalileoNodeType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

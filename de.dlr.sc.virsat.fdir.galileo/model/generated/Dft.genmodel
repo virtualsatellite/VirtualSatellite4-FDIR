@@ -17,7 +17,12 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Dft.ecore#//GalileoFaultTreeNode/children"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoFaultTreeNode/lambda"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoFaultTreeNode/dorm"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoFaultTreeNode/repair"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dft.ecore#//GalileoFaultTreeNode/repairActions"/>
+    </genClasses>
+    <genClasses ecoreClass="Dft.ecore#//GalileoRepairAction">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoRepairAction/repair"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dft.ecore#//GalileoRepairAction/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Dft.ecore#//GalileoRepairAction/observartions"/>
     </genClasses>
     <genClasses ecoreClass="Dft.ecore#//GalileoNodeType"/>
     <genClasses ecoreClass="Dft.ecore#//Named">

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
@@ -179,7 +180,7 @@ public class FaultEvent implements IDFTEvent {
 	 */
 	private boolean canRepairActionOccur(DFTState state, Entry<List<FaultTreeNode>, Double> repairAction) {
 		double repairRate = repairAction.getValue();
-		if (!BasicEventHolder.isRateDefined(repairRate)) {
+		if (!MarkovAutomaton.isRateDefined(repairRate)) {
 			return false;
 		}
 		

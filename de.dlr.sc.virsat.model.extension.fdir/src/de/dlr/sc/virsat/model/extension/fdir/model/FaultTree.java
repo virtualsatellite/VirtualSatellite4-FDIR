@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 // *****************************************************************
@@ -142,7 +143,7 @@ public  class FaultTree extends AFaultTree {
 		
 		for (BasicEvent be : basicEvents) {
 			double transientRepairRate = BasicEventHolder.getRateValue(be.getRepairRateBean());
-			if (BasicEventHolder.isRateDefined(transientRepairRate)) {
+			if (MarkovAutomaton.isRateDefined(transientRepairRate)) {
 				potentialRecoveryActions.add("Transient Failure");
 			}
 			for (RepairAction repairAction : be.getRepairActions()) {
