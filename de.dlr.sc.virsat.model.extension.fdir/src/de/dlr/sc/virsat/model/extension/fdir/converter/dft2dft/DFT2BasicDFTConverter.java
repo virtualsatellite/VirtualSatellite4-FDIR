@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
@@ -92,39 +93,45 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 			FaultTreeNode newNodeOutputNode = newNodeList.get(FaultTreeBuilder.NODE_INDEX);
 			Fault fault = newNodeOutputNode.getFault();
 
-			List<FaultTreeNode> spares = ftHolder.getNodes(node, EdgeType.SPARE);
-			for (int i = 0; i < spares.size(); ++i) {
-				FaultTreeNode spare = spares.get(i);
-				List<FaultTreeNode> newChildNodeList = mapNodes.get(spare);
-				FaultTreeNode newSpareOutputNode = newChildNodeList.get(FaultTreeBuilder.NODE_INDEX);
-				ftBuilder.connectSpare(fault, newSpareOutputNode, newNodeOutputNode);
-			}
-
-			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
-			for (int i = 0; i < monitors.size(); ++i) {
-				FaultTreeNode monitor = monitors.get(i);
-				List<FaultTreeNode> newChildNodeList = mapNodes.get(monitor);
-				FaultTreeNode newMonitorOutputNode = newChildNodeList.get(FaultTreeBuilder.NODE_INDEX);
-				ftBuilder.connectObserver(fault, newNodeOutputNode, newMonitorOutputNode);
-			}
-			
-			List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
-
-			createEdges(fault, newNodeList, newNodeOutputNode, node.getFaultTreeNodeType(), children);
+			createEdges(EdgeType.SPARE, node, newNodeOutputNode, fault);
+			createEdges(EdgeType.MONITOR, node, newNodeOutputNode, fault);
+			createChildEdges(fault, newNodeList, newNodeOutputNode, node);
 			
 			if (node instanceof Fault) {
 				for (BasicEvent be : node.getFault().getBasicEvents()) {
-					List<FaultTreeNode> deps = ftHolder.getNodes(be, EdgeType.DEP);
-					for (int i = 0; i < deps.size(); ++i) {
-						FaultTreeNode dep = deps.get(i);
-						List<FaultTreeNode> newChildNodeList = mapNodes.get(dep);
-						FaultTreeNode newDepOutputNode = newChildNodeList.get(FaultTreeBuilder.NODE_INDEX);
-						ftBuilder.connectDep(fault, newDepOutputNode, mapNodes.get(be).get(0));
-					}
+					BasicEvent newBe = (BasicEvent) mapNodes.get(be).get(0);
+					createEdges(EdgeType.DEP, be, newBe, fault);
+					remapObservations(newBe);
 				}
 			}
 		}
 
+		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerators = createTracing();
+		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newRoot, mapGeneratedToGenerators);
+
+		return conversionResult;
+	}
+
+	/**
+	 * Remaps the observation lists of repair actions of a basic event to the observations in the new tree
+	 * @param newBe the basic event for remapping.
+	 */
+	private void remapObservations(BasicEvent newBe) {
+		for (RepairAction repairAction : newBe.getRepairActions()) {
+			for (int i = 0; i < repairAction.getObservations().size(); ++i) {
+				FaultTreeNode observation = repairAction.getObservations().get(i);
+				FaultTreeNode newObservation = mapNodes.get(observation).get(FaultTreeBuilder.NODE_INDEX);
+				repairAction.getObservations().set(i, newObservation);
+			}
+		}
+	}
+
+	/**
+	 * Creates a mapping between the generator fault tree nodes and the generated fault tree nodes
+	 * for backwards tracing.
+	 * @return a map to identify which fault tree node was responsible for generating a given fault tree node
+	 */
+	private Map<FaultTreeNode, FaultTreeNode> createTracing() {
 		Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerators = new HashMap<>();
 		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : mapNodes.entrySet()) {
 			FaultTreeNode generator = entry.getKey();
@@ -133,10 +140,27 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 				mapGeneratedToGenerators.put(generated, generator);
 			}
 		}
-		
-		DFT2DFTConversionResult conversionResult = new DFT2DFTConversionResult(newRoot, mapGeneratedToGenerators);
+		return mapGeneratedToGenerators;
+	}
 
-		return conversionResult;
+	/**
+	 * Creates the edges of the specified node type in the given fault
+	 * @param node the old node to which edges connect
+	 * @param newNodeOutputNode the new node to which the edges will be connected
+	 * @param fault the fault that will contain the edges
+	 */
+	private void createEdges(EdgeType edgeType, FaultTreeNode node, FaultTreeNode newNodeOutputNode, Fault fault) {
+		List<FaultTreeNode> edges = ftHolder.getNodes(node, edgeType);
+		for (int i = 0; i < edges.size(); ++i) {
+			FaultTreeNode fromNode = edges.get(i);
+			List<FaultTreeNode> newFromNodeList = mapNodes.get(fromNode);
+			FaultTreeNode newFromOutputNode = newFromNodeList.get(FaultTreeBuilder.NODE_INDEX);
+			if (edgeType.equals(EdgeType.MONITOR)) {
+				ftBuilder.connect(fault, edgeType, newNodeOutputNode, newFromOutputNode);
+			} else {
+				ftBuilder.connect(fault, edgeType, newFromOutputNode, newNodeOutputNode);
+			}
+		}
 	}
 
 	/**
@@ -148,13 +172,11 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 	 *            The list of nodes for connection
 	 * @param newNodeOutputNode
 	 *            The new output node
-	 * @param type
-	 *            The type of the node
-	 * @param toNodes
-	 *            The nodes to connect to
 	 */
-	private void createEdges(Fault fault, List<FaultTreeNode> newNodeList, FaultTreeNode newNodeOutputNode,
-			FaultTreeNodeType type, List<FaultTreeNode> toNodes) {
+	private void createChildEdges(Fault fault, List<FaultTreeNode> newNodeList, FaultTreeNode newNodeOutputNode, FaultTreeNode node) {
+		FaultTreeNodeType type = node.getFaultTreeNodeType();
+		List<FaultTreeNode> toNodes = ftHolder.getNodes(node, EdgeType.CHILD);
+		
 		for (int i = 0; i < toNodes.size(); ++i) {
 			FaultTreeNode toNode = toNodes.get(i);
 			List<FaultTreeNode> newChildNodeList = mapNodes.get(toNode);
