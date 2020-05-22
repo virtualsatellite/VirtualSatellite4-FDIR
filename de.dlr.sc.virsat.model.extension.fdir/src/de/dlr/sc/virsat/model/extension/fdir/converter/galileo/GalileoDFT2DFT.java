@@ -225,7 +225,9 @@ public class GalileoDFT2DFT {
 		
 		for (GalileoRepairAction galileoRepairAction : galileoBe.getRepairActions()) {
 			double repairRate = Double.valueOf(galileoRepairAction.getRepair());
-			if (galileoRepairAction.getName() != null) {
+			if (galileoRepairAction.getObservartions().isEmpty()) {
+				be.setRepairRate(repairRate);
+			} else {
 				RepairAction repairAction = new RepairAction(concept);
 				be.getRepairActions().add(repairAction);
 				repairAction.setRepairRate(repairRate);
@@ -235,7 +237,6 @@ public class GalileoDFT2DFT {
 					repairAction.setName(galileoRepairAction.getName());
 				}
 			}
-			be.setRepairRate(repairRate);
 		}
 		return be;
 	}

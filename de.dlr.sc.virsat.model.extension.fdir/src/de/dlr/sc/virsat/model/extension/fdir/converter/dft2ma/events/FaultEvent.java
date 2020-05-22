@@ -160,10 +160,6 @@ public class FaultEvent implements IDFTEvent {
 			}
 		}
 		
-		if (beHolder.isRepairDefined()) {
-			return true;
-		}
-		
 		for (Entry<List<FaultTreeNode>, Double> repairAction : beHolder.getRepairRates().entrySet()) {
 			if (canRepairActionOccur(state, repairAction)) {
 				return true;

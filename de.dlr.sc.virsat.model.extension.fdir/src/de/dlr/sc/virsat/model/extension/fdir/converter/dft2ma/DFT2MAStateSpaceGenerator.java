@@ -25,7 +25,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryRedu
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
@@ -171,7 +170,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			} else {
 				baseSucc.setRecoveryStrategy(recoveryStrategy);
 			}
-		} else if (succs.size() > 1 || event instanceof ObservationEvent) { 
+		} else if (succs.size() > 1) { 
 			// If we do not have a recovery strategy and either multiple successors
 			// or an obsertvation event for which we generally must provide the ability
 			// to react, then we need an intermediate non-deterministic state

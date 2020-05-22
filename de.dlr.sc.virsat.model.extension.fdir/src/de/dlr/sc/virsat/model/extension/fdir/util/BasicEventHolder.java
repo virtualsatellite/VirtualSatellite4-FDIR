@@ -44,6 +44,7 @@ public class BasicEventHolder {
 		coldFailureRate = getRateValue(basicEvent.getColdFailureRateBean());
 		
 		double transientRepairRate = getRateValue(basicEvent.getRepairRateBean());
+		transientRepairRate = Double.isNaN(transientRepairRate) ? 0 : transientRepairRate;
 		repairRates.put(Collections.emptyList(), transientRepairRate);
 				
 		for (RepairAction repairAction : basicEvent.getRepairActions()) {

@@ -94,8 +94,7 @@ public class DFTSemantics {
 		
 		for (BasicEvent be : ftHolder.getBasicEvents()) {
 			BasicEventHolder beHolder = ftHolder.getBasicEventHolder(be);
-			double repairRate = beHolder.getRepairRate();
-			if (allowsRepairEvents && Double.isFinite(repairRate) && repairRate > 0) {
+			if (allowsRepairEvents && beHolder.isRepairDefined()) {
 				faultEvents.add(new FaultEvent(be, true, ftHolder, staticAnalysis));					
 			}
 			
