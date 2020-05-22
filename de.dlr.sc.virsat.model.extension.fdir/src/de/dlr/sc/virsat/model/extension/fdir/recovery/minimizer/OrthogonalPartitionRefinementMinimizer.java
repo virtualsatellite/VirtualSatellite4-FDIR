@@ -181,8 +181,9 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	private List<State> getEquivalentBlock(Map<Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>>, List<State>> mapBlockReachabilityMapToRefinedBlock,
 			State state, Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock) {
 		
-		for (Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlockOther : mapBlockReachabilityMapToRefinedBlock.keySet()) {
-			List<State> blockOther = mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther);
+		for (Entry<Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>>, List<State>> entry : mapBlockReachabilityMapToRefinedBlock.entrySet()) {
+			Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlockOther = entry.getKey();
+			List<State> blockOther = entry.getValue();
 			if (isOrthogonallyEqivalent(state, mapGuardsToBlock, mapGuardsToBlockOther, blockOther)) {
 				return mapBlockReachabilityMapToRefinedBlock.get(mapGuardsToBlockOther);
 			}
