@@ -484,7 +484,19 @@ public class FaultTreeBuilder {
 		return false;
 	}
 	
+	/**
+	 * Gets the encapsulated fault tree helper
+	 * @return the encapulsated fault tree helper
+	 */
 	public FaultTreeHelper getFtHelper() {
 		return ftHelper;
+	}
+
+	/**
+	 * Gets the encapsulated concept
+	 * @return the encapsulated concept
+	 */
+	public Concept getConcept() {
+		return concept;
 	}
 }
