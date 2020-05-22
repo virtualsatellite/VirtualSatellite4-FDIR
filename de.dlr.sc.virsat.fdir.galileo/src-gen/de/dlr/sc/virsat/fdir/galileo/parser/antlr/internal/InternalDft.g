@@ -379,46 +379,40 @@ ruleGalileoRepairAction returns [EObject current=null]
 		)
 		(
 			(
-				(
-					lv_name_3_0=RULE_STRING
-					{
-						newLeafNode(lv_name_3_0, grammarAccess.getGalileoRepairActionAccess().getNameSTRINGTerminalRuleCall_3_0_0());
+				lv_name_3_0=RULE_STRING
+				{
+					newLeafNode(lv_name_3_0, grammarAccess.getGalileoRepairActionAccess().getNameSTRINGTerminalRuleCall_3_0());
+				}
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getGalileoRepairActionRule());
 					}
+					setWithLastConsumed(
+						$current,
+						"name",
+						lv_name_3_0,
+						"org.eclipse.xtext.common.Terminals.STRING");
+				}
+			)
+		)?
+		(
+			otherlv_4='observations'
+			{
+				newLeafNode(otherlv_4, grammarAccess.getGalileoRepairActionAccess().getObservationsKeyword_4_0());
+			}
+			(
+				(
 					{
 						if ($current==null) {
 							$current = createModelElement(grammarAccess.getGalileoRepairActionRule());
 						}
-						setWithLastConsumed(
-							$current,
-							"name",
-							lv_name_3_0,
-							"org.eclipse.xtext.common.Terminals.STRING");
+					}
+					otherlv_5=RULE_STRING
+					{
+						newLeafNode(otherlv_5, grammarAccess.getGalileoRepairActionAccess().getObservartionsGalileoFaultTreeNodeCrossReference_4_1_0());
 					}
 				)
-			)
-			(
-				otherlv_4='['
-				{
-					newLeafNode(otherlv_4, grammarAccess.getGalileoRepairActionAccess().getLeftSquareBracketKeyword_3_1_0());
-				}
-				(
-					(
-						{
-							if ($current==null) {
-								$current = createModelElement(grammarAccess.getGalileoRepairActionRule());
-							}
-						}
-						otherlv_5=RULE_STRING
-						{
-							newLeafNode(otherlv_5, grammarAccess.getGalileoRepairActionAccess().getObservartionsGalileoFaultTreeNodeCrossReference_3_1_1_0());
-						}
-					)
-				)
 			)*
-			otherlv_6=']'
-			{
-				newLeafNode(otherlv_6, grammarAccess.getGalileoRepairActionAccess().getRightSquareBracketKeyword_3_2());
-			}
 		)?
 	)
 ;

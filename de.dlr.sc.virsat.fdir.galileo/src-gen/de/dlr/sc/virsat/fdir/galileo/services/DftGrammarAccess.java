@@ -200,21 +200,19 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cEqualsSignKeyword_1 = (Keyword)cGroup.eContents().get(1);
 		private final Assignment cRepairAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final RuleCall cRepairFloatParserRuleCall_2_0 = (RuleCall)cRepairAssignment_2.eContents().get(0);
-		private final Group cGroup_3 = (Group)cGroup.eContents().get(3);
-		private final Assignment cNameAssignment_3_0 = (Assignment)cGroup_3.eContents().get(0);
-		private final RuleCall cNameSTRINGTerminalRuleCall_3_0_0 = (RuleCall)cNameAssignment_3_0.eContents().get(0);
-		private final Group cGroup_3_1 = (Group)cGroup_3.eContents().get(1);
-		private final Keyword cLeftSquareBracketKeyword_3_1_0 = (Keyword)cGroup_3_1.eContents().get(0);
-		private final Assignment cObservartionsAssignment_3_1_1 = (Assignment)cGroup_3_1.eContents().get(1);
-		private final CrossReference cObservartionsGalileoFaultTreeNodeCrossReference_3_1_1_0 = (CrossReference)cObservartionsAssignment_3_1_1.eContents().get(0);
-		private final RuleCall cObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_3_1_1_0_1 = (RuleCall)cObservartionsGalileoFaultTreeNodeCrossReference_3_1_1_0.eContents().get(1);
-		private final Keyword cRightSquareBracketKeyword_3_2 = (Keyword)cGroup_3.eContents().get(2);
+		private final Assignment cNameAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cNameSTRINGTerminalRuleCall_3_0 = (RuleCall)cNameAssignment_3.eContents().get(0);
+		private final Group cGroup_4 = (Group)cGroup.eContents().get(4);
+		private final Keyword cObservationsKeyword_4_0 = (Keyword)cGroup_4.eContents().get(0);
+		private final Assignment cObservartionsAssignment_4_1 = (Assignment)cGroup_4.eContents().get(1);
+		private final CrossReference cObservartionsGalileoFaultTreeNodeCrossReference_4_1_0 = (CrossReference)cObservartionsAssignment_4_1.eContents().get(0);
+		private final RuleCall cObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_4_1_0_1 = (RuleCall)cObservartionsGalileoFaultTreeNodeCrossReference_4_1_0.eContents().get(1);
 		
 		//GalileoRepairAction:
-		//	'repair' '=' repair=Float (name=STRING ('[' observartions+=[GalileoFaultTreeNode|STRING])* ']')?;
+		//	'repair' '=' repair=Float name=STRING? ('observations' observartions+=[GalileoFaultTreeNode|STRING]*)?;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'repair' '=' repair=Float (name=STRING ('[' observartions+=[GalileoFaultTreeNode|STRING])* ']')?
+		//'repair' '=' repair=Float name=STRING? ('observations' observartions+=[GalileoFaultTreeNode|STRING]*)?
 		public Group getGroup() { return cGroup; }
 		
 		//'repair'
@@ -229,32 +227,26 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		//Float
 		public RuleCall getRepairFloatParserRuleCall_2_0() { return cRepairFloatParserRuleCall_2_0; }
 		
-		//(name=STRING ('[' observartions+=[GalileoFaultTreeNode|STRING])* ']')?
-		public Group getGroup_3() { return cGroup_3; }
-		
-		//name=STRING
-		public Assignment getNameAssignment_3_0() { return cNameAssignment_3_0; }
+		//name=STRING?
+		public Assignment getNameAssignment_3() { return cNameAssignment_3; }
 		
 		//STRING
-		public RuleCall getNameSTRINGTerminalRuleCall_3_0_0() { return cNameSTRINGTerminalRuleCall_3_0_0; }
+		public RuleCall getNameSTRINGTerminalRuleCall_3_0() { return cNameSTRINGTerminalRuleCall_3_0; }
 		
-		//('[' observartions+=[GalileoFaultTreeNode|STRING])*
-		public Group getGroup_3_1() { return cGroup_3_1; }
+		//('observations' observartions+=[GalileoFaultTreeNode|STRING]*)?
+		public Group getGroup_4() { return cGroup_4; }
 		
-		//'['
-		public Keyword getLeftSquareBracketKeyword_3_1_0() { return cLeftSquareBracketKeyword_3_1_0; }
+		//'observations'
+		public Keyword getObservationsKeyword_4_0() { return cObservationsKeyword_4_0; }
 		
-		//observartions+=[GalileoFaultTreeNode|STRING]
-		public Assignment getObservartionsAssignment_3_1_1() { return cObservartionsAssignment_3_1_1; }
+		//observartions+=[GalileoFaultTreeNode|STRING]*
+		public Assignment getObservartionsAssignment_4_1() { return cObservartionsAssignment_4_1; }
 		
 		//[GalileoFaultTreeNode|STRING]
-		public CrossReference getObservartionsGalileoFaultTreeNodeCrossReference_3_1_1_0() { return cObservartionsGalileoFaultTreeNodeCrossReference_3_1_1_0; }
+		public CrossReference getObservartionsGalileoFaultTreeNodeCrossReference_4_1_0() { return cObservartionsGalileoFaultTreeNodeCrossReference_4_1_0; }
 		
 		//STRING
-		public RuleCall getObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_3_1_1_0_1() { return cObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_3_1_1_0_1; }
-		
-		//']'
-		public Keyword getRightSquareBracketKeyword_3_2() { return cRightSquareBracketKeyword_3_2; }
+		public RuleCall getObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_4_1_0_1() { return cObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_4_1_0_1; }
 	}
 	public class GalileoNodeTypeElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.GalileoNodeType");
@@ -585,7 +577,7 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//GalileoRepairAction:
-	//	'repair' '=' repair=Float (name=STRING ('[' observartions+=[GalileoFaultTreeNode|STRING])* ']')?;
+	//	'repair' '=' repair=Float name=STRING? ('observations' observartions+=[GalileoFaultTreeNode|STRING]*)?;
 	public GalileoRepairActionElements getGalileoRepairActionAccess() {
 		return pGalileoRepairAction;
 	}

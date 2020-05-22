@@ -26,7 +26,7 @@ GalileoBasicEvent returns GalileoFaultTreeNode:
 ;
 
 GalileoRepairAction:
-	'repair' '=' repair=Float (name=STRING ('[' (observartions+=[GalileoFaultTreeNode|STRING]))* ']')?
+	'repair' '=' repair=Float (name=STRING)? ('observations' observartions+=[GalileoFaultTreeNode|STRING]*)?
 ;
 
 GalileoNodeType:

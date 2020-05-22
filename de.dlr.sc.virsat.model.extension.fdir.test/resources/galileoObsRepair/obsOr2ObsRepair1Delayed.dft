@@ -1,0 +1,6 @@
+toplevel "tle";
+"tle" or "a" "b";
+"a" lambda=1 
+	repair=0.5 observations "tle";
+"b" lambda=2;
+"O" observer "tle" obsRate=1;

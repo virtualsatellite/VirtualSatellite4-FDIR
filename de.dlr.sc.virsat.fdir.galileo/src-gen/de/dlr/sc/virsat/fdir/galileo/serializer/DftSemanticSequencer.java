@@ -106,7 +106,7 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 	 *     GalileoRepairAction returns GalileoRepairAction
 	 *
 	 * Constraint:
-	 *     (repair=Float (name=STRING observartions+=[GalileoFaultTreeNode|STRING]*)?)
+	 *     (repair=Float name=STRING? observartions+=[GalileoFaultTreeNode|STRING]*)
 	 */
 	protected void sequence_GalileoRepairAction(ISerializationContext context, GalileoRepairAction semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
