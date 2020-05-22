@@ -10,10 +10,12 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -61,12 +63,36 @@ public class FaultEvent implements IDFTEvent {
 	@Override
 	public double getRate(DFTState state) {
 		if (isRepair) {
-			return beHolder.getRepairRate();
+			return getRepairRate(state);
 		} else {
-			boolean isParentNodeActive = state.isNodeActive(beHolder.getFault());
-			double rate = isParentNodeActive ? beHolder.getHotFailureRate() : beHolder.getColdFailureRate();
-			return getExtraRateFactor(state) * rate;
+			return getFailRate(state);
 		}
+	}
+
+	/**
+	 * Gets the occurrence rate for repair
+	 * @param state the current state
+	 * @return the rate for repairing the basic event
+	 */
+	private double getRepairRate(DFTState state) {
+		double maxRepairRate = 0;
+		for (Entry<List<FaultTreeNode>, Double> repairAction : beHolder.getRepairRates().entrySet()) {
+			if (canRepairActionOccur(state, repairAction)) {
+				maxRepairRate = Math.max(maxRepairRate, repairAction.getValue());
+			}
+		}
+		return maxRepairRate;
+	}
+
+	/**
+	 * Gets the occurrence rate for failing
+	 * @param state the current state
+	 * @return the rate for failing the basic event
+	 */
+	private double getFailRate(DFTState state) {
+		boolean isParentNodeActive = state.isNodeActive(beHolder.getFault());
+		double rate = isParentNodeActive ? beHolder.getHotFailureRate() : beHolder.getColdFailureRate();
+		return getExtraRateFactor(state) * rate;
 	}
 	
 	/**
@@ -101,20 +127,82 @@ public class FaultEvent implements IDFTEvent {
 		boolean hasAlreadyFailed = state.hasFaultTreeNodeFailed(be);
 		
 		if (isRepair) {
-			// Disable repair events while there is a failed FDEP trigger
-			List<FaultTreeNode> depTriggers = state.getFTHolder().getNodes(be, EdgeType.DEP);
-			for (FaultTreeNode depTrigger : depTriggers) {
-				if (state.hasFaultTreeNodeFailed(depTrigger)) {
+			return hasAlreadyFailed && canRepairOccur(state);
+		} else {
+			return !hasAlreadyFailed && canFailureOccur(state);
+		} 
+	}
+
+	/**
+	 * Verifies if further conditions, besides the basic event needing to be in a opertaional state, that are required for
+	 * the fault event to occur, are met.
+	 * @param state the current state
+	 * @return true iff the basic event can fail
+	 */
+	private boolean canFailureOccur(DFTState state) {
+		boolean isParentNodeActive = state.isNodeActive(beHolder.getFault());
+		return isParentNodeActive || beHolder.getColdFailureRate() != 0;
+	}
+
+	/**
+	 * Verifies if further conditions, besides the basic event needing to be in a failed state, that are required for
+	 * the repair event to occur, are met.
+	 * @param state the current state
+	 * @return true iff the repair event can occur
+	 */
+	private boolean canRepairOccur(DFTState state) {
+		// Disable repair events while there is a failed FDEP trigger
+		List<FaultTreeNode> depTriggers = state.getFTHolder().getNodes(be, EdgeType.DEP);
+		for (FaultTreeNode depTrigger : depTriggers) {
+			if (depTrigger instanceof FDEP && state.hasFaultTreeNodeFailed(depTrigger)) {
+				return false;
+			}
+		}
+		
+		if (beHolder.isRepairDefined()) {
+			return true;
+		}
+		
+		for (Entry<List<FaultTreeNode>, Double> repairAction : beHolder.getRepairRates().entrySet()) {
+			if (canRepairActionOccur(state, repairAction)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+	 * Checks if a given repair action can be executed in the current state
+	 * @param state the current state
+	 * @param repairAction the repair action to check
+	 */
+	private boolean canRepairActionOccur(DFTState state, Entry<List<FaultTreeNode>, Double> repairAction) {
+		double repairRate = repairAction.getValue();
+		if (!BasicEventHolder.isRateDefined(repairRate)) {
+			return false;
+		}
+		
+		List<FaultTreeNode> requiredObservations = repairAction.getKey();
+		return areAllNodesObserved(state, requiredObservations);
+	}
+
+	/**
+	 * Checks if all passed nodes have been observed in the current state
+	 * @param state the current states
+	 * @param nodes the nodes
+	 * @return true iff all the passed nodes are being observed
+	 */
+	private boolean areAllNodesObserved(DFTState state, List<FaultTreeNode> nodes) {
+		if (state instanceof PODFTState) {
+			PODFTState poState = (PODFTState) state;
+			for (FaultTreeNode node : nodes) {
+				if (!poState.isNodeFailObserved(node)) {
 					return false;
 				}
 			}
-			
-			boolean isFailedDueToFDEP = state.getAffectors(be).stream().filter(affector -> affector instanceof FDEP).findAny().isPresent();
-			return hasAlreadyFailed && !isFailedDueToFDEP;
-		} else {
-			boolean isParentNodeActive = state.isNodeActive(beHolder.getFault());
-			return !hasAlreadyFailed && (isParentNodeActive || beHolder.getColdFailureRate() != 0);
-		} 
+		}
+		return true;
 	}
 
 	@Override

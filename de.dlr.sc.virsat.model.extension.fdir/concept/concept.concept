@@ -120,7 +120,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	
 	Category RepairAction {
 		FloatProperty repairRate default 0.0 quantityKind "Frequency" unit "Per Hour";
-		Reference monitors[] of Type MONITOR description "The action is only available if the reference monitors have observed a failure.";
+		Reference observations[] of Type FaultTreeNode description "The action is only available if the referenced node failures are being observed.";
 	}
 	
 	Category BasicEvent extends FaultEvent {

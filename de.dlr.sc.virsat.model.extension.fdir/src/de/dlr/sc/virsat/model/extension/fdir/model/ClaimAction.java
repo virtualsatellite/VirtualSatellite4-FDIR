@@ -86,7 +86,7 @@ public  class ClaimAction extends AClaimAction {
 	
 	public FaultTreeNode getSpareGateByUUID(DFTState state) {
 		SPARE spareGateOriginal = getSpareGate();
-		return state.getFTHolder().getNodes().stream()
+		return state.getFTHolder().getNodes(FaultTreeNodeType.SPARE).stream()
 				.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
 				.findFirst().get();
 	}

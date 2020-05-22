@@ -1808,9 +1808,9 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionRepairAction">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRepairActionMonitors"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRepairActionObservations"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRepairActionMonitors">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRepairActionObservations">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEvent"

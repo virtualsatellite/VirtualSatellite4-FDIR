@@ -62,19 +62,17 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 		ftHolder = new FaultTreeHolder(holderRoot);
 		mapNodes = new HashMap<>();
 
-		for (FaultTreeNode node : ftHolder.getNodes()) {
-			if (node instanceof Fault) {
-				Fault fault = (Fault) node;
-				List<FaultTreeNode> nodesList = new ArrayList<FaultTreeNode>();
-				Fault copy = ftBuilder.copyFault(fault);
-				nodesList.add(FaultTreeBuilder.NODE_INDEX, copy);
-				mapNodes.put(node, nodesList);
-				
-				for (int i = 0; i < copy.getBasicEvents().size(); ++i) {
-					BasicEvent oldBasicEvent = fault.getBasicEvents().get(i);
-					BasicEvent newBasicEvent = copy.getBasicEvents().get(i);
-					mapNodes.put(oldBasicEvent, Arrays.asList(newBasicEvent));
-				}
+		for (FaultTreeNode node : ftHolder.getNodes(FaultTreeNodeType.FAULT)) {
+			Fault fault = (Fault) node;
+			List<FaultTreeNode> nodesList = new ArrayList<FaultTreeNode>();
+			Fault copy = ftBuilder.copyFault(fault);
+			nodesList.add(FaultTreeBuilder.NODE_INDEX, copy);
+			mapNodes.put(node, nodesList);
+			
+			for (int i = 0; i < copy.getBasicEvents().size(); ++i) {
+				BasicEvent oldBasicEvent = fault.getBasicEvents().get(i);
+				BasicEvent newBasicEvent = copy.getBasicEvents().get(i);
+				mapNodes.put(oldBasicEvent, Arrays.asList(newBasicEvent));
 			}
 		}
 

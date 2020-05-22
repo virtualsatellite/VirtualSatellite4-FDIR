@@ -104,11 +104,9 @@ public class DFTSemantics {
 			}
 		}
 		
-		for (FaultTreeNode node : ftHolder.getNodes()) {
-			if (node instanceof DELAY) {
-				DELAY delayNode = (DELAY) node;
-				faultEvents.add(new DelayEvent(delayNode));
-			}
+		for (FaultTreeNode node : ftHolder.getNodes(FaultTreeNodeType.DELAY)) {
+			DELAY delayNode = (DELAY) node;
+			faultEvents.add(new DelayEvent(delayNode));
 		}
 		
 		return faultEvents;

@@ -80,7 +80,7 @@
   </categories>
   <categories name="RepairAction">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
-    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="monitors" description="The action is only available if the reference monitors have observed a failure." referenceType="de.dlr.sc.virsat.model.extension.fdir.MONITOR">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="observations" description="The action is only available if the referenced node failures are being observed." referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
     <extendsCategory href="platform:/plugin/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>

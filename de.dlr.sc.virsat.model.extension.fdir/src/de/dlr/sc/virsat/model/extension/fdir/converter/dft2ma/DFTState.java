@@ -63,12 +63,13 @@ public class DFTState extends MarkovState {
 	 */
 	public DFTState(FaultTreeHolder ftHolder) {
 		this.ftHolder = ftHolder;
-		failedNodes = new BitSet(ftHolder.getNodes().size());
-		mapSpareToClaimedSpares = new HashMap<>();
+		int countNodes = ftHolder.getNodes().size();
+		failedNodes = new BitSet();
+		mapSpareToClaimedSpares = new HashMap<>(countNodes);
 		mapNodeToAffectors = new HashMap<>();
 		activeFaults = new HashSet<>();
-		permanentNodes = new BitSet(ftHolder.getNodes().size());
-		failingNodes = new BitSet(ftHolder.getNodes().size());
+		permanentNodes = new BitSet(countNodes);
+		failingNodes = new BitSet(countNodes);
 		orderedBes = new ArrayList<>();
 		unorderedBes = new HashSet<>();
 	}

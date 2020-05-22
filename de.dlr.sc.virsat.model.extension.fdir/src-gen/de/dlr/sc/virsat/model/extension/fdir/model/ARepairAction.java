@@ -13,7 +13,6 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
@@ -24,6 +23,7 @@ import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyInstanceList
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
@@ -55,7 +55,7 @@ public abstract class ARepairAction extends GenericCategory implements IBeanCate
 	
 	// property name constants
 	public static final String PROPERTY_REPAIRRATE = "repairRate";
-	public static final String PROPERTY_MONITORS = "monitors";
+	public static final String PROPERTY_OBSERVATIONS = "observations";
 	
 	
 	
@@ -114,19 +114,19 @@ public abstract class ARepairAction extends GenericCategory implements IBeanCate
 	}
 	
 	// *****************************************************************
-	// * Array Attribute: monitors
+	// * Array Attribute: observations
 	// *****************************************************************
-		private IBeanList<MONITOR> monitors = new TypeSafeReferencePropertyInstanceList<>(MONITOR.class);
+		private IBeanList<FaultTreeNode> observations = new TypeSafeReferencePropertyInstanceList<>(FaultTreeNode.class);
 	
-		private void safeAccessMonitors() {
-			if (monitors.getArrayInstance() == null) {
-				monitors.setArrayInstance((ArrayInstance) helper.getPropertyInstance("monitors"));
+		private void safeAccessObservations() {
+			if (observations.getArrayInstance() == null) {
+				observations.setArrayInstance((ArrayInstance) helper.getPropertyInstance("observations"));
 			}
 		}
 	
-		public IBeanList<MONITOR> getMonitors() {
-			safeAccessMonitors();
-			return monitors;
+		public IBeanList<FaultTreeNode> getObservations() {
+			safeAccessObservations();
+			return observations;
 		}
 	
 	

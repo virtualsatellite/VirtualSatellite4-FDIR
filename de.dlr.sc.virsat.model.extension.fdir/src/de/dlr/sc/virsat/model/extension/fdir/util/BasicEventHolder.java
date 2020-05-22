@@ -18,6 +18,7 @@ import java.util.Map;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 
@@ -30,7 +31,7 @@ public class BasicEventHolder {
 	private Fault fault;
 	private double hotFailureRate;
 	private double coldFailureRate;
-	private Map<List<MONITOR>, Double> repairRates;
+	private Map<List<FaultTreeNode>, Double> repairRates;
 	
 	/**
 	 * Standard constructor
@@ -42,13 +43,13 @@ public class BasicEventHolder {
 		hotFailureRate = getRateValue(basicEvent.getHotFailureRateBean());
 		coldFailureRate = getRateValue(basicEvent.getColdFailureRateBean());
 		
-		double repairRate = getRateValue(basicEvent.getRepairRateBean());
-		repairRates.put(Collections.emptyList(), repairRate);
+		double transientRepairRate = getRateValue(basicEvent.getRepairRateBean());
+		repairRates.put(Collections.emptyList(), transientRepairRate);
 				
 		for (RepairAction repairAction : basicEvent.getRepairActions()) {
-			List<MONITOR> monitors = new ArrayList<>(repairAction.getMonitors());
-			repairRate = getRateValue(repairAction.getRepairRateBean());
-			repairRates.put(monitors, repairRate);
+			List<FaultTreeNode> observations = new ArrayList<>(repairAction.getObservations());
+			double repairRate = getRateValue(repairAction.getRepairRateBean());
+			repairRates.put(observations, repairRate + transientRepairRate);
 		}
 	}
 	
@@ -90,7 +91,7 @@ public class BasicEventHolder {
 		return repairRates.get(Collections.emptyList());
 	}
 	
-	public Map<List<MONITOR>, Double> getRepairRates() {
+	public Map<List<FaultTreeNode>, Double> getRepairRates() {
 		return repairRates;
 	}
 }

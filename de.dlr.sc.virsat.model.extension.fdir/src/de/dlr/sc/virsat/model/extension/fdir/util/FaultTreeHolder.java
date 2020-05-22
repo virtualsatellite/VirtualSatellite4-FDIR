@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 
 /**
@@ -41,6 +42,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 public class FaultTreeHolder {
 	
 	private FaultTreeNode root;
+	private Map<FaultTreeNodeType, Set<FaultTreeNode>> mapTypeToNodes;
 	private Set<FaultTreeNode> nodes;
 	private Set<FaultTree> faultTrees;
 	
@@ -73,7 +75,8 @@ public class FaultTreeHolder {
 		
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode node = toProcess.poll();
-			
+
+			mapTypeToNodes.get(node.getFaultTreeNodeType()).add(node);
 			if (!nodes.add(node)) {
 				continue;
 			}
@@ -210,8 +213,13 @@ public class FaultTreeHolder {
 	private void initDataStructures() {
 		mapNodeToNodeHolders = new HashMap<>();
 		mapBEToBEHolders = new HashMap<>();
+		mapTypeToNodes = new HashMap<>();
 		nodes = new HashSet<>();
 		faultTrees = new HashSet<>();
+		
+		for (FaultTreeNodeType type : FaultTreeNodeType.values()) {
+			mapTypeToNodes.put(type, new HashSet<>());
+		}
 	}
 	
 	/**
@@ -251,7 +259,7 @@ public class FaultTreeHolder {
 	 * @return true iff the tree has an observer node
 	 */
 	public boolean isPartialObservable() {
-		return getNodes().stream().filter(node -> node instanceof MONITOR).findAny().isPresent();
+		return !getNodes(FaultTreeNodeType.MONITOR).isEmpty();
 	}
 	
 	/**
@@ -294,6 +302,15 @@ public class FaultTreeHolder {
 	 */
 	public Set<FaultTreeNode> getNodes() {
 		return nodes;
+	}
+	
+	/**
+	 * Gets all the nodes in the fault tree of the specified type
+	 * @param type the node type
+	 * @return all nodes of the specfied type
+	 */
+	public Set<FaultTreeNode> getNodes(FaultTreeNodeType type) {
+		return mapTypeToNodes.get(type);
 	}
 	
 	/**
