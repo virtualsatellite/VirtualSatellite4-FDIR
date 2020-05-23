@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.galileo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import de.dlr.sc.virsat.fdir.galileo.GalileoDFTParser;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType;
+import de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction;
 import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
 import de.dlr.sc.virsat.fdir.galileo.dft.Parametrized;
@@ -28,12 +30,12 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
@@ -52,12 +54,6 @@ public class GalileoDFT2DFT {
 	private final InputStream is;
 	private final Concept concept;
 	private final ABeanStructuralElementInstance parent;
-	private final FaultTreeBuilder ftBuilder;
-	
-	private Fault fault;
-	
-	private Map<GalileoFaultTreeNode, FaultTreeNode> mapGalileoFaultTreeNodeToFaultTreeNode;
-	private Map<GalileoFaultTreeNode, BasicEvent> mapGalileoFaultTreeNodeToBasicEvent;
 	
 	/**
 	 * Default Constructor. 
@@ -70,7 +66,6 @@ public class GalileoDFT2DFT {
 		this.is = is;
 		this.concept = concept;
 		this.parent = parent;
-		ftBuilder = new FaultTreeBuilder(concept);
 	}
 	
 	/**
@@ -89,164 +84,234 @@ public class GalileoDFT2DFT {
 	 * @throws IOException 
 	 */
 	public Fault convert() throws IOException {
-		fault = new Fault(concept);
-		
-		if (parent != null) {
-			parent.add(fault);
-		}
-		
-		mapGalileoFaultTreeNodeToFaultTreeNode = new HashMap<>();
-		mapGalileoFaultTreeNodeToBasicEvent = new HashMap<>();
-		
 		GalileoDFTParser parser = new GalileoDFTParser();
 		GalileoDft galileoDft = parser.parse(is);
-		GalileoFaultTreeNode root = galileoDft.getRoot();
-		fault.setName(root.getName());
 		
-		// Create the nodes
-		for (GalileoFaultTreeNode galileoFtn : galileoDft.getGates()) {
-			FaultTreeNode ftn = convertGalileoDftNode(galileoFtn);
-			if (ftn instanceof Gate) {
-				fault.getFaultTree().getGates().add((Gate) ftn);
-			} else {
-				if (parent != null) {
-					parent.add(ftn);
+		Converter converter = new Converter(galileoDft, concept);
+		converter.convertGates();
+		converter.convertBasicEvents();
+		converter.convertEdges();
+		converter.convertRoot();
+		
+		if (parent != null) {
+			converter.getGeneratedFaults().forEach(generated -> parent.add(generated));
+		}
+		
+		// The root is the first generated fault
+		return converter.getGeneratedFaults().get(0);
+	}
+
+	private static class Converter {
+		private Map<GalileoFaultTreeNode, FaultTreeNode> mapGalileoFaultTreeNodeToFaultTreeNode = new HashMap<>();
+		private Map<GalileoFaultTreeNode, BasicEvent> mapGalileoFaultTreeNodeToBasicEvent = new HashMap<>();
+		private List<Fault> generatedFaults = new ArrayList<Fault>();
+		private final FaultTreeBuilder ftBuilder;
+		private GalileoDft galileoDft;
+		private Fault fault;
+		
+		/**
+		 * Standard constructor
+		 * @param galileoDFT the galileo dft to convert
+		 * @param concept the concept for building dft elements
+		 */
+		Converter(GalileoDft galileoDFT, Concept concept) {
+			this.galileoDft = galileoDFT;
+			this.fault = new Fault(concept);
+			this.ftBuilder = new FaultTreeBuilder(concept);
+			
+			generatedFaults.add(fault);
+		}
+		
+		/**
+		 * Gets the faults that have been generated in the process of conversion
+		 * @return all generated intermediate faults
+		 */
+		public List<Fault> getGeneratedFaults() {
+			return generatedFaults;
+		}
+		
+		/**
+		 * Converts the root node of the galileo dft to a root of a dft
+		 */
+		public void convertRoot() {
+			GalileoFaultTreeNode root = galileoDft.getRoot();
+			fault.setName(root.getName());
+			
+			// Connect root node of galileo dft with root fault node
+			FaultTreeNode ftnToGalileoRoot = mapGalileoFaultTreeNodeToFaultTreeNode.get(root);
+			ftBuilder.connect(fault, ftnToGalileoRoot, fault);
+		}
+	
+		/**
+		 * Converts the edges in a galileo dft to the appropriately typed fault tree edges in a dft
+		 */
+		public void convertEdges() {
+			// Create the propagation edges and dependencies
+			for (GalileoFaultTreeNode galileoFtn : galileoDft.getGates()) {
+				List<GalileoFaultTreeNode> children = galileoFtn.getChildren();
+				FaultTreeNode ftnParent = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
+	
+				boolean primaryAdded = false;
+				
+				for (GalileoFaultTreeNode child : children) {
+					FaultTreeNode ftnChild = mapGalileoFaultTreeNodeToFaultTreeNode.get(child);
+					
+					if (ftnParent instanceof ADEP) {
+						if (primaryAdded) {
+							// DEPs always trigger the basic events directly
+							ftnChild = mapGalileoFaultTreeNodeToBasicEvent.get(child);
+							ftBuilder.connectDep(fault, ftnParent, ftnChild);
+						} else {
+							ftBuilder.connect(fault, ftnChild, ftnParent);
+						}	
+					} else {
+						if (ftnParent.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE) && primaryAdded) {
+							ftBuilder.connectSpare(fault, ftnChild, ftnParent);
+						} else {
+							ftBuilder.connect(fault, ftnChild, ftnParent);
+						}
+					}
+					
+					primaryAdded = true;
+				}
+				
+				if (galileoFtn.getType() instanceof Observer) {
+					List<GalileoFaultTreeNode> observables = ((Observer) galileoFtn.getType()).getObservables();
+					for (GalileoFaultTreeNode observable : observables) {
+						FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
+						FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
+						ftBuilder.connectObserver(fault, ftnFrom, ftnTo);
+					}
 				}
 			}
 		}
-		
-		for (GalileoFaultTreeNode galileoFtn : galileoDft.getBasicEvents()) {
-			Fault leafFault = (Fault) convertGalileoDftNode(galileoFtn);
-			BasicEvent be = new BasicEvent(concept);
-			
-			mapGalileoFaultTreeNodeToBasicEvent.put(galileoFtn, be);
-			
-			leafFault.getBasicEvents().add(be);
-			if (parent != null) {
-				parent.add(leafFault);
+	
+		/**
+		 * Converts all gates in the galileo dft to dft nodes
+		 */
+		public void convertGates() {
+			// Create the nodes
+			for (GalileoFaultTreeNode galileoFtn : galileoDft.getGates()) {
+				FaultTreeNode ftn = convertGalileoDftNode(galileoFtn);
+				if (ftn instanceof Gate) {
+					fault.getFaultTree().getGates().add((Gate) ftn);
+				} else {
+					generatedFaults.add((Fault) ftn);
+				}
 			}
+		}
+	
+		/**
+		 * Converts all basic events in a galileo dft to basic events in a dft
+		 */
+		public void convertBasicEvents() {
+			for (GalileoFaultTreeNode galileoFtn : galileoDft.getBasicEvents()) {
+				Fault leafFault = (Fault) convertGalileoDftNode(galileoFtn);
+				generatedFaults.add(leafFault);
+				
+				BasicEvent be = convertBasicEvent(galileoFtn);
+				leafFault.getBasicEvents().add(be);
+			}
+		}
+	
+		
+		/**
+		 * Creates a basic event for a galileo basic event.
+		 * @param galileoBe the galileo basic event
+		 * @param leafFault the fault to attach the basic event to
+		 * @return the created basic event
+		 */
+		public BasicEvent convertBasicEvent(GalileoFaultTreeNode galileoBe) {
+			BasicEvent be = new BasicEvent(ftBuilder.getConcept());
 			
-			be.setName(leafFault.getName());
+			mapGalileoFaultTreeNodeToBasicEvent.put(galileoBe, be);
 			
-			double hotFailureRate = Double.valueOf(galileoFtn.getLambda());
-			double coldFailureRate = galileoFtn.getDorm() == null ? 0 : Double.valueOf(galileoFtn.getDorm()) * hotFailureRate;
-			double repairRate = galileoFtn.getRepair() == null ? 0 : Double.valueOf(galileoFtn.getRepair());
+			be.setName(galileoBe.getName());
+			
+			double hotFailureRate = Double.valueOf(galileoBe.getLambda());
+			double coldFailureRate = galileoBe.getDorm() == null ? 0 : Double.valueOf(galileoBe.getDorm()) * hotFailureRate;
 			
 			be.setHotFailureRate(hotFailureRate);
 			be.setColdFailureRate(coldFailureRate);
-			be.setRepairRate(repairRate);
-		}
-		
-		
-		// Connect root node of galileo dft with root fault node
-		FaultTreeNode ftnToGalileoRoot = mapGalileoFaultTreeNodeToFaultTreeNode.get(root);
-		
-		FaultTreeEdge fteRoot = new FaultTreeEdge(concept);
-		fteRoot.setFrom(ftnToGalileoRoot);
-		fteRoot.setTo(fault);
-		fault.getFaultTree().getPropagations().add(fteRoot);
-		
-		// Create the propagation edges and dependencies
-		for (GalileoFaultTreeNode galileoFtn : galileoDft.getGates()) {
-			List<GalileoFaultTreeNode> children = galileoFtn.getChildren();
-			FaultTreeNode ftnParent = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
-
-			boolean primaryAdded = false;
 			
-			for (GalileoFaultTreeNode child : children) {
-				FaultTreeNode ftnChild = mapGalileoFaultTreeNodeToFaultTreeNode.get(child);
-				
-				if (ftnParent instanceof ADEP) {
-					if (primaryAdded) {
-						// DEPs always trigger the basic events directly
-						ftnChild = mapGalileoFaultTreeNodeToBasicEvent.get(child);
-						ftBuilder.connectDep(fault, ftnParent, ftnChild);
-					} else {
-						ftBuilder.connect(fault, ftnChild, ftnParent);
-					}	
+			for (GalileoRepairAction galileoRepairAction : galileoBe.getRepairActions()) {
+				double repairRate = Double.valueOf(galileoRepairAction.getRepair());
+				if (galileoRepairAction.getObservartions().isEmpty()) {
+					be.setRepairRate(repairRate);
 				} else {
-					if (ftnParent.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE) && primaryAdded) {
-						ftBuilder.connectSpare(fault, ftnChild, ftnParent);
-					} else {
-						ftBuilder.connect(fault, ftnChild, ftnParent);
+					RepairAction repairAction = new RepairAction(ftBuilder.getConcept());
+					be.getRepairActions().add(repairAction);
+					repairAction.setRepairRate(repairRate);
+					for (GalileoFaultTreeNode galileoObservation : galileoRepairAction.getObservartions()) {
+						FaultTreeNode observation = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoObservation);
+						repairAction.getObservations().add(observation);
+						repairAction.setName(galileoRepairAction.getName());
 					}
 				}
+			}
+			return be;
+		}
+		
+		/**
+		 * Converts a single Galileo DFT Node into a VirSat FaultTreeNode
+		 * @param galileoFtn the fault tree node in the galileo DFT
+		 * @return a VirSat Fault Tree Node
+		 */
+		public FaultTreeNode convertGalileoDftNode(GalileoFaultTreeNode galileoFtn) {
+			FaultTreeNode ftn = null;
 				
-				primaryAdded = true;
-			}
+			GalileoNodeType galileoType = galileoFtn.getType();
 			
-			if (galileoFtn.getType() instanceof Observer) {
-				List<GalileoFaultTreeNode> observables = ((Observer) galileoFtn.getType()).getObservables();
-				for (GalileoFaultTreeNode observable : observables) {
-					FaultTreeNode ftnFrom = mapGalileoFaultTreeNodeToFaultTreeNode.get(observable);
-					FaultTreeNode ftnTo = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoFtn);
-					ftBuilder.connectObserver(fault, ftnFrom, ftnTo);
-				}
-			}
-		}
-		
-		return fault;
-	}
-	
-	/**
-	 * Converts a single Galileo DFT Node into a VirSat FaultTreeNode
-	 * @param galileoFtn the fault tree node in the galileo DFT
-	 * @return a VirSat Fault Tree Node
-	 */
-	private FaultTreeNode convertGalileoDftNode(GalileoFaultTreeNode galileoFtn) {
-		FaultTreeNode ftn = null;
-			
-		GalileoNodeType galileoType = galileoFtn.getType();
-		
-		if (galileoType != null) {
-			FaultTreeNodeType type = galileoNodeType2FaultTreeNodeType(galileoType);
-			Gate gate = ftBuilder.createGate(type);
-			
-			if (type.equals(FaultTreeNodeType.VOTE)) {
-				String[] split = ((Named) galileoType).getTypeName().split(GALILEO_VOTE);
-				Integer x = Integer.valueOf(split[0]);
-				((VOTE) gate).setVotingThreshold(x);
-			} else if (type.equals(FaultTreeNodeType.MONITOR)) {
-				((MONITOR) gate).setObservationRate(Double.valueOf(((Observer) galileoType).getObservationRate()));
-			} else if (type.equals(FaultTreeNodeType.RDEP)) {
-				((RDEP) gate).setRateChange(Double.valueOf((((Parametrized) galileoType).getParameter())));
-			} else if (type.equals(FaultTreeNodeType.DELAY)) {
-				((DELAY) gate).setTime(Double.valueOf(((Parametrized) galileoType).getParameter()));
-			} 
-			
-			ftn = gate;
-		} else {
-			ftn = new Fault(concept);
-		}
-		
-		ftn.setName(galileoFtn.getName());
-		 
-		mapGalileoFaultTreeNodeToFaultTreeNode.put(galileoFtn, ftn);
-		
-		return ftn;
-	}
-	
-	/**
-	 * Converts a galileo fault tree node type to a VirSat fault tree node type
-	 * @param galileoType the galileo node type
-	 * @return the converted VirSat node type
-	 */
-	private FaultTreeNodeType galileoNodeType2FaultTreeNodeType(GalileoNodeType galileoType) {
-		if (galileoType instanceof Named) {
-			String typeName = ((Named) galileoType).getTypeName();
-			if (typeName.contains(GALILEO_VOTE)) {
-				return FaultTreeNodeType.VOTE;
-			} else if (typeName.contains(GALILEO_SPARE_GATE_SUFFIX)) {
-				return FaultTreeNodeType.SPARE;
+			if (galileoType != null) {
+				FaultTreeNodeType type = convertNodeType(galileoType);
+				Gate gate = ftBuilder.createGate(type);
+				
+				if (type.equals(FaultTreeNodeType.VOTE)) {
+					String[] split = ((Named) galileoType).getTypeName().split(GALILEO_VOTE);
+					Integer x = Integer.valueOf(split[0]);
+					((VOTE) gate).setVotingThreshold(x);
+				} else if (type.equals(FaultTreeNodeType.MONITOR)) {
+					((MONITOR) gate).setObservationRate(Double.valueOf(((Observer) galileoType).getObservationRate()));
+				} else if (type.equals(FaultTreeNodeType.RDEP)) {
+					((RDEP) gate).setRateChange(Double.valueOf((((Parametrized) galileoType).getParameter())));
+				} else if (type.equals(FaultTreeNodeType.DELAY)) {
+					((DELAY) gate).setTime(Double.valueOf(((Parametrized) galileoType).getParameter()));
+				} 
+				
+				ftn = gate;
 			} else {
-				return FaultTreeNodeType.valueOf(typeName.toUpperCase());
+				ftn = new Fault(ftBuilder.getConcept());
 			}
-		} else if (galileoType instanceof Observer) {
-			return FaultTreeNodeType.MONITOR;
-		} else if (galileoType instanceof Parametrized) {
-			return FaultTreeNodeType.valueOf(((Parametrized) galileoType).getTypeName().toUpperCase());
-		} 
-
-		throw new RuntimeException("Unknown Galileo Fault Tree Node Type: " + galileoType);
+			
+			ftn.setName(galileoFtn.getName());
+			 
+			mapGalileoFaultTreeNodeToFaultTreeNode.put(galileoFtn, ftn);
+			
+			return ftn;
+		}
+		
+		/**
+		 * Converts a galileo fault tree node type to a VirSat fault tree node type
+		 * @param galileoType the galileo node type
+		 * @return the converted VirSat node type
+		 */
+		public FaultTreeNodeType convertNodeType(GalileoNodeType galileoType) {
+			if (galileoType instanceof Named) {
+				String typeName = ((Named) galileoType).getTypeName();
+				if (typeName.contains(GALILEO_VOTE)) {
+					return FaultTreeNodeType.VOTE;
+				} else if (typeName.contains(GALILEO_SPARE_GATE_SUFFIX)) {
+					return FaultTreeNodeType.SPARE;
+				} else {
+					return FaultTreeNodeType.valueOf(typeName.toUpperCase());
+				}
+			} else if (galileoType instanceof Observer) {
+				return FaultTreeNodeType.MONITOR;
+			} else if (galileoType instanceof Parametrized) {
+				return FaultTreeNodeType.valueOf(((Parametrized) galileoType).getTypeName().toUpperCase());
+			} 
+	
+			throw new RuntimeException("Unknown Galileo Fault Tree Node Type: " + galileoType);
+		}
 	}
 }

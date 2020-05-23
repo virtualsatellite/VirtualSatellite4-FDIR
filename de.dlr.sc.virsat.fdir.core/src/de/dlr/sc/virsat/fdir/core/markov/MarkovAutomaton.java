@@ -283,4 +283,13 @@ public class MarkovAutomaton<S extends MarkovState> {
 		}	
 		return true;
 	}
+
+	/**
+	 * Checks if a given rate is a valid markovian rate
+	 * @param rate the rate
+	 * @return true iff the rate is a real number > 0
+	 */
+	public static boolean isRateDefined(double rate) {
+		return Double.isFinite(rate) && rate > 0;
+	}
 }

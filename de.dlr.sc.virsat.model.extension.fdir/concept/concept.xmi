@@ -78,11 +78,20 @@
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
   </categories>
+  <categories name="RepairAction">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="observations" description="The action is only available if the referenced node failures are being observed." referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/plugin/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" quantityKindName="Frequency" unitName="Per Hour"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="coldFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
-    <properties xsi:type="dvlm_cppd:StringProperty" name="repairAction" description="Description of the action(s) needed to be performed for the repair."/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" description="Transient repair rate." quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="repairActions" description="Conditional repair actions that can be performed if certain observations are made." type="de.dlr.sc.virsat.model.extension.fdir.RepairAction">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
   </categories>
   <categories name="CutSet">
     <equationDefinitions>
@@ -128,7 +137,7 @@
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.23/@properties.4/@values.4">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.24/@properties.4/@values.4">
       <values name="Unknown" value="0"/>
       <values name="ExtremelyUnlikely" value="4"/>
       <values name="Unlikely" value="3"/>

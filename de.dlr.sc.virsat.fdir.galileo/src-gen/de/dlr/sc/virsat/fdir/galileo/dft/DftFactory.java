@@ -42,6 +42,15 @@ public interface DftFactory extends EFactory
   GalileoFaultTreeNode createGalileoFaultTreeNode();
 
   /**
+   * Returns a new object of class '<em>Galileo Repair Action</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Galileo Repair Action</em>'.
+   * @generated
+   */
+  GalileoRepairAction createGalileoRepairAction();
+
+  /**
    * Returns a new object of class '<em>Galileo Node Type</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->

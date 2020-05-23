@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftPackage;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
+import de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction;
 import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
 import de.dlr.sc.virsat.fdir.galileo.dft.Parametrized;
@@ -47,6 +48,9 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 					return; 
 				}
 				else break;
+			case DftPackage.GALILEO_REPAIR_ACTION:
+				sequence_GalileoRepairAction(context, (GalileoRepairAction) semanticObject); 
+				return; 
 			case DftPackage.NAMED:
 				sequence_Named(context, (Named) semanticObject); 
 				return; 
@@ -66,7 +70,7 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 	 *     GalileoBasicEvent returns GalileoFaultTreeNode
 	 *
 	 * Constraint:
-	 *     (name=STRING lambda=Float dorm=Float? repair=Float?)
+	 *     (name=STRING lambda=Float dorm=Float? repairActions+=GalileoRepairAction*)
 	 */
 	protected void sequence_GalileoBasicEvent(ISerializationContext context, GalileoFaultTreeNode semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -93,6 +97,18 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 	 *     (name=STRING type=GalileoNodeType children+=[GalileoFaultTreeNode|STRING]*)
 	 */
 	protected void sequence_GalileoGate(ISerializationContext context, GalileoFaultTreeNode semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     GalileoRepairAction returns GalileoRepairAction
+	 *
+	 * Constraint:
+	 *     (repair=Float name=STRING? observartions+=[GalileoFaultTreeNode|STRING]*)
+	 */
+	protected void sequence_GalileoRepairAction(ISerializationContext context, GalileoRepairAction semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	

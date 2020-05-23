@@ -16,7 +16,14 @@
         upperBound="-1" eType="#//GalileoFaultTreeNode"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="lambda" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dorm" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="repairActions" upperBound="-1"
+        eType="#//GalileoRepairAction" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GalileoRepairAction">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="repair" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="observartions" unique="false"
+        upperBound="-1" eType="#//GalileoFaultTreeNode"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GalileoNodeType"/>
   <eClassifiers xsi:type="ecore:EClass" name="Named" eSuperTypes="#//GalileoNodeType">

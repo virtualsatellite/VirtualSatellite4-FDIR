@@ -67,6 +67,7 @@ public class DftFactoryImpl extends EFactoryImpl implements DftFactory
     {
       case DftPackage.GALILEO_DFT: return createGalileoDft();
       case DftPackage.GALILEO_FAULT_TREE_NODE: return createGalileoFaultTreeNode();
+      case DftPackage.GALILEO_REPAIR_ACTION: return createGalileoRepairAction();
       case DftPackage.GALILEO_NODE_TYPE: return createGalileoNodeType();
       case DftPackage.NAMED: return createNamed();
       case DftPackage.OBSERVER: return createObserver();
@@ -98,6 +99,18 @@ public class DftFactoryImpl extends EFactoryImpl implements DftFactory
   {
     GalileoFaultTreeNodeImpl galileoFaultTreeNode = new GalileoFaultTreeNodeImpl();
     return galileoFaultTreeNode;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public GalileoRepairAction createGalileoRepairAction()
+  {
+    GalileoRepairActionImpl galileoRepairAction = new GalileoRepairActionImpl();
+    return galileoRepairAction;
   }
 
   /**

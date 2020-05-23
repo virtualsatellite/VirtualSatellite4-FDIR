@@ -22,12 +22,14 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -140,9 +142,12 @@ public  class FaultTree extends AFaultTree {
 		basicEvents.addAll(getRoot().getBasicEvents());
 		
 		for (BasicEvent be : basicEvents) {
-			String repairAction = be.getRepairAction();
-			if (repairAction != null && !repairAction.equals("")) {
-				potentialRecoveryActions.add(repairAction);
+			double transientRepairRate = BasicEventHolder.getRateValue(be.getRepairRateBean());
+			if (MarkovAutomaton.isRateDefined(transientRepairRate)) {
+				potentialRecoveryActions.add("Transient Failure");
+			}
+			for (RepairAction repairAction : be.getRepairActions()) {
+				potentialRecoveryActions.add(repairAction.getName());
 			}
 		}
 		

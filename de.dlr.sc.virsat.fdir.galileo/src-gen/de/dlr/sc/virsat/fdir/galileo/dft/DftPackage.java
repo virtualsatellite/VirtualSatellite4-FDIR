@@ -159,13 +159,13 @@ public interface DftPackage extends EPackage
   int GALILEO_FAULT_TREE_NODE__DORM = 4;
 
   /**
-   * The feature id for the '<em><b>Repair</b></em>' attribute.
+   * The feature id for the '<em><b>Repair Actions</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int GALILEO_FAULT_TREE_NODE__REPAIR = 5;
+  int GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS = 5;
 
   /**
    * The number of structural features of the '<em>Galileo Fault Tree Node</em>' class.
@@ -177,6 +177,52 @@ public interface DftPackage extends EPackage
   int GALILEO_FAULT_TREE_NODE_FEATURE_COUNT = 6;
 
   /**
+   * The meta object id for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoRepairActionImpl <em>Galileo Repair Action</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoRepairActionImpl
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getGalileoRepairAction()
+   * @generated
+   */
+  int GALILEO_REPAIR_ACTION = 2;
+
+  /**
+   * The feature id for the '<em><b>Repair</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int GALILEO_REPAIR_ACTION__REPAIR = 0;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int GALILEO_REPAIR_ACTION__NAME = 1;
+
+  /**
+   * The feature id for the '<em><b>Observartions</b></em>' reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int GALILEO_REPAIR_ACTION__OBSERVARTIONS = 2;
+
+  /**
+   * The number of structural features of the '<em>Galileo Repair Action</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int GALILEO_REPAIR_ACTION_FEATURE_COUNT = 3;
+
+  /**
    * The meta object id for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoNodeTypeImpl <em>Galileo Node Type</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -184,7 +230,7 @@ public interface DftPackage extends EPackage
    * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getGalileoNodeType()
    * @generated
    */
-  int GALILEO_NODE_TYPE = 2;
+  int GALILEO_NODE_TYPE = 3;
 
   /**
    * The number of structural features of the '<em>Galileo Node Type</em>' class.
@@ -203,7 +249,7 @@ public interface DftPackage extends EPackage
    * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getNamed()
    * @generated
    */
-  int NAMED = 3;
+  int NAMED = 4;
 
   /**
    * The feature id for the '<em><b>Type Name</b></em>' attribute.
@@ -231,7 +277,7 @@ public interface DftPackage extends EPackage
    * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getObserver()
    * @generated
    */
-  int OBSERVER = 4;
+  int OBSERVER = 5;
 
   /**
    * The feature id for the '<em><b>Observables</b></em>' reference list.
@@ -268,7 +314,7 @@ public interface DftPackage extends EPackage
    * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getParametrized()
    * @generated
    */
-  int PARAMETRIZED = 5;
+  int PARAMETRIZED = 6;
 
   /**
    * The feature id for the '<em><b>Type Name</b></em>' attribute.
@@ -407,15 +453,58 @@ public interface DftPackage extends EPackage
   EAttribute getGalileoFaultTreeNode_Dorm();
 
   /**
-   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepair <em>Repair</em>}'.
+   * Returns the meta object for the containment reference list '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepairActions <em>Repair Actions</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Repair</em>'.
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepair()
+   * @return the meta object for the containment reference list '<em>Repair Actions</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepairActions()
    * @see #getGalileoFaultTreeNode()
    * @generated
    */
-  EAttribute getGalileoFaultTreeNode_Repair();
+  EReference getGalileoFaultTreeNode_RepairActions();
+
+  /**
+   * Returns the meta object for class '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction <em>Galileo Repair Action</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Galileo Repair Action</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction
+   * @generated
+   */
+  EClass getGalileoRepairAction();
+
+  /**
+   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction#getRepair <em>Repair</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Repair</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction#getRepair()
+   * @see #getGalileoRepairAction()
+   * @generated
+   */
+  EAttribute getGalileoRepairAction_Repair();
+
+  /**
+   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction#getName <em>Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Name</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction#getName()
+   * @see #getGalileoRepairAction()
+   * @generated
+   */
+  EAttribute getGalileoRepairAction_Name();
+
+  /**
+   * Returns the meta object for the reference list '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction#getObservartions <em>Observartions</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference list '<em>Observartions</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction#getObservartions()
+   * @see #getGalileoRepairAction()
+   * @generated
+   */
+  EReference getGalileoRepairAction_Observartions();
 
   /**
    * Returns the meta object for class '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoNodeType <em>Galileo Node Type</em>}'.
@@ -620,12 +709,46 @@ public interface DftPackage extends EPackage
     EAttribute GALILEO_FAULT_TREE_NODE__DORM = eINSTANCE.getGalileoFaultTreeNode_Dorm();
 
     /**
+     * The meta object literal for the '<em><b>Repair Actions</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS = eINSTANCE.getGalileoFaultTreeNode_RepairActions();
+
+    /**
+     * The meta object literal for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoRepairActionImpl <em>Galileo Repair Action</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoRepairActionImpl
+     * @see de.dlr.sc.virsat.fdir.galileo.dft.impl.DftPackageImpl#getGalileoRepairAction()
+     * @generated
+     */
+    EClass GALILEO_REPAIR_ACTION = eINSTANCE.getGalileoRepairAction();
+
+    /**
      * The meta object literal for the '<em><b>Repair</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute GALILEO_FAULT_TREE_NODE__REPAIR = eINSTANCE.getGalileoFaultTreeNode_Repair();
+    EAttribute GALILEO_REPAIR_ACTION__REPAIR = eINSTANCE.getGalileoRepairAction_Repair();
+
+    /**
+     * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute GALILEO_REPAIR_ACTION__NAME = eINSTANCE.getGalileoRepairAction_Name();
+
+    /**
+     * The meta object literal for the '<em><b>Observartions</b></em>' reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference GALILEO_REPAIR_ACTION__OBSERVARTIONS = eINSTANCE.getGalileoRepairAction_Observartions();
 
     /**
      * The meta object literal for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoNodeTypeImpl <em>Galileo Node Type</em>}' class.

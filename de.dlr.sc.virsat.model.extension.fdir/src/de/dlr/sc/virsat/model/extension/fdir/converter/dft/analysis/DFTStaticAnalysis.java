@@ -19,6 +19,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -46,7 +47,8 @@ public class DFTStaticAnalysis {
 				orderDependentBasicEvents.add(be);
 			}
 			
-			if (be.isSetRepairRate() && be.getRepairRate() > 0) {
+			BasicEventHolder beHolder = ftHolder.getBasicEventHolder(be);
+			if (beHolder.isRepairDefined()) {
 				transientNodes.add(be);			
 			}
 		}

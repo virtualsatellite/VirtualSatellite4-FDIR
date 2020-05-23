@@ -21,7 +21,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getChildren <em>Children</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getLambda <em>Lambda</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getDorm <em>Dorm</em>}</li>
- *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepair <em>Repair</em>}</li>
+ *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepairActions <em>Repair Actions</em>}</li>
  * </ul>
  *
  * @see de.dlr.sc.virsat.fdir.galileo.dft.DftPackage#getGalileoFaultTreeNode()
@@ -131,25 +131,15 @@ public interface GalileoFaultTreeNode extends EObject
   void setDorm(String value);
 
   /**
-   * Returns the value of the '<em><b>Repair</b></em>' attribute.
+   * Returns the value of the '<em><b>Repair Actions</b></em>' containment reference list.
+   * The list contents are of type {@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoRepairAction}.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Repair</em>' attribute.
-   * @see #setRepair(String)
-   * @see de.dlr.sc.virsat.fdir.galileo.dft.DftPackage#getGalileoFaultTreeNode_Repair()
-   * @model
+   * @return the value of the '<em>Repair Actions</em>' containment reference list.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.DftPackage#getGalileoFaultTreeNode_RepairActions()
+   * @model containment="true"
    * @generated
    */
-  String getRepair();
-
-  /**
-   * Sets the value of the '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepair <em>Repair</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Repair</em>' attribute.
-   * @see #getRepair()
-   * @generated
-   */
-  void setRepair(String value);
+  EList<GalileoRepairAction> getRepairActions();
 
 } // GalileoFaultTreeNode

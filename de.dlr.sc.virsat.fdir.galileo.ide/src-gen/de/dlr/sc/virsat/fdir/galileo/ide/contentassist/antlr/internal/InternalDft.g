@@ -124,6 +124,31 @@ finally {
 	restoreStackSize(stackSize);
 }
 
+// Entry rule entryRuleGalileoRepairAction
+entryRuleGalileoRepairAction
+:
+{ before(grammarAccess.getGalileoRepairActionRule()); }
+	 ruleGalileoRepairAction
+{ after(grammarAccess.getGalileoRepairActionRule()); } 
+	 EOF 
+;
+
+// Rule GalileoRepairAction
+ruleGalileoRepairAction 
+	@init {
+		int stackSize = keepStackSize();
+	}
+	:
+	(
+		{ before(grammarAccess.getGalileoRepairActionAccess().getGroup()); }
+		(rule__GalileoRepairAction__Group__0)
+		{ after(grammarAccess.getGalileoRepairActionAccess().getGroup()); }
+	)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
 // Entry rule entryRuleGalileoNodeType
 entryRuleGalileoNodeType
 :
@@ -854,9 +879,9 @@ rule__GalileoBasicEvent__Group__5__Impl
 	}
 :
 (
-	{ before(grammarAccess.getGalileoBasicEventAccess().getGroup_5()); }
-	(rule__GalileoBasicEvent__Group_5__0)?
-	{ after(grammarAccess.getGalileoBasicEventAccess().getGroup_5()); }
+	{ before(grammarAccess.getGalileoBasicEventAccess().getRepairActionsAssignment_5()); }
+	(rule__GalileoBasicEvent__RepairActionsAssignment_5)*
+	{ after(grammarAccess.getGalileoBasicEventAccess().getRepairActionsAssignment_5()); }
 )
 ;
 finally {
@@ -945,80 +970,188 @@ finally {
 }
 
 
-rule__GalileoBasicEvent__Group_5__0
+rule__GalileoRepairAction__Group__0
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
-	rule__GalileoBasicEvent__Group_5__0__Impl
-	rule__GalileoBasicEvent__Group_5__1
+	rule__GalileoRepairAction__Group__0__Impl
+	rule__GalileoRepairAction__Group__1
 ;
 finally {
 	restoreStackSize(stackSize);
 }
 
-rule__GalileoBasicEvent__Group_5__0__Impl
+rule__GalileoRepairAction__Group__0__Impl
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 (
-	{ before(grammarAccess.getGalileoBasicEventAccess().getRepairKeyword_5_0()); }
+	{ before(grammarAccess.getGalileoRepairActionAccess().getRepairKeyword_0()); }
 	'repair'
-	{ after(grammarAccess.getGalileoBasicEventAccess().getRepairKeyword_5_0()); }
+	{ after(grammarAccess.getGalileoRepairActionAccess().getRepairKeyword_0()); }
 )
 ;
 finally {
 	restoreStackSize(stackSize);
 }
 
-rule__GalileoBasicEvent__Group_5__1
+rule__GalileoRepairAction__Group__1
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
-	rule__GalileoBasicEvent__Group_5__1__Impl
-	rule__GalileoBasicEvent__Group_5__2
+	rule__GalileoRepairAction__Group__1__Impl
+	rule__GalileoRepairAction__Group__2
 ;
 finally {
 	restoreStackSize(stackSize);
 }
 
-rule__GalileoBasicEvent__Group_5__1__Impl
+rule__GalileoRepairAction__Group__1__Impl
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 (
-	{ before(grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_5_1()); }
+	{ before(grammarAccess.getGalileoRepairActionAccess().getEqualsSignKeyword_1()); }
 	'='
-	{ after(grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_5_1()); }
+	{ after(grammarAccess.getGalileoRepairActionAccess().getEqualsSignKeyword_1()); }
 )
 ;
 finally {
 	restoreStackSize(stackSize);
 }
 
-rule__GalileoBasicEvent__Group_5__2
+rule__GalileoRepairAction__Group__2
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
-	rule__GalileoBasicEvent__Group_5__2__Impl
+	rule__GalileoRepairAction__Group__2__Impl
+	rule__GalileoRepairAction__Group__3
 ;
 finally {
 	restoreStackSize(stackSize);
 }
 
-rule__GalileoBasicEvent__Group_5__2__Impl
+rule__GalileoRepairAction__Group__2__Impl
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 (
-	{ before(grammarAccess.getGalileoBasicEventAccess().getRepairAssignment_5_2()); }
-	(rule__GalileoBasicEvent__RepairAssignment_5_2)
-	{ after(grammarAccess.getGalileoBasicEventAccess().getRepairAssignment_5_2()); }
+	{ before(grammarAccess.getGalileoRepairActionAccess().getRepairAssignment_2()); }
+	(rule__GalileoRepairAction__RepairAssignment_2)
+	{ after(grammarAccess.getGalileoRepairActionAccess().getRepairAssignment_2()); }
+)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__Group__3
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	rule__GalileoRepairAction__Group__3__Impl
+	rule__GalileoRepairAction__Group__4
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__Group__3__Impl
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+(
+	{ before(grammarAccess.getGalileoRepairActionAccess().getNameAssignment_3()); }
+	(rule__GalileoRepairAction__NameAssignment_3)?
+	{ after(grammarAccess.getGalileoRepairActionAccess().getNameAssignment_3()); }
+)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__Group__4
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	rule__GalileoRepairAction__Group__4__Impl
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__Group__4__Impl
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+(
+	{ before(grammarAccess.getGalileoRepairActionAccess().getGroup_4()); }
+	(rule__GalileoRepairAction__Group_4__0)?
+	{ after(grammarAccess.getGalileoRepairActionAccess().getGroup_4()); }
+)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+
+rule__GalileoRepairAction__Group_4__0
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	rule__GalileoRepairAction__Group_4__0__Impl
+	rule__GalileoRepairAction__Group_4__1
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__Group_4__0__Impl
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+(
+	{ before(grammarAccess.getGalileoRepairActionAccess().getObservationsKeyword_4_0()); }
+	'observations'
+	{ after(grammarAccess.getGalileoRepairActionAccess().getObservationsKeyword_4_0()); }
+)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__Group_4__1
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	rule__GalileoRepairAction__Group_4__1__Impl
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__Group_4__1__Impl
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+(
+	{ before(grammarAccess.getGalileoRepairActionAccess().getObservartionsAssignment_4_1()); }
+	(rule__GalileoRepairAction__ObservartionsAssignment_4_1)*
+	{ after(grammarAccess.getGalileoRepairActionAccess().getObservartionsAssignment_4_1()); }
 )
 ;
 finally {
@@ -1736,15 +1869,64 @@ finally {
 	restoreStackSize(stackSize);
 }
 
-rule__GalileoBasicEvent__RepairAssignment_5_2
+rule__GalileoBasicEvent__RepairActionsAssignment_5
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 	(
-		{ before(grammarAccess.getGalileoBasicEventAccess().getRepairFloatParserRuleCall_5_2_0()); }
+		{ before(grammarAccess.getGalileoBasicEventAccess().getRepairActionsGalileoRepairActionParserRuleCall_5_0()); }
+		ruleGalileoRepairAction
+		{ after(grammarAccess.getGalileoBasicEventAccess().getRepairActionsGalileoRepairActionParserRuleCall_5_0()); }
+	)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__RepairAssignment_2
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	(
+		{ before(grammarAccess.getGalileoRepairActionAccess().getRepairFloatParserRuleCall_2_0()); }
 		ruleFloat
-		{ after(grammarAccess.getGalileoBasicEventAccess().getRepairFloatParserRuleCall_5_2_0()); }
+		{ after(grammarAccess.getGalileoRepairActionAccess().getRepairFloatParserRuleCall_2_0()); }
+	)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__NameAssignment_3
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	(
+		{ before(grammarAccess.getGalileoRepairActionAccess().getNameSTRINGTerminalRuleCall_3_0()); }
+		RULE_STRING
+		{ after(grammarAccess.getGalileoRepairActionAccess().getNameSTRINGTerminalRuleCall_3_0()); }
+	)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__GalileoRepairAction__ObservartionsAssignment_4_1
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	(
+		{ before(grammarAccess.getGalileoRepairActionAccess().getObservartionsGalileoFaultTreeNodeCrossReference_4_1_0()); }
+		(
+			{ before(grammarAccess.getGalileoRepairActionAccess().getObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_4_1_0_1()); }
+			RULE_STRING
+			{ after(grammarAccess.getGalileoRepairActionAccess().getObservartionsGalileoFaultTreeNodeSTRINGTerminalRuleCall_4_1_0_1()); }
+		)
+		{ after(grammarAccess.getGalileoRepairActionAccess().getObservartionsGalileoFaultTreeNodeCrossReference_4_1_0()); }
 	)
 ;
 finally {

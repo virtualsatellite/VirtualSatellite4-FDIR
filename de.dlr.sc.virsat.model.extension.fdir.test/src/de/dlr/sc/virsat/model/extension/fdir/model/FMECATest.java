@@ -225,7 +225,10 @@ public class FMECATest extends AFMECATest {
 		Fault red = new Fault(concept);
 		red.setName("Redundancy");
 		BasicEvent cause = new BasicEvent(concept);
-		cause.setRepairAction("Reset");
+		
+		RepairAction repairAction = new RepairAction(concept);
+		repairAction.setName("Reset");
+		cause.getRepairActions().add(repairAction);
 		
 		fm.getBasicEvents().add(cause);
 		cause.setHotFailureRate(1);
@@ -240,7 +243,7 @@ public class FMECATest extends AFMECATest {
 		
 		FMECAEntry entry = entries.get(0);
 		assertEquals(2, entry.getCompensation().size());
-		assertEquals(cause.getRepairAction(), entry.getCompensation().get(1).getValue());
+		assertEquals(repairAction.getName(), entry.getCompensation().get(1).getValue());
 		assertEquals("Switch to Redundancy", entry.getCompensation().get(0).getValue());
 	}
 }

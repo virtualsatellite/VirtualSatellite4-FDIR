@@ -14,10 +14,11 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
@@ -25,6 +26,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropert
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
 
 
 // *****************************************************************
@@ -55,7 +57,7 @@ public abstract class ABasicEvent extends FaultEvent implements IBeanCategoryAss
 	public static final String PROPERTY_HOTFAILURERATE = "hotFailureRate";
 	public static final String PROPERTY_COLDFAILURERATE = "coldFailureRate";
 	public static final String PROPERTY_REPAIRRATE = "repairRate";
-	public static final String PROPERTY_REPAIRACTION = "repairAction";
+	public static final String PROPERTY_REPAIRACTIONS = "repairActions";
 	
 	
 	
@@ -186,34 +188,19 @@ public abstract class ABasicEvent extends FaultEvent implements IBeanCategoryAss
 	}
 	
 	// *****************************************************************
-	// * Attribute: repairAction
+	// * Array Attribute: repairActions
 	// *****************************************************************
-	private BeanPropertyString repairAction = new BeanPropertyString();
+	private IBeanList<RepairAction> repairActions = new TypeSafeComposedPropertyInstanceList<>(RepairAction.class);
 	
-	private void safeAccessRepairAction() {
-		if (repairAction.getTypeInstance() == null) {
-			repairAction.setTypeInstance((ValuePropertyInstance) helper.getPropertyInstance("repairAction"));
+	private void safeAccessRepairActions() {
+		if (repairActions.getArrayInstance() == null) {
+			repairActions.setArrayInstance((ArrayInstance) helper.getPropertyInstance("repairActions"));
 		}
 	}
 	
-	public Command setRepairAction(EditingDomain ed, String value) {
-		safeAccessRepairAction();
-		return this.repairAction.setValue(ed, value);
-	}
-	
-	public void setRepairAction(String value) {
-		safeAccessRepairAction();
-		this.repairAction.setValue(value);
-	}
-	
-	public String getRepairAction() {
-		safeAccessRepairAction();
-		return repairAction.getValue();
-	}
-	
-	public BeanPropertyString getRepairActionBean() {
-		safeAccessRepairAction();
-		return repairAction;
+	public IBeanList<RepairAction> getRepairActions() {
+		safeAccessRepairActions();
+		return repairActions;
 	}
 	
 	

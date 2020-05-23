@@ -321,6 +321,19 @@ public class POSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testSynthesizeObsCsp2ObsRepair2Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		// SSA computation isnt stable yet, at least guarantee that its non-zero
+		assertNotEquals(0, result.getSteadyStateAvailability(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testSynthesizeObsOr2Csp2Repair1Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2Repair1Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);

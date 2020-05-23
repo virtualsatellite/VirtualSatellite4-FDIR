@@ -29,7 +29,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.VOTESema
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
-import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -119,10 +118,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 	private Set<FaultTreeNode> getNondeterministicGates(FaultTreeHolder ftHolder) {
 		Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
 		
-		for (FaultTreeNode child : ftHolder.getNodes()) {
-			if (child instanceof SPARE) {
-				spareGatesToCheck.add(child);
-			}
+		for (FaultTreeNode child : ftHolder.getNodes(FaultTreeNodeType.SPARE)) {
+			spareGatesToCheck.add(child);
 		}
 		
 		return spareGatesToCheck;

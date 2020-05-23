@@ -17,8 +17,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
@@ -38,7 +40,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateTransientOrPermanent() throws IOException {
+	public void testConvertTransientOrPermanent() throws IOException {
 		Fault fault = createDFT("/resources/galileoRepair/transientOrPermanent.dft");
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
@@ -47,7 +49,7 @@ public class DFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateTransientToPermanentConversion() throws IOException {
+	public void testConvertTransientToPermanentConversion() throws IOException {
 		Fault fault = createDFT("/resources/galileoRepair/transientToPermanentConversion.dft");
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
@@ -56,13 +58,26 @@ public class DFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCsp2Repair2() throws IOException {
+	public void testConvertCsp2Repair2() throws IOException {
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 7;
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+	}
+	
+	@Test
+	public void testConvertObsObsRepair1Delayed() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsObsRepair1Delayed.dft");
+		
+		dft2MaConverter.getStateSpaceGenerator().setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
+		
+		final int EXPECTED_COUNT_STATES = 4;
+		final int EXPECTED_COUNT_TRANSITIONS = 5;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 	}
