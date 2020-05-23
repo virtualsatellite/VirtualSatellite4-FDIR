@@ -243,6 +243,22 @@ public class POSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testSynthesizeObsOr2Csp2ObsBERepairUnreliable() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2ObsBERepairUnreliable.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int EXPECTED_COUNT_STATES = 9;
+		final int EXPECTED_COUNT_TRANSITIONS = 20;
+		final double EXPECTED_MTTF = 0.9152399267500395;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testSynthesizeObsMemory1RDEP() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsMemory1RDEP.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
