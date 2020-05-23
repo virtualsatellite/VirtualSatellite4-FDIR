@@ -316,7 +316,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateAnd2OrAnd2OrAnd2Symmetric() throws IOException {
-		final double EXPECTEDMTTF = 0.822011322;
+		final double EXPECTEDMTTF = 0.8081154139977669;
 		final int EXPECTEDSTATES = 20;
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2OrAnd2Symmetric.dft");
 		

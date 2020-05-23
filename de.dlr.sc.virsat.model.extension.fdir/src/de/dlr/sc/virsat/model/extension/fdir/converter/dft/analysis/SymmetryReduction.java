@@ -144,8 +144,10 @@ public class SymmetryReduction {
 	 * @param basicEvent the basic event that has failed
 	 */
 	public void createSymmetryRequirements(DFTState state, DFTState predecessor, BasicEvent basicEvent) {
-		state.getMapParentToSymmetryRequirements().putAll(predecessor.getMapParentToSymmetryRequirements());
-
+		for (Entry<FaultTreeNode, Set<FaultTreeNode>> entry : predecessor.getMapParentToSymmetryRequirements().entrySet()) {
+			state.getMapParentToSymmetryRequirements().put(entry.getKey(), new HashSet<>(entry.getValue()));
+		}
+		
 		FaultTreeHolder ftHolder = state.getFTHolder();
 		Set<FaultTreeNode> checkedNodes = new HashSet<>();
 		Queue<FaultTreeNode> queue = new LinkedList<>();

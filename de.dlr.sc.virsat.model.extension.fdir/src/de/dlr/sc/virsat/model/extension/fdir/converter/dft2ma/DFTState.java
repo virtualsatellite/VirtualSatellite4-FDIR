@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -82,7 +83,10 @@ public class DFTState extends MarkovState {
 		orderedBes = new ArrayList<>(other.orderedBes);
 		unorderedBes = new HashSet<>(other.unorderedBes);
 		activeFaults = new HashSet<>(other.activeFaults);
-		mapNodeToAffectors = new HashMap<>(other.mapNodeToAffectors);
+		mapNodeToAffectors = new HashMap<>();
+		for (Entry<FaultTreeNode, Set<FaultTreeNode>> entry : other.mapNodeToAffectors.entrySet()) {
+			mapNodeToAffectors.put(entry.getKey(), new HashSet<>(entry.getValue()));
+		}
 		mapSpareToClaimedSpares = new HashMap<>(other.mapSpareToClaimedSpares);
 		failedNodes = (BitSet) other.failedNodes.clone();
 		permanentNodes = (BitSet) other.permanentNodes.clone();
