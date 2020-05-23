@@ -187,6 +187,23 @@ public class RecoveryAutomatonHelper {
 	}
 	
 	/**
+	 * Gets the timeout transition of a state if it has one.
+	 * @param ra the recovery automaton
+	 * @param state the state
+	 * @return the timeout transition or null if there is none
+	 */
+	public TimeoutTransition getTimeoutTransition(RecoveryAutomaton ra, State state) {
+		List<Transition> transitions = getCurrentTransitions(ra).get(state);
+		TimeoutTransition timeoutTransition = null;
+		for (Transition transition : transitions) {
+			if (transition instanceof TimeoutTransition) {
+				timeoutTransition = (TimeoutTransition) transition;
+			}
+		}
+		return timeoutTransition;
+	}
+	
+	/**
 	 * Creates a map of previous transitions to states
 	 * @param ra recovery automaton
 	 * @return a map of previous transitions to states

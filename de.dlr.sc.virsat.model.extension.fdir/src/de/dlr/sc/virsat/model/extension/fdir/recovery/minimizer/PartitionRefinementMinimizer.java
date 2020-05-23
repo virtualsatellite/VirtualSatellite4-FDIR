@@ -170,12 +170,16 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 				for (Transition transition : outgoingTransitions) {
 					if (transition instanceof TimeoutTransition) {
 						TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
-						blockTimeout += timeoutTransition.getTime();
 						
 						State stateTo = raHolder.getMapTransitionToTo().get(transition);
 						List<State> blockTarget = mapStateToBlock.get(stateTo);
 						if (block != blockTarget && other != state) {
-							blockTimeoutTarget = blockTarget.get(0);
+							if (blockTimeoutTarget != null) {
+								blockTimeoutTarget = blockTarget.get(0);
+								blockTimeout += timeoutTransition.getTime();
+							}
+						} else {
+							blockTimeout += timeoutTransition.getTime();
 						}
 					}
 				}
