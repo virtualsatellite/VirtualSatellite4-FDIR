@@ -37,7 +37,6 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		
 		// Generate the starting states (which might be more than the initial state)
 		List<S> startingStates = stateSpaceGenerator.getStartingStates(initialState);
-		statistics.countGeneratedStates += startingStates.size();
 		monitor = SubMonitor.convert(monitor, startingStates.size());
 		monitor.setTaskName("Generating Markov automaton state space");
 		
@@ -53,7 +52,6 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 			S state = toProcess.poll();
 			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state);
 			toProcess.addAll(generatedNewSuccs);
-			statistics.countGeneratedStates += generatedNewSuccs.size();
 		}
 		
 		endStatisticsRecord(ma);

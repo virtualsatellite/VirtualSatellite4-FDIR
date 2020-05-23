@@ -66,7 +66,6 @@ public class MarkovAutomatonBuilderTest {
 		
 		assertEquals("Correct number of states generated", EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals("Correct number of transitions generated", EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
-		assertEquals("Correct number of states logged in statistics", EXPECTED_COUNT_STATES, maBuilder.getStatistics().countGeneratedStates);
 		assertEquals("Correct number of states logged in statistics", EXPECTED_COUNT_STATES, maBuilder.getStatistics().maxStates);
 		assertEquals("Correct number of transitions logged in statistics", EXPECTED_COUNT_TRANSITIONS, maBuilder.getStatistics().maxTransitions);
 		assertNotEquals("Logged that some time has passed", maBuilder.getStatistics().time);
