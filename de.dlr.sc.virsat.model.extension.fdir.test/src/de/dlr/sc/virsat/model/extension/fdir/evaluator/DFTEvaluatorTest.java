@@ -1065,6 +1065,30 @@ public class DFTEvaluatorTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateRDEP1Repair1() throws IOException {
+		final double[] EXPECTED = {
+			0.019992864754477674, 
+			0.03994444707457824, 
+			0.05981748932252653, 
+			0.07957877842850414
+		};
+		
+		final int EXPECTEDSTATES = 4;
+		final int EXPECTEDTRANSITIONS = 4;
+		final double EXPECTEDMTTF = 0.40909077208719136;
+		
+		Fault fault = createDFT("/resources/galileoRepair/rdep1Repair1.dft");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
+		
+	}
+	
+	@Test
 	public void testObsCsp2WithRa() throws IOException {		
 		Fault root = (Fault) createBasicDFT("/resources/galileoObs/obsCsp2.dft");
 		final double[] EXPECTED = {
