@@ -42,6 +42,10 @@ public class BellmanIterator extends MatrixIterator {
 	
 	@Override
 	public double getChange() {
-		return Math.abs(oldValues[0] - values[0]);	
+		double change = 0;
+		for (int i = 0; i < values.length; ++i) {
+			change += Math.abs(oldValues[i] - values[i]);
+		}
+		return change;
 	}
 }
