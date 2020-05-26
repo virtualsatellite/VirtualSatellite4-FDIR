@@ -31,7 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  *
  */
 
-public class FaultEvent implements IDFTEvent {
+public class FaultEvent implements IDFTEvent, IRepairableEvent {
 
 	private BasicEvent be;
 	private BasicEventHolder beHolder;
@@ -207,11 +207,9 @@ public class FaultEvent implements IDFTEvent {
 		return be;
 	}
 	
-	/**
-	 * Returns true iff this is a repair event
-	 * @return true iff this is a repair event
-	 */
-	public boolean isRepair() {
+
+	@Override
+	public boolean getIsRepair() {
 		return isRepair;
 	}
 }

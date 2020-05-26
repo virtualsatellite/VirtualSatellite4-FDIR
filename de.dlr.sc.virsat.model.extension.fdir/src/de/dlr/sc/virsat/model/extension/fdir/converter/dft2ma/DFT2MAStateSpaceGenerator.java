@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryRedu
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
@@ -88,7 +89,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
 			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
-			List<DFTState> newSuccsStateUpdate = handleStateUpdate(state, stateUpdate, stateUpdateResult);
+			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
 		
@@ -142,12 +143,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 
 	/**
 	 * Handles the result of a state update and inserts the successors into the markov automaton
-	 * @param state the current state
 	 * @param stateUpdate the state update
 	 * @param stateUpdateResult the result of the state update
 	 * @return all newly generated successor states
 	 */
-	private List<DFTState> handleStateUpdate(DFTState state, StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	private List<DFTState> handleStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+		DFTState state = stateUpdate.getState();
 		IDFTEvent event = stateUpdate.getEvent();
 		DFTState baseSucc = stateUpdateResult.getBaseSucc();
 		List<DFTState> succs = stateUpdateResult.getSuccs();
@@ -158,8 +159,10 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			// for this we extract the input from the previous update and then repeat the update with the
 			// determined recovery actions
 			
+			boolean isRepair = stateUpdate.getEvent() instanceof IRepairableEvent 
+					? ((IRepairableEvent) stateUpdate.getEvent()).getIsRepair() : false;
 			Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
-			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
+			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents, isRepair);
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
 				baseSucc = stateUpdateResult.reset(state);

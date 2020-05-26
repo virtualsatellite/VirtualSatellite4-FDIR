@@ -88,18 +88,20 @@ public class RecoveryStrategy {
 	}
 
 	/**
-	 * React to the occurrence of a set of faults
-	 * @param faults the occurred faults
+	 * React to the occurrence or the repair of a set of faults
+	 * @param faults the occurred or repaired faults
+	 * @param whether it was a repair or a failure occurrence
 	 * @return the recovery strategy after reading the fault
 	 */
-	public RecoveryStrategy onFaultsOccured(Collection<FaultTreeNode> faults) {
+	public RecoveryStrategy onFaultsOccured(Collection<FaultTreeNode> faults, boolean isRepair) {
 		if (raHolder.getMapStateToOutgoingTransitions().get(currentState) != null) {
 			Set<String> faultUUIDs = faults.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
 			for (Transition transition : raHolder.getMapStateToOutgoingTransitions().get(currentState)) {
 				if (transition instanceof FaultEventTransition) {
-					Set<String> guardUUIDs = ((FaultEventTransition) transition).getGuards()
+					FaultEventTransition fet = (FaultEventTransition) transition;
+					Set<String> guardUUIDs = fet.getGuards()
 							.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
-					if (guardUUIDs.equals(faultUUIDs)) {
+					if (guardUUIDs.equals(faultUUIDs) && isRepair == fet.getIsRepair()) {
 						RecoveryStrategy ras = new RecoveryStrategy(this,
 								raHolder.getMapTransitionToTo().get(transition), 
 								raHolder.getMapTransitionToRecoveryActions().get(transition));

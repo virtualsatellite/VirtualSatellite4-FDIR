@@ -26,7 +26,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -291,10 +292,13 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			Entry<Collection<? extends FaultTreeNode>, Boolean> genericEvent = (Entry<Collection<? extends FaultTreeNode>, Boolean>) event;
 			raTransition.getGuards().addAll(genericEvent.getKey());
 			raTransition.setIsRepair(genericEvent.getValue());
-		} else if (event instanceof FaultEvent) {
-			FaultEvent faultEvent = (FaultEvent) event;
-			raTransition.getGuards().add(faultEvent.getNode());
-			raTransition.setIsRepair(faultEvent.isRepair());
+		} else if (event instanceof IDFTEvent) {
+			IDFTEvent dftEvent = (IDFTEvent) event;
+			raTransition.getGuards().add(dftEvent.getNode());
+			
+			if (event instanceof IRepairableEvent) {
+				raTransition.setIsRepair(((IRepairableEvent) event).getIsRepair());
+			}
 		}
 		
 		raTransition.setName(fromRaState.getName() + toRaState.getName());

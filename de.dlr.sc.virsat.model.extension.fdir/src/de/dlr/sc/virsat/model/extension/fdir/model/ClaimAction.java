@@ -107,9 +107,7 @@ public  class ClaimAction extends AClaimAction {
 			state.setNodeActivation(primary, false);
 		}
 		
-		if (!state.hasFaultTreeNodeFailed(claimSpare)) {
-			state.setFaultTreeNodeFailed(spareGate, false);
-		}
+		state.setFaultTreeNodeFailed(spareGate, state.hasFaultTreeNodeFailed(claimSpare));
 	}
 	
 	@Override
