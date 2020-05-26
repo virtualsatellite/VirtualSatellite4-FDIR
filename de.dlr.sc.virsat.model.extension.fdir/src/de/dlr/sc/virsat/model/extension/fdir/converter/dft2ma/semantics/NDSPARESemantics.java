@@ -21,7 +21,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
-import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -87,7 +86,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		boolean reclaim = currentClaimant != null;
 		
 		if (reclaim) {
-			performFree(node, spare, state, generationResult);
+			performFree(spare, state, generationResult);
 			newState = generationResult.getGeneratedStates().get(generationResult.getGeneratedStates().size() - 1);
 			extendedRecoveryActions = generationResult.getMapStateToRecoveryActions().get(newState);
 		} else {
@@ -133,14 +132,8 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		return ca;
 	}
 	
-	/**
-	 * Frees a spare from all claims
-	 * @param spare the spare to be freed
-	 * @param state the current state
-	 * @param generationResult accumulator for state space generation results
-	 * @return constant true
-	 */
-	protected void performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+	@Override
+	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
 		if (!propagateWithoutActions) {
 			List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 	
@@ -148,7 +141,6 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 			DFTState newState = state.copy();
 			fa.execute(newState);
 	
-			newState.setFaultTreeNodeFailed(node, hasPrimaryFailed(newState, newState.getFTHolder().getNodes(node, EdgeType.CHILD)));
 			List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
 	
 			extendedRecoveryActions.add(fa);

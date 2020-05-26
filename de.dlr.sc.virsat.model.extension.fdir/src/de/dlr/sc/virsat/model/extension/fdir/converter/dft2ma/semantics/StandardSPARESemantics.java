@@ -50,10 +50,10 @@ public class StandardSPARESemantics implements INodeSemantics {
 					currentClaimWorks = true;
 					
 					if (!isSingleClaim()) {
-						performFree(spareGate, spare, state, generationResult);
+						performFree(spare, state, generationResult);
 					}
 				} else {
-					performFree(spareGate, spare, state, generationResult);
+					performFree(spare, state, generationResult);
 				}
 			}
 		}
@@ -171,7 +171,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @param generationResult accumulator for state space generation results
 	 * @return constant true
 	 */
-	protected void performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
 		FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
 		state.getMapSpareToClaimedSpares().remove(spare);
 		state.setNodeActivation(spare, false);
