@@ -94,7 +94,7 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 			extendedRecoveryActions = new ArrayList<>(recoveryActions);
 		}
 		
-		ClaimAction ca = getOrCreateClaimAction(node, spare, mapNodeToNodeToClaimAction);
+		ClaimAction ca = getOrCreateClaimAction(node, spare);
 		ca.execute(newState);
 
 		FaultTreeNode workingUnit = newState.getWorkingUnit(node);
@@ -115,10 +115,9 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	 * Gets or creates a new claim action
 	 * @param gate the gate doing the claiming
 	 * @param spare the spare getting claimed
-	 * @param mapNodeToNodeToClaimAction a cashing of existing claim actions
 	 * @return a claim action
 	 */
-	protected ClaimAction getOrCreateClaimAction(SPARE gate, FaultTreeNode spare, Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction) {
+	protected ClaimAction getOrCreateClaimAction(SPARE gate, FaultTreeNode spare) {
 		Map<FaultTreeNode, ClaimAction> mapNodeToClaimAction = mapNodeToNodeToClaimAction.get(gate);
 		if (mapNodeToClaimAction == null) {
 			mapNodeToClaimAction = new HashMap<>();
