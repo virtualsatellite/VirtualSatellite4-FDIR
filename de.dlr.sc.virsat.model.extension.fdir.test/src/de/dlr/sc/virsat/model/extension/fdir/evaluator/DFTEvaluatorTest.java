@@ -883,7 +883,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCMSimple() throws IOException {
+	public void testEvaluateCMSimple2() throws IOException {
 		final double[] EXPECTED = {
 			0.0060088,
 			0.0122455,
@@ -891,7 +891,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			0.0273548
 		};
 		final double EXPECTEDMTTF = 0.25627188;
-		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
+		Fault fault = createDFT("/resources/galileo/cm_simple2.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);

@@ -138,14 +138,28 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCMSimple() throws IOException {
+	public void testEvaluateCMSimple1() throws IOException {
+		final double EXPECTED_MTTF = 677.7777777777778;
+		
+		Fault fault = createDFT("/resources/galileo/cm_simple1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int NUM_STATES = 3;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateCMSimple2() throws IOException {
 		final double[] EXPECTED = {
 			0.0060088,
 			0.0122455,
 			0.0191832,
 			0.0273547
 		};
-		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
+		Fault fault = createDFT("/resources/galileo/cm_simple2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		final int NUM_STATES = 1;

@@ -378,8 +378,8 @@ public class ModularizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testCMSimple() throws IOException {
-		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple.dft");
+	public void testCMSimple2() throws IOException {
+		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple2.dft");
 		Set<Module> modules = modularizer.getModules(rootCMSimple.getFaultTree());
 		
 		final int NUM_MODULES = 5;
