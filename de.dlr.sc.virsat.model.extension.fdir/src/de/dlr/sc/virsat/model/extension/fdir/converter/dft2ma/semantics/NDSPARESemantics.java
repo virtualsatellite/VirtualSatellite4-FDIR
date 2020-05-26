@@ -97,6 +97,10 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		ClaimAction ca = getOrCreateClaimAction(node, spare, mapNodeToNodeToClaimAction);
 		ca.execute(newState);
 
+		FaultTreeNode workingUnit = newState.getWorkingUnit(node);
+		boolean hasWorkingUnit = workingUnit != null;
+		newState.setFaultTreeNodeFailed(node, !hasWorkingUnit);
+		
 		extendedRecoveryActions.add(ca);
 		generationResult.getMapStateToRecoveryActions().put(newState, extendedRecoveryActions);
 		
@@ -139,7 +143,13 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	
 			FreeAction fa = getOrCreateFreeAction(spare);
 			DFTState newState = state.copy();
+			
+			FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
 			fa.execute(newState);
+			
+			FaultTreeNode workingUnit = newState.getWorkingUnit(claimingSpareGate);
+			boolean hasWorkingUnit = workingUnit != null;
+			newState.setFaultTreeNodeFailed(claimingSpareGate, !hasWorkingUnit);
 	
 			List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
 	

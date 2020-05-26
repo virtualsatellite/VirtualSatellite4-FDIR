@@ -103,13 +103,7 @@ public  class ClaimAction extends AClaimAction {
 		
 		state.getMapSpareToClaimedSpares().put(claimSpare, spareGate);
 		state.setNodeActivation(claimSpare, true);
-		for (FaultTreeNode primary : state.getFTHolder().getNodes(spareGate, EdgeType.CHILD)) {
-			state.setNodeActivation(primary, false);
-		}
-		
-		if (!state.hasFaultTreeNodeFailed(claimSpare)) {
-			state.setFaultTreeNodeFailed(spareGate, false);
-		}
+		state.setNodeActivations(state.getFTHolder().getNodes(spareGate, EdgeType.CHILD), false);
 	}
 	
 	@Override

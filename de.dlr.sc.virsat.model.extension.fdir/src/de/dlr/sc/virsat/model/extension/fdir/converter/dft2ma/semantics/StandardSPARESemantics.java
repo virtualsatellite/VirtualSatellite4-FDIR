@@ -155,6 +155,11 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state, 
 			GenerationResult generationResult) {
+		
+		if (state.hasFaultTreeNodeFailed(spare)) {
+			return false;
+		}
+		
 		if (state.getMapSpareToClaimedSpares().containsKey(spare)) {
 			return false;
 		}
