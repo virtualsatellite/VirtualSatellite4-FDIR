@@ -282,12 +282,12 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeCsp2Repair2BadPrimary() throws IOException {
 		final double[] EXPECTED = {
-			0.9999018128802991,
-			0.9996143421328886, 
-			0.9991478706086724, 
-			0.9985122259438284
+			0.9999019760517075, 
+			0.9996156202699334, 
+			0.999152094789556, 
+			0.9985220320778355
 		};
-		final double EXPECTED_SSA = 0.5897721459363314;
+		final double EXPECTED_SSA = 0.7143034340592812;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
