@@ -106,5 +106,13 @@ public class StateUpdate {
 			
 			return baseSucc;
 		}
+		
+		/**
+		 * Gets the state update that created this state update result
+		 * @return the state update that generated this update result
+		 */
+		public StateUpdate getStateUpdate() {
+			return StateUpdate.this;
+		}
 	}
 }

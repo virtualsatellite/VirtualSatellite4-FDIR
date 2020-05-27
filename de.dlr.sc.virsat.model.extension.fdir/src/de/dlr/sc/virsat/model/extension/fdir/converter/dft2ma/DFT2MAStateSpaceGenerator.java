@@ -151,7 +151,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private List<DFTState> handleStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
 		DFTState markovSucc = null;
 		if (recoveryStrategy != null) {			
-			synchronizeWithRecoveryStrategy(stateUpdate, stateUpdateResult);
+			synchronizeWithRecoveryStrategy(stateUpdateResult);
 		} else if (stateUpdateResult.getSuccs().size() > 1) { 
 			// If we do not have a recovery strategy and either multiple successors
 			// or an obsertvation event for which we generally must provide the ability
@@ -173,7 +173,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), markovSucc, stateUpdate.getRate());
 		}
 		
-		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdate, stateUpdateResult, markovSucc);
+		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdateResult, markovSucc);
 		return newSuccs;
 	}
 
@@ -184,7 +184,8 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @param stateUpdate the state update
 	 * @param stateUpdateResult the state update result
 	 */
-	private void synchronizeWithRecoveryStrategy(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	private void synchronizeWithRecoveryStrategy(StateUpdateResult stateUpdateResult) {
+		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		DFTState state = stateUpdate.getState();
 		IDFTEvent event = stateUpdate.getEvent();
 		DFTState baseSucc = stateUpdateResult.getBaseSucc();
@@ -201,7 +202,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			Queue<FaultTreeNode> worklist = semantics.createWorklist(event, newBaseSucc);
 			worklist.addAll(affectedNodes);
-			semantics.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
+			semantics.propagateStateUpdate(stateUpdateResult, worklist);
 		} else {
 			baseSucc.setRecoveryStrategy(recoveryStrategy);
 		}
@@ -209,13 +210,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	
 	/**
 	 * Handles the actual insertion of a generated successor into the markov automaton
-	 * @param succ the generated successor state
-	 * @param state the current state
+	 * @param stateUpdateResult the results of a state update
 	 * @param markovSucc the markovian intermediate state if available
-	 * @param stateUpdate the update from generating the state
 	 * @return the generated states that are really new
 	 */
-	private List<DFTState> handleGeneratedSuccs(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, DFTState markovSucc) {
+	private List<DFTState> handleGeneratedSuccs(StateUpdateResult stateUpdateResult, DFTState markovSucc) {
+		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		List<DFTState> newSuccs = new ArrayList<>();
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {

@@ -119,21 +119,21 @@ public class DFTSemantics {
 	public StateUpdateResult performUpdate(StateUpdate stateUpdate) {
 		StateUpdateResult stateUpdateResult = stateUpdate.createResultContainer();
 		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc());
-		propagateStateUpdate(stateUpdate, stateUpdateResult);
+		propagateStateUpdate(stateUpdateResult);
 		
 		return stateUpdateResult;
 	}
 	
 	/**
 	 * Propagates the changes from the state update
-	 * @param stateUpdate the state update
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	public void propagateStateUpdate(StateUpdateResult stateUpdateResult) {
+		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		if (stateUpdate.getEvent().getNode() != null) {
 			Queue<FaultTreeNode> worklist = createWorklist(stateUpdate.getEvent(), stateUpdateResult.getBaseSucc());
-			propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
+			propagateStateUpdate(stateUpdateResult, worklist);
 		}
 	}
 	
@@ -166,17 +166,16 @@ public class DFTSemantics {
 	
 	/**
 	 * Propagates the changes from the state update
-	 * @param stateUpdate the state update
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
 		List<FaultTreeNode> changedNodes = new ArrayList<>();
-		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
+		FaultTreeHolder ftHolder = stateUpdateResult.getStateUpdate().getState().getFTHolder();
 		
 		while (!worklist.isEmpty()) {
 			FaultTreeNode ftn = worklist.poll();
-			boolean hasChanged = propagateStateUpdateToNode(stateUpdate, stateUpdateResult, ftn);
+			boolean hasChanged = propagateStateUpdateToNode(stateUpdateResult, ftn);
 			
 			if (hasChanged) {
 				changedNodes.add(ftn);
@@ -194,12 +193,12 @@ public class DFTSemantics {
 	
 	/**
 	 * Propagates the changes from the state update to a single node
-	 * @param stateUpdate the state update
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @param node the node we want to check
 	 * @return true iff a change occurred in the update
 	 */
-	private boolean propagateStateUpdateToNode(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, FaultTreeNode node) {
+	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node) {
+		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		if (stateUpdate.getState().isFaultTreeNodePermanent(node)) {
 			return false;
 		}

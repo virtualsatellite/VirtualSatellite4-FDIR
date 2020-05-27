@@ -78,9 +78,9 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
-		IDFTEvent event = stateUpdate.getEvent();
-		DFTState pred = stateUpdate.getState();
+	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+		IDFTEvent event = stateUpdateResult.getStateUpdate().getEvent();
+		DFTState pred = stateUpdateResult.getStateUpdate().getState();
 		
 		FaultTreeHolder ftHolder = pred.getFTHolder();
 		boolean hasRecoveryStrategy = hasRecoveryStrategy(pred);
@@ -88,7 +88,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 
 		if (!anyObservation || hasRecoveryStrategy) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
-			super.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
+			super.propagateStateUpdate(stateUpdateResult, worklist);
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
@@ -99,7 +99,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			worklist = new LinkedList<>(nondetGates);
 			stateUpdateResult.getChangedNodes().clear();
-			super.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
+			super.propagateStateUpdate(stateUpdateResult, worklist);
 			propagateObservations(stateUpdateResult);
 		}
 	}
