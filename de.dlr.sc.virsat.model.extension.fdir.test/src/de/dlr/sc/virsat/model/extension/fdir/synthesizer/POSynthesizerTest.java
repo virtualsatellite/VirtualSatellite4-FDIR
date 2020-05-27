@@ -386,7 +386,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final double EXPECTED_SSA = 0.3265228816711657;
 		final int EXPECTED_COUNT_STATES = 5;
-		final int EXPECTED_COUNT_TRANSITIONS = 7;
+		final int EXPECTED_COUNT_TRANSITIONS = 9;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
@@ -404,7 +404,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final double EXPECTED_SSA = 0.4940303888537152;
 		final int EXPECTED_COUNT_STATES = 9;
-		final int EXPECTED_COUNT_TRANSITIONS = 15;
+		final int EXPECTED_COUNT_TRANSITIONS = 17;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
@@ -422,7 +422,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final double EXPECTED_SSA = 0.2882806687913929;
 		final int EXPECTED_COUNT_STATES = 11;
-		final int EXPECTED_COUNT_TRANSITIONS = 20;
+		final int EXPECTED_COUNT_TRANSITIONS = 21;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
