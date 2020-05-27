@@ -38,7 +38,7 @@ public class SteadyStateDetectability implements IDerivedMetric {
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
 		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(SteadyStateAvailability.STEADY_STATE_AVAILABILITY));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED), Collections.singleton(SteadyStateAvailability.STEADY_STATE_AVAILABILITY));
+		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.OBSERVED), Collections.singleton(SteadyStateAvailability.STEADY_STATE_AVAILABILITY));
 		return mapFailLabelProviderToMetrics;
 	}
 
