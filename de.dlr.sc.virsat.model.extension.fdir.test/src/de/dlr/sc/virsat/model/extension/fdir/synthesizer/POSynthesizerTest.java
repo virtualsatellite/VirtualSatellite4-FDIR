@@ -420,12 +420,17 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
+		final double EXPECTED_SSA = 0.2882806687913929;
+		final int EXPECTED_COUNT_STATES = 11;
+		final int EXPECTED_COUNT_TRANSITIONS = 20;
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		
-		// SSA computation isnt stable yet, at least guarantee that its non-zero
-		assertNotEquals(0, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
 	
 	@Test
