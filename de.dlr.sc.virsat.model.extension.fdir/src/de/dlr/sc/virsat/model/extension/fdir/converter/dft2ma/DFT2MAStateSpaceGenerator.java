@@ -149,39 +149,15 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return all newly generated successor states
 	 */
 	private List<DFTState> handleStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
-		DFTState state = stateUpdate.getState();
-		IDFTEvent event = stateUpdate.getEvent();
-		DFTState baseSucc = stateUpdateResult.getBaseSucc();
-		List<DFTState> succs = stateUpdateResult.getSuccs();
-		
 		DFTState markovSucc = null;
-		if (recoveryStrategy != null) {
-			// If we have a recovery strategy, resolve the update such that we only have one deterministic successor
-			// for this we extract the input from the previous update and then repeat the update with the
-			// determined recovery actions
-			
-			boolean isRepair = stateUpdate.getEvent() instanceof IRepairableEvent 
-					? ((IRepairableEvent) stateUpdate.getEvent()).getIsRepair() : false;
-			Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
-			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents, isRepair);
-			
-			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
-				baseSucc = stateUpdateResult.init(state);
-				event.execute(baseSucc);
-				List<FaultTreeNode> affectedNodes = recoveryStrategy.execute(baseSucc);
-				
-				Queue<FaultTreeNode> worklist = semantics.createWorklist(event, baseSucc);
-				worklist.addAll(affectedNodes);
-				semantics.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
-			} else {
-				baseSucc.setRecoveryStrategy(recoveryStrategy);
-			}
-		} else if (succs.size() > 1) { 
+		if (recoveryStrategy != null) {			
+			synchronizeWithRecoveryStrategy(stateUpdate, stateUpdateResult);
+		} else if (stateUpdateResult.getSuccs().size() > 1) { 
 			// If we do not have a recovery strategy and either multiple successors
 			// or an obsertvation event for which we generally must provide the ability
 			// to react, then we need an intermediate non-deterministic state
 			
-			DFTState interimState = baseSucc.copy();
+			DFTState interimState = stateUpdateResult.getBaseSucc().copy();
 			interimState.setMarkovian(false);
 			
 			markovSucc = stateEquivalence.getEquivalentState(interimState);
@@ -192,13 +168,43 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 				// then we know that we do not need to handle the generated successors anymore
 				// because have already done so in the past
 				
-				succs.clear();
+				stateUpdateResult.getSuccs().clear();
 			}
-			targetMa.addMarkovianTransition(event, state, markovSucc, stateUpdate.getRate());
+			targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), markovSucc, stateUpdate.getRate());
 		}
 		
 		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdate, stateUpdateResult, markovSucc);
 		return newSuccs;
+	}
+
+	/**
+	 * If we have a recovery strategy, resolve the update such that we only have one deterministic successor
+	 * for this we extract the input from the previous update and then repeat the update with the
+	 * determined recovery actions
+	 * @param stateUpdate the state update
+	 * @param stateUpdateResult the state update result
+	 */
+	private void synchronizeWithRecoveryStrategy(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+		DFTState state = stateUpdate.getState();
+		IDFTEvent event = stateUpdate.getEvent();
+		DFTState baseSucc = stateUpdateResult.getBaseSucc();
+		
+		boolean isRepair = stateUpdate.getEvent() instanceof IRepairableEvent 
+				? ((IRepairableEvent) stateUpdate.getEvent()).getIsRepair() : false;
+		Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
+		RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents, isRepair);
+		
+		if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
+			DFTState newBaseSucc = stateUpdateResult.init(state);
+			event.execute(newBaseSucc);
+			List<FaultTreeNode> affectedNodes = recoveryStrategy.execute(newBaseSucc);
+			
+			Queue<FaultTreeNode> worklist = semantics.createWorklist(event, newBaseSucc);
+			worklist.addAll(affectedNodes);
+			semantics.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
+		} else {
+			baseSucc.setRecoveryStrategy(recoveryStrategy);
+		}
 	}
 	
 	/**
