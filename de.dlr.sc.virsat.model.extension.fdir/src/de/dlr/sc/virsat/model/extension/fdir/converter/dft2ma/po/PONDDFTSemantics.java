@@ -17,7 +17,6 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ObservationEvent;
@@ -131,13 +130,9 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			for (DFTState state : succs) {
 				PODFTState poState = (PODFTState) state;
-				boolean observedNodeFail = state.hasFaultTreeNodeFailed(observedNode);
-				boolean failNodeObserved = poState.isNodeFailObserved(observedNode);
-				if (failNodeObserved == observedNodeFail) {
-					Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(observedNode);
-					for (FaultTreeNode parent : allParents) {
-						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
-					}
+				Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(observedNode);
+				for (FaultTreeNode parent : allParents) {
+					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 				}
 			}
 			
@@ -174,23 +169,19 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdateResult stateUpdateResult) {
 		Set<FaultTreeNode> observedNodes = new HashSet<>();
-		IDFTEvent event = stateUpdate.getEvent();
+		IDFTEvent event = stateUpdateResult.getStateUpdate().getEvent();
+		DFTState state = stateUpdateResult.getStateUpdate().getState();
 		
 		if (event instanceof ObservationEvent) {
 			observedNodes.add(event.getNode());
 		} else {
-			if (!(stateUpdate.getState() instanceof PODFTState)) {
-				throw new IllegalArgumentException("Expected state of type PODFTState but got state " + stateUpdate.getState());
+			if (!(state instanceof PODFTState)) {
+				throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);
 			}
 			
-			PODFTState poPred = (PODFTState) stateUpdate.getState();
-			
-			if (poPred.existsObserver(event.getNode(), false, false)) {
-				observedNodes.add(event.getNode());
-			}
-			
+			PODFTState poPred = (PODFTState) state;
 			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 				if (poPred.existsObserver(node, false, false)) {
 					observedNodes.add(node);

@@ -236,14 +236,15 @@ public class DFTSemantics {
 	
 	/**
 	 * Extracts the occured event set for recovery strategies
-	 * @param stateUpdate the state update
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the set of nodes that affect the recovery actions
 	 */
-	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdateResult stateUpdateResult) {
+		FaultTreeNode eventNode = stateUpdateResult.getStateUpdate().getEvent().getNode();
+		
 		Set<FaultTreeNode> occuredBasicEvents = new HashSet<>();
-		if (stateUpdate.getEvent().getNode() instanceof BasicEvent) {
-			occuredBasicEvents.add(stateUpdate.getEvent().getNode());
+		if (eventNode instanceof BasicEvent) {
+			occuredBasicEvents.add(eventNode);
 		}
 		for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 			if (node instanceof BasicEvent) {

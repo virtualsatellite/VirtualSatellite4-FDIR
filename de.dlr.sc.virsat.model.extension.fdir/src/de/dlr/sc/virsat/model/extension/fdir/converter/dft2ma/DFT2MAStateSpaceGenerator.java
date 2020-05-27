@@ -192,7 +192,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		boolean isRepair = stateUpdate.getEvent() instanceof IRepairableEvent 
 				? ((IRepairableEvent) stateUpdate.getEvent()).getIsRepair() : false;
-		Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
+		Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdateResult);
 		RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents, isRepair);
 		
 		if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
