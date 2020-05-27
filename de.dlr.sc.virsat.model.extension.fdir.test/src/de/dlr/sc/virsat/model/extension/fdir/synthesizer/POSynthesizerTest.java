@@ -398,6 +398,24 @@ public class POSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testSynthesizeObsCsp2Repair2Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair2Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final double EXPECTED_SSA = 0.4940303888537152;
+		final int EXPECTED_COUNT_STATES = 9;
+		final int EXPECTED_COUNT_TRANSITIONS = 15;
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testSynthesizeObsCsp2ObsRepair2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
