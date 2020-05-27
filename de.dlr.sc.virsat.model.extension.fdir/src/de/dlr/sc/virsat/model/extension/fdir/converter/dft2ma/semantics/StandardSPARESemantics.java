@@ -67,11 +67,9 @@ public class StandardSPARESemantics implements INodeSemantics {
 		
 		if (canClaim) {
 			for (FaultTreeNode spare : spares) {
-				if (!state.hasFaultTreeNodeFailed(spare)) {
-					if (performClaim(spareGate, spare, state, generationResult)) {
-						foundSpare = true;
-						break;
-					}
+				if (performClaim(spareGate, spare, state, generationResult)) {
+					foundSpare = true;
+					break;
 				}
 			}
 		}

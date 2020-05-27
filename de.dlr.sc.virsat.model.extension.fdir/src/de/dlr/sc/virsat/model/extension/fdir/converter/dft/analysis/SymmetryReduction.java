@@ -143,7 +143,7 @@ public class SymmetryReduction {
 	 * @param predecessor the predecessor state
 	 * @param basicEvent the basic event that has failed
 	 */
-	public void createSymmetryRequirements(DFTState state, DFTState predecessor, BasicEvent basicEvent) {
+	public void createSymmetryRequirements(DFTState state, DFTState predecessor, BasicEvent basicEvent, List<FaultTreeNode> changedNodes) {
 		for (Entry<FaultTreeNode, Set<FaultTreeNode>> entry : predecessor.getMapParentToSymmetryRequirements().entrySet()) {
 			state.getMapParentToSymmetryRequirements().put(entry.getKey(), new HashSet<>(entry.getValue()));
 		}
@@ -152,12 +152,20 @@ public class SymmetryReduction {
 		Set<FaultTreeNode> checkedNodes = new HashSet<>();
 		Queue<FaultTreeNode> queue = new LinkedList<>();
 		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
-		queue.add(basicEvent);
-		checkedNodes.add(basicEvent);
+		queue.addAll(changedNodes);
+		checkedNodes.addAll(changedNodes);
 		
 		while (!queue.isEmpty()) {
 			FaultTreeNode node = queue.poll();
 			List<FaultTreeNode> biggerNodes = biggerRelation.getOrDefault(node, Collections.emptyList());
+			
+			if (state.getMapSpareToClaimedSpares().values().contains(node)) {
+				for (FaultTreeNode biggerNode : biggerNodes) {
+					Set<FaultTreeNode> symmetryRequirements = state.getMapParentToSymmetryRequirements().computeIfAbsent(biggerNode, key -> new HashSet<>());
+					symmetryRequirements.add(node);
+				}
+			}
+			
 			if (!biggerNodes.isEmpty()) {
 				List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
 				for (FaultTreeNode parent : parents) {
@@ -216,7 +224,7 @@ public class SymmetryReduction {
 		for (FaultTreeNode parent : allParents) {
 			Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.getOrDefault(parent, Collections.emptySet());
 			for (FaultTreeNode symmetryRequirement : symmetryRequirements) {
-				if (!state.hasFaultTreeNodeFailed(symmetryRequirement)) {
+				if (!state.hasFaultTreeNodeFailed(symmetryRequirement) || state.getMapSpareToClaimedSpares().values().contains(symmetryRequirement)) {
 					return false;
 				}
 			}
