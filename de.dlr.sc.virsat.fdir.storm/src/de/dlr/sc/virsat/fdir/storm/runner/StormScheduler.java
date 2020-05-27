@@ -11,10 +11,10 @@ package de.dlr.sc.virsat.fdir.storm.runner;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
@@ -41,16 +41,16 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 	}
 
 	@Override
-	public Map<MarkovState, Set<MarkovTransition<MarkovState>>> computeOptimalScheduler(MarkovAutomaton<MarkovState> ma,
+	public Map<MarkovState, List<MarkovTransition<MarkovState>>> computeOptimalScheduler(MarkovAutomaton<MarkovState> ma,
 			MarkovState initialMa) {
 
 		Storm storm = new Storm(ma, DELTA, MTTF.MTTF);
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> mapScheduler = new HashMap<>();
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> mapScheduler = new HashMap<>();
 		Map<Integer, Integer> stormResults = runStormScheduler(storm);
 		for (MarkovState fromState : ma.getStates()) {
 			if (!fromState.isMarkovian()) {
 				int bestTransition = stormResults.get(fromState.getIndex());
-				Set<MarkovTransition<MarkovState>> transitionGroup = new HashSet<>();
+				List<MarkovTransition<MarkovState>> transitionGroup = new ArrayList<>();
 				transitionGroup.add(ma.getSuccTransitions(fromState).get(bestTransition));
 				mapScheduler.put(fromState, transitionGroup);
 			}

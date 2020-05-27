@@ -26,7 +26,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -68,7 +69,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * @param initialMa the initial state in the ma
 	 * @return a recovery automaton represenation of the given schedule
 	 */
-	public RecoveryAutomaton convert(Map<S, Set<MarkovTransition<S>>> schedule, S initialMa) {
+	public RecoveryAutomaton convert(Map<S, List<MarkovTransition<S>>> schedule, S initialMa) {
 		mapMarkovStateToRaState = new HashMap<>();
 		raHelper = new RecoveryAutomatonHelper(concept);
 		ra = new RecoveryAutomaton(concept);
@@ -81,7 +82,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
-			Set<S> nextStates = handleState(state, schedule, createdTransitions);
+			List<S> nextStates = handleState(state, schedule, createdTransitions);
 			for (S nextState : nextStates) {
 				if (handledNonDetStates.add(nextState)) {
 					toProcess.offer(nextState);
@@ -102,7 +103,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * @param createdTransitions the set of all created transitions
 	 * @return the set of next ma states that should be inserted into the ra
 	 */
-	private Set<S> handleState(S state, Map<S, Set<MarkovTransition<S>>> schedule, List<Transition> createdTransitions) {
+	private List<S> handleState(S state, Map<S, List<MarkovTransition<S>>> schedule, List<Transition> createdTransitions) {
 		List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
 		
 		if (state.isMarkovian()) {
@@ -110,21 +111,20 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			createPseudoSynchronizationTransitions(state, internalTransitions, markovianTransitions);
 		}
 		
-		Set<S> nextStates = new HashSet<>();
+		List<S> nextStates = new ArrayList<>();
 		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
 			S toState = markovianTransition.getTo();
 			
 			if (!markovianTransition.getTo().isMarkovian()) {
-				@SuppressWarnings("unchecked")
-				Set<MarkovTransition<S>> bestTransitionSet = schedule.getOrDefault(toState, Collections.EMPTY_SET);
-				Iterator<MarkovTransition<S>> itr = bestTransitionSet.iterator();
+				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
+				Iterator<MarkovTransition<S>> itr = bestTransitionGroup.iterator();
 				if (itr.hasNext()) {
 					MarkovTransition<S> representativeTransition = itr.next();
 					
 					Transition raTransition = createTransition(markovianTransition, representativeTransition);
 					createdTransitions.add(raTransition);
 					
-					for (MarkovTransition<S> bestTransition : bestTransitionSet) {
+					for (MarkovTransition<S> bestTransition : bestTransitionGroup) {
 						toState = bestTransition.getTo();
 						mapMarkovStateToRaState.put(toState, raTransition.getTo());
 						nextStates.add(toState);
@@ -291,10 +291,13 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			Entry<Collection<? extends FaultTreeNode>, Boolean> genericEvent = (Entry<Collection<? extends FaultTreeNode>, Boolean>) event;
 			raTransition.getGuards().addAll(genericEvent.getKey());
 			raTransition.setIsRepair(genericEvent.getValue());
-		} else if (event instanceof FaultEvent) {
-			FaultEvent faultEvent = (FaultEvent) event;
-			raTransition.getGuards().add(faultEvent.getNode());
-			raTransition.setIsRepair(faultEvent.isRepair());
+		} else if (event instanceof IDFTEvent) {
+			IDFTEvent dftEvent = (IDFTEvent) event;
+			raTransition.getGuards().add(dftEvent.getNode());
+			
+			if (event instanceof IRepairableEvent) {
+				raTransition.setIsRepair(((IRepairableEvent) event).getIsRepair());
+			}
 		}
 		
 		raTransition.setName(fromRaState.getName() + toRaState.getName());

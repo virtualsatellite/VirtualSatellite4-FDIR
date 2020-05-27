@@ -7,12 +7,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
+package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
 import java.util.List;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
@@ -23,7 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
  *
  */
 
-public class ObservationEvent implements IDFTEvent {
+public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 	
 	private FaultTreeNode node;
 	private boolean isRepair;
@@ -69,10 +69,7 @@ public class ObservationEvent implements IDFTEvent {
 		return node;
 	}
 	
-	/**
-	 * Is the observation a repair or a fail observation?
-	 * @return observation kind
-	 */
+	@Override
 	public boolean getIsRepair() {
 		return isRepair;
 	}

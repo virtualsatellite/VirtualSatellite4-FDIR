@@ -100,7 +100,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-
+		
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
@@ -138,14 +138,28 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCMSimple() throws IOException {
+	public void testEvaluateCMSimple1() throws IOException {
+		final double EXPECTED_MTTF = 677.7777777777778;
+		
+		Fault fault = createDFT("/resources/galileo/cm_simple1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int NUM_STATES = 3;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateCMSimple2() throws IOException {
 		final double[] EXPECTED = {
 			0.0060088,
 			0.0122455,
 			0.0191832,
 			0.0273547
 		};
-		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
+		Fault fault = createDFT("/resources/galileo/cm_simple2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		final int NUM_STATES = 1;
@@ -183,23 +197,24 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateCM2() throws IOException {
 		final double[] EXPECTED = {
-			3.7911129664225385E-5,
-			1.5198531208215904E-4,
-			3.7486938755115773E-4,
-			7.984689354830765E-4
+			3.791152502763406E-5, 
+			1.5199560899314957E-4, 
+			3.749350399882001E-4, 
+			7.987025488765953E-4
 		};
-		final double EXPECTED_MTTF = 0.32784729178994587;
+		final double EXPECTED_MTTF = 0.3278225899445763;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int NUM_STATES = 5;
+		final int NUM_STATES = 6;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
+		final double TEST_EPSILON = 0.001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	}
@@ -266,8 +281,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		System.out.println(ra.toDot());
-		
 		final int NUM_STATES = 3;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
@@ -282,12 +295,12 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeCsp2Repair2BadPrimary() throws IOException {
 		final double[] EXPECTED = {
-			0.9999018128802991,
-			0.9996143421328886, 
-			0.9991478706086724, 
-			0.9985122259438284
+			0.9999019760517075, 
+			0.9996156202699334, 
+			0.999152094789556, 
+			0.9985220320778355
 		};
-		final double EXPECTED_SSA = 0.5897721459363314;
+		final double EXPECTED_SSA = 0.7143034340592812;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -306,18 +319,20 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeCsp2Repair2BadSpare() throws IOException {
 		final double[] EXPECTED = {
-			0.9999503353883044,
-			0.9998026990915827, 
-			0.9995591618462207, 
-			0.9992218375543195
+			0.9999018132903527, 
+			0.9996143485896306, 
+			0.999147902777298, 
+			0.9985123259997293
 		};
-		final double EXPECTED_SSA = 0.7613760616641098;
+		final double EXPECTED_SSA = 0.6470911146192913;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadSpare.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		final int NUM_STATES = 5;
 		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
 		

@@ -18,7 +18,6 @@ package de.dlr.sc.virsat.fdir.core.markov;
 public class MarkovAutomatonBuildStatistics {
 	// CHECKSTYLE:OFF
 	public long time;
-	public int countGeneratedStates;
 	public int maxStates;
 	public int maxTransitions;
 	// CHECKSTYLE:ON
@@ -28,7 +27,6 @@ public class MarkovAutomatonBuildStatistics {
 		StringBuilder sb = new StringBuilder();
 		sb.append("State space generation Statistics: \n");
 		sb.append("\t* Generation Time  :\t\t"	 		+ time + "\n");
-		sb.append("\t* #Generated States:\t\t" 			+ countGeneratedStates + "\n");
 		sb.append("\t* Max States       :\t\t" 			+ maxStates + "\n");
 		sb.append("\t* Max Transitions  :\t\t" 			+ maxTransitions + "\n");
 		return sb.toString();
@@ -40,7 +38,6 @@ public class MarkovAutomatonBuildStatistics {
 	 */
 	public void compose(MarkovAutomatonBuildStatistics other) {
 		time += other.time;
-		countGeneratedStates += other.countGeneratedStates;
 		maxStates = Math.max(maxStates, other.maxStates);
 		maxTransitions = Math.max(maxTransitions, other.maxTransitions);
 	}

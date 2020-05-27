@@ -143,30 +143,58 @@ public class SymmetryReduction {
 	 * @param predecessor the predecessor state
 	 * @param basicEvent the basic event that has failed
 	 */
-	public void createSymmetryRequirements(DFTState state, DFTState predecessor, BasicEvent basicEvent) {
-		state.getMapParentToSymmetryRequirements().putAll(predecessor.getMapParentToSymmetryRequirements());
-
-		FaultTreeHolder ftHolder = state.getFTHolder();
+	public void createSymmetryRequirements(DFTState state, DFTState predecessor, BasicEvent basicEvent, List<FaultTreeNode> changedNodes) {
+		for (Entry<FaultTreeNode, Set<FaultTreeNode>> entry : predecessor.getMapParentToSymmetryRequirements().entrySet()) {
+			state.getMapParentToSymmetryRequirements().put(entry.getKey(), new HashSet<>(entry.getValue()));
+		}
+		
 		Set<FaultTreeNode> checkedNodes = new HashSet<>();
 		Queue<FaultTreeNode> queue = new LinkedList<>();
-		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
-		queue.add(basicEvent);
-		checkedNodes.add(basicEvent);
+		Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(basicEvent);
+		queue.addAll(changedNodes);
+		checkedNodes.addAll(changedNodes);
 		
 		while (!queue.isEmpty()) {
 			FaultTreeNode node = queue.poll();
-			List<FaultTreeNode> biggerNodes = biggerRelation.getOrDefault(node, Collections.emptyList());
-			if (!biggerNodes.isEmpty()) {
-				List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
-				for (FaultTreeNode parent : parents) {
-					boolean continueToParent = updateSymmetryRequirements(state, parent, biggerNodes, allParents);
-					
-					if (continueToParent && checkedNodes.add(parent)) {
-						queue.add(parent);
-					}
+			List<FaultTreeNode> nextNodes = updateSymmetryRequirements(state, allParents, node);
+			
+			for (FaultTreeNode nextNode : nextNodes) {
+				if (checkedNodes.add(nextNode)) {
+					queue.add(nextNode);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Updates the symmetry requirements for a single node in a state
+	 * @param state the current state
+	 * @param allParents all parents of the node
+	 * @param node the node
+	 * @return a new list of nodes that should have their symmetry requirements updated
+	 */
+	private List<FaultTreeNode> updateSymmetryRequirements(DFTState state, Set<FaultTreeNode> allParents, FaultTreeNode node) {
+		List<FaultTreeNode> nextNodes = new ArrayList<>();
+		List<FaultTreeNode> biggerNodes = biggerRelation.getOrDefault(node, Collections.emptyList());
+		
+		if (state.getMapSpareToClaimedSpares().values().contains(node)) {
+			for (FaultTreeNode biggerNode : biggerNodes) {
+				Set<FaultTreeNode> symmetryRequirements = state.getMapParentToSymmetryRequirements().computeIfAbsent(biggerNode, key -> new HashSet<>());
+				symmetryRequirements.add(node);
+			}
+		}
+		
+		if (!biggerNodes.isEmpty()) {
+			List<FaultTreeNode> parents = state.getFTHolder().getNodes(node, EdgeType.PARENT);
+			for (FaultTreeNode parent : parents) {
+				boolean continueToParent = updateSymmetryRequirements(state, parent, biggerNodes, allParents);
+				
+				if (continueToParent) {
+					nextNodes.add(parent);
+				}
+			}
+		}
+		return nextNodes;
 	}
 	
 	/**
@@ -214,7 +242,7 @@ public class SymmetryReduction {
 		for (FaultTreeNode parent : allParents) {
 			Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.getOrDefault(parent, Collections.emptySet());
 			for (FaultTreeNode symmetryRequirement : symmetryRequirements) {
-				if (!state.hasFaultTreeNodeFailed(symmetryRequirement)) {
+				if (!state.hasFaultTreeNodeFailed(symmetryRequirement) || state.getMapSpareToClaimedSpares().values().contains(symmetryRequirement)) {
 					return false;
 				}
 			}

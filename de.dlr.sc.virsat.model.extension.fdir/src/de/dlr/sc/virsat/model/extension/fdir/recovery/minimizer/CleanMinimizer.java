@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -28,15 +27,12 @@ public class CleanMinimizer extends ARecoveryAutomatonMinimizer {
 	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder) {
 		RecoveryAutomaton ra = raHolder.getRa();
-
-		Map<State, List<Transition>> mapStateToOutgoingTransitions = raHolder.getMapStateToOutgoingTransitions();
-		Map<State, List<Transition>> mapStateToIncomingTransitions = raHolder.getMapStateToIncomingTransitions();
 		
 		List<Transition> transitionsToRemove = new ArrayList<>();
 		
 		for (State state : ra.getStates()) {
-			List<Transition> outgoingTransitions = mapStateToOutgoingTransitions.get(state);
-			List<Transition> incomingTransitions = mapStateToIncomingTransitions.get(state);
+			List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
+			List<Transition> incomingTransitions = raHolder.getStateHolder(state).getIncomingTransitions();
 			List<Transition> localTransitionsToRemove = new ArrayList<>();
 			
 			for (int i = 0; i < outgoingTransitions.size(); i++) {

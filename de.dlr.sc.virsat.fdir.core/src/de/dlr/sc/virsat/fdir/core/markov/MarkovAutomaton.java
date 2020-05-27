@@ -105,9 +105,9 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @param state the state
 	 * @return a map from event label to transition set
 	 */
-	public Map<Object, Set<MarkovTransition<S>>> getGroupedSuccTransitions(Object state) {
+	public Map<Object, List<MarkovTransition<S>>> getGroupedSuccTransitions(Object state) {
 		List<MarkovTransition<S>> succTransitions = getSuccTransitions(state);
-		return succTransitions.stream().collect(Collectors.groupingBy(MarkovTransition::getEvent, Collectors.toSet()));
+		return succTransitions.stream().collect(Collectors.groupingBy(MarkovTransition::getEvent, Collectors.toList()));
 	}
 	
 	/**

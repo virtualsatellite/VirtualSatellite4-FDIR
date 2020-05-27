@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.AStateSpaceGenerator;
@@ -25,6 +26,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryRedu
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
@@ -88,7 +90,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
 			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
-			List<DFTState> newSuccsStateUpdate = handleStateUpdate(state, stateUpdate, stateUpdateResult);
+			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
 		
@@ -142,40 +144,20 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 
 	/**
 	 * Handles the result of a state update and inserts the successors into the markov automaton
-	 * @param state the current state
 	 * @param stateUpdate the state update
 	 * @param stateUpdateResult the result of the state update
 	 * @return all newly generated successor states
 	 */
-	private List<DFTState> handleStateUpdate(DFTState state, StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
-		IDFTEvent event = stateUpdate.getEvent();
-		DFTState baseSucc = stateUpdateResult.getBaseSucc();
-		List<DFTState> succs = stateUpdateResult.getSuccs();
-		
+	private List<DFTState> handleStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
 		DFTState markovSucc = null;
-		if (recoveryStrategy != null) {
-			// If we have a recovery strategy, resolve the update such that we only have one deterministic successor
-			// for this we extract the input from the previous update and then repeat the update with the
-			// determined recovery actions
-			
-			Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdate, stateUpdateResult);
-			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents);
-			
-			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
-				baseSucc = stateUpdateResult.reset(state);
-				event.execute(baseSucc);
-				recoveryStrategy.execute(baseSucc);
-				
-				semantics.propgateStateUpdate(stateUpdate, stateUpdateResult);
-			} else {
-				baseSucc.setRecoveryStrategy(recoveryStrategy);
-			}
-		} else if (succs.size() > 1) { 
+		if (recoveryStrategy != null) {			
+			synchronizeWithRecoveryStrategy(stateUpdateResult);
+		} else if (stateUpdateResult.getSuccs().size() > 1) { 
 			// If we do not have a recovery strategy and either multiple successors
 			// or an obsertvation event for which we generally must provide the ability
 			// to react, then we need an intermediate non-deterministic state
 			
-			DFTState interimState = baseSucc.copy();
+			DFTState interimState = stateUpdateResult.getBaseSucc().copy();
 			interimState.setMarkovian(false);
 			
 			markovSucc = stateEquivalence.getEquivalentState(interimState);
@@ -186,24 +168,54 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 				// then we know that we do not need to handle the generated successors anymore
 				// because have already done so in the past
 				
-				succs.clear();
+				stateUpdateResult.getSuccs().clear();
 			}
-			targetMa.addMarkovianTransition(event, state, markovSucc, stateUpdate.getRate());
+			targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), markovSucc, stateUpdate.getRate());
 		}
 		
-		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdate, stateUpdateResult, markovSucc);
+		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdateResult, markovSucc);
 		return newSuccs;
+	}
+
+	/**
+	 * If we have a recovery strategy, resolve the update such that we only have one deterministic successor
+	 * for this we extract the input from the previous update and then repeat the update with the
+	 * determined recovery actions
+	 * @param stateUpdate the state update
+	 * @param stateUpdateResult the state update result
+	 */
+	private void synchronizeWithRecoveryStrategy(StateUpdateResult stateUpdateResult) {
+		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
+		DFTState state = stateUpdate.getState();
+		IDFTEvent event = stateUpdate.getEvent();
+		DFTState baseSucc = stateUpdateResult.getBaseSucc();
+		
+		boolean isRepair = stateUpdate.getEvent() instanceof IRepairableEvent 
+				? ((IRepairableEvent) stateUpdate.getEvent()).getIsRepair() : false;
+		Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdateResult);
+		RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents, isRepair);
+		
+		if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
+			DFTState newBaseSucc = stateUpdateResult.init(state);
+			event.execute(newBaseSucc);
+			List<FaultTreeNode> affectedNodes = recoveryStrategy.execute(newBaseSucc);
+			
+			Queue<FaultTreeNode> worklist = semantics.createWorklist(event, newBaseSucc);
+			worklist.addAll(affectedNodes);
+			semantics.propagateStateUpdate(stateUpdateResult, worklist);
+		} else {
+			baseSucc.setRecoveryStrategy(recoveryStrategy);
+		}
 	}
 	
 	/**
 	 * Handles the actual insertion of a generated successor into the markov automaton
-	 * @param succ the generated successor state
-	 * @param state the current state
+	 * @param stateUpdateResult the results of a state update
 	 * @param markovSucc the markovian intermediate state if available
-	 * @param stateUpdate the update from generating the state
 	 * @return the generated states that are really new
 	 */
-	private List<DFTState> handleGeneratedSuccs(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, DFTState markovSucc) {
+	private List<DFTState> handleGeneratedSuccs(StateUpdateResult stateUpdateResult, DFTState markovSucc) {
+		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		List<DFTState> newSuccs = new ArrayList<>();
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
@@ -220,7 +232,8 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 				SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
 				if (symmetryReduction != null) {
 					if (stateUpdate.getEvent() instanceof FaultEvent) {
-						symmetryReduction.createSymmetryRequirements(succ, stateUpdate.getState(), (BasicEvent) stateUpdate.getEvent().getNode());
+						symmetryReduction.createSymmetryRequirements(succ, stateUpdate.getState(), 
+								(BasicEvent) stateUpdate.getEvent().getNode(), stateUpdateResult.getChangedNodes());
 					}
 				}
 				

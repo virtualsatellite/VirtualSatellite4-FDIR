@@ -51,8 +51,8 @@ public class ModuleTest extends ATestCase {
 	}
 
 	@Test
-	public void testCopyFaultTreeCMSimple() throws IOException {
-		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple.dft");
+	public void testCopyFaultTreeCMSimple2() throws IOException {
+		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple2.dft");
 		Set<Module> modules = modularizer.getModules(rootCMSimple.getFaultTree());
 		Module module = modules.stream().filter(m -> m.isNondeterministic()).findAny().get();
 		module.constructFaultTreeCopy();

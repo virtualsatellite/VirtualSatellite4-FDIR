@@ -173,7 +173,7 @@ public class GalileoDFT2DFTTest extends ATestCase {
 		final double EXPECTED_REPAIR_RATE_1 = 1;
 		assertEquals("Repair rate is correct", EXPECTED_REPAIR_RATE_1, faults.get(1).getBasicEvents().get(0).getRepairRate(), TEST_EPSILON);
 		
-		final double EXPECTED_REPAIR_RATE_2 = 0.5;
+		final double EXPECTED_REPAIR_RATE_2 = 1;
 		assertEquals("Repair rate is correct", EXPECTED_REPAIR_RATE_2, faults.get(2).getBasicEvents().get(0).getRepairRate(), TEST_EPSILON);
 	}
 

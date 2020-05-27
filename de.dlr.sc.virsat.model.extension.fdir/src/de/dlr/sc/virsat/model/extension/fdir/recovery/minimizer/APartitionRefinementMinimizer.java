@@ -74,7 +74,7 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 		List<List<State>> outdatedBlocks = new ArrayList<>();
 		for (List<State> refinedBlock : refinedBlocks) {
 			for (State state : refinedBlock) {
-				List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(state);
+				List<Transition> incomingTransitions = raHolder.getStateHolder(state).getIncomingTransitions();
 				for (Transition transition : incomingTransitions) {
 					List<State> fromBlock = mapStateToBlock.get(transition.getFrom());
 					outdatedBlocks.add(fromBlock);

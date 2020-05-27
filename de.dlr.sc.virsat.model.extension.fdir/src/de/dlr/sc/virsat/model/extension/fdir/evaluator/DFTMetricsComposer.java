@@ -193,7 +193,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	@Override
 	public void visit(Detectability detectabilityMetrc) {
 		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED));
+		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
 		detectabilityMetrc.derive(resultUnobservedFailure.getAvailability(), resultObservedFailure.getAvailability(), composedResult.getDetectabiity());
 	}
 
@@ -201,7 +201,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	@Override
 	public void visit(MeanTimeToDetection meanTimeToDetectionMetric) {
 		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED));
+		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
 		double derivedMTTD = meanTimeToDetectionMetric.derive(resultUnobservedFailure.getMeanTimeToFailure(), resultObservedFailure.getMeanTimeToFailure());
 		composedResult.setMeanTimeToDetection(derivedMTTD);
 	}
@@ -210,7 +210,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	@Override
 	public void visit(SteadyStateDetectability steadyStateDetectability) {
 		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED));
+		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
 		double derivedSteadyStateDetectability = steadyStateDetectability.derive(resultUnobservedFailure.getSteadyStateAvailability(), resultObservedFailure.getSteadyStateAvailability());
 		composedResult.setSteadyStateDetectability(derivedSteadyStateDetectability);
 	}

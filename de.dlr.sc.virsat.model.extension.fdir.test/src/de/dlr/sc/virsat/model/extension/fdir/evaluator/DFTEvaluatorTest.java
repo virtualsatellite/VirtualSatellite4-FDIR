@@ -316,7 +316,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateAnd2OrAnd2OrAnd2Symmetric() throws IOException {
-		final double EXPECTEDMTTF = 0.822011322;
+		final double EXPECTEDMTTF = 0.8081154139977669;
 		final int EXPECTEDSTATES = 20;
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2OrAnd2Symmetric.dft");
 		
@@ -883,7 +883,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCMSimple() throws IOException {
+	public void testEvaluateCMSimple2() throws IOException {
 		final double[] EXPECTED = {
 			0.0060088,
 			0.0122455,
@@ -891,7 +891,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			0.0273548
 		};
 		final double EXPECTEDMTTF = 0.25627188;
-		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
+		Fault fault = createDFT("/resources/galileo/cm_simple2.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
@@ -1062,6 +1062,30 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 		assertEquals("Steady State Availability has correct value", EXPECTEDSTEADYSTATE, result.getSteadyStateAvailability(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testEvaluateRDEP1Repair1() throws IOException {
+		final double[] EXPECTED = {
+			0.019992864754477674, 
+			0.03994444707457824, 
+			0.05981748932252653, 
+			0.07957877842850414
+		};
+		
+		final int EXPECTEDSTATES = 4;
+		final int EXPECTEDTRANSITIONS = 4;
+		final double EXPECTEDMTTF = 0.40909077208719136;
+		
+		Fault fault = createDFT("/resources/galileoRepair/rdep1Repair1.dft");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
+		
 	}
 	
 	@Test

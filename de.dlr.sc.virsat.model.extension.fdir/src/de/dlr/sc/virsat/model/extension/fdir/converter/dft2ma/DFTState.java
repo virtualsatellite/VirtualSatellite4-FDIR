@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -82,7 +83,10 @@ public class DFTState extends MarkovState {
 		orderedBes = new ArrayList<>(other.orderedBes);
 		unorderedBes = new HashSet<>(other.unorderedBes);
 		activeFaults = new HashSet<>(other.activeFaults);
-		mapNodeToAffectors = new HashMap<>(other.mapNodeToAffectors);
+		mapNodeToAffectors = new HashMap<>();
+		for (Entry<FaultTreeNode, Set<FaultTreeNode>> entry : other.mapNodeToAffectors.entrySet()) {
+			mapNodeToAffectors.put(entry.getKey(), new HashSet<>(entry.getValue()));
+		}
 		mapSpareToClaimedSpares = new HashMap<>(other.mapSpareToClaimedSpares);
 		failedNodes = (BitSet) other.failedNodes.clone();
 		permanentNodes = (BitSet) other.permanentNodes.clone();
@@ -333,6 +337,17 @@ public class DFTState extends MarkovState {
 	}
 	
 	/**
+	 * Sets the node activation for all elements in the passed list of nodes
+	 * @param nodes the list of nodes
+	 * @param activation the activation state that should be set
+	 */
+	public void setNodeActivations(List<FaultTreeNode> nodes, boolean activation) {
+		for (FaultTreeNode node : nodes) {
+			setNodeActivation(node, activation);
+		}
+	}
+	
+	/**
 	 * Makes a DFT state uniform by failing all basic events and nodes about we
 	 * dont care what exact state we have
 	 * @param changedNodes the nodes that have changed in this dft state
@@ -550,5 +565,44 @@ public class DFTState extends MarkovState {
 
 	public DFTState copy() {
 		return new DFTState(this);
+	}
+	
+	/**
+	 * Gets a currently working and claimed spare or primary for a spare gate
+	 * @param spareGate the spare gate
+	 * @return a working unit or null if there is none
+	 */
+	public FaultTreeNode getWorkingUnit(FaultTreeNode spareGate) {
+		List<FaultTreeNode> spares = getFTHolder().getNodes(spareGate, EdgeType.SPARE);
+		
+		boolean hasClaim = false;
+		for (FaultTreeNode spare : spares) {
+			FaultTreeNode spareGateOther = getMapSpareToClaimedSpares().get(spare);
+			if (spareGate.equals(spareGateOther)) {
+				hasClaim = true;
+				if (!hasFaultTreeNodeFailed(spare)) {
+					return spare;
+				}
+			}
+		}
+		
+		if (hasClaim) {
+			return null;
+		}
+		
+		boolean anyPrimaryFailed = false;
+		List<FaultTreeNode> primaries = getFTHolder().getNodes(spareGate, EdgeType.CHILD);
+		for (FaultTreeNode primary : primaries) {
+			if (hasFaultTreeNodeFailed(primary)) {
+				anyPrimaryFailed = true;
+				break;
+			}
+		}
+		
+		if (!anyPrimaryFailed && !primaries.isEmpty()) {
+			return primaries.get(0);
+		}
+		
+		return null;
 	}
 }

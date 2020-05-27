@@ -17,8 +17,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -69,8 +69,8 @@ public class Schedule2RAConverterTest extends ATestCase {
 		MarkovTransition<MarkovState> choice = ma.addNondeterministicTransition(Collections.singletonList(ca1), nondet, correct);
 		ma.addNondeterministicTransition(Collections.singletonList(ca2), nondet, wrong);
 		
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
-		schedule.put(nondet, Collections.singleton(choice));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
+		schedule.put(nondet, Collections.singletonList(choice));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
 		RecoveryAutomaton ra = converter.convert(schedule, initial);
@@ -132,9 +132,9 @@ public class Schedule2RAConverterTest extends ATestCase {
 		ma.addNondeterministicTransition(Collections.singletonList(ca2), nondet1, wrong);
 		ma.addNondeterministicTransition(Collections.singletonList(ca1), nondet2, wrong);
 		
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
-		schedule.put(nondet1, Collections.singleton(choice1));
-		schedule.put(nondet2, Collections.singleton(choice2));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
+		schedule.put(nondet1, Collections.singletonList(choice1));
+		schedule.put(nondet2, Collections.singletonList(choice2));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
 		RecoveryAutomaton ra = converter.convert(schedule, initial1);
@@ -202,13 +202,13 @@ public class Schedule2RAConverterTest extends ATestCase {
 		
 		final double RATE_EXTERNAL = 1;
 		final double RATE_INTERNAL = 0.5;
-		ma.addMarkovianTransition(new SimpleEntry<>(Collections.EMPTY_SET, false), initial1, initial2, RATE_INTERNAL);
+		ma.addMarkovianTransition(new SimpleEntry<>(Collections.emptySet(), false), initial1, initial2, RATE_INTERNAL);
 		ma.addMarkovianTransition(new SimpleEntry<>(Collections.singleton(fault), false), initial2, nondet, RATE_EXTERNAL);		
 		MarkovTransition<MarkovState> choice = ma.addNondeterministicTransition(Collections.singletonList(ca1), nondet, correct);
 		ma.addNondeterministicTransition(Collections.singletonList(ca2), nondet, wrong);
 		
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
-		schedule.put(nondet, Collections.singleton(choice));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
+		schedule.put(nondet, Collections.singletonList(choice));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
 		RecoveryAutomaton ra = converter.convert(schedule, initial1);

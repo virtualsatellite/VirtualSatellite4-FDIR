@@ -239,7 +239,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(root);
 		
 		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2maConverter.getMaBuilder().getInitialState(), subMonitor);
-		
 		statistics.maBuildStatistics.compose(dft2maConverter.getMaBuilder().getStatistics());
 		
 		return ra;

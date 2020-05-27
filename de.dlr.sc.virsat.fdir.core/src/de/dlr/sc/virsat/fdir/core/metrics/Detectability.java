@@ -40,7 +40,7 @@ public class Detectability extends AProbabilityCurve implements IDerivedMetric {
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
 		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(new Availability(time)));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED), Collections.singleton(new Availability(time)));
+		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.OBSERVED), Collections.singleton(new Availability(time)));
 		return mapFailLabelProviderToMetrics;
 	}
 

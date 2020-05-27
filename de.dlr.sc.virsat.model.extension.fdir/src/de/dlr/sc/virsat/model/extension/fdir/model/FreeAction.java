@@ -80,31 +80,16 @@ public  class FreeAction extends AFreeAction {
 		
 		List<FaultTreeNode> spares = state.getFTHolder().getNodes(claimingSpareGate, EdgeType.SPARE);
 		boolean hasClaim = false;
-		boolean hasWorkingUnit = false;
-		
 		for (FaultTreeNode spare : spares) {
-			FaultTreeNode claimingSpareGateOther = state.getMapSpareToClaimedSpares().get(spare);
-			if (claimingSpareGate != null && claimingSpareGate.equals(claimingSpareGateOther)) {
+			if (claimingSpareGate.equals(state.getMapSpareToClaimedSpares().get(spare))) {
 				hasClaim = true;
-				
-				if (!state.hasFaultTreeNodeFailed(spare)) {
-					hasWorkingUnit = true;
-				}
+				break;
 			}
 		}
 		
 		if (!hasClaim) {
-			for (FaultTreeNode primary : state.getFTHolder().getNodes(claimingSpareGate, EdgeType.CHILD)) {
-				state.setNodeActivation(primary, true);
-			
-				if (!state.hasFaultTreeNodeFailed(primary)) {
-					hasWorkingUnit = true;
-				}
-			}
-		}
-		
-		if (claimingSpareGate != null) {
-			state.setFaultTreeNodeFailed(claimingSpareGate, !hasWorkingUnit);
+			List<FaultTreeNode> primaries = state.getFTHolder().getNodes(claimingSpareGate, EdgeType.CHILD);
+			state.setNodeActivations(primaries, true);
 		}
 	}
 	

@@ -41,19 +41,19 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private Map<S, Double> results;
 	
 	@Override
-	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
+	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
 		results = computeValues(ma, initialMa);
 		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(initialMa);
 		Set<S> handledNonDetStates = new HashSet<>();
 		
-		Map<S, Set<MarkovTransition<S>>> schedule = new HashMap<>();
+		Map<S, List<MarkovTransition<S>>> schedule = new HashMap<>();
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
 			
 			if (!state.isMarkovian()) {
-				Set<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, state);
+				List<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, state);
 				
 				if (bestTransitionGroup != null) {
 					schedule.put(state, bestTransitionGroup);
@@ -136,7 +136,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
 		Map<S, Double> resultMap = new LinkedHashMap<S, Double>();
 		
-		for (int i = ma.getStates().size() - 1; i >= 0; --i) {	
+		for (int i = 0; i < ma.getStates().size(); ++i) {	
 			S state = ma.getStates().get(i);
 			double value = values[i];		
 			if (Double.isNaN(value)) {
@@ -165,14 +165,14 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @param state the state
 	 * @return the optimal transition group of successor states
 	 */
-	private Set<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, S state) {
-		Set<MarkovTransition<S>> bestTransitionGroup = null;
+	private List<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, S state) {
+		List<MarkovTransition<S>> bestTransitionGroup = null;
 		double bestValue = Double.NEGATIVE_INFINITY;
 		double bestTransitionProbFail = 1;
 		
-		Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
+		Map<Object, List<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 		
-		for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
+		for (List<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
 			double expectationValue = 0;
 			double transitionGroupProbFail = 0;
 			
@@ -188,7 +188,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			
 			if ((transitionGroupProbFail < bestTransitionProbFail)
 					|| (expectationValue + EPS >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
-				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue;
+				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue + EPS;
 				
 				if (!isNewBestTransition) {
 					isNewBestTransition = checkMinimality(transitionGroup, bestTransitionGroup);
@@ -214,7 +214,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @param bestTransitionGroup the currently best transition group
 	 * @return true if the transition group is smaller
 	 */
-	private boolean checkMinimality(Set<MarkovTransition<S>> transitionGroup, Set<MarkovTransition<S>> bestTransitionGroup) {
+	private boolean checkMinimality(List<MarkovTransition<S>> transitionGroup, List<MarkovTransition<S>> bestTransitionGroup) {
 		// Prefer to keep the fewer actions over any other actions in case of the same value
 		Object event1 = transitionGroup.iterator().next().getEvent();
 		Object event2 = bestTransitionGroup.iterator().next().getEvent();

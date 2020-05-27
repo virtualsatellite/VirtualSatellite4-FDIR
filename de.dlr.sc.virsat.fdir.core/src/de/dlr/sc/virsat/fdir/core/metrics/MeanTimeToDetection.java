@@ -39,7 +39,7 @@ public class MeanTimeToDetection implements IDerivedMetric {
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
 		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(MTTF.MTTF));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED), Collections.singleton(MTTF.MTTF));
+		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.OBSERVED), Collections.singleton(MTTF.MTTF));
 		return mapFailLabelProviderToMetrics;
 	}
 	

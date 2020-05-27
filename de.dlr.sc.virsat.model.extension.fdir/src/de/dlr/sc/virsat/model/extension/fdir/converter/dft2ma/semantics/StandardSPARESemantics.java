@@ -50,10 +50,10 @@ public class StandardSPARESemantics implements INodeSemantics {
 					currentClaimWorks = true;
 					
 					if (!isSingleClaim()) {
-						performFree(spareGate, spare, state, generationResult);
+						performFree(spare, state, generationResult);
 					}
 				} else {
-					performFree(spareGate, spare, state, generationResult);
+					performFree(spare, state, generationResult);
 				}
 			}
 		}
@@ -67,11 +67,9 @@ public class StandardSPARESemantics implements INodeSemantics {
 		
 		if (canClaim) {
 			for (FaultTreeNode spare : spares) {
-				if (!state.hasFaultTreeNodeFailed(spare)) {
-					if (performClaim(spareGate, spare, state, generationResult)) {
-						foundSpare = true;
-						break;
-					}
+				if (performClaim(spareGate, spare, state, generationResult)) {
+					foundSpare = true;
+					break;
 				}
 			}
 		}
@@ -155,6 +153,11 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state, 
 			GenerationResult generationResult) {
+		
+		if (state.hasFaultTreeNodeFailed(spare)) {
+			return false;
+		}
+		
 		if (state.getMapSpareToClaimedSpares().containsKey(spare)) {
 			return false;
 		}
@@ -171,7 +174,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @param generationResult accumulator for state space generation results
 	 * @return constant true
 	 */
-	protected void performFree(SPARE node, FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
 		FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
 		state.getMapSpareToClaimedSpares().remove(spare);
 		state.setNodeActivation(spare, false);

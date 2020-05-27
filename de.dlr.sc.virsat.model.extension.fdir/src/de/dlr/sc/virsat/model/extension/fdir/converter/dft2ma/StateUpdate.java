@@ -71,11 +71,7 @@ public class StateUpdate {
 		 * @param state the base state
 		 */
 		StateUpdateResult() {
-			baseSucc = state.copy();
-			baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
-			
-			succs.add(baseSucc);
-			mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());
+			init(state);
 		}
 		
 		public Map<DFTState, List<RecoveryAction>> getMapStateToRecoveryActions() {
@@ -95,16 +91,28 @@ public class StateUpdate {
 		}
 
 		/**
-		 * Resets the result and creates a new clean base successor
+		 * Initializes the result and creates a new clean base successor
 		 * @param baseSucc the new base successor
 		 */
-		public DFTState reset(DFTState state) {
-			this.baseSucc = state.copy();
+		public DFTState init(DFTState state) {
+			baseSucc = state.copy();
+			baseSucc.setRecoveryStrategy(state.getRecoveryStrategy());
+			
 			succs.clear();
 			succs.add(baseSucc);
+			mapStateToRecoveryActions.put(baseSucc, Collections.emptyList());
+			
 			changedNodes.clear();
 			
 			return baseSucc;
+		}
+		
+		/**
+		 * Gets the state update that created this state update result
+		 * @return the state update that generated this update result
+		 */
+		public StateUpdate getStateUpdate() {
+			return StateUpdate.this;
 		}
 	}
 }
