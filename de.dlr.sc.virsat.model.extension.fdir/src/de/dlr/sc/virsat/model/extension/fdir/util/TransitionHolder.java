@@ -21,14 +21,11 @@ import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
-public class TransitionHolder {
+public class TransitionHolder {	
 	private RecoveryAutomatonHolder raHolder;
 	private Transition transition;
-	private Set<FaultTreeNode> guards;
-	private String actionLabel;
-	private List<RecoveryAction> recoveryActions;
-	private State to;
-	private State from;
+	private Edge edge;
+	private Label label;
 	
 	/**
 	 * Standard constructor
@@ -38,21 +35,13 @@ public class TransitionHolder {
 	public TransitionHolder(RecoveryAutomatonHolder raHolder, Transition transition) {
 		this.raHolder = raHolder;
 		this.transition = transition;
-		this.to = transition.getTo();
-		this.from = transition.getFrom();
-		this.actionLabel = transition.getActionLabels();
-		
-		this.recoveryActions = new ArrayList<>();
-		for (RecoveryAction recoveryAction : transition.getRecoveryActions()) {
-			this.recoveryActions.add(recoveryAction);
-		}
+		this.edge = new Edge();
+		this.label = new Label();
 		
 		if (transition instanceof TimeoutTransition) {
 			TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
 			StateHolder fromStateHolder = raHolder.getMapStateToStateHolder().get(timeoutTransition.getFrom());
 			fromStateHolder.setTimeoutTransition(timeoutTransition);
-		} else if (transition instanceof FaultEventTransition) {
-			this.guards = new HashSet<>(((FaultEventTransition) transition).getGuards());
 		}
 	}
 
@@ -61,19 +50,23 @@ public class TransitionHolder {
 	}
 	
 	public Set<FaultTreeNode> getGuards() {
-		return guards;
+		return label.guards;
 	}
 	
 	public List<RecoveryAction> getRecoveryActions() {
-		return recoveryActions;
+		return label.recoveryActions;
 	}
 	
 	public State getTo() {
-		return to;
+		return edge.to;
 	}
 	
 	public State getFrom() {
-		return from;
+		return edge.from;
+	}
+	
+	public String getActionLabel() {
+		return label.actionLabel;
 	}
 	
 	/**
@@ -82,7 +75,7 @@ public class TransitionHolder {
 	 * @param state the new from state
 	 */
 	public void setFrom(State state) {
-		StateHolder stateHolder = raHolder.getStateHolder(from);
+		StateHolder stateHolder = raHolder.getStateHolder(edge.from);
 		stateHolder.getOutgoingTransitions().remove(transition);
 		
 		if (transition instanceof TimeoutTransition) {
@@ -96,7 +89,7 @@ public class TransitionHolder {
 			stateHolder.setTimeoutTransition((TimeoutTransition) transition);
 		}
 		
-		this.from = state;
+		edge.from = state;
 		transition.setFrom(state);
 	}
 	
@@ -106,17 +99,48 @@ public class TransitionHolder {
 	 * @param state the new to state
 	 */
 	public void setTo(State state) {
-		StateHolder stateHolder = raHolder.getStateHolder(to);
+		StateHolder stateHolder = raHolder.getStateHolder(edge.to);
 		stateHolder.getIncomingTransitions().remove(transition);
 		
 		stateHolder = raHolder.getStateHolder(state);
 		stateHolder.getIncomingTransitions().add(transition);
 		
-		this.to = state;
+		edge.to = state;
 		transition.setTo(state);
 	}
 	
-	public String getActionLabel() {
-		return actionLabel;
+	private class Edge {
+		private State to;
+		private State from;
+		
+		/**
+		 * Standard constructor.
+		 */
+		Edge() {
+			this.to = transition.getTo();
+			this.from = transition.getFrom();
+		}
+	}
+	
+	private class Label {
+		private Set<FaultTreeNode> guards;
+		private String actionLabel;
+		private List<RecoveryAction> recoveryActions;
+		
+		/**
+		 * Standard constructor.
+		 */
+		Label() {
+			this.actionLabel = transition.getActionLabels();
+			
+			this.recoveryActions = new ArrayList<>();
+			for (RecoveryAction recoveryAction : transition.getRecoveryActions()) {
+				this.recoveryActions.add(recoveryAction);
+			}
+			
+			if (transition instanceof FaultEventTransition) {
+				this.guards = new HashSet<>(((FaultEventTransition) transition).getGuards());
+			}
+		}
 	}
 }
