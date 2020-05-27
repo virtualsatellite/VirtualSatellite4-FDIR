@@ -78,15 +78,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public void propgateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
 		IDFTEvent event = stateUpdate.getEvent();
-		
-		if (event.getNode() == null) {
-			// Only update if the event actually affected a node in the tree
-			// e.g. dont update when processing TimeEvents
-			return;
-		}
-		
 		DFTState pred = stateUpdate.getState();
 		
 		FaultTreeHolder ftHolder = pred.getFTHolder();
@@ -95,7 +88,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 
 		if (!anyObservation || hasRecoveryStrategy) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
-			super.propgateStateUpdate(stateUpdate, stateUpdateResult);
+			super.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
@@ -104,7 +97,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		if (anyObservation && !hasRecoveryStrategy) {
 			Set<FaultTreeNode> nondetGates = getNondeterministicGates(ftHolder);
 			
-			Queue<FaultTreeNode> worklist = new LinkedList<>(nondetGates);
+			worklist = new LinkedList<>(nondetGates);
 			stateUpdateResult.getChangedNodes().clear();
 			super.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
 			propagateObservations(stateUpdateResult);

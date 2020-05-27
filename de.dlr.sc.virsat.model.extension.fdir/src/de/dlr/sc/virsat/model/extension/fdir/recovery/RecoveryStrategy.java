@@ -80,11 +80,15 @@ public class RecoveryStrategy {
 	 * Executes the current strategy on a state
 	 * @param state the state to execute the strategy on
 	 */
-	public void execute(DFTState state) {
+	public List<FaultTreeNode> execute(DFTState state) {
+		List<FaultTreeNode> affectedNodes = new ArrayList<>();
 		state.setRecoveryStrategy(this);
 		for (RecoveryAction ra : getRecoveryActions()) {
 			ra.execute(state);
+			affectedNodes.addAll(ra.getAffectedNodes(state));
 		}
+		
+		return affectedNodes;
 	}
 
 	/**

@@ -119,7 +119,7 @@ public class DFTSemantics {
 	public StateUpdateResult performUpdate(StateUpdate stateUpdate) {
 		StateUpdateResult stateUpdateResult = stateUpdate.createResultContainer();
 		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc());
-		propgateStateUpdate(stateUpdate, stateUpdateResult);
+		propagateStateUpdate(stateUpdate, stateUpdateResult);
 		
 		return stateUpdateResult;
 	}
@@ -130,7 +130,7 @@ public class DFTSemantics {
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void propgateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
 		if (stateUpdate.getEvent().getNode() != null) {
 			Queue<FaultTreeNode> worklist = createWorklist(stateUpdate.getEvent(), stateUpdateResult.getBaseSucc());
 			propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
@@ -143,7 +143,7 @@ public class DFTSemantics {
 	 * @param baseSucc the base state
 	 * @return an initial worklist of nodes that need to be checked
 	 */
-	private Queue<FaultTreeNode> createWorklist(IDFTEvent event, DFTState baseSucc) {
+	public Queue<FaultTreeNode> createWorklist(IDFTEvent event, DFTState baseSucc) {
 		FaultTreeHolder ftHolder = baseSucc.getFTHolder();
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
 		if (event.getNode() instanceof BasicEvent) {
@@ -170,7 +170,7 @@ public class DFTSemantics {
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	protected void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+	public void propagateStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
 		List<FaultTreeNode> changedNodes = new ArrayList<>();
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();
 		

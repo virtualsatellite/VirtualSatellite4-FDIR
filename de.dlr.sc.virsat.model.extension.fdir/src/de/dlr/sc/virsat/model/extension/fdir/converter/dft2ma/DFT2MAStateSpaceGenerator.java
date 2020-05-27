@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.AStateSpaceGenerator;
@@ -165,11 +166,13 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents, isRepair);
 			
 			if (!recoveryStrategy.getRecoveryActions().isEmpty()) {
-				baseSucc = stateUpdateResult.reset(state);
+				baseSucc = stateUpdateResult.init(state);
 				event.execute(baseSucc);
-				recoveryStrategy.execute(baseSucc);
+				List<FaultTreeNode> affectedNodes = recoveryStrategy.execute(baseSucc);
 				
-				semantics.propgateStateUpdate(stateUpdate, stateUpdateResult);
+				Queue<FaultTreeNode> worklist = semantics.createWorklist(event, baseSucc);
+				worklist.addAll(affectedNodes);
+				semantics.propagateStateUpdate(stateUpdate, stateUpdateResult, worklist);
 			} else {
 				baseSucc.setRecoveryStrategy(recoveryStrategy);
 			}
