@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
@@ -30,7 +29,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
  */
 public class MarkovAutomatonValueIterator<S extends MarkovState> extends DecoratedIterator {
 	
-	private Map<S, Collection<Set<MarkovTransition<S>>>> mapNondetStateToTransitionGroups;
+	private Map<S, Collection<List<MarkovTransition<S>>>> mapNondetStateToTransitionGroups;
 	private List<S> nondeterministicStates;
 	
 	/**
@@ -46,7 +45,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 		
 		for (S state : ma.getStates()) {
 			if (!state.isMarkovian()) {
-				Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
+				Map<Object, List<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 				mapNondetStateToTransitionGroups.put(state, transitionGroups.values());
 				nondeterministicStates.add(state);
 			}
@@ -58,9 +57,9 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 		super.iterate();
 		for (S nondeterministicState : nondeterministicStates) {
 			double maxValue = Double.NEGATIVE_INFINITY;
-			Collection<Set<MarkovTransition<S>>> transitionGroups = mapNondetStateToTransitionGroups.get(nondeterministicState);
+			Collection<List<MarkovTransition<S>>> transitionGroups = mapNondetStateToTransitionGroups.get(nondeterministicState);
 			
-			for (Set<MarkovTransition<S>> transitionGroup : transitionGroups) {
+			for (List<MarkovTransition<S>> transitionGroup : transitionGroups) {
 				double expectationValue = getExpectationValue(transitionGroup);
 				maxValue = Math.max(expectationValue, maxValue);
 			}
@@ -74,7 +73,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	 * @param transitionGroup the transition group
 	 * @return the expectation value of the transition group
 	 */
-	private double getExpectationValue(Set<MarkovTransition<S>> transitionGroup) {
+	private double getExpectationValue(List<MarkovTransition<S>> transitionGroup) {
 		double expectationValue = 0;
 		for (MarkovTransition<S> transition : transitionGroup) {
 			double succValue = getValues()[transition.getTo().getIndex()];

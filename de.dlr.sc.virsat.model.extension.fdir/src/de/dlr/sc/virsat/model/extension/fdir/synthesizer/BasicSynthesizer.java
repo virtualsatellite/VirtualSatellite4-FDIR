@@ -9,8 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.SubMonitor;
 
@@ -33,7 +33,7 @@ public class BasicSynthesizer extends ASynthesizer {
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
 		IMarkovScheduler<DFTState> scheduler = new MarkovScheduler<>();
-		Map<DFTState, Set<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(ma, initialMa);
+		Map<DFTState, List<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(ma, initialMa);
 		return new Schedule2RAConverter<>(ma, concept).convert(schedule, initialMa);
 	}
 
