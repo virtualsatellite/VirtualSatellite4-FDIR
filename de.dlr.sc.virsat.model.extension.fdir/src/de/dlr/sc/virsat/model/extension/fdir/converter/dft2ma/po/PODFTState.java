@@ -9,12 +9,16 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
@@ -136,5 +140,46 @@ public class PODFTState extends DFTState {
 	@Override
 	public DFTState copy() {
 		return new PODFTState(this);
+	}
+	
+	/**
+	 * Extracts the set observation event containing the observed events and the information if this is a repair
+	 * event or not
+	 * @param succ 
+	 * @param succTransitions the successor transitions from a belief state to the successor belief state
+	 * @return the set of observation event
+	 */
+	public Entry<Set<Object>, Boolean> extractObservationEvent(PODFTState succ, List<MarkovTransition<DFTState>> succTransitions) {
+		Set<Object> observationSet = new HashSet<>();
+		
+		MarkovTransition<DFTState> representantTransition = succTransitions.iterator().next();
+		Object event = representantTransition.getEvent();
+		if (event instanceof ObservationEvent) {
+			ObservationEvent obsEvent = (ObservationEvent) event;
+			observationSet.add(obsEvent.getNode());
+			Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, obsEvent.getIsRepair());
+			return observationEvent;
+		}
+		
+		// obtain all newly observed failed nodes
+		Set<FaultTreeNode> succObservedFailedNodes = succ.getObservedFailedNodes();
+		Set<FaultTreeNode> currentObservedFailedNodes = getObservedFailedNodes();
+		observationSet.addAll(succObservedFailedNodes);
+		observationSet.removeAll(currentObservedFailedNodes);
+		
+		// obtain all newly observed repaired nodes in the event that no failures were observed
+		boolean isRepair = false;
+		if (observationSet.isEmpty()) {
+			for (FaultTreeNode node : getFTHolder().getNodes()) {
+				if (currentObservedFailedNodes.contains(node) && !succObservedFailedNodes.contains(node)) {
+					observationSet.add(node);
+				}
+			}
+			
+			isRepair = !observationSet.isEmpty();
+		}
+		
+		Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, isRepair);
+		return observationEvent;
 	}
 }

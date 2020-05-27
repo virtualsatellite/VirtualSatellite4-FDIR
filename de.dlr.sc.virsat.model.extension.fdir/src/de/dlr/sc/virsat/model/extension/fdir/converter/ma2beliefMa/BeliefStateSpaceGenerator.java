@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,9 +24,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState> {
 	
@@ -67,7 +64,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			List<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 			
 			if (beliefState.isMarkovian()) {
-				Entry<Set<Object>, Boolean> observationEvent = extractObservationEvent(beliefState, beliefSucc, succTransitions);
+				Entry<Set<Object>, Boolean> observationEvent = beliefState.representant.extractObservationEvent(beliefSucc.representant, succTransitions);
 				
 				double exitRate = beliefState.getTotalRate(entry.getValue());
 				fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
@@ -126,46 +123,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		}
 		
 		return mapRepresentantToTransitions;
-	}
-	
-	/**
-	 * Extracts the set observation event containing the observed events and the information if this is a repair
-	 * event or not
-	 * @param succTransitions the successor transitions from a belief state to the successor belief state
-	 * @return the set of observation event
-	 */
-	private Entry<Set<Object>, Boolean> extractObservationEvent(BeliefState beliefState, BeliefState beliefSucc, List<MarkovTransition<DFTState>> succTransitions) {
-		Set<Object> observationSet = new HashSet<>();
-		
-		MarkovTransition<DFTState> representantTransition = succTransitions.iterator().next();
-		Object event = representantTransition.getEvent();
-		if (event instanceof ObservationEvent) {
-			ObservationEvent obsEvent = (ObservationEvent) event;
-			observationSet.add(obsEvent.getNode());
-			Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, obsEvent.getIsRepair());
-			return observationEvent;
-		}
-		
-		// obtain all newly observed failed nodes
-		Set<FaultTreeNode> succObservedFailedNodes = beliefSucc.representant.getObservedFailedNodes();
-		Set<FaultTreeNode> currentObservedFailedNodes = beliefState.representant.getObservedFailedNodes();
-		observationSet.addAll(succObservedFailedNodes);
-		observationSet.removeAll(currentObservedFailedNodes);
-		
-		// obtain all newly observed repaired nodes in the event that no failures were observed
-		boolean isRepair = false;
-		if (observationSet.isEmpty()) {
-			for (FaultTreeNode node : beliefState.representant.getFTHolder().getNodes()) {
-				if (currentObservedFailedNodes.contains(node) && !succObservedFailedNodes.contains(node)) {
-					observationSet.add(node);
-				}
-			}
-			
-			isRepair = !observationSet.isEmpty();
-		}
-		
-		Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, isRepair);
-		return observationEvent;
 	}
 	
 	/**
