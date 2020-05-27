@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
@@ -17,7 +16,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
 
 // *****************************************************************
 // * Class Declaration
@@ -59,49 +57,20 @@ public abstract class Transition extends ATransition {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(); 
-		sb.append(" : ");
-		
-		if (getRecoveryActions().isEmpty()) {
-			sb.append("[]");
-		} else {
-			for (RecoveryAction ra : getRecoveryActions()) {
-				sb.append(ra.toString());
-				sb.append(" ");
-			}
-		}
-
-		
-		return sb.toString();
-	}
-	
-	/**
-	 * Checks whether transitions contais equivalent recovery actions
-	 * @param transition to check the recovery actions 
-	 * @return true if contains, false otherwise 
-	 */
-	public boolean hasEquivalentRecoveryActions(Transition transition) {
-		return new FaultTreeHelper().hasEquivalentRecoveryActions(getRecoveryActions(), transition.getRecoveryActions());
-	}
-	
-	/**
-	 * Checks whether transitions are equivalent 
-	 * @param transition to check the equivalence 
-	 * @return true if equivalent, false otherwise 
-	 */
-	public boolean isEquivalentTransition(Transition transition) {
-		return Objects.equals(getFrom(), transition.getFrom()) 
-				&& Objects.equals(getTo(), transition.getTo()) 
-				&& hasEquivalentRecoveryActions(transition);
-
+		String humanReadableActionLabel = getRecoveryActions().stream().map(RecoveryAction::toString).collect(Collectors.joining());
+		return getGuardLabel() + " : " + (humanReadableActionLabel.isEmpty() ? "[]" : humanReadableActionLabel);
 	}
 	
 	/**
 	 * Gets a string representation for the actions of this transition
 	 * @return a string representing the actions that should be performed upon executing this transition
 	 */
-	public String getActionLabels() {
+	public String getActionLabel() {
 		return getRecoveryActions().stream()
 				.map(RecoveryAction::getActionLabel).collect(Collectors.joining());
+	}
+	
+	public String getGuardLabel() {
+		return "";
 	}
 }

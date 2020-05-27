@@ -9,9 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
@@ -58,27 +55,9 @@ public  class FaultEventTransition extends AFaultEventTransition {
 		super(categoryAssignment);
 	}
 	
-	/**
-	 * Checks whether transitions have equivalent guards 
-	 * @param transition to which the guards with 
-	 * @return true if guards are equivalent, and false otherwise  
-	 */
-	public boolean hasEquivalentGuards(FaultEventTransition transition) {
-		Set<FaultTreeNode> guards = new HashSet<>(getGuards());
-		Set<FaultTreeNode> guardsOther = new HashSet<>(transition.getGuards());
-		
-		return guards.equals(guardsOther);
-	}
-	
+
 	@Override
-	public boolean isEquivalentTransition(Transition transition) {
-		return super.isEquivalentTransition(transition) 
-				&& transition instanceof FaultEventTransition
-				&& hasEquivalentGuards((FaultEventTransition) transition);
-	}
-	
-	@Override
-	public String toString() {
+	public String getGuardLabel() {
 		StringBuilder sb = new StringBuilder(); 
 		
 		String faultType = getIsRepair() ? "R" : "F";
@@ -91,7 +70,6 @@ public  class FaultEventTransition extends AFaultEventTransition {
 		}
 
 		sb.append("}");
-		sb.append(super.toString());
 		
 		return sb.toString();
 	}

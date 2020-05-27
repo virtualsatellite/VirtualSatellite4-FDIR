@@ -159,10 +159,9 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 	private void mergeBlocks(Set<List<State>> blocks) {
 		// Redirect all transitions between blocks so that they are between the block represenatatives
 		for (List<State> block : blocks) {
-			BlockTimeoutTransition blockTimeoutTransition = new BlockTimeoutTransition(block);
-			
 			State state = block.get(0);
-			List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
+			StateHolder stateHolder = raHolder.getStateHolder(state);
+			List<Transition> outgoingTransitions = stateHolder.getOutgoingTransitions();
 			for (Transition transition : outgoingTransitions) {
 				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
 				State stateTo = transitionHolder.getTo();
@@ -171,16 +170,14 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 					if (blockRepresentative != state || !transitionHolder.getActionLabel().isEmpty()) {
 						transitionHolder.setTo(blockRepresentative);
 					}
-					
-					if (transition instanceof TimeoutTransition) {
-						TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
-						timeoutTransition.setTime(blockTimeoutTransition.timeout);
-						
-						if (blockTimeoutTransition.toState != null) {
-							raHolder.getTransitionHolder(timeoutTransition).setTo(blockTimeoutTransition.toState);
-						}
-					}
 				}
+			}
+			
+			BlockTimeoutTransition blockTimeoutTransition = new BlockTimeoutTransition(block);
+			if (blockTimeoutTransition.toState != null) {
+				TimeoutTransition timeoutTransition = stateHolder.getTimeoutTransition();
+				timeoutTransition.setTime(blockTimeoutTransition.timeout);
+				raHolder.getTransitionHolder(timeoutTransition).setTo(blockTimeoutTransition.toState);
 			}
 			
 			if (block.contains(ra.getInitial())) {
@@ -215,12 +212,16 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		return mapGuardProfileToBlock.get(raHolder.getStateHolder(state).getGuardProfile());
 	}
 	
+	/**
+	 * The target of the timeout transitions and the total timeout time.
+	 *
+	 */
 	private class BlockTimeoutTransition {
 		State toState;
 		double timeout;
 		
 		/**
-		 * Get the target of the timout transitions and the total timeout time
+		 * Standard constructor
 		 * @param block the block to consider
 		 */
 		BlockTimeoutTransition(List<State> block) {

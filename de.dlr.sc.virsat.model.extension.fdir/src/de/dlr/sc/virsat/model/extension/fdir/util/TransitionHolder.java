@@ -69,6 +69,19 @@ public class TransitionHolder {
 		return label.actionLabel;
 	}
 	
+	public String getGuardLabel() {
+		return label.guardLabel;
+	}
+	
+	/**
+	 * Checks whether the transition held here is equivalent to the transition held by another holder
+	 * @param other the other transition holder
+	 * @return true iff they are equivalent
+	 */
+	public boolean isEquivalent(TransitionHolder other) {
+		return edge.isEquivalent(other.edge) && label.isEquivalent(other.label);
+	}
+	
 	/**
 	 * Sets the from state of the transition and updates all
 	 * data structures to reflect the change.
@@ -120,18 +133,24 @@ public class TransitionHolder {
 			this.to = transition.getTo();
 			this.from = transition.getFrom();
 		}
+		
+		public boolean isEquivalent(Edge other) {
+			return to.equals(other.to) && from.equals(other.from);
+		}
 	}
 	
 	private class Label {
 		private Set<FaultTreeNode> guards;
 		private String actionLabel;
+		private String guardLabel;
 		private List<RecoveryAction> recoveryActions;
 		
 		/**
 		 * Standard constructor.
 		 */
 		Label() {
-			this.actionLabel = transition.getActionLabels();
+			this.actionLabel = transition.getActionLabel();
+			this.guardLabel = transition.getGuardLabel();
 			
 			this.recoveryActions = new ArrayList<>();
 			for (RecoveryAction recoveryAction : transition.getRecoveryActions()) {
@@ -141,6 +160,10 @@ public class TransitionHolder {
 			if (transition instanceof FaultEventTransition) {
 				this.guards = new HashSet<>(((FaultEventTransition) transition).getGuards());
 			}
+		}
+		
+		public boolean isEquivalent(Label other) {
+			return guardLabel.equals(other.guardLabel) && actionLabel.equals(other.actionLabel);
 		}
 	}
 }

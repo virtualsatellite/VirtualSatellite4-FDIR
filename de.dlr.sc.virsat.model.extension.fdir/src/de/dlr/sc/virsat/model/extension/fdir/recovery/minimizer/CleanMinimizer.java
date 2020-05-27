@@ -16,6 +16,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
 /**
  * Clean the transitions by removing all epsilon loops and duplicate transitions
@@ -37,14 +38,16 @@ public class CleanMinimizer extends ARecoveryAutomatonMinimizer {
 			
 			for (int i = 0; i < outgoingTransitions.size(); i++) {
 				Transition transition1 = outgoingTransitions.get(i);
+				TransitionHolder transitionHolder1 = raHolder.getTransitionHolder(transition1);
 				
-				if (incomingTransitions.contains(transition1) && transition1.getRecoveryActions().isEmpty()) {
+				if (incomingTransitions.contains(transition1) && transitionHolder1.getRecoveryActions().isEmpty()) {
 					transitionsToRemove.add(transition1);
 					localTransitionsToRemove.add(transition1);
 				} else {
 					// Check for duplicate
 					for (int j = i + 1; j < outgoingTransitions.size(); j++) {
-						if (transition1.isEquivalentTransition(outgoingTransitions.get(j))) {
+						TransitionHolder transitionHolder2 = raHolder.getTransitionHolder(outgoingTransitions.get(j));
+						if (transitionHolder1.isEquivalent(transitionHolder2)) {
 							transitionsToRemove.add(transition1);
 							localTransitionsToRemove.add(transition1);
 						}
