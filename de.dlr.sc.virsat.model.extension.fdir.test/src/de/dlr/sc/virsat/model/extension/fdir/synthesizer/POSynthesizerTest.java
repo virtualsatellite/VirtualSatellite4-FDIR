@@ -235,11 +235,10 @@ public class POSynthesizerTest extends ATestCase {
 		final int EXPECTED_COUNT_TRANSITIONS = 10;
 		final double EXPECTED_MTTF = 0.9153439153439152;
 		
-		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
-		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 	}
 	
 	@Test

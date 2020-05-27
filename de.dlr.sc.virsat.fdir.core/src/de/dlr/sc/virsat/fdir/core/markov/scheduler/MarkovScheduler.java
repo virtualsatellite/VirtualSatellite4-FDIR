@@ -136,7 +136,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
 		Map<S, Double> resultMap = new LinkedHashMap<S, Double>();
 		
-		for (int i = ma.getStates().size() - 1; i >= 0; --i) {	
+		for (int i = 0; i < ma.getStates().size(); ++i) {	
 			S state = ma.getStates().get(i);
 			double value = values[i];		
 			if (Double.isNaN(value)) {
@@ -188,7 +188,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			
 			if ((transitionGroupProbFail < bestTransitionProbFail)
 					|| (expectationValue + EPS >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
-				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue;
+				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue + EPS;
 				
 				if (!isNewBestTransition) {
 					isNewBestTransition = checkMinimality(transitionGroup, bestTransitionGroup);
