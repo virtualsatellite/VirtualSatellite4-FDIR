@@ -27,6 +27,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.StateHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
 /**
  * Minimizes a given recovery automaton using the partition refinement algorithm.
@@ -69,7 +71,8 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				State state = transition.getFrom();
 				Map<FaultTreeNode, Boolean> guaranteedInputs = mapStateToDisabledInputs.get(state);
 				
-				boolean isRepeated = raHolder.getMapTransitionToGuards().containsKey(transition);
+				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
+				boolean isRepeated = transitionHolder.getGuards() != null;
 				
 				if (isRepeated 
 						&& transition.getRecoveryActions().isEmpty() && transition.getFrom().equals(transition.getTo())) {
@@ -77,7 +80,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				}
 				
 				if (isRepeated) {
-					for (FaultTreeNode guard : raHolder.getMapTransitionToGuards().get(transition)) {
+					for (FaultTreeNode guard : transitionHolder.getGuards()) {
 						Boolean repairLabel = guaranteedInputs.get(guard);
 						if (repairableEvents.contains(guard)) {
 							if (!Objects.equals(repairLabel, fte.getIsRepair())) {
@@ -153,11 +156,12 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 */
 	private Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> createReachabilityProfile(List<State> block, State state) {
 		Map<Entry<Set<FaultTreeNode>, Boolean>, List<State>> mapGuardsToBlock = new HashMap<>();
-		List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
+		List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
 		for (Transition transition : outgoingTransitions) {
-			List<State> toBlock = mapStateToBlock.get(raHolder.getMapTransitionToTo().get(transition));
-			if (toBlock != block || !raHolder.getMapTransitionToActionLabels().get(transition).isEmpty()) {
-				Entry<Set<FaultTreeNode>, Boolean> guards = new SimpleEntry<>(raHolder.getMapTransitionToGuards().get(transition), false);
+			TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
+			List<State> toBlock = mapStateToBlock.get(transitionHolder.getTo());
+			if (toBlock != block || !transitionHolder.getActionLabel().isEmpty()) {
+				Entry<Set<FaultTreeNode>, Boolean> guards = new SimpleEntry<>(transitionHolder.getGuards(), false);
 				
 				if (transition instanceof FaultEventTransition) {
 					FaultEventTransition fte = (FaultEventTransition) transition;
@@ -232,38 +236,22 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 			}
 			
 			block.remove(state);
-		
-			List<Transition> outgoingTransitionsState = raHolder.getMapStateToOutgoingTransitions().get(state);
-			List<Transition> incomingTransitionsState = raHolder.getMapStateToIncomingTransitions().get(state);
-			
-			List<Transition> outgoingTransitionsToAdd = new ArrayList<>();
-			List<Transition> incomingTransitionsToAdd = new ArrayList<>();
 			
 			for (State removedState : block) {
-				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(removedState);
-				List<Transition> incomingTransitions = raHolder.getMapStateToIncomingTransitions().get(removedState);
+				StateHolder removedStateHolder = raHolder.getStateHolder(removedState);
+				List<Transition> outgoingTransitions = new ArrayList<>(removedStateHolder.getOutgoingTransitions());
+				List<Transition> incomingTransitions = new ArrayList<>(removedStateHolder.getIncomingTransitions());
 				
 				for (Transition transition : outgoingTransitions) {
-					outgoingTransitionsToAdd.add(transition);
-					transition.setFrom(state);
+					raHolder.getTransitionHolder(transition).setFrom(state);
 				}
 				
 				for (Transition transition : incomingTransitions) {
-					incomingTransitionsToAdd.add(transition);
-					transition.setTo(state);
-					raHolder.getMapTransitionToTo().put(transition, state);
+					raHolder.getTransitionHolder(transition).setTo(state);
 				}
 			}
 			
-			outgoingTransitionsState.addAll(outgoingTransitionsToAdd);
-			incomingTransitionsState.addAll(incomingTransitionsToAdd);
-			
-			raHolder.getMapStateToOutgoingTransitions().keySet().removeAll(block);
-			raHolder.getMapStateToIncomingTransitions().keySet().removeAll(block);
-			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
-			
-			ra.getStates().removeAll(block);
-			
+			raHolder.removeStates(block);
 		}
 	}
 	
@@ -308,8 +296,8 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 * @return isEqual 
 	 */
 	private boolean isActionEquivalent(State state0, State state1) {
-		List<Transition> outgoingTransitions0 = raHolder.getMapStateToOutgoingTransitions().get(state0);
-		List<Transition> outgoingTransitions1 = raHolder.getMapStateToOutgoingTransitions().get(state1);
+		List<Transition> outgoingTransitions0 = raHolder.getStateHolder(state0).getOutgoingTransitions();
+		List<Transition> outgoingTransitions1 = raHolder.getStateHolder(state1).getOutgoingTransitions();
 		return isRecoveryEquivalent(outgoingTransitions0, state0, state1) && isRecoveryEquivalent(outgoingTransitions1, state0, state1);
 	}
 	
@@ -324,7 +312,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 */
 	private boolean isRecoveryEquivalent(List<Transition> transitions, State state0, State state1) {
 		for (Transition transition : transitions) {
-			Set<FaultTreeNode> guards0 = raHolder.getMapTransitionToGuards().get(transition);
+			Set<FaultTreeNode> guards0 = raHolder.getTransitionHolder(transition).getGuards();
 			if (guards0 == null) {
 				return false;
 			}
@@ -336,8 +324,9 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 					continue;
 				}
 				
-				if (!Objects.equals(raHolder.getMapStateToGuardProfile().get(state0).get(guards0), 
-						raHolder.getMapStateToGuardProfile().get(state1).get(guards0))) {
+				String actions0 = raHolder.getStateHolder(state0).getGuardProfile().get(guards0);
+				String actions1 = raHolder.getStateHolder(state1).getGuardProfile().get(guards0);
+				if (!Objects.equals(actions0, actions1)) {
 					return false;
 				}
 			}
@@ -355,21 +344,27 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 * @return true iff state0 and state1 are orthogonal with respect to the set of guards transition
 	 */
 	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards, boolean isRepair) {
+		boolean allEventsRepeated = true;
 		for (FaultTreeNode guard : guards) {
-			if (repeatedEvents.contains(guard)) {
-				return false;
+			if (!repeatedEvents.contains(guard)) {
+				allEventsRepeated = false;
+				break;
 			}
+		}
+		
+		if (allEventsRepeated) {
+			return false;
 		}
 		
 		Map<FaultTreeNode, Boolean> disabledInputs0 = mapStateToDisabledInputs.get(state0);
 		Map<FaultTreeNode, Boolean> disabledInputs1 = mapStateToDisabledInputs.get(state1);
 		
 		if (Collections.disjoint(guards, repairableEvents)) {
-			if (disabledInputs0.keySet().containsAll(guards)) {
+			if (!Collections.disjoint(disabledInputs0.keySet(), guards)) {
 				return true;
 			}
 			
-			if (disabledInputs1.keySet().containsAll(guards)) {
+			if (!Collections.disjoint(disabledInputs1.keySet(), guards)) {
 				return true;
 			}
 			

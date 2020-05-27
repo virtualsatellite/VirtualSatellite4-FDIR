@@ -100,7 +100,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-
+		
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		

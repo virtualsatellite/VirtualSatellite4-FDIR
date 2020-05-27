@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +27,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.StateHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
 /**
  * Wrapper turning a recovery automaton into an actual recovery strategy.
@@ -98,17 +99,19 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy after reading the fault
 	 */
 	public RecoveryStrategy onFaultsOccured(Collection<FaultTreeNode> faults, boolean isRepair) {
-		if (raHolder.getMapStateToOutgoingTransitions().get(currentState) != null) {
+		StateHolder stateHolder = raHolder.getMapStateToStateHolder().get(currentState);
+		if (!stateHolder.getOutgoingTransitions().isEmpty()) {
 			Set<String> faultUUIDs = faults.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
-			for (Transition transition : raHolder.getMapStateToOutgoingTransitions().get(currentState)) {
+			for (Transition transition : stateHolder.getOutgoingTransitions()) {
 				if (transition instanceof FaultEventTransition) {
+					TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
 					FaultEventTransition fet = (FaultEventTransition) transition;
-					Set<String> guardUUIDs = fet.getGuards()
+					Set<String> guardUUIDs = transitionHolder.getGuards()
 							.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
 					if (guardUUIDs.equals(faultUUIDs) && isRepair == fet.getIsRepair()) {
 						RecoveryStrategy ras = new RecoveryStrategy(this,
-								raHolder.getMapTransitionToTo().get(transition), 
-								raHolder.getMapTransitionToRecoveryActions().get(transition));
+								transitionHolder.getTo(), 
+								transitionHolder.getRecoveryActions());
 						return ras;
 					}
 				}
@@ -125,14 +128,13 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy after reading the time event
 	 */
 	public RecoveryStrategy onTimeout() {
-		if (raHolder.getMapStateToOutgoingTransitions().get(currentState) != null) {
-			for (Transition transition : raHolder.getMapStateToOutgoingTransitions().get(currentState)) {
-				if (transition instanceof TimeoutTransition) {
-					RecoveryStrategy ras = new RecoveryStrategy(this,
-							raHolder.getMapTransitionToTo().get(transition), 
-							raHolder.getMapTransitionToRecoveryActions().get(transition));
-					return ras;
-				}
+		for (Transition transition : raHolder.getStateHolder(currentState).getOutgoingTransitions()) {
+			if (transition instanceof TimeoutTransition) {
+				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
+				RecoveryStrategy ras = new RecoveryStrategy(this,
+						transitionHolder.getTo(), 
+						transitionHolder.getRecoveryActions());
+				return ras;
 			}
 		}
 		
@@ -146,13 +148,11 @@ public class RecoveryStrategy {
 	 */
 	public List<IDFTEvent> createEventSet() {
 		List<IDFTEvent> timeEvents = new ArrayList<>();
-		for (Entry<State, List<Transition>> entry : raHolder.getMapStateToOutgoingTransitions().entrySet()) {
-			for (Transition transition : entry.getValue()) {
-				if (transition instanceof TimeoutTransition) {
-					TimeoutTransition timeoutTranstion = (TimeoutTransition) transition;
-					TimeoutEvent timeEvent = new TimeoutEvent(timeoutTranstion.getTimeBean().getValueToBaseUnit(), entry.getKey());
-					timeEvents.add(timeEvent);
-				}
+		for (StateHolder stateHolder : raHolder.getMapStateToStateHolder().values()) {
+			TimeoutTransition timeoutTranstion = stateHolder.getTimeoutTransition();
+			if (timeoutTranstion != null) {
+				TimeoutEvent timeEvent = new TimeoutEvent(timeoutTranstion.getTimeBean().getValueToBaseUnit(), stateHolder.getState());
+				timeEvents.add(timeEvent);
 			}
 		}
 		return timeEvents;

@@ -10,9 +10,9 @@
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,45 +34,37 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 		
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		
-		Map<State, List<Transition>> mapStateToPredecessors = raHelper.getPreviousTransitions(ra);
-		Map<State, List<Transition>> mapStateToSuccessors = raHelper.getCurrentTransitions(ra);
-		
 		Set<State> finalStates = new HashSet<>();
 		
 		for (State state1 : ra.getStates()) {
-			List<Transition> outgoingTransitions1 = mapStateToSuccessors.get(state1); 
+			List<Transition> outgoingTransitions1 = new ArrayList<>(raHolder.getStateHolder(state1).getOutgoingTransitions());
 			if (!raHelper.isFinalState(ra, state1, outgoingTransitions1) && raHelper.isFinalStateEquivalent(ra, outgoingTransitions1)) {
 				
 				State state2 = outgoingTransitions1.get(0).getTo(); 
-				List<Transition> outgoingTransitions2 = mapStateToSuccessors.get(state2);
+				List<Transition> outgoingTransitions2 = raHolder.getStateHolder(state2).getOutgoingTransitions();
 				
 				if (!state1.equals(state2) && raHelper.isFinalState(ra, state2, outgoingTransitions2)) {
 
 					finalStates.add(state2);
 					
 					// create new mergedState and redirect transitions 
-					List<Transition> incomingTransitions2 = mapStateToPredecessors.get(state2);
+					List<Transition> incomingTransitions2 = new ArrayList<>(raHolder.getStateHolder(state2).getIncomingTransitions());
 					List<Transition> transitionsToRemove = new ArrayList<>();
 					for (Transition incomingTransition : incomingTransitions2) {
 						if (incomingTransition.getFrom().equals(state1)) {
-							transitionsToRemove.add(incomingTransition);
 							if (incomingTransition.getRecoveryActions().isEmpty()) {
-								ra.getTransitions().remove(incomingTransition);
+								transitionsToRemove.add(incomingTransition);
 							} else {
-								incomingTransition.setTo(state1);
-								raHolder.getMapTransitionToTo().put(incomingTransition, state1);
+								raHolder.getTransitionHolder(incomingTransition).setTo(state1);
 							}
 						}
 					}
 					
 					for (Transition outgoingTransition1 : outgoingTransitions1) {
-						outgoingTransition1.setTo(state1);
-						raHolder.getMapTransitionToTo().put(outgoingTransition1, state1);
+						raHolder.getTransitionHolder(outgoingTransition1).setTo(state1);
 					}
 					
-					for (Transition transition : transitionsToRemove) {
-						incomingTransitions2.remove(transition);
-					}
+					raHolder.removeTransitions(transitionsToRemove);
 				}
 
 			}
@@ -82,12 +74,12 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 		for (State state : finalStates) {
 			if (!Objects.equals(ra.getInitial(), state)) {
 				// remove the states that cannot be reached
-				if (mapStateToSuccessors.get(state).equals(mapStateToPredecessors.get(state))) {
-					ra.getStates().remove(state); 
-					ra.getTransitions().removeAll(mapStateToPredecessors.get(state));
-					ra.getTransitions().removeAll(mapStateToSuccessors.get(state));
-					mapStateToPredecessors.remove(state);
-					mapStateToSuccessors.remove(state);
+				List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
+				List<Transition> incomingTransitions = raHolder.getStateHolder(state).getIncomingTransitions();
+				if (outgoingTransitions.equals(incomingTransitions)) {
+					raHolder.removeTransitions(new ArrayList<>(outgoingTransitions));
+					raHolder.removeTransitions(new ArrayList<>(incomingTransitions));
+					raHolder.removeStates(Collections.singleton(state));
 				}
 			}
 		}

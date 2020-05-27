@@ -393,7 +393,11 @@ public class PartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignAction(transition22, action);
 		//CHECKSTYLE:ON
 		
+		System.out.println(ra.toDot());
+		
 		minimizer.minimize(ra);
+		
+		System.out.println(ra.toDot());
 		
 		assertEquals(RESULTING_STATES, ra.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());

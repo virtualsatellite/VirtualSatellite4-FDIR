@@ -40,7 +40,6 @@ public class FinalStateMinimizerTest extends ATestCase {
 	
 	@Test
 	public void basicTest() {
-		
 		final int INITIAL_STATES = 2;
 		final int FINAL_STATES = 1;
 		final int FINAL_TRANSITIONS = 1; 
@@ -118,7 +117,6 @@ public class FinalStateMinimizerTest extends ATestCase {
 	
 	@Test 
 	public void multipleStatesTest() {
-		
 		final int INITIAL_STATES = 4;
 		final int FINAL_STATES = 3;
 		final int FINAL_TRANSITIONS = 4; 
