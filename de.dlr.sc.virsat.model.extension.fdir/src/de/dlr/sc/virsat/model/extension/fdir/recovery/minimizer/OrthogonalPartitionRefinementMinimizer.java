@@ -72,12 +72,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				Map<FaultTreeNode, Boolean> guaranteedInputs = mapStateToDisabledInputs.get(state);
 				
 				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
-				boolean isRepeated = transitionHolder.getGuards() != null;
-				
-				if (isRepeated 
-						&& transition.getRecoveryActions().isEmpty() && transition.getFrom().equals(transition.getTo())) {
-					isRepeated = false;
-				}
+				boolean isRepeated = !transitionHolder.isEpsilonLoop();
 				
 				if (isRepeated) {
 					for (FaultTreeNode guard : transitionHolder.getGuards()) {
@@ -160,7 +155,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		for (Transition transition : outgoingTransitions) {
 			TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
 			List<State> toBlock = mapStateToBlock.get(transitionHolder.getTo());
-			if (toBlock != block || !transitionHolder.getActionLabel().isEmpty()) {
+			if (toBlock != block || !transitionHolder.isEpsilonTransition()) {
 				Entry<Set<FaultTreeNode>, Boolean> guards = new SimpleEntry<>(transitionHolder.getGuards(), false);
 				
 				if (transition instanceof FaultEventTransition) {

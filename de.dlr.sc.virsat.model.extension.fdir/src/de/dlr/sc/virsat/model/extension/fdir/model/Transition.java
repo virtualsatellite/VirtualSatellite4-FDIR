@@ -67,7 +67,9 @@ public abstract class Transition extends ATransition {
 	 */
 	public String getActionLabel() {
 		return getRecoveryActions().stream()
-				.map(RecoveryAction::getActionLabel).collect(Collectors.joining());
+				.map(RecoveryAction::getActionLabel)
+				.sorted()
+				.collect(Collectors.joining());
 	}
 	
 	public String getGuardLabel() {

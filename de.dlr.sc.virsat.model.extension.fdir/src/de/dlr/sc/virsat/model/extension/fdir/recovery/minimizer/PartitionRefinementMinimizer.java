@@ -118,7 +118,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 				toBlock = getTimeoutBlock(block, state);
 			}
 			
-			if (toBlock != block || !transitionHolder.getActionLabel().isEmpty()) {
+			if (toBlock != block || !transitionHolder.isEpsilonTransition()) {
 				mapGuardsToBlock.put(transitionHolder.getGuards(), toBlock);
 			}
 		}
@@ -167,7 +167,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 				State stateTo = transitionHolder.getTo();
 				State blockRepresentative = mapStateToBlock.get(stateTo).get(0);
 				if (blockRepresentative != stateTo) {
-					if (blockRepresentative != state || !transitionHolder.getActionLabel().isEmpty()) {
+					if (blockRepresentative != state || !transitionHolder.isEpsilonTransition()) {
 						transitionHolder.setTo(blockRepresentative);
 					}
 				}

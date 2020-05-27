@@ -73,6 +73,18 @@ public class TransitionHolder {
 		return label.guardLabel;
 	}
 	
+	public boolean isLoop() {
+		return edge.to.equals(edge.from);
+	}
+	
+	public boolean isEpsilonTransition() {
+		return label.recoveryActions.isEmpty();
+	}
+	
+	public boolean isEpsilonLoop() {
+		return isLoop() && isEpsilonTransition();
+	}
+	
 	/**
 	 * Checks whether the transition held here is equivalent to the transition held by another holder
 	 * @param other the other transition holder

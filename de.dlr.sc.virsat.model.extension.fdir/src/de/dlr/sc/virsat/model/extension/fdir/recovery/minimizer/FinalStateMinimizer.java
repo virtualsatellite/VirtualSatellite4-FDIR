@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
 /**
  * Class that minimizes a recovery automaton by merging final states to previous states provided that the epsilon transitions cannot be executed  
@@ -52,10 +53,11 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 					List<Transition> transitionsToRemove = new ArrayList<>();
 					for (Transition incomingTransition : incomingTransitions2) {
 						if (incomingTransition.getFrom().equals(state1)) {
-							if (incomingTransition.getRecoveryActions().isEmpty()) {
+							TransitionHolder incomingTransitionHolder = raHolder.getTransitionHolder(incomingTransition);
+							if (incomingTransitionHolder.isEpsilonTransition()) {
 								transitionsToRemove.add(incomingTransition);
 							} else {
-								raHolder.getTransitionHolder(incomingTransition).setTo(state1);
+								incomingTransitionHolder.setTo(state1);
 							}
 						}
 					}

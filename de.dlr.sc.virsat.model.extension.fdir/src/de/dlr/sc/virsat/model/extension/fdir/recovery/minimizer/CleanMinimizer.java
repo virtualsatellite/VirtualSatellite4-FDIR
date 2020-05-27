@@ -33,14 +33,13 @@ public class CleanMinimizer extends ARecoveryAutomatonMinimizer {
 		
 		for (State state : ra.getStates()) {
 			List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
-			List<Transition> incomingTransitions = raHolder.getStateHolder(state).getIncomingTransitions();
 			List<Transition> localTransitionsToRemove = new ArrayList<>();
 			
 			for (int i = 0; i < outgoingTransitions.size(); i++) {
 				Transition transition1 = outgoingTransitions.get(i);
 				TransitionHolder transitionHolder1 = raHolder.getTransitionHolder(transition1);
 				
-				if (incomingTransitions.contains(transition1) && transitionHolder1.getRecoveryActions().isEmpty()) {
+				if (transitionHolder1.isEpsilonLoop()) {
 					transitionsToRemove.add(transition1);
 					localTransitionsToRemove.add(transition1);
 				} else {

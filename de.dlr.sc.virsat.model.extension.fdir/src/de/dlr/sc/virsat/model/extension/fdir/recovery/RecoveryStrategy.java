@@ -44,12 +44,12 @@ public class RecoveryStrategy {
 	
 	/**
 	 * Standard constructor.
-	 * @param ras base recovery strategy
+	 * @param raHolder the recovery automaton holder
 	 * @param currentState the state of the strategy
 	 * @param recoveryActions the label of the recovery actions that should be taken
 	 */
-	private RecoveryStrategy(RecoveryStrategy ras, State currentState, List<RecoveryAction> recoveryActions) {
-		this.raHolder = ras.raHolder;
+	private RecoveryStrategy(RecoveryAutomatonHolder raHolder, State currentState, List<RecoveryAction> recoveryActions) {
+		this.raHolder = raHolder;
 		this.currentState = currentState;
 		this.recoveryActions = recoveryActions;
 	}
@@ -62,6 +62,7 @@ public class RecoveryStrategy {
 	public RecoveryStrategy(RecoveryAutomaton ra) {
 		raHolder = new RecoveryAutomatonHolder(ra);
 		currentState = ra.getInitial();
+		recoveryActions = Collections.emptyList();
 	}
 	
 	/**
@@ -92,6 +93,10 @@ public class RecoveryStrategy {
 		return affectedNodes;
 	}
 
+	private RecoveryStrategy onTransitionTriggered(TransitionHolder transitionHolder) {
+		return new RecoveryStrategy(raHolder, transitionHolder.getTo(), transitionHolder.getRecoveryActions());
+	}
+	
 	/**
 	 * React to the occurrence or the repair of a set of faults
 	 * @param faults the occurred or repaired faults
@@ -109,17 +114,13 @@ public class RecoveryStrategy {
 					Set<String> guardUUIDs = transitionHolder.getGuards()
 							.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
 					if (guardUUIDs.equals(faultUUIDs) && isRepair == fet.getIsRepair()) {
-						RecoveryStrategy ras = new RecoveryStrategy(this,
-								transitionHolder.getTo(), 
-								transitionHolder.getRecoveryActions());
-						return ras;
+						return onTransitionTriggered(transitionHolder);
 					}
 				}
 			}
 		}
 		
-		RecoveryStrategy ras = new RecoveryStrategy(this, currentState, null);
-		return ras;
+		return new RecoveryStrategy(raHolder, currentState, Collections.emptyList());
 	}
 
 	/**
@@ -128,18 +129,8 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy after reading the time event
 	 */
 	public RecoveryStrategy onTimeout() {
-		for (Transition transition : raHolder.getStateHolder(currentState).getOutgoingTransitions()) {
-			if (transition instanceof TimeoutTransition) {
-				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
-				RecoveryStrategy ras = new RecoveryStrategy(this,
-						transitionHolder.getTo(), 
-						transitionHolder.getRecoveryActions());
-				return ras;
-			}
-		}
-		
-		RecoveryStrategy ras = new RecoveryStrategy(this, currentState, null);
-		return ras;
+		TimeoutTransition timeoutTransition = raHolder.getStateHolder(currentState).getTimeoutTransition();
+		return onTransitionTriggered(raHolder.getTransitionHolder(timeoutTransition));
 	}
 
 	/**
@@ -163,7 +154,7 @@ public class RecoveryStrategy {
 	 * @return A list of recommened recovery actions.
 	 */
 	public List<RecoveryAction> getRecoveryActions() {
-		return recoveryActions != null ? recoveryActions : Collections.emptyList();
+		return recoveryActions;
 	}
 
 	/**
@@ -171,7 +162,6 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy in its initial state
 	 */
 	public RecoveryStrategy reset() {
-		RecoveryStrategy ras = new RecoveryStrategy(this, raHolder.getRa().getInitial(), Collections.emptyList());
-		return ras;
+		return new RecoveryStrategy(raHolder, raHolder.getRa().getInitial(), Collections.emptyList());
 	}
 }

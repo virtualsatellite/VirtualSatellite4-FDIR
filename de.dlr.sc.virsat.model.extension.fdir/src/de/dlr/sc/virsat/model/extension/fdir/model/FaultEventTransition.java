@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.stream.Collectors;
+
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
@@ -58,20 +60,15 @@ public  class FaultEventTransition extends AFaultEventTransition {
 
 	@Override
 	public String getGuardLabel() {
-		StringBuilder sb = new StringBuilder(); 
-		
 		String faultType = getIsRepair() ? "R" : "F";
-		sb.append("{");
 		
-		for (FaultTreeNode guard : getGuards()) {
+		String guards = getGuards().stream().map(guard -> {
 			StructuralElementInstance guardSei = VirSatEcoreUtil.getEContainerOfClass(guard.getATypeInstance(), StructuralElementInstance.class);
 			String parentPrefix = guardSei != null ? (guard.getParent().getName() + ".") : "";
-			sb.append(faultType + "(" +  parentPrefix + guard.toString() + ")");
-		}
-
-		sb.append("}");
+			return faultType + "(" +  parentPrefix + guard.toString() + ")";
+		}).sorted().collect(Collectors.joining());
 		
-		return sb.toString();
+		return faultType + "{" + guards + "}";
 	}
 
 }
