@@ -160,31 +160,9 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 	private void mergeBlocks(Set<List<State>> blocks) {
 		// Redirect all transitions between blocks so that they are between the block represenatatives
 		for (List<State> block : blocks) {
+			BlockTimeoutTransition blockTimeoutTransition = new BlockTimeoutTransition(block);
+			
 			State state = block.get(0);
-			
-			// Get the target of the timout transitions and the total timeout time
-			double blockTimeout = 0;
-			State blockTimeoutTarget = null;
-			for (State other : block) {
-				List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(other);
-				for (Transition transition : outgoingTransitions) {
-					if (transition instanceof TimeoutTransition) {
-						TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
-						
-						State stateTo = raHolder.getMapTransitionToTo().get(transition);
-						List<State> blockTarget = mapStateToBlock.get(stateTo);
-						if (block != blockTarget) {
-							if (blockTimeoutTarget == null) {
-								blockTimeoutTarget = blockTarget.get(0);
-								blockTimeout += timeoutTransition.getTime();
-							}
-						} else {
-							blockTimeout += timeoutTransition.getTime();
-						}
-					}
-				}
-			}
-			
 			List<Transition> outgoingTransitions = raHolder.getMapStateToOutgoingTransitions().get(state);
 			for (Transition transition : outgoingTransitions) {
 				State stateTo = raHolder.getMapTransitionToTo().get(transition);
@@ -203,14 +181,14 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 					
 					if (transition instanceof TimeoutTransition) {
 						TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
-						timeoutTransition.setTime(blockTimeout);
+						timeoutTransition.setTime(blockTimeoutTransition.timeout);
 						
-						if (blockTimeoutTarget != null) {
-							timeoutTransition.setTo(blockTimeoutTarget);
+						if (blockTimeoutTransition.toState != null) {
+							timeoutTransition.setTo(blockTimeoutTransition.toState);
 							
-							raHolder.getMapTransitionToTo().put(timeoutTransition, blockTimeoutTarget);
+							raHolder.getMapTransitionToTo().put(timeoutTransition, blockTimeoutTransition.toState);
 							raHolder.getMapStateToIncomingTransitions().get(stateTo).remove(timeoutTransition);
-							raHolder.getMapStateToIncomingTransitions().get(blockTimeoutTarget).add(timeoutTransition);
+							raHolder.getMapStateToIncomingTransitions().get(blockTimeoutTransition.toState).add(timeoutTransition);
 						}
 					}
 				}
@@ -247,12 +225,17 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 						otherOutgoingTransitions.remove(transition);
 					}
 					transitionsToRemove.add(transition);
+					
+					if (transition instanceof TimeoutTransition) {
+						raHolder.getMapStateToTimeoutTransition().remove(transition.getFrom());
+					}
 				}
 			}
 			
 			raHolder.getMapStateToOutgoingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToIncomingTransitions().keySet().removeAll(block);
 			raHolder.getMapStateToGuardProfile().keySet().removeAll(block);
+			raHolder.getMapStateToTimeoutTransition().keySet().removeAll(block);
 			ra.getStates().removeAll(block);
 		}
 		
@@ -261,8 +244,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		raHolder.getMapTransitionToGuards().keySet().removeAll(transitionsToRemove);
 		raHolder.getTransitions().removeAll(transitionsToRemove);
 		ra.getTransitions().removeAll(transitionsToRemove);
-	}
-	
+	}	
 	/**
 	 * Checks if a state fits into one of the given partitions
 	 * @param state the state to insert into the partition list
@@ -271,5 +253,32 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 	 */
 	private List<State> getBlock(State state, Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock) {
 		return mapGuardProfileToBlock.get(raHolder.getMapStateToGuardProfile().get(state));
+	}
+	
+	private class BlockTimeoutTransition {
+		State toState;
+		double timeout;
+		
+		/**
+		 * Get the target of the timout transitions and the total timeout time
+		 * @param block the block to consider
+		 */
+		BlockTimeoutTransition(List<State> block) {
+			for (State state : block) {
+				TimeoutTransition timeoutTransition = raHolder.getMapStateToTimeoutTransition().get(state);
+				if (timeoutTransition != null) {
+					State stateTo = raHolder.getMapTransitionToTo().get(timeoutTransition);
+					List<State> blockTarget = mapStateToBlock.get(stateTo);
+					if (block != blockTarget) {
+						if (toState == null) {
+							toState = blockTarget.get(0);
+							timeout += timeoutTransition.getTime();
+						}
+					} else {
+						timeout += timeoutTransition.getTime();
+					}
+				}
+			}
+		}
 	}
 }

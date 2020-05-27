@@ -22,6 +22,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 /**
@@ -36,6 +37,7 @@ public class RecoveryAutomatonHolder {
 	
 	private Map<State, List<Transition>> mapStateToOutgoingTransitions;
 	private Map<State, List<Transition>> mapStateToIncomingTransitions;
+	private Map<State, TimeoutTransition> mapStateToTimeoutTransition;
 	private Map<Transition, Set<FaultTreeNode>> mapTransitionToGuards;
 	private Map<Transition, String> mapTransitionToActionLabels;
 	private Map<Transition, List<RecoveryAction>> mapTransitionToRecoveryActions;
@@ -134,6 +136,20 @@ public class RecoveryAutomatonHolder {
 			mapStateToOutgoingTransitions = raHelper.getCurrentTransitions(ra);
 		}
 		return mapStateToOutgoingTransitions;
+	}
+	
+	/**
+	 * Gets a map from a state to its timeout transition
+	 * @return a map from a state to its timeout transition
+	 */
+	public Map<State, TimeoutTransition> getMapStateToTimeoutTransition() {
+		if (mapStateToTimeoutTransition == null) {
+			mapStateToTimeoutTransition = new HashMap<State, TimeoutTransition>();
+			for (State state : ra.getStates()) {
+				mapStateToTimeoutTransition.put(state, raHelper.getTimeoutTransition(ra, state));
+			}
+		}
+		return mapStateToTimeoutTransition;
 	}
 	
 	/**
