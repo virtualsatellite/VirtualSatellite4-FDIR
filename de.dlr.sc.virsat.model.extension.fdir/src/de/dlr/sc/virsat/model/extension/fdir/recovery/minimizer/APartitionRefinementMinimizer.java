@@ -10,6 +10,8 @@
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,30 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	
 	protected RecoveryAutomatonHolder raHolder;
 	protected Map<State, List<State>> mapStateToBlock;
+	
+	/**
+	 * Checks if a state fits into a give partition.
+	 * A state fits into a given partition if the actions of the transitions agree with all the transitions
+	 * of all the states in the partition
+	 * @param block the partition to check if the state belongs into
+	 * @param state the state
+	 * @return true iff the state belongs into the block
+	 */
+	protected abstract boolean belongsToBlock(List<State> block, State state);
+	
+	/**
+	 * Refines the given partitions until no more refinement is possible.
+	 * A partition needs to be split into refined partitions if at least two states
+	 * have a different transition profile.
+	 * @param blocks the partitions to be refined-
+	 */
+	protected abstract List<List<State>> refineBlock(List<State> block);
+	
+	/**
+	 * Merge all the states in the given partitions
+	 * @param blocks the partitions in which the states should be merged
+	 */
+	protected abstract void mergeBlocks(Set<List<State>> blocks);
 	
 	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder) {
@@ -51,26 +77,43 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	}
 	
 	/**
-	 * Refines the given partitions until no more refinement is possible.
-	 * A partition needs to be split into refined partitions if at least two states
-	 * have a different transition profile.
-	 * @param blocks the partitions to be refined-
-	 */
-	protected abstract List<List<State>> refineBlock(List<State> block);
-	
-	/**
 	 * Creates the initial partitions. Each partition contains the states
 	 * that are potentially equivalent. States in different partitions cannot
 	 * be equivalent.
 	 * @return the initial partitions.
 	 */
-	protected abstract Set<List<State>> createInitialBlocks();
+	protected Set<List<State>> createInitialBlocks() {
+		Set<List<State>> blocks = new HashSet<>();
+		mapStateToBlock = new HashMap<>();
+		for (State state : raHolder.getRa().getStates()) {
+			List<State> block = getBlock(state, blocks);
+			if (!blocks.remove(block)) {
+				block = new ArrayList<>();
+			}
+	
+			block.add(state);	
+			blocks.add(block);
+			mapStateToBlock.put(state, block);
+		}
+		
+		return blocks;
+	}
 	
 	/**
-	 * Merge all the states in the given partitions
-	 * @param blocks the partitions in which the states should be merged
+	 * Checks if a state fits into one of the given partitions
+	 * @param state the state to insert into the partition list
+	 * @param blocks a list of partitions
+	 * @return the partition to which the state belongs or null if it belongs no none of the given partitions
 	 */
-	protected abstract void mergeBlocks(Set<List<State>> blocks);
+	private List<State> getBlock(State state, Set<List<State>> blocks) {
+		for (List<State> block : blocks) {
+			if (belongsToBlock(block, state)) {
+				return block;
+			}
+		}
+		
+		return null;
+	}
 	
 	/**
 	 * Refines the given partitions until no more refinement is possible.

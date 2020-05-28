@@ -32,22 +32,8 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer {
 	
 	@Override
-	protected Set<List<State>> createInitialBlocks() {
-		mapStateToBlock = new HashMap<>();
-		Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock = new HashMap<>();
-		for (State state : raHolder.getRa().getStates()) {
-			List<State> block = getBlock(state, mapGuardProfileToBlock);
-			if (block == null) {
-				block = new ArrayList<>();
-				mapGuardProfileToBlock.put(raHolder.getStateHolder(state).getGuardProfile(), block);
-			}
-			
-			block.add(state);	
-			mapStateToBlock.put(state, block);
-		}
-		
-		Set<List<State>> blocks = new HashSet<>(mapStateToBlock.values());
-		return blocks;
+	protected boolean belongsToBlock(List<State> block, State state) {
+		return raHolder.getStateHolder(state).getGuardProfile().equals(raHolder.getStateHolder(block.get(0)).getGuardProfile());
 	}
 	
 	@Override
@@ -182,15 +168,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		
 		raHolder.removeTransitions(transitionsToRemove);
 	}	
-	/**
-	 * Checks if a state fits into one of the given partitions
-	 * @param state the state to insert into the partition list
-	 * @param mapGuardProfileToBlock mapping from guard profile to block
-	 * @return the partition to which the state belongs or null if it belongs no existing partition
-	 */
-	private List<State> getBlock(State state, Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock) {
-		return mapGuardProfileToBlock.get(raHolder.getStateHolder(state).getGuardProfile());
-	}
+
 	
 	/**
 	 * The target of the timeout transitions and the total timeout time.

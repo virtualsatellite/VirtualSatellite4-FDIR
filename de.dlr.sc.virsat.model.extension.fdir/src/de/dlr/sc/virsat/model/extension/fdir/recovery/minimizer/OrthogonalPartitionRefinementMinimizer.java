@@ -92,21 +92,14 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	}
 	
 	@Override
-	protected Set<List<State>> createInitialBlocks() {
-		Set<List<State>> blocks = new HashSet<>();
-		mapStateToBlock = new HashMap<>();
-		for (State state : raHolder.getRa().getStates()) {
-			List<State> block = getBlock(state, blocks);
-			if (!blocks.remove(block)) {
-				block = new ArrayList<>();
+	protected boolean belongsToBlock(List<State> block, State state) {
+		for (State other : block) {
+			if (!isActionEquivalent(other, state)) {
+				return false;
 			}
-	
-			block.add(state);	
-			blocks.add(block);
-			mapStateToBlock.put(state, block);
 		}
 		
-		return blocks;
+		return true;
 	}
 	
 	@Override
@@ -233,40 +226,6 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 			
 			raHolder.removeStates(block);
 		}
-	}
-	
-	/**
-	 * Checks if a state fits into one of the given partitions
-	 * @param state the state to insert into the partition list
-	 * @param blocks a list of partitions
-	 * @return the partition to which the state belongs or null if it belongs no none of the given partitions
-	 */
-	private List<State> getBlock(State state, Set<List<State>> blocks) {
-		for (List<State> block : blocks) {
-			if (belongsToBlock(block, state)) {
-				return block;
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Checks if a state fits into a give partition.
-	 * A state fits into a given partition if the actions of the transitions agree with all the transitions
-	 * of all the states in the partition
-	 * @param block the partition to check if the state belongs into
-	 * @param state the state
-	 * @return true iff the state belongs into the block
-	 */
-	private boolean belongsToBlock(List<State> block, State state) {
-		for (State other : block) {
-			if (!isActionEquivalent(other, state)) {
-				return false;
-			}
-		}
-		
-		return true;
 	}
 	
 	/**
