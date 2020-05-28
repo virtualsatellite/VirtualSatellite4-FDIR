@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +25,10 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.StateHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
@@ -38,6 +42,13 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	private Map<State, Map<FaultTreeNode, Boolean>> mapStateToDisabledInputs;
 	private Set<FaultTreeNode> repairableEvents;
 	private Set<FaultTreeNode> repeatedEvents;
+	private FaultTreeHolder ftHolder;
+	
+	@Override
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
+		this.ftHolder = ftHolder;
+		super.minimize(raHolder, ftHolder);
+	}
 	
 	@Override
 	protected Set<List<State>> computeBlocks() {
@@ -67,6 +78,14 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				
 				if (isRepeated) {
 					for (FaultTreeNode guard : transitionHolder.getGuards()) {
+						if (ftHolder != null) {
+							List<FaultTreeNode> monitoredNode = ftHolder.getNodes(guard, EdgeType.MONITOR);
+							if (monitoredNode.isEmpty()) {
+								isRepeated = false;
+								break;
+							}
+						}
+						
 						Boolean repairLabel = guaranteedInputs.get(guard);
 						if (repairableEvents.contains(guard)) {
 							if (!Objects.equals(repairLabel, fte.getIsRepair())) {
@@ -201,11 +220,20 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	protected void mergeBlocks(Set<List<State>> blocks) {
 		State initial = raHolder.getRa().getInitial();
 		
+		List<Transition> transitionsToRemove = new ArrayList<>();
+		
 		for (List<State> block : blocks) {
 			State state = block.get(0);
 			
 			if (block.contains(initial)) {
 				raHolder.getRa().setInitial(state);
+			}
+			
+			List<Transition> repOutgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
+			for (Transition transition : repOutgoingTransitions) {
+				if (isDisabled(state, transition)) {
+					transitionsToRemove.add(transition);
+				}
 			}
 			
 			block.remove(state);
@@ -216,7 +244,11 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				List<Transition> incomingTransitions = new ArrayList<>(removedStateHolder.getIncomingTransitions());
 				
 				for (Transition transition : outgoingTransitions) {
-					raHolder.getTransitionHolder(transition).setFrom(state);
+					if (isDisabled(removedState, transition)) {
+						transitionsToRemove.add(transition);
+					} else {
+						raHolder.getTransitionHolder(transition).setFrom(state);
+					}
 				}
 				
 				for (Transition transition : incomingTransitions) {
@@ -226,6 +258,8 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 			
 			raHolder.removeStates(block);
 		}
+		
+		raHolder.removeTransitions(transitionsToRemove);
 	}
 	
 	/**
@@ -283,41 +317,45 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 * @return true iff state0 and state1 are orthogonal with respect to the set of guards transition
 	 */
 	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards, boolean isRepair) {
-		boolean allEventsRepeated = true;
+		return isDisabled(state0, guards, isRepair) || isDisabled(state1, guards, isRepair);
+	}
+	
+	/**
+	 * Checks if a transition is disabled in a state
+	 * @param state the state
+	 * @param transition the transition
+	 * @return true iff the transition is an event transition and the guards are disabled
+	 */
+	private boolean isDisabled(State state, Transition transition) {
+		if (transition instanceof FaultEventTransition) {
+			FaultEventTransition fet = (FaultEventTransition) transition;
+			return isDisabled(state, fet.getGuards(), fet.getIsRepair());
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if a set of guards is disabled in a state
+	 * @param state the the state
+	 * @param guards the guards
+	 * @param isRepair whether the guards are repair guards
+	 * @return true iff at least one guard is disabled in the state
+	 */
+	private boolean isDisabled(State state, Collection<FaultTreeNode> guards, boolean isRepair) {
+		Map<FaultTreeNode, Boolean> disabledInputs = mapStateToDisabledInputs.get(state);
+		
+		if (!Collections.disjoint(guards, repeatedEvents)) {
+			return false;
+		}
+		
 		for (FaultTreeNode guard : guards) {
-			if (!repeatedEvents.contains(guard)) {
-				allEventsRepeated = false;
-				break;
-			}
-		}
-		
-		if (allEventsRepeated) {
-			return false;
-		}
-		
-		Map<FaultTreeNode, Boolean> disabledInputs0 = mapStateToDisabledInputs.get(state0);
-		Map<FaultTreeNode, Boolean> disabledInputs1 = mapStateToDisabledInputs.get(state1);
-		
-		if (Collections.disjoint(guards, repairableEvents)) {
-			if (!Collections.disjoint(disabledInputs0.keySet(), guards)) {
-				return true;
-			}
+			Boolean repairLabel = disabledInputs.get(guard);
 			
-			if (!Collections.disjoint(disabledInputs1.keySet(), guards)) {
-				return true;
+			if (!Objects.equals(repairLabel, isRepair)) {
+				return false;
 			}
-			
-			return false;
-		} else {
-			for (FaultTreeNode guard : guards) {
-				Boolean repairLabel0 = disabledInputs0.get(guard);
-				Boolean repairLabel1 = disabledInputs1.get(guard);
-				
-				if (!Objects.equals(repairLabel0, isRepair) || !Objects.equals(repairLabel1, isRepair)) {
-					return false;
-				}
-			}
-			return true;
 		}
+		return true;
 	}
 }

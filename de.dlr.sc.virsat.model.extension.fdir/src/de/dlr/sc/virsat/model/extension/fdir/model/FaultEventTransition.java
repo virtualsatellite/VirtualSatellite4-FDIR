@@ -68,7 +68,7 @@ public  class FaultEventTransition extends AFaultEventTransition {
 			return faultType + "(" +  parentPrefix + guard.toString() + ")";
 		}).sorted().collect(Collectors.joining());
 		
-		return faultType + "{" + guards + "}";
+		return "{" + guards + "}";
 	}
 
 }

@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 /**
@@ -24,9 +25,9 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 	private List<ARecoveryAutomatonMinimizer> minimizers = new ArrayList<>();
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
 		for (ARecoveryAutomatonMinimizer minimizer : minimizers) {
-			minimizer.minimize(raHolder);
+			minimizer.minimize(raHolder, ftHolder);
 		}
 	}
 	

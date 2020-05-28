@@ -19,6 +19,7 @@ import java.util.Set;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
@@ -30,7 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
  */
 public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
 		RecoveryAutomaton ra = raHolder.getRa();
 		
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();

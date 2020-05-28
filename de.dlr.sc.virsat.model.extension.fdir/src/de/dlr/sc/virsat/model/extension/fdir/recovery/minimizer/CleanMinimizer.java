@@ -14,6 +14,7 @@ import java.util.List;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
@@ -25,7 +26,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 public class CleanMinimizer extends ARecoveryAutomatonMinimizer {
 
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
 		List<Transition> transitionsToRemove = new ArrayList<>();
 		
 		for (State state : raHolder.getMapStateToStateHolder().keySet()) {

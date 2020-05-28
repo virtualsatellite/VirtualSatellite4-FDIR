@@ -20,6 +20,7 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 /**
@@ -57,7 +58,7 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	protected abstract void mergeBlocks(Set<List<State>> blocks);
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
 		this.raHolder = raHolder;
 		
 		Set<List<State>> blocks = computeBlocks();

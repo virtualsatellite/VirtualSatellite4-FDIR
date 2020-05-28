@@ -84,7 +84,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 				RecoveryAutomaton ra = convertToRecoveryAutomaton(module, subMonitor);
 				
 				if (minimizer != null) {
-					minimizer.minimize(ra);
+					minimizer.minimize(ra, module.getRootNodeCopy());
 					statistics.minimizationStatistics.compose(minimizer.getStatistics());
 				}
 				
@@ -102,12 +102,13 @@ public abstract class ASynthesizer implements ISynthesizer {
 			statistics.maxModuleSize = conversionResult.getMapGeneratedToGenerator().values().size();
 			
 			synthesizedRA = convertToRecoveryAutomaton(fault, subMonitor);
-			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 			
 			if (minimizer != null) {
-				minimizer.minimize(synthesizedRA);
+				minimizer.minimize(synthesizedRA, fault);
 				statistics.minimizationStatistics.compose(minimizer.getStatistics());
 			}
+			
+			remapToGeneratorNodes(synthesizedRA, conversionResult.getMapGeneratedToGenerator());
 			
 			statistics.maxModuleRaSize = synthesizedRA.getStates().size();
 		}
