@@ -33,21 +33,20 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 	
 	@Override
 	protected Set<List<State>> createInitialBlocks() {
-		Set<List<State>> blocks = new HashSet<>();
 		mapStateToBlock = new HashMap<>();
 		Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock = new HashMap<>();
 		for (State state : raHolder.getRa().getStates()) {
 			List<State> block = getBlock(state, mapGuardProfileToBlock);
-			if (!blocks.remove(block)) {
+			if (block == null) {
 				block = new ArrayList<>();
 				mapGuardProfileToBlock.put(raHolder.getStateHolder(state).getGuardProfile(), block);
 			}
 			
 			block.add(state);	
-			blocks.add(block);
 			mapStateToBlock.put(state, block);
 		}
 		
+		Set<List<State>> blocks = new HashSet<>(mapStateToBlock.values());
 		return blocks;
 	}
 	
