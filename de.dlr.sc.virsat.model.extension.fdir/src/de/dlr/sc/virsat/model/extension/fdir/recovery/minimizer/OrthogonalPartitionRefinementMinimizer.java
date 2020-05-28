@@ -346,21 +346,10 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		
 		for (FaultTreeNode guard : guards) {
 			if (ftHolder != null) {
-				List<FaultTreeNode> monitors = ftHolder.getNodes(guard, EdgeType.MONITOR);
-				if (!monitors.isEmpty()) {
-					boolean allMonitorsDisabled = true;
-					for (FaultTreeNode monitor : monitors) {
-						Boolean repairLabel = disabledInputs.get(monitor);
-						if (repairLabel == null || repairLabel) {
-							allMonitorsDisabled = false;
-							break;
-						}
-					}
-					if (allMonitorsDisabled) {
-						disabledInputs.put(guard, false);
-					} else if (repeatedEvents.contains(guard)) {
-						return false;
-					}
+				if (!hasEnabledMonitor(guard, disabledInputs)) {
+					disabledInputs.put(guard, false);
+				} else if (repeatedEvents.contains(guard)) {
+					return false;
 				}
 			}
 			
@@ -371,5 +360,30 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Checks if there exists an enabled monitor gate for a given guard.
+	 * @param guard the guard to be checked
+	 * @param disabledInputs a list of inputs that are disabled in a give state
+	 * @return true iff there are no monitors or if at least one monitor gate is not disabled
+	 */
+	private boolean hasEnabledMonitor(FaultTreeNode guard, Map<FaultTreeNode, Boolean> disabledInputs) {
+		List<FaultTreeNode> monitors = ftHolder.getNodes(guard, EdgeType.MONITOR);
+		
+		// If there are no monitor gates in the first place
+		// we assume that the npde is always fully observable
+		if (monitors.isEmpty()) {
+			return true;
+		}
+		
+		for (FaultTreeNode monitor : monitors) {
+			Boolean repairLabel = disabledInputs.get(monitor);
+			if (repairLabel == null || repairLabel) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
