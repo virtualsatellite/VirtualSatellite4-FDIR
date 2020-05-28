@@ -256,12 +256,48 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
 	}
 	
+	@Test 
+	public void testDisabledDueToFailedMonitor() {
+		final int INITIAL_STATES = 3;
+		final int RESULTING_STATES = 1;
+		final int RESULTING_TRANSITIONS = 1; 
+		
+		Fault fault = new Fault(concept);
+		Fault fault1 = new Fault(concept);
+		
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
+		FaultTreeNode monitor = ftBuilder.createGate(fault, FaultTreeNodeType.MONITOR);
+		ftBuilder.connectObserver(fault, fault1, monitor);
+		
+		// initial recovery automaton with non-empty recovery action list
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		
+		raHelper.createStates(ra, INITIAL_STATES); 
+		
+		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		raHelper.assignInputs(transition01, monitor);
+		
+		FaultEventTransition transition12 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(2));
+		raHelper.assignInputs(transition12, fault1);
+		
+		FaultTreeNode spare = ftBuilder.createGate(fault, FaultTreeNodeType.SPARE);
+		ClaimAction action = new ClaimAction(concept);
+		action.setClaimSpare(spare);
+		
+		raHelper.assignAction(transition01, action.copy());
+		raHelper.assignAction(transition12, action.copy());
+		
+		minimizer.minimize(ra, fault);
+		
+		assertEquals(RESULTING_STATES, ra.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+	}
+	
 	@Test
 	public void testComplete() {
-		
 		final int INITIAL_STATES = 5;
 		final int RESULTING_STATES = 3; 
-		final int RESULTING_TRANSITIONS = 8; 
+		final int RESULTING_TRANSITIONS = 6;
 		
 		Fault fault1 = new Fault(concept);
 		fault1.setName("Fault1");

@@ -12,7 +12,6 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,8 +78,8 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				if (isRepeated) {
 					for (FaultTreeNode guard : transitionHolder.getGuards()) {
 						if (ftHolder != null) {
-							List<FaultTreeNode> monitoredNode = ftHolder.getNodes(guard, EdgeType.MONITOR);
-							if (monitoredNode.isEmpty()) {
+							List<FaultTreeNode> monitors = ftHolder.getNodes(guard, EdgeType.MONITOR);
+							if (monitors.isEmpty()) {
 								isRepeated = false;
 								break;
 							}
@@ -345,11 +344,26 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	private boolean isDisabled(State state, Collection<FaultTreeNode> guards, boolean isRepair) {
 		Map<FaultTreeNode, Boolean> disabledInputs = mapStateToDisabledInputs.get(state);
 		
-		if (!Collections.disjoint(guards, repeatedEvents)) {
-			return false;
-		}
-		
 		for (FaultTreeNode guard : guards) {
+			if (ftHolder != null) {
+				List<FaultTreeNode> monitors = ftHolder.getNodes(guard, EdgeType.MONITOR);
+				if (!monitors.isEmpty()) {
+					boolean allMonitorsDisabled = true;
+					for (FaultTreeNode monitor : monitors) {
+						Boolean repairLabel = disabledInputs.get(monitor);
+						if (repairLabel == null || repairLabel) {
+							allMonitorsDisabled = false;
+							break;
+						}
+					}
+					if (allMonitorsDisabled) {
+						disabledInputs.put(guard, false);
+					} else if (repeatedEvents.contains(guard)) {
+						return false;
+					}
+				}
+			}
+			
 			Boolean repairLabel = disabledInputs.get(guard);
 			
 			if (!Objects.equals(repairLabel, isRepair)) {
