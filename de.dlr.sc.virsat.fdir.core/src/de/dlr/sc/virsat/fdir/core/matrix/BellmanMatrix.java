@@ -64,11 +64,7 @@ public class BellmanMatrix extends TransitionMatrix {
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = mc.getStates().get(i);
 			if (state.isMarkovian() && !mc.getFinalStates().contains(state)) {
-				if (!failableStates.contains(state)) {
-					inititalVector[i] = Double.POSITIVE_INFINITY;
-				} else {
-					inititalVector[i] = 1 / mc.getExitRateForState(state);
-				}
+				inititalVector[i] = failableStates.contains(state) ? 1 / mc.getExitRateForState(state) : Double.POSITIVE_INFINITY;
 			}
 		}
 		return inititalVector;

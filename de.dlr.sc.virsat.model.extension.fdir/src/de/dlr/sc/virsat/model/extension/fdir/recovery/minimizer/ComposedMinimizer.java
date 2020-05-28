@@ -52,15 +52,4 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 		composedMinimizer.addMinimizer(new CleanMinimizer());
 		return composedMinimizer;
 	}
-	
-	
-	/**
-	 * Returns a composed minimizer as a series of minimizers  
-	 * @return composed minimizer
-	 */
-	public static ComposedMinimizer createEndMinimizer() {
-		ComposedMinimizer composedMinimizer = new ComposedMinimizer();
-		composedMinimizer.addMinimizer(new FinalStateMinimizer());
-		return composedMinimizer;
-	}
 }

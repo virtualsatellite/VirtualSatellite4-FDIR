@@ -168,7 +168,7 @@ public class DFTModularization {
 			
 			boolean shouldModelCheck = module.getModuleNodes().size() > 1;
 			if (!shouldModelCheck) {
-				FaultTreeNode moduleRoot = module.getModuleNodes().get(0).getFaultTreeNode();
+				FaultTreeNode moduleRoot = module.getModuleRoot().getFaultTreeNode();
 				
 				if (moduleRoot instanceof Fault) {
 					shouldModelCheck = !((Fault) moduleRoot).getBasicEvents().isEmpty();

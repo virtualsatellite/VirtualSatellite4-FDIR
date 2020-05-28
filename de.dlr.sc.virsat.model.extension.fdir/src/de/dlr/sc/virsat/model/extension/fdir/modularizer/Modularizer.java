@@ -35,6 +35,9 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class Modularizer implements IModularizer {
 
+	private static final Comparator<FaultTreeNodePlus> FTN_PLUS_COMPARATOR = 
+			(ftnPlus1, ftnPlus2) -> ftnPlus1.getFirstVisit() - ftnPlus2.getFirstVisit();
+	
 	private TreeSet<FaultTreeNodePlus> nodePlusTree;
 	private Map<FaultTreeNode, FaultTreeNodePlus> table;
 	private Set<Module> modules;
@@ -52,16 +55,7 @@ public class Modularizer implements IModularizer {
 	 * Default constructor
 	 */
 	public Modularizer() {
-		/* create comparator for sorting FaultTreeNodePlus nodes */
-		Comparator<FaultTreeNodePlus> comparator = new Comparator<FaultTreeNodePlus>() {
-			
-			@Override
-			public int compare(final FaultTreeNodePlus o1, final FaultTreeNodePlus o2) {
-				return o1.getFirstVisit() - o2.getFirstVisit();
-			}
-		};
-		
-		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(comparator);
+		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(FTN_PLUS_COMPARATOR);
 		this.table = new HashMap<FaultTreeNode, FaultTreeNodePlus>();
 	}
 	
@@ -136,7 +130,7 @@ public class Modularizer implements IModularizer {
 			
 			this.addNodeToInternalTree(curr);
 
-			List<FaultTreeNodePlus> children = curr.getChildren().size() == 0 ? this.getChildrenInReverseOrder(curr) : curr.getChildren();
+			List<FaultTreeNodePlus> children = curr.getChildren().isEmpty() ? this.getChildrenInReverseOrder(curr) : curr.getChildren();
 			
 			int numChildrenAddedToStack = 0;
 			
@@ -161,7 +155,7 @@ public class Modularizer implements IModularizer {
 				FaultTreeNodePlus nodePopped = dfsStack.pop();
 				
 				if (nodePopped.hasSpareBelow() || nodePopped.isNondeterministic()) {
-					nodePopped.getSetFrom().stream().forEach(n -> n.setHasSpareBelow());
+					nodePopped.getSetFrom().stream().forEach(FaultTreeNodePlus::setHasSpareBelow);
 				}
 			}
 		}
@@ -174,17 +168,15 @@ public class Modularizer implements IModularizer {
 		this.countTree();
 		/*	DEFAULT optimization
 		 *  start looking for modules at maxDepth - 2 because deepest 2 levels are just faults and their basic events */
-		int startingDepth = this.beOptimizationOn ? this.maxDepth - 2 : this.maxDepth - 1;
+		int depthOffset = this.beOptimizationOn ? 2 : 1;
+		int startingDepth = this.maxDepth - depthOffset;
 		
 		for (int i = startingDepth; i >= 0; i--) {
-			int currDepth = i;
-			
 			for (FaultTreeNodePlus currNode : this.nodePlusTree) {				
 				/* detected a potential module */
-				boolean moduleDetected = (currNode.getDepth() == currDepth) && !currNode.isHarvested();
-				moduleDetected = moduleDetected 
-						&& (this.beOptimizationOn ? (currNode.getFirstVisit() + 2 < currNode.getLastVisit())
-												: (currNode.getFirstVisit() + 1 < currNode.getLastVisit()));
+				boolean moduleDetected = (currNode.getDepth() == i) 
+						&& !currNode.isHarvested()
+						&& (currNode.getFirstVisit() + depthOffset < currNode.getLastVisit());
 				if (moduleDetected) {
 					Module module = this.harvestModule(currNode.getFaultTreeNode());
 					
@@ -226,8 +218,7 @@ public class Modularizer implements IModularizer {
 	 */
 	private List<FaultTreeNodePlus> getChildren(FaultTreeNodePlus node) {
 		List<FaultTreeNode> children = new ArrayList<>(ftHolder.getMapNodeToSubNodes().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
-		children.addAll(ftHolder.getNodes(node.getFaultTreeNode(), EdgeType.BE));
-		children.addAll(ftHolder.getNodes(node.getFaultTreeNode(), EdgeType.DEP));
+		children.addAll(ftHolder.getNodes(node.getFaultTreeNode(), EdgeType.BE, EdgeType.DEP));
 		
 		return children.stream()
 					.map(ftNode -> getOrCreateFaultTreeNodePlus(ftNode, node.getDepth() + 1))

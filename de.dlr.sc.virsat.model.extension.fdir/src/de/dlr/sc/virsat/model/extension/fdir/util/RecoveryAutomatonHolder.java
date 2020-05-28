@@ -51,8 +51,7 @@ public class RecoveryAutomatonHolder {
 		}
 		
 		for (Transition transition : ra.getTransitions()) {
-			TransitionHolder transitionHolder = new TransitionHolder(this, transition);
-			mapTransitionToTransitionHolder.put(transition, transitionHolder);
+			mapTransitionToTransitionHolder.put(transition, new TransitionHolder(this, transition));
 		}
 	}
 	

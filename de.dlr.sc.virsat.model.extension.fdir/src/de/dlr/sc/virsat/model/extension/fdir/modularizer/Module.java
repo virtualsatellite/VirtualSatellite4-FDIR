@@ -9,10 +9,11 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class Module {
 
 	private FaultTreeNodePlus moduleRoot;
 	private ModuleType moduleType;
-	private List<FaultTreeNodePlus> moduleNodes;
+	private Set<FaultTreeNodePlus> moduleNodes;
 	private FaultTreeNode moduleRootCopy;
 	private Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy;
 	private Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal;
@@ -41,7 +42,7 @@ public class Module {
 	 * Default constructor.
 	 */
 	public Module() {
-		this.moduleNodes = new ArrayList<FaultTreeNodePlus>();
+		this.moduleNodes = new HashSet<FaultTreeNodePlus>();
 		this.moduleType = ModuleType.DETERMINISTIC;
 	}
 	
@@ -70,21 +71,15 @@ public class Module {
 	 * @return true iff the node was not in the module nodes before
 	 */
 	boolean addNode(FaultTreeNodePlus node) {
-		if (this.moduleNodes.contains(node)) {
-			return false;
-		}
-		
 		if (this.moduleNodes.isEmpty()) {
 			this.moduleRoot = node;
 		}
-		
-		this.moduleNodes.add(node);
 		
 		if (node.isNondeterministic()) {
 			this.moduleType = ModuleType.NONDETERMINISTIC;
 		}
 		
-		return true;
+		return this.moduleNodes.add(node);
 	}
 	
 	/**
@@ -99,7 +94,7 @@ public class Module {
 	 * Gets the nodes of the modules with the associated meta-information such as visit times
 	 * @return the nodes of the modules with their meta-information
 	 */
-	public List<FaultTreeNodePlus> getModuleNodes() {
+	public Set<FaultTreeNodePlus> getModuleNodes() {
 		return moduleNodes;
 	}
 	
@@ -245,12 +240,7 @@ public class Module {
 	 * @return true if this node is part of the module, false otherwise
 	 */
 	private boolean containsFaultTreeNode(FaultTreeNode ftnode) {
-		for (FaultTreeNodePlus ftPlus : moduleNodes) {
-			if (ftPlus.getFaultTreeNode().equals(ftnode)) {
-				return true;
-			}
-		}
-		return false;
+		return moduleNodes.stream().anyMatch(ftPlus -> ftPlus.getFaultTreeNode().equals(ftnode));
 	}
 	
 	@Override

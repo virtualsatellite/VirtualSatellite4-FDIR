@@ -50,7 +50,6 @@ import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
-	protected ARecoveryAutomatonMinimizer endMinimizer = ComposedMinimizer.createEndMinimizer();
 	protected Modularizer modularizer = new Modularizer();
 	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected Concept concept;
