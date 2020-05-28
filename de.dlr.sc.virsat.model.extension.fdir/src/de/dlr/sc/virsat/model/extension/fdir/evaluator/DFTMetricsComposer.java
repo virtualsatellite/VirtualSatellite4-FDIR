@@ -43,7 +43,6 @@ import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeNodePlus;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 
 /**
@@ -229,12 +228,8 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 		if (result != null) {
 			return;
 		}
-		
-		List<FaultTreeNodePlus> children = module.getModuleRoot().getChildren();
-		List<Module> subModules = children.stream()
-				.map(child -> modularization.getModule(child.getFaultTreeNode()))
-				.collect(Collectors.toList());
-		
+
+		List<Module> subModules = modularization.getSubModules(module);		
 		List<ModelCheckingResult> subModuleResults = new ArrayList<>();
 		for (Module subModule : subModules) {
 			FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(subModule.getRootNode());

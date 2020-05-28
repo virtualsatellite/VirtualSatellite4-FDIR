@@ -40,7 +40,7 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 		List<Transition> transitionsToRemove = new ArrayList<>();
 		
 		for (State state1 : ra.getStates()) {
-			List<Transition> outgoingTransitions1 = new ArrayList<>(raHolder.getStateHolder(state1).getOutgoingTransitions());
+			List<Transition> outgoingTransitions1 = raHolder.getStateHolder(state1).getOutgoingTransitions();
 			if (raHelper.isFinalState(ra, state1, outgoingTransitions1) || !raHelper.isFinalStateEquivalent(ra, outgoingTransitions1)) {
 				continue;
 			}
@@ -67,7 +67,7 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 				}
 			}
 			
-			for (Transition outgoingTransition1 : outgoingTransitions1) {
+			for (Transition outgoingTransition1 : Collections.unmodifiableCollection(outgoingTransitions1)) {
 				raHolder.getTransitionHolder(outgoingTransition1).setTo(state1);
 			}
 		}

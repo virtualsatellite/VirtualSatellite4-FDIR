@@ -253,20 +253,9 @@ public class Module {
 		return false;
 	}
 	
-	/**
-	 * Override of toString()
-	 * @return the string
-	 */
+	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		for (FaultTreeNodePlus node : this.moduleNodes) {
-			sb.append(node.toString());
-			sb.append(", ");
-		}
-		sb.delete(sb.length() - 2, sb.length() - 1);
-		sb.append("}");
-		
-		return sb.toString();
+		String res = moduleNodes.stream().map(FaultTreeNodePlus::toString).collect(Collectors.joining(","));
+		return "{" + res + "}";
 	}
 }
