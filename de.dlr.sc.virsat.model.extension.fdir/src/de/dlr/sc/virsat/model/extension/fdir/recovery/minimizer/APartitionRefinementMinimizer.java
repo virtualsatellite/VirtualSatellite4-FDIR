@@ -33,7 +33,44 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder) {
 		this.raHolder = raHolder;
+		
+		Set<List<State>> blocks = computeBlocks();
+		mergeBlocks(blocks);
 	}
+	
+	/**
+	 * Performs the actual partition refinement algorithm
+	 * to compute the equivalence classes on the recovery automaton.
+	 * Each equivalence class is represented as a "block" list of states.
+	 * @return the computed block partitions
+	 */
+	protected Set<List<State>> computeBlocks() {
+		Set<List<State>> blocks = createInitialBlocks();
+		refineBlocks(blocks);
+		return blocks;
+	}
+	
+	/**
+	 * Refines the given partitions until no more refinement is possible.
+	 * A partition needs to be split into refined partitions if at least two states
+	 * have a different transition profile.
+	 * @param blocks the partitions to be refined-
+	 */
+	protected abstract List<List<State>> refineBlock(List<State> block);
+	
+	/**
+	 * Creates the initial partitions. Each partition contains the states
+	 * that are potentially equivalent. States in different partitions cannot
+	 * be equivalent.
+	 * @return the initial partitions.
+	 */
+	protected abstract Set<List<State>> createInitialBlocks();
+	
+	/**
+	 * Merge all the states in the given partitions
+	 * @param blocks the partitions in which the states should be merged
+	 */
+	protected abstract void mergeBlocks(Set<List<State>> blocks);
 	
 	/**
 	 * Refines the given partitions until no more refinement is possible.
@@ -98,12 +135,4 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 			}
 		}
 	}
-	
-	/**
-	 * Refines the given partitions until no more refinement is possible.
-	 * A partition needs to be split into refined partitions if at least two states
-	 * have a different transition profile.
-	 * @param blocks the partitions to be refined-
-	 */
-	protected abstract List<List<State>> refineBlock(List<State> block);
 }

@@ -40,7 +40,7 @@ public class TransitionHolder {
 		
 		if (transition instanceof TimeoutTransition) {
 			TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
-			StateHolder fromStateHolder = raHolder.getMapStateToStateHolder().get(timeoutTransition.getFrom());
+			StateHolder fromStateHolder = raHolder.getStateHolder(timeoutTransition.getFrom());
 			fromStateHolder.setTimeoutTransition(timeoutTransition);
 		}
 	}

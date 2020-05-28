@@ -104,7 +104,7 @@ public class RecoveryStrategy {
 	 * @return the recovery strategy after reading the fault
 	 */
 	public RecoveryStrategy onFaultsOccured(Collection<FaultTreeNode> faults, boolean isRepair) {
-		StateHolder stateHolder = raHolder.getMapStateToStateHolder().get(currentState);
+		StateHolder stateHolder = raHolder.getStateHolder(currentState);
 		if (!stateHolder.getOutgoingTransitions().isEmpty()) {
 			Set<String> faultUUIDs = faults.stream().map(FaultTreeNode::getUuid).collect(Collectors.toSet());
 			for (Transition transition : stateHolder.getOutgoingTransitions()) {

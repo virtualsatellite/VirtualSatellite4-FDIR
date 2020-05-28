@@ -22,11 +22,9 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
-import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.StateHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
@@ -37,25 +35,18 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
  */
 
 public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinementMinimizer {
-	private RecoveryAutomaton ra;
-	
 	private Map<State, Map<FaultTreeNode, Boolean>> mapStateToDisabledInputs;
 	private Set<FaultTreeNode> repairableEvents;
 	private Set<FaultTreeNode> repeatedEvents;
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
-		super.minimize(raHolder);
-		this.ra = raHolder.getRa();
-		
+	protected Set<List<State>> computeBlocks() {
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		repairableEvents = raHelper.computeRepairableEvents(raHolder);
 		mapStateToDisabledInputs = raHelper.computeDisabledInputs(raHolder);
 		repeatedEvents = computeRepeatedEvents();
 		
-		Set<List<State>> blocks = createInitialBlocks();
-		refineBlocks(blocks);
-		mergeBlocks(blocks);
+		return super.computeBlocks();
 	}
 	
 	/**
@@ -64,7 +55,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 */
 	private Set<FaultTreeNode> computeRepeatedEvents() {
 		Set<FaultTreeNode> repeatedEvents = new HashSet<>();
-		for (Transition transition : ra.getTransitions()) {
+		for (Transition transition : raHolder.getRa().getTransitions()) {
 			if (transition instanceof FaultEventTransition) {
 				FaultEventTransition fte = (FaultEventTransition) transition;
 				
@@ -100,16 +91,11 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		return repeatedEvents;
 	}
 	
-	/**
-	 * Creates the initial partitions. Each partition contains the states
-	 * that are potentially equivalent. States in different partitions cannot
-	 * be equivalent.
-	 * @return the initial partitions.
-	 */
-	private Set<List<State>> createInitialBlocks() {
+	@Override
+	protected Set<List<State>> createInitialBlocks() {
 		Set<List<State>> blocks = new HashSet<>();
 		mapStateToBlock = new HashMap<>();
-		for (State state : ra.getStates()) {
+		for (State state : raHolder.getRa().getStates()) {
 			List<State> block = getBlock(state, blocks);
 			if (!blocks.remove(block)) {
 				block = new ArrayList<>();
@@ -218,16 +204,15 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		return true;
 	}
 	
-	/**
-	 * Merge all the states in the given partitions
-	 * @param blocks the partitions in which the states should be merged
-	 */
-	private void mergeBlocks(Set<List<State>> blocks) {
+	@Override
+	protected void mergeBlocks(Set<List<State>> blocks) {
+		State initial = raHolder.getRa().getInitial();
+		
 		for (List<State> block : blocks) {
 			State state = block.get(0);
 			
-			if (block.contains(ra.getInitial())) {
-				ra.setInitial(state);
+			if (block.contains(initial)) {
+				raHolder.getRa().setInitial(state);
 			}
 			
 			block.remove(state);

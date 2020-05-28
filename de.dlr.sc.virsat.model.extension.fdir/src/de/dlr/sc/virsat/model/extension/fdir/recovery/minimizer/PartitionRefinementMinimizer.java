@@ -17,11 +17,9 @@ import java.util.Map;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
-import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.StateHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
@@ -32,29 +30,13 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
  */
 
 public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer {
-	private RecoveryAutomaton ra;
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
-		super.minimize(raHolder);
-		this.ra = raHolder.getRa();
-		
-		Set<List<State>> blocks = createInitialBlocks();
-		refineBlocks(blocks);
-		mergeBlocks(blocks);
-	}
-	
-	/**
-	 * Creates the initial partitions. Each partition contains the states
-	 * that are potentially equivalent. States in different partitions cannot
-	 * be equivalent.
-	 * @return the initial partitions.
-	 */
-	private Set<List<State>> createInitialBlocks() {
+	protected Set<List<State>> createInitialBlocks() {
 		Set<List<State>> blocks = new HashSet<>();
 		mapStateToBlock = new HashMap<>();
 		Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock = new HashMap<>();
-		for (State state : ra.getStates()) {
+		for (State state : raHolder.getRa().getStates()) {
 			List<State> block = getBlock(state, mapGuardProfileToBlock);
 			if (!blocks.remove(block)) {
 				block = new ArrayList<>();
@@ -152,11 +134,10 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		return toBlock;
 	}
 	
-	/**
-	 * Merge all the states in the given partitions
-	 * @param blocks the partitions in which the states should be merged
-	 */
-	private void mergeBlocks(Set<List<State>> blocks) {
+	@Override
+	protected void mergeBlocks(Set<List<State>> blocks) {
+		State initial = raHolder.getRa().getInitial();
+		
 		// Redirect all transitions between blocks so that they are between the block represenatatives
 		for (List<State> block : blocks) {
 			State state = block.get(0);
@@ -180,8 +161,8 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 				raHolder.getTransitionHolder(timeoutTransition).setTo(blockTimeoutTransition.toState);
 			}
 			
-			if (block.contains(ra.getInitial())) {
-				ra.setInitial(state);
+			if (block.contains(initial)) {
+				raHolder.getRa().setInitial(state);
 			}
 		}
 		

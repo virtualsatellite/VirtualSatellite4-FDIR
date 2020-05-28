@@ -65,7 +65,7 @@ public class StateHolder {
 		if (guardProfile == null) {
 			guardProfile = new HashMap<>();
 			for (Transition transition : outgoingTransitions) {
-				TransitionHolder transitionHolder = raHolder.getMapTransitionToTransitionHolder().get(transition);
+				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
 				String actionLabels = transitionHolder.getActionLabel();
 				if (!actionLabels.isEmpty()) {
 					guardProfile.put(transitionHolder.getGuards(), actionLabels);
