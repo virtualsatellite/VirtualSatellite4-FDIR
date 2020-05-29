@@ -10,7 +10,9 @@
 
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 /**
@@ -26,24 +28,35 @@ public abstract class ARecoveryAutomatonMinimizer {
 	/**
 	 * Main method to override and perform the actual minimization
 	 * @param raHolder the recovery automaton to minimize
+	 * @param ftHolder the fault tree upon which the recovery automaton is based. Choose null
+	 * if no additional fault tree information is supplied.
 	 */
-	protected abstract void minimize(RecoveryAutomatonHolder raHolder);
+	protected abstract void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder);
+	
+	/**
+	 * Main interface minimization method
+	 * @param ra the recovery automaton to be minimized
+	 * @param root the root of the associated fault tree
+	 */
+	public void minimize(RecoveryAutomaton ra, FaultTreeNode root) {
+		statistics = new MinimizationStatistics();
+		statistics.time = System.currentTimeMillis();
+		statistics.removedStates = ra.getStates().size();
+		statistics.removedTransitions = ra.getTransitions().size();
+		
+		minimize(new RecoveryAutomatonHolder(ra), new FaultTreeHolder(root));
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.removedStates = statistics.removedStates - ra.getStates().size();
+		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
+	}
 	
 	/**
 	 * Main interface minimization method
 	 * @param ra the recovery automaton to be minimized
 	 */
 	public void minimize(RecoveryAutomaton ra) {
-		statistics = new MinimizationStatistics();
-		statistics.time = System.currentTimeMillis();
-		statistics.removedStates = ra.getStates().size();
-		statistics.removedTransitions = ra.getTransitions().size();
-		
-		minimize(new RecoveryAutomatonHolder(ra));
-		
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		statistics.removedStates = statistics.removedStates - ra.getStates().size();
-		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
+		minimize(new RecoveryAutomatonHolder(ra), null);
 	}
 	
 	/**

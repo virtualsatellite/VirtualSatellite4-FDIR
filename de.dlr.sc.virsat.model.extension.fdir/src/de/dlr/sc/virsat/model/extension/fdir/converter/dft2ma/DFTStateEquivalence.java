@@ -48,8 +48,7 @@ public class DFTStateEquivalence {
 			if (state.isEquivalent(other)) {
 				return other;
 			}
-		}
-		
+		}	
 	
 		states.add(state);
 		return state;

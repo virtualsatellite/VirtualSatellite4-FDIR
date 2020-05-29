@@ -246,8 +246,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2ObsBERepairUnreliable.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 11;
-		final int EXPECTED_COUNT_TRANSITIONS = 21;
+		final int EXPECTED_COUNT_STATES = 9;
+		final int EXPECTED_COUNT_TRANSITIONS = 18;
 		final double EXPECTED_MTTF = 0.916584877377345;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
@@ -386,7 +386,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		final double EXPECTED_SSA = 0.3265228816711657;
 		final int EXPECTED_COUNT_STATES = 5;
-		final int EXPECTED_COUNT_TRANSITIONS = 7;
+		final int EXPECTED_COUNT_TRANSITIONS = 9;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
@@ -402,9 +402,9 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final double EXPECTED_SSA = 0.4940303888537152;
+		final double EXPECTED_SSA = 0.4937571763091959;
 		final int EXPECTED_COUNT_STATES = 9;
-		final int EXPECTED_COUNT_TRANSITIONS = 15;
+		final int EXPECTED_COUNT_TRANSITIONS = 17;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
@@ -420,9 +420,9 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final double EXPECTED_SSA = 0.2882806687913929;
+		final double EXPECTED_SSA = 0.180992517069135;
 		final int EXPECTED_COUNT_STATES = 11;
-		final int EXPECTED_COUNT_TRANSITIONS = 20;
+		final int EXPECTED_COUNT_TRANSITIONS = 21;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		

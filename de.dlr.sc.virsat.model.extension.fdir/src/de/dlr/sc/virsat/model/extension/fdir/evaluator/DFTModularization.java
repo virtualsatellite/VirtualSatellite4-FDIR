@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Queue;
 import java.util.Set;
 
@@ -167,7 +168,7 @@ public class DFTModularization {
 			
 			boolean shouldModelCheck = module.getModuleNodes().size() > 1;
 			if (!shouldModelCheck) {
-				FaultTreeNode moduleRoot = module.getModuleNodes().get(0).getFaultTreeNode();
+				FaultTreeNode moduleRoot = module.getModuleRoot().getFaultTreeNode();
 				
 				if (moduleRoot instanceof Fault) {
 					shouldModelCheck = !((Fault) moduleRoot).getBasicEvents().isEmpty();
@@ -194,5 +195,18 @@ public class DFTModularization {
 		}
 		
 		return modulesToModelCheck;
+	}
+	
+	/**
+	 * Gets the sub modules for a given module
+	 * @param module the module
+	 * @return the submodules of the module
+	 */
+	public List<Module> getSubModules(Module module) {
+		List<FaultTreeNodePlus> children = module.getModuleRoot().getChildren();
+		List<Module> subModules = children.stream()
+				.map(child -> getModule(child.getFaultTreeNode()))
+				.collect(Collectors.toList());
+		return subModules;
 	}
 }

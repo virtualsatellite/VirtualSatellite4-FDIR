@@ -84,6 +84,8 @@ public class MatrixFactory {
 		return tm;
 	}
 	
+	private static final int[] EMPTY_INDEX_LIST = new int[0];
+	private static final double[] EMPTY_RATES_LIST = new double[0];
 	
 	/**
 	 * Creates the iteration matrix for computing the Mean Time To Failure (MTTF)
@@ -111,8 +113,8 @@ public class MatrixFactory {
 					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() / exitRate;
 				}
 			} else {
-				tm.getStatePredIndices()[state.getIndex()] = new int[0];
-				tm.getStatePredRates()[state.getIndex()] = new double[0];
+				tm.getStatePredIndices()[state.getIndex()] = EMPTY_INDEX_LIST;
+				tm.getStatePredRates()[state.getIndex()] = EMPTY_RATES_LIST;
 			}
 		}
 		return tm;

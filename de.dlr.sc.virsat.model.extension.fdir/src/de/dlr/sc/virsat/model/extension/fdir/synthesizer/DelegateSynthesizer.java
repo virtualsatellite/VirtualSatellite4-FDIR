@@ -40,11 +40,6 @@ public class DelegateSynthesizer implements ISynthesizer {
 	 */
 	public ISynthesizer chooseSynthesizer(Fault fault) {
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
-		
-		if (ftHolder.isPartialObservable()) {
-			return poSynthesizer;
-		} else {
-			return basicSynthesizer;
-		}
+		return ftHolder.isPartialObservable() ? poSynthesizer : basicSynthesizer;
 	}
 }

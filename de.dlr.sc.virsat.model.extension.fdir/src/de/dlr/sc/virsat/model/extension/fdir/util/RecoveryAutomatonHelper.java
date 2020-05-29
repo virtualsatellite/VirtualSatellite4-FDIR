@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -123,12 +122,10 @@ public class RecoveryAutomatonHelper {
 	/**
 	 * Adds an action to a transition  
 	 * @param transition the transition to which the action is added
-	 * @param recoveryAction the action that will be assigned to the transition 
-	 * @return assignedActions present state recovery actions 
+	 * @param recoveryAction the action that will be assigned to the transition
 	 */
-	public IBeanList<RecoveryAction> assignAction(Transition transition, RecoveryAction recoveryAction) {
+	public void assignAction(Transition transition, RecoveryAction recoveryAction) {
 		transition.getRecoveryActions().add(recoveryAction); 
-		return transition.getRecoveryActions();
 	}
 	
 	/**

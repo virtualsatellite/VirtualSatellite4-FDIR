@@ -9,8 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
@@ -58,42 +57,18 @@ public  class FaultEventTransition extends AFaultEventTransition {
 		super(categoryAssignment);
 	}
 	
-	/**
-	 * Checks whether transitions have equivalent guards 
-	 * @param transition to which the guards with 
-	 * @return true if guards are equivalent, and false otherwise  
-	 */
-	public boolean hasEquivalentGuards(FaultEventTransition transition) {
-		Set<FaultTreeNode> guards = new HashSet<>(getGuards());
-		Set<FaultTreeNode> guardsOther = new HashSet<>(transition.getGuards());
-		
-		return guards.equals(guardsOther);
-	}
-	
+
 	@Override
-	public boolean isEquivalentTransition(Transition transition) {
-		return super.isEquivalentTransition(transition) 
-				&& transition instanceof FaultEventTransition
-				&& hasEquivalentGuards((FaultEventTransition) transition);
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder(); 
-		
+	public String getGuardLabel() {
 		String faultType = getIsRepair() ? "R" : "F";
-		sb.append("{");
 		
-		for (FaultTreeNode guard : getGuards()) {
+		String guards = getGuards().stream().map(guard -> {
 			StructuralElementInstance guardSei = VirSatEcoreUtil.getEContainerOfClass(guard.getATypeInstance(), StructuralElementInstance.class);
 			String parentPrefix = guardSei != null ? (guard.getParent().getName() + ".") : "";
-			sb.append(faultType + "(" +  parentPrefix + guard.toString() + ")");
-		}
-
-		sb.append("}");
-		sb.append(super.toString());
+			return faultType + "(" +  parentPrefix + guard.toString() + ")";
+		}).sorted().collect(Collectors.joining());
 		
-		return sb.toString();
+		return "{" + guards + "}";
 	}
 
 }

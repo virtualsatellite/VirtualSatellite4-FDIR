@@ -115,7 +115,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			tmTerminal = matrixFactory.getTransitionMatrix(mc, true, delta);
 		}
 		
-		
 		subMonitor.setTaskName("Running Markov Checker on Model");					
 		
 		IMatrixIterator mtxIterator = tmTerminal.getIterator(probabilityDistribution, eps);

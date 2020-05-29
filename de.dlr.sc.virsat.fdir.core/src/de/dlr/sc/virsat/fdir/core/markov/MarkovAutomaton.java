@@ -73,14 +73,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return a list of markov transitions
 	 */
 	public List<MarkovTransition<S>> getTransitions(Object event) {
-		List<MarkovTransition<S>> transitions = mapEventToTransitions.get(event);
-		
-		if (transitions == null) {
-			transitions = new ArrayList<>();
-			mapEventToTransitions.put(event, transitions);
-		}
-		
-		return transitions;
+		return mapEventToTransitions.computeIfAbsent(event, key -> new ArrayList<>());
 	}
 
 	/**
@@ -155,7 +148,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return the created transition
 	 */
 	private MarkovTransition<S> addTransition(Object event, S from, S to, double rate, boolean isMarkovian) {
-		MarkovTransition<S> t = new MarkovTransition<>(from, to, rate, event, isMarkovian);
+		MarkovTransition<S> t = new MarkovTransition<>(from, to, rate, event);
 		List<MarkovTransition<S>> transitions = getTransitions(event);
 		
 		transitions.add(t);
@@ -226,21 +219,14 @@ public class MarkovAutomaton<S extends MarkovState> {
 		mapStateToPredTransitions.remove(state);
 	}
 	
-	
 	/**
+	 * Computes the total exit rate for a markovian state
 	 * @param state Markov state
 	 * @return Returns exit rate for state 
 	 */
 	public double getExitRateForState(MarkovState state) {
-		List<?> transitions = getSuccTransitions(state);
-		
-		double exitRate = 0;
-		for (int j = 0; j < transitions.size(); ++j) {
-			@SuppressWarnings("unchecked")
-			MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
-			exitRate += transition.getRate();
-		}
-		return exitRate;
+		List<MarkovTransition<S>> succTransitions = getSuccTransitions(state);
+		return succTransitions.stream().mapToDouble(MarkovTransition::getRate).reduce(0, Double::sum);
 	}
 	
 	@Override
@@ -256,15 +242,13 @@ public class MarkovAutomaton<S extends MarkovState> {
 	public String toDot() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("digraph ma {\n");
-		
-		for (MarkovState state : states) {
-			sb.append(state.toString() + "\n");
-		}
-		
-		for (MarkovTransition<S> transition : getTransitions()) {
-			sb.append(transition.getFrom().getIndex() + "->" + transition.getTo().getIndex() + " [label=\"" + (transition.getEvent() != null ? transition.getEvent().toString() : "") + " : " + transition.getRate() +  "\"]\n");
-		}
-		
+		sb.append(getStates().stream().map(MarkovState::toString).collect(Collectors.joining("\n")) + "\n");
+		sb.append(getTransitions().stream().map(transition ->
+					transition.getFrom().getIndex() 
+					+ "->" + transition.getTo().getIndex() 
+					+ " [label=\"" + String.valueOf(transition.getEvent()) 
+					+ " : " + transition.getRate() +  "\"]")
+				.collect(Collectors.joining("\n")) + "\n");
 		sb.append("}");
 		return sb.toString();
 	}
@@ -274,14 +258,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return true iff the Markov Automaton is a CTMC
 	 */
 	public boolean isCTMC() {
-		for (MarkovState state : getStates()) {
-			for (MarkovTransition<? extends MarkovState> transition : getSuccTransitions(state)) {
-				if (!transition.isMarkovian()) {
-					return false;
-				}
-			}
-		}	
-		return true;
+		return getStates().stream().allMatch(MarkovState::isMarkovian);
 	}
 
 	/**

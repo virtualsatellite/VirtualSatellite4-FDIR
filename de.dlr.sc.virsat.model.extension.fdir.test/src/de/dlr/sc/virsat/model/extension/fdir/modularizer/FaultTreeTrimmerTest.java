@@ -7,26 +7,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.trimmer;
+package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
+
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 
 
 /**
@@ -36,22 +33,15 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
  */
 public class FaultTreeTrimmerTest extends ATestCase {
 	
-	protected FaultTreeTrimmer fttrim;
+	private FaultTreeTrimmer fttrim;
+	private Modularizer modularizer;
 	
 	@Before
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		fttrim = new FaultTreeTrimmer();
-	}
-	
-	@Test
-	public void testNull() {
-		FaultTree result = fttrim.trimFaultTree(null);
-		assertNull(result);
-		
-		Set<Module> resultSet = fttrim.trimModulesAll(null);
-		assertNull(resultSet);
+		modularizer = new Modularizer();
 	}
 	
 	@Test
@@ -63,9 +53,7 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	@Test
 	public void testDeterministicTree() throws IOException {
 		Fault rootDeterministic = createDFT("/resources/galileo/and2or.dft");
-		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootDeterministic.getFaultTree());
-		modules.forEach(module -> module.constructFaultTreeCopy());
 		modules = fttrim.trimModulesAll(modules);
 		
 		final int NUM_NONDET_MODULES = 0;
@@ -75,9 +63,7 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	@Test
 	public void testTrimNondeterministicModules() throws IOException {
 		Fault rootNestedComplex = createDFT("/resources/galileo/nestedPand2.dft");
-		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
-		modules.forEach(module -> module.constructFaultTreeCopy());
 		modules = fttrim.trimModulesAll(modules);
 		
 		final int NUM_NONDET_MODULES = 1;
@@ -87,31 +73,27 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	@Test
 	public void testTrimCM2() throws IOException {
 		Fault rootNestedComplex = createDFT("/resources/galileo/cm2.dft");
-		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
-		modules.forEach(module -> module.constructFaultTreeCopy());
 		modules = fttrim.trimModulesAll(modules);
 		
 		final int NUM_NONDET_MODULES = 4;
 		assertEquals(NUM_NONDET_MODULES, modules.size());
 	}
 	
-	@Test
+	@Test(expected = NoSuchElementException.class)
 	public void testTrimSideNode() throws IOException {
 		Fault rootSideNode = createDFT("/resources/galileo/sharedSpareWithSideNode.dft");
-		Modularizer modularizer = new Modularizer();
 		Set<Module> modules = modularizer.getModules(rootSideNode.getFaultTree());
-		modules.forEach(m -> m.constructFaultTreeCopy());
 		
+		modules = fttrim.trimModulesAll(modules);
 		final int NUM_NODES_IN_UNWANTED_MODULE = 2;
 		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_UNWANTED_MODULE)
 				.findAny().get();
-		FaultTreeHolder fthold = new FaultTreeHolder(module.getRootNodeCopy().getFault());
-		FaultTreeNode sideNode = fthold.getNodeByName("side node", Fault.class);
 		
-		modules = fttrim.trimModulesAll(modules);
 		assertFalse(modules.isEmpty());
-		assertFalse(ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).contains(sideNode));
+		
+		FaultTreeHolder fthold = new FaultTreeHolder(module.getRootNodeCopy().getFault());
+		fthold.getNodeByName("side node", Fault.class);
 	}
 
 }

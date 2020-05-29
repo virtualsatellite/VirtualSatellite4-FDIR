@@ -30,7 +30,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
-import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 
 /**
  * This helper class holds fault tree data and provides interferable data
@@ -158,7 +157,7 @@ public class FaultTreeHolder {
 	private List<FaultTreeNode> processMonitors(Fault fault) {
 		List<FaultTreeNode> monitorGates = new ArrayList<>();
 		for (FaultTreeEdge obs : fault.getFaultTree().getObservations()) {
-			MONITOR monitor = (MONITOR) obs.getTo();
+			FaultTreeNode monitor = obs.getTo();
 			FaultTreeNode monitored = obs.getFrom();
 			
 			NodeHolder monitorHolder = getNodeHolder(monitored);
@@ -179,8 +178,7 @@ public class FaultTreeHolder {
 	 */
 	private void processBasicEvents(Fault fault) {
 		for (BasicEvent basicEvent : fault.getBasicEvents()) {
-			BasicEventHolder beHolder = new BasicEventHolder(basicEvent);
-			mapBEToBEHolders.put(basicEvent, beHolder);
+			mapBEToBEHolders.put(basicEvent, new BasicEventHolder(basicEvent));
 					
 			NodeHolder parentHolder = getNodeHolder(basicEvent);
 			parentHolder.getNodes(EdgeType.PARENT).add(fault);

@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -25,7 +24,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 
 /**
  * Helper functions for work with static/dynamic fault trees;
@@ -222,17 +220,6 @@ public class FaultTreeHelper {
 			edges.addAll(getEdges(edgeType, fault.getFaultTree()));
 		}
 		return edges;
-	}
-
-	/**
-	 * Checks whether transition contains equivalent recovery actions with the given transition
-	 * @param recoveryActions1 to check the recovery actions
-	 * @param recoveryActions2 to check the recovery actions
-	 * @return true if contains, false otherwise 
-	 */
-	public boolean hasEquivalentRecoveryActions(List<RecoveryAction> recoveryActions1, List<RecoveryAction> recoveryActions2) {
-		return recoveryActions1.stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining())
-				.equals(recoveryActions2.stream().map(RecoveryAction::getActionLabel).collect(Collectors.joining()));
 	}
 	
 	/**

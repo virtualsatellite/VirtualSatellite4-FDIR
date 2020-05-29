@@ -44,15 +44,13 @@ public class RecoveryAutomatonHolder {
 		Map<State, List<Transition>> mapStateToOutgoingTransitions = raHelper.getCurrentTransitions(ra);
 
 		for (State state : ra.getStates()) {
-			StateHolder stateHolder = new StateHolder(this, state);
-			stateHolder.getIncomingTransitions().addAll(mapStateToIncomingTransitions.get(state));
-			stateHolder.getOutgoingTransitions().addAll(mapStateToOutgoingTransitions.get(state));
-			mapStateToStateHolder.put(state, stateHolder);
+			List<Transition> incomingTransitions = mapStateToIncomingTransitions.get(state);
+			List<Transition> outgoingTransitions = mapStateToOutgoingTransitions.get(state);
+			mapStateToStateHolder.put(state, new StateHolder(this, state, incomingTransitions, outgoingTransitions));
 		}
 		
 		for (Transition transition : ra.getTransitions()) {
-			TransitionHolder transitionHolder = new TransitionHolder(this, transition);
-			mapTransitionToTransitionHolder.put(transition, transitionHolder);
+			mapTransitionToTransitionHolder.put(transition, new TransitionHolder(this, transition));
 		}
 	}
 	

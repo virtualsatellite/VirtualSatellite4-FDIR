@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -104,11 +103,12 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * @return the set of next ma states that should be inserted into the ra
 	 */
 	private List<S> handleState(S state, Map<S, List<MarkovTransition<S>>> schedule, List<Transition> createdTransitions) {
-		List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
+		List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
 		
-		if (state.isMarkovian()) {
-			List<MarkovTransition<S>> internalTransitions = getInternalOutgoingTransitions(state);
-			createPseudoSynchronizationTransitions(state, internalTransitions, markovianTransitions);
+		MarkovTransition<S> internalTransition = getInternalOutgoingTransition(state);
+		if (internalTransition != null) {
+			markovianTransitions = new ArrayList<>(markovianTransitions);
+			createPseudoSynchronizationTransitions(state, internalTransition, markovianTransitions);
 		}
 		
 		List<S> nextStates = new ArrayList<>();
@@ -117,18 +117,15 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			
 			if (!markovianTransition.getTo().isMarkovian()) {
 				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
-				Iterator<MarkovTransition<S>> itr = bestTransitionGroup.iterator();
-				if (itr.hasNext()) {
-					MarkovTransition<S> representativeTransition = itr.next();
-					
-					Transition raTransition = createTransition(markovianTransition, representativeTransition);
-					createdTransitions.add(raTransition);
-					
-					for (MarkovTransition<S> bestTransition : bestTransitionGroup) {
-						toState = bestTransition.getTo();
-						mapMarkovStateToRaState.put(toState, raTransition.getTo());
-						nextStates.add(toState);
-					}
+				MarkovTransition<S> representativeTransition = bestTransitionGroup.iterator().next();
+				
+				Transition raTransition = createTransition(markovianTransition, representativeTransition);
+				createdTransitions.add(raTransition);
+				
+				for (MarkovTransition<S> bestTransition : bestTransitionGroup) {
+					toState = bestTransition.getTo();
+					mapMarkovStateToRaState.put(toState, raTransition.getTo());
+					nextStates.add(toState);
 				}
 			} else {
 				Transition raTransition = createTransition(markovianTransition, null);
@@ -148,35 +145,42 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * That means we need to create a corresponding transition in the recovery automaton
 	 * to react to the event.
 	 * @param state the state to create the pseudo transitions for
-	 * @param internalTransitions the internal transitions of the state
+	 * @param the internal transition of the state
 	 * @param markovianTransitions the current markovian transitions
 	 */
-	protected void createPseudoSynchronizationTransitions(S state, List<MarkovTransition<S>> internalTransitions, List<MarkovTransition<S>> markovianTransitions) {
+	protected void createPseudoSynchronizationTransitions(S state, MarkovTransition<S> internalTransition, List<MarkovTransition<S>> markovianTransitions) {
 		Set<S> internalStates = new HashSet<>();
 		internalStates.add(state);
-		Queue<MarkovTransition<S>> internalTransitionsToProcess = new LinkedList<>(internalTransitions);
+		Queue<MarkovTransition<S>> internalTransitionsToProcess = new LinkedList<>();
+		internalTransitionsToProcess.add(internalTransition);
 		
 		while (!internalTransitionsToProcess.isEmpty()) {
-			MarkovTransition<S> internalTransition = internalTransitionsToProcess.poll();
+			internalTransition = internalTransitionsToProcess.poll();
+			
+			if (internalTransition == null) {
+				continue;
+			}
+			
 			S internalState = internalTransition.getTo();
 			
 			if (internalStates.add(internalState)) {
 				List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
 				for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
-					if (internalState.isMarkovian() && !isInternalTransition(internalMarkovTransition) && !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
+					if (!isInternalTransition(internalMarkovTransition) 
+							&& !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
 						MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
 						pseudoTransition.setFrom(state);
 						markovianTransitions.add(pseudoTransition);
 					}
 				}
 				
-				internalTransitionsToProcess.addAll(getInternalOutgoingTransitions(internalState));
+				internalTransitionsToProcess.add(getInternalOutgoingTransition(internalState));
 			}
 		}
 	}
 	
 	/**
-	 * Checks if a given transition is internal
+	 * Checks if a given transition is internal (no guards have been observed)
 	 * @param markovianTransition the transition
 	 * @return true iff the transition has no guards
 	 */
@@ -187,31 +191,25 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			Entry<Collection<? extends FaultTreeNode>, Boolean> genericEvent = (Entry<Collection<? extends FaultTreeNode>, Boolean>) event;
 			Collection<? extends FaultTreeNode> guards = genericEvent.getKey();
 			return guards.isEmpty();
-		} else if (event instanceof Collection) {
-			Collection<?> recoveryActions = (Collection<?>) event;
-			return recoveryActions.isEmpty();
 		}
 		
 		return false;
 	}
 	
 	/**
-	 * Checks for internal transitions. A state can only have up to two internal transitions:
-	 * - A forward internal transition
-	 * - A backward internal transition
+	 * Checks for an internal outgoing transition
 	 * @param state set of markovian state
 	 * @return an internal transition if there is one, null otherwise
 	 */
-	protected List<MarkovTransition<S>> getInternalOutgoingTransitions(MarkovState state) {
-		List<MarkovTransition<S>> internalTransitions = new ArrayList<>();
+	protected MarkovTransition<S> getInternalOutgoingTransition(MarkovState state) {
 		List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
 		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
 			if (isInternalTransition(markovianTransition)) {
-				internalTransitions.add(markovianTransition);
+				return markovianTransition;
 			}
 		}
 		
-		return internalTransitions;
+		return null;
 	}
 	
 	/**
@@ -220,14 +218,8 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * @param markovTransitions the list of markov transitions
 	 * @return true iff an event in the list corresponds to the given event
 	 */
-	protected boolean hasEvent(Object event, List<MarkovTransition<S>> markovTransitions) {
-		for (MarkovTransition<S> markovTransition : markovTransitions) {
-			if (markovTransition.getEvent().equals(event)) {
-				return true;
-			}
-		}
-		
-		return false;
+	protected boolean hasEvent(Object event, List<MarkovTransition<S>> markovTransitions) {		
+		return markovTransitions.stream().anyMatch(transition -> transition.getEvent().equals(event));
 	}
 
 	/**
@@ -241,13 +233,13 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		S toState = nondetTransition == null ? markovianTransition.getTo() : nondetTransition.getTo();
 		Object event = markovianTransition.getEvent();
 		
-		Transition transition = null;
-		if (isInternalTransition(markovianTransition)) {
-			transition = createTimeoutTransition(fromState, toState, 1 / markovianTransition.getRate());
-		} else {
-			transition = createFaultEventTransition(fromState, toState, event);
-		}
+		State fromRaState = getOrCreateRecoveryAutomatonState(ra, fromState);
+		State toRaState = getOrCreateRecoveryAutomatonState(ra, toState);
 		
+		Transition transition = isInternalTransition(markovianTransition)
+				? createTimeoutTransition(fromRaState, toRaState, 1 / markovianTransition.getRate())
+				: createFaultEventTransition(fromRaState, toRaState, event);
+
 		if (nondetTransition != null) {
 			@SuppressWarnings("unchecked")
 			List<RecoveryAction> recoveryActions = (List<RecoveryAction>) nondetTransition.getEvent();
@@ -261,14 +253,12 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	
 	/**
 	 * Creates an RA timed transition corresponding to an internal Markovian Transition
-	 * @param from the from state
-	 * @param to the to state
+	 * @param fromRaState the from state
+	 * @param toRaState the to state
 	 * @param time the time
 	 * @return the created RA transition
 	 */
-	protected TimeoutTransition createTimeoutTransition(S from, S to, double time) {
-		State fromRaState = getOrCreateRecoveryAutomatonState(ra, from);
-		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
+	protected TimeoutTransition createTimeoutTransition(State fromRaState, State toRaState, double time) {
 		TimeoutTransition raTransition = raHelper.createTimeoutTransition(ra, fromRaState, toRaState, time);
 		raTransition.setName(fromRaState.getName() + toRaState.getName());
 		return raTransition;
@@ -276,15 +266,13 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	
 	/**
 	 * Creates an RA transition corresponding to a Markovian Transition
-	 * @param from the from state
-	 * @param to the to state
+	 * @param fromRaState the from state
+	 * @param toRaState the to state
 	 * @param event the event
 	 * @return the created RA transition
 	 */
 	@SuppressWarnings("unchecked")
-	protected FaultEventTransition createFaultEventTransition(S from, S to, Object event) {
-		State fromRaState = getOrCreateRecoveryAutomatonState(ra, from);
-		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
+	protected FaultEventTransition createFaultEventTransition(State fromRaState, State toRaState, Object event) {
 		FaultEventTransition raTransition = raHelper.createFaultEventTransition(ra, fromRaState, toRaState);
 		
 		if (event instanceof Entry) {

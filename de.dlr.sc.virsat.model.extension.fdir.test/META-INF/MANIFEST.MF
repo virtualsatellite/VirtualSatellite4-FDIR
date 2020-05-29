@@ -19,7 +19,6 @@ Export-Package: de.dlr.sc.virsat.model.extension.fdir.calculation,
  de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer,
  de.dlr.sc.virsat.model.extension.fdir.synthesizer,
  de.dlr.sc.virsat.model.extension.fdir.test,
- de.dlr.sc.virsat.model.extension.fdir.trimmer,
  de.dlr.sc.virsat.model.extension.fdir.util,
  de.dlr.sc.virsat.model.extension.fdir.validator
 Require-Bundle: org.junit,

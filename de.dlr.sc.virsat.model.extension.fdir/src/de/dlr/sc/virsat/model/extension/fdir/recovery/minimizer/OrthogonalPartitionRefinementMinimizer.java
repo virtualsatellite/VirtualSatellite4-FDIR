@@ -11,7 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,9 +22,10 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.StateHolder;
@@ -37,25 +38,25 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
  */
 
 public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinementMinimizer {
-	private RecoveryAutomaton ra;
-	
 	private Map<State, Map<FaultTreeNode, Boolean>> mapStateToDisabledInputs;
 	private Set<FaultTreeNode> repairableEvents;
 	private Set<FaultTreeNode> repeatedEvents;
+	private FaultTreeHolder ftHolder;
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
-		super.minimize(raHolder);
-		this.ra = raHolder.getRa();
-		
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
+		this.ftHolder = ftHolder;
+		super.minimize(raHolder, ftHolder);
+	}
+	
+	@Override
+	protected Set<List<State>> computeBlocks() {
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		repairableEvents = raHelper.computeRepairableEvents(raHolder);
 		mapStateToDisabledInputs = raHelper.computeDisabledInputs(raHolder);
 		repeatedEvents = computeRepeatedEvents();
 		
-		Set<List<State>> blocks = createInitialBlocks();
-		refineBlocks(blocks);
-		mergeBlocks(blocks);
+		return super.computeBlocks();
 	}
 	
 	/**
@@ -64,7 +65,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 */
 	private Set<FaultTreeNode> computeRepeatedEvents() {
 		Set<FaultTreeNode> repeatedEvents = new HashSet<>();
-		for (Transition transition : ra.getTransitions()) {
+		for (Transition transition : raHolder.getRa().getTransitions()) {
 			if (transition instanceof FaultEventTransition) {
 				FaultEventTransition fte = (FaultEventTransition) transition;
 				
@@ -72,15 +73,18 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				Map<FaultTreeNode, Boolean> guaranteedInputs = mapStateToDisabledInputs.get(state);
 				
 				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
-				boolean isRepeated = transitionHolder.getGuards() != null;
-				
-				if (isRepeated 
-						&& transition.getRecoveryActions().isEmpty() && transition.getFrom().equals(transition.getTo())) {
-					isRepeated = false;
-				}
+				boolean isRepeated = !transitionHolder.isEpsilonLoop();
 				
 				if (isRepeated) {
 					for (FaultTreeNode guard : transitionHolder.getGuards()) {
+						if (ftHolder != null) {
+							List<FaultTreeNode> monitors = ftHolder.getNodes(guard, EdgeType.MONITOR);
+							if (monitors.isEmpty()) {
+								isRepeated = false;
+								break;
+							}
+						}
+						
 						Boolean repairLabel = guaranteedInputs.get(guard);
 						if (repairableEvents.contains(guard)) {
 							if (!Objects.equals(repairLabel, fte.getIsRepair())) {
@@ -105,27 +109,15 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		return repeatedEvents;
 	}
 	
-	/**
-	 * Creates the initial partitions. Each partition contains the states
-	 * that are potentially equivalent. States in different partitions cannot
-	 * be equivalent.
-	 * @return the initial partitions.
-	 */
-	private Set<List<State>> createInitialBlocks() {
-		Set<List<State>> blocks = new HashSet<>();
-		mapStateToBlock = new HashMap<>();
-		for (State state : ra.getStates()) {
-			List<State> block = getBlock(state, blocks);
-			if (!blocks.remove(block)) {
-				block = new ArrayList<>();
+	@Override
+	protected boolean belongsToBlock(List<State> block, State state) {
+		for (State other : block) {
+			if (!isActionEquivalent(other, state)) {
+				return false;
 			}
-	
-			block.add(state);	
-			blocks.add(block);
-			mapStateToBlock.put(state, block);
 		}
 		
-		return blocks;
+		return true;
 	}
 	
 	@Override
@@ -160,7 +152,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		for (Transition transition : outgoingTransitions) {
 			TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
 			List<State> toBlock = mapStateToBlock.get(transitionHolder.getTo());
-			if (toBlock != block || !transitionHolder.getActionLabel().isEmpty()) {
+			if (toBlock != block || !transitionHolder.isEpsilonTransition()) {
 				Entry<Set<FaultTreeNode>, Boolean> guards = new SimpleEntry<>(transitionHolder.getGuards(), false);
 				
 				if (transition instanceof FaultEventTransition) {
@@ -223,16 +215,24 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 		return true;
 	}
 	
-	/**
-	 * Merge all the states in the given partitions
-	 * @param blocks the partitions in which the states should be merged
-	 */
-	private void mergeBlocks(Set<List<State>> blocks) {
+	@Override
+	protected void mergeBlocks(Set<List<State>> blocks) {
+		State initial = raHolder.getRa().getInitial();
+		
+		List<Transition> transitionsToRemove = new ArrayList<>();
+		
 		for (List<State> block : blocks) {
 			State state = block.get(0);
 			
-			if (block.contains(ra.getInitial())) {
-				ra.setInitial(state);
+			if (block.contains(initial)) {
+				raHolder.getRa().setInitial(state);
+			}
+			
+			List<Transition> repOutgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
+			for (Transition transition : repOutgoingTransitions) {
+				if (isDisabled(state, transition)) {
+					transitionsToRemove.add(transition);
+				}
 			}
 			
 			block.remove(state);
@@ -243,7 +243,11 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 				List<Transition> incomingTransitions = new ArrayList<>(removedStateHolder.getIncomingTransitions());
 				
 				for (Transition transition : outgoingTransitions) {
-					raHolder.getTransitionHolder(transition).setFrom(state);
+					if (isDisabled(removedState, transition)) {
+						transitionsToRemove.add(transition);
+					} else {
+						raHolder.getTransitionHolder(transition).setFrom(state);
+					}
 				}
 				
 				for (Transition transition : incomingTransitions) {
@@ -253,40 +257,8 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 			
 			raHolder.removeStates(block);
 		}
-	}
-	
-	/**
-	 * Checks if a state fits into one of the given partitions
-	 * @param state the state to insert into the partition list
-	 * @param blocks a list of partitions
-	 * @return the partition to which the state belongs or null if it belongs no none of the given partitions
-	 */
-	private List<State> getBlock(State state, Set<List<State>> blocks) {
-		for (List<State> block : blocks) {
-			if (belongsToBlock(block, state)) {
-				return block;
-			}
-		}
 		
-		return null;
-	}
-	
-	/**
-	 * Checks if a state fits into a give partition.
-	 * A state fits into a given partition if the actions of the transitions agree with all the transitions
-	 * of all the states in the partition
-	 * @param block the partition to check if the state belongs into
-	 * @param state the state
-	 * @return true iff the state belongs into the block
-	 */
-	private boolean belongsToBlock(List<State> block, State state) {
-		for (State other : block) {
-			if (!isActionEquivalent(other, state)) {
-				return false;
-			}
-		}
-		
-		return true;
+		raHolder.removeTransitions(transitionsToRemove);
 	}
 	
 	/**
@@ -344,41 +316,74 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 * @return true iff state0 and state1 are orthogonal with respect to the set of guards transition
 	 */
 	private boolean isOrthogonalWithRespectToGuards(State state0, State state1, Set<FaultTreeNode> guards, boolean isRepair) {
-		boolean allEventsRepeated = true;
+		return isDisabled(state0, guards, isRepair) || isDisabled(state1, guards, isRepair);
+	}
+	
+	/**
+	 * Checks if a transition is disabled in a state
+	 * @param state the state
+	 * @param transition the transition
+	 * @return true iff the transition is an event transition and the guards are disabled
+	 */
+	private boolean isDisabled(State state, Transition transition) {
+		if (transition instanceof FaultEventTransition) {
+			FaultEventTransition fet = (FaultEventTransition) transition;
+			return isDisabled(state, fet.getGuards(), fet.getIsRepair());
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if a set of guards is disabled in a state
+	 * @param state the the state
+	 * @param guards the guards
+	 * @param isRepair whether the guards are repair guards
+	 * @return true iff at least one guard is disabled in the state
+	 */
+	private boolean isDisabled(State state, Collection<FaultTreeNode> guards, boolean isRepair) {
+		Map<FaultTreeNode, Boolean> disabledInputs = mapStateToDisabledInputs.get(state);
+		
 		for (FaultTreeNode guard : guards) {
-			if (!repeatedEvents.contains(guard)) {
-				allEventsRepeated = false;
-				break;
-			}
-		}
-		
-		if (allEventsRepeated) {
-			return false;
-		}
-		
-		Map<FaultTreeNode, Boolean> disabledInputs0 = mapStateToDisabledInputs.get(state0);
-		Map<FaultTreeNode, Boolean> disabledInputs1 = mapStateToDisabledInputs.get(state1);
-		
-		if (Collections.disjoint(guards, repairableEvents)) {
-			if (!Collections.disjoint(disabledInputs0.keySet(), guards)) {
-				return true;
-			}
-			
-			if (!Collections.disjoint(disabledInputs1.keySet(), guards)) {
-				return true;
-			}
-			
-			return false;
-		} else {
-			for (FaultTreeNode guard : guards) {
-				Boolean repairLabel0 = disabledInputs0.get(guard);
-				Boolean repairLabel1 = disabledInputs1.get(guard);
-				
-				if (!Objects.equals(repairLabel0, isRepair) || !Objects.equals(repairLabel1, isRepair)) {
+			if (ftHolder != null) {
+				if (!hasEnabledMonitor(guard, disabledInputs)) {
+					disabledInputs.put(guard, false);
+				} else if (repeatedEvents.contains(guard)) {
 					return false;
 				}
 			}
+			
+			Boolean repairLabel = disabledInputs.get(guard);
+			
+			if (!Objects.equals(repairLabel, isRepair)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Checks if there exists an enabled monitor gate for a given guard.
+	 * @param guard the guard to be checked
+	 * @param disabledInputs a list of inputs that are disabled in a give state
+	 * @return true iff there are no monitors or if at least one monitor gate is not disabled
+	 */
+	private boolean hasEnabledMonitor(FaultTreeNode guard, Map<FaultTreeNode, Boolean> disabledInputs) {
+		List<FaultTreeNode> monitors = ftHolder.getNodes(guard, EdgeType.MONITOR);
+		
+		// If there are no monitor gates in the first place
+		// we assume that the npde is always fully observable
+		if (monitors.isEmpty()) {
 			return true;
 		}
+		
+		for (FaultTreeNode monitor : monitors) {
+			Boolean repairLabel = disabledInputs.get(monitor);
+			if (repairLabel == null || repairLabel) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

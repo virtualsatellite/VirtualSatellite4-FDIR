@@ -17,11 +17,9 @@ import java.util.Map;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
-import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.StateHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 
@@ -32,41 +30,10 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
  */
 
 public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer {
-	private RecoveryAutomaton ra;
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
-		super.minimize(raHolder);
-		this.ra = raHolder.getRa();
-		
-		Set<List<State>> blocks = createInitialBlocks();
-		refineBlocks(blocks);
-		mergeBlocks(blocks);
-	}
-	
-	/**
-	 * Creates the initial partitions. Each partition contains the states
-	 * that are potentially equivalent. States in different partitions cannot
-	 * be equivalent.
-	 * @return the initial partitions.
-	 */
-	private Set<List<State>> createInitialBlocks() {
-		Set<List<State>> blocks = new HashSet<>();
-		mapStateToBlock = new HashMap<>();
-		Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock = new HashMap<>();
-		for (State state : ra.getStates()) {
-			List<State> block = getBlock(state, mapGuardProfileToBlock);
-			if (!blocks.remove(block)) {
-				block = new ArrayList<>();
-				mapGuardProfileToBlock.put(raHolder.getStateHolder(state).getGuardProfile(), block);
-			}
-			
-			block.add(state);	
-			blocks.add(block);
-			mapStateToBlock.put(state, block);
-		}
-		
-		return blocks;
+	protected boolean belongsToBlock(List<State> block, State state) {
+		return raHolder.getStateHolder(state).getGuardProfile().equals(raHolder.getStateHolder(block.get(0)).getGuardProfile());
 	}
 	
 	@Override
@@ -118,7 +85,7 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 				toBlock = getTimeoutBlock(block, state);
 			}
 			
-			if (toBlock != block || !transitionHolder.getActionLabel().isEmpty()) {
+			if (toBlock != block || !transitionHolder.isEpsilonTransition()) {
 				mapGuardsToBlock.put(transitionHolder.getGuards(), toBlock);
 			}
 		}
@@ -152,39 +119,35 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		return toBlock;
 	}
 	
-	/**
-	 * Merge all the states in the given partitions
-	 * @param blocks the partitions in which the states should be merged
-	 */
-	private void mergeBlocks(Set<List<State>> blocks) {
+	@Override
+	protected void mergeBlocks(Set<List<State>> blocks) {
+		State initial = raHolder.getRa().getInitial();
+		
 		// Redirect all transitions between blocks so that they are between the block represenatatives
 		for (List<State> block : blocks) {
-			BlockTimeoutTransition blockTimeoutTransition = new BlockTimeoutTransition(block);
-			
 			State state = block.get(0);
-			List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
+			StateHolder stateHolder = raHolder.getStateHolder(state);
+			List<Transition> outgoingTransitions = stateHolder.getOutgoingTransitions();
 			for (Transition transition : outgoingTransitions) {
 				TransitionHolder transitionHolder = raHolder.getTransitionHolder(transition);
 				State stateTo = transitionHolder.getTo();
 				State blockRepresentative = mapStateToBlock.get(stateTo).get(0);
 				if (blockRepresentative != stateTo) {
-					if (blockRepresentative != state || !transitionHolder.getActionLabel().isEmpty()) {
+					if (blockRepresentative != state || !transitionHolder.isEpsilonTransition()) {
 						transitionHolder.setTo(blockRepresentative);
-					}
-					
-					if (transition instanceof TimeoutTransition) {
-						TimeoutTransition timeoutTransition = (TimeoutTransition) transition;
-						timeoutTransition.setTime(blockTimeoutTransition.timeout);
-						
-						if (blockTimeoutTransition.toState != null) {
-							raHolder.getTransitionHolder(timeoutTransition).setTo(blockTimeoutTransition.toState);
-						}
 					}
 				}
 			}
 			
-			if (block.contains(ra.getInitial())) {
-				ra.setInitial(state);
+			BlockTimeoutTransition blockTimeoutTransition = new BlockTimeoutTransition(block);
+			if (blockTimeoutTransition.toState != null) {
+				TimeoutTransition timeoutTransition = stateHolder.getTimeoutTransition();
+				timeoutTransition.setTime(blockTimeoutTransition.timeout);
+				raHolder.getTransitionHolder(timeoutTransition).setTo(blockTimeoutTransition.toState);
+			}
+			
+			if (block.contains(initial)) {
+				raHolder.getRa().setInitial(state);
 			}
 		}
 		
@@ -205,22 +168,18 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 		
 		raHolder.removeTransitions(transitionsToRemove);
 	}	
-	/**
-	 * Checks if a state fits into one of the given partitions
-	 * @param state the state to insert into the partition list
-	 * @param mapGuardProfileToBlock mapping from guard profile to block
-	 * @return the partition to which the state belongs or null if it belongs no existing partition
-	 */
-	private List<State> getBlock(State state, Map<Map<Set<FaultTreeNode>, String>, List<State>> mapGuardProfileToBlock) {
-		return mapGuardProfileToBlock.get(raHolder.getStateHolder(state).getGuardProfile());
-	}
+
 	
+	/**
+	 * The target of the timeout transitions and the total timeout time.
+	 *
+	 */
 	private class BlockTimeoutTransition {
 		State toState;
 		double timeout;
 		
 		/**
-		 * Get the target of the timout transitions and the total timeout time
+		 * Standard constructor
 		 * @param block the block to consider
 		 */
 		BlockTimeoutTransition(List<State> block) {

@@ -21,7 +21,6 @@ public class MarkovTransition<S> {
 	private S to;
 	private double rate;
 	private Object event;
-	private boolean isMarkovian;
 	
 	/**
 	 * Constructor creating a new markov automaton transition
@@ -29,15 +28,13 @@ public class MarkovTransition<S> {
 	 * @param to the end state of the transition
 	 * @param rate the transition rate
 	 * @param event the transition event
-	 * @param isMarkovian whether the transition is markovian
 	 */
 	
-	public MarkovTransition(S from, S to, double rate, Object event, boolean isMarkovian) {
+	public MarkovTransition(S from, S to, double rate, Object event) {
 		this.from = from;
 		this.to = to;
 		this.rate = rate;
 		this.event = event;
-		this.isMarkovian = isMarkovian;
 	}
 	
 	/**
@@ -45,7 +42,7 @@ public class MarkovTransition<S> {
 	 * @return a copy of this markov transition
 	 */
 	public MarkovTransition<S> copy() {
-		return new MarkovTransition<S>(from, to, rate, event, isMarkovian);
+		return new MarkovTransition<S>(from, to, rate, event);
 	}
 	
 	/**
@@ -119,13 +116,5 @@ public class MarkovTransition<S> {
 	@Override
 	public String toString() {
 		return from.toString() + " --- " + event.toString() + ", " + rate + " ---> " + to.toString();
-	}
-	
-	/**
-	 * Checks if this is a Markovian transition or an immediate nondeterministic transition
-	 * @return true iff the transition is Markovian
-	 */
-	public boolean isMarkovian() {
-		return isMarkovian;
 	}
 }

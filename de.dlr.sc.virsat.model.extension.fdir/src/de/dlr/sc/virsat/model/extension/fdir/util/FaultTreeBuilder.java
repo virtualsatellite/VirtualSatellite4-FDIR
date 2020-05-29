@@ -477,11 +477,7 @@ public class FaultTreeBuilder {
 	 * @return true if edge removed, false otherwise
 	 */
 	public boolean removeEdgeFromFaultTree(FaultTreeEdge edge, FaultTree ft) {
-		if (ft.getPropagations().contains(edge)) {
-			ft.getPropagations().remove(edge);
-			return true;
-		}
-		return false;
+		return ft.getPropagations().remove(edge);
 	}
 	
 	/**

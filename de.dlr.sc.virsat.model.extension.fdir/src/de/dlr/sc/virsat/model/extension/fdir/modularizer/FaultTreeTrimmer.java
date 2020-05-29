@@ -7,16 +7,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.trimmer;
+package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 /**
@@ -25,15 +23,6 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
  *
  */
 public class FaultTreeTrimmer {
-
-	/**
-	 * Trim a fault tree
-	 * @param ftNode the fault tree node
-	 * @return the trimmed fault tree
-	 */
-	public FaultTree trimFaultTree(FaultTreeNode ftNode) {
-		return null;
-	}
 	
 	/**
 	 * Trim a set of modules from a modularized fault tree with all possible trimmings in a given order
@@ -41,13 +30,9 @@ public class FaultTreeTrimmer {
 	 * @return the trimmed set of modules
 	 */
 	public Set<Module> trimModulesAll(Set<Module> modules) {
-		if (modules == null || modules.isEmpty()) {
-			return modules;
-		}
-		
 		Set<Module> trimmedModules = trimDeterministicModules(modules);
+		trimmedModules.stream().forEach(Module::constructFaultTreeCopy);
 		trimmedModules = trimDeterministicNodes(trimmedModules);
-
 		return trimmedModules;
 	}
 	

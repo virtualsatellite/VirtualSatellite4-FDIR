@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantic
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTMetricsComposerTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeTrimmerTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModularizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModuleTest;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferencesTest;
@@ -38,7 +39,6 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimi
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
-import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;

@@ -170,12 +170,8 @@ public class PODFTState extends DFTState {
 		// obtain all newly observed repaired nodes in the event that no failures were observed
 		boolean isRepair = false;
 		if (observationSet.isEmpty()) {
-			for (FaultTreeNode node : getFTHolder().getNodes()) {
-				if (currentObservedFailedNodes.contains(node) && !succObservedFailedNodes.contains(node)) {
-					observationSet.add(node);
-				}
-			}
-			
+			observationSet.addAll(currentObservedFailedNodes);
+			observationSet.removeAll(succObservedFailedNodes);
 			isRepair = !observationSet.isEmpty();
 		}
 		
