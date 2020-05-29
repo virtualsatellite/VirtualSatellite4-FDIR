@@ -90,6 +90,22 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 
 	@Test
+	public void testEvaluateCsp1() throws IOException {
+		final double EXPECTED_MTTF = 1;
+		
+		Fault fault = createDFT("/resources/galileo/csp1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int NUM_STATES = 1;
+		final int NUM_TRANSITIONS = 0;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		assertEquals(NUM_TRANSITIONS, ra.getTransitions().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testEvaluateCsp2() throws IOException {
 		final double[] EXPECTED = {
 			9.9e-05,
