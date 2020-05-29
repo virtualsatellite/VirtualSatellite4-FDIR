@@ -187,8 +187,8 @@ public class DFTModularization {
 			if (shouldModelCheck) {
 				modulesToModelCheck.add(module);
 			} else {
-				for (FaultTreeNodePlus ftChildPlus : module.getModuleRoot().getChildren()) {
-					Module subModule = getModule(ftChildPlus.getFaultTreeNode());
+				List<Module> subModules = getSubModules(module);
+				for (Module subModule : subModules) {
 					toProcess.add(subModule);
 				}
 			}
