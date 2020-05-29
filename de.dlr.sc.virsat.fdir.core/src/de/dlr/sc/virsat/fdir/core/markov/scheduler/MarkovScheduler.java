@@ -52,29 +52,18 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
 			
-			if (!state.isMarkovian()) {
-				List<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, state);
-				
-				if (bestTransitionGroup != null) {
-					schedule.put(state, bestTransitionGroup);
-					for (MarkovTransition<S> transition : bestTransitionGroup) {
-						S nextState = transition.getTo();
-						if (handledNonDetStates.add(nextState)) {
-							toProcess.offer(nextState);
-						} 
-					}
-				}
-			} else {
-				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
-				for (MarkovTransition<S> markovianTransition : succTransitions) {
-					S nextState = markovianTransition.getTo();
+			List<MarkovTransition<S>> succTransitions = state.isMarkovian() 
+					? ma.getSuccTransitions(state) : selectOptimalTransitionGroup(ma, state);
+			
+			if (succTransitions != null) {
+				schedule.put(state, succTransitions);
+				for (MarkovTransition<S> transition : succTransitions) {
+					S nextState = transition.getTo();
 					if (handledNonDetStates.add(nextState)) {
 						toProcess.offer(nextState);
 					} 
 				}
 			}
-			
-
 		}	
 		return schedule;
 	}
