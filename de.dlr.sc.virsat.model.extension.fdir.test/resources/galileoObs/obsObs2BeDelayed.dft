@@ -1,0 +1,4 @@
+toplevel "a";
+"a" lambda=1;
+"O1" observer "a" obsRate=0.5;
+"O2" observer "a" obsRate=3.5;

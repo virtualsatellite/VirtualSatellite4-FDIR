@@ -25,9 +25,11 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -883,6 +885,17 @@ public class DFTEvaluatorTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateDelay1Repair() throws IOException {
+		final double EXPECTEDMTTF = 15.999998884932491;
+		final double EXPECTEDSSA = 0.8889073028882054;
+		
+		Fault fault = createDFT("/resources/galileoRepair/delay1Repair.dft");
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals("SSA has correct value", EXPECTEDSSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testEvaluateCMSimple2() throws IOException {
 		final double[] EXPECTED = {
 			0.0060088,
@@ -976,7 +989,6 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertEquals("SSA has correct value", EXPECTEDSSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
 	
-	/*
 	@Test
 	public void testEvaluateRC1() throws IOException {
 		final double[] EXPECTED = {
@@ -992,7 +1004,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
-	*/
+	
 	/*
 	@Test
 	public void testEvaluateVGS1() throws IOException {
@@ -1007,8 +1019,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		final double EXPECTEDMTTF = 39595.24895;
-		final double TEST_EPSILON_SMALL = 1e-08;
-		assertIterationResultsEquals(result, EXPECTED, TEST_EPSILON_SMALL);
+		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	*/
@@ -1087,6 +1098,20 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
 		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
 		
+	}
+	
+	@Test
+	public void testEvaluateObsObs2BeDelayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObs/obsObs2BeDelayed.dft");
+		
+		final double EXPECTED_MTTD = 0.25;
+		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, 
+				MeanTimeToDetection.MTTD, SteadyStateDetectability.STEADY_STATE_DETECTABILITY);
+		
+		assertEquals("MTTD has correct value", EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
+		assertEquals("Steady State Detectability has correct value", EXPECTED_STEADY_STATE_DETECTABILITY, result.getSteadyStateDetectability(), TEST_EPSILON);
 	}
 	
 	@Test
