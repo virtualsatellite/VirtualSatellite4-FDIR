@@ -163,7 +163,9 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			if (internalStates.add(internalState)) {
 				List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
 				for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
-					if (internalState.isMarkovian() && !isInternalTransition(internalMarkovTransition) && !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
+					if (internalState.isMarkovian() 
+							&& !isInternalTransition(internalMarkovTransition) 
+							&& !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
 						MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
 						pseudoTransition.setFrom(state);
 						markovianTransitions.add(pseudoTransition);
@@ -241,13 +243,13 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		S toState = nondetTransition == null ? markovianTransition.getTo() : nondetTransition.getTo();
 		Object event = markovianTransition.getEvent();
 		
-		Transition transition = null;
-		if (isInternalTransition(markovianTransition)) {
-			transition = createTimeoutTransition(fromState, toState, 1 / markovianTransition.getRate());
-		} else {
-			transition = createFaultEventTransition(fromState, toState, event);
-		}
+		State fromRaState = getOrCreateRecoveryAutomatonState(ra, fromState);
+		State toRaState = getOrCreateRecoveryAutomatonState(ra, toState);
 		
+		Transition transition = isInternalTransition(markovianTransition)
+				? createTimeoutTransition(fromRaState, toRaState, 1 / markovianTransition.getRate())
+				: createFaultEventTransition(fromRaState, toRaState, event);
+
 		if (nondetTransition != null) {
 			@SuppressWarnings("unchecked")
 			List<RecoveryAction> recoveryActions = (List<RecoveryAction>) nondetTransition.getEvent();
@@ -261,14 +263,12 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	
 	/**
 	 * Creates an RA timed transition corresponding to an internal Markovian Transition
-	 * @param from the from state
-	 * @param to the to state
+	 * @param fromRaState the from state
+	 * @param toRaState the to state
 	 * @param time the time
 	 * @return the created RA transition
 	 */
-	protected TimeoutTransition createTimeoutTransition(S from, S to, double time) {
-		State fromRaState = getOrCreateRecoveryAutomatonState(ra, from);
-		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
+	protected TimeoutTransition createTimeoutTransition(State fromRaState, State toRaState, double time) {
 		TimeoutTransition raTransition = raHelper.createTimeoutTransition(ra, fromRaState, toRaState, time);
 		raTransition.setName(fromRaState.getName() + toRaState.getName());
 		return raTransition;
@@ -276,15 +276,13 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	
 	/**
 	 * Creates an RA transition corresponding to a Markovian Transition
-	 * @param from the from state
-	 * @param to the to state
+	 * @param fromRaState the from state
+	 * @param toRaState the to state
 	 * @param event the event
 	 * @return the created RA transition
 	 */
 	@SuppressWarnings("unchecked")
-	protected FaultEventTransition createFaultEventTransition(S from, S to, Object event) {
-		State fromRaState = getOrCreateRecoveryAutomatonState(ra, from);
-		State toRaState = getOrCreateRecoveryAutomatonState(ra, to);
+	protected FaultEventTransition createFaultEventTransition(State fromRaState, State toRaState, Object event) {
 		FaultEventTransition raTransition = raHelper.createFaultEventTransition(ra, fromRaState, toRaState);
 		
 		if (event instanceof Entry) {
