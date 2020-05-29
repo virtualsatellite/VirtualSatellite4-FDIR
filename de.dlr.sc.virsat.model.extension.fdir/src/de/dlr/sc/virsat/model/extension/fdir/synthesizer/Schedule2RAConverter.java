@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -106,10 +105,8 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	private List<S> handleState(S state, Map<S, List<MarkovTransition<S>>> schedule, List<Transition> createdTransitions) {
 		List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
 		
-		if (state.isMarkovian()) {
-			MarkovTransition<S> internalTransition = getInternalOutgoingTransition(state);
-			createPseudoSynchronizationTransitions(state, internalTransition, markovianTransitions);
-		}
+		MarkovTransition<S> internalTransition = getInternalOutgoingTransition(state);
+		createPseudoSynchronizationTransitions(state, internalTransition, markovianTransitions);
 		
 		List<S> nextStates = new ArrayList<>();
 		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
@@ -117,18 +114,15 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			
 			if (!markovianTransition.getTo().isMarkovian()) {
 				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
-				Iterator<MarkovTransition<S>> itr = bestTransitionGroup.iterator();
-				if (itr.hasNext()) {
-					MarkovTransition<S> representativeTransition = itr.next();
-					
-					Transition raTransition = createTransition(markovianTransition, representativeTransition);
-					createdTransitions.add(raTransition);
-					
-					for (MarkovTransition<S> bestTransition : bestTransitionGroup) {
-						toState = bestTransition.getTo();
-						mapMarkovStateToRaState.put(toState, raTransition.getTo());
-						nextStates.add(toState);
-					}
+				MarkovTransition<S> representativeTransition = bestTransitionGroup.iterator().next();
+				
+				Transition raTransition = createTransition(markovianTransition, representativeTransition);
+				createdTransitions.add(raTransition);
+				
+				for (MarkovTransition<S> bestTransition : bestTransitionGroup) {
+					toState = bestTransition.getTo();
+					mapMarkovStateToRaState.put(toState, raTransition.getTo());
+					nextStates.add(toState);
 				}
 			} else {
 				Transition raTransition = createTransition(markovianTransition, null);
@@ -169,8 +163,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			if (internalStates.add(internalState)) {
 				List<MarkovTransition<S>> internalStateSuccs = ma.getSuccTransitions(internalState);
 				for (MarkovTransition<S> internalMarkovTransition : internalStateSuccs) {
-					if (internalState.isMarkovian() 
-							&& !isInternalTransition(internalMarkovTransition) 
+					if (!isInternalTransition(internalMarkovTransition) 
 							&& !hasEvent(internalMarkovTransition.getEvent(), markovianTransitions)) {
 						MarkovTransition<S> pseudoTransition = internalMarkovTransition.copy();
 						pseudoTransition.setFrom(state);
