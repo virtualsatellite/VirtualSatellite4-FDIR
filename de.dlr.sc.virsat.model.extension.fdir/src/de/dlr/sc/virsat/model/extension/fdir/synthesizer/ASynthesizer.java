@@ -34,12 +34,12 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeTrimmer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
-import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmer;
 
 /**
  * Abstract class providing some default implementations for the ISynthesizer interface.
@@ -52,6 +52,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
 	protected Modularizer modularizer = new Modularizer();
 	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
+	protected ParallelComposer pc = new ParallelComposer();
 	protected Concept concept;
 	protected SynthesisStatistics statistics;
 	
@@ -69,9 +70,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		RecoveryAutomaton synthesizedRA;
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
-			Set<Module> trimmedModules = ftTrimmer.trimDeterministicModules(modules);
-			trimmedModules.stream().forEach(Module::constructFaultTreeCopy);
-			trimmedModules = ftTrimmer.trimDeterministicNodes(trimmedModules);
+			Set<Module> trimmedModules = ftTrimmer.trimModulesAll(modules);
 			
 			statistics.countModules = trimmedModules.size();
 			statistics.countTrimmedModules = modules.size() - statistics.countModules;
@@ -94,7 +93,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 				statistics.maxModuleRaSize = Math.max(statistics.maxModuleRaSize, ra.getStates().size());
 			}
 			
-			ParallelComposer pc = new ParallelComposer();
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
 			statistics.countModules = 1;

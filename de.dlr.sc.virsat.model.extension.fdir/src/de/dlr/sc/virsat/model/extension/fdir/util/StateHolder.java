@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +27,12 @@ public class StateHolder {
 	private TimeoutTransition timeoutTransition;
 	private Map<Set<FaultTreeNode>, String> guardProfile;
 	
-	public StateHolder(RecoveryAutomatonHolder raHolder, State state) {
+	public StateHolder(RecoveryAutomatonHolder raHolder, State state, 
+			List<Transition> incomingTransitions, List<Transition> outgoingTransitions) {
 		this.raHolder = raHolder;
 		this.state = state;
-		this.incomingTransitions = new ArrayList<>();
-		this.outgoingTransitions = new ArrayList<>();
+		this.incomingTransitions = incomingTransitions;
+		this.outgoingTransitions = outgoingTransitions;
 	}
 	
 	public State getState() {

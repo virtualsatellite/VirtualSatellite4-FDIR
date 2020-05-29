@@ -185,7 +185,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 	}
 
 	@Test 
-	public void testSubsetDisabled() {
+	public void testRepeatedEventSubset() {
 		final int INITIAL_STATES = 3;
 		final int RESULTING_STATES = 1; 
 		final int RESULTING_TRANSITIONS = 1; 
@@ -212,85 +212,37 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignAction(transition01, action.copy());
 		raHelper.assignAction(transition12, action.copy());
 		
-		minimizer.minimize(ra, fault);
+		RecoveryAutomaton raCopy = raHelper.copyRA(ra);
+		minimizer.minimize(raCopy, fault);
 		
-		assertEquals(RESULTING_STATES, ra.getStates().size());
-		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
-	}
-	
-	@Test 
-	public void testSubsetRepeatedEnabled() {
-		final int INITIAL_STATES = 3;
-		final int RESULTING_STATES = 3;
-		final int RESULTING_TRANSITIONS = 2; 
+		assertEquals(RESULTING_STATES, raCopy.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, raCopy.getTransitions().size());
 		
-		Fault fault = new Fault(concept);
-		Fault fault1 = new Fault(concept);
-		Fault fault2 = new Fault(concept);
+		// If the event is partially observable, then we cannot disable it
+		final int RESULTING_STATES_PO = 3; 
+		final int RESULTING_TRANSITIONS_PO = 2; 
 		
 		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
 		FaultTreeNode monitor = ftBuilder.createGate(fault, FaultTreeNodeType.MONITOR);
 		ftBuilder.connectObserver(fault, fault1, monitor);
 		
-		// initial recovery automaton with non-empty recovery action list
-		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raCopy = raHelper.copyRA(ra);
+		minimizer.minimize(raCopy, fault);
 		
-		raHelper.createStates(ra, INITIAL_STATES); 
+		assertEquals(RESULTING_STATES_PO, raCopy.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS_PO, raCopy.getTransitions().size());
 		
-		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		raHelper.assignInputs(transition01, fault1, fault2);
+		// If the monitor is failed, then we know that the event cannot be repeated
+		final int RESULTING_STATES_FAILED_MONITOR = 1; 
+		final int RESULTING_TRANSITIONS_FAILED_MONITOR = 1; 
 		
-		FaultEventTransition transition12 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(2));
-		raHelper.assignInputs(transition12, fault1);
-		
-		FaultTreeNode spare = ftBuilder.createGate(fault, FaultTreeNodeType.SPARE);
-		ClaimAction action = new ClaimAction(concept);
-		action.setClaimSpare(spare);
-		
-		raHelper.assignAction(transition01, action.copy());
-		raHelper.assignAction(transition12, action.copy());
-		
-		minimizer.minimize(ra, fault);
-		
-		assertEquals(RESULTING_STATES, ra.getStates().size());
-		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
-	}
-	
-	@Test 
-	public void testDisabledDueToFailedMonitor() {
-		final int INITIAL_STATES = 3;
-		final int RESULTING_STATES = 1;
-		final int RESULTING_TRANSITIONS = 1; 
-		
-		Fault fault = new Fault(concept);
-		Fault fault1 = new Fault(concept);
-		
-		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
-		FaultTreeNode monitor = ftBuilder.createGate(fault, FaultTreeNodeType.MONITOR);
-		ftBuilder.connectObserver(fault, fault1, monitor);
-		
-		// initial recovery automaton with non-empty recovery action list
-		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
-		
-		raHelper.createStates(ra, INITIAL_STATES); 
-		
-		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
 		raHelper.assignInputs(transition01, monitor);
 		
-		FaultEventTransition transition12 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(2));
-		raHelper.assignInputs(transition12, fault1);
+		raCopy = raHelper.copyRA(ra);
+		minimizer.minimize(raCopy, fault);
 		
-		FaultTreeNode spare = ftBuilder.createGate(fault, FaultTreeNodeType.SPARE);
-		ClaimAction action = new ClaimAction(concept);
-		action.setClaimSpare(spare);
-		
-		raHelper.assignAction(transition01, action.copy());
-		raHelper.assignAction(transition12, action.copy());
-		
-		minimizer.minimize(ra, fault);
-		
-		assertEquals(RESULTING_STATES, ra.getStates().size());
-		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+		assertEquals(RESULTING_STATES_FAILED_MONITOR, raCopy.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS_FAILED_MONITOR, raCopy.getTransitions().size());
 	}
 	
 	@Test
