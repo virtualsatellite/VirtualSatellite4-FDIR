@@ -47,16 +47,6 @@ public class Module {
 	}
 	
 	/**
-	 * Constructor which takes in the known module nodes
-	 * @param moduleNodes the module nodes
-	 */
-	public Module(List<FaultTreeNode> moduleNodes) {
-		for (FaultTreeNode ftn : moduleNodes) {
-			this.moduleNodes.add(new FaultTreeNodePlus(ftn, null, 0, 0, 0, false));
-		}
-	}
-	
-	/**
 	 * Set the table used when creating this module by the modularizer
 	 * @param mapOriginalToNodePlus the table
 	 */
