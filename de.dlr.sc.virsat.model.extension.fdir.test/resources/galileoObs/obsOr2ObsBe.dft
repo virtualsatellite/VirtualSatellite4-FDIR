@@ -1,0 +1,7 @@
+toplevel "tle";
+"tle" and "a" "or";
+"or" or "b" "c";
+"a" lambda=1;
+"b" lambda=1;
+"c" lambda=1;
+"O" observer "a" "b" "c" obsRate=0;

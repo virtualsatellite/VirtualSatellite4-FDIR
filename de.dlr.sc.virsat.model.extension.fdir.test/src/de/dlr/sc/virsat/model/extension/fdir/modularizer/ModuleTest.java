@@ -9,8 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Set;
@@ -43,8 +43,7 @@ public class ModuleTest extends ATestCase {
 		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
 		Set<Module> modules = modularizer.getModules(rootcsp2.getFaultTree());
 		final int NUM_NODES_IN_SHARED_SPARE_MODULE = 3;
-		Module module = modules.stream().filter(m -> m.getNodes().size() >= NUM_NODES_IN_SHARED_SPARE_MODULE)
-				.findAny().get();
+		Module module = modules.stream().filter(m -> m.getNodes().size() >= NUM_NODES_IN_SHARED_SPARE_MODULE).findAny().get();
 		module.constructFaultTreeCopy();
 	
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
@@ -54,7 +53,7 @@ public class ModuleTest extends ATestCase {
 	public void testCopyFaultTreeCMSimple2() throws IOException {
 		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple2.dft");
 		Set<Module> modules = modularizer.getModules(rootCMSimple.getFaultTree());
-		Module module = modules.stream().filter(m -> m.isNondeterministic()).findAny().get();
+		Module module = modules.stream().filter(Module::isNondeterministic).findAny().get();
 		module.constructFaultTreeCopy();
 		
 		assertTrue("Number of nodes in tree copy should be >= number of nodes in module", ftHelper.getAllNodes(module.getRootNodeCopy().getFault()).size() >= module.getNodes().size());
@@ -66,8 +65,7 @@ public class ModuleTest extends ATestCase {
 		Set<Module> modules = modularizer.getModules(rootCM1.getFaultTree());
 		
 		final int NUM_NODES_IN_SHARED_SPARE_MODULE = 8;
-		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_SHARED_SPARE_MODULE)
-				.findAny().get();
+		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_SHARED_SPARE_MODULE).findAny().get();
 
 		module.constructFaultTreeCopy();
 		assertEquals("Fault", module.getRootNodeCopy().getName());
@@ -82,8 +80,7 @@ public class ModuleTest extends ATestCase {
 		Fault rootCM2 = createDFT("/resources/galileo/cm2.dft");
 		Set<Module> modules = modularizer.getModules(rootCM2.getFaultTree());
 		final int NUM_NODES_IN_MODULE_DESIRED = 8;
-		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_MODULE_DESIRED)
-				.findAny().get();
+		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_MODULE_DESIRED).findAny().get();
 		module.constructFaultTreeCopy();
 		
 		assertEquals("Fault", module.getRootNodeCopy().getName());
