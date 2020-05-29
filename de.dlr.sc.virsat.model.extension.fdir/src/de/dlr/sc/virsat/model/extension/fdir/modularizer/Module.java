@@ -31,10 +31,9 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 public class Module {
 
 	private FaultTreeNodePlus moduleRoot;
-	private ModuleType moduleType;
+	private Set<ModuleProperty> moduleProperties;
 	private Set<FaultTreeNodePlus> moduleNodes;
 	private FaultTreeNode moduleRootCopy;
-	private Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy;
 	private Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal;
 	private Map<FaultTreeNode, FaultTreeNodePlus> mapOriginalToNodePlus;
 	
@@ -43,7 +42,7 @@ public class Module {
 	 */
 	public Module() {
 		this.moduleNodes = new HashSet<FaultTreeNodePlus>();
-		this.moduleType = ModuleType.DETERMINISTIC;
+		this.moduleProperties = new HashSet<>();
 	}
 	
 	/**
@@ -53,7 +52,6 @@ public class Module {
 	void setTable(Map<FaultTreeNode, FaultTreeNodePlus> mapOriginalToNodePlus) {
 		this.mapOriginalToNodePlus = mapOriginalToNodePlus;
 	}
-	
 	
 	/**
 	 * Add a node to the module
@@ -66,7 +64,7 @@ public class Module {
 		}
 		
 		if (node.isNondeterministic()) {
-			this.moduleType = ModuleType.NONDETERMINISTIC;
+			this.moduleProperties.add(ModuleProperty.NONDETERMINISTIC);
 		}
 		
 		return this.moduleNodes.add(node);
@@ -116,8 +114,8 @@ public class Module {
 	 * Get the map which maps original fault tree nodes to the copy fault tree nodes
 	 * @return the map
 	 */
-	public Map<FaultTreeNode, FaultTreeNode> getMapOriginalToCopy() {
-		return this.mapOriginalToCopy;
+	public Map<FaultTreeNode, FaultTreeNode> getMapCopyToOriginal() {
+		return this.mapCopyToOriginal;
 	}
 	
 	
@@ -126,7 +124,15 @@ public class Module {
 	 * @return is nondeterministic
 	 */
 	public boolean isNondeterministic() {
-		return this.moduleType == ModuleType.NONDETERMINISTIC;
+		return this.moduleProperties.contains(ModuleProperty.NONDETERMINISTIC);
+	}
+	
+	/**
+	 * Returns true if module is partial observable, false otherwise
+	 * @return is nondeterministic
+	 */
+	public boolean isPartialObservable() {
+		return this.moduleProperties.contains(ModuleProperty.PARTIALOBSERVABLE);
 	}
 	
 	/**
@@ -142,7 +148,7 @@ public class Module {
 	public void constructFaultTreeCopy() {
 		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(this.moduleRoot.getFaultTreeNode().getConcept());
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
-		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
+		Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		this.mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
 		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode();

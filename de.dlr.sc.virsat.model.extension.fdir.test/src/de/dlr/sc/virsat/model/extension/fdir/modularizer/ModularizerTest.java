@@ -365,6 +365,22 @@ public class ModularizerTest extends ATestCase {
 	}
 	
 	/* *****************************************************
+	 *  TESTING MODULARIZER WITH PARTIAL OBSERVABILITY
+	 * ****************************************************/
+	
+	@Test
+	public void testModuleTypeObsCsp2() throws IOException {
+		Fault root = createDFT("/resources/galileoObs/obsCsp2.dft");
+		
+		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		final int NUM_MODULES = 1;
+		//assertEquals(NUM_MODULES, modules.size());
+		
+		Module module = modules.iterator().next();
+		//assertFalse(module.isPartialObservable());
+	}
+	
+	/* *****************************************************
 	 *  TESTING MORE REALISTIC & COMPLETE FAULT TREES
 	 * *****************************************************/
 
