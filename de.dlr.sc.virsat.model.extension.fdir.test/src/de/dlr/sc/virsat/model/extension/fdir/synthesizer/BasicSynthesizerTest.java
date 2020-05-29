@@ -194,7 +194,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.004302925106080927
 
 		};
-		final double EXPECTED_MTTF = 0.2806246922221153;
+		final double EXPECTED_MTTF = 0.28062467694389703;
 		
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -268,7 +268,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			1.4760258380271557E-7,
 			1.968045934244401E-7
 		};
-		final double EXPECTED_MTTF = 24404.807713861;
+		final double EXPECTED_MTTF = 24365.03442441116;
 		
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
