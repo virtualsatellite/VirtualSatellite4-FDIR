@@ -177,7 +177,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	}
 	
 	/**
-	 * Checks if a given transition is internal
+	 * Checks if a given transition is internal (no guards have been observed)
 	 * @param markovianTransition the transition
 	 * @return true iff the transition has no guards
 	 */
@@ -188,9 +188,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			Entry<Collection<? extends FaultTreeNode>, Boolean> genericEvent = (Entry<Collection<? extends FaultTreeNode>, Boolean>) event;
 			Collection<? extends FaultTreeNode> guards = genericEvent.getKey();
 			return guards.isEmpty();
-		} else if (event instanceof Collection) {
-			Collection<?> recoveryActions = (Collection<?>) event;
-			return recoveryActions.isEmpty();
 		}
 		
 		return false;
