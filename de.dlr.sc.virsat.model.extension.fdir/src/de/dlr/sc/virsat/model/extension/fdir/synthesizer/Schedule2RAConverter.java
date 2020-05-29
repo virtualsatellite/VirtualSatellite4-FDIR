@@ -103,10 +103,13 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * @return the set of next ma states that should be inserted into the ra
 	 */
 	private List<S> handleState(S state, Map<S, List<MarkovTransition<S>>> schedule, List<Transition> createdTransitions) {
-		List<MarkovTransition<S>> markovianTransitions = new ArrayList<>(ma.getSuccTransitions(state));
+		List<MarkovTransition<S>> markovianTransitions = ma.getSuccTransitions(state);
 		
 		MarkovTransition<S> internalTransition = getInternalOutgoingTransition(state);
-		createPseudoSynchronizationTransitions(state, internalTransition, markovianTransitions);
+		if (internalTransition != null) {
+			markovianTransitions = new ArrayList<>(markovianTransitions);
+			createPseudoSynchronizationTransitions(state, internalTransition, markovianTransitions);
+		}
 		
 		List<S> nextStates = new ArrayList<>();
 		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
