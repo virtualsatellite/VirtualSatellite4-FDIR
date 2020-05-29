@@ -38,6 +38,7 @@ public class BeliefState extends MarkovState {
 	 */
 	BeliefState(PODFTState representant) {
 		this.representant = representant;
+		setMarkovian(representant.isMarkovian());
 	}
 	
 	@Override

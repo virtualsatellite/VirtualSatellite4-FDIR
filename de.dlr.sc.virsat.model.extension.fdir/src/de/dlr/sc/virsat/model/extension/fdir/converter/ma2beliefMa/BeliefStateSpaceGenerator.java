@@ -156,7 +156,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 */
 	private void fillMarkovianStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
 			double exitRate, Entry<Set<Object>, Boolean> observationEvent, List<MarkovTransition<DFTState>> succTransitions) {
-		boolean isMarkovian = true;
 		boolean isInternalTransition = observationEvent.getKey().isEmpty();
 		
 		Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
@@ -190,12 +189,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 				beliefSucc.addBelief(toState, prob);
 			}
-			
-			if (!toState.isMarkovian()) {
-				isMarkovian = false;
-			} 
 		}
-		beliefSucc.setMarkovian(isMarkovian);
 		
 		if (isInternalTransition) {
 			for (PODFTState state : statesWithNoTransitions) {
@@ -228,7 +222,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param succTransitions the transitions to reach the successor state
 	 */
 	private void fillNonDeterministicStateSucc(BeliefState beliefState, BeliefState beliefSucc, List<MarkovTransition<DFTState>> succTransitions) {
-		beliefSucc.setMarkovian(true);
 		for (MarkovTransition<DFTState> succTransition : succTransitions) {
 			PODFTState succState = (PODFTState) succTransition.getTo();
 			PODFTState fromState = (PODFTState) succTransition.getFrom();

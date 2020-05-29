@@ -256,15 +256,13 @@ public class MarkovAutomaton<S extends MarkovState> {
 	public String toDot() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("digraph ma {\n");
-		
-		for (MarkovState state : states) {
-			sb.append(state.toString() + "\n");
-		}
-		
-		for (MarkovTransition<S> transition : getTransitions()) {
-			sb.append(transition.getFrom().getIndex() + "->" + transition.getTo().getIndex() + " [label=\"" + (transition.getEvent() != null ? transition.getEvent().toString() : "") + " : " + transition.getRate() +  "\"]\n");
-		}
-		
+		sb.append(getStates().stream().map(MarkovState::toString).collect(Collectors.joining("\n")));
+		sb.append(getTransitions().stream().map(transition ->
+					transition.getFrom().getIndex() 
+					+ "->" + transition.getTo().getIndex() 
+					+ " [label=\"" + String.valueOf(transition.getEvent()) 
+					+ " : " + transition.getRate() +  "\"]")
+				.collect(Collectors.joining("\n")));
 		sb.append("}");
 		return sb.toString();
 	}
