@@ -51,9 +51,5 @@ public interface IDFTEvent {
 	 * Standard comparator for IDFTEvents.
 	 * Usefule for sorting lists and ensuring deterministic behavior.
 	 */
-	Comparator<IDFTEvent> IDFTEVENT_COMPARATOR = new Comparator<IDFTEvent>() {
-		public int compare(IDFTEvent event1, IDFTEvent event2) {
-			return event1.toString().compareTo(event2.toString());
-		};
-	};
+	Comparator<IDFTEvent> IDFTEVENT_COMPARATOR = Comparator.comparing(Object::toString);
 }

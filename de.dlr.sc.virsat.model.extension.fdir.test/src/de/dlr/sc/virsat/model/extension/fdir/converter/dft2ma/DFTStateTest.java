@@ -10,12 +10,15 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
@@ -59,4 +62,39 @@ public class DFTStateTest extends ATestCase {
 		assertNull("Claimed by other spare gate and failed primary gives null for working unit", workingUnit);
 	}
 
+	@Test
+	public void testExecuteBasicEvent() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileo/failureMode.dft");
+		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+		
+		BasicEvent be = ftHolder.getNodeByName("FailureMode", BasicEvent.class);
+		
+		DFTState state = new DFTState(ftHolder);
+		
+		assertTrue(state.getOrderedBes().isEmpty());
+		assertTrue(state.getUnorderedBes().isEmpty());
+		
+		state.executeBasicEvent(be, false, false, false);
+		
+		assertTrue(state.getOrderedBes().isEmpty());
+		assertTrue(state.getUnorderedBes().contains(be));
+		assertTrue(state.hasFaultTreeNodeFailed(be));
+		assertTrue(state.isFaultTreeNodePermanent(be));
+		
+		state.executeBasicEvent(be, true, false, false);
+		
+		assertTrue(state.getOrderedBes().isEmpty());
+		assertTrue(state.getUnorderedBes().isEmpty());
+		assertFalse(state.hasFaultTreeNodeFailed(be));
+		
+		state.executeBasicEvent(be, false, true, true);
+		
+		assertTrue(state.getOrderedBes().contains(be));
+		assertTrue(state.getUnorderedBes().isEmpty());
+		assertFalse(state.isFaultTreeNodePermanent(be));
+		
+		state.executeBasicEvent(be, false, true, true);
+		
+		assertEquals(1, state.getOrderedBes().size());
+	}
 }

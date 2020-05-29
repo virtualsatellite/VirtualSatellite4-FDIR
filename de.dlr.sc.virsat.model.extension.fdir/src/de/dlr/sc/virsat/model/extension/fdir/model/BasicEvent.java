@@ -79,6 +79,7 @@ public  class BasicEvent extends ABasicEvent {
 		
 		BasicEvent be = (BasicEvent) other;
 		return getHotFailureRateBean().getValueToBaseUnit() == be.getHotFailureRateBean().getValueToBaseUnit()
-				&& getColdFailureRateBean().getValueToBaseUnit() == be.getColdFailureRateBean().getValueToBaseUnit();
+				&& getColdFailureRateBean().getValueToBaseUnit() == be.getColdFailureRateBean().getValueToBaseUnit()
+				&& getRepairRateBean().getValueToBaseUnit() == be.getRepairRateBean().getValueToBaseUnit();
 	}
 }

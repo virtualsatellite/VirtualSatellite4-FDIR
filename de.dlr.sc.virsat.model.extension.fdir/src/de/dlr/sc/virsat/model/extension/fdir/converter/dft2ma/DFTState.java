@@ -409,6 +409,10 @@ public class DFTState extends MarkovState {
 	 * @return true iff the basic event successfully caused some change
 	 */
 	public boolean executeBasicEvent(BasicEvent be, boolean isRepair, boolean isOrderDependent, boolean isTransient) {
+		if (isOrderDependent && getOrderedBes().contains(be)) {
+			return false;
+		}
+		
 		Collection<BasicEvent> beCollection = isOrderDependent ? getOrderedBes() : getUnorderedBes();
 		setFaultTreeNodeFailed(be, !isRepair);
 		setFaultTreeNodePermanent(be, !isTransient);

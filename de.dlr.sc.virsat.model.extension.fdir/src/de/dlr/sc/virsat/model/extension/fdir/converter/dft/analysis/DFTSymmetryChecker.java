@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
@@ -33,6 +35,21 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFTSymmetryChecker {
 	
+	private static final Comparator<Entry<FaultTreeNode, FaultTreeNode>> PAIR_COMPARATOR = (pair1, pair2) -> {
+		int compare = pair1.getKey().toString().compareTo(pair2.getKey().toString());
+		if (compare == 0) {
+			compare = pair1.getValue().toString().compareTo(pair2.getValue().toString());
+		}
+		if (compare == 0) {
+			compare = pair1.getKey().getUuid().compareTo(pair2.getKey().getUuid());
+		}
+		if (compare == 0) {
+			compare = pair1.getValue().getUuid().compareTo(pair2.getValue().getUuid());
+		}
+		
+		return compare;
+	};
+	
 	/**
 	 * Computes a symmetry reduction between two FTs
 	 * @param ftHolder1 the first ft
@@ -40,7 +57,7 @@ public class DFTSymmetryChecker {
 	 * @return a symmetry reduction
 	 */
 	public SymmetryReduction computeSymmetryReduction(FaultTreeHolder ftHolder1, FaultTreeHolder ftHolder2) {
-		Set<Entry<FaultTreeNode, FaultTreeNode>> pairs = new HashSet<>();
+		Set<Entry<FaultTreeNode, FaultTreeNode>> pairs = new TreeSet<>(PAIR_COMPARATOR);
 		Map<Entry<FaultTreeNode, FaultTreeNode>, Set<Entry<FaultTreeNode, FaultTreeNode>>> mapChildPairToParentPairs = new HashMap<>();
 		Map<Entry<FaultTreeNode, FaultTreeNode>, Set<Entry<FaultTreeNode, FaultTreeNode>>> mapPairToPairSet = new HashMap<>();
 		Queue<Set<Entry<FaultTreeNode, FaultTreeNode>>> toProcess = new LinkedList<>();
@@ -191,7 +208,7 @@ public class DFTSymmetryChecker {
 			}
 			
 			if (!isParentPair) {
-				Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new HashSet<>();
+				Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new TreeSet<>(PAIR_COMPARATOR);
 				mapNodeToNodePairs.add(candidatePairs);
 				
 				for (FaultTreeNode child2 : nodes2) {
@@ -243,7 +260,7 @@ public class DFTSymmetryChecker {
 				}
 			}
 			
-			Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new HashSet<>();
+			Set<Entry<FaultTreeNode, FaultTreeNode>> candidatePairs = new TreeSet<>(PAIR_COMPARATOR);
 			mapNodeToNodePairs.add(candidatePairs);
 			
 			if (!isParentPair && child1.equals(child2)) {
