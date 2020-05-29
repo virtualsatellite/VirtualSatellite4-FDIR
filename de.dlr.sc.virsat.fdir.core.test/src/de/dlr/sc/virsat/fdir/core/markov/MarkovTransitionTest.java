@@ -28,7 +28,7 @@ public class MarkovTransitionTest {
 		MarkovState from = new MockState(0);
 		MarkovState to = new MockState(1);
 		
-		MarkovTransition<MarkovState> transition = new MarkovTransition<MarkovState>(from, to, 1, "a", true);
+		MarkovTransition<MarkovState> transition = new MarkovTransition<MarkovState>(from, to, 1, "a");
 		String stringRepresentation = transition.toString();
 		
 		assertEquals("Correct string representation", "0 --- a, 1.0 ---> 1", stringRepresentation);

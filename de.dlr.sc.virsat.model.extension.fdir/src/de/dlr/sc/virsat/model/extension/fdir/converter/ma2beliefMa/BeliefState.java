@@ -145,6 +145,6 @@ public class BeliefState extends MarkovState {
 	 * @param belief the probability of being in the state
 	 */
 	void addBelief(PODFTState state, double belief) {
-		mapStateToBelief.merge(state, belief, (p1, p2) -> p1 + p2);
+		mapStateToBelief.merge(state, belief, Double::sum);
 	}
 }
