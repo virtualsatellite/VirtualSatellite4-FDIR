@@ -244,4 +244,14 @@ public class Module {
 		String res = moduleNodes.stream().map(FaultTreeNodePlus::toString).collect(Collectors.joining(","));
 		return "{" + res + "}";
 	}
+	
+	/**
+	 * Gets the module for a given fault tree node
+	 * @param modules a set of modules
+	 * @param node a fault tree node
+	 * @return the module for the fault tree node, or null of no such module exists
+	 */
+	public static Module getModule(Set<Module> modules, FaultTreeNode node) {
+		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
+	}
 }

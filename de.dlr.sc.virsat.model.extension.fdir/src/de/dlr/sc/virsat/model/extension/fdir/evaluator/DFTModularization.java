@@ -119,7 +119,7 @@ public class DFTModularization {
 	 * @return the module for the fault tree node, or null of no such module exists
 	 */
 	Module getModule(FaultTreeNode node) {
-		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
+		return Module.getModule(modules, node);
 	}
 	
 	/**

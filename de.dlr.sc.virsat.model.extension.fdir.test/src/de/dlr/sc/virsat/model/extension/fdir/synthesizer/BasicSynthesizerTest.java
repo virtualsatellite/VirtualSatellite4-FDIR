@@ -30,6 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -134,7 +135,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		};
 		
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
-		synthesizer.getModularizer().setBEOptimization(false);
+		synthesizer.setModularizer(new Modularizer().setBEOptimization(false));
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 
 		final int NUM_STATES = 1;

@@ -33,6 +33,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeTrimmer;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.IModularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
@@ -48,7 +49,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimize
 public abstract class ASynthesizer implements ISynthesizer {
 
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
-	protected Modularizer modularizer = new Modularizer();
+	protected IModularizer modularizer = new Modularizer();
 	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected ParallelComposer pc = new ParallelComposer();
 	protected Concept concept;
@@ -144,7 +145,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * Sets the modularizer that will be used to modularize the fault tree
 	 * @param modularizer the modularizer
 	 */
-	public void setModularizer(Modularizer modularizer) {
+	public void setModularizer(IModularizer modularizer) {
 		this.modularizer = modularizer;
 	}
 	
@@ -152,7 +153,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * Gets the equipped modularizer
 	 * @return the equipped modularizer
 	 */
-	public Modularizer getModularizer() {
+	public IModularizer getModularizer() {
 		return modularizer;
 	}
 	

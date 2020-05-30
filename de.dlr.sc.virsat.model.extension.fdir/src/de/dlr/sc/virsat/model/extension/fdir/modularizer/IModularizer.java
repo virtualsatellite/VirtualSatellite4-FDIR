@@ -19,7 +19,7 @@ import java.util.Set;
  * @author jord_ad
  */
 
-interface IModularizer {
+public interface IModularizer {
 
 	/**
 	 * A method which modularizes a Fault Tree and returns the modules in a list.

@@ -75,6 +75,14 @@ public class Modularizer implements IModularizer {
 		return this.modules;
 	}
 	
+	/**
+	 * Gets the underlying fault tree holder data structure
+ 	 * @return the fault tree holder
+	 */
+	public FaultTreeHolder getFtHolder() {
+		return ftHolder;
+	}
+	
 	
 	/**
 	 * Get the depth of the tree, where root has depth 0
@@ -91,9 +99,11 @@ public class Modularizer implements IModularizer {
 	 * Allows the user to choose if they would like to start searching for modules at the lowest level (basic events)
 	 * or past basic events.
 	 * @param beOptimizationOn true for optimization turned on, false for optimization turned off.
+	 * @return the modularizer
 	 */
-	public void setBEOptimization(boolean beOptimizationOn) {
+	public Modularizer setBEOptimization(boolean beOptimizationOn) {
 		this.beOptimizationOn = beOptimizationOn;
+		return this;
 	}
 	
 	
