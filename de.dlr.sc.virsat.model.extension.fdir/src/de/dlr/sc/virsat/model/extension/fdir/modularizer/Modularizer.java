@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -124,7 +125,6 @@ public class Modularizer implements IModularizer {
 		}
 		
 		this.ftHolder = new FaultTreeHolder(faultTree.getRoot());
-		
 		FaultTreeNodePlus root = new FaultTreeNodePlus(this.faultTree.getRoot(), 0);
 		
 		/* dfs traverse the tree, numbering off nodes */
@@ -151,11 +151,12 @@ public class Modularizer implements IModularizer {
 					dfsStack.push(child);
 					numChildrenAddedToStack++;
 					
-					if (curr.isPriority() || curr.hasPriorityAbove()) {
+					FaultTreeNodeType nodeType = curr.getFaultTreeNode().getFaultTreeNodeType();
+					if (nodeType.isOrderDependent() || curr.hasPriorityAbove()) {
 						child.setHasPriorityAbove();
 					}
 					
-					if (curr.isNondeterministic() || curr.hasSpareAbove()) {
+					if (nodeType.isNondeterministic() || curr.hasSpareAbove()) {
 						child.setHasSpareAbove();
 					}
 				}
@@ -164,7 +165,7 @@ public class Modularizer implements IModularizer {
 			if (numChildrenAddedToStack == 0) {
 				FaultTreeNodePlus nodePopped = dfsStack.pop();
 				
-				if (nodePopped.hasSpareBelow() || nodePopped.isNondeterministic()) {
+				if (nodePopped.hasSpareBelow() || nodePopped.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic()) {
 					nodePopped.getSetFrom().stream().forEach(FaultTreeNodePlus::setHasSpareBelow);
 				}
 			}
@@ -282,7 +283,7 @@ public class Modularizer implements IModularizer {
 		Module module = new Module();
 
 		if (root == null
-				|| (root.isNondeterministic() && root.hasPriorityAbove())
+				|| (root.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic() && root.hasPriorityAbove())
 				|| root.hasSpareAbove()
 				|| (root.hasSpareBelow() && root.hasPriorityAbove())) {
 			return null;
@@ -293,16 +294,17 @@ public class Modularizer implements IModularizer {
 		
 		while (!stack.isEmpty()) {
 			FaultTreeNodePlus curr = stack.pop();
-			if (module.addNode(curr)) {
-				List<FaultTreeNodePlus> children = curr.getChildren();
-				
-				for (FaultTreeNodePlus child : children) {
-					if (!child.isHarvested()) {
-						if (!child.isWithinBoundsOf(root)) {
-							return null;
-						}
-						stack.push(child);
+			if (!module.addNode(curr)) {
+				continue;
+			}
+			
+			List<FaultTreeNodePlus> children = curr.getChildren();
+			for (FaultTreeNodePlus child : children) {
+				if (!child.isHarvested()) {
+					if (!child.isWithinBoundsOf(root)) {
+						return null;
 					}
+					stack.push(child);
 				}
 			}
 		}

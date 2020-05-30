@@ -63,7 +63,7 @@ public class Module {
 			this.moduleRoot = node;
 		}
 		
-		if (node.isNondeterministic()) {
+		if (node.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic()) {
 			this.moduleProperties.add(ModuleProperty.NONDETERMINISTIC);
 		}
 		

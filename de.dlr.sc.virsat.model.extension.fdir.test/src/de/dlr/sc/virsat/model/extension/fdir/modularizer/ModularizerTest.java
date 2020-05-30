@@ -385,7 +385,7 @@ public class ModularizerTest extends ATestCase {
 		assertEquals(NUM_MODULES, modules.size());
 		
 		Module module = modules.iterator().next();
-		assertTrue(module.isPartialObservable());
+		assertFalse(module.isPartialObservable());
 	}
 	
 	@Test
