@@ -61,7 +61,7 @@ public class ModularizerTest extends ATestCase {
 	public void testCountTreeCSP2() throws IOException {
 		Fault root = createDFT("/resources/galileo/csp2.dft");
 		
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		
 		FaultTreeHolder ftHolder = modularizer.getFtHolder();
@@ -81,7 +81,7 @@ public class ModularizerTest extends ATestCase {
 	public void testCountTreeOr3AndCSPBasic() throws IOException {
 		Fault root = createDFT("/resources/galileo/or3AndColdSpareBasic.dft");
 
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		
 		FaultTreeHolder fthold = modularizer.getFtHolder();
@@ -106,33 +106,6 @@ public class ModularizerTest extends ATestCase {
 		assertEquals("andGate, first visit", ANDGATE_FIRST_VISIT, ans.get(andGate).getFirstVisit());
 	}
 	
-	
-	/* **********************************************
-	 * TESTING TREE DEPTH
-	 * *********************************************/
-	@Test
-	public void testNullTree() {
-		final int TREE_DEPTH = -1;
-		assertEquals(TREE_DEPTH, modularizer.getTreeDepth(null));
-	}
-	
-	@Test
-	public void testTreeDepthCSP2() throws IOException {
-		Fault root = createDFT("/resources/galileo/csp2.dft");
-		int ans = modularizer.getTreeDepth(root.getFaultTree());
-		final int EXPECTED_DEPTH = 3;		
-		assertEquals(EXPECTED_DEPTH, ans);
-	}
-
-	@Test
-	public void testTreeDepthOr3AndCSPBasic() throws IOException {
-		Fault root = createDFT("/resources/galileo/or3AndColdSpareBasic.dft");
-		int ans = modularizer.getTreeDepth(root.getFaultTree());
-		final int EXPECTED_DEPTH = 5;
-		assertEquals(EXPECTED_DEPTH, ans);
-	}
-	
-	
 	/* **********************************************
 	 * TESTING MODULARIZATION
 	 * *********************************************/
@@ -140,7 +113,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testHarvestModuleSimpleSpareRoot() throws IOException {
 		Fault root = createDFT("/resources/galileo/csp2.dft");
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		Module module = modularizer.harvestModule(root);
 		
@@ -157,7 +130,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testHarvestModuleSimpleSpareSpareGate() throws IOException {
 		Fault root = createDFT("/resources/galileo/csp2.dft");
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		
 		FaultTreeHolder fthold = modularizer.getFtHolder();
@@ -176,7 +149,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = new Fault(concept);
 		root.setName("ROOT");
 		
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		Module module = modularizer.harvestModule(root);
 		
@@ -188,7 +161,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testHarvestModuleSharedSpare() throws IOException {
 		Fault root = createDFT("/resources/galileo/or2And2SharedSpare.dft");
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		
 		FaultTreeNode andGate1 = modularizer.getFtHolder().getNodeByName("AND1", AND.class);
@@ -205,7 +178,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testModuleTypeOr2And2Basic() throws IOException {
 		Fault root = createDFT("/resources/galileo/or2And2Basic.dft");
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		
 		FaultTreeNode and1 = modularizer.getFtHolder().getNodeByName("AND1", AND.class);
@@ -217,7 +190,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testModuleTypeOr2() throws IOException {
 		Fault root = createDFT("/resources/galileo/or2.dft");
-		modularizer.setFaultTree(root.getFaultTree());
+		modularizer.setFaultTree(root);
 		modularizer.countTree();
 		
 		FaultTreeNode or = modularizer.getFtHolder().getNodeByName("tle", OR.class);

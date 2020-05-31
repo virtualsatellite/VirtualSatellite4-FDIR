@@ -22,7 +22,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
@@ -45,7 +44,7 @@ public class Modularizer implements IModularizer {
 	private Set<Module> modules;
 	
 	/* a reference to the entire fault tree */
-	private FaultTree faultTree;
+	private Fault root;
 	private FaultTreeHolder ftHolder;
 	
 	private int maxDepth = 0;
@@ -68,7 +67,7 @@ public class Modularizer implements IModularizer {
 	@Override
 	public Set<Module> getModules(Fault root) {
 		this.modules = new HashSet<Module>();
-		this.faultTree = root.getFaultTree();
+		this.root = root;
 		this.modularize();
 		return this.modules;
 	}
@@ -79,18 +78,6 @@ public class Modularizer implements IModularizer {
 	 */
 	public FaultTreeHolder getFtHolder() {
 		return ftHolder;
-	}
-	
-	
-	/**
-	 * Get the depth of the tree, where root has depth 0
-	 * @param ft the fault tree
-	 * @return the depth
-	 */
-	public int getTreeDepth(FaultTree ft) {
-		this.faultTree = ft;
-		this.countTree();
-		return this.maxDepth;
 	}
 	
 	/**
@@ -116,13 +103,13 @@ public class Modularizer implements IModularizer {
 		table.clear();
 		nodePlusTree.clear();
 		
-		if (this.faultTree == null) {
+		if (this.root == null) {
 			this.maxDepth = -1;
 			return;
 		}
 		
-		this.ftHolder = new FaultTreeHolder(faultTree.getRoot());
-		FaultTreeNodePlus root = new FaultTreeNodePlus(this.faultTree.getRoot(), 0);
+		this.ftHolder = new FaultTreeHolder(this.root);
+		FaultTreeNodePlus root = new FaultTreeNodePlus(this.root, 0);
 		
 		/* dfs traverse the tree, numbering off nodes */
 		Stack<FaultTreeNodePlus> dfsStack = new Stack<FaultTreeNodePlus>();
@@ -204,17 +191,16 @@ public class Modularizer implements IModularizer {
 	 * @param node the node to be added to the internal tree
 	 */
 	private void addNodeToInternalTree(FaultTreeNodePlus node) {
-		if (!this.table.containsValue(node)) {
-			this.nodePlusTree.add(node);
+		if (this.nodePlusTree.add(node)) {
 			this.table.put(node.getFaultTreeNode(), node);
 		} 
 	}
 	
 	/** Set the fault tree of the modularizer. For testing only.
-	 * @param ft the fault tree
+	 * @param root the root of the tree
 	 */
-	void setFaultTree(FaultTree ft) {
-		this.faultTree = ft;
+	void setFaultTree(Fault root) {
+		this.root = root;
 	}
 	
 	/**
