@@ -9,9 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
-
 import java.util.Set;
+
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 
 
 /**
@@ -22,9 +22,9 @@ import java.util.Set;
 public interface IModularizer {
 
 	/**
-	 * A method which modularizes a Fault Tree and returns the modules in a list.
-	 * @param ft the fault tree
-	 * @return a list of fault trees which are the modules
+	 * A method which modularizes a Fault Tree and returns the modules in a set.
+	 * @param root the root node to the Fault Tree which is to be modularized
+	 * @return a set of modules
 	 */
-	Set<Module> getModules(FaultTree ft);
+	Set<Module> getModules(Fault root);
 }

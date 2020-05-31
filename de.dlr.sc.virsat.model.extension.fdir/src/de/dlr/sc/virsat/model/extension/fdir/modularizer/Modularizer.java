@@ -21,6 +21,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -64,14 +65,10 @@ public class Modularizer implements IModularizer {
 	 * *********** PUBLIC METHODS ********************************************
 	 * **********************************************************************/
 	
-	/**
-	 * A method which modularizes a Fault Tree and returns the modules in a set.
-	 * @param ft the root node to the Fault Tree which is to be modularized
-	 * @return a set of modules
-	 */
-	public Set<Module> getModules(FaultTree ft) {
+	@Override
+	public Set<Module> getModules(Fault root) {
 		this.modules = new HashSet<Module>();
-		this.faultTree = ft;
+		this.faultTree = root.getFaultTree();
 		this.modularize();
 		return this.modules;
 	}

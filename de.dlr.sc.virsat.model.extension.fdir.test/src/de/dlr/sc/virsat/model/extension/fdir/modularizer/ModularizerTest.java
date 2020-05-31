@@ -231,7 +231,7 @@ public class ModularizerTest extends ATestCase {
 	public void testModuleTypeOr2WithoutBEOptimization() throws IOException {
 		Fault root = createDFT("/resources/galileo/or2.dft");
 		modularizer.setBEOptimization(false);
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_MODULES = 4;
 		assertEquals(NUM_MODULES, modules.size());
 	}
@@ -248,7 +248,7 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeNode primary = ftHolder.getNodeByName("A", Fault.class);
 		FaultTreeNode primaryBE = ftHolder.getNodeByName("A", BasicEvent.class);
 		
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());
@@ -273,7 +273,7 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeNode b = ftholder.getNodeByName("B", Fault.class);
 		FaultTreeNode d = ftholder.getNodeByName("D", Fault.class);
 		
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());
 		
@@ -299,7 +299,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testNestedPrioritySimple() throws IOException {
 		Fault root = createDFT("/resources/galileo/nestedPand.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 4;
 		assertEquals(NUM_MODULES, modules.size());
@@ -333,7 +333,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testNestedPriorityComplex() throws IOException {
 		Fault root = createDFT("/resources/galileo/nestedPand2.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 
 		final int NUM_MODULES = 7;
 		assertEquals(NUM_MODULES, modules.size());
@@ -346,7 +346,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testModularizeFDEP1() throws IOException {
 		Fault root = createDFT("/resources/galileo/fdep1.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_MODULES = 5;
 		assertEquals(NUM_MODULES, modules.size());
 	}
@@ -354,7 +354,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testModularizeFDEP2Complex() throws IOException {
 		Fault root = createDFT("/resources/galileo/fdep2.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 6;
 		assertEquals(NUM_MODULES, modules.size());
@@ -368,7 +368,7 @@ public class ModularizerTest extends ATestCase {
 	public void testModuleTypeObsCsp2() throws IOException {
 		Fault root = createDFT("/resources/galileoObs/obsCsp2.dft");
 		
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_MODULES = 1;
 		assertEquals(NUM_MODULES, modules.size());
 		
@@ -380,7 +380,7 @@ public class ModularizerTest extends ATestCase {
 	public void testModuleTypeObsOr2ObsBe2() throws IOException {
 		Fault root = createDFT("/resources/galileoObs/obsOr2ObsBe2.dft");
 		
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_MODULES = 1;
 		assertEquals(NUM_MODULES, modules.size());
 		
@@ -392,7 +392,7 @@ public class ModularizerTest extends ATestCase {
 	public void testModuleTypeObsOr2ObsCsp2() throws IOException {
 		Fault root = createDFT("/resources/galileoObs/obsOr2ObsCsp2.dft");
 		
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_MODULES = 3;
 		assertEquals(NUM_MODULES, modules.size());
 		
@@ -417,7 +417,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testComplexTree() throws IOException {
 		Fault root = createDFT("/resources/galileo/fdep3Spare2.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 10;
 		assertEquals(NUM_MODULES, modules.size());
@@ -426,7 +426,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testCMSimple2() throws IOException {
 		Fault root = createDFT("/resources/galileo/cm_simple2.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 5;
 		assertEquals(NUM_MODULES, modules.size());
@@ -435,7 +435,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testCM1() throws IOException {
 		Fault root = createDFT("/resources/galileo/cm1.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 8;
 		assertEquals(NUM_MODULES, modules.size());
@@ -444,7 +444,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testCM2() throws IOException {
 		Fault root = createDFT("/resources/galileo/cm2.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 10;
 		assertEquals(NUM_MODULES, modules.size());
@@ -453,7 +453,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testCM3() throws IOException {
 		Fault root = createDFT("/resources/galileo/cm3.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 16;
 		assertEquals(NUM_MODULES, modules.size());
@@ -462,7 +462,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testFTPP4() throws IOException {
 		Fault root = createDFT("/resources/galileo/ftpp4.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());
@@ -471,7 +471,7 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testAHRS2() throws IOException {
 		Fault root = createDFT("/resources/galileo/ahrs2.dft");
-		Set<Module> modules = modularizer.getModules(root.getFaultTree());
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());

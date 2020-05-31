@@ -40,8 +40,8 @@ public class ModuleTest extends ATestCase {
 	
 	@Test
 	public void testEvaluateCsp2() throws IOException {
-		Fault rootcsp2 = createDFT("/resources/galileo/csp2.dft");
-		Set<Module> modules = modularizer.getModules(rootcsp2.getFaultTree());
+		Fault root = createDFT("/resources/galileo/csp2.dft");
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_NODES_IN_SHARED_SPARE_MODULE = 3;
 		Module module = modules.stream().filter(m -> m.getNodes().size() >= NUM_NODES_IN_SHARED_SPARE_MODULE).findAny().get();
 		module.constructFaultTreeCopy();
@@ -51,8 +51,8 @@ public class ModuleTest extends ATestCase {
 
 	@Test
 	public void testCopyFaultTreeCMSimple2() throws IOException {
-		Fault rootCMSimple = createDFT("/resources/galileo/cm_simple2.dft");
-		Set<Module> modules = modularizer.getModules(rootCMSimple.getFaultTree());
+		Fault root = createDFT("/resources/galileo/cm_simple2.dft");
+		Set<Module> modules = modularizer.getModules(root);
 		Module module = modules.stream().filter(Module::isNondeterministic).findAny().get();
 		module.constructFaultTreeCopy();
 		
@@ -61,8 +61,8 @@ public class ModuleTest extends ATestCase {
 	
 	@Test
 	public void testCopyFaultTreeCM1() throws IOException {
-		Fault rootCM1 = createDFT("/resources/galileo/cm1.dft");
-		Set<Module> modules = modularizer.getModules(rootCM1.getFaultTree());
+		Fault root = createDFT("/resources/galileo/cm1.dft");
+		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_NODES_IN_SHARED_SPARE_MODULE = 8;
 		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_SHARED_SPARE_MODULE).findAny().get();
@@ -77,8 +77,8 @@ public class ModuleTest extends ATestCase {
 	
 	@Test
 	public void testCopyFaultTreeCM2() throws IOException {
-		Fault rootCM2 = createDFT("/resources/galileo/cm2.dft");
-		Set<Module> modules = modularizer.getModules(rootCM2.getFaultTree());
+		Fault root = createDFT("/resources/galileo/cm2.dft");
+		Set<Module> modules = modularizer.getModules(root);
 		final int NUM_NODES_IN_MODULE_DESIRED = 8;
 		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_MODULE_DESIRED).findAny().get();
 		module.constructFaultTreeCopy();

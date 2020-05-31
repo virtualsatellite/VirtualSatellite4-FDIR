@@ -54,7 +54,7 @@ public class DFTModularization {
 	 */
 	public DFTModularization(Modularizer modularizer, FaultTreeHolder ftHolder, DFTSymmetryChecker symmetryChecker) {
 		Fault rootFault = (Fault) ftHolder.getRoot();
-		modules = modularizer.getModules(rootFault.getFaultTree());
+		modules = modularizer.getModules(rootFault);
 		
 		if (!modules.isEmpty()) {
 			topLevelModule = getModule(rootFault);

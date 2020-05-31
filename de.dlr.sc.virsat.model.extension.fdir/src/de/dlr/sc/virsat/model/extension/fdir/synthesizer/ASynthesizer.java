@@ -69,7 +69,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		
 		RecoveryAutomaton synthesizedRA;
 		if (modularizer != null) {
-			Set<Module> modules = modularizer.getModules(fault.getFaultTree());
+			Set<Module> modules = modularizer.getModules(fault);
 			Set<Module> trimmedModules = ftTrimmer.trimModulesAll(modules);
 			
 			statistics.countModules = trimmedModules.size();
