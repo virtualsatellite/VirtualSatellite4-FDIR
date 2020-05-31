@@ -30,9 +30,10 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 public class BasicSynthesizer extends ASynthesizer {
 
+	protected IMarkovScheduler<DFTState> scheduler = new MarkovScheduler<>();
+	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
-		IMarkovScheduler<DFTState> scheduler = new MarkovScheduler<>();
 		Map<DFTState, List<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(ma, initialMa);
 		return new Schedule2RAConverter<>(ma, concept).convert(schedule, initialMa);
 	}

@@ -48,10 +48,12 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimize
 
 public abstract class ASynthesizer implements ISynthesizer {
 
-	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
+	protected DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
 	protected IModularizer modularizer = new Modularizer();
 	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
+	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
 	protected ParallelComposer pc = new ParallelComposer();
+	
 	protected Concept concept;
 	protected SynthesisStatistics statistics;
 	
@@ -62,7 +64,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 		
 		concept = fault.getConcept();
 		
-		DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
 		fault = (Fault) conversionResult.getRoot();
 		

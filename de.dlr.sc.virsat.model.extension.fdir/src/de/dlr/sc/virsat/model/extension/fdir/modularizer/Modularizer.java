@@ -135,21 +135,19 @@ public class Modularizer implements IModularizer {
 		
 		while (!dfsStack.isEmpty()) {
 			FaultTreeNodePlus curr = dfsStack.peek();
-			
 			curr.visit(++count);
 			
 			this.addNodeToInternalTree(curr);
 
 			List<FaultTreeNodePlus> children = curr.getChildren().isEmpty() ? this.getChildrenInReverseOrder(curr) : curr.getChildren();
 			
-			int numChildrenAddedToStack = 0;
-			
+			boolean addedToStack = false;
 			for (FaultTreeNodePlus child : children) {
 				if (!child.isHarvested() && !child.visitedBeforeFromNode(curr)) {
 					curr.addChild(child);
 					child.addVisitedFrom(curr);
 					dfsStack.push(child);
-					numChildrenAddedToStack++;
+					addedToStack = true;
 					
 					FaultTreeNodeType nodeType = curr.getFaultTreeNode().getFaultTreeNodeType();
 					if (nodeType.isOrderDependent() || curr.hasPriorityAbove()) {
@@ -162,7 +160,7 @@ public class Modularizer implements IModularizer {
 				}
 			}
 			
-			if (numChildrenAddedToStack == 0) {
+			if (!addedToStack) {
 				FaultTreeNodePlus nodePopped = dfsStack.pop();
 				
 				if (nodePopped.hasSpareBelow() || nodePopped.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic()) {
