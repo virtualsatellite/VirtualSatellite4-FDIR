@@ -14,7 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	
 	@Test
 	public void testNone() {
-		Set<Module> resultSet = fttrim.trimModulesAll(new HashSet<Module>());
+		Set<Module> resultSet = fttrim.trimModulesAll(Collections.emptySet());
 		assertTrue(resultSet.isEmpty());
 	}
 	

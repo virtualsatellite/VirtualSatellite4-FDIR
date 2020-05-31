@@ -44,7 +44,6 @@ public class Modularizer implements IModularizer {
 	private Set<Module> modules;
 	
 	/* a reference to the entire fault tree */
-	private Fault root;
 	private FaultTreeHolder ftHolder;
 	
 	private int maxDepth = 0;
@@ -66,8 +65,7 @@ public class Modularizer implements IModularizer {
 	
 	@Override
 	public Set<Module> getModules(Fault root) {
-		this.modules = new HashSet<Module>();
-		this.root = root;
+		setFaultTree(root);
 		this.modularize();
 		return this.modules;
 	}
@@ -103,13 +101,12 @@ public class Modularizer implements IModularizer {
 		table.clear();
 		nodePlusTree.clear();
 		
-		if (this.root == null) {
+		if (this.ftHolder == null) {
 			this.maxDepth = -1;
 			return;
 		}
 		
-		this.ftHolder = new FaultTreeHolder(this.root);
-		FaultTreeNodePlus root = new FaultTreeNodePlus(this.root, 0);
+		FaultTreeNodePlus root = new FaultTreeNodePlus(ftHolder.getRoot(), 0);
 		
 		/* dfs traverse the tree, numbering off nodes */
 		Stack<FaultTreeNodePlus> dfsStack = new Stack<FaultTreeNodePlus>();
@@ -158,7 +155,9 @@ public class Modularizer implements IModularizer {
 	 * Begin the modularization process.
 	 */
 	private void modularize() {
+		this.modules = new HashSet<Module>();
 		this.countTree();
+		
 		/*	DEFAULT optimization
 		 *  start looking for modules at maxDepth - 2 because deepest 2 levels are just faults and their basic events */
 		int depthOffset = this.beOptimizationOn ? 2 : 1;
@@ -200,7 +199,7 @@ public class Modularizer implements IModularizer {
 	 * @param root the root of the tree
 	 */
 	void setFaultTree(Fault root) {
-		this.root = root;
+		ftHolder = new FaultTreeHolder(root);
 	}
 	
 	/**
