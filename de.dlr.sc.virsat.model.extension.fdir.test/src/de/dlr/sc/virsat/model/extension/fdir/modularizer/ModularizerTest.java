@@ -55,7 +55,6 @@ public class ModularizerTest extends ATestCase {
 	/* **********************************************
 	 * TESTING TREE COUNT
 	 * *********************************************/
-
 	
 	@Test
 	public void testCountTreeCSP2() throws IOException {
@@ -386,7 +385,7 @@ public class ModularizerTest extends ATestCase {
 	/* *****************************************************
 	 *  TESTING MORE REALISTIC & COMPLETE FAULT TREES
 	 * *****************************************************/
-
+	
 	@Test
 	public void testComplexTree() throws IOException {
 		Fault root = createDFT("/resources/galileo/fdep3Spare2.dft");

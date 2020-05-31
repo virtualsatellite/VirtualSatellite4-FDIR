@@ -25,11 +25,11 @@ import java.util.List;
  */
 
 public class FaultTreeNodePlus {
-
+	
 	private FaultTreeNode node;
 	private Set<FaultTreeNodePlus> visitedFrom = new HashSet<FaultTreeNodePlus>();
-	private int firstVisit = 0;
-	private int lastVisit = 0;
+	private int firstVisit;
+	private int lastVisit;
 	private int depth;
 	
 	private boolean harvested = false;
@@ -39,7 +39,7 @@ public class FaultTreeNodePlus {
 	private boolean isDEPDescendant = false;
 	
 	private List<FaultTreeNodePlus> children = new ArrayList<FaultTreeNodePlus>();
-
+	
 	/* CONSTRUCTORS */
 	
 	/**
@@ -63,7 +63,6 @@ public class FaultTreeNodePlus {
 		
 		this.lastVisit = visitDate;
 	}
-	
 	
 	/* ***********************
 	 * GETTERS
@@ -205,7 +204,6 @@ public class FaultTreeNodePlus {
 		this.harvested = true;
 	}
 	
-	
 	/**
 	 * Add a path to this node
 	 * @param node the node we are visiting from
@@ -222,15 +220,6 @@ public class FaultTreeNodePlus {
 	boolean visitedBeforeFromNode(FaultTreeNodePlus node) {
 		return this.visitedFrom.contains(node);
 	}
-
-	
-	/**
-	 * Returns whether a FaultTreeNodePlus is nondeterministic or not
-	 * @return true if nondeterministic, false otherwise
-	 */
-	public boolean isNondeterministic() {
-		return this.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic();
-	}
 	
 	/**
 	 * Get whether this node is within visiting dates of a root node
@@ -243,7 +232,6 @@ public class FaultTreeNodePlus {
 		}
 		return true;
 	}
-
 	
 	/**
 	 * Override of toString()
