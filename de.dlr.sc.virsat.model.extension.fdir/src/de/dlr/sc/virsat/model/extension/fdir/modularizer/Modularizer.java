@@ -21,9 +21,11 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -47,7 +49,6 @@ public class Modularizer implements IModularizer {
 	private FaultTreeHolder ftHolder;
 	
 	private int maxDepth = 0;
-	private boolean beOptimizationOn = true;
 	
 	// CONSTRUCTORS
 	
@@ -78,18 +79,6 @@ public class Modularizer implements IModularizer {
 		return ftHolder;
 	}
 	
-	/**
-	 * Allows the user to choose if they would like to start searching for modules at the lowest level (basic events)
-	 * or past basic events.
-	 * @param beOptimizationOn true for optimization turned on, false for optimization turned off.
-	 * @return the modularizer
-	 */
-	public Modularizer setBEOptimization(boolean beOptimizationOn) {
-		this.beOptimizationOn = beOptimizationOn;
-		return this;
-	}
-	
-	
 	/* ***********************************************************************
 	 * *********** PRIVATE METHODS ********************************************
 	 * **********************************************************************/
@@ -106,11 +95,16 @@ public class Modularizer implements IModularizer {
 			return;
 		}
 		
-		FaultTreeNodePlus root = new FaultTreeNodePlus(ftHolder.getRoot(), 0);
-		
 		/* dfs traverse the tree, numbering off nodes */
 		Stack<FaultTreeNodePlus> dfsStack = new Stack<FaultTreeNodePlus>();
-		dfsStack.push(root);
+		FaultTreeNodePlus rootPlus = new FaultTreeNodePlus(ftHolder.getRoot(), 0);
+		dfsStack.push(rootPlus);
+		
+		Set<FaultTreeNode> monitorRoots = getMonitorRoots();
+		for (FaultTreeNode monitorRoot : monitorRoots) {
+			FaultTreeNodePlus monitorRootPlus = new FaultTreeNodePlus(monitorRoot, 0);
+			dfsStack.push(monitorRootPlus);
+		}
 		
 		int count = 0;
 		
@@ -150,6 +144,28 @@ public class Modularizer implements IModularizer {
 			}
 		}
 	}
+
+	/**
+	 * Gets the root nodes of the monitoring gates.
+	 * @return 
+	 */
+	private Set<FaultTreeNode> getMonitorRoots() {
+		Set<FaultTreeNode> monitorRoots = new HashSet<>();
+		Set<FaultTreeNode> monitors = ftHolder.getNodes(FaultTreeNodeType.MONITOR);
+		for (FaultTreeNode monitor : monitors) {
+			Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(monitor);
+			for (FaultTreeNode allParent : allParents) {
+				if (ftHolder.getNodes(allParent, EdgeType.PARENT).isEmpty()) {
+					monitorRoots.add(allParent);
+				}
+			}
+			
+			if (allParents.isEmpty()) {
+				monitorRoots.add(monitor);
+			}
+		}
+		return monitorRoots;
+	}
 	
 	/**
 	 * Begin the modularization process.
@@ -158,26 +174,75 @@ public class Modularizer implements IModularizer {
 		this.modules = new HashSet<Module>();
 		this.countTree();
 		
-		/*	DEFAULT optimization
-		 *  start looking for modules at maxDepth - 2 because deepest 2 levels are just faults and their basic events */
-		int depthOffset = this.beOptimizationOn ? 2 : 1;
-		int startingDepth = this.maxDepth - depthOffset;
+		int startingDepth = this.maxDepth - 1;
 		
 		for (int i = startingDepth; i >= 0; i--) {
-			for (FaultTreeNodePlus currNode : this.nodePlusTree) {				
-				/* detected a potential module */
-				boolean moduleDetected = (currNode.getDepth() == i) 
-						&& !currNode.isHarvested()
-						&& (currNode.getFirstVisit() + depthOffset < currNode.getLastVisit());
-				if (moduleDetected) {
-					Module module = this.harvestModule(currNode.getFaultTreeNode());
-					
+			for (FaultTreeNodePlus currNode : this.nodePlusTree) {	
+				boolean potentialModuleDetected = isPotentialModule(i, currNode);
+				if (potentialModuleDetected) {
+					Module module = this.harvestModule(currNode.getFaultTreeNode(), modules);
 					if (module != null) {
 						this.modules.add(module);
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Checks if a given node defines a module.
+	 * @param currentDepth the current depth
+	 * @param currNode the current node
+	 * @return true iff the current node defines a module root
+	 */
+	private boolean isPotentialModule(int currentDepth, FaultTreeNodePlus currNode) {
+		if (currNode.getDepth() != currentDepth) {
+			return false;
+		}
+		
+		if (currNode.isHarvested()) {
+			return false;
+		}
+		
+		if (currNode.getFirstVisit() + 1 >= currNode.getLastVisit()) {
+			return false;
+		}
+		
+		if (currNode.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic() && currNode.hasPriorityAbove()) {
+			return false;
+		}
+		
+		if (currNode.hasSpareAbove()) {
+			return false;
+		}
+		
+		if (currNode.hasSpareBelow() && currNode.hasPriorityAbove()) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Checks if there exists a guaranteed monitor that can immediately
+	 * observe the given node.
+	 * @param node the node to check
+	 * @return true iff there exists an immediate monitor node
+	 */
+	private boolean existsImmediateMonitor(FaultTreeNode node) {
+		if (node instanceof BasicEvent) {
+			node = ftHolder.getBasicEventHolder((BasicEvent) node).getFault();
+		}
+		
+		List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
+		for (FaultTreeNode monitor : monitors) {
+			if (((MONITOR) monitor).getObservationRate() == 0 
+					&& ftHolder.getNodes(monitor, EdgeType.CHILD).isEmpty()) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	
@@ -253,25 +318,19 @@ public class Modularizer implements IModularizer {
 	Map<FaultTreeNode, FaultTreeNodePlus> getTable() {
 		return this.table;
 	}
-	
-	/** 
-	 * Collect a suspected module
-	 * @param root the root node of suspected module
-	 * @return module containing modules nodes. Null if not a module.
-	 */
-	private Module collectModule(FaultTreeNodePlus root) {
-		Module module = new Module();
 
-		if (root == null
-				|| (root.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic() && root.hasPriorityAbove())
-				|| root.hasSpareAbove()
-				|| (root.hasSpareBelow() && root.hasPriorityAbove())) {
-			return null;
-		}
+	/**
+	 * Collect the module. Returns null if not a module.
+	 * @param root the root of the module
+	 * @param modules the current modules
+	 * @return the module
+	 */
+	Module harvestModule(FaultTreeNode root, Set<Module> modules) {
+		FaultTreeNodePlus rootPlus = this.table.get(root);
+		Module module = new Module(rootPlus);
 		
 		Stack<FaultTreeNodePlus> stack = new Stack<FaultTreeNodePlus>();
-		stack.push(root);
-		
+		stack.push(rootPlus);
 		while (!stack.isEmpty()) {
 			FaultTreeNodePlus curr = stack.pop();
 			if (!module.addNode(curr)) {
@@ -281,29 +340,35 @@ public class Modularizer implements IModularizer {
 			List<FaultTreeNodePlus> children = curr.getChildren();
 			for (FaultTreeNodePlus child : children) {
 				if (!child.isHarvested()) {
-					if (!child.isWithinBoundsOf(root)) {
+					if (!child.isWithinBoundsOf(rootPlus)) {
 						return null;
 					}
 					stack.push(child);
+				} else if (ftHolder.isPartialObservable()) {
+					Module subModule = Module.getModule(modules, child.getFaultTreeNode());
+					if (subModule.isPartialObservable() && !existsImmediateMonitor(child.getFaultTreeNode())) {
+						module.getModuleProperties().add(ModuleProperty.PARTIALOBSERVABLE);
+					}
+				}
+			}
+			
+			if (children.isEmpty()) {
+				// This is a leaf node within the module
+				if (ftHolder.isPartialObservable() && !existsImmediateMonitor(curr.getFaultTreeNode())) {
+					module.getModuleProperties().add(ModuleProperty.PARTIALOBSERVABLE);
 				}
 			}
 		}
-		return module;
-	}
-
-	/**
-	 * Collect the module. Returns null if not a module.
-	 * @param root the root of the module
-	 * @return the module
-	 */
-	Module harvestModule(FaultTreeNode root) {
-		FaultTreeNodePlus rootPlus = this.table.get(root);
 		
-		Module mod = collectModule(rootPlus);
-		if (mod != null) {
-			mod.harvestFromFaultTree();
-			mod.setTable(table);
+		if (ftHolder.isPartialObservable() && module.isPartialObservable()) {
+			if (!existsImmediateMonitor(root)) {
+				return null;
+			}
 		}
-		return mod;
+		
+		module.harvestFromFaultTree();
+		module.setTable(table);
+		
+		return module;
 	}
 }

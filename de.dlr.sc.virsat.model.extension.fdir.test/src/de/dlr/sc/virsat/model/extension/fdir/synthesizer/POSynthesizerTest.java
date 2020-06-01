@@ -246,9 +246,9 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2ObsBERepairUnreliable.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 9;
-		final int EXPECTED_COUNT_TRANSITIONS = 18;
-		final double EXPECTED_MTTF = 0.916584877377345;
+		final int EXPECTED_COUNT_STATES = 12;
+		final int EXPECTED_COUNT_TRANSITIONS = 22;
+		final double EXPECTED_MTTF = 0.9154067521378296;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());

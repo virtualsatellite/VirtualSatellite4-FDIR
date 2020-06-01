@@ -10,12 +10,12 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 /**
  * Links each FaultTreeNode in a FaultTree with the first and last date visited.

@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -114,7 +116,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/csp2.dft");
 		modularizer.setFaultTree(root);
 		modularizer.countTree();
-		Module module = modularizer.harvestModule(root);
+		Module module = modularizer.harvestModule(root, Collections.emptySet());
 		
 		FaultTreeHolder fthold = modularizer.getFtHolder();
 		FaultTreeNode spare = fthold.getNodeByName("B", Fault.class);
@@ -137,7 +139,7 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeNode spareGate = fthold.getNodeByName("tle", SPARE.class);
 		FaultTreeNode child = fthold.getChildFaults(root).iterator().next();
 		
-		Module module = modularizer.harvestModule(spareGate);
+		Module module = modularizer.harvestModule(spareGate, Collections.emptySet());
 		final int MODULESIZE_SPAREGATE = 5;
 		assertEquals(MODULESIZE_SPAREGATE, module.getNodes().size());
 		assertThat(module.getNodes(), allOf(hasItems(child, spareGate, spare), not(hasItems(root))));
@@ -150,7 +152,7 @@ public class ModularizerTest extends ATestCase {
 		
 		modularizer.setFaultTree(root);
 		modularizer.countTree();
-		Module module = modularizer.harvestModule(root);
+		Module module = modularizer.harvestModule(root, Collections.emptySet());
 		
 		final int MODULESIZE = 1;
 		assertEquals(MODULESIZE, module.getNodes().size());
@@ -164,13 +166,7 @@ public class ModularizerTest extends ATestCase {
 		modularizer.countTree();
 		
 		FaultTreeNode andGate1 = modularizer.getFtHolder().getNodeByName("AND1", AND.class);
-		Module module = modularizer.harvestModule(andGate1);
-		assertNull(module);
-	}
-	
-	@Test
-	public void testHarvestModuleNull() {
-		Module module = modularizer.harvestModule(null);
+		Module module = modularizer.harvestModule(andGate1, Collections.emptySet());
 		assertNull(module);
 	}
 	
@@ -182,7 +178,7 @@ public class ModularizerTest extends ATestCase {
 		
 		FaultTreeNode and1 = modularizer.getFtHolder().getNodeByName("AND1", AND.class);
 		
-		Module module = modularizer.harvestModule(and1);
+		Module module = modularizer.harvestModule(and1, Collections.emptySet());
 		assertTrue(module.isNondeterministic());
 	}
 	
@@ -194,33 +190,23 @@ public class ModularizerTest extends ATestCase {
 		
 		FaultTreeNode or = modularizer.getFtHolder().getNodeByName("tle", OR.class);
 		
-		Module module = modularizer.harvestModule(or);
+		Module module = modularizer.harvestModule(or, Collections.emptySet());
 		assertFalse(module.isNondeterministic());
 		assertEquals(or, module.getRootNode());
 	}
 	
 	@Test
-	public void testModuleTypeOr2WithoutBEOptimization() throws IOException {
-		Fault root = createDFT("/resources/galileo/or2.dft");
-		modularizer.setBEOptimization(false);
-		Set<Module> modules = modularizer.getModules(root);
-		final int NUM_MODULES = 4;
-		assertEquals(NUM_MODULES, modules.size());
-	}
-	
-	
-	@Test
 	public void testModularizeCSP2() throws IOException {
 		Fault root = createDFT("/resources/galileo/csp2.dft");
 		
-		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+		Set<Module> modules = modularizer.getModules(root);
+		
+		FaultTreeHolder ftHolder = modularizer.getFtHolder();
 		FaultTreeNode spare = ftHolder.getNodeByName("B", Fault.class);
 		FaultTreeNode spareBE = ftHolder.getNodeByName("B", BasicEvent.class);
 		FaultTreeNode spareGate = ftHolder.getNodeByName("tle", SPARE.class);
 		FaultTreeNode primary = ftHolder.getNodeByName("A", Fault.class);
 		FaultTreeNode primaryBE = ftHolder.getNodeByName("A", BasicEvent.class);
-		
-		Set<Module> modules = modularizer.getModules(root);
 		
 		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());
@@ -235,7 +221,10 @@ public class ModularizerTest extends ATestCase {
 	@Test
 	public void testModularizeOr2And2SharedSP() throws IOException {
 		Fault root = createDFT("/resources/galileo/or2And2SharedSpare.dft");
-		FaultTreeHolder ftholder = new FaultTreeHolder(root);
+		
+		Set<Module> modules = modularizer.getModules(root);
+		
+		FaultTreeHolder ftholder = modularizer.getFtHolder();
 		FaultTreeNode and1 = ftholder.getNodeByName("AND1", AND.class);
 		FaultTreeNode and2 = ftholder.getNodeByName("AND2", AND.class);
 		FaultTreeNode or = ftholder.getNodeByName("OR", OR.class);
@@ -245,8 +234,7 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeNode b = ftholder.getNodeByName("B", Fault.class);
 		FaultTreeNode d = ftholder.getNodeByName("D", Fault.class);
 		
-		Set<Module> modules = modularizer.getModules(root);
-		final int NUM_MODULES = 2;
+		final int NUM_MODULES = 4;
 		assertEquals(NUM_MODULES, modules.size());
 		
 		Map<FaultTreeNode, FaultTreeNodePlus> map = modularizer.getTable();
@@ -259,9 +247,13 @@ public class ModularizerTest extends ATestCase {
 
 		Module rootModule = Module.getModule(modules, root);
 		Module orModule = Module.getModule(modules, or);
+		Module aModule = Module.getModule(modules, a);
+		Module dModule = Module.getModule(modules, d);
 		
 		assertThat(rootModule.getNodes(), allOf(not(hasItems(and1, and2, or, spareGate, a, b, c, d)), hasItems(root)));
-		assertThat(orModule.getNodes(), allOf(hasItems(and1, and2, or, spareGate, a, b, c, d), not(hasItems(root))));
+		assertThat(orModule.getNodes(), allOf(hasItems(and1, and2, or, spareGate, b, c), not(hasItems(a, d, root))));
+		assertThat(aModule.getNodes(), allOf(hasItems(a), not(hasItems(and1, and2, or, spareGate, b, c, d, root))));
+		assertThat(dModule.getNodes(), allOf(hasItems(d), not(hasItems(and1, and2, or, spareGate, a, b, c, root))));
 	}
 	
 	/* *****************************************************
@@ -273,18 +265,23 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/nestedPand.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 4;
+		final int NUM_MODULES = 9;
 		assertEquals(NUM_MODULES, modules.size());
 		
-		FaultTreeHolder fthold = new FaultTreeHolder(root);
-		FaultTreeNode and = fthold.getNodeByName("tle", AND.class);
-		FaultTreeNode pand1 = fthold.getNodeByName("PAND1", PAND.class);
-		FaultTreeNode pand2 = fthold.getNodeByName("PAND2", PAND.class);
-		FaultTreeNode a = fthold.getNodeByName("A", Fault.class);
-		FaultTreeNode b = fthold.getNodeByName("B", Fault.class);
-		FaultTreeNode c = fthold.getNodeByName("C", Fault.class);
-		FaultTreeNode d = fthold.getNodeByName("D", Fault.class);
-		FaultTreeNode e = fthold.getNodeByName("E", Fault.class);
+		FaultTreeHolder ftholder = modularizer.getFtHolder();
+		FaultTreeNode and = ftholder.getNodeByName("tle", AND.class);
+		FaultTreeNode pand1 = ftholder.getNodeByName("PAND1", PAND.class);
+		FaultTreeNode pand2 = ftholder.getNodeByName("PAND2", PAND.class);
+		FaultTreeNode a = ftholder.getNodeByName("A", Fault.class);
+		FaultTreeNode b = ftholder.getNodeByName("B", Fault.class);
+		FaultTreeNode c = ftholder.getNodeByName("C", Fault.class);
+		FaultTreeNode d = ftholder.getNodeByName("D", Fault.class);
+		FaultTreeNode e = ftholder.getNodeByName("E", Fault.class);
+		FaultTreeNode beA = ftholder.getNodeByName("A", BasicEvent.class);
+		FaultTreeNode beB = ftholder.getNodeByName("B", BasicEvent.class);
+		FaultTreeNode beC = ftholder.getNodeByName("C", BasicEvent.class);
+		FaultTreeNode beD = ftholder.getNodeByName("D", BasicEvent.class);
+		FaultTreeNode beE = ftholder.getNodeByName("E", BasicEvent.class);
 		
 		Map<FaultTreeNode, FaultTreeNodePlus> map = modularizer.getTable();
 		assertTrue(map.get(b).hasPriorityAbove());
@@ -295,11 +292,21 @@ public class ModularizerTest extends ATestCase {
 		Module andModule = Module.getModule(modules, and);
 		Module pand1Module = Module.getModule(modules, pand1);
 		Module pand2Module = Module.getModule(modules, pand2);
+		Module aModule = Module.getModule(modules, a);
+		Module bModule = Module.getModule(modules, b);
+		Module cModule = Module.getModule(modules, c);
+		Module dModule = Module.getModule(modules, d);
+		Module eModule = Module.getModule(modules, e);
 		
 		assertThat(rootModule.getNodes(), allOf(not(hasItems(and, pand1, pand2, a, b, c, d, e)), hasItems(root)));
-		assertThat(andModule.getNodes(), allOf(hasItems(and, a), not(hasItems(root, pand1, pand2, b, c, d, e))));
-		assertThat(pand1Module.getNodes(), allOf(hasItems(pand1, b, c), not(hasItems(root, pand2, d, e, and, a))));
-		assertThat(pand2Module.getNodes(), allOf(hasItems(pand2, d, e), not(hasItems(root, pand1, b, c, and, a))));
+		assertThat(andModule.getNodes(), allOf(hasItems(and), not(hasItems(root, pand1, pand2, a, b, c, d, e))));
+		assertThat(pand1Module.getNodes(), allOf(hasItems(pand1), not(hasItems(root, pand2, a, b, c, d, e, and))));
+		assertThat(pand2Module.getNodes(), allOf(hasItems(pand2), not(hasItems(root, pand1, a, b, c, d, e, and))));
+		assertThat(aModule.getNodes(), allOf(hasItems(a, beA), hasSize(2)));
+		assertThat(bModule.getNodes(), allOf(hasItems(b, beB), hasSize(2)));
+		assertThat(cModule.getNodes(), allOf(hasItems(c, beC), hasSize(2)));
+		assertThat(dModule.getNodes(), allOf(hasItems(d, beD), hasSize(2)));
+		assertThat(eModule.getNodes(), allOf(hasItems(e, beE), hasSize(2)));
 	}
 	
 	@Test
@@ -307,7 +314,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/nestedPand2.dft");
 		Set<Module> modules = modularizer.getModules(root);
 
-		final int NUM_MODULES = 7;
+		final int NUM_MODULES = 18;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -319,7 +326,7 @@ public class ModularizerTest extends ATestCase {
 	public void testModularizeFDEP1() throws IOException {
 		Fault root = createDFT("/resources/galileo/fdep1.dft");
 		Set<Module> modules = modularizer.getModules(root);
-		final int NUM_MODULES = 5;
+		final int NUM_MODULES = 6;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -328,7 +335,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/fdep2.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 6;
+		final int NUM_MODULES = 7;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -341,11 +348,18 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileoObs/obsCsp2.dft");
 		
 		Set<Module> modules = modularizer.getModules(root);
-		final int NUM_MODULES = 1;
+		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());
 		
-		Module module = modules.iterator().next();
-		assertTrue(module.isPartialObservable());
+		FaultTreeHolder ftHolder = modularizer.getFtHolder();
+		
+		FaultTreeNode csp = ftHolder.getNodeByName("tle", SPARE.class);
+		
+		Module rootModule = Module.getModule(modules, root);
+		Module cspModule = Module.getModule(modules, csp);
+		
+		assertFalse(rootModule.isPartialObservable());
+		assertTrue(cspModule.isPartialObservable());
 	}
 	
 	@Test
@@ -353,11 +367,24 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileoObs/obsOr2ObsBe2.dft");
 		
 		Set<Module> modules = modularizer.getModules(root);
-		final int NUM_MODULES = 1;
+		final int NUM_MODULES = 4;
 		assertEquals(NUM_MODULES, modules.size());
 		
-		Module module = modules.iterator().next();
-		assertFalse(module.isPartialObservable());
+		FaultTreeHolder ftHolder = modularizer.getFtHolder();
+		
+		FaultTreeNode or = ftHolder.getNodeByName("tle", OR.class);
+		FaultTreeNode a = ftHolder.getNodeByName("a", Fault.class);
+		FaultTreeNode b = ftHolder.getNodeByName("b", Fault.class);
+		
+		Module rootModule = Module.getModule(modules, root);
+		Module orModule = Module.getModule(modules, or);
+		Module aModule = Module.getModule(modules, a);
+		Module bModule = Module.getModule(modules, b);
+		
+		assertFalse(rootModule.isPartialObservable());
+		assertFalse(orModule.isPartialObservable());
+		assertFalse(aModule.isPartialObservable());
+		assertFalse(bModule.isPartialObservable());
 	}
 	
 	@Test
@@ -365,19 +392,22 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileoObs/obsOr2ObsCsp2.dft");
 		
 		Set<Module> modules = modularizer.getModules(root);
-		final int NUM_MODULES = 3;
+		final int NUM_MODULES = 4;
 		assertEquals(NUM_MODULES, modules.size());
 		
-		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
+		FaultTreeHolder ftHolder = modularizer.getFtHolder();
 		
-		SPARE s1 = ftHolder.getNodeByName("s1", SPARE.class);
-		SPARE s2 = ftHolder.getNodeByName("s2", SPARE.class);
+		FaultTreeNode or = ftHolder.getNodeByName("tle", OR.class);
+		FaultTreeNode s1 = ftHolder.getNodeByName("s1", SPARE.class);
+		FaultTreeNode s2 = ftHolder.getNodeByName("s2", SPARE.class);
 		
 		Module rootModule = Module.getModule(modules, root);
+		Module orModule = Module.getModule(modules, or);
 		Module s1Module = Module.getModule(modules, s1);
 		Module s2Module = Module.getModule(modules, s2);
 		
 		assertFalse(rootModule.isPartialObservable());
+		assertFalse(orModule.isPartialObservable());
 		assertTrue(s1Module.isPartialObservable());
 		assertTrue(s2Module.isPartialObservable());
 	}
@@ -391,7 +421,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/fdep3Spare2.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 10;
+		final int NUM_MODULES = 12;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -400,7 +430,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/cm_simple2.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 5;
+		final int NUM_MODULES = 13;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -409,7 +439,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/cm1.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 8;
+		final int NUM_MODULES = 13;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -418,7 +448,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/cm2.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 10;
+		final int NUM_MODULES = 16;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	
@@ -427,7 +457,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/cm3.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 16;
+		final int NUM_MODULES = 26;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	

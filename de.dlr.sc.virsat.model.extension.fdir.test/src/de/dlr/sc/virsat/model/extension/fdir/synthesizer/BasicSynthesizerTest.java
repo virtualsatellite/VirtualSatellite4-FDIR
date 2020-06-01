@@ -30,7 +30,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -118,26 +117,6 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int NUM_STATES = 1;
-		assertEquals(NUM_STATES, ra.getStates().size());
-		
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
-	}
-	
-	@Test
-	public void testEvaluateCsp2WithoutBEOptimization() throws IOException {
-		final double[] EXPECTED = {
-			9.9e-05,
-			0.0003921,
-			0.0008735,
-			0.0015375
-		};
-		
-		Fault fault = createDFT("/resources/galileo/csp2.dft");
-		synthesizer.setModularizer(new Modularizer().setBEOptimization(false));
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		

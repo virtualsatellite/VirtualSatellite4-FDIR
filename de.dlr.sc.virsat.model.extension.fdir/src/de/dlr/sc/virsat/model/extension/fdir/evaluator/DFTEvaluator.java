@@ -49,7 +49,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private MarkovAutomaton<DFTState> mc;
 	private IMarkovModelChecker markovModelChecker;
 	private DFT2MAConverter dft2MaConverter = new DFT2MAConverter();
-	private Modularizer modularizer = new Modularizer().setBEOptimization(false);
+	private Modularizer modularizer = new Modularizer();
 	private DFTSymmetryChecker symmetryChecker = new DFTSymmetryChecker();
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
 	private DFTEvaluationStatistics statistics;

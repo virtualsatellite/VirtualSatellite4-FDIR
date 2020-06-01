@@ -162,9 +162,6 @@ public class FaultTreeHolder {
 			
 			NodeHolder monitorHolder = getNodeHolder(monitored);
 			monitorHolder.getNodes(EdgeType.MONITOR).add(monitor);
-
-			NodeHolder parentHolder = getNodeHolder(monitor);
-			parentHolder.getNodes(EdgeType.PARENT).add(monitored);
 			
 			monitorGates.add(monitor);
 		}

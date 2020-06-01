@@ -39,8 +39,10 @@ public class Module {
 	
 	/**
 	 * Default constructor.
+	 * @param moduleRoot the root of the module
 	 */
-	public Module() {
+	public Module(FaultTreeNodePlus moduleRoot) {
+		this.moduleRoot = moduleRoot;
 		this.moduleNodes = new HashSet<FaultTreeNodePlus>();
 		this.moduleProperties = new HashSet<>();
 	}
@@ -59,10 +61,6 @@ public class Module {
 	 * @return true iff the node was not in the module nodes before
 	 */
 	boolean addNode(FaultTreeNodePlus node) {
-		if (this.moduleNodes.isEmpty()) {
-			this.moduleRoot = node;
-		}
-		
 		if (node.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic()) {
 			this.moduleProperties.add(ModuleProperty.NONDETERMINISTIC);
 		}
@@ -136,10 +134,18 @@ public class Module {
 	}
 	
 	/**
-	 * Trim the module from the tree.
+	 * Gets the module classification properties
+	 * @return the classification properties attached to this module
+	 */
+	public Set<ModuleProperty> getModuleProperties() {
+		return moduleProperties;
+	}
+	
+	/**
+	 * Marks the nodes in the module as harvested.
 	 */
 	public void harvestFromFaultTree() {
-		this.moduleNodes.stream().forEach(node -> node.harvestFromFaultTree());
+		this.moduleNodes.stream().forEach(FaultTreeNodePlus::harvestFromFaultTree);
 	}
 	
 	/**
