@@ -187,7 +187,7 @@ public class Module {
 			
 			if (isPartialObservable()) {
 				for (FaultTreeNode monitor : ftHolder.getNodes(curr, EdgeType.MONITOR)) {
-					ftBuilder.connectObserver(currCopy.getFault(), currCopy, mapOriginalToCopy.get(monitor));
+					ftBuilder.connectObserver(rootFault, currCopy, mapOriginalToCopy.get(monitor));
 				}
 			}
 			
@@ -196,7 +196,7 @@ public class Module {
 				FaultTreeNode child = childPlus.getFaultTreeNode();
 				FaultTreeNode childCopy;
 				if (mapOriginalToCopy.get(child) == null) {
-					childCopy = ftBuilder.copyFaultTreeNode(child, currCopy.getFault());
+					childCopy = ftBuilder.copyFaultTreeNode(child, rootFault);
 					mapOriginalToCopy.put(child, childCopy);
 					mapCopyToOriginal.put(childCopy, child);
 					
@@ -219,9 +219,9 @@ public class Module {
 				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
 				if (moduleContainsCurrAndChild && !(child instanceof BasicEvent)) {
 					if (ftHolder.getNodes(curr, EdgeType.SPARE).contains(child)) {
-						ftBuilder.connectSpare(currCopy.getFault(), childCopy, currCopy);
+						ftBuilder.connectSpare(rootFault, childCopy, currCopy);
 					} else {
-						ftBuilder.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);
+						ftBuilder.createFaultTreeEdge(rootFault, childCopy, currCopy);
 					}
 				}
 			}

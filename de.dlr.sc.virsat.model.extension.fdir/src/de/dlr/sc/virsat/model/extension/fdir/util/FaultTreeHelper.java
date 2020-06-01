@@ -132,6 +132,7 @@ public class FaultTreeHelper {
 			nodes.addAll(getNodes(EdgeType.CHILD, node));
 			nodes.addAll(getNodes(EdgeType.SPARE, node));
 			nodes.addAll(getNodes(EdgeType.MONITOR, node));
+			nodes.addAll(getNodes(EdgeType.DEP, node));
 			
 			if (node instanceof Fault) {
 				nodes.addAll(((Fault) node).getBasicEvents());
