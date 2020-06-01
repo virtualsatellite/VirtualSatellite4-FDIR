@@ -169,17 +169,6 @@ public class FaultTreeHelper {
 	}
 	
 	/**
-	 * get all spare NODES in the fault tree
-	 * @param fault the fault containing the fault tree
-	 * @return a list of all the spare nodes in the tree
-	 */
-	public List<FaultTreeNode> getAllSpareNodes(Fault fault) {
-		List<FaultTreeNode> spareNodes = new ArrayList<FaultTreeNode>();
-		this.getAllEdges(fault, EdgeType.SPARE).stream().forEach(edge -> spareNodes.add(edge.getFrom()));
-		return spareNodes;
-	}
-	
-	/**
 	 * Gets all the edges in the fault tree of the passed fault
 	 * including all the edges in the sub trees
 	 * @param fault the root fault of a fault tree

@@ -103,15 +103,13 @@ public class BeliefState extends MarkovState {
 			return false;
 		}
 		
-		Set<DFTState> dftStates = new HashSet<>(mapStateToBelief.keySet());
-		dftStates.addAll(other.mapStateToBelief.keySet());
-		boolean isEquivalent = other.representant.getObservedFailed().equals(representant.getObservedFailed()) 
-				&& other.representant.getMapSpareToClaimedSpares().equals(representant.getMapSpareToClaimedSpares());
-		
+		boolean isEquivalent = other.representant.getMapSpareToClaimedSpares().equals(representant.getMapSpareToClaimedSpares());
 		if (!isEquivalent) {
 			return false;
 		}
 		
+		Set<DFTState> dftStates = new HashSet<>(mapStateToBelief.keySet());
+		dftStates.addAll(other.mapStateToBelief.keySet());
 		for (DFTState dftState : dftStates) {
 			double prob = mapStateToBelief.getOrDefault(dftState, Double.NaN);
 			double probOther = other.mapStateToBelief.getOrDefault(dftState, Double.NaN);
