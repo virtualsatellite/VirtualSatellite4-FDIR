@@ -70,7 +70,8 @@ public class FaultTreeTrimmer {
 					if (!module.hasPriorityAbove(from)
 							&& !module.hasSpareBelow(from)
 							&& !module.hasSpareAbove(from)
-							&& !from.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE)) {
+							&& !from.getFaultTreeNodeType().equals(FaultTreeNodeType.SPARE)
+							&& !module.isPartialObservable()) {
 						ftBuilder.removeEdgeFromFaultTree(edge, module.getRootNodeCopy().getFault().getFaultTree());
 					}
 				}
