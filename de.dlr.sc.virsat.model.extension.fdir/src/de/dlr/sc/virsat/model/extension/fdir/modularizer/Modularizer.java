@@ -50,16 +50,6 @@ public class Modularizer implements IModularizer {
 	
 	private int maxDepth = 0;
 	
-	// CONSTRUCTORS
-	
-	/**
-	 * Default constructor
-	 */
-	public Modularizer() {
-		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(FTN_PLUS_COMPARATOR);
-		this.table = new HashMap<FaultTreeNode, FaultTreeNodePlus>();
-	}
-	
 	/* ***********************************************************************
 	 * *********** PUBLIC METHODS ********************************************
 	 * **********************************************************************/
@@ -87,8 +77,8 @@ public class Modularizer implements IModularizer {
 	 * Number the fault tree and save a copy of the tree as our internal TreeSet.
 	 */
 	void countTree() {
-		table.clear();
-		nodePlusTree.clear();
+		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(FTN_PLUS_COMPARATOR);
+		this.table = new HashMap<FaultTreeNode, FaultTreeNodePlus>();
 		
 		if (this.ftHolder == null) {
 			this.maxDepth = -1;
@@ -107,7 +97,7 @@ public class Modularizer implements IModularizer {
 			curr.visit(++count);
 			
 			this.addNodeToInternalTree(curr);
-
+			
 			List<FaultTreeNodePlus> children = curr.getChildren().isEmpty() ? this.getChildrenInReverseOrder(curr) : curr.getChildren();
 			
 			boolean addedToStack = false;
@@ -333,30 +323,18 @@ public class Modularizer implements IModularizer {
 			}
 			
 			List<FaultTreeNode> monitors = ftHolder.getNodes(curr.getFaultTreeNode(), EdgeType.MONITOR);
-			Set<FaultTreeNode> monitorTrees = new HashSet<>();
 			for (FaultTreeNode monitor : monitors) {
-				for (FaultTreeNode monitorRoot : ftHolder.getRoots(monitor)) {
-					monitorTrees.add(monitorRoot);
-					List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().get(monitorRoot);
-					for (FaultTreeNode subNode : subNodes) {
-						monitorTrees.add(subNode);
-						if (subNode instanceof Fault) {
-							for (FaultTreeNode be : ftHolder.getNodes(subNode, EdgeType.BE)) {
-								monitorTrees.add(be);
-							}
-						}
-					}
-				}
-			}
-			
-			for (FaultTreeNode monitorTreeNode : monitorTrees) {
-				FaultTreeNodePlus ftnPlus = getOrCreateFaultTreeNodePlus(monitorTreeNode, 0);
-				module.addNode(ftnPlus);
+				Set<FaultTreeNode> monitorTree = getMonitorTree(monitor);
 				
-				if (!this.table.containsKey(monitorTreeNode)) {
-					this.table.put(monitorTreeNode, ftnPlus);
-					for (FaultTreeNodePlus child : getChildrenInReverseOrder(ftnPlus)) {
-						ftnPlus.addChild(child);
+				for (FaultTreeNode monitorTreeNode : monitorTree) {
+					FaultTreeNodePlus ftnPlus = getOrCreateFaultTreeNodePlus(monitorTreeNode, 0);
+					module.addNode(ftnPlus);
+					
+					if (!this.table.containsKey(monitorTreeNode)) {
+						this.table.put(monitorTreeNode, ftnPlus);
+						for (FaultTreeNodePlus child : getChildrenInReverseOrder(ftnPlus)) {
+							ftnPlus.addChild(child);
+						}
 					}
 				}
 			}
@@ -372,5 +350,27 @@ public class Modularizer implements IModularizer {
 		module.setTable(table);
 		
 		return module;
+	}
+
+	/**
+	 * Gets all nodes in a tree starting from the root of the given monitor node
+	 * @param monitor the given monitor node
+	 * @return all nodes in the tree starting from the roots of the given monitor node
+	 */
+	private Set<FaultTreeNode> getMonitorTree(FaultTreeNode monitor) {
+		Set<FaultTreeNode> monitorTree = new HashSet<>();
+		for (FaultTreeNode monitorRoot : ftHolder.getRoots(monitor)) {
+			monitorTree.add(monitorRoot);
+			List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().get(monitorRoot);
+			for (FaultTreeNode subNode : subNodes) {
+				monitorTree.add(subNode);
+				if (subNode instanceof Fault) {
+					for (FaultTreeNode be : ftHolder.getNodes(subNode, EdgeType.BE)) {
+						monitorTree.add(be);
+					}
+				}
+			}
+		}
+		return monitorTree;
 	}
 }
