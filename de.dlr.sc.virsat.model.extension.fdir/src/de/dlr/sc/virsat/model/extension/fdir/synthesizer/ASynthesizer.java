@@ -179,7 +179,8 @@ public abstract class ASynthesizer implements ISynthesizer {
 				
 				for (FaultTreeNode guard : fet.getGuards()) {
 					if (guard.getTypeInstance() != null) {
-						generatorGuards.add(mapGeneratedToGenerator.get(guard));
+						FaultTreeNode generatorGuard = mapGeneratedToGenerator.get(guard);
+						generatorGuards.add(generatorGuard);
 					}
 				}
 				fet.getGuards().clear();

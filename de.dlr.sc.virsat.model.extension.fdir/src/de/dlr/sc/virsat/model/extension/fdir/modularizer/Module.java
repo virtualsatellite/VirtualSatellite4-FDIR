@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * Contains information for modules of the fault tree
@@ -30,6 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
  */
 public class Module {
 
+	private FaultTreeHolder ftHolder;
 	private FaultTreeNodePlus moduleRoot;
 	private Set<ModuleProperty> moduleProperties;
 	private Set<FaultTreeNodePlus> moduleNodes;
@@ -39,9 +41,11 @@ public class Module {
 	
 	/**
 	 * Default constructor.
+	 * @param ftHolder the fault tree holder
 	 * @param moduleRoot the root of the module
 	 */
-	public Module(FaultTreeNodePlus moduleRoot) {
+	public Module(FaultTreeHolder ftHolder, FaultTreeNodePlus moduleRoot) {
+		this.ftHolder = ftHolder;
 		this.moduleRoot = moduleRoot;
 		this.moduleNodes = new HashSet<FaultTreeNodePlus>();
 		this.moduleProperties = new HashSet<>();
@@ -163,16 +167,31 @@ public class Module {
 		this.moduleRootCopy = rootFault;
 		ftBuilder.connect(rootFault, rootCopy, rootFault);
 
-		List<FaultTreeNode> sparesInOriginalFaultTree = ftBuilder.getFtHelper().getAllSpareNodes(originalRoot.getFault());
 		mapOriginalToCopy.put(originalRoot, rootCopy);
 		mapCopyToOriginal.put(rootCopy, originalRoot);
 		dfsStack.push(originalRoot);
+		
+		if (isPartialObservable()) {
+			Set<FaultTreeNode> monitorRoots = ftHolder.getMonitorRoots();
+			for (FaultTreeNode monitorRoot : monitorRoots) {
+				FaultTreeNode monitorRootCopy = ftBuilder.copyFaultTreeNode(monitorRoot, rootFault);
+				mapOriginalToCopy.put(monitorRoot, monitorRootCopy);
+				mapCopyToOriginal.put(monitorRootCopy, monitorRoot);
+				dfsStack.push(monitorRoot);
+			}
+		}
 		
 		while (!dfsStack.isEmpty()) {
 			FaultTreeNode curr = dfsStack.pop();
 			FaultTreeNode currCopy = mapOriginalToCopy.get(curr);
 			
-			List<FaultTreeNodePlus> children = this.mapOriginalToNodePlus.get(curr).getChildren();
+			if (isPartialObservable()) {
+				for (FaultTreeNode monitor : ftHolder.getNodes(curr, EdgeType.MONITOR)) {
+					ftBuilder.connectObserver(currCopy.getFault(), currCopy, mapOriginalToCopy.get(monitor));
+				}
+			}
+			
+			List<FaultTreeNodePlus> children = mapOriginalToNodePlus.get(curr).getChildren();
 			for (FaultTreeNodePlus childPlus : children) {
 				FaultTreeNode child = childPlus.getFaultTreeNode();
 				FaultTreeNode childCopy;
@@ -198,8 +217,8 @@ public class Module {
 				}
 				
 				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
-				if (moduleContainsCurrAndChild && !child.getFaultTreeNodeType().equals(FaultTreeNodeType.BASIC_EVENT)) {
-					if (sparesInOriginalFaultTree.contains(child)) {
+				if (moduleContainsCurrAndChild && !(child instanceof BasicEvent)) {
+					if (ftHolder.getNodes(curr, EdgeType.SPARE).contains(child)) {
 						ftBuilder.connectSpare(currCopy.getFault(), childCopy, currCopy);
 					} else {
 						ftBuilder.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);

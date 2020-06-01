@@ -88,7 +88,7 @@ public class FaultTreeBuilderTest extends ATestCase {
 	public void testRemoveNullEdge() {
 		FaultTreeNode root = ftBuilder.createBasicFault("ROOT", 0, 0);
 		FaultTreeNode child = ftBuilder.createBasicFault("CHILD", 0, 0);
-		ftBuilder.createFaultTreeEdge(root.getFault(), child, root);
+		ftBuilder.connect(root.getFault(), child, root);
 		
 		boolean removeEdge = ftBuilder.removeEdgeFromFaultTree(null, root.getFault().getFaultTree());
 		assertFalse(removeEdge);
@@ -98,7 +98,7 @@ public class FaultTreeBuilderTest extends ATestCase {
 	public void testRemoveOneEdge() {
 		FaultTreeNode root = ftBuilder.createBasicFault("ROOT", 0, 0);
 		FaultTreeNode child = ftBuilder.createBasicFault("CHILD", 0, 0);
-		ftBuilder.createFaultTreeEdge(root.getFault(), child, root);
+		ftBuilder.connect(root.getFault(), child, root);
 		
 		boolean removeEdge = ftBuilder.removeEdgeFromFaultTree(root.getFault().getFaultTree().getPropagations().get(0), root.getFault().getFaultTree());
 		assertTrue(removeEdge);

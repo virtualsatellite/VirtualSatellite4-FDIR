@@ -411,4 +411,38 @@ public class FaultTreeHolder {
 		failureModes.addAll(fault.getBasicEvents());
 		return failureModes;
 	}
+	
+	/**
+	 * Gets the root nodes of the monitoring gates.
+	 * @return the set root nodes of any monitoring gate
+	 */
+	public Set<FaultTreeNode> getMonitorRoots() {
+		Set<FaultTreeNode> monitorRoots = new HashSet<>();
+		Set<FaultTreeNode> monitors = getNodes(FaultTreeNodeType.MONITOR);
+		for (FaultTreeNode monitor : monitors) {
+			monitorRoots.addAll(getRoots(monitor));
+		}
+		return monitorRoots;
+	}
+	
+	/**
+	 * Gets all roots for a given node
+	 * @param node the node
+	 * @return all roots that have the given node as a sub node
+	 */
+	public Set<FaultTreeNode> getRoots(FaultTreeNode node) {
+		Set<FaultTreeNode> roots = new HashSet<>();
+		Set<FaultTreeNode> allParents = getMapNodeToAllParents().get(node);
+		for (FaultTreeNode allParent : allParents) {
+			if (getNodes(allParent, EdgeType.PARENT).isEmpty()) {
+				roots.add(allParent);
+			}
+		}
+		
+		if (allParents.isEmpty()) {
+			roots.add(node);
+		}
+		
+		return roots;
+	}
 }

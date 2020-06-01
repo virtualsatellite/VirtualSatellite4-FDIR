@@ -31,6 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.AND;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.OR;
 import de.dlr.sc.virsat.model.extension.fdir.model.PAND;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
@@ -354,12 +355,15 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeHolder ftHolder = modularizer.getFtHolder();
 		
 		FaultTreeNode csp = ftHolder.getNodeByName("tle", SPARE.class);
+		FaultTreeNode o = ftHolder.getNodeByName("O", MONITOR.class);
 		
 		Module rootModule = Module.getModule(modules, root);
 		Module cspModule = Module.getModule(modules, csp);
 		
 		assertFalse(rootModule.isPartialObservable());
 		assertTrue(cspModule.isPartialObservable());
+		
+		assertThat(cspModule.getNodes(), hasItems(o));
 	}
 	
 	@Test
@@ -376,6 +380,9 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeNode a = ftHolder.getNodeByName("a", Fault.class);
 		FaultTreeNode b = ftHolder.getNodeByName("b", Fault.class);
 		
+		FaultTreeNode o1 = ftHolder.getNodeByName("O1", MONITOR.class);
+		FaultTreeNode o2 = ftHolder.getNodeByName("O2", MONITOR.class);
+		
 		Module rootModule = Module.getModule(modules, root);
 		Module orModule = Module.getModule(modules, or);
 		Module aModule = Module.getModule(modules, a);
@@ -385,6 +392,9 @@ public class ModularizerTest extends ATestCase {
 		assertFalse(orModule.isPartialObservable());
 		assertFalse(aModule.isPartialObservable());
 		assertFalse(bModule.isPartialObservable());
+		
+		assertThat(aModule.getNodes(), hasItems(o1));
+		assertThat(bModule.getNodes(), hasItems(o2));
 	}
 	
 	@Test
@@ -401,6 +411,8 @@ public class ModularizerTest extends ATestCase {
 		FaultTreeNode s1 = ftHolder.getNodeByName("s1", SPARE.class);
 		FaultTreeNode s2 = ftHolder.getNodeByName("s2", SPARE.class);
 		
+		FaultTreeNode o = ftHolder.getNodeByName("O", MONITOR.class);
+		
 		Module rootModule = Module.getModule(modules, root);
 		Module orModule = Module.getModule(modules, or);
 		Module s1Module = Module.getModule(modules, s1);
@@ -410,6 +422,9 @@ public class ModularizerTest extends ATestCase {
 		assertFalse(orModule.isPartialObservable());
 		assertTrue(s1Module.isPartialObservable());
 		assertTrue(s2Module.isPartialObservable());
+		
+		assertThat(s1Module.getNodes(), hasItems(o));
+		assertThat(s2Module.getNodes(), hasItems(o));
 	}
 	
 	/* *****************************************************

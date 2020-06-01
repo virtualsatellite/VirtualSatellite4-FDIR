@@ -420,12 +420,6 @@ public class FaultTreeBuilder {
 	 * @return the created edge
 	 */
 	public FaultTreeEdge createFaultTreeEdge(Fault fault, FaultTreeNode from, FaultTreeNode to) {
-		FaultTreeNodeType typeTo = to.getFaultTreeNodeType();
-		
-		if (typeTo.equals(FaultTreeNodeType.MONITOR)) {
-			return connectObserver(fault, from, to);
-		}
-		
 		FaultTreeNodeType typeFrom = from.getFaultTreeNodeType();
 		switch (typeFrom) {
 			case FDEP:

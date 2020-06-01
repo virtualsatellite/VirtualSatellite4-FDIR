@@ -37,13 +37,6 @@ public class POSynthesizer extends ASynthesizer {
 	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
 	protected IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 	
-	/**
-	 * Default constructor
-	 */
-	public POSynthesizer() {
-		modularizer = null;
-	}
-	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
 		// Build the actual belief ma
