@@ -125,26 +125,6 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCsp2WithoutBEOptimization() throws IOException {
-		final double[] EXPECTED = {
-			9.9e-05,
-			0.0003921,
-			0.0008735,
-			0.0015375
-		};
-		
-		Fault fault = createDFT("/resources/galileo/csp2.dft");
-		synthesizer.getModularizer().setBEOptimization(false);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-
-		final int NUM_STATES = 1;
-		assertEquals(NUM_STATES, ra.getStates().size());
-		
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
-	}
-	
-	@Test
 	public void testEvaluateHECS11() throws IOException {
 		Fault fault = createDFT("/resources/galileo/hecs_1_1_0_np.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);

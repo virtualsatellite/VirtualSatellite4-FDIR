@@ -131,6 +131,8 @@ public class FaultTreeHelper {
 			List<FaultTreeNode> nodes = new ArrayList<>();
 			nodes.addAll(getNodes(EdgeType.CHILD, node));
 			nodes.addAll(getNodes(EdgeType.SPARE, node));
+			nodes.addAll(getNodes(EdgeType.MONITOR, node));
+			nodes.addAll(getNodes(EdgeType.DEP, node));
 			
 			if (node instanceof Fault) {
 				nodes.addAll(((Fault) node).getBasicEvents());
@@ -164,17 +166,6 @@ public class FaultTreeHelper {
 		allLocalSubNodes.addAll(ftHolder.getChildFaults(fault));
 		allLocalSubNodes.addAll(faultTree.getChildSpares());
 		return allLocalSubNodes;
-	}
-	
-	/**
-	 * get all spare NODES in the fault tree
-	 * @param fault the fault containing the fault tree
-	 * @return a list of all the spare nodes in the tree
-	 */
-	public List<FaultTreeNode> getAllSpareNodes(Fault fault) {
-		List<FaultTreeNode> spareNodes = new ArrayList<FaultTreeNode>();
-		this.getAllEdges(fault, EdgeType.SPARE).stream().forEach(edge -> spareNodes.add(edge.getFrom()));
-		return spareNodes;
 	}
 	
 	/**

@@ -54,7 +54,7 @@ public class DFTModularization {
 	 */
 	public DFTModularization(Modularizer modularizer, FaultTreeHolder ftHolder, DFTSymmetryChecker symmetryChecker) {
 		Fault rootFault = (Fault) ftHolder.getRoot();
-		modules = modularizer.getModules(rootFault.getFaultTree());
+		modules = modularizer.getModules(rootFault);
 		
 		if (!modules.isEmpty()) {
 			topLevelModule = getModule(rootFault);
@@ -119,7 +119,7 @@ public class DFTModularization {
 	 * @return the module for the fault tree node, or null of no such module exists
 	 */
 	Module getModule(FaultTreeNode node) {
-		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
+		return Module.getModule(modules, node);
 	}
 	
 	/**

@@ -14,7 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -46,24 +46,23 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	
 	@Test
 	public void testNone() {
-		Set<Module> resultSet = fttrim.trimModulesAll(new HashSet<Module>());
+		Set<Module> resultSet = fttrim.trimModulesAll(Collections.emptySet());
 		assertTrue(resultSet.isEmpty());
 	}
 	
 	@Test
 	public void testDeterministicTree() throws IOException {
-		Fault rootDeterministic = createDFT("/resources/galileo/and2or.dft");
-		Set<Module> modules = modularizer.getModules(rootDeterministic.getFaultTree());
+		Fault root = createDFT("/resources/galileo/and2or.dft");
+		Set<Module> modules = modularizer.getModules(root);
 		modules = fttrim.trimModulesAll(modules);
 		
-		final int NUM_NONDET_MODULES = 0;
-		assertEquals(NUM_NONDET_MODULES, modules.size());
+		assertTrue(modules.isEmpty());
 	}
 	
 	@Test
 	public void testTrimNondeterministicModules() throws IOException {
-		Fault rootNestedComplex = createDFT("/resources/galileo/nestedPand2.dft");
-		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
+		Fault root = createDFT("/resources/galileo/nestedPand2.dft");
+		Set<Module> modules = modularizer.getModules(root);
 		modules = fttrim.trimModulesAll(modules);
 		
 		final int NUM_NONDET_MODULES = 1;
@@ -72,8 +71,8 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	
 	@Test
 	public void testTrimCM2() throws IOException {
-		Fault rootNestedComplex = createDFT("/resources/galileo/cm2.dft");
-		Set<Module> modules = modularizer.getModules(rootNestedComplex.getFaultTree());
+		Fault root = createDFT("/resources/galileo/cm2.dft");
+		Set<Module> modules = modularizer.getModules(root);
 		modules = fttrim.trimModulesAll(modules);
 		
 		final int NUM_NONDET_MODULES = 4;
@@ -82,18 +81,18 @@ public class FaultTreeTrimmerTest extends ATestCase {
 	
 	@Test(expected = NoSuchElementException.class)
 	public void testTrimSideNode() throws IOException {
-		Fault rootSideNode = createDFT("/resources/galileo/sharedSpareWithSideNode.dft");
-		Set<Module> modules = modularizer.getModules(rootSideNode.getFaultTree());
+		Fault root = createDFT("/resources/galileo/sharedSpareWithSideNode.dft");
+		Set<Module> modules = modularizer.getModules(root);
+		
+		assertFalse(modules.isEmpty());
 		
 		modules = fttrim.trimModulesAll(modules);
 		final int NUM_NODES_IN_UNWANTED_MODULE = 2;
 		Module module = modules.stream().filter(m -> m.getNodes().size() > NUM_NODES_IN_UNWANTED_MODULE)
 				.findAny().get();
 		
-		assertFalse(modules.isEmpty());
-		
-		FaultTreeHolder fthold = new FaultTreeHolder(module.getRootNodeCopy().getFault());
-		fthold.getNodeByName("side node", Fault.class);
+		FaultTreeHolder ftholder = new FaultTreeHolder(module.getRootNodeCopy().getFault());
+		ftholder.getNodeByName("side node", Fault.class);
 	}
 
 }

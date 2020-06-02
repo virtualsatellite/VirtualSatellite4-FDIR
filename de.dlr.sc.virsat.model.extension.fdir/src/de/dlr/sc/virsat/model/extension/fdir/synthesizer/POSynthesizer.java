@@ -34,14 +34,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 public class POSynthesizer extends ASynthesizer {
 
-	private MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
-	
-	/**
-	 * Default constructor
-	 */
-	public POSynthesizer() {
-		modularizer = null;
-	}
+	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
+	protected IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
@@ -50,9 +44,7 @@ public class POSynthesizer extends ASynthesizer {
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma
-		IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 		Map<BeliefState, List<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
-		
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState);
 	}
 	

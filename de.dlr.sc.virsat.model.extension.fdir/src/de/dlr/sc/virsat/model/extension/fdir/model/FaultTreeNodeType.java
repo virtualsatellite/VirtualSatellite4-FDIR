@@ -22,7 +22,7 @@ public enum FaultTreeNodeType {
 	
 	/**
 	 * Checks if this is an order dependent fault tree node type
-	 * @return true iff the inpurt order matters
+	 * @return true iff the input order matters
 	 */
 	public boolean isOrderDependent() {
 		switch (this) {
@@ -33,6 +33,34 @@ public enum FaultTreeNodeType {
 			case PAND:
 				return true;
 			default:
+				return false;
+		}
+	}
+	
+	/**
+	 * Checks if this is a nondetermiistic fault tree node type
+	 * @return true iff the node allows for nondeterministic behavior
+	 */
+	public boolean isNondeterministic() {
+		switch (this) {
+			case SPARE:
+				return true;
+			default: 
+				return false;
+		}
+	}
+	
+	/**
+	 * Returns whether this is a dependency gate or not
+	 * @return true iff dependency gate, false otherwise
+	 */
+	public boolean isDependency() {
+		switch (this) {
+			case FDEP:
+			case PDEP:
+			case RDEP:
+				return true;
+			default: 
 				return false;
 		}
 	}

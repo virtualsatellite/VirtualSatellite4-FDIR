@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * Contains information for modules of the fault tree
@@ -30,20 +31,24 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
  */
 public class Module {
 
+	private FaultTreeHolder ftHolder;
 	private FaultTreeNodePlus moduleRoot;
-	private ModuleType moduleType;
+	private Set<ModuleProperty> moduleProperties;
 	private Set<FaultTreeNodePlus> moduleNodes;
 	private FaultTreeNode moduleRootCopy;
-	private Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy;
 	private Map<FaultTreeNode, FaultTreeNode> mapCopyToOriginal;
 	private Map<FaultTreeNode, FaultTreeNodePlus> mapOriginalToNodePlus;
 	
 	/**
 	 * Default constructor.
+	 * @param ftHolder the fault tree holder
+	 * @param moduleRoot the root of the module
 	 */
-	public Module() {
+	public Module(FaultTreeHolder ftHolder, FaultTreeNodePlus moduleRoot) {
+		this.ftHolder = ftHolder;
+		this.moduleRoot = moduleRoot;
 		this.moduleNodes = new HashSet<FaultTreeNodePlus>();
-		this.moduleType = ModuleType.DETERMINISTIC;
+		this.moduleProperties = new HashSet<>();
 	}
 	
 	/**
@@ -54,19 +59,14 @@ public class Module {
 		this.mapOriginalToNodePlus = mapOriginalToNodePlus;
 	}
 	
-	
 	/**
 	 * Add a node to the module
 	 * @param node the node
 	 * @return true iff the node was not in the module nodes before
 	 */
 	boolean addNode(FaultTreeNodePlus node) {
-		if (this.moduleNodes.isEmpty()) {
-			this.moduleRoot = node;
-		}
-		
-		if (node.isNondeterministic()) {
-			this.moduleType = ModuleType.NONDETERMINISTIC;
+		if (node.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic()) {
+			this.moduleProperties.add(ModuleProperty.NONDETERMINISTIC);
 		}
 		
 		return this.moduleNodes.add(node);
@@ -116,8 +116,8 @@ public class Module {
 	 * Get the map which maps original fault tree nodes to the copy fault tree nodes
 	 * @return the map
 	 */
-	public Map<FaultTreeNode, FaultTreeNode> getMapOriginalToCopy() {
-		return this.mapOriginalToCopy;
+	public Map<FaultTreeNode, FaultTreeNode> getMapCopyToOriginal() {
+		return this.mapCopyToOriginal;
 	}
 	
 	
@@ -126,14 +126,30 @@ public class Module {
 	 * @return is nondeterministic
 	 */
 	public boolean isNondeterministic() {
-		return this.moduleType == ModuleType.NONDETERMINISTIC;
+		return this.moduleProperties.contains(ModuleProperty.NONDETERMINISTIC);
 	}
 	
 	/**
-	 * Trim the module from the tree.
+	 * Returns true if module is partial observable, false otherwise
+	 * @return is nondeterministic
+	 */
+	public boolean isPartialObservable() {
+		return this.moduleProperties.contains(ModuleProperty.PARTIALOBSERVABLE);
+	}
+	
+	/**
+	 * Gets the module classification properties
+	 * @return the classification properties attached to this module
+	 */
+	public Set<ModuleProperty> getModuleProperties() {
+		return moduleProperties;
+	}
+	
+	/**
+	 * Marks the nodes in the module as harvested.
 	 */
 	public void harvestFromFaultTree() {
-		this.moduleNodes.stream().forEach(node -> node.harvestFromFaultTree());
+		this.moduleNodes.stream().forEach(FaultTreeNodePlus::harvestFromFaultTree);
 	}
 	
 	/**
@@ -142,7 +158,7 @@ public class Module {
 	public void constructFaultTreeCopy() {
 		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(this.moduleRoot.getFaultTreeNode().getConcept());
 		Stack<FaultTreeNode> dfsStack = new Stack<FaultTreeNode>();
-		this.mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
+		Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy = new HashMap<FaultTreeNode, FaultTreeNode>();
 		this.mapCopyToOriginal = new HashMap<FaultTreeNode, FaultTreeNode>();
 		
 		FaultTreeNode originalRoot = this.moduleRoot.getFaultTreeNode();
@@ -151,21 +167,36 @@ public class Module {
 		this.moduleRootCopy = rootFault;
 		ftBuilder.connect(rootFault, rootCopy, rootFault);
 
-		List<FaultTreeNode> sparesInOriginalFaultTree = ftBuilder.getFtHelper().getAllSpareNodes(originalRoot.getFault());
 		mapOriginalToCopy.put(originalRoot, rootCopy);
 		mapCopyToOriginal.put(rootCopy, originalRoot);
 		dfsStack.push(originalRoot);
+		
+		if (isPartialObservable()) {
+			Set<FaultTreeNode> monitorRoots = ftHolder.getMonitorRoots();
+			for (FaultTreeNode monitorRoot : monitorRoots) {
+				FaultTreeNode monitorRootCopy = ftBuilder.copyFaultTreeNode(monitorRoot, rootFault);
+				mapOriginalToCopy.put(monitorRoot, monitorRootCopy);
+				mapCopyToOriginal.put(monitorRootCopy, monitorRoot);
+				dfsStack.push(monitorRoot);
+			}
+		}
 		
 		while (!dfsStack.isEmpty()) {
 			FaultTreeNode curr = dfsStack.pop();
 			FaultTreeNode currCopy = mapOriginalToCopy.get(curr);
 			
-			List<FaultTreeNodePlus> children = this.mapOriginalToNodePlus.get(curr).getChildren();
+			if (isPartialObservable()) {
+				for (FaultTreeNode monitor : ftHolder.getNodes(curr, EdgeType.MONITOR)) {
+					ftBuilder.connectObserver(rootFault, currCopy, mapOriginalToCopy.get(monitor));
+				}
+			}
+			
+			List<FaultTreeNodePlus> children = mapOriginalToNodePlus.get(curr).getChildren();
 			for (FaultTreeNodePlus childPlus : children) {
 				FaultTreeNode child = childPlus.getFaultTreeNode();
 				FaultTreeNode childCopy;
 				if (mapOriginalToCopy.get(child) == null) {
-					childCopy = ftBuilder.copyFaultTreeNode(child, currCopy.getFault());
+					childCopy = ftBuilder.copyFaultTreeNode(child, rootFault);
 					mapOriginalToCopy.put(child, childCopy);
 					mapCopyToOriginal.put(childCopy, child);
 					
@@ -186,11 +217,11 @@ public class Module {
 				}
 				
 				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
-				if (moduleContainsCurrAndChild && !child.getFaultTreeNodeType().equals(FaultTreeNodeType.BASIC_EVENT)) {
-					if (sparesInOriginalFaultTree.contains(child)) {
-						ftBuilder.connectSpare(currCopy.getFault(), childCopy, currCopy);
+				if (moduleContainsCurrAndChild && !(child instanceof BasicEvent)) {
+					if (ftHolder.getNodes(curr, EdgeType.SPARE).contains(child)) {
+						ftBuilder.connectSpare(rootFault, childCopy, currCopy);
 					} else {
-						ftBuilder.createFaultTreeEdge(currCopy.getFault(), childCopy, currCopy);
+						ftBuilder.createFaultTreeEdge(rootFault, childCopy, currCopy);
 					}
 				}
 			}
@@ -237,5 +268,15 @@ public class Module {
 	public String toString() {
 		String res = moduleNodes.stream().map(FaultTreeNodePlus::toString).collect(Collectors.joining(","));
 		return "{" + res + "}";
+	}
+	
+	/**
+	 * Gets the module for a given fault tree node
+	 * @param modules a set of modules
+	 * @param node a fault tree node
+	 * @return the module for the fault tree node, or null of no such module exists
+	 */
+	public static Module getModule(Set<Module> modules, FaultTreeNode node) {
+		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
 	}
 }

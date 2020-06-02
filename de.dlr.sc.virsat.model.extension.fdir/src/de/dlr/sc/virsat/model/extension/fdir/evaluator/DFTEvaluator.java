@@ -65,7 +65,6 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		this.defaultSemantics = defaultSemantics;
 		this.poSemantics = poSemantics;
 		this.markovModelChecker = markovModelChecker;
-		this.modularizer.setBEOptimization(false);
 	}
 
 	@Override

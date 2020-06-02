@@ -15,6 +15,6 @@ package de.dlr.sc.virsat.model.extension.fdir.modularizer;
  * @author jord_ad
  *
  */
-enum ModuleType {
-	STATIC, DYNAMIC, DETERMINISTIC, NONDETERMINISTIC;
+enum ModuleProperty {
+	DYNAMIC, NONDETERMINISTIC, PARTIALOBSERVABLE;
 }
