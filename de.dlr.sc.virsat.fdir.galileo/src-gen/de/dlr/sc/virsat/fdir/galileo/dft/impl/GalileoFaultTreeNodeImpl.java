@@ -37,6 +37,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getType <em>Type</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getChildren <em>Children</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getLambda <em>Lambda</em>}</li>
+ *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getProb <em>Prob</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getDorm <em>Dorm</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoFaultTreeNodeImpl#getRepairActions <em>Repair Actions</em>}</li>
  * </ul>
@@ -104,6 +105,26 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
    * @ordered
    */
   protected String lambda = LAMBDA_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #getProb() <em>Prob</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getProb()
+   * @generated
+   * @ordered
+   */
+  protected static final String PROB_EDEFAULT = null;
+
+  /**
+   * The cached value of the '{@link #getProb() <em>Prob</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getProb()
+   * @generated
+   * @ordered
+   */
+  protected String prob = PROB_EDEFAULT;
 
   /**
    * The default value of the '{@link #getDorm() <em>Dorm</em>}' attribute.
@@ -277,6 +298,31 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
    * @generated
    */
   @Override
+  public String getProb()
+  {
+    return prob;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setProb(String newProb)
+  {
+    String oldProb = prob;
+    prob = newProb;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, DftPackage.GALILEO_FAULT_TREE_NODE__PROB, oldProb, prob));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public String getDorm()
   {
     return dorm;
@@ -347,6 +393,8 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
         return getChildren();
       case DftPackage.GALILEO_FAULT_TREE_NODE__LAMBDA:
         return getLambda();
+      case DftPackage.GALILEO_FAULT_TREE_NODE__PROB:
+        return getProb();
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         return getDorm();
       case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS:
@@ -378,6 +426,9 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
         return;
       case DftPackage.GALILEO_FAULT_TREE_NODE__LAMBDA:
         setLambda((String)newValue);
+        return;
+      case DftPackage.GALILEO_FAULT_TREE_NODE__PROB:
+        setProb((String)newValue);
         return;
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         setDorm((String)newValue);
@@ -412,6 +463,9 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
       case DftPackage.GALILEO_FAULT_TREE_NODE__LAMBDA:
         setLambda(LAMBDA_EDEFAULT);
         return;
+      case DftPackage.GALILEO_FAULT_TREE_NODE__PROB:
+        setProb(PROB_EDEFAULT);
+        return;
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         setDorm(DORM_EDEFAULT);
         return;
@@ -440,6 +494,8 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
         return children != null && !children.isEmpty();
       case DftPackage.GALILEO_FAULT_TREE_NODE__LAMBDA:
         return LAMBDA_EDEFAULT == null ? lambda != null : !LAMBDA_EDEFAULT.equals(lambda);
+      case DftPackage.GALILEO_FAULT_TREE_NODE__PROB:
+        return PROB_EDEFAULT == null ? prob != null : !PROB_EDEFAULT.equals(prob);
       case DftPackage.GALILEO_FAULT_TREE_NODE__DORM:
         return DORM_EDEFAULT == null ? dorm != null : !DORM_EDEFAULT.equals(dorm);
       case DftPackage.GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS:
@@ -463,6 +519,8 @@ public class GalileoFaultTreeNodeImpl extends MinimalEObjectImpl.Container imple
     result.append(name);
     result.append(", lambda: ");
     result.append(lambda);
+    result.append(", prob: ");
+    result.append(prob);
     result.append(", dorm: ");
     result.append(dorm);
     result.append(')');

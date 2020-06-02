@@ -124,7 +124,10 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 	
 	Category BasicEvent extends FaultEvent {
-		FloatProperty hotFailureRate quantityKind "Frequency" unit "Per Hour";
+		FloatProperty hotFailureRate unit "Per Hour";
+		EnumProperty distribution values [
+			EXP=0, UNIFORM=1
+		] default EXP quantityKind "Dimensionless" unit "No Unit" description "Distribution of the failure process";
 		FloatProperty coldFailureRate default 0.0 quantityKind "Frequency" unit "Per Hour";
 		FloatProperty repairRate default 0.0 quantityKind "Frequency" unit "Per Hour" description "Transient repair rate.";
 		Type repairActions [] of Category RepairAction description "Conditional repair actions that can be performed if certain observations are made.";

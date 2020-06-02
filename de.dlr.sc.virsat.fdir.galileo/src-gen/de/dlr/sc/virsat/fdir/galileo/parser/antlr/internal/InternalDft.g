@@ -256,48 +256,82 @@ ruleGalileoBasicEvent returns [EObject current=null]
 				}
 			)
 		)
-		otherlv_1='lambda'
-		{
-			newLeafNode(otherlv_1, grammarAccess.getGalileoBasicEventAccess().getLambdaKeyword_1());
-		}
-		otherlv_2='='
-		{
-			newLeafNode(otherlv_2, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_2());
-		}
 		(
 			(
+				otherlv_1='lambda'
 				{
-					newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getLambdaFloatParserRuleCall_3_0());
+					newLeafNode(otherlv_1, grammarAccess.getGalileoBasicEventAccess().getLambdaKeyword_1_0_0());
 				}
-				lv_lambda_3_0=ruleFloat
+				otherlv_2='='
 				{
-					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
-					}
-					set(
-						$current,
-						"lambda",
-						lv_lambda_3_0,
-						"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
-					afterParserOrEnumRuleCall();
+					newLeafNode(otherlv_2, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_1_0_1());
 				}
+				(
+					(
+						{
+							newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getLambdaFloatParserRuleCall_1_0_2_0());
+						}
+						lv_lambda_3_0=ruleFloat
+						{
+							if ($current==null) {
+								$current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
+							}
+							set(
+								$current,
+								"lambda",
+								lv_lambda_3_0,
+								"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
+							afterParserOrEnumRuleCall();
+						}
+					)
+				)
+			)
+			    |
+			(
+				otherlv_4='prob'
+				{
+					newLeafNode(otherlv_4, grammarAccess.getGalileoBasicEventAccess().getProbKeyword_1_1_0());
+				}
+				otherlv_5='='
+				{
+					newLeafNode(otherlv_5, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_1_1_1());
+				}
+				(
+					(
+						{
+							newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getProbFloatParserRuleCall_1_1_2_0());
+						}
+						lv_prob_6_0=ruleFloat
+						{
+							if ($current==null) {
+								$current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
+							}
+							set(
+								$current,
+								"prob",
+								lv_prob_6_0,
+								"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
+							afterParserOrEnumRuleCall();
+						}
+					)
+				)
 			)
 		)
 		(
-			otherlv_4='dorm'
+			otherlv_7='dorm'
 			{
-				newLeafNode(otherlv_4, grammarAccess.getGalileoBasicEventAccess().getDormKeyword_4_0());
+				newLeafNode(otherlv_7, grammarAccess.getGalileoBasicEventAccess().getDormKeyword_2_0());
 			}
-			otherlv_5='='
+			otherlv_8='='
 			{
-				newLeafNode(otherlv_5, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_4_1());
+				newLeafNode(otherlv_8, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_2_1());
 			}
 			(
 				(
 					{
-						newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getDormFloatParserRuleCall_4_2_0());
+						newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getDormFloatParserRuleCall_2_2_0());
 					}
-					lv_dorm_6_0=ruleFloat
+					lv_dorm_9_0=ruleFloat
 					{
 						if ($current==null) {
 							$current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
@@ -305,7 +339,7 @@ ruleGalileoBasicEvent returns [EObject current=null]
 						set(
 							$current,
 							"dorm",
-							lv_dorm_6_0,
+							lv_dorm_9_0,
 							"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
 						afterParserOrEnumRuleCall();
 					}
@@ -315,9 +349,9 @@ ruleGalileoBasicEvent returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getRepairActionsGalileoRepairActionParserRuleCall_5_0());
+					newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getRepairActionsGalileoRepairActionParserRuleCall_3_0());
 				}
-				lv_repairActions_7_0=ruleGalileoRepairAction
+				lv_repairActions_10_0=ruleGalileoRepairAction
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
@@ -325,7 +359,7 @@ ruleGalileoBasicEvent returns [EObject current=null]
 					add(
 						$current,
 						"repairActions",
-						lv_repairActions_7_0,
+						lv_repairActions_10_0,
 						"de.dlr.sc.virsat.fdir.galileo.Dft.GalileoRepairAction");
 					afterParserOrEnumRuleCall();
 				}

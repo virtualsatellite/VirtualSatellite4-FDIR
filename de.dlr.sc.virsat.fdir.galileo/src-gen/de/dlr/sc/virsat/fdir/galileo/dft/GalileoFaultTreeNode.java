@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getType <em>Type</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getChildren <em>Children</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getLambda <em>Lambda</em>}</li>
+ *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getProb <em>Prob</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getDorm <em>Dorm</em>}</li>
  *   <li>{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getRepairActions <em>Repair Actions</em>}</li>
  * </ul>
@@ -107,6 +108,28 @@ public interface GalileoFaultTreeNode extends EObject
    * @generated
    */
   void setLambda(String value);
+
+  /**
+   * Returns the value of the '<em><b>Prob</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Prob</em>' attribute.
+   * @see #setProb(String)
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.DftPackage#getGalileoFaultTreeNode_Prob()
+   * @model
+   * @generated
+   */
+  String getProb();
+
+  /**
+   * Sets the value of the '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getProb <em>Prob</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Prob</em>' attribute.
+   * @see #getProb()
+   * @generated
+   */
+  void setProb(String value);
 
   /**
    * Returns the value of the '<em><b>Dorm</b></em>' attribute.

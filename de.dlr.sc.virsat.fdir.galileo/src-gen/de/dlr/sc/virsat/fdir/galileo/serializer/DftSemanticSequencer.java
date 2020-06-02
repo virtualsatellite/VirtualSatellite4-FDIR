@@ -70,7 +70,7 @@ public class DftSemanticSequencer extends AbstractDelegatingSemanticSequencer {
 	 *     GalileoBasicEvent returns GalileoFaultTreeNode
 	 *
 	 * Constraint:
-	 *     (name=STRING lambda=Float dorm=Float? repairActions+=GalileoRepairAction*)
+	 *     (name=STRING (lambda=Float | prob=Float) dorm=Float? repairActions+=GalileoRepairAction*)
 	 */
 	protected void sequence_GalileoBasicEvent(ISerializationContext context, GalileoFaultTreeNode semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

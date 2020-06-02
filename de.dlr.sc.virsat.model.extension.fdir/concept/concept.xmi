@@ -86,7 +86,11 @@
     <extendsCategory href="platform:/plugin/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
   </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
-    <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" quantityKindName="Frequency" unitName="Per Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" unitName="Per Hour"/>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="distribution" description="Distribution of the failure process" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.23/@properties.1/@values.0">
+      <values name="EXP" value="0"/>
+      <values name="UNIFORM" value="1"/>
+    </properties>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="coldFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
     <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" description="Transient repair rate." quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="repairActions" description="Conditional repair actions that can be performed if certain observations are made." type="de.dlr.sc.virsat.model.extension.fdir.RepairAction">

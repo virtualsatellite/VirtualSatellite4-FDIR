@@ -21,7 +21,7 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalDftParser extends AbstractInternalAntlrParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_STRING", "RULE_XOFY", "RULE_INT", "RULE_ID", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'toplevel'", "';'", "'lambda'", "'='", "'dorm'", "'repair'", "'observations'", "'and'", "'or'", "'pand'", "'pand_i'", "'por'", "'por_i'", "'sand'", "'hsp'", "'wsp'", "'csp'", "'seq'", "'fdep'", "'observer'", "'obsRate'", "'rdep'", "'delay'", "'-'", "'.'", "'e'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_STRING", "RULE_XOFY", "RULE_INT", "RULE_ID", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'toplevel'", "';'", "'lambda'", "'='", "'prob'", "'dorm'", "'repair'", "'observations'", "'and'", "'or'", "'pand'", "'pand_i'", "'por'", "'por_i'", "'sand'", "'hsp'", "'wsp'", "'csp'", "'seq'", "'fdep'", "'observer'", "'obsRate'", "'rdep'", "'delay'", "'-'", "'.'", "'e'"
     };
     public static final int RULE_XOFY=5;
     public static final int RULE_STRING=4;
@@ -30,6 +30,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
     public static final int T__15=15;
     public static final int T__37=37;
     public static final int T__16=16;
+    public static final int T__38=38;
     public static final int T__17=17;
     public static final int T__18=18;
     public static final int T__33=33;
@@ -197,10 +198,10 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                 if ( (LA1_0==RULE_STRING) ) {
                     int LA1_2 = input.LA(2);
 
-                    if ( (LA1_2==RULE_XOFY||(LA1_2>=19 && LA1_2<=31)||(LA1_2>=33 && LA1_2<=34)) ) {
+                    if ( (LA1_2==RULE_XOFY||(LA1_2>=20 && LA1_2<=32)||(LA1_2>=34 && LA1_2<=35)) ) {
                         alt1=1;
                     }
-                    else if ( (LA1_2==14) ) {
+                    else if ( (LA1_2==14||LA1_2==16) ) {
                         alt1=2;
                     }
 
@@ -542,7 +543,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleGalileoBasicEvent"
-    // InternalDft.g:233:1: ruleGalileoBasicEvent returns [EObject current=null] : ( ( (lv_name_0_0= RULE_STRING ) ) otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) (otherlv_4= 'dorm' otherlv_5= '=' ( (lv_dorm_6_0= ruleFloat ) ) )? ( (lv_repairActions_7_0= ruleGalileoRepairAction ) )* ) ;
+    // InternalDft.g:233:1: ruleGalileoBasicEvent returns [EObject current=null] : ( ( (lv_name_0_0= RULE_STRING ) ) ( (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) ) | (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) ) ) (otherlv_7= 'dorm' otherlv_8= '=' ( (lv_dorm_9_0= ruleFloat ) ) )? ( (lv_repairActions_10_0= ruleGalileoRepairAction ) )* ) ;
     public final EObject ruleGalileoBasicEvent() throws RecognitionException {
         EObject current = null;
 
@@ -551,22 +552,26 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
         Token otherlv_2=null;
         Token otherlv_4=null;
         Token otherlv_5=null;
+        Token otherlv_7=null;
+        Token otherlv_8=null;
         AntlrDatatypeRuleToken lv_lambda_3_0 = null;
 
-        AntlrDatatypeRuleToken lv_dorm_6_0 = null;
+        AntlrDatatypeRuleToken lv_prob_6_0 = null;
 
-        EObject lv_repairActions_7_0 = null;
+        AntlrDatatypeRuleToken lv_dorm_9_0 = null;
+
+        EObject lv_repairActions_10_0 = null;
 
 
 
         	enterRule();
 
         try {
-            // InternalDft.g:239:2: ( ( ( (lv_name_0_0= RULE_STRING ) ) otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) (otherlv_4= 'dorm' otherlv_5= '=' ( (lv_dorm_6_0= ruleFloat ) ) )? ( (lv_repairActions_7_0= ruleGalileoRepairAction ) )* ) )
-            // InternalDft.g:240:2: ( ( (lv_name_0_0= RULE_STRING ) ) otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) (otherlv_4= 'dorm' otherlv_5= '=' ( (lv_dorm_6_0= ruleFloat ) ) )? ( (lv_repairActions_7_0= ruleGalileoRepairAction ) )* )
+            // InternalDft.g:239:2: ( ( ( (lv_name_0_0= RULE_STRING ) ) ( (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) ) | (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) ) ) (otherlv_7= 'dorm' otherlv_8= '=' ( (lv_dorm_9_0= ruleFloat ) ) )? ( (lv_repairActions_10_0= ruleGalileoRepairAction ) )* ) )
+            // InternalDft.g:240:2: ( ( (lv_name_0_0= RULE_STRING ) ) ( (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) ) | (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) ) ) (otherlv_7= 'dorm' otherlv_8= '=' ( (lv_dorm_9_0= ruleFloat ) ) )? ( (lv_repairActions_10_0= ruleGalileoRepairAction ) )* )
             {
-            // InternalDft.g:240:2: ( ( (lv_name_0_0= RULE_STRING ) ) otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) (otherlv_4= 'dorm' otherlv_5= '=' ( (lv_dorm_6_0= ruleFloat ) ) )? ( (lv_repairActions_7_0= ruleGalileoRepairAction ) )* )
-            // InternalDft.g:241:3: ( (lv_name_0_0= RULE_STRING ) ) otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) (otherlv_4= 'dorm' otherlv_5= '=' ( (lv_dorm_6_0= ruleFloat ) ) )? ( (lv_repairActions_7_0= ruleGalileoRepairAction ) )*
+            // InternalDft.g:240:2: ( ( (lv_name_0_0= RULE_STRING ) ) ( (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) ) | (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) ) ) (otherlv_7= 'dorm' otherlv_8= '=' ( (lv_dorm_9_0= ruleFloat ) ) )? ( (lv_repairActions_10_0= ruleGalileoRepairAction ) )* )
+            // InternalDft.g:241:3: ( (lv_name_0_0= RULE_STRING ) ) ( (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) ) | (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) ) ) (otherlv_7= 'dorm' otherlv_8= '=' ( (lv_dorm_9_0= ruleFloat ) ) )? ( (lv_repairActions_10_0= ruleGalileoRepairAction ) )*
             {
             // InternalDft.g:241:3: ( (lv_name_0_0= RULE_STRING ) )
             // InternalDft.g:242:4: (lv_name_0_0= RULE_STRING )
@@ -594,75 +599,158 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            otherlv_1=(Token)match(input,14,FOLLOW_8); 
-
-            			newLeafNode(otherlv_1, grammarAccess.getGalileoBasicEventAccess().getLambdaKeyword_1());
-            		
-            otherlv_2=(Token)match(input,15,FOLLOW_9); 
-
-            			newLeafNode(otherlv_2, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_2());
-            		
-            // InternalDft.g:267:3: ( (lv_lambda_3_0= ruleFloat ) )
-            // InternalDft.g:268:4: (lv_lambda_3_0= ruleFloat )
-            {
-            // InternalDft.g:268:4: (lv_lambda_3_0= ruleFloat )
-            // InternalDft.g:269:5: lv_lambda_3_0= ruleFloat
-            {
-
-            					newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getLambdaFloatParserRuleCall_3_0());
-            				
-            pushFollow(FOLLOW_10);
-            lv_lambda_3_0=ruleFloat();
-
-            state._fsp--;
-
-
-            					if (current==null) {
-            						current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
-            					}
-            					set(
-            						current,
-            						"lambda",
-            						lv_lambda_3_0,
-            						"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
-            					afterParserOrEnumRuleCall();
-            				
-
-            }
-
-
-            }
-
-            // InternalDft.g:286:3: (otherlv_4= 'dorm' otherlv_5= '=' ( (lv_dorm_6_0= ruleFloat ) ) )?
+            // InternalDft.g:259:3: ( (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) ) | (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) ) )
             int alt3=2;
             int LA3_0 = input.LA(1);
 
-            if ( (LA3_0==16) ) {
+            if ( (LA3_0==14) ) {
                 alt3=1;
+            }
+            else if ( (LA3_0==16) ) {
+                alt3=2;
+            }
+            else {
+                NoViableAltException nvae =
+                    new NoViableAltException("", 3, 0, input);
+
+                throw nvae;
             }
             switch (alt3) {
                 case 1 :
-                    // InternalDft.g:287:4: otherlv_4= 'dorm' otherlv_5= '=' ( (lv_dorm_6_0= ruleFloat ) )
+                    // InternalDft.g:260:4: (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) )
+                    {
+                    // InternalDft.g:260:4: (otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) ) )
+                    // InternalDft.g:261:5: otherlv_1= 'lambda' otherlv_2= '=' ( (lv_lambda_3_0= ruleFloat ) )
+                    {
+                    otherlv_1=(Token)match(input,14,FOLLOW_8); 
+
+                    					newLeafNode(otherlv_1, grammarAccess.getGalileoBasicEventAccess().getLambdaKeyword_1_0_0());
+                    				
+                    otherlv_2=(Token)match(input,15,FOLLOW_9); 
+
+                    					newLeafNode(otherlv_2, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_1_0_1());
+                    				
+                    // InternalDft.g:269:5: ( (lv_lambda_3_0= ruleFloat ) )
+                    // InternalDft.g:270:6: (lv_lambda_3_0= ruleFloat )
+                    {
+                    // InternalDft.g:270:6: (lv_lambda_3_0= ruleFloat )
+                    // InternalDft.g:271:7: lv_lambda_3_0= ruleFloat
+                    {
+
+                    							newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getLambdaFloatParserRuleCall_1_0_2_0());
+                    						
+                    pushFollow(FOLLOW_10);
+                    lv_lambda_3_0=ruleFloat();
+
+                    state._fsp--;
+
+
+                    							if (current==null) {
+                    								current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
+                    							}
+                    							set(
+                    								current,
+                    								"lambda",
+                    								lv_lambda_3_0,
+                    								"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
+                    							afterParserOrEnumRuleCall();
+                    						
+
+                    }
+
+
+                    }
+
+
+                    }
+
+
+                    }
+                    break;
+                case 2 :
+                    // InternalDft.g:290:4: (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) )
+                    {
+                    // InternalDft.g:290:4: (otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) ) )
+                    // InternalDft.g:291:5: otherlv_4= 'prob' otherlv_5= '=' ( (lv_prob_6_0= ruleFloat ) )
                     {
                     otherlv_4=(Token)match(input,16,FOLLOW_8); 
 
-                    				newLeafNode(otherlv_4, grammarAccess.getGalileoBasicEventAccess().getDormKeyword_4_0());
-                    			
+                    					newLeafNode(otherlv_4, grammarAccess.getGalileoBasicEventAccess().getProbKeyword_1_1_0());
+                    				
                     otherlv_5=(Token)match(input,15,FOLLOW_9); 
 
-                    				newLeafNode(otherlv_5, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_4_1());
-                    			
-                    // InternalDft.g:295:4: ( (lv_dorm_6_0= ruleFloat ) )
-                    // InternalDft.g:296:5: (lv_dorm_6_0= ruleFloat )
+                    					newLeafNode(otherlv_5, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_1_1_1());
+                    				
+                    // InternalDft.g:299:5: ( (lv_prob_6_0= ruleFloat ) )
+                    // InternalDft.g:300:6: (lv_prob_6_0= ruleFloat )
                     {
-                    // InternalDft.g:296:5: (lv_dorm_6_0= ruleFloat )
-                    // InternalDft.g:297:6: lv_dorm_6_0= ruleFloat
+                    // InternalDft.g:300:6: (lv_prob_6_0= ruleFloat )
+                    // InternalDft.g:301:7: lv_prob_6_0= ruleFloat
                     {
 
-                    						newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getDormFloatParserRuleCall_4_2_0());
+                    							newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getProbFloatParserRuleCall_1_1_2_0());
+                    						
+                    pushFollow(FOLLOW_10);
+                    lv_prob_6_0=ruleFloat();
+
+                    state._fsp--;
+
+
+                    							if (current==null) {
+                    								current = createModelElementForParent(grammarAccess.getGalileoBasicEventRule());
+                    							}
+                    							set(
+                    								current,
+                    								"prob",
+                    								lv_prob_6_0,
+                    								"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
+                    							afterParserOrEnumRuleCall();
+                    						
+
+                    }
+
+
+                    }
+
+
+                    }
+
+
+                    }
+                    break;
+
+            }
+
+            // InternalDft.g:320:3: (otherlv_7= 'dorm' otherlv_8= '=' ( (lv_dorm_9_0= ruleFloat ) ) )?
+            int alt4=2;
+            int LA4_0 = input.LA(1);
+
+            if ( (LA4_0==17) ) {
+                alt4=1;
+            }
+            switch (alt4) {
+                case 1 :
+                    // InternalDft.g:321:4: otherlv_7= 'dorm' otherlv_8= '=' ( (lv_dorm_9_0= ruleFloat ) )
+                    {
+                    otherlv_7=(Token)match(input,17,FOLLOW_8); 
+
+                    				newLeafNode(otherlv_7, grammarAccess.getGalileoBasicEventAccess().getDormKeyword_2_0());
+                    			
+                    otherlv_8=(Token)match(input,15,FOLLOW_9); 
+
+                    				newLeafNode(otherlv_8, grammarAccess.getGalileoBasicEventAccess().getEqualsSignKeyword_2_1());
+                    			
+                    // InternalDft.g:329:4: ( (lv_dorm_9_0= ruleFloat ) )
+                    // InternalDft.g:330:5: (lv_dorm_9_0= ruleFloat )
+                    {
+                    // InternalDft.g:330:5: (lv_dorm_9_0= ruleFloat )
+                    // InternalDft.g:331:6: lv_dorm_9_0= ruleFloat
+                    {
+
+                    						newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getDormFloatParserRuleCall_2_2_0());
                     					
                     pushFollow(FOLLOW_11);
-                    lv_dorm_6_0=ruleFloat();
+                    lv_dorm_9_0=ruleFloat();
 
                     state._fsp--;
 
@@ -673,7 +761,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     						set(
                     							current,
                     							"dorm",
-                    							lv_dorm_6_0,
+                    							lv_dorm_9_0,
                     							"de.dlr.sc.virsat.fdir.galileo.Dft.Float");
                     						afterParserOrEnumRuleCall();
                     					
@@ -689,29 +777,29 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalDft.g:315:3: ( (lv_repairActions_7_0= ruleGalileoRepairAction ) )*
-            loop4:
+            // InternalDft.g:349:3: ( (lv_repairActions_10_0= ruleGalileoRepairAction ) )*
+            loop5:
             do {
-                int alt4=2;
-                int LA4_0 = input.LA(1);
+                int alt5=2;
+                int LA5_0 = input.LA(1);
 
-                if ( (LA4_0==17) ) {
-                    alt4=1;
+                if ( (LA5_0==18) ) {
+                    alt5=1;
                 }
 
 
-                switch (alt4) {
+                switch (alt5) {
             	case 1 :
-            	    // InternalDft.g:316:4: (lv_repairActions_7_0= ruleGalileoRepairAction )
+            	    // InternalDft.g:350:4: (lv_repairActions_10_0= ruleGalileoRepairAction )
             	    {
-            	    // InternalDft.g:316:4: (lv_repairActions_7_0= ruleGalileoRepairAction )
-            	    // InternalDft.g:317:5: lv_repairActions_7_0= ruleGalileoRepairAction
+            	    // InternalDft.g:350:4: (lv_repairActions_10_0= ruleGalileoRepairAction )
+            	    // InternalDft.g:351:5: lv_repairActions_10_0= ruleGalileoRepairAction
             	    {
 
-            	    					newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getRepairActionsGalileoRepairActionParserRuleCall_5_0());
+            	    					newCompositeNode(grammarAccess.getGalileoBasicEventAccess().getRepairActionsGalileoRepairActionParserRuleCall_3_0());
             	    				
             	    pushFollow(FOLLOW_11);
-            	    lv_repairActions_7_0=ruleGalileoRepairAction();
+            	    lv_repairActions_10_0=ruleGalileoRepairAction();
 
             	    state._fsp--;
 
@@ -722,7 +810,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
             	    					add(
             	    						current,
             	    						"repairActions",
-            	    						lv_repairActions_7_0,
+            	    						lv_repairActions_10_0,
             	    						"de.dlr.sc.virsat.fdir.galileo.Dft.GalileoRepairAction");
             	    					afterParserOrEnumRuleCall();
             	    				
@@ -734,7 +822,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
             	    break;
 
             	default :
-            	    break loop4;
+            	    break loop5;
                 }
             } while (true);
 
@@ -761,7 +849,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleGalileoRepairAction"
-    // InternalDft.g:338:1: entryRuleGalileoRepairAction returns [EObject current=null] : iv_ruleGalileoRepairAction= ruleGalileoRepairAction EOF ;
+    // InternalDft.g:372:1: entryRuleGalileoRepairAction returns [EObject current=null] : iv_ruleGalileoRepairAction= ruleGalileoRepairAction EOF ;
     public final EObject entryRuleGalileoRepairAction() throws RecognitionException {
         EObject current = null;
 
@@ -769,8 +857,8 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalDft.g:338:60: (iv_ruleGalileoRepairAction= ruleGalileoRepairAction EOF )
-            // InternalDft.g:339:2: iv_ruleGalileoRepairAction= ruleGalileoRepairAction EOF
+            // InternalDft.g:372:60: (iv_ruleGalileoRepairAction= ruleGalileoRepairAction EOF )
+            // InternalDft.g:373:2: iv_ruleGalileoRepairAction= ruleGalileoRepairAction EOF
             {
              newCompositeNode(grammarAccess.getGalileoRepairActionRule()); 
             pushFollow(FOLLOW_1);
@@ -797,7 +885,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleGalileoRepairAction"
-    // InternalDft.g:345:1: ruleGalileoRepairAction returns [EObject current=null] : (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? ) ;
+    // InternalDft.g:379:1: ruleGalileoRepairAction returns [EObject current=null] : (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? ) ;
     public final EObject ruleGalileoRepairAction() throws RecognitionException {
         EObject current = null;
 
@@ -813,13 +901,13 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalDft.g:351:2: ( (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? ) )
-            // InternalDft.g:352:2: (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? )
+            // InternalDft.g:385:2: ( (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? ) )
+            // InternalDft.g:386:2: (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? )
             {
-            // InternalDft.g:352:2: (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? )
-            // InternalDft.g:353:3: otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )?
+            // InternalDft.g:386:2: (otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )? )
+            // InternalDft.g:387:3: otherlv_0= 'repair' otherlv_1= '=' ( (lv_repair_2_0= ruleFloat ) ) ( (lv_name_3_0= RULE_STRING ) )? (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )?
             {
-            otherlv_0=(Token)match(input,17,FOLLOW_8); 
+            otherlv_0=(Token)match(input,18,FOLLOW_8); 
 
             			newLeafNode(otherlv_0, grammarAccess.getGalileoRepairActionAccess().getRepairKeyword_0());
             		
@@ -827,11 +915,11 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(otherlv_1, grammarAccess.getGalileoRepairActionAccess().getEqualsSignKeyword_1());
             		
-            // InternalDft.g:361:3: ( (lv_repair_2_0= ruleFloat ) )
-            // InternalDft.g:362:4: (lv_repair_2_0= ruleFloat )
+            // InternalDft.g:395:3: ( (lv_repair_2_0= ruleFloat ) )
+            // InternalDft.g:396:4: (lv_repair_2_0= ruleFloat )
             {
-            // InternalDft.g:362:4: (lv_repair_2_0= ruleFloat )
-            // InternalDft.g:363:5: lv_repair_2_0= ruleFloat
+            // InternalDft.g:396:4: (lv_repair_2_0= ruleFloat )
+            // InternalDft.g:397:5: lv_repair_2_0= ruleFloat
             {
 
             					newCompositeNode(grammarAccess.getGalileoRepairActionAccess().getRepairFloatParserRuleCall_2_0());
@@ -858,19 +946,19 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalDft.g:380:3: ( (lv_name_3_0= RULE_STRING ) )?
-            int alt5=2;
-            int LA5_0 = input.LA(1);
+            // InternalDft.g:414:3: ( (lv_name_3_0= RULE_STRING ) )?
+            int alt6=2;
+            int LA6_0 = input.LA(1);
 
-            if ( (LA5_0==RULE_STRING) ) {
-                alt5=1;
+            if ( (LA6_0==RULE_STRING) ) {
+                alt6=1;
             }
-            switch (alt5) {
+            switch (alt6) {
                 case 1 :
-                    // InternalDft.g:381:4: (lv_name_3_0= RULE_STRING )
+                    // InternalDft.g:415:4: (lv_name_3_0= RULE_STRING )
                     {
-                    // InternalDft.g:381:4: (lv_name_3_0= RULE_STRING )
-                    // InternalDft.g:382:5: lv_name_3_0= RULE_STRING
+                    // InternalDft.g:415:4: (lv_name_3_0= RULE_STRING )
+                    // InternalDft.g:416:5: lv_name_3_0= RULE_STRING
                     {
                     lv_name_3_0=(Token)match(input,RULE_STRING,FOLLOW_13); 
 
@@ -895,38 +983,38 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalDft.g:398:3: (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )?
-            int alt7=2;
-            int LA7_0 = input.LA(1);
+            // InternalDft.g:432:3: (otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )* )?
+            int alt8=2;
+            int LA8_0 = input.LA(1);
 
-            if ( (LA7_0==18) ) {
-                alt7=1;
+            if ( (LA8_0==19) ) {
+                alt8=1;
             }
-            switch (alt7) {
+            switch (alt8) {
                 case 1 :
-                    // InternalDft.g:399:4: otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )*
+                    // InternalDft.g:433:4: otherlv_4= 'observations' ( (otherlv_5= RULE_STRING ) )*
                     {
-                    otherlv_4=(Token)match(input,18,FOLLOW_5); 
+                    otherlv_4=(Token)match(input,19,FOLLOW_5); 
 
                     				newLeafNode(otherlv_4, grammarAccess.getGalileoRepairActionAccess().getObservationsKeyword_4_0());
                     			
-                    // InternalDft.g:403:4: ( (otherlv_5= RULE_STRING ) )*
-                    loop6:
+                    // InternalDft.g:437:4: ( (otherlv_5= RULE_STRING ) )*
+                    loop7:
                     do {
-                        int alt6=2;
-                        int LA6_0 = input.LA(1);
+                        int alt7=2;
+                        int LA7_0 = input.LA(1);
 
-                        if ( (LA6_0==RULE_STRING) ) {
-                            alt6=1;
+                        if ( (LA7_0==RULE_STRING) ) {
+                            alt7=1;
                         }
 
 
-                        switch (alt6) {
+                        switch (alt7) {
                     	case 1 :
-                    	    // InternalDft.g:404:5: (otherlv_5= RULE_STRING )
+                    	    // InternalDft.g:438:5: (otherlv_5= RULE_STRING )
                     	    {
-                    	    // InternalDft.g:404:5: (otherlv_5= RULE_STRING )
-                    	    // InternalDft.g:405:6: otherlv_5= RULE_STRING
+                    	    // InternalDft.g:438:5: (otherlv_5= RULE_STRING )
+                    	    // InternalDft.g:439:6: otherlv_5= RULE_STRING
                     	    {
 
                     	    						if (current==null) {
@@ -945,7 +1033,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     	    break;
 
                     	default :
-                    	    break loop6;
+                    	    break loop7;
                         }
                     } while (true);
 
@@ -978,7 +1066,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleGalileoNodeType"
-    // InternalDft.g:421:1: entryRuleGalileoNodeType returns [EObject current=null] : iv_ruleGalileoNodeType= ruleGalileoNodeType EOF ;
+    // InternalDft.g:455:1: entryRuleGalileoNodeType returns [EObject current=null] : iv_ruleGalileoNodeType= ruleGalileoNodeType EOF ;
     public final EObject entryRuleGalileoNodeType() throws RecognitionException {
         EObject current = null;
 
@@ -986,8 +1074,8 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalDft.g:421:56: (iv_ruleGalileoNodeType= ruleGalileoNodeType EOF )
-            // InternalDft.g:422:2: iv_ruleGalileoNodeType= ruleGalileoNodeType EOF
+            // InternalDft.g:455:56: (iv_ruleGalileoNodeType= ruleGalileoNodeType EOF )
+            // InternalDft.g:456:2: iv_ruleGalileoNodeType= ruleGalileoNodeType EOF
             {
              newCompositeNode(grammarAccess.getGalileoNodeTypeRule()); 
             pushFollow(FOLLOW_1);
@@ -1014,7 +1102,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleGalileoNodeType"
-    // InternalDft.g:428:1: ruleGalileoNodeType returns [EObject current=null] : (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver ) ;
+    // InternalDft.g:462:1: ruleGalileoNodeType returns [EObject current=null] : (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver ) ;
     public final EObject ruleGalileoNodeType() throws RecognitionException {
         EObject current = null;
 
@@ -1029,14 +1117,13 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalDft.g:434:2: ( (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver ) )
-            // InternalDft.g:435:2: (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver )
+            // InternalDft.g:468:2: ( (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver ) )
+            // InternalDft.g:469:2: (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver )
             {
-            // InternalDft.g:435:2: (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver )
-            int alt8=3;
+            // InternalDft.g:469:2: (this_Named_0= ruleNamed | this_Parametrized_1= ruleParametrized | this_Observer_2= ruleObserver )
+            int alt9=3;
             switch ( input.LA(1) ) {
             case RULE_XOFY:
-            case 19:
             case 20:
             case 21:
             case 22:
@@ -1048,31 +1135,32 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
             case 28:
             case 29:
             case 30:
-                {
-                alt8=1;
-                }
-                break;
-            case 33:
-            case 34:
-                {
-                alt8=2;
-                }
-                break;
             case 31:
                 {
-                alt8=3;
+                alt9=1;
+                }
+                break;
+            case 34:
+            case 35:
+                {
+                alt9=2;
+                }
+                break;
+            case 32:
+                {
+                alt9=3;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 8, 0, input);
+                    new NoViableAltException("", 9, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt8) {
+            switch (alt9) {
                 case 1 :
-                    // InternalDft.g:436:3: this_Named_0= ruleNamed
+                    // InternalDft.g:470:3: this_Named_0= ruleNamed
                     {
 
                     			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getNamedParserRuleCall_0());
@@ -1090,7 +1178,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 2 :
-                    // InternalDft.g:445:3: this_Parametrized_1= ruleParametrized
+                    // InternalDft.g:479:3: this_Parametrized_1= ruleParametrized
                     {
 
                     			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getParametrizedParserRuleCall_1());
@@ -1108,7 +1196,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 3 :
-                    // InternalDft.g:454:3: this_Observer_2= ruleObserver
+                    // InternalDft.g:488:3: this_Observer_2= ruleObserver
                     {
 
                     			newCompositeNode(grammarAccess.getGalileoNodeTypeAccess().getObserverParserRuleCall_2());
@@ -1148,7 +1236,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleNamed"
-    // InternalDft.g:466:1: entryRuleNamed returns [EObject current=null] : iv_ruleNamed= ruleNamed EOF ;
+    // InternalDft.g:500:1: entryRuleNamed returns [EObject current=null] : iv_ruleNamed= ruleNamed EOF ;
     public final EObject entryRuleNamed() throws RecognitionException {
         EObject current = null;
 
@@ -1156,8 +1244,8 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalDft.g:466:46: (iv_ruleNamed= ruleNamed EOF )
-            // InternalDft.g:467:2: iv_ruleNamed= ruleNamed EOF
+            // InternalDft.g:500:46: (iv_ruleNamed= ruleNamed EOF )
+            // InternalDft.g:501:2: iv_ruleNamed= ruleNamed EOF
             {
              newCompositeNode(grammarAccess.getNamedRule()); 
             pushFollow(FOLLOW_1);
@@ -1184,7 +1272,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleNamed"
-    // InternalDft.g:473:1: ruleNamed returns [EObject current=null] : ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) ) ;
+    // InternalDft.g:507:1: ruleNamed returns [EObject current=null] : ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) ) ;
     public final EObject ruleNamed() throws RecognitionException {
         EObject current = null;
 
@@ -1206,14 +1294,14 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalDft.g:479:2: ( ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) ) )
-            // InternalDft.g:480:2: ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) )
+            // InternalDft.g:513:2: ( ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) ) )
+            // InternalDft.g:514:2: ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) )
             {
-            // InternalDft.g:480:2: ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) )
-            // InternalDft.g:481:3: () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) )
+            // InternalDft.g:514:2: ( () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) ) )
+            // InternalDft.g:515:3: () ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) )
             {
-            // InternalDft.g:481:3: ()
-            // InternalDft.g:482:4: 
+            // InternalDft.g:515:3: ()
+            // InternalDft.g:516:4: 
             {
 
             				current = forceCreateModelElement(
@@ -1223,92 +1311,92 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalDft.g:488:3: ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) )
-            // InternalDft.g:489:4: ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) )
+            // InternalDft.g:522:3: ( ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) ) )
+            // InternalDft.g:523:4: ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) )
             {
-            // InternalDft.g:489:4: ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) )
-            // InternalDft.g:490:5: (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' )
+            // InternalDft.g:523:4: ( (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' ) )
+            // InternalDft.g:524:5: (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' )
             {
-            // InternalDft.g:490:5: (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' )
-            int alt9=13;
+            // InternalDft.g:524:5: (lv_typeName_1_1= 'and' | lv_typeName_1_2= 'or' | lv_typeName_1_3= RULE_XOFY | lv_typeName_1_4= 'pand' | lv_typeName_1_5= 'pand_i' | lv_typeName_1_6= 'por' | lv_typeName_1_7= 'por_i' | lv_typeName_1_8= 'sand' | lv_typeName_1_9= 'hsp' | lv_typeName_1_10= 'wsp' | lv_typeName_1_11= 'csp' | lv_typeName_1_12= 'seq' | lv_typeName_1_13= 'fdep' )
+            int alt10=13;
             switch ( input.LA(1) ) {
-            case 19:
-                {
-                alt9=1;
-                }
-                break;
             case 20:
                 {
-                alt9=2;
-                }
-                break;
-            case RULE_XOFY:
-                {
-                alt9=3;
+                alt10=1;
                 }
                 break;
             case 21:
                 {
-                alt9=4;
+                alt10=2;
+                }
+                break;
+            case RULE_XOFY:
+                {
+                alt10=3;
                 }
                 break;
             case 22:
                 {
-                alt9=5;
+                alt10=4;
                 }
                 break;
             case 23:
                 {
-                alt9=6;
+                alt10=5;
                 }
                 break;
             case 24:
                 {
-                alt9=7;
+                alt10=6;
                 }
                 break;
             case 25:
                 {
-                alt9=8;
+                alt10=7;
                 }
                 break;
             case 26:
                 {
-                alt9=9;
+                alt10=8;
                 }
                 break;
             case 27:
                 {
-                alt9=10;
+                alt10=9;
                 }
                 break;
             case 28:
                 {
-                alt9=11;
+                alt10=10;
                 }
                 break;
             case 29:
                 {
-                alt9=12;
+                alt10=11;
                 }
                 break;
             case 30:
                 {
-                alt9=13;
+                alt10=12;
+                }
+                break;
+            case 31:
+                {
+                alt10=13;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 9, 0, input);
+                    new NoViableAltException("", 10, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt9) {
+            switch (alt10) {
                 case 1 :
-                    // InternalDft.g:491:6: lv_typeName_1_1= 'and'
+                    // InternalDft.g:525:6: lv_typeName_1_1= 'and'
                     {
-                    lv_typeName_1_1=(Token)match(input,19,FOLLOW_2); 
+                    lv_typeName_1_1=(Token)match(input,20,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_1, grammarAccess.getNamedAccess().getTypeNameAndKeyword_1_0_0());
                     					
@@ -1322,9 +1410,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 2 :
-                    // InternalDft.g:502:6: lv_typeName_1_2= 'or'
+                    // InternalDft.g:536:6: lv_typeName_1_2= 'or'
                     {
-                    lv_typeName_1_2=(Token)match(input,20,FOLLOW_2); 
+                    lv_typeName_1_2=(Token)match(input,21,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_2, grammarAccess.getNamedAccess().getTypeNameOrKeyword_1_0_1());
                     					
@@ -1338,7 +1426,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 3 :
-                    // InternalDft.g:513:6: lv_typeName_1_3= RULE_XOFY
+                    // InternalDft.g:547:6: lv_typeName_1_3= RULE_XOFY
                     {
                     lv_typeName_1_3=(Token)match(input,RULE_XOFY,FOLLOW_2); 
 
@@ -1358,9 +1446,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 4 :
-                    // InternalDft.g:528:6: lv_typeName_1_4= 'pand'
+                    // InternalDft.g:562:6: lv_typeName_1_4= 'pand'
                     {
-                    lv_typeName_1_4=(Token)match(input,21,FOLLOW_2); 
+                    lv_typeName_1_4=(Token)match(input,22,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_4, grammarAccess.getNamedAccess().getTypeNamePandKeyword_1_0_3());
                     					
@@ -1374,9 +1462,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 5 :
-                    // InternalDft.g:539:6: lv_typeName_1_5= 'pand_i'
+                    // InternalDft.g:573:6: lv_typeName_1_5= 'pand_i'
                     {
-                    lv_typeName_1_5=(Token)match(input,22,FOLLOW_2); 
+                    lv_typeName_1_5=(Token)match(input,23,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_5, grammarAccess.getNamedAccess().getTypeNamePand_iKeyword_1_0_4());
                     					
@@ -1390,9 +1478,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 6 :
-                    // InternalDft.g:550:6: lv_typeName_1_6= 'por'
+                    // InternalDft.g:584:6: lv_typeName_1_6= 'por'
                     {
-                    lv_typeName_1_6=(Token)match(input,23,FOLLOW_2); 
+                    lv_typeName_1_6=(Token)match(input,24,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_6, grammarAccess.getNamedAccess().getTypeNamePorKeyword_1_0_5());
                     					
@@ -1406,9 +1494,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 7 :
-                    // InternalDft.g:561:6: lv_typeName_1_7= 'por_i'
+                    // InternalDft.g:595:6: lv_typeName_1_7= 'por_i'
                     {
-                    lv_typeName_1_7=(Token)match(input,24,FOLLOW_2); 
+                    lv_typeName_1_7=(Token)match(input,25,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_7, grammarAccess.getNamedAccess().getTypeNamePor_iKeyword_1_0_6());
                     					
@@ -1422,9 +1510,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 8 :
-                    // InternalDft.g:572:6: lv_typeName_1_8= 'sand'
+                    // InternalDft.g:606:6: lv_typeName_1_8= 'sand'
                     {
-                    lv_typeName_1_8=(Token)match(input,25,FOLLOW_2); 
+                    lv_typeName_1_8=(Token)match(input,26,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_8, grammarAccess.getNamedAccess().getTypeNameSandKeyword_1_0_7());
                     					
@@ -1438,9 +1526,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 9 :
-                    // InternalDft.g:583:6: lv_typeName_1_9= 'hsp'
+                    // InternalDft.g:617:6: lv_typeName_1_9= 'hsp'
                     {
-                    lv_typeName_1_9=(Token)match(input,26,FOLLOW_2); 
+                    lv_typeName_1_9=(Token)match(input,27,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_9, grammarAccess.getNamedAccess().getTypeNameHspKeyword_1_0_8());
                     					
@@ -1454,9 +1542,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 10 :
-                    // InternalDft.g:594:6: lv_typeName_1_10= 'wsp'
+                    // InternalDft.g:628:6: lv_typeName_1_10= 'wsp'
                     {
-                    lv_typeName_1_10=(Token)match(input,27,FOLLOW_2); 
+                    lv_typeName_1_10=(Token)match(input,28,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_10, grammarAccess.getNamedAccess().getTypeNameWspKeyword_1_0_9());
                     					
@@ -1470,9 +1558,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 11 :
-                    // InternalDft.g:605:6: lv_typeName_1_11= 'csp'
+                    // InternalDft.g:639:6: lv_typeName_1_11= 'csp'
                     {
-                    lv_typeName_1_11=(Token)match(input,28,FOLLOW_2); 
+                    lv_typeName_1_11=(Token)match(input,29,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_11, grammarAccess.getNamedAccess().getTypeNameCspKeyword_1_0_10());
                     					
@@ -1486,9 +1574,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 12 :
-                    // InternalDft.g:616:6: lv_typeName_1_12= 'seq'
+                    // InternalDft.g:650:6: lv_typeName_1_12= 'seq'
                     {
-                    lv_typeName_1_12=(Token)match(input,29,FOLLOW_2); 
+                    lv_typeName_1_12=(Token)match(input,30,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_12, grammarAccess.getNamedAccess().getTypeNameSeqKeyword_1_0_11());
                     					
@@ -1502,9 +1590,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 13 :
-                    // InternalDft.g:627:6: lv_typeName_1_13= 'fdep'
+                    // InternalDft.g:661:6: lv_typeName_1_13= 'fdep'
                     {
-                    lv_typeName_1_13=(Token)match(input,30,FOLLOW_2); 
+                    lv_typeName_1_13=(Token)match(input,31,FOLLOW_2); 
 
                     						newLeafNode(lv_typeName_1_13, grammarAccess.getNamedAccess().getTypeNameFdepKeyword_1_0_12());
                     					
@@ -1549,7 +1637,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleObserver"
-    // InternalDft.g:644:1: entryRuleObserver returns [EObject current=null] : iv_ruleObserver= ruleObserver EOF ;
+    // InternalDft.g:678:1: entryRuleObserver returns [EObject current=null] : iv_ruleObserver= ruleObserver EOF ;
     public final EObject entryRuleObserver() throws RecognitionException {
         EObject current = null;
 
@@ -1557,8 +1645,8 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalDft.g:644:49: (iv_ruleObserver= ruleObserver EOF )
-            // InternalDft.g:645:2: iv_ruleObserver= ruleObserver EOF
+            // InternalDft.g:678:49: (iv_ruleObserver= ruleObserver EOF )
+            // InternalDft.g:679:2: iv_ruleObserver= ruleObserver EOF
             {
              newCompositeNode(grammarAccess.getObserverRule()); 
             pushFollow(FOLLOW_1);
@@ -1585,7 +1673,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleObserver"
-    // InternalDft.g:651:1: ruleObserver returns [EObject current=null] : ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) ) ;
+    // InternalDft.g:685:1: ruleObserver returns [EObject current=null] : ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) ) ;
     public final EObject ruleObserver() throws RecognitionException {
         EObject current = null;
 
@@ -1600,14 +1688,14 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalDft.g:657:2: ( ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) ) )
-            // InternalDft.g:658:2: ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) )
+            // InternalDft.g:691:2: ( ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) ) )
+            // InternalDft.g:692:2: ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) )
             {
-            // InternalDft.g:658:2: ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) )
-            // InternalDft.g:659:3: () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) )
+            // InternalDft.g:692:2: ( () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) ) )
+            // InternalDft.g:693:3: () otherlv_1= 'observer' ( (otherlv_2= RULE_STRING ) )* otherlv_3= 'obsRate' otherlv_4= '=' ( (lv_observationRate_5_0= ruleFloat ) )
             {
-            // InternalDft.g:659:3: ()
-            // InternalDft.g:660:4: 
+            // InternalDft.g:693:3: ()
+            // InternalDft.g:694:4: 
             {
 
             				current = forceCreateModelElement(
@@ -1617,27 +1705,27 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            otherlv_1=(Token)match(input,31,FOLLOW_14); 
+            otherlv_1=(Token)match(input,32,FOLLOW_14); 
 
             			newLeafNode(otherlv_1, grammarAccess.getObserverAccess().getObserverKeyword_1());
             		
-            // InternalDft.g:670:3: ( (otherlv_2= RULE_STRING ) )*
-            loop10:
+            // InternalDft.g:704:3: ( (otherlv_2= RULE_STRING ) )*
+            loop11:
             do {
-                int alt10=2;
-                int LA10_0 = input.LA(1);
+                int alt11=2;
+                int LA11_0 = input.LA(1);
 
-                if ( (LA10_0==RULE_STRING) ) {
-                    alt10=1;
+                if ( (LA11_0==RULE_STRING) ) {
+                    alt11=1;
                 }
 
 
-                switch (alt10) {
+                switch (alt11) {
             	case 1 :
-            	    // InternalDft.g:671:4: (otherlv_2= RULE_STRING )
+            	    // InternalDft.g:705:4: (otherlv_2= RULE_STRING )
             	    {
-            	    // InternalDft.g:671:4: (otherlv_2= RULE_STRING )
-            	    // InternalDft.g:672:5: otherlv_2= RULE_STRING
+            	    // InternalDft.g:705:4: (otherlv_2= RULE_STRING )
+            	    // InternalDft.g:706:5: otherlv_2= RULE_STRING
             	    {
 
             	    					if (current==null) {
@@ -1656,11 +1744,11 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
             	    break;
 
             	default :
-            	    break loop10;
+            	    break loop11;
                 }
             } while (true);
 
-            otherlv_3=(Token)match(input,32,FOLLOW_8); 
+            otherlv_3=(Token)match(input,33,FOLLOW_8); 
 
             			newLeafNode(otherlv_3, grammarAccess.getObserverAccess().getObsRateKeyword_3());
             		
@@ -1668,11 +1756,11 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(otherlv_4, grammarAccess.getObserverAccess().getEqualsSignKeyword_4());
             		
-            // InternalDft.g:691:3: ( (lv_observationRate_5_0= ruleFloat ) )
-            // InternalDft.g:692:4: (lv_observationRate_5_0= ruleFloat )
+            // InternalDft.g:725:3: ( (lv_observationRate_5_0= ruleFloat ) )
+            // InternalDft.g:726:4: (lv_observationRate_5_0= ruleFloat )
             {
-            // InternalDft.g:692:4: (lv_observationRate_5_0= ruleFloat )
-            // InternalDft.g:693:5: lv_observationRate_5_0= ruleFloat
+            // InternalDft.g:726:4: (lv_observationRate_5_0= ruleFloat )
+            // InternalDft.g:727:5: lv_observationRate_5_0= ruleFloat
             {
 
             					newCompositeNode(grammarAccess.getObserverAccess().getObservationRateFloatParserRuleCall_5_0());
@@ -1722,7 +1810,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleParametrized"
-    // InternalDft.g:714:1: entryRuleParametrized returns [EObject current=null] : iv_ruleParametrized= ruleParametrized EOF ;
+    // InternalDft.g:748:1: entryRuleParametrized returns [EObject current=null] : iv_ruleParametrized= ruleParametrized EOF ;
     public final EObject entryRuleParametrized() throws RecognitionException {
         EObject current = null;
 
@@ -1730,8 +1818,8 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalDft.g:714:53: (iv_ruleParametrized= ruleParametrized EOF )
-            // InternalDft.g:715:2: iv_ruleParametrized= ruleParametrized EOF
+            // InternalDft.g:748:53: (iv_ruleParametrized= ruleParametrized EOF )
+            // InternalDft.g:749:2: iv_ruleParametrized= ruleParametrized EOF
             {
              newCompositeNode(grammarAccess.getParametrizedRule()); 
             pushFollow(FOLLOW_1);
@@ -1758,7 +1846,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleParametrized"
-    // InternalDft.g:721:1: ruleParametrized returns [EObject current=null] : ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) ) ;
+    // InternalDft.g:755:1: ruleParametrized returns [EObject current=null] : ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) ) ;
     public final EObject ruleParametrized() throws RecognitionException {
         EObject current = null;
 
@@ -1772,14 +1860,14 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalDft.g:727:2: ( ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) ) )
-            // InternalDft.g:728:2: ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) )
+            // InternalDft.g:761:2: ( ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) ) )
+            // InternalDft.g:762:2: ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) )
             {
-            // InternalDft.g:728:2: ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) )
-            // InternalDft.g:729:3: () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) )
+            // InternalDft.g:762:2: ( () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) ) )
+            // InternalDft.g:763:3: () ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) ) otherlv_2= '=' ( (lv_parameter_3_0= ruleFloat ) )
             {
-            // InternalDft.g:729:3: ()
-            // InternalDft.g:730:4: 
+            // InternalDft.g:763:3: ()
+            // InternalDft.g:764:4: 
             {
 
             				current = forceCreateModelElement(
@@ -1789,33 +1877,33 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalDft.g:736:3: ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) )
-            // InternalDft.g:737:4: ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) )
+            // InternalDft.g:770:3: ( ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) ) )
+            // InternalDft.g:771:4: ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) )
             {
-            // InternalDft.g:737:4: ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) )
-            // InternalDft.g:738:5: (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' )
+            // InternalDft.g:771:4: ( (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' ) )
+            // InternalDft.g:772:5: (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' )
             {
-            // InternalDft.g:738:5: (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' )
-            int alt11=2;
-            int LA11_0 = input.LA(1);
+            // InternalDft.g:772:5: (lv_typeName_1_1= 'rdep' | lv_typeName_1_2= 'delay' )
+            int alt12=2;
+            int LA12_0 = input.LA(1);
 
-            if ( (LA11_0==33) ) {
-                alt11=1;
+            if ( (LA12_0==34) ) {
+                alt12=1;
             }
-            else if ( (LA11_0==34) ) {
-                alt11=2;
+            else if ( (LA12_0==35) ) {
+                alt12=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("", 11, 0, input);
+                    new NoViableAltException("", 12, 0, input);
 
                 throw nvae;
             }
-            switch (alt11) {
+            switch (alt12) {
                 case 1 :
-                    // InternalDft.g:739:6: lv_typeName_1_1= 'rdep'
+                    // InternalDft.g:773:6: lv_typeName_1_1= 'rdep'
                     {
-                    lv_typeName_1_1=(Token)match(input,33,FOLLOW_8); 
+                    lv_typeName_1_1=(Token)match(input,34,FOLLOW_8); 
 
                     						newLeafNode(lv_typeName_1_1, grammarAccess.getParametrizedAccess().getTypeNameRdepKeyword_1_0_0());
                     					
@@ -1829,9 +1917,9 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 2 :
-                    // InternalDft.g:750:6: lv_typeName_1_2= 'delay'
+                    // InternalDft.g:784:6: lv_typeName_1_2= 'delay'
                     {
-                    lv_typeName_1_2=(Token)match(input,34,FOLLOW_8); 
+                    lv_typeName_1_2=(Token)match(input,35,FOLLOW_8); 
 
                     						newLeafNode(lv_typeName_1_2, grammarAccess.getParametrizedAccess().getTypeNameDelayKeyword_1_0_1());
                     					
@@ -1857,11 +1945,11 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(otherlv_2, grammarAccess.getParametrizedAccess().getEqualsSignKeyword_2());
             		
-            // InternalDft.g:767:3: ( (lv_parameter_3_0= ruleFloat ) )
-            // InternalDft.g:768:4: (lv_parameter_3_0= ruleFloat )
+            // InternalDft.g:801:3: ( (lv_parameter_3_0= ruleFloat ) )
+            // InternalDft.g:802:4: (lv_parameter_3_0= ruleFloat )
             {
-            // InternalDft.g:768:4: (lv_parameter_3_0= ruleFloat )
-            // InternalDft.g:769:5: lv_parameter_3_0= ruleFloat
+            // InternalDft.g:802:4: (lv_parameter_3_0= ruleFloat )
+            // InternalDft.g:803:5: lv_parameter_3_0= ruleFloat
             {
 
             					newCompositeNode(grammarAccess.getParametrizedAccess().getParameterFloatParserRuleCall_3_0());
@@ -1911,7 +1999,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleFloat"
-    // InternalDft.g:790:1: entryRuleFloat returns [String current=null] : iv_ruleFloat= ruleFloat EOF ;
+    // InternalDft.g:824:1: entryRuleFloat returns [String current=null] : iv_ruleFloat= ruleFloat EOF ;
     public final String entryRuleFloat() throws RecognitionException {
         String current = null;
 
@@ -1919,8 +2007,8 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalDft.g:790:45: (iv_ruleFloat= ruleFloat EOF )
-            // InternalDft.g:791:2: iv_ruleFloat= ruleFloat EOF
+            // InternalDft.g:824:45: (iv_ruleFloat= ruleFloat EOF )
+            // InternalDft.g:825:2: iv_ruleFloat= ruleFloat EOF
             {
              newCompositeNode(grammarAccess.getFloatRule()); 
             pushFollow(FOLLOW_1);
@@ -1947,7 +2035,7 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleFloat"
-    // InternalDft.g:797:1: ruleFloat returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] : ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? ) ;
+    // InternalDft.g:831:1: ruleFloat returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] : ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? ) ;
     public final AntlrDatatypeRuleToken ruleFloat() throws RecognitionException {
         AntlrDatatypeRuleToken current = new AntlrDatatypeRuleToken();
 
@@ -1960,24 +2048,24 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalDft.g:803:2: ( ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? ) )
-            // InternalDft.g:804:2: ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? )
+            // InternalDft.g:837:2: ( ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? ) )
+            // InternalDft.g:838:2: ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? )
             {
-            // InternalDft.g:804:2: ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? )
-            // InternalDft.g:805:3: (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )?
+            // InternalDft.g:838:2: ( (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )? )
+            // InternalDft.g:839:3: (kw= '-' )? this_INT_1= RULE_INT (kw= '.' this_INT_3= RULE_INT )? (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )?
             {
-            // InternalDft.g:805:3: (kw= '-' )?
-            int alt12=2;
-            int LA12_0 = input.LA(1);
+            // InternalDft.g:839:3: (kw= '-' )?
+            int alt13=2;
+            int LA13_0 = input.LA(1);
 
-            if ( (LA12_0==35) ) {
-                alt12=1;
+            if ( (LA13_0==36) ) {
+                alt13=1;
             }
-            switch (alt12) {
+            switch (alt13) {
                 case 1 :
-                    // InternalDft.g:806:4: kw= '-'
+                    // InternalDft.g:840:4: kw= '-'
                     {
-                    kw=(Token)match(input,35,FOLLOW_15); 
+                    kw=(Token)match(input,36,FOLLOW_15); 
 
                     				current.merge(kw);
                     				newLeafNode(kw, grammarAccess.getFloatAccess().getHyphenMinusKeyword_0());
@@ -1995,18 +2083,18 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(this_INT_1, grammarAccess.getFloatAccess().getINTTerminalRuleCall_1());
             		
-            // InternalDft.g:819:3: (kw= '.' this_INT_3= RULE_INT )?
-            int alt13=2;
-            int LA13_0 = input.LA(1);
+            // InternalDft.g:853:3: (kw= '.' this_INT_3= RULE_INT )?
+            int alt14=2;
+            int LA14_0 = input.LA(1);
 
-            if ( (LA13_0==36) ) {
-                alt13=1;
+            if ( (LA14_0==37) ) {
+                alt14=1;
             }
-            switch (alt13) {
+            switch (alt14) {
                 case 1 :
-                    // InternalDft.g:820:4: kw= '.' this_INT_3= RULE_INT
+                    // InternalDft.g:854:4: kw= '.' this_INT_3= RULE_INT
                     {
-                    kw=(Token)match(input,36,FOLLOW_15); 
+                    kw=(Token)match(input,37,FOLLOW_15); 
 
                     				current.merge(kw);
                     				newLeafNode(kw, grammarAccess.getFloatAccess().getFullStopKeyword_2_0());
@@ -2024,34 +2112,34 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalDft.g:833:3: (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )?
-            int alt15=2;
-            int LA15_0 = input.LA(1);
+            // InternalDft.g:867:3: (kw= 'e' (kw= '-' )? this_INT_6= RULE_INT )?
+            int alt16=2;
+            int LA16_0 = input.LA(1);
 
-            if ( (LA15_0==37) ) {
-                alt15=1;
+            if ( (LA16_0==38) ) {
+                alt16=1;
             }
-            switch (alt15) {
+            switch (alt16) {
                 case 1 :
-                    // InternalDft.g:834:4: kw= 'e' (kw= '-' )? this_INT_6= RULE_INT
+                    // InternalDft.g:868:4: kw= 'e' (kw= '-' )? this_INT_6= RULE_INT
                     {
-                    kw=(Token)match(input,37,FOLLOW_9); 
+                    kw=(Token)match(input,38,FOLLOW_9); 
 
                     				current.merge(kw);
                     				newLeafNode(kw, grammarAccess.getFloatAccess().getEKeyword_3_0());
                     			
-                    // InternalDft.g:839:4: (kw= '-' )?
-                    int alt14=2;
-                    int LA14_0 = input.LA(1);
+                    // InternalDft.g:873:4: (kw= '-' )?
+                    int alt15=2;
+                    int LA15_0 = input.LA(1);
 
-                    if ( (LA14_0==35) ) {
-                        alt14=1;
+                    if ( (LA15_0==36) ) {
+                        alt15=1;
                     }
-                    switch (alt14) {
+                    switch (alt15) {
                         case 1 :
-                            // InternalDft.g:840:5: kw= '-'
+                            // InternalDft.g:874:5: kw= '-'
                             {
-                            kw=(Token)match(input,35,FOLLOW_15); 
+                            kw=(Token)match(input,36,FOLLOW_15); 
 
                             					current.merge(kw);
                             					newLeafNode(kw, grammarAccess.getFloatAccess().getHyphenMinusKeyword_3_1());
@@ -2106,17 +2194,17 @@ public class InternalDftParser extends AbstractInternalAntlrParser {
     public static final BitSet FOLLOW_3 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_4 = new BitSet(new long[]{0x0000000000002000L});
     public static final BitSet FOLLOW_5 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_6 = new BitSet(new long[]{0x00000006FFF80020L});
-    public static final BitSet FOLLOW_7 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_6 = new BitSet(new long[]{0x0000000DFFF00020L});
+    public static final BitSet FOLLOW_7 = new BitSet(new long[]{0x0000000000014000L});
     public static final BitSet FOLLOW_8 = new BitSet(new long[]{0x0000000000008000L});
-    public static final BitSet FOLLOW_9 = new BitSet(new long[]{0x0000000800000040L});
-    public static final BitSet FOLLOW_10 = new BitSet(new long[]{0x0000000000030002L});
-    public static final BitSet FOLLOW_11 = new BitSet(new long[]{0x0000000000020002L});
-    public static final BitSet FOLLOW_12 = new BitSet(new long[]{0x0000000000040012L});
-    public static final BitSet FOLLOW_13 = new BitSet(new long[]{0x0000000000040002L});
-    public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000000100000010L});
+    public static final BitSet FOLLOW_9 = new BitSet(new long[]{0x0000001000000040L});
+    public static final BitSet FOLLOW_10 = new BitSet(new long[]{0x0000000000060002L});
+    public static final BitSet FOLLOW_11 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_12 = new BitSet(new long[]{0x0000000000080012L});
+    public static final BitSet FOLLOW_13 = new BitSet(new long[]{0x0000000000080002L});
+    public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000000200000010L});
     public static final BitSet FOLLOW_15 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_16 = new BitSet(new long[]{0x0000003000000002L});
-    public static final BitSet FOLLOW_17 = new BitSet(new long[]{0x0000002000000002L});
+    public static final BitSet FOLLOW_16 = new BitSet(new long[]{0x0000006000000002L});
+    public static final BitSet FOLLOW_17 = new BitSet(new long[]{0x0000004000000002L});
 
 }
