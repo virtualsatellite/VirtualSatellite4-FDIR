@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -317,10 +318,9 @@ public class DFTState extends MarkovState {
 			}
 			
 			for (FaultTreeNode be : ftHolder.getNodes(node, EdgeType.BE)) {
-				for (FaultTreeNode trigger : ftHolder.getNodes(be, EdgeType.DEP)) {
-					if (activeFaults.contains(trigger) ^ activation) {
-						setNodeActivation(trigger, activation);
-					}
+				BasicEventHolder beHolder = ftHolder.getBasicEventHolder((BasicEvent) be);
+				if (beHolder.isImmediateDistribution()) {
+					// Fire event somehow
 				}
 			}
 		}

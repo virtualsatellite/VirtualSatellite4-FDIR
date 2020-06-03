@@ -133,4 +133,12 @@ public class BasicEventHolder {
 	public boolean isMarkovianDistribution() {
 		return distribution.equals(BasicEvent.DISTRIBUTION_EXP_NAME);
 	}
+
+	/**
+	 * Checks if the basic evetn contains an event for a time less distribution
+	 * @return true iff the distribution has no time dependence
+	 */
+	public boolean isImmediateDistribution() {
+		return distribution.equals(BasicEvent.DISTRIBUTION_UNIFORM_NAME);
+	}
 }
