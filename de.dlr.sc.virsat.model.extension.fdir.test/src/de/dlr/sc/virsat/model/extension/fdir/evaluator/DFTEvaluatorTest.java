@@ -577,7 +577,6 @@ public class DFTEvaluatorTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
-		System.out.println(result.getFailRates());
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	}
 	

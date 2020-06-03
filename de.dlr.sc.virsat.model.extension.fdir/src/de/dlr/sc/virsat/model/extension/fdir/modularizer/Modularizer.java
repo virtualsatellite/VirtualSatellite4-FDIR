@@ -9,13 +9,14 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -79,11 +80,6 @@ public class Modularizer implements IModularizer {
 	void countTree() {
 		this.nodePlusTree = new TreeSet<FaultTreeNodePlus>(FTN_PLUS_COMPARATOR);
 		this.table = new HashMap<FaultTreeNode, FaultTreeNodePlus>();
-		
-		if (this.ftHolder == null) {
-			this.maxDepth = -1;
-			return;
-		}
 		
 		/* dfs traverse the tree, numbering off nodes */
 		Stack<FaultTreeNodePlus> dfsStack = new Stack<FaultTreeNodePlus>();
@@ -236,8 +232,7 @@ public class Modularizer implements IModularizer {
 	 * @return the list of children
 	 */
 	private List<FaultTreeNodePlus> getChildren(FaultTreeNodePlus node) {
-		List<FaultTreeNode> children = new ArrayList<>(ftHolder.getMapNodeToSubNodes().getOrDefault(node.getFaultTreeNode(), Collections.emptyList()));
-		children.addAll(ftHolder.getNodes(node.getFaultTreeNode(), EdgeType.BE, EdgeType.DEP));
+		List<FaultTreeNode> children = ftHolder.getMapNodeToSubNodes().getOrDefault(node.getFaultTreeNode(), Collections.emptyList());
 		
 		return children.stream()
 					.map(ftNode -> getOrCreateFaultTreeNodePlus(ftNode, node.getDepth() + 1))
@@ -359,18 +354,16 @@ public class Modularizer implements IModularizer {
 	 */
 	private Set<FaultTreeNode> getMonitorTree(FaultTreeNode monitor) {
 		Set<FaultTreeNode> monitorTree = new HashSet<>();
-		for (FaultTreeNode monitorRoot : ftHolder.getRoots(monitor)) {
-			monitorTree.add(monitorRoot);
-			List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().get(monitorRoot);
-			for (FaultTreeNode subNode : subNodes) {
-				monitorTree.add(subNode);
-				if (subNode instanceof Fault) {
-					for (FaultTreeNode be : ftHolder.getNodes(subNode, EdgeType.BE)) {
-						monitorTree.add(be);
-					}
-				}
+		Queue<FaultTreeNode> toProcess = new LinkedList<>(ftHolder.getRoots(monitor));
+		
+		while (!toProcess.isEmpty()) {
+			FaultTreeNode node = toProcess.poll();
+			if (monitorTree.add(node)) {
+				List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().get(node);
+				toProcess.addAll(subNodes);
 			}
 		}
+		
 		return monitorTree;
 	}
 }
