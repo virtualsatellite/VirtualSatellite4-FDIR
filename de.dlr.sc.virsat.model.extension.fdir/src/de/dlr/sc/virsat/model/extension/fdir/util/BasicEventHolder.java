@@ -125,4 +125,12 @@ public class BasicEventHolder {
 	public Map<List<FaultTreeNode>, Double> getRepairRates() {
 		return repairRates;
 	}
+
+	/**
+	 * Checks if the basic event contains an event for markovian transitions
+	 * @return true iff the distribution is suited for a markovian transition
+	 */
+	public boolean isMarkovianDistribution() {
+		return distribution.equals(BasicEvent.DISTRIBUTION_EXP_NAME);
+	}
 }

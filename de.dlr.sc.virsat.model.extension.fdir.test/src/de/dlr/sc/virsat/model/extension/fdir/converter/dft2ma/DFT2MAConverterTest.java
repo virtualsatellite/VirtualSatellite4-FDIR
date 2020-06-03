@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -67,6 +68,21 @@ public class DFT2MAConverterTest extends ATestCase {
 		final int EXPECTED_COUNT_TRANSITIONS = 7;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+	}
+	
+	@Test
+	public void testConvertProb() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoUniform/prob.dft");
+		
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
+		
+		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_TRANSITIONS = 2;
+		final int EXPECTED_COUNT_FINAL_STATES = 1;
+		assertTrue(ma.getEvents().isEmpty());
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStates());
 	}
 	
 	@Test
