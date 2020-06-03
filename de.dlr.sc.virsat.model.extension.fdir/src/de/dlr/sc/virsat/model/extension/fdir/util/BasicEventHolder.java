@@ -32,6 +32,7 @@ public class BasicEventHolder {
 	private double hotFailureRate;
 	private double coldFailureRate;
 	private Map<List<FaultTreeNode>, Double> repairRates;
+	private String distribution;
 	
 	/**
 	 * Standard constructor
@@ -42,6 +43,7 @@ public class BasicEventHolder {
 		fault = basicEvent.getFault();
 		hotFailureRate = getRateValue(basicEvent.getHotFailureRateBean());
 		coldFailureRate = getRateValue(basicEvent.getColdFailureRateBean());
+		distribution = basicEvent.getDistribution();
 		
 		double transientRepairRate = getRateValue(basicEvent.getRepairRateBean());
 		transientRepairRate = Double.isNaN(transientRepairRate) ? 0 : transientRepairRate;
@@ -107,6 +109,14 @@ public class BasicEventHolder {
 	 */
 	public double getColdFailureRate() {
 		return coldFailureRate;
+	}
+	
+	/**
+	 * Gets the distribution type
+	 * @return the distribution type
+	 */
+	public String getDistribution() {
+		return distribution;
 	}
 	/**
 	 * Gets all repair rates

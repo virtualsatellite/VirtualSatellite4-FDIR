@@ -228,10 +228,16 @@ public class GalileoDFT2DFT {
 			
 			be.setName(galileoBe.getName());
 			
-			double hotFailureRate = Double.valueOf(galileoBe.getLambda());
-			double coldFailureRate = galileoBe.getDorm() == null ? 0 : Double.valueOf(galileoBe.getDorm()) * hotFailureRate;
+			String distribution = getDistribution(galileoBe);
+			be.setDistribution(distribution);
 			
+			String distributionParam = distribution.equals(BasicEvent.DISTRIBUTION_EXP_NAME)
+					? galileoBe.getLambda()
+					: galileoBe.getProb();
+			double hotFailureRate = Double.valueOf(distributionParam);
 			be.setHotFailureRate(hotFailureRate);
+			
+			double coldFailureRate = galileoBe.getDorm() == null ? 0 : Double.valueOf(galileoBe.getDorm()) * hotFailureRate;
 			be.setColdFailureRate(coldFailureRate);
 			
 			for (GalileoRepairAction galileoRepairAction : galileoBe.getRepairActions()) {
@@ -250,6 +256,19 @@ public class GalileoDFT2DFT {
 				}
 			}
 			return be;
+		}
+
+		/**
+		 * Gets the distribution type of the galileo basic event
+		 * @param galileoBe the galileo basic event
+		 * @return the distribution type
+		 */
+		private String getDistribution(GalileoFaultTreeNode galileoBe) {
+			String distribution = BasicEvent.DISTRIBUTION_EXP_NAME;
+			if (galileoBe.getProb() != null) {
+				distribution = BasicEvent.DISTRIBUTION_UNIFORM_NAME;
+			}
+			return distribution;
 		}
 		
 		/**

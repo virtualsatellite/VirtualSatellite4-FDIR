@@ -185,14 +185,13 @@ public class GalileoDFT2DFTTest extends ATestCase {
 		
 		converter.convert();
 		
-		assertEquals("Contains one entry", 1, parent.getAll(Fault.class).size());
-		Fault tle = parent.getFirst(Fault.class);
+		assertEquals("Contains root and tle entry", 2, parent.getAll(Fault.class).size());
+		Fault tle = parent.getAll(Fault.class).get(1);
 		assertEquals("Contains one entry", 1, tle.getBasicEvents().size());
 		BasicEvent be = tle.getBasicEvents().get(0);
 		
 		final double EXPECTED_PROB = 0.4;
 		assertEquals("Got correct prob value", EXPECTED_PROB, be.getHotFailureRate(), TEST_EPSILON);
-		assertEquals("Got correct unit", "Percent", be.getHotFailureRateBean().getUnit());
 		assertEquals("Got correct distribution", BasicEvent.DISTRIBUTION_UNIFORM_NAME, be.getDistributionBean().getValue());
 	}
 }
