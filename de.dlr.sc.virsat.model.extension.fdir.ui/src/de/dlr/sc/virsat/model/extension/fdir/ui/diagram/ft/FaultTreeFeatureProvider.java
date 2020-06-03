@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -95,73 +96,77 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNod
  */
 
 public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
-	
+
 	/**
 	 * Default constructor
 	 * @param dtp the diagram type provider
 	 */
-	
+
 	public FaultTreeFeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
 	}
-	
+
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
 		List<ICreateFeature> createFeatures = new ArrayList<>();
 		createFeatures.add(new CommentCreateFeature(this));
-		
+
 		for (FaultTreeNodeType type : FaultTreeNodeType.values()) {
 			if (type != FaultTreeNodeType.BASIC_EVENT) {
 				createFeatures.add(new FaultTreeNodeCreateFeature(this, type));
 			}
 		}
-		
+
 		createFeatures.add(new BasicEventsCreateFeature(this));
+
+		//Order create features alphabetically
+		createFeatures.sort(Comparator.comparing(ICreateFeature::getName));
+
 		return createFeatures.toArray(new ICreateFeature[createFeatures.size()]);
 	}
-	
+
 	@Override
 	public IAddFeature getAddFeature(IAddContext context) {
 		Object newObject = context.getNewObject();
-		
+
 		if (newObject instanceof CategoryAssignment) {
 			CategoryAssignment ca = (CategoryAssignment) newObject;
-			
+
 			if (ca.getType().getName().equals(BasicEvent.class.getSimpleName())) {
 				return new BasicEventAddFeature(this);
 			}
-			
+
 			Set<String> extendedCategoryNames = ActiveConceptHelper.getAllNames(ca.getType());
 			if (extendedCategoryNames.contains(FaultTreeNode.class.getSimpleName())) {
 				return new FaultTreeNodeAddFeature(this);
 			}
 		}
-		
+
 		if (newObject instanceof BasicEvent) {
 			return new BasicEventsConnectionAddFeature(this);
 		}
-		
+
 		if (newObject instanceof AbstractFaultTreeEdge) {
 			return new ConnectionAddFeature(this);
 		}
-		
+
 		if (newObject instanceof String) {
 			return new CommentAddFeature(this);
 		}
-		
+
 		return super.getAddFeature(context);
 	}
-	
+
 	@Override
 	public IUpdateFeature getUpdateFeature(IUpdateContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
-		
+
 		if (Graphiti.getPeService().getPropertyValue(pictogramElement, CommentAddFeature.IS_COMMENT_KEY) != null) {
 			return null;
 		}
-		
+
 		Object object = getBusinessObjectForPictogramElement(pictogramElement);
-		
+
 		if (object == null && pictogramElement instanceof ContainerShape && !(pictogramElement instanceof Diagram)) {
 			return new NullObjectUpdateFeature(this);
 		}
@@ -169,61 +174,61 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 		if (object instanceof BasicEvent) {
 			return new BasicEventsUpdateFeature(this);
 		}
-		
+
 		if (object instanceof FaultTreeNode) {
 			return new FaultTreeNodeUpdateFeature(this);
 		}
-		
+
 		if ((object instanceof FaultTreeEdge || object == null) && pictogramElement instanceof FreeFormConnection) {
 			return new AbstractConnectionUpdateFeature(this);
 		}
-		
+
 		return super.getUpdateFeature(context);
 	}
-	
+
 	@Override
 	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		
+
 		if (object instanceof AbstractFaultTreeEdge) {
 			return new ConnectionDeleteFeature(this);
 		}
-		
+
 		if (object instanceof FaultTreeNode) {
 			// Cant delete the containment between basic event and fault
 			if (object instanceof BasicEvent && context.getPictogramElement() instanceof Connection) {
 				return null;
 			}
-			
+
 			return new FaultTreeNodeDeleteFeature(this);
 		}
-		
+
 		return super.getDeleteFeature(context);
 	}
-	
+
 	@Override
 	public IFeature[] getDragAndDropFeatures(IPictogramElementContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		List<ICreateConnectionFeature> featuresResult = new ArrayList<ICreateConnectionFeature>();
-		
+
 		ICreateConnectionFeature[] createConnectionFeatures = getCreateConnectionFeatures();
 		for (ICreateConnectionFeature createConnectionFeature : createConnectionFeatures) {
 			CreateConnectionContext connectionContext = new CreateConnectionContext();
-			connectionContext.setSourcePictogramElement(pictogramElement);			
-			Anchor anchor = AnchorUtil.getAnchorForPictogramElement(pictogramElement);			
-			connectionContext.setSourceAnchor(anchor);			
+			connectionContext.setSourcePictogramElement(pictogramElement);
+			Anchor anchor = AnchorUtil.getAnchorForPictogramElement(pictogramElement);
+			connectionContext.setSourceAnchor(anchor);
 			if (createConnectionFeature.isAvailable(connectionContext) && createConnectionFeature.canStartConnection(connectionContext)) {
 				featuresResult.add(createConnectionFeature);
-			}			
+			}
 		}
 		return featuresResult.toArray(new IFeature[featuresResult.size()]);
 	}
-	
+
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		Object object = getBusinessObjectForPictogramElement(pictogramElement);
-		
+
 		if (object instanceof BasicEvent) {
 			if (pictogramElement instanceof FreeFormConnection && ((FreeFormConnection) pictogramElement).getStart() != null) {
 				return null;
@@ -231,37 +236,37 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 				return new BasicEventRemoveFeature(this);
 			}
 		}
-		
+
 		return super.getRemoveFeature(context);
 	}
-	
+
 	@Override
 	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		
+
 		if (object instanceof BasicEvent) {
 			return new BasicEventsLayoutFeature(this);
 		}
-		
+
 		if (object instanceof FaultTreeNode) {
 			return new FaultTreeNodeLayoutFeature(this);
 		}
-		
+
 		return super.getLayoutFeature(context);
 	}
-	
+
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IDirectEditingContext context) {
 		if (Graphiti.getPeService().getPropertyValue(context.getPictogramElement(), CommentAddFeature.IS_COMMENT_KEY) != null) {
 			return new CommentDirectEditFeature(this);
 		}
-		
+
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		
+
 		if (object instanceof FaultTreeNode) {
 			return new BeanDirectEditNameFeature(this);
 		}
-		
+
 		if (object instanceof BeanPropertyFloat) {
 			BeanPropertyFloat beanProperty = (BeanPropertyFloat) object;
 			String propName = beanProperty.getATypeInstance().getType().getName();
@@ -269,26 +274,26 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 				return new BeanPropertyFloatDirectEditValueFeature(this);
 			}
 		}
-		
+
 		return super.getDirectEditingFeature(context);
 	}
-	
+
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
 		return new ICreateConnectionFeature[] { new PropagationCreateFeature(this) };
 	}
-	
+
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IReconnectionContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getConnection());
-		
+
 		if (object instanceof AbstractFaultTreeEdge || object instanceof BasicEvent) {
 			return new ConnectionReconnectionFeature(this);
 		}
-		
+
 		return super.getReconnectionFeature(context);
 	}
-	
+
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		PictogramElement[] pe = context.getPictogramElements();
@@ -296,28 +301,28 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 		if (object instanceof Fault) {
 			return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this), new FaultTreeNodeCollapseFeature(this)};
 		}
-		
+
 		return new ICustomFeature[] { new VirsatCategoryAssignmentOpenEditorFeature(this), new VirSatChangeColorFeature(this)};
-	} 
-	
+	}
+
 	@Override
 	public IMoveAnchorFeature getMoveAnchorFeature(IMoveAnchorContext context) {
 		return null;
 	}
-	
+
 	@Override
 	public IResizeShapeFeature getResizeShapeFeature(IResizeShapeContext context) {
 		return null;
 	}
-	
+
 	@Override
 	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		
+
 		if (object instanceof FaultTreeNode) {
 			return new FaultTreeNodeMoveFeature(this);
 		}
-		
+
 		return super.getMoveShapeFeature(context);
 	}
 }
