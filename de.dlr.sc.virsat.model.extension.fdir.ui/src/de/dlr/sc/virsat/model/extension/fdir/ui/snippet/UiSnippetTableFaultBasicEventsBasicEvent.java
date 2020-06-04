@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.EditingSupport;
 
@@ -41,14 +40,8 @@ public class UiSnippetTableFaultBasicEventsBasicEvent extends AUiSnippetTableFau
 				protected void setValue(Object element, Object userInputValue) {
 					super.setValue(element, userInputValue);
 					APropertyInstance pi = getPropertyInstance(element);
-					
 					BasicEvent be = new BasicEvent((CategoryAssignment) pi.eContainer());
-					BasicEventHolder beHolder = new BasicEventHolder(be);
-					String unit = beHolder.getDefaultUnitForDistribution();
-					
-					CompoundCommand cc = new CompoundCommand();
-					cc.append(be.getHotFailureRateBean().setUnit(editingDomain, unit));
-					editingDomain.getCommandStack().execute(cc);
+					BasicEventHolder.synchronizeWithDistribution(editingDomain, be);
 				}
 			};
 			

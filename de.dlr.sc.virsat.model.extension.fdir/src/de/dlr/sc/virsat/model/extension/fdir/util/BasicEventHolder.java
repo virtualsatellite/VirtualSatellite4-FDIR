@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -176,5 +180,20 @@ public class BasicEventHolder {
 		}
 		
 		return QUANTITY_KIND_NONE;
+	}
+	
+	public Command createSynchronizeUnitsWIthDistributionCommand(EditingDomain editingDomain, BasicEvent be) {
+		String unit = getDefaultUnitForDistribution();
+		
+		CompoundCommand cc = new CompoundCommand();
+		cc.append(be.getHotFailureRateBean().setUnit(editingDomain, unit));
+		return cc;
+	}
+	
+	public static void synchronizeWithDistribution(EditingDomain editingDomain, BasicEvent be) {
+		BasicEventHolder beHolder = new BasicEventHolder(be);
+		
+		Command synchronizeUnitsCommand = beHolder.createSynchronizeUnitsWIthDistributionCommand(editingDomain, be);
+		editingDomain.getCommandStack().execute(synchronizeUnitsCommand);
 	}
 }

@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -78,12 +77,7 @@ public class UiSnippetSectionBasicEvent extends AUiSnippetSectionBasicEvent impl
 			comboViewerUnit.refresh();
 			
 			BasicEvent be = new BasicEvent((CategoryAssignment) model);
-			BasicEventHolder beHolder = new BasicEventHolder(be);
-			String unit = beHolder.getDefaultUnitForDistribution();
-			
-			CompoundCommand cc = new CompoundCommand();
-			cc.append(be.getHotFailureRateBean().setUnit(editingDomain, unit));
-			editingDomain.getCommandStack().execute(cc);			
+			BasicEventHolder.synchronizeWithDistribution(editingDomain, be);
 		});
 	}
 }
