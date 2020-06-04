@@ -194,6 +194,12 @@ public class Module {
 			List<FaultTreeNodePlus> children = mapOriginalToNodePlus.get(curr).getChildren();
 			for (FaultTreeNodePlus childPlus : children) {
 				FaultTreeNode child = childPlus.getFaultTreeNode();
+				
+				if (child instanceof BasicEvent) {
+					// Basic event children are already copied when copying a fault
+					continue;
+				}
+				
 				FaultTreeNode childCopy;
 				if (mapOriginalToCopy.get(child) == null) {
 					childCopy = ftBuilder.copyFaultTreeNode(child, rootFault);

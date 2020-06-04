@@ -382,17 +382,15 @@ public class DFTState extends MarkovState {
 			if (permanentNodes.get(nodeID)) {
 				List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().getOrDefault(ftn, Collections.emptyList());
 				for (FaultTreeNode subNode : subNodes) {
-					if (!toProcess.contains(subNode)) {
+					if (subNode instanceof BasicEvent) {
+						BasicEvent be = (BasicEvent) subNode;
+						executeBasicEvent(be, false, staticAnalysis.getOrderDependentBasicEvents().contains(be), false);
+					} else if (!toProcess.contains(subNode)) {
 						int subNodeID = ftHolder.getNodeIndex(subNode);
 						if (!permanentNodes.get(subNodeID)) {
 							toProcess.push(subNode);
 						}
 					}
-				}
-				
-				List<FaultTreeNode> basicEvents = ftHolder.getNodes(ftn, EdgeType.BE);
-				for (FaultTreeNode be : basicEvents) {
-					executeBasicEvent((BasicEvent) be, false, staticAnalysis.getOrderDependentBasicEvents().contains(be), false);
 				}
 				
 				removeClaimedSparesOnPermanentFailureIfPossible(ftn);

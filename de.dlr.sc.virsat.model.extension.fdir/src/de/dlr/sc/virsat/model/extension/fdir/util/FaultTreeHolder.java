@@ -175,6 +175,7 @@ public class FaultTreeHolder {
 	 */
 	private void processBasicEvents(Fault fault) {
 		for (BasicEvent basicEvent : fault.getBasicEvents()) {
+			nodes.add(basicEvent);
 			mapBEToBEHolders.put(basicEvent, new BasicEventHolder(basicEvent));
 					
 			NodeHolder parentHolder = getNodeHolder(basicEvent);
@@ -350,7 +351,7 @@ public class FaultTreeHolder {
 		if (mapNodeToSubNodes == null) {
 			mapNodeToSubNodes = new HashMap<>();
 			for (FaultTreeNode node : getNodes()) {
-				List<FaultTreeNode> subNodes = getNodes(node, EdgeType.CHILD, EdgeType.SPARE, EdgeType.DEP);
+				List<FaultTreeNode> subNodes = getNodes(node, EdgeType.CHILD, EdgeType.SPARE, EdgeType.DEP, EdgeType.BE);
 				mapNodeToSubNodes.put(node, subNodes);
 			}
 		}
@@ -366,13 +367,8 @@ public class FaultTreeHolder {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends FaultTreeNode> T getNodeByName(String name, Class<T> ftnClazz) {
-		if (ftnClazz == BasicEvent.class) {
-			return (T) mapBEToBEHolders.keySet().stream()
-					.filter(be -> be.getName().equals(name)).findFirst().get();
-		} else {
-			return (T) getNodes().stream()
-					.filter(node -> ftnClazz.isAssignableFrom(node.getClass()) && node.getName().equals(name)).findFirst().get();
-		}
+		return (T) getNodes().stream()
+				.filter(node -> ftnClazz.isAssignableFrom(node.getClass()) && node.getName().equals(name)).findFirst().get();
 	}
 	
 	/**
