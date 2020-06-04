@@ -1,0 +1,4 @@
+toplevel "tle";
+"tle" csp "a" "p";
+"a" lambda=1;
+"p" prob=0.3;

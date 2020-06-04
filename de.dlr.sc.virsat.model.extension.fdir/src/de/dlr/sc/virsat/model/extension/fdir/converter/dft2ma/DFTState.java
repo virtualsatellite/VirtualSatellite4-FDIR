@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -301,10 +302,15 @@ public class DFTState extends MarkovState {
 	public void setNodeActivation(FaultTreeNode node, boolean activation) {
 		if (node instanceof Fault) {
 			Fault fault = (Fault) node;
+			boolean hasChanged = false;
 			if (activation) {
-				activeFaults.add(fault);
+				hasChanged = activeFaults.add(fault);
 			} else {
-				activeFaults.remove(fault);
+				hasChanged = activeFaults.remove(fault);
+			}
+			
+			if (!hasChanged) {
+				return;
 			}
 			
 			// All depenency gates in a fault are considered activated as soon as the parent fault is activated
@@ -313,6 +319,13 @@ public class DFTState extends MarkovState {
 					if (activeFaults.contains(gate) ^ activation) {
 						setNodeActivation(gate, activation);
 					}
+				}
+			}
+			
+			for (FaultTreeNode be : ftHolder.getNodes(fault, EdgeType.BE)) {
+				BasicEventHolder beHolder = ftHolder.getBasicEventHolder((BasicEvent) be);
+				if (activation && beHolder.isImmediateDistribution()) {
+					setFaultTreeNodePermanent(be, false);
 				}
 			}
 		}

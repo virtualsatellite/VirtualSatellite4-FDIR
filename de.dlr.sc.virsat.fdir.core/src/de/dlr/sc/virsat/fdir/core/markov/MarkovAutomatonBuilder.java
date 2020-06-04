@@ -35,13 +35,11 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		initialState = stateSpaceGenerator.createInitialState();
 		ma.addState(initialState);
 		
-		// Generate the starting states (which might be more than the initial state)
-		List<S> startingStates = stateSpaceGenerator.getStartingStates(initialState);
-		monitor = SubMonitor.convert(monitor, startingStates.size());
+		monitor = SubMonitor.convert(monitor, 1);
 		monitor.setTaskName("Generating Markov automaton state space");
 		
 		Queue<S> toProcess = new LinkedList<>();
-		toProcess.addAll(startingStates);
+		toProcess.add(initialState);
 		
 		// Actual state space generation loop
 		while (!toProcess.isEmpty()) {

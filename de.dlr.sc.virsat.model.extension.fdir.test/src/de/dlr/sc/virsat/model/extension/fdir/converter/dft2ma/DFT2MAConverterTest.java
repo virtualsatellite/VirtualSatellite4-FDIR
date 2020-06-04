@@ -78,8 +78,6 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
 		
-		System.out.println(ma.toDot());
-		
 		final int EXPECTED_COUNT_EVENTS = 2;
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
@@ -90,6 +88,66 @@ public class DFT2MAConverterTest extends ATestCase {
 		assertTrue(event1.getIsImmediate());
 		IDFTEvent event2 = (IDFTEvent) itr.next();
 		assertTrue(event2.getIsImmediate());
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+	}
+	
+	@Test
+	public void testConvertCsp2Prob() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoUniform/csp2Prob.dft");
+		
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
+		
+		final int EXPECTED_COUNT_STATES = 4;
+		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final int EXPECTED_COUNT_FINAL_STATES = 1;
+
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+	}
+	
+	@Test
+	public void testConvertCsp2Repair1Prob1() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoUniform/csp2Repair1Prob1.dft");
+		
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
+		
+		final int EXPECTED_COUNT_STATES = 6;
+		final int EXPECTED_COUNT_TRANSITIONS = 7;
+		final int EXPECTED_COUNT_FINAL_STATES = 1;
+
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+	}
+	
+	@Test
+	public void testConvertOr2Prob2() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoUniform/or2Prob2.dft");
+		
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
+		
+		final int EXPECTED_COUNT_STATES = 5;
+		final int EXPECTED_COUNT_TRANSITIONS = 8;
+		final int EXPECTED_COUNT_FINAL_STATES = 1;
+
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+	}
+	
+	@Test
+	public void testConvertCsp2Prob1Exp1() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoUniform/csp2Prob1Exp1.dft");
+		
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
+		
+		final int EXPECTED_COUNT_STATES = 4;
+		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final int EXPECTED_COUNT_FINAL_STATES = 1;
+
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
