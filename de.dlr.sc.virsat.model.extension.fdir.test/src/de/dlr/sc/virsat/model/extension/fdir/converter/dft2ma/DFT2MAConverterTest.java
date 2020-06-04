@@ -81,7 +81,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		final int EXPECTED_COUNT_FINAL_STATES = 1;
-		assertEquals(EXPECTED_COUNT_EVENTS, ma.getEvents().isEmpty());
+		assertEquals(EXPECTED_COUNT_EVENTS, ma.getEvents().size());
 		IDFTEvent event = (IDFTEvent) ma.getEvents().iterator().next();
 		assertTrue(event.getIsImmediate());
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
