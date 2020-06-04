@@ -131,7 +131,7 @@ public class BasicEventHolder {
 	 * @return true iff the distribution is suited for a markovian transition
 	 */
 	public boolean isMarkovianDistribution() {
-		return distribution.equals(BasicEvent.DISTRIBUTION_EXP_NAME);
+		return BasicEvent.DISTRIBUTION_EXP_NAME.equals(distribution);
 	}
 
 	/**
@@ -139,6 +139,42 @@ public class BasicEventHolder {
 	 * @return true iff the distribution has no time dependence
 	 */
 	public boolean isImmediateDistribution() {
-		return distribution.equals(BasicEvent.DISTRIBUTION_UNIFORM_NAME);
+		return BasicEvent.DISTRIBUTION_UNIFORM_NAME.equals(distribution);
+	}
+	
+	public static final String DEFAULT_UNIT_MARKOVIAN = "Per Hour";
+	public static final String DEFAULT_UNIT_IMMEDIATE = "Percent";
+	public static final String DEFAULT_UNIT_NONE = "No Unit";
+	
+	public static final String QUANTITY_KIND_MARKOVIAN = "Frequency";
+	public static final String QUANTITY_KIND_IMMEDIATE = "Dimensionless";
+	public static final String QUANTITY_KIND_NONE = "Dimensionless";
+	
+	/**
+	 * Gets the default unit for the current distribution of the passed be
+	 * @return the default unit for the distribution
+	 */
+	public String getDefaultUnitForDistribution() {
+		if (isMarkovianDistribution()) {
+			return DEFAULT_UNIT_MARKOVIAN;
+		} else if (isImmediateDistribution()) {
+			return DEFAULT_UNIT_IMMEDIATE;
+		}
+		
+		return DEFAULT_UNIT_NONE;
+	}
+	
+	/**
+	 * Gets the quantity kind fitting to the distribution of a passed be
+	 * @return the quantity kind associated with the distribution of the be
+	 */
+	public String getQuantityKindForDistribution() {
+		if (isMarkovianDistribution()) {
+			return QUANTITY_KIND_MARKOVIAN;
+		} else if (isImmediateDistribution()) {
+			return QUANTITY_KIND_IMMEDIATE;
+		}
+		
+		return QUANTITY_KIND_NONE;
 	}
 }
