@@ -22,7 +22,9 @@ import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.internal.util.T;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
 import org.eclipse.graphiti.palette.impl.ConnectionCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.ObjectCreationToolEntry;
@@ -31,6 +33,9 @@ import org.eclipse.graphiti.tb.ContextEntryHelper;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IContextButtonEntry;
 import org.eclipse.graphiti.tb.IContextButtonPadData;
+import org.eclipse.graphiti.tb.IShapeSelectionInfo;
+import org.eclipse.graphiti.tb.ShapeSelectionInfoImpl;
+import org.eclipse.graphiti.util.IColorConstant;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -199,5 +204,15 @@ public class FaultTreeDiagramToolBehaviorProvider extends DefaultToolBehaviorPro
 				createFeature.getCreateImageId(), createFeature.getCreateLargeImageId(), createFeature);
 
 		compartmentEntry.addToolEntry(objectCreationToolEntry);
+	}
+
+	@Override
+	public IShapeSelectionInfo getSelectionInfoForShape(Shape shape) {
+		IShapeSelectionInfo si = new ShapeSelectionInfoImpl();
+		si.setColor(IColorConstant.SHAPE_SELECTION_FG);
+		si.setLineStyle(LineStyle.DASH);
+		si.setPrimarySelectionBackgroundColor(IColorConstant.LIGHT_GRAY);
+		si.setSecondarySelectionBackgroundColor(IColorConstant.LIGHT_GRAY);
+		return si;
 	}
 }
