@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateU
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.DelayEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateFaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -95,11 +96,16 @@ public class DFTSemantics {
 		for (BasicEvent be : ftHolder.getBasicEvents()) {
 			BasicEventHolder beHolder = ftHolder.getBasicEventHolder(be);
 			if (allowsRepairEvents && beHolder.isRepairDefined()) {
-				faultEvents.add(new FaultEvent(be, true, ftHolder, staticAnalysis));					
+				faultEvents.add(new FaultEvent(be, true, ftHolder, staticAnalysis));
 			}
 			
 			if (beHolder.isFailureDefined()) {
-				faultEvents.add(new FaultEvent(be, false, ftHolder, staticAnalysis));
+				if (beHolder.isImmediateDistribution()) {
+					faultEvents.add(new ImmediateFaultEvent(be, false, ftHolder, staticAnalysis, true));
+					faultEvents.add(new ImmediateFaultEvent(be, false, ftHolder, staticAnalysis, false));
+				} else {
+					faultEvents.add(new FaultEvent(be, false, ftHolder, staticAnalysis));	
+				}
 			}
 		}
 		

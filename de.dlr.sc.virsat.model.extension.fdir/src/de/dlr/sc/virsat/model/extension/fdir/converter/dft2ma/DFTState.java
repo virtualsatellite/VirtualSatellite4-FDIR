@@ -532,6 +532,10 @@ public class DFTState extends MarkovState {
 			return false;
 		}
 		
+		if (!permanentNodes.equals(other.permanentNodes)) {
+			return false;
+		}
+		
 		if (isFailState != other.isFailState) {
 			return false;
 		}

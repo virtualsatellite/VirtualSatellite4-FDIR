@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,16 +78,21 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
 		
-		final int EXPECTED_COUNT_EVENTS = 1;
+		System.out.println(ma.toDot());
+		
+		final int EXPECTED_COUNT_EVENTS = 2;
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		final int EXPECTED_COUNT_FINAL_STATES = 1;
 		assertEquals(EXPECTED_COUNT_EVENTS, ma.getEvents().size());
-		IDFTEvent event = (IDFTEvent) ma.getEvents().iterator().next();
-		assertTrue(event.getIsImmediate());
+		Iterator<Object> itr = ma.getEvents().iterator();
+		IDFTEvent event1 = (IDFTEvent) itr.next();
+		assertTrue(event1.getIsImmediate());
+		IDFTEvent event2 = (IDFTEvent) itr.next();
+		assertTrue(event2.getIsImmediate());
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
-		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStates());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
 	}
 	
 	@Test

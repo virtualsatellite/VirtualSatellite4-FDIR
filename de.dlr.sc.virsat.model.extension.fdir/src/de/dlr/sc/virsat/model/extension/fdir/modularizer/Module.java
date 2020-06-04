@@ -223,7 +223,7 @@ public class Module {
 				}
 				
 				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
-				if (moduleContainsCurrAndChild && !(child instanceof BasicEvent)) {
+				if (moduleContainsCurrAndChild) {
 					if (ftHolder.getNodes(curr, EdgeType.SPARE).contains(child)) {
 						ftBuilder.connectSpare(rootFault, childCopy, currCopy);
 					} else {
