@@ -360,6 +360,20 @@ public class BasicSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateCsp2Or2Exp1Prob1Exp1() throws IOException {
+		Fault fault = createDFT("/resources/galileoUniform/csp2Or2Exp1Prob1Exp1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int NUM_STATES = 1;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		final double EXPECTED_MTTF = 1;
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), EXPECTED_MTTF, TEST_EPSILON);
+	}
+	
+	@Test
 	public void testEvaluatePand2ColdSpare1SharedWithRa() throws IOException {
 		final double DELTA = 10;
 		final double TIME = 4000;

@@ -210,12 +210,12 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	
 
 	@Override
-	public boolean getIsRepair() {
+	public boolean isRepair() {
 		return isRepair;
 	}
 
 	@Override
-	public boolean getIsImmediate() {
+	public boolean isImmediate() {
 		return false;
 	}
 }

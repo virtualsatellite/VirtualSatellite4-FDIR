@@ -59,7 +59,7 @@ public class DelayEvent implements IDFTEvent {
 	}
 
 	@Override
-	public boolean getIsImmediate() {
+	public boolean isImmediate() {
 		return false;
 	}
 }

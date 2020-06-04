@@ -52,7 +52,7 @@ public interface IDFTEvent {
 	 * In a DFTstate all immediate events occur before non-immediate events. 
 	 * @return true iff the event is an immediate event
 	 */
-	boolean getIsImmediate();
+	boolean isImmediate();
 	
 	/**
 	 * Standard comparator for IDFTEvents.

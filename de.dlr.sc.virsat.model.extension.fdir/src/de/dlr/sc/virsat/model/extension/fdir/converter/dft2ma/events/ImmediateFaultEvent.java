@@ -23,6 +23,10 @@ public class ImmediateFaultEvent extends FaultEvent {
 		this.isNegative = isNegative;
 	}
 	
+	public boolean isNegative() {
+		return isNegative;
+	}
+	
 	@Override
 	public double getRate(DFTState state) {
 		double rate = super.getRate(state);
@@ -38,7 +42,7 @@ public class ImmediateFaultEvent extends FaultEvent {
 		return occurenceType + super.toString();
 	}
 	@Override
-	public boolean getIsImmediate() {
+	public boolean isImmediate() {
 		return true;
 	}
 	

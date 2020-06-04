@@ -191,7 +191,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		DFTState baseSucc = stateUpdateResult.getBaseSucc();
 		
 		boolean isRepair = stateUpdate.getEvent() instanceof IRepairableEvent 
-				? ((IRepairableEvent) stateUpdate.getEvent()).getIsRepair() : false;
+				? ((IRepairableEvent) stateUpdate.getEvent()).isRepair() : false;
 		Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdateResult);
 		RecoveryStrategy recoveryStrategy = occuredEvents.isEmpty() ? baseSucc.getRecoveryStrategy() : state.getRecoveryStrategy().onFaultsOccured(occuredEvents, isRepair);
 		
@@ -264,14 +264,14 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		List<IDFTEvent> occurableEvents = new ArrayList<>();
 		for (IDFTEvent event : events) {
-			if (event.getIsImmediate() && event.canOccur(state)) {
+			if (event.isImmediate() && event.canOccur(state)) {
 				occurableEvents.add(event);
 			}
 		}
 		
 		if (occurableEvents.isEmpty()) {
 			for (IDFTEvent event : events) {
-				if (!event.getIsImmediate() && event.canOccur(state)) {
+				if (!event.isImmediate() && event.canOccur(state)) {
 					occurableEvents.add(event);
 				}
 			}
