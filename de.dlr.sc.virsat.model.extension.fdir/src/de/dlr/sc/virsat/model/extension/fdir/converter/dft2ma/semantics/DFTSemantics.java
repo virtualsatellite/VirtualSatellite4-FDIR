@@ -98,7 +98,7 @@ public class DFTSemantics {
 				faultEvents.add(new FaultEvent(be, true, ftHolder, staticAnalysis));					
 			}
 			
-			if (beHolder.isFailureDefined() && beHolder.isMarkovianDistribution()) {
+			if (beHolder.isFailureDefined()) {
 				faultEvents.add(new FaultEvent(be, false, ftHolder, staticAnalysis));
 			}
 		}

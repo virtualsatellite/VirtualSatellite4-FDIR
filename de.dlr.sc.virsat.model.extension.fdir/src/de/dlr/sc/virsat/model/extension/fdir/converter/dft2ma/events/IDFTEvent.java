@@ -48,6 +48,13 @@ public interface IDFTEvent {
 	FaultTreeNode getNode();
 	
 	/**
+	 * Checks if the given event is an immediate events.
+	 * In a DFTstate all immediate events occur before non-immediate events. 
+	 * @return true iff the event is an immediate event
+	 */
+	boolean getIsImmediate();
+	
+	/**
 	 * Standard comparator for IDFTEvents.
 	 * Usefule for sorting lists and ensuring deterministic behavior.
 	 */

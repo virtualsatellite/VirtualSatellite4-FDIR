@@ -93,4 +93,9 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 		
 		return false;
 	}
+
+	@Override
+	public boolean getIsImmediate() {
+		return false;
+	}
 }

@@ -269,8 +269,16 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		List<IDFTEvent> occurableEvents = new ArrayList<>();
 		for (IDFTEvent event : events) {
-			if (event.canOccur(state)) {
+			if (event.getIsImmediate() && event.canOccur(state)) {
 				occurableEvents.add(event);
+			}
+		}
+		
+		if (occurableEvents.isEmpty()) {
+			for (IDFTEvent event : events) {
+				if (!event.getIsImmediate() && event.canOccur(state)) {
+					occurableEvents.add(event);
+				}
 			}
 		}
 		

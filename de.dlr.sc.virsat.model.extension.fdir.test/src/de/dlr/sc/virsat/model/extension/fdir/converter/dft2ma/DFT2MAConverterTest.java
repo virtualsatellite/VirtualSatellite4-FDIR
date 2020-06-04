@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -76,10 +77,13 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
 		
+		final int EXPECTED_COUNT_EVENTS = 1;
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		final int EXPECTED_COUNT_FINAL_STATES = 1;
-		assertTrue(ma.getEvents().isEmpty());
+		assertEquals(EXPECTED_COUNT_EVENTS, ma.getEvents().isEmpty());
+		IDFTEvent event = (IDFTEvent) ma.getEvents().iterator().next();
+		assertTrue(event.getIsImmediate());
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStates());

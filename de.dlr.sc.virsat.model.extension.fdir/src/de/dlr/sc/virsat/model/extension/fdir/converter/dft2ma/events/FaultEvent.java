@@ -39,6 +39,7 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	private boolean isRepair;
 	private boolean isOrderDependent;
 	private boolean isTransient;
+	private boolean isImmediate;
 	
 	/**
 	 * The default constructor
@@ -53,6 +54,7 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 		
 		isOrderDependent = staticAnalysis.getOrderDependentBasicEvents().contains(be);
 		isTransient = staticAnalysis.getTransientNodes().contains(be);
+		isImmediate = beHolder.isImmediateDistribution();
 	}
 	
 	@Override
@@ -211,5 +213,10 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	@Override
 	public boolean getIsRepair() {
 		return isRepair;
+	}
+
+	@Override
+	public boolean getIsImmediate() {
+		return isImmediate;
 	}
 }
