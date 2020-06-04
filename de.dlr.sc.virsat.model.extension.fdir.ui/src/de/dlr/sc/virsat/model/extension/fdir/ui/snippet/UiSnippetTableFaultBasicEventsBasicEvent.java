@@ -10,11 +10,8 @@
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
 import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertydefinitions.AProperty;
@@ -35,10 +32,6 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  */
 public class UiSnippetTableFaultBasicEventsBasicEvent extends AUiSnippetTableFaultBasicEventsBasicEvent implements IUiSnippet {
-	@Override
-	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
-		super.createSwt(toolkit, editingDomain, composite, initModel);
-	}
 	
 	@Override
 	protected EditingSupport createEditingSupport(EditingDomain editingDomain, AProperty property) {
