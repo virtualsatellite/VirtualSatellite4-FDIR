@@ -364,10 +364,10 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoUniform/csp2Or2Exp1Prob1Exp1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int NUM_STATES = 1;
+		final int NUM_STATES = 2;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
-		final double EXPECTED_MTTF = 2;
+		final double EXPECTED_MTTF = 1.3333333333333333;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), EXPECTED_MTTF, TEST_EPSILON);
