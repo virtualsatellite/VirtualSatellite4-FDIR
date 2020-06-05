@@ -215,14 +215,7 @@ public class Module {
 							BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
 							mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
 							mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
-							
-							for (RepairAction repairAction : newBasicEvent.getRepairActions()) {
-								for (int j = 0; j < repairAction.getObservations().size(); ++j) {
-									FaultTreeNode observation = repairAction.getObservations().get(i);
-									FaultTreeNode newObservation = mapOriginalToCopy.get(observation);
-									repairAction.getObservations().set(i, newObservation);
-								}
-							}
+							remapRepairActionObservations(mapOriginalToCopy, newBasicEvent);
 							
 							dfsStack.push(oldBasicEvent);
 						}
@@ -239,6 +232,22 @@ public class Module {
 						ftBuilder.createFaultTreeEdge(rootFault, childCopy, currCopy);
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * Remaps the observations required for a repair action
+	 * @param mapOriginalToCopy the mapping
+	 * @param newBasicEvent the basic event to remap
+	 */
+	private void remapRepairActionObservations(Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy,
+			BasicEvent newBasicEvent) {
+		for (RepairAction repairAction : newBasicEvent.getRepairActions()) {
+			for (int j = 0; j < repairAction.getObservations().size(); ++j) {
+				FaultTreeNode observation = repairAction.getObservations().get(j);
+				FaultTreeNode newObservation = mapOriginalToCopy.get(observation);
+				repairAction.getObservations().set(j, newObservation);
 			}
 		}
 	}
