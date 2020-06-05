@@ -22,7 +22,7 @@ GalileoGate returns GalileoFaultTreeNode:
 ;
 
 GalileoBasicEvent returns GalileoFaultTreeNode:
-	name=STRING 'lambda' '=' lambda=Float ('dorm' '=' dorm=Float)? (repairActions+=GalileoRepairAction)*
+	name=STRING ('lambda' '=' lambda=Float | 'prob' '=' prob=Float)  ('dorm' '=' dorm=Float)? (repairActions+=GalileoRepairAction)*
 ;
 
 GalileoRepairAction:

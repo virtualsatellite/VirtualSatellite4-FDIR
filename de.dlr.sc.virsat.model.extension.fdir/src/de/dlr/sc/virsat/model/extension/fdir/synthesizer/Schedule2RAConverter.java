@@ -27,6 +27,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateFaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -114,6 +115,16 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		List<S> nextStates = new ArrayList<>();
 		for (MarkovTransition<S> markovianTransition : markovianTransitions) {
 			S toState = markovianTransition.getTo();
+			
+			Object event = markovianTransition.getEvent();
+			if (event instanceof ImmediateFaultEvent) {
+				ImmediateFaultEvent immediateEvent = (ImmediateFaultEvent) event;
+				if (immediateEvent.isNegative()) {
+					mapMarkovStateToRaState.put(toState, getOrCreateRecoveryAutomatonState(ra, state));
+					nextStates.add(toState);
+					continue;
+				}
+			}
 			
 			if (!markovianTransition.getTo().isMarkovian()) {
 				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
@@ -284,7 +295,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			raTransition.getGuards().add(dftEvent.getNode());
 			
 			if (event instanceof IRepairableEvent) {
-				raTransition.setIsRepair(((IRepairableEvent) event).getIsRepair());
+				raTransition.setIsRepair(((IRepairableEvent) event).isRepair());
 			}
 		}
 		

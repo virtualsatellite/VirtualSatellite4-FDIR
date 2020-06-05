@@ -157,7 +157,7 @@ public class PODFTState extends DFTState {
 		if (event instanceof ObservationEvent) {
 			ObservationEvent obsEvent = (ObservationEvent) event;
 			observationSet.add(obsEvent.getNode());
-			Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, obsEvent.getIsRepair());
+			Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, obsEvent.isRepair());
 			return observationEvent;
 		}
 		

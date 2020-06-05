@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -32,6 +36,7 @@ public class BasicEventHolder {
 	private double hotFailureRate;
 	private double coldFailureRate;
 	private Map<List<FaultTreeNode>, Double> repairRates;
+	private String distribution;
 	
 	/**
 	 * Standard constructor
@@ -42,6 +47,7 @@ public class BasicEventHolder {
 		fault = basicEvent.getFault();
 		hotFailureRate = getRateValue(basicEvent.getHotFailureRateBean());
 		coldFailureRate = getRateValue(basicEvent.getColdFailureRateBean());
+		distribution = basicEvent.getDistribution();
 		
 		double transientRepairRate = getRateValue(basicEvent.getRepairRateBean());
 		transientRepairRate = Double.isNaN(transientRepairRate) ? 0 : transientRepairRate;
@@ -108,11 +114,86 @@ public class BasicEventHolder {
 	public double getColdFailureRate() {
 		return coldFailureRate;
 	}
+	
+	/**
+	 * Gets the distribution type
+	 * @return the distribution type
+	 */
+	public String getDistribution() {
+		return distribution;
+	}
 	/**
 	 * Gets all repair rates
 	 * @return a mapping from required obersvations to repair rates
 	 */
 	public Map<List<FaultTreeNode>, Double> getRepairRates() {
 		return repairRates;
+	}
+
+	/**
+	 * Checks if the basic event contains an event for markovian transitions
+	 * @return true iff the distribution is suited for a markovian transition
+	 */
+	public boolean isMarkovianDistribution() {
+		return BasicEvent.DISTRIBUTION_EXP_NAME.equals(distribution);
+	}
+
+	/**
+	 * Checks if the basic evetn contains an event for a time less distribution
+	 * @return true iff the distribution has no time dependence
+	 */
+	public boolean isImmediateDistribution() {
+		return BasicEvent.DISTRIBUTION_UNIFORM_NAME.equals(distribution);
+	}
+	
+	public static final String DEFAULT_UNIT_MARKOVIAN = "Per Hour";
+	public static final String DEFAULT_UNIT_IMMEDIATE = "Percent";
+	public static final String DEFAULT_UNIT_NONE = "No Unit";
+	
+	public static final String QUANTITY_KIND_MARKOVIAN = "Frequency";
+	public static final String QUANTITY_KIND_IMMEDIATE = "Dimensionless";
+	public static final String QUANTITY_KIND_NONE = "Dimensionless";
+	
+	/**
+	 * Gets the default unit for the current distribution of the passed be
+	 * @return the default unit for the distribution
+	 */
+	public String getDefaultUnitForDistribution() {
+		if (isMarkovianDistribution()) {
+			return DEFAULT_UNIT_MARKOVIAN;
+		} else if (isImmediateDistribution()) {
+			return DEFAULT_UNIT_IMMEDIATE;
+		}
+		
+		return DEFAULT_UNIT_NONE;
+	}
+	
+	/**
+	 * Gets the quantity kind fitting to the distribution of a passed be
+	 * @return the quantity kind associated with the distribution of the be
+	 */
+	public String getQuantityKindForDistribution() {
+		if (isMarkovianDistribution()) {
+			return QUANTITY_KIND_MARKOVIAN;
+		} else if (isImmediateDistribution()) {
+			return QUANTITY_KIND_IMMEDIATE;
+		}
+		
+		return QUANTITY_KIND_NONE;
+	}
+	
+	public Command createSynchronizeUnitsWIthDistributionCommand(EditingDomain editingDomain, BasicEvent be) {
+		String unit = getDefaultUnitForDistribution();
+		
+		CompoundCommand cc = new CompoundCommand();
+		cc.append(be.getHotFailureRateBean().setUnit(editingDomain, unit));
+		return cc;
+	}
+	
+	public static void synchronizeWithDistribution(EditingDomain editingDomain, BasicEvent be) {
+		BasicEventHolder beHolder = new BasicEventHolder(be);
+		
+		Command synchronizeUnitsCommand = beHolder.createSynchronizeUnitsWIthDistributionCommand(editingDomain, be);
+		editingDomain.getCommandStack().execute(synchronizeUnitsCommand);
 	}
 }

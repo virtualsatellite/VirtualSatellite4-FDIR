@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.model.dvlm.structural.StructuralElement;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralFactory;
 import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.GalileoDFT2DFT;
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -176,5 +177,21 @@ public class GalileoDFT2DFTTest extends ATestCase {
 		final double EXPECTED_REPAIR_RATE_2 = 1;
 		assertEquals("Repair rate is correct", EXPECTED_REPAIR_RATE_2, faults.get(2).getBasicEvents().get(0).getRepairRate(), TEST_EPSILON);
 	}
-
+	
+	@Test
+	public void testConvertProb() throws IOException {
+		InputStream is = resourceGetter.getResourceContentAsStream("/resources/galileoUniform/prob.dft");
+		GalileoDFT2DFT converter = new GalileoDFT2DFT(concept, is, parent);
+		
+		converter.convert();
+		
+		assertEquals("Contains root and tle entry", 2, parent.getAll(Fault.class).size());
+		Fault tle = parent.getAll(Fault.class).get(1);
+		assertEquals("Contains one entry", 1, tle.getBasicEvents().size());
+		BasicEvent be = tle.getBasicEvents().get(0);
+		
+		final double EXPECTED_PROB = 0.4;
+		assertEquals("Got correct prob value", EXPECTED_PROB, be.getHotFailureRate(), TEST_EPSILON);
+		assertEquals("Got correct distribution", BasicEvent.DISTRIBUTION_UNIFORM_NAME, be.getDistributionBean().getValue());
+	}
 }

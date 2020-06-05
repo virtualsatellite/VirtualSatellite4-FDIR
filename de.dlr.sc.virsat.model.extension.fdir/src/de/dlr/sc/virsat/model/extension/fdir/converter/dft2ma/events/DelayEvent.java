@@ -57,4 +57,9 @@ public class DelayEvent implements IDFTEvent {
 	public String toString() {
 		return "F(" + delayNode.getName() + ")";
 	}
+
+	@Override
+	public boolean isImmediate() {
+		return false;
+	}
 }

@@ -198,21 +198,21 @@ public class BasicSynthesizerTest extends ATestCase {
 			3.749350399882001E-4, 
 			7.987025488765953E-4
 		};
-		final double EXPECTED_MTTF = 0.3278225899445763;
+		final double EXPECTED_MTTF = 0.32784729178994587;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int NUM_STATES = 6;
+		final int NUM_STATES = 5;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		final double TEST_EPSILON = 0.001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
+
 	}
 	
 	@Test
@@ -357,6 +357,20 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
+	}
+	
+	@Test
+	public void testEvaluateCsp2Or2Exp1Prob1Exp1() throws IOException {
+		Fault fault = createDFT("/resources/galileoUniform/csp2Or2Exp1Prob1Exp1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		
+		final int NUM_STATES = 2;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		final double EXPECTED_MTTF = 1.3333333333333333;
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), EXPECTED_MTTF, TEST_EPSILON);
 	}
 	
 	@Test

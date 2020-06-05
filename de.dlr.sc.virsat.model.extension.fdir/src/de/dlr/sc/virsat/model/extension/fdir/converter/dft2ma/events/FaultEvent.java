@@ -92,8 +92,9 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	 */
 	private double getFailRate(DFTState state) {
 		boolean isParentNodeActive = state.isNodeActive(beHolder.getFault());
-		double rate = isParentNodeActive ? beHolder.getHotFailureRate() : beHolder.getColdFailureRate();
-		return getExtraRateFactor(state) * rate;
+		double baseRate = isParentNodeActive ? beHolder.getHotFailureRate() : beHolder.getColdFailureRate();
+		double rate = getExtraRateFactor(state) * baseRate;
+		return rate;
 	}
 	
 	/**
@@ -209,7 +210,12 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	
 
 	@Override
-	public boolean getIsRepair() {
+	public boolean isRepair() {
 		return isRepair;
+	}
+
+	@Override
+	public boolean isImmediate() {
+		return false;
 	}
 }

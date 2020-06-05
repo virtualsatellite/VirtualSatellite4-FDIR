@@ -1,0 +1,6 @@
+toplevel "tle";
+"tle" csp "or" "b";
+"or" or "a" "p";
+"a" lambda=2;
+"b" lambda=3;
+"p" prob=0.7;

@@ -70,7 +70,7 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 	}
 	
 	@Override
-	public boolean getIsRepair() {
+	public boolean isRepair() {
 		return isRepair;
 	}
 
@@ -91,6 +91,11 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 			return poState.existsObserver(node, true, false);
 		} 
 		
+		return false;
+	}
+
+	@Override
+	public boolean isImmediate() {
 		return false;
 	}
 }

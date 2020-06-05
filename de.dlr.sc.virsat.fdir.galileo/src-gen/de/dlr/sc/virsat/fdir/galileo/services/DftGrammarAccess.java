@@ -135,23 +135,32 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Assignment cNameAssignment_0 = (Assignment)cGroup.eContents().get(0);
 		private final RuleCall cNameSTRINGTerminalRuleCall_0_0 = (RuleCall)cNameAssignment_0.eContents().get(0);
-		private final Keyword cLambdaKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Keyword cEqualsSignKeyword_2 = (Keyword)cGroup.eContents().get(2);
-		private final Assignment cLambdaAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cLambdaFloatParserRuleCall_3_0 = (RuleCall)cLambdaAssignment_3.eContents().get(0);
-		private final Group cGroup_4 = (Group)cGroup.eContents().get(4);
-		private final Keyword cDormKeyword_4_0 = (Keyword)cGroup_4.eContents().get(0);
-		private final Keyword cEqualsSignKeyword_4_1 = (Keyword)cGroup_4.eContents().get(1);
-		private final Assignment cDormAssignment_4_2 = (Assignment)cGroup_4.eContents().get(2);
-		private final RuleCall cDormFloatParserRuleCall_4_2_0 = (RuleCall)cDormAssignment_4_2.eContents().get(0);
-		private final Assignment cRepairActionsAssignment_5 = (Assignment)cGroup.eContents().get(5);
-		private final RuleCall cRepairActionsGalileoRepairActionParserRuleCall_5_0 = (RuleCall)cRepairActionsAssignment_5.eContents().get(0);
+		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
+		private final Group cGroup_1_0 = (Group)cAlternatives_1.eContents().get(0);
+		private final Keyword cLambdaKeyword_1_0_0 = (Keyword)cGroup_1_0.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_1_0_1 = (Keyword)cGroup_1_0.eContents().get(1);
+		private final Assignment cLambdaAssignment_1_0_2 = (Assignment)cGroup_1_0.eContents().get(2);
+		private final RuleCall cLambdaFloatParserRuleCall_1_0_2_0 = (RuleCall)cLambdaAssignment_1_0_2.eContents().get(0);
+		private final Group cGroup_1_1 = (Group)cAlternatives_1.eContents().get(1);
+		private final Keyword cProbKeyword_1_1_0 = (Keyword)cGroup_1_1.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_1_1_1 = (Keyword)cGroup_1_1.eContents().get(1);
+		private final Assignment cProbAssignment_1_1_2 = (Assignment)cGroup_1_1.eContents().get(2);
+		private final RuleCall cProbFloatParserRuleCall_1_1_2_0 = (RuleCall)cProbAssignment_1_1_2.eContents().get(0);
+		private final Group cGroup_2 = (Group)cGroup.eContents().get(2);
+		private final Keyword cDormKeyword_2_0 = (Keyword)cGroup_2.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_2_1 = (Keyword)cGroup_2.eContents().get(1);
+		private final Assignment cDormAssignment_2_2 = (Assignment)cGroup_2.eContents().get(2);
+		private final RuleCall cDormFloatParserRuleCall_2_2_0 = (RuleCall)cDormAssignment_2_2.eContents().get(0);
+		private final Assignment cRepairActionsAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cRepairActionsGalileoRepairActionParserRuleCall_3_0 = (RuleCall)cRepairActionsAssignment_3.eContents().get(0);
 		
 		//GalileoBasicEvent GalileoFaultTreeNode:
-		//	name=STRING 'lambda' '=' lambda=Float ('dorm' '=' dorm=Float)? repairActions+=GalileoRepairAction*;
+		//	name=STRING ('lambda' '=' lambda=Float | 'prob' '=' prob=Float) ('dorm' '=' dorm=Float)?
+		//	repairActions+=GalileoRepairAction*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//name=STRING 'lambda' '=' lambda=Float ('dorm' '=' dorm=Float)? repairActions+=GalileoRepairAction*
+		//name=STRING ('lambda' '=' lambda=Float | 'prob' '=' prob=Float) ('dorm' '=' dorm=Float)?
+		//repairActions+=GalileoRepairAction*
 		public Group getGroup() { return cGroup; }
 		
 		//name=STRING
@@ -160,38 +169,59 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 		//STRING
 		public RuleCall getNameSTRINGTerminalRuleCall_0_0() { return cNameSTRINGTerminalRuleCall_0_0; }
 		
+		//'lambda' '=' lambda=Float | 'prob' '=' prob=Float
+		public Alternatives getAlternatives_1() { return cAlternatives_1; }
+		
+		//'lambda' '=' lambda=Float
+		public Group getGroup_1_0() { return cGroup_1_0; }
+		
 		//'lambda'
-		public Keyword getLambdaKeyword_1() { return cLambdaKeyword_1; }
+		public Keyword getLambdaKeyword_1_0_0() { return cLambdaKeyword_1_0_0; }
 		
 		//'='
-		public Keyword getEqualsSignKeyword_2() { return cEqualsSignKeyword_2; }
+		public Keyword getEqualsSignKeyword_1_0_1() { return cEqualsSignKeyword_1_0_1; }
 		
 		//lambda=Float
-		public Assignment getLambdaAssignment_3() { return cLambdaAssignment_3; }
+		public Assignment getLambdaAssignment_1_0_2() { return cLambdaAssignment_1_0_2; }
 		
 		//Float
-		public RuleCall getLambdaFloatParserRuleCall_3_0() { return cLambdaFloatParserRuleCall_3_0; }
+		public RuleCall getLambdaFloatParserRuleCall_1_0_2_0() { return cLambdaFloatParserRuleCall_1_0_2_0; }
 		
-		//('dorm' '=' dorm=Float)?
-		public Group getGroup_4() { return cGroup_4; }
+		//'prob' '=' prob=Float
+		public Group getGroup_1_1() { return cGroup_1_1; }
 		
-		//'dorm'
-		public Keyword getDormKeyword_4_0() { return cDormKeyword_4_0; }
+		//'prob'
+		public Keyword getProbKeyword_1_1_0() { return cProbKeyword_1_1_0; }
 		
 		//'='
-		public Keyword getEqualsSignKeyword_4_1() { return cEqualsSignKeyword_4_1; }
+		public Keyword getEqualsSignKeyword_1_1_1() { return cEqualsSignKeyword_1_1_1; }
 		
-		//dorm=Float
-		public Assignment getDormAssignment_4_2() { return cDormAssignment_4_2; }
+		//prob=Float
+		public Assignment getProbAssignment_1_1_2() { return cProbAssignment_1_1_2; }
 		
 		//Float
-		public RuleCall getDormFloatParserRuleCall_4_2_0() { return cDormFloatParserRuleCall_4_2_0; }
+		public RuleCall getProbFloatParserRuleCall_1_1_2_0() { return cProbFloatParserRuleCall_1_1_2_0; }
+		
+		//('dorm' '=' dorm=Float)?
+		public Group getGroup_2() { return cGroup_2; }
+		
+		//'dorm'
+		public Keyword getDormKeyword_2_0() { return cDormKeyword_2_0; }
+		
+		//'='
+		public Keyword getEqualsSignKeyword_2_1() { return cEqualsSignKeyword_2_1; }
+		
+		//dorm=Float
+		public Assignment getDormAssignment_2_2() { return cDormAssignment_2_2; }
+		
+		//Float
+		public RuleCall getDormFloatParserRuleCall_2_2_0() { return cDormFloatParserRuleCall_2_2_0; }
 		
 		//repairActions+=GalileoRepairAction*
-		public Assignment getRepairActionsAssignment_5() { return cRepairActionsAssignment_5; }
+		public Assignment getRepairActionsAssignment_3() { return cRepairActionsAssignment_3; }
 		
 		//GalileoRepairAction
-		public RuleCall getRepairActionsGalileoRepairActionParserRuleCall_5_0() { return cRepairActionsGalileoRepairActionParserRuleCall_5_0; }
+		public RuleCall getRepairActionsGalileoRepairActionParserRuleCall_3_0() { return cRepairActionsGalileoRepairActionParserRuleCall_3_0; }
 	}
 	public class GalileoRepairActionElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.dlr.sc.virsat.fdir.galileo.Dft.GalileoRepairAction");
@@ -567,7 +597,8 @@ public class DftGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//GalileoBasicEvent GalileoFaultTreeNode:
-	//	name=STRING 'lambda' '=' lambda=Float ('dorm' '=' dorm=Float)? repairActions+=GalileoRepairAction*;
+	//	name=STRING ('lambda' '=' lambda=Float | 'prob' '=' prob=Float) ('dorm' '=' dorm=Float)?
+	//	repairActions+=GalileoRepairAction*;
 	public GalileoBasicEventElements getGalileoBasicEventAccess() {
 		return pGalileoBasicEvent;
 	}

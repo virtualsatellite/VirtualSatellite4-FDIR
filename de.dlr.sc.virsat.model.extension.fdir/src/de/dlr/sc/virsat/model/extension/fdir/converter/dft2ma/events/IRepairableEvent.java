@@ -22,5 +22,5 @@ public interface IRepairableEvent {
 	 * Returns true iff this is a repair event
 	 * @return true iff this is a repair event
 	 */
-	boolean getIsRepair();
+	boolean isRepair();
 }

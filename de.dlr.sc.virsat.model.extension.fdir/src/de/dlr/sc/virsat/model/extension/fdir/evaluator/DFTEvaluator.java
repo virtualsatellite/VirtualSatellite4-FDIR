@@ -138,7 +138,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	/**
-	 * Performs a DFT evaluation for the given base metrics with and the given fail criteria
+	 * Performs a DFT evaluation for the given base metrics with the given fail criteria
 	 * @param ftHolder the fault tree holder
 	 * @param failableBasicEventsProvider the node fail criteria
 	 * @param failLabelProvider the labeling fail criteria

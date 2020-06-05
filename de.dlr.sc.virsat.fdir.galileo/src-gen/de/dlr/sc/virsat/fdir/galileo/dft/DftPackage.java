@@ -150,13 +150,22 @@ public interface DftPackage extends EPackage
   int GALILEO_FAULT_TREE_NODE__LAMBDA = 3;
 
   /**
+   * The feature id for the '<em><b>Prob</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int GALILEO_FAULT_TREE_NODE__PROB = 4;
+
+  /**
    * The feature id for the '<em><b>Dorm</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int GALILEO_FAULT_TREE_NODE__DORM = 4;
+  int GALILEO_FAULT_TREE_NODE__DORM = 5;
 
   /**
    * The feature id for the '<em><b>Repair Actions</b></em>' containment reference list.
@@ -165,7 +174,7 @@ public interface DftPackage extends EPackage
    * @generated
    * @ordered
    */
-  int GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS = 5;
+  int GALILEO_FAULT_TREE_NODE__REPAIR_ACTIONS = 6;
 
   /**
    * The number of structural features of the '<em>Galileo Fault Tree Node</em>' class.
@@ -174,7 +183,7 @@ public interface DftPackage extends EPackage
    * @generated
    * @ordered
    */
-  int GALILEO_FAULT_TREE_NODE_FEATURE_COUNT = 6;
+  int GALILEO_FAULT_TREE_NODE_FEATURE_COUNT = 7;
 
   /**
    * The meta object id for the '{@link de.dlr.sc.virsat.fdir.galileo.dft.impl.GalileoRepairActionImpl <em>Galileo Repair Action</em>}' class.
@@ -442,6 +451,17 @@ public interface DftPackage extends EPackage
   EAttribute getGalileoFaultTreeNode_Lambda();
 
   /**
+   * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getProb <em>Prob</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Prob</em>'.
+   * @see de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getProb()
+   * @see #getGalileoFaultTreeNode()
+   * @generated
+   */
+  EAttribute getGalileoFaultTreeNode_Prob();
+
+  /**
    * Returns the meta object for the attribute '{@link de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode#getDorm <em>Dorm</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -699,6 +719,14 @@ public interface DftPackage extends EPackage
      * @generated
      */
     EAttribute GALILEO_FAULT_TREE_NODE__LAMBDA = eINSTANCE.getGalileoFaultTreeNode_Lambda();
+
+    /**
+     * The meta object literal for the '<em><b>Prob</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute GALILEO_FAULT_TREE_NODE__PROB = eINSTANCE.getGalileoFaultTreeNode_Prob();
 
     /**
      * The meta object literal for the '<em><b>Dorm</b></em>' attribute feature.

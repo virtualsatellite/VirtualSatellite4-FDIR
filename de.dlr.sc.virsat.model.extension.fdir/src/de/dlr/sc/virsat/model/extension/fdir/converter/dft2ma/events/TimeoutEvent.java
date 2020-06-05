@@ -60,4 +60,9 @@ public class TimeoutEvent implements IDFTEvent {
 		return String.valueOf(time) + "s";
 	}
 
+	@Override
+	public boolean isImmediate() {
+		return false;
+	}
+
 }

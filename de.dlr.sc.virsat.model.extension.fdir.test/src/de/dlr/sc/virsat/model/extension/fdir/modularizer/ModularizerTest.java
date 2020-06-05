@@ -266,7 +266,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/nestedPand.dft");
 		Set<Module> modules = modularizer.getModules(root);
 		
-		final int NUM_MODULES = 9;
+		final int NUM_MODULES = 5;
 		assertEquals(NUM_MODULES, modules.size());
 		
 		FaultTreeHolder ftholder = modularizer.getFtHolder();
@@ -294,20 +294,14 @@ public class ModularizerTest extends ATestCase {
 		Module pand1Module = Module.getModule(modules, pand1);
 		Module pand2Module = Module.getModule(modules, pand2);
 		Module aModule = Module.getModule(modules, a);
-		Module bModule = Module.getModule(modules, b);
-		Module cModule = Module.getModule(modules, c);
-		Module dModule = Module.getModule(modules, d);
-		Module eModule = Module.getModule(modules, e);
 		
-		assertThat(rootModule.getNodes(), allOf(not(hasItems(and, pand1, pand2, a, b, c, d, e)), hasItems(root)));
-		assertThat(andModule.getNodes(), allOf(hasItems(and), not(hasItems(root, pand1, pand2, a, b, c, d, e))));
-		assertThat(pand1Module.getNodes(), allOf(hasItems(pand1), not(hasItems(root, pand2, a, b, c, d, e, and))));
-		assertThat(pand2Module.getNodes(), allOf(hasItems(pand2), not(hasItems(root, pand1, a, b, c, d, e, and))));
-		assertThat(aModule.getNodes(), allOf(hasItems(a, beA), hasSize(2)));
-		assertThat(bModule.getNodes(), allOf(hasItems(b, beB), hasSize(2)));
-		assertThat(cModule.getNodes(), allOf(hasItems(c, beC), hasSize(2)));
-		assertThat(dModule.getNodes(), allOf(hasItems(d, beD), hasSize(2)));
-		assertThat(eModule.getNodes(), allOf(hasItems(e, beE), hasSize(2)));
+		//CHECKSTYLE:OFF
+		assertThat(rootModule.getNodes(), allOf(hasSize(1), hasItems(root)));
+		assertThat(andModule.getNodes(), allOf(hasSize(1), hasItems(and)));
+		assertThat(pand1Module.getNodes(), allOf(hasSize(5), hasItems(pand1, c, beC, b, beB)));
+		assertThat(pand2Module.getNodes(), allOf(hasSize(5), hasItems(pand2, d, beD, e, beE)));
+		assertThat(aModule.getNodes(), allOf(hasSize(2), hasItems(a, beA)));
+		//CHECKSTYLE:ON
 	}
 	
 	@Test
@@ -315,7 +309,7 @@ public class ModularizerTest extends ATestCase {
 		Fault root = createDFT("/resources/galileo/nestedPand2.dft");
 		Set<Module> modules = modularizer.getModules(root);
 
-		final int NUM_MODULES = 18;
+		final int NUM_MODULES = 2;
 		assertEquals(NUM_MODULES, modules.size());
 	}
 	

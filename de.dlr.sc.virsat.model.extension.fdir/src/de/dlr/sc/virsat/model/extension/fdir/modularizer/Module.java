@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -214,6 +215,7 @@ public class Module {
 							BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
 							mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
 							mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
+							remapRepairActionObservations(mapOriginalToCopy, newBasicEvent);
 							
 							dfsStack.push(oldBasicEvent);
 						}
@@ -223,13 +225,29 @@ public class Module {
 				}
 				
 				boolean moduleContainsCurrAndChild = this.containsFaultTreeNode(curr) && this.containsFaultTreeNode(child);
-				if (moduleContainsCurrAndChild && !(child instanceof BasicEvent)) {
+				if (moduleContainsCurrAndChild) {
 					if (ftHolder.getNodes(curr, EdgeType.SPARE).contains(child)) {
 						ftBuilder.connectSpare(rootFault, childCopy, currCopy);
 					} else {
 						ftBuilder.createFaultTreeEdge(rootFault, childCopy, currCopy);
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * Remaps the observations required for a repair action
+	 * @param mapOriginalToCopy the mapping
+	 * @param newBasicEvent the basic event to remap
+	 */
+	private void remapRepairActionObservations(Map<FaultTreeNode, FaultTreeNode> mapOriginalToCopy,
+			BasicEvent newBasicEvent) {
+		for (RepairAction repairAction : newBasicEvent.getRepairActions()) {
+			for (int j = 0; j < repairAction.getObservations().size(); ++j) {
+				FaultTreeNode observation = repairAction.getObservations().get(j);
+				FaultTreeNode newObservation = mapOriginalToCopy.get(observation);
+				repairAction.getObservations().set(j, newObservation);
 			}
 		}
 	}
