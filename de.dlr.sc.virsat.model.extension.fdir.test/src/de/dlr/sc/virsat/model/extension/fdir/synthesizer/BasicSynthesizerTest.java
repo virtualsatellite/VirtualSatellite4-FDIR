@@ -198,21 +198,21 @@ public class BasicSynthesizerTest extends ATestCase {
 			3.749350399882001E-4, 
 			7.987025488765953E-4
 		};
-		final double EXPECTED_MTTF = 0.3278225899445763;
+		final double EXPECTED_MTTF = 0.32784729178994587;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int NUM_STATES = 6;
+		final int NUM_STATES = 5;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
-		final double TEST_EPSILON = 0.001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
+
 	}
 	
 	@Test
