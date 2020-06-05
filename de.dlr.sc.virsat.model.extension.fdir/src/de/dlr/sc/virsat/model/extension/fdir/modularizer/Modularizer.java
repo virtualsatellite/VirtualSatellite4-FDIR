@@ -167,15 +167,11 @@ public class Modularizer implements IModularizer {
 			return false;
 		}
 		
-		if (currNode.getFaultTreeNode().getFaultTreeNodeType().isNondeterministic() && currNode.hasPriorityAbove()) {
+		if (currNode.hasPriorityAbove()) {
 			return false;
 		}
 		
 		if (currNode.hasSpareAbove()) {
-			return false;
-		}
-		
-		if (currNode.hasSpareBelow() && currNode.hasPriorityAbove()) {
 			return false;
 		}
 		

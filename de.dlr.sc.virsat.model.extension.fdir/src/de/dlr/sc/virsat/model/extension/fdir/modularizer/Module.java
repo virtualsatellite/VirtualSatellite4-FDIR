@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -214,6 +215,14 @@ public class Module {
 							BasicEvent newBasicEvent = childCopy.getFault().getBasicEvents().get(i);
 							mapOriginalToCopy.put(oldBasicEvent, newBasicEvent);
 							mapCopyToOriginal.put(newBasicEvent, oldBasicEvent);
+							
+							for (RepairAction repairAction : newBasicEvent.getRepairActions()) {
+								for (int j = 0; j < repairAction.getObservations().size(); ++j) {
+									FaultTreeNode observation = repairAction.getObservations().get(i);
+									FaultTreeNode newObservation = mapOriginalToCopy.get(observation);
+									repairAction.getObservations().set(i, newObservation);
+								}
+							}
 							
 							dfsStack.push(oldBasicEvent);
 						}
