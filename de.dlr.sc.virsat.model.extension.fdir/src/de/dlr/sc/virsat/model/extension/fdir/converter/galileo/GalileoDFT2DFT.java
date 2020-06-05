@@ -241,21 +241,30 @@ public class GalileoDFT2DFT {
 			be.setColdFailureRate(coldFailureRate);
 			
 			for (GalileoRepairAction galileoRepairAction : galileoBe.getRepairActions()) {
-				double repairRate = Double.valueOf(galileoRepairAction.getRepair());
-				if (galileoRepairAction.getObservartions().isEmpty()) {
-					be.setRepairRate(repairRate);
-				} else {
-					RepairAction repairAction = new RepairAction(ftBuilder.getConcept());
-					be.getRepairActions().add(repairAction);
-					repairAction.setRepairRate(repairRate);
-					for (GalileoFaultTreeNode galileoObservation : galileoRepairAction.getObservartions()) {
-						FaultTreeNode observation = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoObservation);
-						repairAction.getObservations().add(observation);
-						repairAction.setName(galileoRepairAction.getName());
-					}
-				}
+				convertRepairAction(be, galileoRepairAction);
 			}
 			return be;
+		}
+
+		/**
+		 * Creates a repair action from a galileo dft repair action
+		 * @param be the basic event of the repair action
+		 * @param galileoRepairAction the galileo repair action
+		 */
+		private void convertRepairAction(BasicEvent be, GalileoRepairAction galileoRepairAction) {
+			double repairRate = Double.valueOf(galileoRepairAction.getRepair());
+			if (galileoRepairAction.getObservartions().isEmpty()) {
+				be.setRepairRate(repairRate);
+			} else {
+				RepairAction repairAction = new RepairAction(ftBuilder.getConcept());
+				be.getRepairActions().add(repairAction);
+				repairAction.setRepairRate(repairRate);
+				for (GalileoFaultTreeNode galileoObservation : galileoRepairAction.getObservartions()) {
+					FaultTreeNode observation = mapGalileoFaultTreeNodeToFaultTreeNode.get(galileoObservation);
+					repairAction.getObservations().add(observation);
+					repairAction.setName(galileoRepairAction.getName());
+				}
+			}
 		}
 
 		/**
