@@ -24,9 +24,9 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
-import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -44,7 +44,7 @@ public class MarkovModelCheckerTest {
 		final double EXPECTED_FAIL_RATE = 0.9975212478; 
 		final double EXPECTED_MTTF = 0.166666666;
 		MarkovModelChecker modelChecker = new MarkovModelChecker(DELTA, EPSILON * EPSILON);
-
+		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		MarkovState state1 = new MarkovState();
 		MarkovState state2 = new MarkovState();
@@ -71,7 +71,7 @@ public class MarkovModelCheckerTest {
 		EXPECTED_POINT_AVAILABILITY.add(AVAIL_RATE);
 		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.5;
 		MarkovModelChecker modelChecker = new MarkovModelChecker(1, EPSILON);
-
+		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		ma.getEvents().add("a");
 		ma.getEvents().add("b");
@@ -80,17 +80,58 @@ public class MarkovModelCheckerTest {
 		ma.addState(state1);
 		ma.addState(state2);
 		ma.getFinalStateProbs().put(state2, 1d);
-
+		
 		final double RATE1 = 1.2;
 		final double RATE2 = 1.2;
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
-
+		
 		ModelCheckingResult result = modelChecker.checkModel(ma, null, Availability.UNIT_AVAILABILITY,
 				SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
-
+		
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getAvailability()); 
+	}
+
+	@Test
+	public void testSteadyStateAvailability() {
+		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.677419354;
+		MarkovModelChecker modelChecker = new MarkovModelChecker(1, EPSILON);
+		
+		// Construct the following MA:
+		// init --- 5 ---> nondet --- b ---> good --- 2 ---> fail --- 3 ---> init
+		// 				   nondet --- a ------------------.> fail
+		
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		ma.getEvents().add("m");
+		ma.getEvents().add("a");
+		ma.getEvents().add("b");
+		MarkovState init = new MarkovState();
+		MarkovState nondet = new MarkovState();
+		MarkovState good = new MarkovState();
+		MarkovState fail = new MarkovState();
+		
+		ma.addState(init);
+		ma.addState(nondet);
+		ma.addState(good);
+		ma.addState(fail);
+		ma.getFinalStateProbs().put(fail, 1d);
+		
+		final double RATE_INIT_TO_NONDET = 5;
+		final double RATE_GOOD_TO_FAIL = 2;
+		final double RATE_FAIL_TO_INIT = 3;
+		
+		ma.addMarkovianTransition("m", init, nondet, RATE_INIT_TO_NONDET);
+		ma.addMarkovianTransition("m", good, fail, RATE_GOOD_TO_FAIL);
+		ma.addMarkovianTransition("m", fail, init, RATE_FAIL_TO_INIT);
+		
+		ma.addNondeterministicTransition("a", nondet, good);
+		ma.addNondeterministicTransition("b", nondet, fail);
+		
+		System.out.println(ma.toDot());
+		ModelCheckingResult result = modelChecker.checkModel(ma, null, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		
+		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 	}
 	
 	@Test 

@@ -36,7 +36,8 @@ public interface IMatrixIterator {
 	default double getChange() {
 		double change = 0;
 		for (int i = 0; i < getValues().length; ++i) {
-			change += Math.abs(getOldValues()[i] - getValues()[i]);
+			double localChange = getOldValues()[i] - getValues()[i];
+			change += localChange * localChange;
 		}
 		return change;
 	}

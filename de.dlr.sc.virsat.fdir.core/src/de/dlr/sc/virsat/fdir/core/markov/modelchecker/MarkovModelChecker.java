@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.SSAIterator;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
@@ -53,7 +54,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	private MarkovAutomaton<? extends MarkovState> mc;
 	private IMatrix tm;
 	private IMatrix tmTerminal;
-	private BellmanMatrix bellmanMatrix;
+	private BellmanMatrix bellmanMatrixTerminal;
 
 	/* Buffers */
 
@@ -89,7 +90,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 		tm = null;
 		tmTerminal = null;
-		bellmanMatrix = null;
+		bellmanMatrixTerminal = null;
 
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
@@ -159,12 +160,12 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	
 	@Override
 	public void visit(MTTF mttfMetric) {
-		if (bellmanMatrix == null) {
-			bellmanMatrix = matrixFactory.getBellmanMatrix(mc);
+		if (bellmanMatrixTerminal == null) {
+			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, true);
 		}
 		
 		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(mc); 
-		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrix.getIterator(probabilityDistribution, eps), mc);
+		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrixTerminal.getIterator(probabilityDistribution, eps), mc);
 		
 		boolean convergence = false;
 		while (!convergence) {			
@@ -226,31 +227,32 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
-		if (tm == null) {
-			tm = matrixFactory.getTransitionMatrix(mc, false, delta);
+		if (bellmanMatrixTerminal == null) {
+			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, false);
 		}
 
 		probabilityDistribution = getInitialProbabilityDistribution();
 		
-		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(tm.getIterator(probabilityDistribution, eps), mc);
+		double[] baseFailCosts = BellmanMatrix.getInitalSSAFailVector(mc);
+		double[] baseTotalCosts = BellmanMatrix.getInititalSSATotalVector(mc);
+		IMatrixIterator mtxIterator = new SSAIterator<>(bellmanMatrixTerminal, baseFailCosts, baseTotalCosts, mc);
 		
-		double oldUnavailability = getFailRate();
-		double difference = 0;
 		boolean convergence = false;
 		while (!convergence) {
 			mtxIterator.iterate();
-			double newUnavailability = getFailRate();
-			difference = Math.abs(newUnavailability - oldUnavailability) / newUnavailability;
-
-			if (difference < (eps) / Math.max(1, delta) || Double.isNaN(difference)) {
+			double change = mtxIterator.getChange();
+			if (change < eps * eps || Double.isNaN(change)) {
+				probabilityDistribution = mtxIterator.getValues();
 				convergence = true;
+				if (Double.isInfinite(mtxIterator.getOldValues()[0])) {
+					probabilityDistribution[0] = 1;
+				}
 			}
-			oldUnavailability = newUnavailability;
-		}
+		}	
 		
 		// Due to numerical inaccuracies, it possible to end up with a ssa very slightly below 0 (in the area of epsilon).
 		// Limit the lower bound to 0, to prevent this.
-		double ssa = Math.max(0, 1 - getFailRate());
+		double ssa = Math.max(0, 1 - probabilityDistribution[0]);
 		modelCheckingResult.setSteadyStateAvailability(ssa);
 	}
 

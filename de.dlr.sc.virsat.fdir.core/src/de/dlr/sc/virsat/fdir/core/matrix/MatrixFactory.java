@@ -39,12 +39,13 @@ public class MatrixFactory {
 	}
 	/**
 	 * @param mc markov chain
+	 * @param failStatesAreTerminal whether the final states are terminal states
 	 * @return transition matrix
 	 */
-	public BellmanMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc) {		
+	public BellmanMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal) {		
 		this.mc = mc;
 		BellmanMatrix tm = new BellmanMatrix(mc.getStates().size());
-		tm = createBellmanMatrix(tm);
+		tm = createBellmanMatrix(tm, failStatesAreTerminal);
 		return tm;
 	}
 	/**
@@ -93,13 +94,14 @@ public class MatrixFactory {
 	 * 1/ExitRate(s) + SUM(s' successor of s: Prob(s, s') * MTTF(s')
 	 * 
 	 * @param tm TransitionMatrix
+	 * @param failStatesAreTerminal whether fail states are terminal
 	 * @return the matrix representing the fixpoint iteration
 	 */
-	public BellmanMatrix createBellmanMatrix(BellmanMatrix tm) {
+	public BellmanMatrix createBellmanMatrix(BellmanMatrix tm, boolean failStatesAreTerminal) {
 		for (MarkovState state : mc.getStates()) {
 			List<?> transitions = mc.getSuccTransitions(state);
 
-			if (state.isMarkovian() && !mc.getFinalStates().contains(state)) {
+			if (state.isMarkovian() && (!failStatesAreTerminal || !mc.getFinalStates().contains(state))) {
 				tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
 				tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
 				

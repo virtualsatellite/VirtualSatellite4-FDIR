@@ -44,6 +44,49 @@ public class BellmanMatrix extends TransitionMatrix {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];
 
+		Set<MarkovState> failReachableStates = getStatesWithReachableFailState(mc);
+
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = mc.getStates().get(i);
+			if (state.isMarkovian() && !mc.getFinalStates().contains(state)) {
+				inititalVector[i] = failReachableStates.contains(state) ? 1 / mc.getExitRateForState(state) : Double.POSITIVE_INFINITY;
+			}
+		}
+		return inititalVector;
+	}
+	
+	public static double[] getInitalSSAFailVector(MarkovAutomaton<? extends MarkovState> mc) {
+		int countStates = mc.getStates().size();
+		double[] inititalVector = new double[countStates];
+
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = mc.getStates().get(i);
+			if (mc.getFinalStates().contains(state)) {
+				inititalVector[i] = 1 / mc.getExitRateForState(state);
+			}
+		}
+		return inititalVector;
+	}
+	
+	public static double[] getInititalSSATotalVector(MarkovAutomaton<? extends MarkovState> mc) {
+		int countStates = mc.getStates().size();
+		double[] inititalVector = new double[countStates];
+
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = mc.getStates().get(i);
+			if (state.isMarkovian()) {
+				inititalVector[i] = 1 / mc.getExitRateForState(state);
+			}
+		}
+		return inititalVector;
+	}
+
+	/**
+	 * Computes the set of states that can reach a fail state
+	 * @param mc the markov chain
+	 * @return the set of states that can reach a fail state
+	 */
+	private static Set<MarkovState> getStatesWithReachableFailState(MarkovAutomaton<? extends MarkovState> mc) {
 		Queue<MarkovState> toProcess = new LinkedList<>();
 		toProcess.addAll(mc.getFinalStates());
 		Set<MarkovState> failReachableStates = new HashSet<>();
@@ -60,13 +103,6 @@ public class BellmanMatrix extends TransitionMatrix {
 				}
 			}
 		}
-
-		for (int i = 0; i < countStates; ++i) {
-			MarkovState state = mc.getStates().get(i);
-			if (state.isMarkovian() && !mc.getFinalStates().contains(state)) {
-				inititalVector[i] = failReachableStates.contains(state) ? 1 / mc.getExitRateForState(state) : Double.POSITIVE_INFINITY;
-			}
-		}
-		return inititalVector;
+		return failReachableStates;
 	}
 }

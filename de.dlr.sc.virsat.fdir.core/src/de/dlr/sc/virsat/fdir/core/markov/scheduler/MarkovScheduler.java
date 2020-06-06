@@ -109,7 +109,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 */
 	private IMatrixIterator createValueIterator(MarkovAutomaton<S> ma) {
 		MatrixFactory matrixFactory = new MatrixFactory();
-		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
+		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma, true);
 		
 		double[] values = BellmanMatrix.getInitialMTTFVector(ma);
 		IMatrixIterator bellmanIterator = bellmanMatrix.getIterator(values, EPS);		
