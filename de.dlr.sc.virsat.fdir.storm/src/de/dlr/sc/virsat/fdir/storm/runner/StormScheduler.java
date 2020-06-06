@@ -48,7 +48,7 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> mapScheduler = new HashMap<>();
 		Map<Integer, Integer> stormResults = runStormScheduler(storm);
 		for (MarkovState fromState : ma.getStates()) {
-			if (!fromState.isMarkovian()) {
+			if (fromState.isNondet()) {
 				int bestTransition = stormResults.get(fromState.getIndex());
 				List<MarkovTransition<MarkovState>> transitionGroup = new ArrayList<>();
 				transitionGroup.add(ma.getSuccTransitions(fromState).get(bestTransition));

@@ -155,8 +155,10 @@ public class DFTState extends MarkovState {
 		
 		if (isFailState) {
 			res += ", color=\"red\"";
-		} else if (!isMarkovian()) {
+		} else if (isNondet()) {
 			res += ", color=\"blue\"";
+		} else if (isProbabilisic()) {
+			res += ", color=\"green\"";
 		}
 		
 		res += "]";
@@ -529,7 +531,7 @@ public class DFTState extends MarkovState {
 	 * @return true iff also the claims and the order of the ordered failed basic events match
 	 */
 	public boolean isEquivalent(DFTState other) {
-		if (isMarkovian() != other.isMarkovian()) {
+		if (!getType().equals(other.getType())) {
 			return false;
 		}
 		

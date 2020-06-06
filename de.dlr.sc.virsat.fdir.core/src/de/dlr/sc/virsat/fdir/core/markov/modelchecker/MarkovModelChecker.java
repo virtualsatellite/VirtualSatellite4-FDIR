@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
@@ -117,7 +118,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");					
 		
-		IMatrixIterator mtxIterator = tmTerminal.getIterator(probabilityDistribution, eps);
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(tmTerminal.getIterator(probabilityDistribution, eps), mc);
+		
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
 			subMonitor.setWorkRemaining(steps);
@@ -162,7 +164,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 		
 		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(mc); 
-		IMatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, eps);
+		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrix.getIterator(probabilityDistribution, eps), mc);
 		
 		boolean convergence = false;
 		while (!convergence) {			
@@ -188,7 +190,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		subMonitor.setTaskName("Running Markov Checker on Model");
 				
 		probabilityDistribution = getInitialProbabilityDistribution();
-		IMatrixIterator mtxIterator = tm.getIterator(probabilityDistribution, eps);
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(tm.getIterator(probabilityDistribution, eps), mc);
 
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
@@ -229,7 +231,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 
 		probabilityDistribution = getInitialProbabilityDistribution();
-		IMatrixIterator mtxIterator = tm.getIterator(probabilityDistribution, eps);
+		
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(tm.getIterator(probabilityDistribution, eps), mc);
 		
 		double oldUnavailability = getFailRate();
 		double difference = 0;

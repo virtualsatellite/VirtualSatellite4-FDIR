@@ -367,10 +367,10 @@ public class BasicSynthesizerTest extends ATestCase {
 		final int NUM_STATES = 2;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
-		final double EXPECTED_MTTF = 1.3333333333333333;
+		final double EXPECTED_MTTF = 0.4833333333333333;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertEquals(ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), EXPECTED_MTTF, TEST_EPSILON);
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
 	@Test
