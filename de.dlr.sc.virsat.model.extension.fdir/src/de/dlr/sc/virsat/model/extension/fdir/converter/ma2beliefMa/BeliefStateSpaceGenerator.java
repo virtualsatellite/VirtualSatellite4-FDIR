@@ -63,7 +63,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			BeliefState equivalentBeliefSucc = null;
 			List<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 			
-			if (beliefState.isMarkovian()) {
+			if (!beliefState.isNondet()) {
 				Entry<Set<Object>, Boolean> observationEvent = beliefState.representant.extractObservationEvent(beliefSucc.representant, succTransitions);
 				
 				double exitRate = beliefState.getTotalRate(entry.getValue());
@@ -108,7 +108,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 					PODFTState representant = representantEntry.getKey();
 					if (representant.getObservedFailed().equals(succState.getObservedFailed()) 
 							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())
-							&& representant.isMarkovian() == succState.isMarkovian()) {
+							&& representant.getType().equals(succState.getType())) {
 						transitions = representantEntry.getValue();
 					}
 				}

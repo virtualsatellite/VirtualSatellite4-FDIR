@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -52,8 +53,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
 			
-			List<MarkovTransition<S>> succTransitions = state.isMarkovian() 
-					? ma.getSuccTransitions(state) : selectOptimalTransitionGroup(ma, state);
+			List<MarkovTransition<S>> succTransitions = state.isNondet() 
+					? selectOptimalTransitionGroup(ma, state) : ma.getSuccTransitions(state);
 			
 			if (succTransitions != null) {
 				schedule.put(state, succTransitions);

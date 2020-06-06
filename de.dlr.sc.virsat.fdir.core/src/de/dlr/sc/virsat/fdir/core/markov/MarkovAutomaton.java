@@ -147,12 +147,12 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @param isMarkovian whether the transition is markovian
 	 * @return the created transition
 	 */
-	private MarkovTransition<S> addTransition(Object event, S from, S to, double rate, boolean isMarkovian) {
+	private MarkovTransition<S> addTransition(Object event, S from, S to, double rate, MarkovStateType type) {
 		MarkovTransition<S> t = new MarkovTransition<>(from, to, rate, event);
 		List<MarkovTransition<S>> transitions = getTransitions(event);
 		
 		transitions.add(t);
-		from.setMarkovian(isMarkovian);
+		from.setType(type);
 		
 		this.mapStateToSuccTransitions.get(from).add(t);
 		this.mapStateToPredTransitions.get(to).add(t);
@@ -169,7 +169,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return the created transition
 	 */
 	public MarkovTransition<S> addMarkovianTransition(Object event, S from, S to, double rate) {
-		return addTransition(event, from, to, rate, true);
+		return addTransition(event, from, to, rate, MarkovStateType.MARKOVIAN);
 	}
 	
 	/**
@@ -181,8 +181,21 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return the created transition
 	 */
 	public MarkovTransition<S> addNondeterministicTransition(Object event, S from, S to, double prob) {
-		return addTransition(event, from, to, prob, false);
+		return addTransition(event, from, to, prob, MarkovStateType.NONDET);
 	}
+	
+	/**
+	 * Adds a labeled probabilistic transition
+	 * @param event the transition event
+	 * @param from the starting state of the transition
+	 * @param to the end state of the transition
+	 * @param prob the probability of the probabilistic transition
+	 * @return the created transition
+	 */
+	public MarkovTransition<S> addProbabilisticTransition(Object event, S from, S to, double prob) {
+		return addTransition(event, from, to, prob, MarkovStateType.PROBABILISTIC);
+	}
+	
 	
 	/**
 	 * Adds a labeled nondeterministic transition

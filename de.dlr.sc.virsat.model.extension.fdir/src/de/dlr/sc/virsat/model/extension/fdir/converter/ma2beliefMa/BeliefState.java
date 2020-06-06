@@ -38,7 +38,7 @@ public class BeliefState extends MarkovState {
 	 */
 	BeliefState(PODFTState representant) {
 		this.representant = representant;
-		setMarkovian(representant.isMarkovian());
+		setType(representant.getType());
 	}
 	
 	@Override
@@ -50,8 +50,10 @@ public class BeliefState extends MarkovState {
 		String label = index + " [label=\"[" + index + " " + beliefs + "]\"";
 		if (getFailProb() > 0) {
 			label += ", color=\"red\"";
-		} else if (!isMarkovian()) {
+		} else if (isNondet()) {
 			label += ", color=\"blue\"";
+		} else if (isProbabilisic()) {
+			label += ", color=\"green\"";
 		}
 		label += "]";
 		
@@ -99,7 +101,7 @@ public class BeliefState extends MarkovState {
 	 * @return true if the two belief states are belief equivalent
 	 */
 	public boolean isEquivalent(BeliefState other, double eps) {
-		if (isMarkovian() != other.isMarkovian() || mapStateToBelief.size() != other.mapStateToBelief.size()) {
+		if (!getType().equals(other.getType()) || mapStateToBelief.size() != other.mapStateToBelief.size()) {
 			return false;
 		}
 		

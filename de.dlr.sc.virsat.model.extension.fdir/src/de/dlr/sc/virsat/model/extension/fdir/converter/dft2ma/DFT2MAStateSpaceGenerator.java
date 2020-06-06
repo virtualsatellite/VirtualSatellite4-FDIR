@@ -19,6 +19,7 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
@@ -78,6 +79,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			initialState.setNodeActivation(root, true);
 		}
 		initialState.setRecoveryStrategy(recoveryStrategy);
+		initialState.setType(hasImmediateEvents(initialState) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 		
 		return initialState;
 	}
@@ -158,7 +160,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			// to react, then we need an intermediate non-deterministic state
 			
 			DFTState interimState = stateUpdateResult.getBaseSucc().copy();
-			interimState.setMarkovian(false);
+			interimState.setType(MarkovStateType.NONDET);
 			
 			markovSucc = stateEquivalence.getEquivalentState(interimState);
 			if (markovSucc == interimState) {
@@ -219,7 +221,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<DFTState> newSuccs = new ArrayList<>();
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
-			succ.setMarkovian(true);
+			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 			
 			if (allowsDontCareFailing) {
 				succ.failDontCares(stateUpdateResult.getChangedNodes(), staticAnalysis);
@@ -245,7 +247,11 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 				List<RecoveryAction> actions = stateUpdateResult.getMapStateToRecoveryActions().get(succ);
 				targetMa.addNondeterministicTransition(actions, markovSucc, equivalentState);	
 			} else if (stateUpdate.getState() != equivalentState) {
-				targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), equivalentState, stateUpdate.getRate());
+				if (stateUpdate.getState().isMarkovian()) {
+					targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), equivalentState, stateUpdate.getRate());
+				} else {
+					targetMa.addProbabilisticTransition(stateUpdate.getEvent(), stateUpdate.getState(), equivalentState, stateUpdate.getRate());
+				}
 			}
 		}
 		
@@ -262,22 +268,31 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			return Collections.emptyList();
 		}
 		
-		List<IDFTEvent> occurableEvents = new ArrayList<>();
-		for (IDFTEvent event : events) {
-			if (event.isImmediate() && event.canOccur(state)) {
-				occurableEvents.add(event);
-			}
-		}
-		
+		List<IDFTEvent> occurableEvents = new ArrayList<>();		
 		if (occurableEvents.isEmpty()) {
 			for (IDFTEvent event : events) {
-				if (!event.isImmediate() && event.canOccur(state)) {
+				if (event.isImmediate() == state.isProbabilisic() && event.canOccur(state)) {
 					occurableEvents.add(event);
 				}
 			}
-		}
+		} 
 		
 		return occurableEvents;
+	}
+	
+	/**
+	 * Checks if a state has immediate events enabled
+	 * @param state the state to check
+	 * @return true iff at least one immediate event can occur
+	 */
+	private boolean hasImmediateEvents(DFTState state) {
+		for (IDFTEvent event : events) {
+			if (event.isImmediate() && event.canOccur(state)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**

@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.core.markov.scheduler;
+package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +18,6 @@ import java.util.Map;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.DecoratedIterator;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 
 /**
  * Extends an iterator to nondeterministic states
@@ -31,6 +29,8 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	
 	private Map<S, Collection<List<MarkovTransition<S>>>> mapNondetStateToTransitionGroups;
 	private List<S> nondeterministicStates;
+	private List<S> probabilisticStates;
+	private MarkovAutomaton<S> ma;
 	
 	/**
 	 * Standard constructor
@@ -40,14 +40,19 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma) {
 		super(deterministicIterator);
 		
+		this.ma = ma;
+		
 		nondeterministicStates = new ArrayList<>();
+		probabilisticStates = new ArrayList<>();
 		mapNondetStateToTransitionGroups = new HashMap<>();
 		
 		for (S state : ma.getStates()) {
-			if (!state.isMarkovian()) {
+			if (state.isNondet()) {
 				Map<Object, List<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 				mapNondetStateToTransitionGroups.put(state, transitionGroups.values());
 				nondeterministicStates.add(state);
+			} else if (state.isProbabilisic()) {
+				probabilisticStates.add(state);
 			}
 		}
 	}
@@ -55,6 +60,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	@Override
 	public void iterate() {
 		super.iterate();
+		
 		for (S nondeterministicState : nondeterministicStates) {
 			double maxValue = Double.NEGATIVE_INFINITY;
 			Collection<List<MarkovTransition<S>>> transitionGroups = mapNondetStateToTransitionGroups.get(nondeterministicState);
@@ -65,6 +71,12 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 			}
 			
 			getValues()[nondeterministicState.getIndex()] = maxValue;
+		}
+		
+		for (S probabilisticState : probabilisticStates) {
+			List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(probabilisticState);
+			double expectationValue = getExpectationValue(succTransitions);
+			getValues()[probabilisticState.getIndex()] = expectationValue;
 		}
 	}
 	

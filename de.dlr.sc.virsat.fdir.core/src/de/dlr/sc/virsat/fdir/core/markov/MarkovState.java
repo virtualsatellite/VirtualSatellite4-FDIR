@@ -18,7 +18,7 @@ import java.util.Comparator;
  */
 public class MarkovState {
 	protected int index;
-	private boolean markovian = true;
+	private MarkovStateType type = MarkovStateType.MARKOVIAN;
 	
 	/**
 	 * Gets the index of this state
@@ -29,19 +29,31 @@ public class MarkovState {
 	}
 	
 	/**
-	 * Sets whether or not this state is markovian
-	 * @param markovian set to true to make the state markovian, set to false to make it immediate nondeterministic
+	 * Sets the type of this state
+	 * @param type the new type of this state
 	 */
-	public void setMarkovian(boolean markovian) {
-		this.markovian = markovian;
+	public void setType(MarkovStateType type) {
+		this.type = type;
 	}
 	
 	/**
-	 * Checks if this state is markovian
-	 * @return true iff the state is markovian, false iff the state is immediate nondeterministic
+	 * Gets the type of this state
+	 * @return the type of this state
 	 */
+	public MarkovStateType getType() {
+		return type;
+	}
+	
 	public boolean isMarkovian() {
-		return markovian;
+		return type.equals(MarkovStateType.MARKOVIAN);
+	}
+	
+	public boolean isNondet() {
+		return type.equals(MarkovStateType.NONDET);
+	}
+	
+	public boolean isProbabilisic() {
+		return type.equals(MarkovStateType.PROBABILISTIC);
 	}
 	
 	@Override

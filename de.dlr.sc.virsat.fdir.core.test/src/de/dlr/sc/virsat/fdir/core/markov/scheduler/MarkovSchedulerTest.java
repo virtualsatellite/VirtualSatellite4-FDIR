@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 
 /**
@@ -37,7 +38,7 @@ public class MarkovSchedulerTest {
 	public void testScheduleNoTransitions() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		MarkovState initial = new MarkovState();
-		initial.setMarkovian(false);
+		initial.setType(MarkovStateType.NONDET);
 		ma.addState(initial);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
