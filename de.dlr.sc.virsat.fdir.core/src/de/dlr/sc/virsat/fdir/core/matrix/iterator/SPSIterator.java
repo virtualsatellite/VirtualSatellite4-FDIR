@@ -62,7 +62,7 @@ public class SPSIterator extends MatrixIterator {
 		if (b > BIG) {
 			for (int i = 0; i < vsum.length; i++) {
 				vsum[i] = vsum[i] / b;
-			}			
+			}
 			c = c + Math.log(b);
 			b = 1;
 		}
@@ -91,8 +91,8 @@ public class SPSIterator extends MatrixIterator {
 					vsum[i] = vsum[i] / b;
 				}
 				c = c + Math.log(b);
-				b = 1;				
-			}			
+				b = 1;
+			}
 		}
 		
 		double ecr = Math.exp(c - iteratorParams.maxEntry);

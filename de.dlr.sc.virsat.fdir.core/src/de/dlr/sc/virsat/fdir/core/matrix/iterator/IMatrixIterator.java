@@ -34,6 +34,10 @@ public interface IMatrixIterator {
 	 * @return the change between the distributions
 	 */
 	default double getChange() {
-		return 0;	
+		double change = 0;
+		for (int i = 0; i < getValues().length; ++i) {
+			change += Math.abs(getOldValues()[i] - getValues()[i]);
+		}
+		return change;
 	}
 }
