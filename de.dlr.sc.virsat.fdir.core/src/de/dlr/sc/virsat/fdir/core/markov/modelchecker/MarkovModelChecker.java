@@ -164,7 +164,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 		
 		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(mc); 
-		IMatrixIterator mxIterator = bellmanMatrix.getIterator(probabilityDistribution, eps);
+		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrix.getIterator(probabilityDistribution, eps), mc);
 		
 		boolean convergence = false;
 		while (!convergence) {			

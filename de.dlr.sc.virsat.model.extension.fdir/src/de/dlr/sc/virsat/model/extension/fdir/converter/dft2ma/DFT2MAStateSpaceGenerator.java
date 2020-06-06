@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateU
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateFaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
@@ -192,6 +193,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		IDFTEvent event = stateUpdate.getEvent();
 		DFTState baseSucc = stateUpdateResult.getBaseSucc();
 		
+		if (event instanceof ImmediateFaultEvent) {
+			if (((ImmediateFaultEvent) event).isNegative()) {
+				return;
+			}
+		}
+		
 		boolean isRepair = stateUpdate.getEvent() instanceof IRepairableEvent 
 				? ((IRepairableEvent) stateUpdate.getEvent()).isRepair() : false;
 		Set<FaultTreeNode> occuredEvents = semantics.extractRecoveryActionInput(stateUpdateResult);
@@ -221,11 +228,11 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<DFTState> newSuccs = new ArrayList<>();
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
-			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
-			
 			if (allowsDontCareFailing) {
 				succ.failDontCares(stateUpdateResult.getChangedNodes(), staticAnalysis);
 			}
+			
+			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 			
 			checkFailState(succ);
 			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
