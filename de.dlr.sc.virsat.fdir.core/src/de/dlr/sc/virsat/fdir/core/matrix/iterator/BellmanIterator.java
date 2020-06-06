@@ -22,30 +22,28 @@ public class BellmanIterator extends MatrixIterator {
 		super(matrix, initialValues);
 		baseMTTFs = initialValues.clone();
 		result = new double[initialValues.length];
+		oldValues = new double[initialValues.length];
 	}
 
 	@Override
 	public void iterate() {
-		oldValues = values.clone();
+		for (int i = 0; i < values.length; ++i) {
+			oldValues[i] = values[i];
+		}
+		
 		matrix.multiply(values, result);
 		
 		for (int i = 0; i < baseMTTFs.length; ++i) {
 			result[i] += baseMTTFs[i];
 		}
-		values = result.clone();	
+		
+		double[] tmp = values;
+		values = result;
+		result = tmp;
 	}
 	
 	@Override
 	public double[] getOldValues() {
 		return oldValues;
-	}
-	
-	@Override
-	public double getChange() {
-		double change = 0;
-		for (int i = 0; i < values.length; ++i) {
-			change += Math.abs(oldValues[i] - values[i]);
-		}
-		return change;
 	}
 }

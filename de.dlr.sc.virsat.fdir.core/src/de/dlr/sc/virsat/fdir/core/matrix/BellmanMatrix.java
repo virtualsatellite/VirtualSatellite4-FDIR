@@ -46,11 +46,11 @@ public class BellmanMatrix extends TransitionMatrix {
 
 		Queue<MarkovState> toProcess = new LinkedList<>();
 		toProcess.addAll(mc.getFinalStates());
-		Set<MarkovState> failableStates = new HashSet<>();
+		Set<MarkovState> failReachableStates = new HashSet<>();
 
 		while (!toProcess.isEmpty()) {
 			MarkovState state = toProcess.poll();
-			if (failableStates.add(state)) {
+			if (failReachableStates.add(state)) {
 				List<?> transitions = mc.getPredTransitions(state);
 				for (int j = 0; j < transitions.size(); ++j) {
 					@SuppressWarnings("unchecked")
@@ -64,7 +64,7 @@ public class BellmanMatrix extends TransitionMatrix {
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = mc.getStates().get(i);
 			if (state.isMarkovian() && !mc.getFinalStates().contains(state)) {
-				inititalVector[i] = failableStates.contains(state) ? 1 / mc.getExitRateForState(state) : Double.POSITIVE_INFINITY;
+				inititalVector[i] = failReachableStates.contains(state) ? 1 / mc.getExitRateForState(state) : Double.POSITIVE_INFINITY;
 			}
 		}
 		return inititalVector;
