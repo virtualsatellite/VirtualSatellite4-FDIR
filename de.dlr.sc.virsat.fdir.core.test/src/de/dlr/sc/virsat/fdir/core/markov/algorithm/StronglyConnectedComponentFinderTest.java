@@ -73,7 +73,7 @@ public class StronglyConnectedComponentFinderTest {
 		assertTrue(sccs.contains(scc1));
 		assertTrue(sccs.contains(scc2));
 		
-		List<StronglyConnectedComponent> endSccs = sccFinder.getStronglyConnectedEndComponents();
+		List<StronglyConnectedComponent> endSccs = sccFinder.getStronglyConnectedEndComponents(sccs);
 		
 		final int EXPECTED_COUNT_END_SCCS = 2;
 		assertEquals(EXPECTED_COUNT_END_SCCS, endSccs.size());

@@ -149,7 +149,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @param isMarkovian whether the transition is markovian
 	 * @return the created transition
 	 */
-	private MarkovTransition<S> addTransition(Object event, S from, S to, double rate, MarkovStateType type) {
+	public MarkovTransition<S> addTransition(Object event, S from, S to, double rate, MarkovStateType type) {
 		MarkovTransition<S> t = new MarkovTransition<>(from, to, rate, event);
 		List<MarkovTransition<S>> transitions = getTransitions(event);
 		

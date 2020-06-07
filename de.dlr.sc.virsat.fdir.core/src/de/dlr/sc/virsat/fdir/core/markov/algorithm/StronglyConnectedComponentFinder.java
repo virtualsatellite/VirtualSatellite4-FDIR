@@ -95,8 +95,7 @@ public class StronglyConnectedComponentFinder<S extends MarkovState> {
 		return mapStateToIndex.get(state) == null;
 	}
 	
-	public List<StronglyConnectedComponent> getStronglyConnectedEndComponents() {
-		List<StronglyConnectedComponent> sccs = getStronglyConnectedComponents();
+	public List<StronglyConnectedComponent> getStronglyConnectedEndComponents(List<StronglyConnectedComponent> sccs) {
 		List<StronglyConnectedComponent> endSccs = sccs.stream().filter(StronglyConnectedComponent::isEndComponent).collect(Collectors.toList());
 		return endSccs;
 	}

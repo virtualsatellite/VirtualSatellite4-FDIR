@@ -77,8 +77,6 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 
 	@Override
 	public void iterate() {
-		System.out.println(Arrays.toString(getValues()));
-		
 		super.iterate();
 		
 		for (S nondeterministicState : nondeterministicStates) {

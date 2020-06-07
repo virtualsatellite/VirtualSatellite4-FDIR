@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -230,31 +231,16 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
-		probabilityDistribution = getInitialProbabilityDistribution();
-		
 		StronglyConnectedComponentFinder<? extends MarkovState> sccFinder = new StronglyConnectedComponentFinder<>(mc);
-		List<StronglyConnectedComponent> endSCCs = sccFinder.getStronglyConnectedEndComponents();
+		List<StronglyConnectedComponent> sccs = sccFinder.getStronglyConnectedComponents();
+		List<StronglyConnectedComponent> endSCCs = sccFinder.getStronglyConnectedEndComponents(sccs);
 		
 		Set<MarkovState> endSCCStates = new HashSet<>();
 		for (StronglyConnectedComponent endSCC : endSCCs) {
 			endSCCStates.addAll(endSCC.getStates());
 		}
 		
-		IMatrix transitionMatrixToEndSCCs = matrixFactory.getBellmanMatrix(mc, mc.getStates(), endSCCStates, false);
-		LinearProgramIterator lpIterator = new LinearProgramIterator(transitionMatrixToEndSCCs, probabilityDistribution);
-		
-		boolean convergence = false;
-		while (!convergence) {
-			lpIterator.iterate();
-			double change = lpIterator.getChangeSquared();
-			if (change < eps * eps || Double.isNaN(change)) {
-				convergence = true;
-			}
-		}
-		
-		double[] endSCCProbabilityDistribution = lpIterator.getValues();
-		double ssa = 0;
-		
+		double[] ssas = new double[mc.getStates().size()];
 		for (StronglyConnectedComponent endSCC : endSCCs) {
 			IMatrix bellmanMatrixSCC = matrixFactory.getBellmanMatrix(mc, endSCC.getStates(), Collections.emptySet(), true);
 			
@@ -264,7 +250,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 					new SSAIterator<>(bellmanMatrixSCC, baseFailCosts, baseTotalCosts), mc, endSCC.getStates(), false
 			);
 			
-			convergence = false;
+			boolean convergence = false;
 			while (!convergence) {
 				mtxIterator.iterate();
 				double change = mtxIterator.getChangeSquared();
@@ -277,18 +263,25 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				}
 			}
 			
-			double endSCCProbability = 0;
 			for (MarkovState sccState : endSCC.getStates()) {
-				endSCCProbability += endSCCProbabilityDistribution[sccState.getIndex()];
+				ssas[sccState.getIndex()] += probabilityDistribution[0];
 			}
-			double endSCCSSA =  1 - probabilityDistribution[0];
-			
-			// Final SSA contribution is the steady state availability of the strongly connected end component
-			// weighed by the probability of reaching it
-			ssa += endSCCProbability * endSCCSSA;
 		}
 		
-
+		IMatrix transitionMatrixToEndSCCs = matrixFactory.getBellmanMatrix(mc, mc.getStates(), endSCCStates, true);
+		LinearProgramIterator lpIterator = new LinearProgramIterator(transitionMatrixToEndSCCs, ssas);
+		
+		boolean convergence = false;
+		while (!convergence) {
+			lpIterator.iterate();
+			double change = lpIterator.getChangeSquared();
+			if (change < eps * eps || Double.isNaN(change)) {
+				probabilityDistribution = lpIterator.getValues();
+				convergence = true;
+			}
+		}
+		
+		double ssa = 1 - probabilityDistribution[0];
 		modelCheckingResult.setSteadyStateAvailability(ssa);
 	}
 
