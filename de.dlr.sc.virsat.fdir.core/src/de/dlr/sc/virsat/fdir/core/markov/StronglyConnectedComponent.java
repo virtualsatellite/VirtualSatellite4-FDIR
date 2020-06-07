@@ -1,7 +1,25 @@
+/*******************************************************************************
+ * Copyright (c) 2020 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * This class manages a strongly connected component (SCC) of a markov automaton.
+ * A strongly connected component is a set of states where each state can
+ * be reached from any other state. 
+ * 
+ * @author muel_s8
+ *
+ */
 
 public class StronglyConnectedComponent {
 	private List<MarkovState> states = new ArrayList<>();
@@ -30,6 +48,13 @@ public class StronglyConnectedComponent {
 		return states.hashCode();
 	}
 	
+	/**
+	 * Checks if this SCC is an end component.
+	 * An SCC is a end component if no state has any outgoing transition to state that is
+	 * not in this SCC.
+	 * 
+	 * @return true iff the SCC is an end component
+	 */
 	public boolean isEndComponent() {
 		for (MarkovState state : states) {
 			List<?> succs = ma.getSuccTransitions(state);

@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
