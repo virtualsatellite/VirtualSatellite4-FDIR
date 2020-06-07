@@ -37,7 +37,7 @@ public class BellmanMatrix extends TransitionMatrix {
 	 * Gets the initial MTTF according to the Bellman equations with
 	 * MTTF(s) = 0 if s is a fail state and 
 	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
-	 * @param mc 
+	 * @param mc the markov chain
 	 * @return the initial probability distribution
 	 */
 	public static double[] getNonFailSoujornTimes(MarkovAutomaton<? extends MarkovState> mc) {
@@ -55,6 +55,11 @@ public class BellmanMatrix extends TransitionMatrix {
 		return inititalVector;
 	}
 	
+	/**
+	 * Gets an array with only the soujourn times of fail states.
+	 * @param mc the markoc chain
+	 * @return the soujourn times
+	 */
 	public static double[] getFailSoujournTimes(MarkovAutomaton<? extends MarkovState> mc) {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];
@@ -68,6 +73,11 @@ public class BellmanMatrix extends TransitionMatrix {
 		return inititalVector;
 	}
 	
+	/**
+	 * Gets the soujourn time of any markovian state.
+	 * @param mc the markoc chain
+	 * @return the soujourn times
+	 */
 	public static double[] getSoujournTimes(MarkovAutomaton<? extends MarkovState> mc) {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];

@@ -72,6 +72,8 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 
 	@Override
 	public void iterate() {
+		System.out.println(Arrays.toString(getValues()));
+		
 		super.iterate();
 		
 		for (S nondeterministicState : nondeterministicStates) {
@@ -95,8 +97,6 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 			double expectationValue = MarkovTransition.getExpectationValue(succTransitions, getValues());
 			delegateProbabilisticUpdate(probabilisticState.getIndex(), expectationValue, succTransitions);
 		}
-		
-		System.out.println(Arrays.toString(getValues()));
 	}
 	
 	public void setMaximize(boolean maximize) {

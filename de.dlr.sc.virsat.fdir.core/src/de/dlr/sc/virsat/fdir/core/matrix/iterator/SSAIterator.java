@@ -1,6 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2020 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
-import java.util.Arrays;
 import java.util.List;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
@@ -15,6 +23,8 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
  * Guck, Dennis, et al. "Modelling, reduction and analysis of Markov automata (extended version)." arXiv preprint arXiv:1305.7050 (2013).
  * 
  * @author muel_s8
+ * 
+ * @param <S> State space type
  *
  */
 
@@ -50,6 +60,22 @@ public class SSAIterator<S extends MarkovState> extends MatrixIterator implement
 	public void delegateProbabilisticUpdate(int stateIndex, double value, List<MarkovTransition<S>> transitions) {
 		failCostIterator.getValues()[stateIndex] = MarkovTransition.getExpectationValue(transitions, failCostIterator.getOldValues());
 		totalCostIterator.getValues()[stateIndex] = MarkovTransition.getExpectationValue(transitions, totalCostIterator.getOldValues());
+	}
+	
+	@Override
+	public double getChangeSquared() {
+		boolean allValuesEqual = true;
+		for (int i = 0; i < values.length; ++i) {
+			if (values[i] != values[0]) {
+				allValuesEqual = false;
+			}
+		}
+		
+		if (allValuesEqual) {
+			return 0;
+		}
+		
+		return super.getChangeSquared();
 	}
 	
 	@Override

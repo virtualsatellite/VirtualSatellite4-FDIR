@@ -230,8 +230,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		if (bellmanMatrixTerminal == null) {
 			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, false);
 		}
-
-		System.out.println(mc.toDot());
 		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		
@@ -241,10 +239,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				new SSAIterator<>(bellmanMatrixTerminal, baseFailCosts, baseTotalCosts), mc, false
 		);
 		
-		int countIterations = 0;
 		boolean convergence = false;
 		while (!convergence) {
-			countIterations++;
 			mtxIterator.iterate();
 			double change = mtxIterator.getChangeSquared();
 			if (change < eps * eps || Double.isNaN(change)) {
