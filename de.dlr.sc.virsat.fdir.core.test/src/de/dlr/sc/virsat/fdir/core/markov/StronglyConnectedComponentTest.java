@@ -1,5 +1,8 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 public class StronglyConnectedComponentTest {
@@ -8,7 +11,6 @@ public class StronglyConnectedComponentTest {
 	public void testIsEndComponent() {
 		// Construct the following MA:
 		// init --- 3 ---> good1 --- 2 ---> fail1 --- 4 ---> good1
-		//          2 ---> good2 --- 5 ---> fail2 --- 0.5 -> good2
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 		ma.getEvents().add("m");
@@ -34,14 +36,6 @@ public class StronglyConnectedComponentTest {
 		ma.addMarkovianTransition("m", good1, fail1, RATE_GOOD_1_TO_FAIL_1);
 		ma.addMarkovianTransition("m", fail1, good1, RATE_FAIL_1_TO_GOOD_1);
 		
-		final double RATE_INIT_TO_GOOD_2 = 2;
-		final double RATE_GOOD_2_TO_FAIL_2 = 5;
-		final double RATE_FAIL_2_TO_GOOD_2 = 0.5;
-		
-		ma.addMarkovianTransition("m", init, good2, RATE_INIT_TO_GOOD_2);
-		ma.addMarkovianTransition("m", good2, fail2, RATE_GOOD_2_TO_FAIL_2);
-		ma.addMarkovianTransition("m", fail2, good2, RATE_FAIL_2_TO_GOOD_2);
-		
 		StronglyConnectedComponent<MarkovState> sccInit = new StronglyConnectedComponent<>(ma);
 		sccInit.getStates().add(init);
 		
@@ -49,8 +43,7 @@ public class StronglyConnectedComponentTest {
 		scc1.getStates().add(good1);
 		scc1.getStates().add(fail1);
 		
-		StronglyConnectedComponent<MarkovState> scc2 = new StronglyConnectedComponent<>(ma);
-		scc2.getStates().add(good2);
-		scc2.getStates().add(fail2);
+		assertFalse(sccInit.isEndComponent());
+		assertTrue(scc1.isEndComponent());
 	}
 }
