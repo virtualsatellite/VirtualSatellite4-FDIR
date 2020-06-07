@@ -88,7 +88,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 			double bestValue = maximize ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
 			for (List<MarkovTransition<S>> transitionGroup : transitionGroups) {
 				double expectationValue = MarkovTransition.getExpectationValue(transitionGroup, mapStateToIndex, getValues());
-				if ((maximize && expectationValue > bestValue) || expectationValue < bestValue) {
+				if ((maximize && expectationValue > bestValue) || (!maximize && expectationValue < bestValue)) {
 					bestValue = expectationValue;
 					bestTransitionGroup = transitionGroup;
 				}

@@ -125,15 +125,17 @@ public class MarkovSchedulerTest {
 		
 		ma.addMarkovianTransition("c", good, bad, 1);
 		
+		System.out.println(ma.toDot());
+		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice1));
 		assertFalse(schedule.get(initial).contains(falseChoice2));
 		
 		Map<MarkovState, Double> values = scheduler.getResults();
-		assertEquals(values.get(initial), 1, 0);
-		assertEquals(values.get(good), 1, 0);
-		assertEquals(values.get(bad), 0, 0);
+		assertEquals(1, values.get(initial), 0);
+		assertEquals(1, values.get(good), 0);
+		assertEquals(0, values.get(bad), 0);
 	}
 	
 	@Test
