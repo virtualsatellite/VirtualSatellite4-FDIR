@@ -31,11 +31,13 @@ public class StronglyConnectedComponentFinder<S extends MarkovState> {
 	private int index;
 	private Map<S, Integer> mapStateToIndex;
 	private Map<S, Integer> mapStateToLowLink;
-	private List<StronglyConnectedComponent<S>> sccs;
+	private List<StronglyConnectedComponent> sccs;
 	
-	public List<StronglyConnectedComponent<S>> getStronglyConnectedComponents(MarkovAutomaton<S> ma) {
+	public StronglyConnectedComponentFinder(MarkovAutomaton<S> ma) {
 		this.ma = ma;
-		
+	}
+	
+	public List<StronglyConnectedComponent> getStronglyConnectedComponents() {
 		sccs = new ArrayList<>();
 		mapStateToIndex = new HashMap<>();
 		mapStateToLowLink = new HashMap<>();
@@ -77,7 +79,7 @@ public class StronglyConnectedComponentFinder<S extends MarkovState> {
 		
 		// If state is an SCC root, then generate a new SCC
 		if (mapStateToLowLink.get(state) == mapStateToIndex.get(state)) {
-			StronglyConnectedComponent<S> scc = new StronglyConnectedComponent<>(ma);
+			StronglyConnectedComponent scc = new StronglyConnectedComponent(ma);
 			sccs.add(scc);
 			
 			// Backtrack over the indexed tree to grab all members of the scc
@@ -93,9 +95,9 @@ public class StronglyConnectedComponentFinder<S extends MarkovState> {
 		return mapStateToIndex.get(state) == null;
 	}
 	
-	public List<StronglyConnectedComponent<S>> getStronglyConnectedEndComponents(MarkovAutomaton<S> ma) {
-		List<StronglyConnectedComponent<S>> sccs = getStronglyConnectedComponents(ma);
-		List<StronglyConnectedComponent<S>> endSccs = sccs.stream().filter(StronglyConnectedComponent::isEndComponent).collect(Collectors.toList());
+	public List<StronglyConnectedComponent> getStronglyConnectedEndComponents() {
+		List<StronglyConnectedComponent> sccs = getStronglyConnectedComponents();
+		List<StronglyConnectedComponent> endSccs = sccs.stream().filter(StronglyConnectedComponent::isEndComponent).collect(Collectors.toList());
 		return endSccs;
 	}
 }

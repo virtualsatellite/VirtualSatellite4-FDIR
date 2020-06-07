@@ -28,7 +28,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
  *
  */
 
-public class SSAIterator<S extends MarkovState> extends MatrixIterator implements IDelegateIterator<S> {
+public class SSAIterator<S extends MarkovState> extends AMatrixIterator implements IDelegateIterator<S> {
 
 	private double[] oldValues;
 	private IMatrixIterator failCostIterator;

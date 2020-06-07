@@ -17,7 +17,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
  * 
  * Abstract matrix iterator class   
  */
-public abstract class MatrixIterator implements IMatrixIterator {
+public abstract class AMatrixIterator implements IMatrixIterator {
 	protected IMatrix matrix;
 	protected double[] values;
 	
@@ -28,7 +28,7 @@ public abstract class MatrixIterator implements IMatrixIterator {
 	 * @param initialValues probabilityDistribution
 	 * @param eps epsilon
 	 */
-	public MatrixIterator(IMatrix matrix, double[] initialValues) {
+	public AMatrixIterator(IMatrix matrix, double[] initialValues) {
 		this.matrix = matrix;
 		this.values = initialValues;
 	}

@@ -1,6 +1,7 @@
 package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -14,8 +15,6 @@ public class StronglyConnectedComponentFinderTest {
 
 	@Test
 	public void testGetStronglyConnectedComponents() {
-		StronglyConnectedComponentFinder<MarkovState> sccFinder = new StronglyConnectedComponentFinder<>();
-		
 		// Construct the following MA:
 		// init --- 3 ---> good1 --- 2 ---> fail1 --- 4 ---> good1
 		//          2 ---> good2 --- 5 ---> fail2 --- 0.5 -> good2
@@ -52,19 +51,21 @@ public class StronglyConnectedComponentFinderTest {
 		ma.addMarkovianTransition("m", good2, fail2, RATE_GOOD_2_TO_FAIL_2);
 		ma.addMarkovianTransition("m", fail2, good2, RATE_FAIL_2_TO_GOOD_2);
 		
-		List<StronglyConnectedComponent<MarkovState>> sccs = sccFinder.getStronglyConnectedComponents(ma);
+		StronglyConnectedComponentFinder<MarkovState> sccFinder = new StronglyConnectedComponentFinder<>(ma);
+		
+		List<StronglyConnectedComponent> sccs = sccFinder.getStronglyConnectedComponents();
 		
 		final int EXPECTED_COUNT_SCCS = 3;
 		assertEquals(EXPECTED_COUNT_SCCS, sccs.size());
 		
-		StronglyConnectedComponent<MarkovState> sccInit = new StronglyConnectedComponent<>(ma);
+		StronglyConnectedComponent sccInit = new StronglyConnectedComponent(ma);
 		sccInit.getStates().add(init);
 		
-		StronglyConnectedComponent<MarkovState> scc1 = new StronglyConnectedComponent<>(ma);
+		StronglyConnectedComponent scc1 = new StronglyConnectedComponent(ma);
 		scc1.getStates().add(good1);
 		scc1.getStates().add(fail1);
 		
-		StronglyConnectedComponent<MarkovState> scc2 = new StronglyConnectedComponent<>(ma);
+		StronglyConnectedComponent scc2 = new StronglyConnectedComponent(ma);
 		scc2.getStates().add(good2);
 		scc2.getStates().add(fail2);
 		
@@ -72,7 +73,7 @@ public class StronglyConnectedComponentFinderTest {
 		assertTrue(sccs.contains(scc1));
 		assertTrue(sccs.contains(scc2));
 		
-		List<StronglyConnectedComponent<MarkovState>> endSccs = sccFinder.getStronglyConnectedEndComponents(ma);
+		List<StronglyConnectedComponent> endSccs = sccFinder.getStronglyConnectedEndComponents();
 		
 		final int EXPECTED_COUNT_END_SCCS = 2;
 		assertEquals(EXPECTED_COUNT_END_SCCS, endSccs.size());

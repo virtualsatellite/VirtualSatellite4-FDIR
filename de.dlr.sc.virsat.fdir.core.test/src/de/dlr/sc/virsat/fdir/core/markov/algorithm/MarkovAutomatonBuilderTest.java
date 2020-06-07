@@ -20,8 +20,6 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
-import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuilder;
 
 /**
  * This class tests the markov automaton builder class

@@ -24,7 +24,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
  * 	of a rate matrix on a probability vector. In: 1809.07110, arXiv, 2018. 
  *
  */
-public class SPSIterator extends MatrixIterator {
+public class SPSIterator extends AMatrixIterator {
 	
 	private static final double BIG = Math.pow(10, 100);
 	private static final int RHO_FACTOR = 18;

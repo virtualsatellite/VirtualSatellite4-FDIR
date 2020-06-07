@@ -12,38 +12,21 @@ package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 
-public class BellmanIterator extends MatrixIterator {
+public class BellmanIterator extends LinearProgramIterator {
 	
 	private double[] stateCosts;
-	private double[] result;
-	private double[] oldValues;
 
 	public BellmanIterator(IMatrix matrix, double[] initialValues) {
 		super(matrix, initialValues);
 		stateCosts = initialValues.clone();
-		result = new double[initialValues.length];
-		oldValues = new double[initialValues.length];
 	}
 
 	@Override
 	public void iterate() {
-		for (int i = 0; i < values.length; ++i) {
-			oldValues[i] = values[i];
-		}
-		
-		matrix.multiply(values, result);
+		super.iterate();
 		
 		for (int i = 0; i < stateCosts.length; ++i) {
-			result[i] += stateCosts[i];
+			getValues()[i] += stateCosts[i];
 		}
-		
-		double[] tmp = values;
-		values = result;
-		result = tmp;
-	}
-	
-	@Override
-	public double[] getOldValues() {
-		return oldValues;
 	}
 }

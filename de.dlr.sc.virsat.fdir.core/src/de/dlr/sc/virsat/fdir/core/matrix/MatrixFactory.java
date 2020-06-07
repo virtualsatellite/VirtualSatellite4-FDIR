@@ -10,7 +10,11 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -37,15 +41,16 @@ public class MatrixFactory {
 		tm = createTransitionMatrix(tm, failStatesAreTerminal, delta);
 		return tm;
 	}
+	
 	/**
 	 * @param mc markov chain
 	 * @param failStatesAreTerminal whether the final states are terminal states
 	 * @return transition matrix
 	 */
-	public BellmanMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal) {		
+	public BellmanMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc, List<? extends MarkovState> states, Set<? extends MarkovState> terminalStates, boolean invertEdgeDirection) {		
 		this.mc = mc;
-		BellmanMatrix tm = new BellmanMatrix(mc.getStates().size());
-		tm = createBellmanMatrix(tm, failStatesAreTerminal);
+		BellmanMatrix tm = new BellmanMatrix(states.size());
+		tm = createBellmanMatrix(tm, states, terminalStates, invertEdgeDirection);
 		return tm;
 	}
 	/**
@@ -94,31 +99,45 @@ public class MatrixFactory {
 	 * 1/ExitRate(s) + SUM(s' successor of s: Prob(s, s') * MTTF(s')
 	 * 
 	 * @param tm TransitionMatrix
+	 * @param states 
 	 * @param failStatesAreTerminal whether fail states are terminal
 	 * @return the matrix representing the fixpoint iteration
 	 */
-	public BellmanMatrix createBellmanMatrix(BellmanMatrix tm, boolean failStatesAreTerminal) {
-		for (MarkovState state : mc.getStates()) {
-			List<?> transitions = mc.getSuccTransitions(state);
+	public BellmanMatrix createBellmanMatrix(BellmanMatrix tm, List<? extends MarkovState> states, Set<? extends MarkovState> terminalStates, boolean invertEdgeDirection) {
+		Map<MarkovState, Integer> mapStateToIndex = new HashMap<>();
+		for (int i = 0; i < states.size(); ++i) {
+			mapStateToIndex.put(states.get(i), i);
+		}
+		
+		for (MarkovState state : states) {
+			int index = mapStateToIndex.get(state);
 
-			if (state.isMarkovian() && (!failStatesAreTerminal || !mc.getFinalStates().contains(state))) {
-				tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
-				tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
-				
-				double exitRate = mc.getExitRateForState(state);
+			if (state.isMarkovian() && (!invertEdgeDirection || !terminalStates.contains(state))) {
+				List<?> transitions = invertEdgeDirection ? mc.getSuccTransitions(state) : mc.getPredTransitions(state);
+				tm.getStatePredIndices()[index] = new int[transitions.size()];
+				tm.getStatePredRates()[index] = new double[transitions.size()];
 
 				for (int j = 0; j < transitions.size(); ++j) {
 					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					tm.getStatePredIndices()[state.getIndex()][j] = transition.getTo().getIndex();
-					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() / exitRate;
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+					if (invertEdgeDirection || !terminalStates.contains(transition.getFrom())) {
+						tm.getStatePredIndices()[index][j] = mapStateToIndex.get(invertEdgeDirection ? transition.getTo() : transition.getFrom());
+						double exitRate = mc.getExitRateForState(invertEdgeDirection ? state : transition.getFrom());
+						tm.getStatePredRates()[index][j] = transition.getRate() / exitRate;
+					}
 				}
 			} else {
-				tm.getStatePredIndices()[state.getIndex()] = EMPTY_INDEX_LIST;
-				tm.getStatePredRates()[state.getIndex()] = EMPTY_RATES_LIST;
+				tm.getStatePredIndices()[index] = EMPTY_INDEX_LIST;
+				tm.getStatePredRates()[index] = EMPTY_RATES_LIST;
 			}
 		}
+		
+		// Make terminal states absorbing
+		for (MarkovState terminalState : terminalStates) {
+			int index = mapStateToIndex.get(terminalState);
+			tm.getDiagonal()[index] = 1;
+		}
+		
 		return tm;
 	}	
 }

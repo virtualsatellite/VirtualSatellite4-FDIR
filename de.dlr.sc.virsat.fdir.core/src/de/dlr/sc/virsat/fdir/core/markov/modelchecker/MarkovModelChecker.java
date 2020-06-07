@@ -24,10 +24,13 @@ import org.eclipse.core.runtime.SubMonitor;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponent;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.StronglyConnectedComponentFinder;
 import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.LinearProgramIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.SSAIterator;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
@@ -161,10 +164,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(MTTF mttfMetric) {
 		if (bellmanMatrixTerminal == null) {
-			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, true);
+			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, mc.getStates(), mc.getFinalStates(), true);
 		}
 		
-		probabilityDistribution = BellmanMatrix.getNonFailSoujornTimes(mc); 
+		probabilityDistribution = mc.getNonFailSoujornTimes(); 
 		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrixTerminal.getIterator(probabilityDistribution, eps), mc);
 		
 		boolean convergence = false;
@@ -227,34 +230,65 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
-		if (bellmanMatrixTerminal == null) {
-			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, false);
-		}
-		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		
-		double[] baseFailCosts = BellmanMatrix.getFailSoujournTimes(mc);
-		double[] baseTotalCosts = BellmanMatrix.getSoujournTimes(mc);
-		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(
-				new SSAIterator<>(bellmanMatrixTerminal, baseFailCosts, baseTotalCosts), mc, false
-		);
+		StronglyConnectedComponentFinder<? extends MarkovState> sccFinder = new StronglyConnectedComponentFinder<>(mc);
+		List<StronglyConnectedComponent> endSCCs = sccFinder.getStronglyConnectedEndComponents();
+		
+		Set<MarkovState> endSCCStates = new HashSet<>();
+		for (StronglyConnectedComponent endSCC : endSCCs) {
+			endSCCStates.addAll(endSCC.getStates());
+		}
+		
+		IMatrix transitionMatrixToEndSCCs = matrixFactory.getBellmanMatrix(mc, mc.getStates(), endSCCStates, false);
+		LinearProgramIterator lpIterator = new LinearProgramIterator(transitionMatrixToEndSCCs, probabilityDistribution);
 		
 		boolean convergence = false;
 		while (!convergence) {
-			mtxIterator.iterate();
-			double change = mtxIterator.getChangeSquared();
+			lpIterator.iterate();
+			double change = lpIterator.getChangeSquared();
 			if (change < eps * eps || Double.isNaN(change)) {
-				probabilityDistribution = mtxIterator.getValues();
 				convergence = true;
-				if (Double.isInfinite(mtxIterator.getOldValues()[0])) {
-					probabilityDistribution[0] = 1;
+			}
+		}
+		
+		double[] endSCCProbabilityDistribution = lpIterator.getValues();
+		double ssa = 0;
+		
+		for (StronglyConnectedComponent endSCC : endSCCs) {
+			IMatrix bellmanMatrixSCC = matrixFactory.getBellmanMatrix(mc, endSCC.getStates(), Collections.emptySet(), true);
+			
+			double[] baseFailCosts = mc.getFailSoujournTimes(endSCC.getStates());
+			double[] baseTotalCosts = mc.getSoujournTimes(endSCC.getStates());
+			IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(
+					new SSAIterator<>(bellmanMatrixSCC, baseFailCosts, baseTotalCosts), mc, false
+			);
+			
+			convergence = false;
+			while (!convergence) {
+				mtxIterator.iterate();
+				double change = mtxIterator.getChangeSquared();
+				if (change < eps * eps || Double.isNaN(change)) {
+					probabilityDistribution = mtxIterator.getValues();
+					convergence = true;
+					if (Double.isInfinite(mtxIterator.getOldValues()[0])) {
+						probabilityDistribution[0] = 1;
+					}
 				}
 			}
-		}	
+			
+			double endSCCProbability = 0;
+			for (MarkovState sccState : endSCC.getStates()) {
+				endSCCProbability += endSCCProbabilityDistribution[sccState.getIndex()];
+			}
+			double endSCCSSA =  1 - probabilityDistribution[0];
+			
+			// Final SSA contribution is the steady state availability of the strongly connected end component
+			// weighed by the probability of reaching it
+			ssa += endSCCProbability * endSCCSSA;
+		}
 		
-		// Due to numerical inaccuracies, it possible to end up with a ssa very slightly below 0 (in the area of epsilon).
-		// Limit the lower bound to 0, to prevent this.
-		double ssa = Math.max(0, 1 - probabilityDistribution[0]);
+
 		modelCheckingResult.setSteadyStateAvailability(ssa);
 	}
 

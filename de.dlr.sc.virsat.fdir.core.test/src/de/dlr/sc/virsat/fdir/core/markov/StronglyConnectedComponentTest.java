@@ -36,10 +36,10 @@ public class StronglyConnectedComponentTest {
 		ma.addMarkovianTransition("m", good1, fail1, RATE_GOOD_1_TO_FAIL_1);
 		ma.addMarkovianTransition("m", fail1, good1, RATE_FAIL_1_TO_GOOD_1);
 		
-		StronglyConnectedComponent<MarkovState> sccInit = new StronglyConnectedComponent<>(ma);
+		StronglyConnectedComponent sccInit = new StronglyConnectedComponent(ma);
 		sccInit.getStates().add(init);
 		
-		StronglyConnectedComponent<MarkovState> scc1 = new StronglyConnectedComponent<>(ma);
+		StronglyConnectedComponent scc1 = new StronglyConnectedComponent(ma);
 		scc1.getStates().add(good1);
 		scc1.getStates().add(fail1);
 		

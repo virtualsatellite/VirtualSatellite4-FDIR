@@ -1,25 +1,24 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-public class StronglyConnectedComponent<S extends MarkovState> {
-	private Set<S> states = new HashSet<>();
-	private MarkovAutomaton<S> ma;
+public class StronglyConnectedComponent {
+	private List<MarkovState> states = new ArrayList<>();
+	private MarkovAutomaton<? extends MarkovState> ma;
 	
-	public StronglyConnectedComponent(MarkovAutomaton<S> ma) {
+	public StronglyConnectedComponent(MarkovAutomaton<? extends MarkovState> ma) {
 		this.ma = ma;
 	}
 	
-	public Set<S> getStates() {
+	public List<MarkovState> getStates() {
 		return states;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof StronglyConnectedComponent) {
-			StronglyConnectedComponent<?> sccOther = (StronglyConnectedComponent<?>) obj;
+			StronglyConnectedComponent sccOther = (StronglyConnectedComponent) obj;
 			return states.equals(sccOther.getStates()); 
 		}
 		
@@ -33,8 +32,9 @@ public class StronglyConnectedComponent<S extends MarkovState> {
 	
 	public boolean isEndComponent() {
 		for (MarkovState state : states) {
-			List<MarkovTransition<S>> succs = ma.getSuccTransitions(state);
-			for (MarkovTransition<S> succTransition : succs) {
+			List<?> succs = ma.getSuccTransitions(state);
+			for (Object succTransitionObject : succs) {
+				MarkovTransition<?> succTransition = (MarkovTransition<?>) succTransitionObject;
 				if (!states.contains(succTransition.getTo())) {
 					return false;
 				}

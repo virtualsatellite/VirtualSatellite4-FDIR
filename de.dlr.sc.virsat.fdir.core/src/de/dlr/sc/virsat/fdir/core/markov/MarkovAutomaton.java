@@ -14,8 +14,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -281,5 +283,87 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 */
 	public static boolean isRateDefined(double rate) {
 		return Double.isFinite(rate) && rate > 0;
+	}
+	
+	/**
+	 * Gets the initial MTTF according to the Bellman equations with
+	 * MTTF(s) = 0 if s is a fail state and 
+	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
+	 * @param mc the markov chain
+	 * @return the initial probability distribution
+	 */
+	public double[] getNonFailSoujornTimes() {
+		int countStates = getStates().size();
+		double[] inititalVector = new double[countStates];
+
+		Set<MarkovState> failReachableStates = getStatesWithReachableFailState();
+
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = getStates().get(i);
+			if (state.isMarkovian() && !getFinalStates().contains(state)) {
+				inititalVector[i] = failReachableStates.contains(state) ? 1 / getExitRateForState(state) : Double.POSITIVE_INFINITY;
+			}
+		}
+		return inititalVector;
+	}
+	
+	/**
+	 * Gets an array with only the soujourn times of fail states.
+	 * @param mc the markoc chain
+	 * @param states 
+	 * @return the soujourn times
+	 */
+	public double[] getFailSoujournTimes(List<MarkovState> states) {
+		int countStates = states.size();
+		double[] inititalVector = new double[countStates];
+
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = states.get(i);
+			if (state.isMarkovian() && getFinalStates().contains(state)) {
+				inititalVector[i] = 1 / getExitRateForState(state);
+			}
+		}
+		return inititalVector;
+	}
+	
+	/**
+	 * Gets the soujourn time of any markovian state.
+	 * @param states 
+	 * @return the soujourn times
+	 */
+	public double[] getSoujournTimes(List<MarkovState> states) {
+		int countStates = states.size();
+		double[] inititalVector = new double[countStates];
+
+		for (int i = 0; i < countStates; ++i) {
+			MarkovState state = states.get(i);
+			if (state.isMarkovian()) {
+				inititalVector[i] = 1 / getExitRateForState(state);
+			}
+		}
+		return inititalVector;
+	}
+
+	/**
+	 * Computes the set of states that can reach a fail state
+	 * @param mc the markov chain
+	 * @return the set of states that can reach a fail state
+	 */
+	public Set<MarkovState> getStatesWithReachableFailState() {
+		Queue<MarkovState> toProcess = new LinkedList<>();
+		toProcess.addAll(getFinalStates());
+		Set<MarkovState> failReachableStates = new HashSet<>();
+
+		while (!toProcess.isEmpty()) {
+			MarkovState state = toProcess.poll();
+			if (failReachableStates.add(state)) {
+				List<MarkovTransition<S>> transitions = getPredTransitions(state);
+				for (int j = 0; j < transitions.size(); ++j) {
+					MarkovTransition<S> transition = transitions.get(j);
+					toProcess.add(transition.getFrom());
+				}
+			}
+		}
+		return failReachableStates;
 	}
 }

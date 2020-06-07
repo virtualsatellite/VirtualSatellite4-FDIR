@@ -135,7 +135,7 @@ public class MarkovModelCheckerTest {
 	
 	@Test
 	public void testSteadyStateAvailability2SCC() {
-		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.677419354;
+		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.4363636363636364;
 		MarkovModelChecker modelChecker = new MarkovModelChecker(1, EPSILON);
 		
 		// Construct the following MA:
