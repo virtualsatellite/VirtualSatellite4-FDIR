@@ -1,17 +1,16 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class StronglyConnectedComponent<S extends MarkovState> {
 	private Set<S> states = new HashSet<>();
 	private MarkovAutomaton<S> ma;
+	
+	public StronglyConnectedComponent(MarkovAutomaton<S> ma) {
+		this.ma = ma;
+	}
 	
 	public Set<S> getStates() {
 		return states;
@@ -19,7 +18,12 @@ public class StronglyConnectedComponent<S extends MarkovState> {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return states.equals(obj);
+		if (obj instanceof StronglyConnectedComponent) {
+			StronglyConnectedComponent<?> sccOther = (StronglyConnectedComponent<?>) obj;
+			return states.equals(sccOther.getStates()); 
+		}
+		
+		return super.equals(obj);
 	}
 	
 	@Override

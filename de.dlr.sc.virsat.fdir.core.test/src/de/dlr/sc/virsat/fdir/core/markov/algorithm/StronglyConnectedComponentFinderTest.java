@@ -57,14 +57,14 @@ public class StronglyConnectedComponentFinderTest {
 		final int EXPECTED_COUNT_SCCS = 3;
 		assertEquals(EXPECTED_COUNT_SCCS, sccs.size());
 		
-		StronglyConnectedComponent<MarkovState> sccInit = new StronglyConnectedComponent<>();
+		StronglyConnectedComponent<MarkovState> sccInit = new StronglyConnectedComponent<>(ma);
 		sccInit.getStates().add(init);
 		
-		StronglyConnectedComponent<MarkovState> scc1 = new StronglyConnectedComponent<>();
+		StronglyConnectedComponent<MarkovState> scc1 = new StronglyConnectedComponent<>(ma);
 		scc1.getStates().add(good1);
 		scc1.getStates().add(fail1);
 		
-		StronglyConnectedComponent<MarkovState> scc2 = new StronglyConnectedComponent<>();
+		StronglyConnectedComponent<MarkovState> scc2 = new StronglyConnectedComponent<>(ma);
 		scc2.getStates().add(good2);
 		scc2.getStates().add(fail2);
 		
@@ -75,7 +75,7 @@ public class StronglyConnectedComponentFinderTest {
 		List<StronglyConnectedComponent<MarkovState>> endSccs = sccFinder.getStronglyConnectedEndComponents(ma);
 		
 		final int EXPECTED_COUNT_END_SCCS = 2;
-		assertEquals(EXPECTED_COUNT_END_SCCS, sccs.size());
+		assertEquals(EXPECTED_COUNT_END_SCCS, endSccs.size());
 		assertTrue(endSccs.contains(scc1));
 		assertTrue(endSccs.contains(scc2));
 	}
