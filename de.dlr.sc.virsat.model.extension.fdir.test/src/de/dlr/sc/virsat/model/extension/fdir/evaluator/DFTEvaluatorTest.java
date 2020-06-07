@@ -886,7 +886,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateDelay1Repair() throws IOException {
 		final double EXPECTEDMTTF = 15.999998884932491;
-		final double EXPECTEDSSA = 0.8889073028882054;
+		final double EXPECTEDSSA = 0.8885081639540016;
 		
 		Fault fault = createDFT("/resources/galileoRepair/delay1Repair.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
@@ -1041,7 +1041,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		};
 		
 		final double EXPECTEDMTTF = 2.9435483;
-		final double EXPECTEDSTEADYSTATE = 0.09111471531361703;
+		final double EXPECTEDSTEADYSTATE = 0.09090911014549385;
 		
 		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
 		
@@ -1062,7 +1062,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			0.8897991134702452
 		};
 		
-		final double EXPECTEDSTEADYSTATE = 0.22228307985176277;
+		final double EXPECTEDSTEADYSTATE = 0.22222102222417872;
 		
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Repair1.dft");
 		
