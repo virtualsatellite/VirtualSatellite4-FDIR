@@ -9,7 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuildStatistics;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
 
 /**

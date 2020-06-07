@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.core.markov;
+package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -17,6 +17,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
+
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuilder;
 
 /**
  * This class tests the markov automaton builder class

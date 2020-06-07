@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.core.markov;
+package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
 /**
  * This class holds the internal statistics of a call to the DFT2MAConverter

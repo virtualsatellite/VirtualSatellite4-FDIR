@@ -11,8 +11,8 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
 import org.eclipse.core.runtime.SubMonitor;
 
-import de.dlr.sc.virsat.fdir.core.markov.A2MAConverter;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.A2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 

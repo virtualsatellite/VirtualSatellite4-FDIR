@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-import de.dlr.sc.virsat.fdir.core.markov.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;

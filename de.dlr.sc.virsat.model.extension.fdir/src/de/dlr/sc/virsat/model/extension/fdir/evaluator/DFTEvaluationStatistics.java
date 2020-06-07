@@ -9,7 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuildStatistics;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 
 /**
