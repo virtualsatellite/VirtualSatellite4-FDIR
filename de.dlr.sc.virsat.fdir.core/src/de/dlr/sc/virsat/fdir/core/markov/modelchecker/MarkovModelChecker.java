@@ -257,7 +257,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				if (change < eps * eps || Double.isNaN(change)) {
 					probabilityDistribution = mtxIterator.getValues();
 					convergence = true;
-					if (Double.isInfinite(mtxIterator.getOldValues()[0])) {
+					if (!Double.isFinite(mtxIterator.getValues()[0])) {
 						probabilityDistribution[0] = 1;
 					}
 				}
