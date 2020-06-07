@@ -261,7 +261,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			double[] baseFailCosts = mc.getFailSoujournTimes(endSCC.getStates());
 			double[] baseTotalCosts = mc.getSoujournTimes(endSCC.getStates());
 			IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(
-					new SSAIterator<>(bellmanMatrixSCC, baseFailCosts, baseTotalCosts), mc, false
+					new SSAIterator<>(bellmanMatrixSCC, baseFailCosts, baseTotalCosts), mc, endSCC.getStates(), false
 			);
 			
 			convergence = false;

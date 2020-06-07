@@ -33,6 +33,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	private List<S> probabilisticStates;
 	private MarkovAutomaton<S> ma;
 	private boolean maximize;
+	private Map<MarkovState, Integer> mapStateToIndex;
 	
 	/**
 	 * Standard constructor
@@ -40,7 +41,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	 * @param ma the markov automaton
 	 * @param maximize whether the iterator will try to maximize or minimize the values
 	 */
-	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma, boolean maximize) {
+	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma, List<? extends MarkovState> states, boolean maximize) {
 		super(deterministicIterator);
 		
 		this.ma = ma;
@@ -49,8 +50,12 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 		nondeterministicStates = new ArrayList<>();
 		probabilisticStates = new ArrayList<>();
 		mapNondetStateToTransitionGroups = new HashMap<>();
+		mapStateToIndex = new HashMap<>();
 		
-		for (S state : ma.getStates()) {
+		for (int i = 0; i < states.size(); ++i) {
+			@SuppressWarnings("unchecked")
+			S state = (S) states.get(i);
+			mapStateToIndex.put(state, i);
 			if (state.isNondet()) {
 				Map<Object, List<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 				mapNondetStateToTransitionGroups.put(state, transitionGroups.values());
@@ -67,7 +72,7 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	 * @param ma the markov automaton
 	 */
 	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma) {
-		this(deterministicIterator, ma, true);
+		this(deterministicIterator, ma, ma.getStates(), true);
 	}
 
 	@Override
@@ -82,20 +87,20 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 			List<MarkovTransition<S>> bestTransitionGroup = null;
 			double bestValue = maximize ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
 			for (List<MarkovTransition<S>> transitionGroup : transitionGroups) {
-				double expectationValue = MarkovTransition.getExpectationValue(transitionGroup, getValues());
+				double expectationValue = MarkovTransition.getExpectationValue(transitionGroup, mapStateToIndex, getValues());
 				if ((maximize && expectationValue > bestValue) || expectationValue < bestValue) {
 					bestValue = expectationValue;
 					bestTransitionGroup = transitionGroup;
 				}
 			}
 			
-			delegateProbabilisticUpdate(nondeterministicState.getIndex(), bestValue, bestTransitionGroup);
+			delegateProbabilisticUpdate(mapStateToIndex, mapStateToIndex.get(nondeterministicState), bestValue, bestTransitionGroup);
 		}
 		
 		for (S probabilisticState : probabilisticStates) {
 			List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(probabilisticState);
-			double expectationValue = MarkovTransition.getExpectationValue(succTransitions, getValues());
-			delegateProbabilisticUpdate(probabilisticState.getIndex(), expectationValue, succTransitions);
+			double expectationValue = MarkovTransition.getExpectationValue(succTransitions, mapStateToIndex, getValues());
+			delegateProbabilisticUpdate(mapStateToIndex, mapStateToIndex.get(probabilisticState), expectationValue, succTransitions);
 		}
 	}
 	
@@ -108,13 +113,13 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 	}
 
 	@Override
-	public void delegateProbabilisticUpdate(int index, double value, List<MarkovTransition<S>> transitions) {
+	public void delegateProbabilisticUpdate(Map<MarkovState, Integer> mapStateToIndex, int index, double value, List<MarkovTransition<S>> transitions) {
 		getValues()[index] = value;
 		IMatrixIterator decoratedItr = getDecoratedIterator();
 		if (decoratedItr instanceof IDelegateIterator) {
 			@SuppressWarnings("unchecked")
 			IDelegateIterator<S> delegateItr = (IDelegateIterator<S>) decoratedItr;
-			delegateItr.delegateProbabilisticUpdate(index, value, transitions);
+			delegateItr.delegateProbabilisticUpdate(mapStateToIndex, index, value, transitions);
 		}
 	}
 }

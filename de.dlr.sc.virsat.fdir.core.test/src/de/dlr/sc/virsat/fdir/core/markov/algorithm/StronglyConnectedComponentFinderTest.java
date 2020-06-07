@@ -62,12 +62,12 @@ public class StronglyConnectedComponentFinderTest {
 		sccInit.getStates().add(init);
 		
 		StronglyConnectedComponent scc1 = new StronglyConnectedComponent(ma);
-		scc1.getStates().add(good1);
 		scc1.getStates().add(fail1);
+		scc1.getStates().add(good1);
 		
 		StronglyConnectedComponent scc2 = new StronglyConnectedComponent(ma);
-		scc2.getStates().add(good2);
 		scc2.getStates().add(fail2);
+		scc2.getStates().add(good2);
 		
 		assertTrue(sccs.contains(sccInit));
 		assertTrue(sccs.contains(scc1));

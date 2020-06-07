@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
 import java.util.List;
+import java.util.Map;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -30,5 +31,5 @@ public interface IDelegateIterator<S extends MarkovState> {
 	 * @param value the new value of the state
 	 * @param transitions the probabilistic transition group
 	 */
-	void delegateProbabilisticUpdate(int stateIndex, double value, List<MarkovTransition<S>> transitions);
+	void delegateProbabilisticUpdate(Map<MarkovState, Integer> mapStateToIndex, int stateIndex, double value, List<MarkovTransition<S>> transitions);
 }

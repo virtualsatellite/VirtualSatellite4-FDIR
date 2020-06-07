@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
 import java.util.List;
+import java.util.Map;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -57,9 +58,9 @@ public class SSAIterator<S extends MarkovState> extends AMatrixIterator implemen
 	}
 	
 	@Override
-	public void delegateProbabilisticUpdate(int stateIndex, double value, List<MarkovTransition<S>> transitions) {
-		failCostIterator.getValues()[stateIndex] = MarkovTransition.getExpectationValue(transitions, failCostIterator.getOldValues());
-		totalCostIterator.getValues()[stateIndex] = MarkovTransition.getExpectationValue(transitions, totalCostIterator.getOldValues());
+	public void delegateProbabilisticUpdate(Map<MarkovState, Integer> mapStateToIndex, int stateIndex, double value, List<MarkovTransition<S>> transitions) {
+		failCostIterator.getValues()[stateIndex] = MarkovTransition.getExpectationValue(transitions, mapStateToIndex, failCostIterator.getOldValues());
+		totalCostIterator.getValues()[stateIndex] = MarkovTransition.getExpectationValue(transitions, mapStateToIndex, totalCostIterator.getOldValues());
 	}
 	
 	@Override

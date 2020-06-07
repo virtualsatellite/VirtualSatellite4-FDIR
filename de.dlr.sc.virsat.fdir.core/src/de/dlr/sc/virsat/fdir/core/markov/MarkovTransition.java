@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A transition in a markov automaton
@@ -125,10 +126,11 @@ public class MarkovTransition<S> {
 	 * @param transitionGroup the transition group
 	 * @return the expectation value of the transition group
 	 */
-	public static <S extends MarkovState> double getExpectationValue(List<MarkovTransition<S>> transitionGroup, double[] values) {
+	public static <S extends MarkovState> double getExpectationValue(List<MarkovTransition<S>> transitionGroup, 
+			Map<MarkovState, Integer> mapStateToIndex, double[] values) {
 		double expectationValue = 0;
 		for (MarkovTransition<S> transition : transitionGroup) {
-			double succValue = values[transition.getTo().getIndex()];
+			double succValue = values[mapStateToIndex.get(transition.getTo())];
 			expectationValue += transition.getRate() * succValue;
 		}
 		return expectationValue;

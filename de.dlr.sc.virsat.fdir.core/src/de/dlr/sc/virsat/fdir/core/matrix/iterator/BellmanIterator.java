@@ -17,8 +17,8 @@ public class BellmanIterator extends LinearProgramIterator {
 	private double[] stateCosts;
 
 	public BellmanIterator(IMatrix matrix, double[] initialValues) {
-		super(matrix, initialValues);
-		stateCosts = initialValues.clone();
+		super(matrix, initialValues.clone());
+		stateCosts = initialValues;
 	}
 
 	@Override
