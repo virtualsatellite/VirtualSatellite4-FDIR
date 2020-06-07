@@ -1,9 +1,12 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class StronglyConnectedComponent<S extends MarkovState> {
@@ -35,17 +38,5 @@ public class StronglyConnectedComponent<S extends MarkovState> {
 		}
 		
 		return true;
-	}
-	
-	public static <S extends MarkovState> List<StronglyConnectedComponent<S>> getStronglyConnectedComponents(MarkovAutomaton<S> ma) {
-		List<StronglyConnectedComponent<S>> sccs = new ArrayList<>();
-		
-		return sccs;
-	}
-	
-	public static <S extends MarkovState> List<StronglyConnectedComponent<S>> getStronglyConnectedEndComponents(MarkovAutomaton<S> ma) {
-		List<StronglyConnectedComponent<S>> sccs = getStronglyConnectedComponents(ma);
-		List<StronglyConnectedComponent<S>> endSccs = sccs.stream().filter(StronglyConnectedComponent::isEndComponent).collect(Collectors.toList());
-		return endSccs;
 	}
 }
