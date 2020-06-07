@@ -40,7 +40,7 @@ public class BellmanMatrix extends TransitionMatrix {
 	 * @param mc 
 	 * @return the initial probability distribution
 	 */
-	public static double[] getInitialMTTFVector(MarkovAutomaton<? extends MarkovState> mc) {
+	public static double[] getNonFailSoujornTimes(MarkovAutomaton<? extends MarkovState> mc) {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];
 
@@ -55,20 +55,20 @@ public class BellmanMatrix extends TransitionMatrix {
 		return inititalVector;
 	}
 	
-	public static double[] getInitalSSAFailVector(MarkovAutomaton<? extends MarkovState> mc) {
+	public static double[] getFailSoujournTimes(MarkovAutomaton<? extends MarkovState> mc) {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];
 
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = mc.getStates().get(i);
-			if (mc.getFinalStates().contains(state)) {
+			if (state.isMarkovian() && mc.getFinalStates().contains(state)) {
 				inititalVector[i] = 1 / mc.getExitRateForState(state);
 			}
 		}
 		return inititalVector;
 	}
 	
-	public static double[] getInititalSSATotalVector(MarkovAutomaton<? extends MarkovState> mc) {
+	public static double[] getSoujournTimes(MarkovAutomaton<? extends MarkovState> mc) {
 		int countStates = mc.getStates().size();
 		double[] inititalVector = new double[countStates];
 

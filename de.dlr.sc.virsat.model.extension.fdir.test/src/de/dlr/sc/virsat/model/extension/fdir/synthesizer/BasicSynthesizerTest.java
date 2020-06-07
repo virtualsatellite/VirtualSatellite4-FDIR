@@ -272,7 +272,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.9991436794433161, 
 			0.9985025233486501
 		};
-		final double EXPECTED_SSA = 0.5000847790772874;
+		final double EXPECTED_SSA = 0.5000005000000001;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);

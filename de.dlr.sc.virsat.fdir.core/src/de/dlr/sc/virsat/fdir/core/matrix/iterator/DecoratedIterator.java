@@ -39,8 +39,12 @@ public abstract class DecoratedIterator implements IMatrixIterator {
 	}
 	
 	@Override
-	public double getChange() {
-		return decoratedIterator.getChange();
+	public double getChangeSquared() {
+		return decoratedIterator.getChangeSquared();
+	}
+	
+	public IMatrixIterator getDecoratedIterator() {
+		return decoratedIterator;
 	}
 
 }

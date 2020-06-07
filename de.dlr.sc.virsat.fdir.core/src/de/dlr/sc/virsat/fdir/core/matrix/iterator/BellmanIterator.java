@@ -14,13 +14,13 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 
 public class BellmanIterator extends MatrixIterator {
 	
-	private double[] baseMTTFs;
+	private double[] stateCosts;
 	private double[] result;
 	private double[] oldValues;
 
 	public BellmanIterator(IMatrix matrix, double[] initialValues) {
 		super(matrix, initialValues);
-		baseMTTFs = initialValues.clone();
+		stateCosts = initialValues.clone();
 		result = new double[initialValues.length];
 		oldValues = new double[initialValues.length];
 	}
@@ -33,8 +33,8 @@ public class BellmanIterator extends MatrixIterator {
 		
 		matrix.multiply(values, result);
 		
-		for (int i = 0; i < baseMTTFs.length; ++i) {
-			result[i] += baseMTTFs[i];
+		for (int i = 0; i < stateCosts.length; ++i) {
+			result[i] += stateCosts[i];
 		}
 		
 		double[] tmp = values;

@@ -164,14 +164,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, true);
 		}
 		
-		probabilityDistribution = BellmanMatrix.getInitialMTTFVector(mc); 
+		probabilityDistribution = BellmanMatrix.getNonFailSoujornTimes(mc); 
 		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrixTerminal.getIterator(probabilityDistribution, eps), mc);
 		
 		boolean convergence = false;
 		while (!convergence) {			
 			mxIterator.iterate();			
-			double change = mxIterator.getChange();
-			if (change < eps || Double.isNaN(change)) {
+			double change = mxIterator.getChangeSquared();
+			if (change < eps * eps || Double.isNaN(change)) {
 				probabilityDistribution = mxIterator.getValues();
 				convergence = true;				
 				if (Double.isInfinite(mxIterator.getOldValues()[0])) {
@@ -231,16 +231,22 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, false);
 		}
 
+		System.out.println(mc.toDot());
+		
 		probabilityDistribution = getInitialProbabilityDistribution();
 		
-		double[] baseFailCosts = BellmanMatrix.getInitalSSAFailVector(mc);
-		double[] baseTotalCosts = BellmanMatrix.getInititalSSATotalVector(mc);
-		IMatrixIterator mtxIterator = new SSAIterator<>(bellmanMatrixTerminal, baseFailCosts, baseTotalCosts, mc);
+		double[] baseFailCosts = BellmanMatrix.getFailSoujournTimes(mc);
+		double[] baseTotalCosts = BellmanMatrix.getSoujournTimes(mc);
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(
+				new SSAIterator<>(bellmanMatrixTerminal, baseFailCosts, baseTotalCosts), mc, false
+		);
 		
+		int countIterations = 0;
 		boolean convergence = false;
 		while (!convergence) {
+			countIterations++;
 			mtxIterator.iterate();
-			double change = mtxIterator.getChange();
+			double change = mtxIterator.getChangeSquared();
 			if (change < eps * eps || Double.isNaN(change)) {
 				probabilityDistribution = mtxIterator.getValues();
 				convergence = true;

@@ -90,8 +90,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		while (!converged) {
 			valueIterator.iterate();
 			
-			double change = valueIterator.getChange();
-			if (change < EPS || Double.isNaN(change)) {
+			double change = valueIterator.getChangeSquared();
+			if (change < EPS * EPS || Double.isNaN(change)) {
 				converged = true;
 			}
 		}
@@ -111,7 +111,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		MatrixFactory matrixFactory = new MatrixFactory();
 		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma, true);
 		
-		double[] values = BellmanMatrix.getInitialMTTFVector(ma);
+		double[] values = BellmanMatrix.getNonFailSoujornTimes(ma);
 		IMatrixIterator bellmanIterator = bellmanMatrix.getIterator(values, EPS);		
 		MarkovAutomatonValueIterator<S> valueIterator = new MarkovAutomatonValueIterator<S>(bellmanIterator, ma);
 		return valueIterator;

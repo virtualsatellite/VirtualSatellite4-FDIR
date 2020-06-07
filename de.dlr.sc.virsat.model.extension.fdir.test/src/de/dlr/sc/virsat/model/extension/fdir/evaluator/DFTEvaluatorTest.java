@@ -1004,6 +1004,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
+	/*
 	@Test
 	public void testEvaluateVGS1() throws IOException {
 		final double[] EXPECTED = {
@@ -1020,6 +1021,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
+	*/
 	
 	@Test
 	public void testFTPP4() throws IOException {

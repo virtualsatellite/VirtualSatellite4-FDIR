@@ -33,7 +33,7 @@ public interface IMatrixIterator {
 	 * Gets the change between the distributions
 	 * @return the change between the distributions
 	 */
-	default double getChange() {
+	default double getChangeSquared() {
 		double change = 0;
 		for (int i = 0; i < getValues().length; ++i) {
 			double localChange = getOldValues()[i] - getValues()[i];
