@@ -16,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonBuilderTest;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonTest;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransitionTest;
+import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponentTest;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelCheckerTest;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResultTest;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovSchedulerTest;
@@ -34,7 +35,8 @@ import junit.framework.JUnit4TestAdapter;
 	MarkovModelCheckerTest.class,
 	MarkovSchedulerTest.class,
 	ModelCheckingResultTest.class,
-	MarkovAutomatonBuilderTest.class
+	MarkovAutomatonBuilderTest.class,
+	StronglyConnectedComponentTest.class
 	})
 
 public class AllTests {
