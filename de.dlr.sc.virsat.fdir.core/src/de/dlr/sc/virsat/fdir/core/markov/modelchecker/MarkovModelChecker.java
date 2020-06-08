@@ -28,9 +28,11 @@ import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponent;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.StronglyConnectedComponentFinder;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.LinearProgramIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.SSAIterator;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
@@ -121,7 +123,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");					
 		
-		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(generatorMatrixTerminal.getIterator(probabilityDistribution, eps), mc);
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(new SPSIterator(generatorMatrixTerminal, probabilityDistribution, eps), mc);
 		
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
@@ -167,7 +169,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		}
 		
 		probabilityDistribution = mc.getNonFailSoujornTimes(); 
-		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(mttfBellmanMatrix.getIterator(probabilityDistribution, eps), mc);
+		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(new BellmanIterator(mttfBellmanMatrix, probabilityDistribution), mc);
 		
 		probabilityDistribution = mxIterator.converge(eps);
 		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
@@ -186,7 +188,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		subMonitor.setTaskName("Running Markov Checker on Model");
 				
 		probabilityDistribution = getInitialProbabilityDistribution();
-		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(generatorMatrix.getIterator(probabilityDistribution, eps), mc);
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(new SPSIterator(generatorMatrix, probabilityDistribution, eps), mc);
 
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
