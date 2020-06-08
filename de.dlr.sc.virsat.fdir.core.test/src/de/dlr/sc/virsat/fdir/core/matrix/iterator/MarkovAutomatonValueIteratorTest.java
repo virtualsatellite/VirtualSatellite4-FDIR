@@ -18,7 +18,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
 public class MarkovAutomatonValueIteratorTest {
 
-	private class MockIterator implements IMatrixIterator {
+	private static class MockIterator implements IMatrixIterator {
 		double[] values = { 0, 0, 1};
 		
 		@Override
