@@ -13,7 +13,7 @@ package de.dlr.sc.virsat.fdir.core.matrix;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 
-public class BellmanMatrix extends TransitionMatrix {
+public class BellmanMatrix extends SparseMatrix {
 
 	public BellmanMatrix(int countStates) {
 		super(countStates);

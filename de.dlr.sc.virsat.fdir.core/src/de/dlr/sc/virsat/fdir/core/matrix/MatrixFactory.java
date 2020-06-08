@@ -37,8 +37,8 @@ public class MatrixFactory {
 	 * @param delta the matrix will be scaled accoriding to the time delta
 	 * @return the generator matrix
 	 */
-	public TransitionMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
-		TransitionMatrix tm = new TransitionMatrix(ma.getStates().size());
+	public SparseMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
+		SparseMatrix tm = new SparseMatrix(ma.getStates().size());
 		int countStates = ma.getStates().size();
 		
 		for (Object event : ma.getEvents()) {

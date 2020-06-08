@@ -19,7 +19,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
  * Class representing a transition matrix
  *
  */
-public class TransitionMatrix implements IMatrix {
+public class SparseMatrix implements IMatrix {
 	
 	private double[] diagonal;
 	private int[][] statePredIndices;
@@ -29,7 +29,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param countStates markov chain state count
 	 */
-	public TransitionMatrix(int countStates) {
+	public SparseMatrix(int countStates) {
 		this.countStates = countStates;
 		this.setDiagonal(new double[countStates]);
 		this.setStatePredIndices(new int[countStates][]);
@@ -119,7 +119,7 @@ public class TransitionMatrix implements IMatrix {
 
 	@Override
 	public IMatrix copy() {
-		TransitionMatrix t = new TransitionMatrix(this.size());
+		SparseMatrix t = new SparseMatrix(this.size());
 		t.setDiagonal(this.getDiagonal());
 		t.setStatePredIndices(this.getStatePredIndices());
 		t.setStatePredRates(this.getStatePredRates());
