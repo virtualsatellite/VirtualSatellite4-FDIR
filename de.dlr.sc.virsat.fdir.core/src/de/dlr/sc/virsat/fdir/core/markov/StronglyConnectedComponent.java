@@ -10,7 +10,10 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class manages a strongly connected component (SCC) of a markov automaton.
@@ -67,5 +70,19 @@ public class StronglyConnectedComponent {
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Computes the state union for a given collection of strongly connected components.
+	 * @param sccs the strongly connected components
+	 * @return the state union
+	 */
+	public static Set<MarkovState> union(Collection<StronglyConnectedComponent> sccs) {
+		Set<MarkovState> sccStates = new HashSet<>();
+		for (StronglyConnectedComponent scc : sccs) {
+			sccStates.addAll(scc.getStates());
+		}
+		
+		return sccStates;
 	}
 }

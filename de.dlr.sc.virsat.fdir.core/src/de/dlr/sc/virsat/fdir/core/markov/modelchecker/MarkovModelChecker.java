@@ -117,7 +117,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 
 		if (tmTerminal == null) {
-			tmTerminal = matrixFactory.getTransitionMatrix(mc, true, delta);
+			tmTerminal = matrixFactory.createGeneratorMatrix(mc, true, delta);
 		}
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");					
@@ -164,31 +164,24 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(MTTF mttfMetric) {
 		if (bellmanMatrixTerminal == null) {
-			bellmanMatrixTerminal = matrixFactory.getBellmanMatrix(mc, mc.getStates(), mc.getFinalStates(), true);
+			bellmanMatrixTerminal = matrixFactory.createBellmanMatrix(mc, mc.getStates(), mc.getFinalStates(), true);
 		}
 		
 		probabilityDistribution = mc.getNonFailSoujornTimes(); 
 		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrixTerminal.getIterator(probabilityDistribution, eps), mc);
 		
-		boolean convergence = false;
-		while (!convergence) {			
-			mxIterator.iterate();			
-			double change = mxIterator.getChangeSquared();
-			if (change < eps * eps || Double.isNaN(change)) {
-				probabilityDistribution = mxIterator.getValues();
-				convergence = true;				
-				if (Double.isInfinite(mxIterator.getOldValues()[0])) {
-					probabilityDistribution[0] = Double.POSITIVE_INFINITY;
-				}				
-			}			
-		}		
+		probabilityDistribution = mxIterator.converge(eps);
+		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
+			probabilityDistribution[0] = Double.POSITIVE_INFINITY;
+		}
+		
 		modelCheckingResult.setMeanTimeToFailure(probabilityDistribution[0]);		
 	}
 
 	@Override
 	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
 		if (tm == null) {
-			tm = matrixFactory.getTransitionMatrix(mc, false, delta);
+			tm = matrixFactory.createGeneratorMatrix(mc, false, delta);
 		}
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");
@@ -234,14 +227,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		List<StronglyConnectedComponent> sccs = sccFinder.getStronglyConnectedComponents();
 		List<StronglyConnectedComponent> endSCCs = sccFinder.getStronglyConnectedEndComponents(sccs);
 		
-		Set<MarkovState> endSCCStates = new HashSet<>();
-		for (StronglyConnectedComponent endSCC : endSCCs) {
-			endSCCStates.addAll(endSCC.getStates());
-		}
-		
+		Set<MarkovState> endSCCStates = StronglyConnectedComponent.union(endSCCs);
 		double[] ssas = new double[mc.getStates().size()];
+		
 		for (StronglyConnectedComponent endSCC : endSCCs) {
-			IMatrix bellmanMatrixSCC = matrixFactory.getBellmanMatrix(mc, endSCC.getStates(), Collections.emptySet(), true);
+			IMatrix bellmanMatrixSCC = matrixFactory.createBellmanMatrix(mc, endSCC.getStates(), Collections.emptySet(), true);
 			
 			double[] baseFailCosts = mc.getFailSoujournTimes(endSCC.getStates());
 			double[] baseTotalCosts = mc.getSoujournTimes(endSCC.getStates());
@@ -249,17 +239,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 					new SSAIterator<>(bellmanMatrixSCC, baseFailCosts, baseTotalCosts), mc, endSCC.getStates(), false
 			);
 			
-			boolean convergence = false;
-			while (!convergence) {
-				mtxIterator.iterate();
-				double change = mtxIterator.getChangeSquared();
-				if (change < eps * eps || Double.isNaN(change)) {
-					probabilityDistribution = mtxIterator.getValues();
-					convergence = true;
-					if (!Double.isFinite(mtxIterator.getValues()[0])) {
-						probabilityDistribution[0] = 1;
-					}
-				}
+			probabilityDistribution = mtxIterator.converge(eps);
+			if (!Double.isFinite(probabilityDistribution[0])) {
+				probabilityDistribution[0] = 1;
 			}
 			
 			for (MarkovState sccState : endSCC.getStates()) {
@@ -267,7 +249,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 		
-		IMatrix transitionMatrixToEndSCCs = matrixFactory.getBellmanMatrix(mc, mc.getStates(), endSCCStates, true);
+		IMatrix transitionMatrixToEndSCCs = matrixFactory.createBellmanMatrix(mc, mc.getStates(), endSCCStates, true);
 		LinearProgramIterator lpIterator = new LinearProgramIterator(transitionMatrixToEndSCCs, ssas);
 		probabilityDistribution = lpIterator.converge(eps);
 		

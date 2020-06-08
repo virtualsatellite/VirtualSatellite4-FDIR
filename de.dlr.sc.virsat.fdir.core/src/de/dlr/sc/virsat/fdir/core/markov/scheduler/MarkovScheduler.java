@@ -86,17 +86,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
 		IMatrixIterator valueIterator = createValueIterator(ma);
 		
-		boolean converged = false;		
-		while (!converged) {
-			valueIterator.iterate();
-			
-			double change = valueIterator.getChangeSquared();
-			if (change < EPS * EPS || Double.isNaN(change)) {
-				converged = true;
-			}
-		}
-		
-		double[] values = valueIterator.getValues();
+		double[] values = valueIterator.converge(EPS);
 		Map<S, Double> resultMap = createResultMap(ma, values);
 		
 		return resultMap;
@@ -109,7 +99,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 */
 	private IMatrixIterator createValueIterator(MarkovAutomaton<S> ma) {
 		MatrixFactory matrixFactory = new MatrixFactory();
-		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma, ma.getStates(), ma.getFinalStates(), true);
+		BellmanMatrix bellmanMatrix = matrixFactory.createBellmanMatrix(ma, ma.getStates(), ma.getFinalStates(), true);
 		
 		double[] values = ma.getNonFailSoujornTimes();
 		IMatrixIterator bellmanIterator = bellmanMatrix.getIterator(values, EPS);		
