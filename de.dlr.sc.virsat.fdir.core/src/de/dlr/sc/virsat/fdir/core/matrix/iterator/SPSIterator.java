@@ -38,12 +38,12 @@ public class SPSIterator extends AMatrixIterator {
 	/**
 	 * Implementation of a MatrixIterator using custom sparse matrices
 	 * 
-	 * @param tmTerminal transition matrix
-	 * @param probabilityDistribution probability distribution
-	 * @param eps epsilon
+	 * @param generatorMatrix the generator matrix of a markov chain
+	 * @param probabilityDistribution the initial probability distribution
+	 * @param eps the precision epsilon
 	 */
-	public SPSIterator(IMatrix tmTerminal, double[] probabilityDistribution, double eps) {
-		super(tmTerminal, probabilityDistribution);	
+	public SPSIterator(IMatrix generatorMatrix, double[] probabilityDistribution, double eps) {
+		super(generatorMatrix, probabilityDistribution);	
 		this.iteratorParams = new IteratorParams(eps);
 		
 		this.vsum = probabilityDistribution;
