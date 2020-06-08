@@ -52,11 +52,10 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.BeanDirectEditNameFeature;
-import de.dlr.sc.virsat.graphiti.ui.diagram.feature.BeanPropertyFloatDirectEditValueFeature;
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatChangeColorFeature;
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatDiagramFeatureProvider;
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirsatCategoryAssignmentOpenEditorFeature;
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.concept.types.property.IBeanProperty;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.AbstractFaultTreeEdge;
@@ -65,7 +64,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
-import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.NullObjectUpdateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentCreateFeature;
@@ -254,7 +252,7 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 
 		return super.getLayoutFeature(context);
 	}
-
+	
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IDirectEditingContext context) {
 		if (Graphiti.getPeService().getPropertyValue(context.getPictogramElement(), CommentAddFeature.IS_COMMENT_KEY) != null) {
@@ -267,12 +265,8 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 			return new BeanDirectEditNameFeature(this);
 		}
 
-		if (object instanceof BeanPropertyFloat) {
-			BeanPropertyFloat beanProperty = (BeanPropertyFloat) object;
-			String propName = beanProperty.getATypeInstance().getType().getName();
-			if (propName.equals(BasicEvent.PROPERTY_HOTFAILURERATE) || propName.equals(RDEP.PROPERTY_RATECHANGE)) {
-				return new BeanPropertyFloatDirectEditValueFeature(this);
-			}
+		if (object instanceof IBeanProperty) {
+			return new BeanPropertyDirectEditValueFeature(this);
 		}
 
 		return super.getDirectEditingFeature(context);
