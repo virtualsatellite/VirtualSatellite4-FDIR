@@ -27,9 +27,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
  */
 public class MatrixFactory implements IMatrixFactory {
 	
-	private static final int[] EMPTY_INDEX_LIST = new int[0];
-	private static final double[] EMPTY_RATES_LIST = new double[0];
-	
 	@Override
 	public IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
 		SparseMatrix matrix = new SparseMatrix(ma.getStates().size());
@@ -88,9 +85,6 @@ public class MatrixFactory implements IMatrixFactory {
 						matrix.getStatePredRates()[index][j] = transition.getRate() / exitRate;
 					}
 				}
-			} else {
-				matrix.getStatePredIndices()[index] = EMPTY_INDEX_LIST;
-				matrix.getStatePredRates()[index] = EMPTY_RATES_LIST;
 			}
 		}
 		
