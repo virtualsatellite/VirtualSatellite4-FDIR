@@ -42,7 +42,8 @@ import junit.framework.JUnit4TestAdapter;
 	StronglyConnectedComponentTest.class,
 	StronglyConnectedComponentFinderTest.class,
 	LinearProgramIteratorTest.class,
-	BellmanIteratorTest.class
+	BellmanIteratorTest.class,
+	MarkovAutomatonTest.class
 	})
 
 public class AllTests {
