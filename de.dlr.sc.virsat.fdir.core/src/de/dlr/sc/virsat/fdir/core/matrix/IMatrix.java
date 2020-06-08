@@ -43,11 +43,6 @@ public interface IMatrix {
 	 * @param value the value
 	 */
 	void setValue(int column, int row, double value);
-	
-	/**
-	 * @return returns matrix diagonal
-	 */
-	double[] getDiagonal();
 
 	/**
 	 * @return returns copy of this matrix object

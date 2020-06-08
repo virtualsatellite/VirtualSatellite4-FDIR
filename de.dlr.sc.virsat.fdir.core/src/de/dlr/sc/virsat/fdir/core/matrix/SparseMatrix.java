@@ -55,7 +55,6 @@ public class SparseMatrix implements IMatrix {
 	/**
 	 * @return Diagonal
 	 */
-	@Override
 	public double[] getDiagonal() {
 		return diagonal;
 	}

@@ -149,11 +149,8 @@ public class SPSIterator extends AMatrixIterator {
 		 */
 		private double initMaxEntry() {
 			double maxVal = 0;
-			double[] diag = matrix.getDiagonal();
-			int diagLength = diag.length;
-			
-			for (int i = 0; i < diagLength; i++) {
-				maxVal = Math.max(maxVal, Math.abs(diag[i]));    
+			for (int i = 0; i < matrix.size(); i++) {
+				maxVal = Math.max(maxVal, Math.abs(matrix.getValue(i, i)));
 			}		
 			return maxVal;
 		}
