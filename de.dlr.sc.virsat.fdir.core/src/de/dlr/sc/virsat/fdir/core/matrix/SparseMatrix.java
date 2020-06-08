@@ -113,11 +113,19 @@ public class SparseMatrix implements IMatrix {
 
 	@Override
 	public double getValue(int column, int row) {
-		return diagonal[column];
+		if (column == row) {
+			return diagonal[column];
+		}
+		
+		throw new UnsupportedOperationException("SparseMatrix only supports random access of the diagonal and not of the random entry (" + column + ", " + row + ").");
 	}
 
 	@Override
 	public void setValue(int column, int row, double value) {
-		diagonal[column] = value;
+		if (column == row) {
+			diagonal[column] = value;
+		} else {
+			throw new UnsupportedOperationException("SparseMatrix only supports random access of the diagonal and not of the random entry (" + column + ", " + row + ").");
+		}
 	}
 }
