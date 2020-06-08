@@ -11,13 +11,16 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.command;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
+import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters;
 
 /**
@@ -31,6 +34,11 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters;
 public class CreateAddFDIRParametersCommand extends ACreateAddFDIRParametersCommand {
 	@Override
 	public Command create(EditingDomain editingDomain, EObject owner, Concept activeConcept) {
+		BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance((StructuralElementInstance) owner);
+		if (beanSei.getParentSeiBean() != null) {
+			return UnexecutableCommand.INSTANCE;
+		}
+		
 		Command createCommand = super.create(editingDomain, owner, activeConcept);
 		CompoundCommand cmd = new CompoundCommand(createCommand.getLabel());
 		cmd.append(createCommand);
