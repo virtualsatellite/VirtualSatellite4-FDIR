@@ -15,6 +15,12 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.SubMonitor;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
@@ -45,5 +51,16 @@ public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		return Collections.singletonMap(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(Reliability.INF_RELIABILITY));
+	}
+	
+	/**
+	 * Creates an iterator that converges towards the mean time to failure of the markov automaton.
+	 * @param matrix the matrix representation of the ma
+	 * @param ma the markov automaton
+	 * @return an iterator that converges towards the MTTF
+	 */
+	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma) {
+		double[] nonFailSoujournTimes = ma.getNonFailSoujornTimes(); 
+		return new MarkovAutomatonValueIterator<>(new BellmanIterator(matrix, nonFailSoujournTimes), ma);
 	}
 }

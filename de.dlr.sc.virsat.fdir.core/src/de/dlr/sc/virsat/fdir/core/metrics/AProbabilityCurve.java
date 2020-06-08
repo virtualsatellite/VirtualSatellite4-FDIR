@@ -11,6 +11,13 @@ package de.dlr.sc.virsat.fdir.core.metrics;
 
 import java.util.List;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
+
 /**
  * This is an abstract class for probability curve metrics
  * @author muel_s8
@@ -87,5 +94,17 @@ public abstract class AProbabilityCurve implements IQuantitativeMetric {
 		}
 		
 		return countProbabilites;
+	}
+	
+	/**
+	 * Creates an iterator that computes for each iteration the current curve value after passgae of 1 abstract time unit.
+	 * @param matrix the matrix encoding the transition behavior of the ma and the time
+	 * @param ma the markov automaton
+	 * @param initialDistribution the initial probability distribution
+	 * @param eps the precision
+	 * @return an iterator that gives the curve value after 1 abstract time unit after each iteration
+	 */
+	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, double[] initialDistribution, double eps) {
+		return new MarkovAutomatonValueIterator<>(new SPSIterator(matrix, initialDistribution, eps), ma);
 	}
 }

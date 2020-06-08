@@ -26,9 +26,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -102,10 +101,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private IMatrixIterator createValueIterator(MarkovAutomaton<S> ma) {
 		IMatrixFactory matrixFactory = new MatrixFactory();
 		IMatrix bellmanMatrix = matrixFactory.createBellmanMatrix(ma, ma.getStates(), ma.getFinalStates(), true);
-		
-		double[] values = ma.getNonFailSoujornTimes();
-		IMatrixIterator bellmanIterator = new BellmanIterator(bellmanMatrix, values);		
-		MarkovAutomatonValueIterator<S> valueIterator = new MarkovAutomatonValueIterator<S>(bellmanIterator, ma);
+			
+		IMatrixIterator valueIterator = MTTF.MTTF.iterator(bellmanMatrix, ma);
 		return valueIterator;
 	}
 	
