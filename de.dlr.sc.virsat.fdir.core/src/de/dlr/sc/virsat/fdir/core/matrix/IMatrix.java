@@ -34,29 +34,9 @@ public interface IMatrix {
 	double[] getDiagonal();
 
 	/**
-	 * @return returns StatePredIndices
-	 */
-	int[][] getStatePredIndices();
-
-	/**
-	 * @return return StatePredRates
-	 */
-	double[][] getStatePredRates();
-
-	/**
 	 * @param diagonal sets new diagonal for this matrix
 	 */
 	void setDiagonal(double[] diagonal);
-
-	/**
-	 * @param statePredIndices sets new StatePredIndices
-	 */
-	void setStatePredIndices(int[][] statePredIndices);
-
-	/**
-	 * @param statePredRates sets new StatePredRates
-	 */
-	void setStatePredRates(double[][] statePredRates);
 
 	/**
 	 * @return returns copy of this matrix object

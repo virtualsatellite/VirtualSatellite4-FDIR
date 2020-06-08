@@ -71,7 +71,6 @@ public class SparseMatrix implements IMatrix {
 	/**
 	 * @return StatePredIndices
 	 */
-	@Override
 	public int[][] getStatePredIndices() {
 		return statePredIndices;
 	}
@@ -79,7 +78,6 @@ public class SparseMatrix implements IMatrix {
 	/**
 	 * @param statePredIndices statePredIndices
 	 */
-	@Override
 	public void setStatePredIndices(int[][] statePredIndices) {
 		this.statePredIndices = statePredIndices.clone();
 	}	
@@ -87,7 +85,6 @@ public class SparseMatrix implements IMatrix {
 	/**
 	 * @return StatePredRates
 	 */
-	@Override
 	public double[][] getStatePredRates() {
 		return statePredRates;
 	}
@@ -95,7 +92,6 @@ public class SparseMatrix implements IMatrix {
 	/**
 	 * @param statePredRates statePredRates
 	 */
-	@Override
 	public void setStatePredRates(double[][] statePredRates) {
 		this.statePredRates = statePredRates.clone();
 	}
