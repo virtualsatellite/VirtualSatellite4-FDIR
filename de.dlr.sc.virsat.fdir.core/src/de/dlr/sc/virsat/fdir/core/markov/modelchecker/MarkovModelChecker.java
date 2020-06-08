@@ -269,16 +269,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		IMatrix transitionMatrixToEndSCCs = matrixFactory.getBellmanMatrix(mc, mc.getStates(), endSCCStates, true);
 		LinearProgramIterator lpIterator = new LinearProgramIterator(transitionMatrixToEndSCCs, ssas);
-		
-		boolean convergence = false;
-		while (!convergence) {
-			lpIterator.iterate();
-			double change = lpIterator.getChangeSquared();
-			if (change < eps * eps || Double.isNaN(change)) {
-				probabilityDistribution = lpIterator.getValues();
-				convergence = true;
-			}
-		}
+		probabilityDistribution = lpIterator.converge(eps);
 		
 		double ssa = 1 - probabilityDistribution[0];
 		modelCheckingResult.setSteadyStateAvailability(ssa);

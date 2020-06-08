@@ -41,4 +41,22 @@ public interface IMatrixIterator {
 		}
 		return change;
 	}
+	
+	/**
+	 * Performs iterations until the iterator the values have converged
+	 * @param eps the precision
+	 * @return the converged values
+	 */
+	default double[] converge(double eps) {
+		boolean convergence = false;
+		while (!convergence) {
+			iterate();
+			double change = getChangeSquared();
+			if (change < eps * eps || Double.isNaN(change)) {
+				convergence = true;
+			}
+		}
+		
+		return getValues();
+	}
 }
