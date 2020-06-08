@@ -37,7 +37,7 @@ public class MatrixFactory {
 	 * @param delta the matrix will be scaled accoriding to the time delta
 	 * @return the generator matrix
 	 */
-	public SparseMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
+	public IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
 		SparseMatrix tm = new SparseMatrix(ma.getStates().size());
 		int countStates = ma.getStates().size();
 		
@@ -83,7 +83,7 @@ public class MatrixFactory {
 	 * If set to true, the costs will be forward propagated with no particular starting place dictated by the matrix.
 	 * @return the matrix representing the equation system
 	 */
-	public BellmanMatrix createBellmanMatrix(MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states, Set<? extends MarkovState> terminalStates, boolean invertEdgeDirection) {		
+	public IMatrix createBellmanMatrix(MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states, Set<? extends MarkovState> terminalStates, boolean invertEdgeDirection) {		
 		BellmanMatrix tm = new BellmanMatrix(states.size());
 		
 		Map<MarkovState, Integer> mapStateToIndex = new HashMap<>();

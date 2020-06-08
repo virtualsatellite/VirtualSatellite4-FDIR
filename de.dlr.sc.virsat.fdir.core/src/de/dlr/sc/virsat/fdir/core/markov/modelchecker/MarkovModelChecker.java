@@ -26,7 +26,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponent;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.StronglyConnectedComponentFinder;
-import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
@@ -55,9 +54,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	/* Transition System */
 
 	private MarkovAutomaton<? extends MarkovState> mc;
-	private IMatrix tm;
-	private IMatrix tmTerminal;
-	private BellmanMatrix bellmanMatrixTerminal;
+	private IMatrix generatorMatrix;
+	private IMatrix generatorMatrixTerminal;
+	private IMatrix mttfBellmanMatrix;
 
 	/* Buffers */
 
@@ -91,9 +90,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		statistics.time = System.currentTimeMillis();
 		subMonitor = SubMonitor.convert(subMonitor);
 
-		tm = null;
-		tmTerminal = null;
-		bellmanMatrixTerminal = null;
+		generatorMatrix = null;
+		generatorMatrixTerminal = null;
+		mttfBellmanMatrix = null;
 
 		this.mc = mc;
 		this.modelCheckingResult = new ModelCheckingResult();
@@ -116,13 +115,13 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
 		probabilityDistribution = getInitialProbabilityDistribution();
 
-		if (tmTerminal == null) {
-			tmTerminal = matrixFactory.createGeneratorMatrix(mc, true, delta);
+		if (generatorMatrixTerminal == null) {
+			generatorMatrixTerminal = matrixFactory.createGeneratorMatrix(mc, true, delta);
 		}
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");					
 		
-		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(tmTerminal.getIterator(probabilityDistribution, eps), mc);
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(generatorMatrixTerminal.getIterator(probabilityDistribution, eps), mc);
 		
 		if (Double.isFinite(reliabilityMetric.getTime())) {
 			int steps = (int) (reliabilityMetric.getTime() / delta);
@@ -163,12 +162,12 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	
 	@Override
 	public void visit(MTTF mttfMetric) {
-		if (bellmanMatrixTerminal == null) {
-			bellmanMatrixTerminal = matrixFactory.createBellmanMatrix(mc, mc.getStates(), mc.getFinalStates(), true);
+		if (mttfBellmanMatrix == null) {
+			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(mc, mc.getStates(), mc.getFinalStates(), true);
 		}
 		
 		probabilityDistribution = mc.getNonFailSoujornTimes(); 
-		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(bellmanMatrixTerminal.getIterator(probabilityDistribution, eps), mc);
+		IMatrixIterator mxIterator = new MarkovAutomatonValueIterator<>(mttfBellmanMatrix.getIterator(probabilityDistribution, eps), mc);
 		
 		probabilityDistribution = mxIterator.converge(eps);
 		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
@@ -180,14 +179,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 	@Override
 	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
-		if (tm == null) {
-			tm = matrixFactory.createGeneratorMatrix(mc, false, delta);
+		if (generatorMatrix == null) {
+			generatorMatrix = matrixFactory.createGeneratorMatrix(mc, false, delta);
 		}
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");
 				
 		probabilityDistribution = getInitialProbabilityDistribution();
-		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(tm.getIterator(probabilityDistribution, eps), mc);
+		IMatrixIterator mtxIterator = new MarkovAutomatonValueIterator<>(generatorMatrix.getIterator(probabilityDistribution, eps), mc);
 
 		if (Double.isFinite(availabilityMetric.getTime())) {
 			int steps = (int) (availabilityMetric.getTime() / delta);
