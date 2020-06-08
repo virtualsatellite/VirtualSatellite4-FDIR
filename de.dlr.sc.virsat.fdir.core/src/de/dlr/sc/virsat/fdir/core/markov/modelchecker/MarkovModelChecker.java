@@ -27,6 +27,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponent;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.StronglyConnectedComponentFinder;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
@@ -68,7 +69,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	private ModelCheckingResult modelCheckingResult;
 	private ModelCheckingStatistics statistics;
 	
-	private MatrixFactory matrixFactory;
+	private IMatrixFactory matrixFactory;
 	/**
 	 * 
 	 * @param delta time slice

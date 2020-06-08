@@ -25,18 +25,12 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
  * This class acts as a factory for different types of matrices.
  *
  */
-public class MatrixFactory {
+public class MatrixFactory implements IMatrixFactory {
 	
 	private static final int[] EMPTY_INDEX_LIST = new int[0];
 	private static final double[] EMPTY_RATES_LIST = new double[0];
 	
-	/**
-	 * Creates the generator matrix of a markov automaton
-	 * @param ma the markov automaton
-	 * @param failStatesAreTerminal failStatesAreTerminal
-	 * @param delta the matrix will be scaled accoriding to the time delta
-	 * @return the generator matrix
-	 */
+	@Override
 	public IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
 		SparseMatrix matrix = new SparseMatrix(ma.getStates().size());
 		int countStates = ma.getStates().size();
@@ -68,21 +62,7 @@ public class MatrixFactory {
 		return matrix;
 	}
 	
-	/**
-	 * This creates a matrix representing bellman equations on the induced Markov Decision Process of a Markov Automaton.
-	 * 
-	 * The equations are as follows:
-	 * 
-	 * value(terminalState) = 0
-	 * value(state) = costs(state) + SUM(s' successor of s: Prob(s, s') * value(s')
-	 * 
-	 * @param ma the markov automaton
-	 * @param states a subset of states from the markov automaton. Only the states in this list will be used to construct the matrix.
-	 * @param terminalStates a set of states that will be considered terminal for the matrix (outgoing transitions are ignored)
-	 * @param invertEdgeDirection if set to true, the costs will be backwards propagated starting from the terminal states.
-	 * If set to true, the costs will be forward propagated with no particular starting place dictated by the matrix.
-	 * @return the matrix representing the equation system
-	 */
+	@Override
 	public IMatrix createBellmanMatrix(MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states, Set<? extends MarkovState> terminalStates, boolean invertEdgeDirection) {		
 		SparseMatrix matrix = new SparseMatrix(states.size());
 		
