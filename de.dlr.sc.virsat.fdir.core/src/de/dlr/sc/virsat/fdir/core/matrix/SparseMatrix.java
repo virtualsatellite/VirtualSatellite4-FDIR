@@ -10,16 +10,13 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
-
 /**
  * @author piet_ci
  * 
  * Class representing a transition matrix
  *
  */
-public class TransitionMatrix implements IMatrix {
+public class SparseMatrix implements IMatrix {
 	
 	private double[] diagonal;
 	private int[][] statePredIndices;
@@ -29,7 +26,7 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param countStates markov chain state count
 	 */
-	public TransitionMatrix(int countStates) {
+	public SparseMatrix(int countStates) {
 		this.countStates = countStates;
 		this.setDiagonal(new double[countStates]);
 		this.setStatePredIndices(new int[countStates][]);
@@ -58,7 +55,6 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @return Diagonal
 	 */
-	@Override
 	public double[] getDiagonal() {
 		return diagonal;
 	}
@@ -66,7 +62,6 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param diagonal matrix diagonal
 	 */
-	@Override
 	public void setDiagonal(double[] diagonal) {
 		this.diagonal = diagonal.clone();
 	}
@@ -74,7 +69,6 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @return StatePredIndices
 	 */
-	@Override
 	public int[][] getStatePredIndices() {
 		return statePredIndices;
 	}
@@ -82,7 +76,6 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param statePredIndices statePredIndices
 	 */
-	@Override
 	public void setStatePredIndices(int[][] statePredIndices) {
 		this.statePredIndices = statePredIndices.clone();
 	}	
@@ -90,7 +83,6 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @return StatePredRates
 	 */
-	@Override
 	public double[][] getStatePredRates() {
 		return statePredRates;
 	}
@@ -98,17 +90,10 @@ public class TransitionMatrix implements IMatrix {
 	/**
 	 * @param statePredRates statePredRates
 	 */
-	@Override
 	public void setStatePredRates(double[][] statePredRates) {
 		this.statePredRates = statePredRates.clone();
 	}
-
-
-	@Override
-	public IMatrixIterator getIterator(double[] probabilityDistribution, double eps) {
-		return new SPSIterator(this, probabilityDistribution, eps);
-	}
-
+	
 	/**
 	 * @return countStates
 	 */
@@ -119,10 +104,28 @@ public class TransitionMatrix implements IMatrix {
 
 	@Override
 	public IMatrix copy() {
-		TransitionMatrix t = new TransitionMatrix(this.size());
+		SparseMatrix t = new SparseMatrix(this.size());
 		t.setDiagonal(this.getDiagonal());
 		t.setStatePredIndices(this.getStatePredIndices());
 		t.setStatePredRates(this.getStatePredRates());
 		return t;
+	}
+
+	@Override
+	public double getValue(int column, int row) {
+		if (column == row) {
+			return diagonal[column];
+		}
+		
+		throw new UnsupportedOperationException("SparseMatrix only supports random access of the diagonal and not of the random entry (" + column + ", " + row + ").");
+	}
+
+	@Override
+	public void setValue(int column, int row, double value) {
+		if (column == row) {
+			diagonal[column] = value;
+		} else {
+			throw new UnsupportedOperationException("SparseMatrix only supports random access of the diagonal and not of the random entry (" + column + ", " + row + ").");
+		}
 	}
 }

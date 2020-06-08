@@ -10,7 +10,11 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -21,102 +25,81 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
  * This class acts as a factory for different types of matrices.
  *
  */
-public class MatrixFactory {
+public class MatrixFactory implements IMatrixFactory {
 	
-	private MarkovAutomaton<? extends MarkovState> mc;
+	private static final int[] EMPTY_INDEX_LIST = new int[0];
+	private static final double[] EMPTY_RATES_LIST = new double[0];
 	
-	/**
-	 * @param mc markov chain
-	 * @param failStatesAreTerminal failStatesAreTerminal
-	 * @param delta delta
-	 * @return transition matrix
-	 */
-	public TransitionMatrix getTransitionMatrix(MarkovAutomaton<? extends MarkovState> mc, boolean failStatesAreTerminal, double delta) {		
-		this.mc = mc;
-		TransitionMatrix tm = new TransitionMatrix(mc.getStates().size());
-		tm = createTransitionMatrix(tm, failStatesAreTerminal, delta);
-		return tm;
-	}
-	/**
-	 * @param mc markov chain
-	 * @return transition matrix
-	 */
-	public BellmanMatrix getBellmanMatrix(MarkovAutomaton<? extends MarkovState> mc) {		
-		this.mc = mc;
-		BellmanMatrix tm = new BellmanMatrix(mc.getStates().size());
-		tm = createBellmanMatrix(tm);
-		return tm;
-	}
-	/**
-	 * Creates a transition matrix
-	 * @param tm transition matrix
-	 * @param failStatesAreTerminal failStatesAreTerminal
-	 * @param delta delta
-	 * @return transition matrix
-	 */
-	private TransitionMatrix createTransitionMatrix(TransitionMatrix tm, boolean failStatesAreTerminal, double delta) {
-		int countStates = mc.getStates().size();
+	@Override
+	public IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
+		SparseMatrix matrix = new SparseMatrix(ma.getStates().size());
+		int countStates = ma.getStates().size();
 		
-		for (Object event : mc.getEvents()) {
-			for (MarkovTransition<? extends MarkovState> transition : mc.getTransitions(event)) {
+		for (Object event : ma.getEvents()) {
+			for (MarkovTransition<? extends MarkovState> transition : ma.getTransitions(event)) {
 				int fromIndex = transition.getFrom().getIndex();
-				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
-					tm.getDiagonal()[fromIndex] -= transition.getRate() * delta;
+				if (!failStatesAreTerminal || !ma.getFinalStates().contains(transition.getFrom())) {
+					matrix.getDiagonal()[fromIndex] -= transition.getRate() * delta;
 				}
 			}
 		}
 		
 		for (int i = 0; i < countStates; ++i) {
-			MarkovState state = mc.getStates().get(i);
-			List<?> transitions = mc.getPredTransitions(state);
+			MarkovState state = ma.getStates().get(i);
+			List<?> transitions = ma.getPredTransitions(state);
 			
-			tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
-			tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
+			matrix.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
+			matrix.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
 			for (int j = 0; j < transitions.size(); ++j) {
-				@SuppressWarnings("unchecked")
-				MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
-				if (!failStatesAreTerminal || !mc.getFinalStates().contains(transition.getFrom())) {
-					tm.getStatePredIndices()[state.getIndex()][j] = transition.getFrom().getIndex();
-					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() * delta;
+				MarkovTransition<?> transition = (MarkovTransition<?>) transitions.get(j);
+				if (!failStatesAreTerminal || !ma.getFinalStates().contains(transition.getFrom())) {
+					MarkovState fromState = (MarkovState) transition.getFrom();
+					matrix.getStatePredIndices()[state.getIndex()][j] = fromState.getIndex();
+					matrix.getStatePredRates()[state.getIndex()][j] = transition.getRate() * delta;
 				}
 			}
 		}		
-		return tm;
+		return matrix;
 	}
 	
-	private static final int[] EMPTY_INDEX_LIST = new int[0];
-	private static final double[] EMPTY_RATES_LIST = new double[0];
-	
-	/**
-	 * Creates the iteration matrix for computing the Mean Time To Failure (MTTF)
-	 * according to the Bellman equation: MTTF(s) = 0 if s is a fail state MTTF(s) =
-	 * 1/ExitRate(s) + SUM(s' successor of s: Prob(s, s') * MTTF(s')
-	 * 
-	 * @param tm TransitionMatrix
-	 * @return the matrix representing the fixpoint iteration
-	 */
-	public BellmanMatrix createBellmanMatrix(BellmanMatrix tm) {
-		for (MarkovState state : mc.getStates()) {
-			List<?> transitions = mc.getSuccTransitions(state);
+	@Override
+	public IMatrix createBellmanMatrix(MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states, Set<? extends MarkovState> terminalStates, boolean invertEdgeDirection) {		
+		SparseMatrix matrix = new SparseMatrix(states.size());
+		
+		Map<MarkovState, Integer> mapStateToIndex = new HashMap<>();
+		for (int i = 0; i < states.size(); ++i) {
+			mapStateToIndex.put(states.get(i), i);
+		}
+		
+		for (MarkovState state : states) {
+			int index = mapStateToIndex.get(state);
 
-			if (state.isMarkovian() && !mc.getFinalStates().contains(state)) {
-				tm.getStatePredIndices()[state.getIndex()] = new int[transitions.size()];
-				tm.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
-				
-				double exitRate = mc.getExitRateForState(state);
+			if (state.isMarkovian() && (!invertEdgeDirection || !terminalStates.contains(state))) {
+				List<?> transitions = invertEdgeDirection ? ma.getSuccTransitions(state) : ma.getPredTransitions(state);
+				matrix.getStatePredIndices()[index] = new int[transitions.size()];
+				matrix.getStatePredRates()[index] = new double[transitions.size()];
 
 				for (int j = 0; j < transitions.size(); ++j) {
 					@SuppressWarnings("unchecked")
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions
-							.get(j);
-					tm.getStatePredIndices()[state.getIndex()][j] = transition.getTo().getIndex();
-					tm.getStatePredRates()[state.getIndex()][j] = transition.getRate() / exitRate;
+					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) transitions.get(j);
+					if (invertEdgeDirection || !terminalStates.contains(transition.getFrom())) {
+						matrix.getStatePredIndices()[index][j] = mapStateToIndex.get(invertEdgeDirection ? transition.getTo() : transition.getFrom());
+						double exitRate = ma.getExitRateForState(invertEdgeDirection ? state : transition.getFrom());
+						matrix.getStatePredRates()[index][j] = transition.getRate() / exitRate;
+					}
 				}
 			} else {
-				tm.getStatePredIndices()[state.getIndex()] = EMPTY_INDEX_LIST;
-				tm.getStatePredRates()[state.getIndex()] = EMPTY_RATES_LIST;
+				matrix.getStatePredIndices()[index] = EMPTY_INDEX_LIST;
+				matrix.getStatePredRates()[index] = EMPTY_RATES_LIST;
 			}
 		}
-		return tm;
-	}	
+		
+		// Make terminal states absorbing
+		for (MarkovState terminalState : terminalStates) {
+			int index = mapStateToIndex.get(terminalState);
+			matrix.getDiagonal()[index] = 1;
+		}
+		
+		return matrix;
+	}
 }

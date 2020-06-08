@@ -7,9 +7,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.core.markov;
+package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
 import java.util.List;
+
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
 public abstract class AStateSpaceGenerator<S extends MarkovState> {
 	

@@ -23,10 +23,11 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-import de.dlr.sc.virsat.fdir.core.matrix.BellmanMatrix;
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
+import de.dlr.sc.virsat.fdir.core.matrix.IMatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
+import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -86,17 +87,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
 		IMatrixIterator valueIterator = createValueIterator(ma);
 		
-		boolean converged = false;		
-		while (!converged) {
-			valueIterator.iterate();
-			
-			double change = valueIterator.getChange();
-			if (change < EPS || Double.isNaN(change)) {
-				converged = true;
-			}
-		}
-		
-		double[] values = valueIterator.getValues();
+		double[] values = valueIterator.converge(EPS);
 		Map<S, Double> resultMap = createResultMap(ma, values);
 		
 		return resultMap;
@@ -108,12 +99,10 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return the value iterator
 	 */
 	private IMatrixIterator createValueIterator(MarkovAutomaton<S> ma) {
-		MatrixFactory matrixFactory = new MatrixFactory();
-		BellmanMatrix bellmanMatrix = matrixFactory.getBellmanMatrix(ma);
-		
-		double[] values = BellmanMatrix.getInitialMTTFVector(ma);
-		IMatrixIterator bellmanIterator = bellmanMatrix.getIterator(values, EPS);		
-		MarkovAutomatonValueIterator<S> valueIterator = new MarkovAutomatonValueIterator<S>(bellmanIterator, ma);
+		IMatrixFactory matrixFactory = new MatrixFactory();
+		IMatrix bellmanMatrix = matrixFactory.createBellmanMatrix(ma, ma.getStates(), ma.getFinalStates(), true);
+			
+		IMatrixIterator valueIterator = MTTF.MTTF.iterator(bellmanMatrix, ma);
 		return valueIterator;
 	}
 	

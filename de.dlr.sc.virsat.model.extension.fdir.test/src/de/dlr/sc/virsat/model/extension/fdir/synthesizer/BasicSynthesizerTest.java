@@ -272,7 +272,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.9991436794433161, 
 			0.9985025233486501
 		};
-		final double EXPECTED_SSA = 0.5000847790772874;
+		final double EXPECTED_SSA = 0.5000005000000001;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -296,7 +296,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.999152094789556, 
 			0.9985220320778355
 		};
-		final double EXPECTED_SSA = 0.7143034340592812;
+		final double EXPECTED_SSA = 0.7142864724603194;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -320,7 +320,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.999147902777298, 
 			0.9985123259997293
 		};
-		final double EXPECTED_SSA = 0.6470911146192913;
+		final double EXPECTED_SSA = 0.6470577570952566;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadSpare.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
@@ -343,7 +343,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.9976596933453932, 
 			0.9962533670570343
 		};
-		final double EXPECTED_SSA = 0.606161048084501;
+		final double EXPECTED_SSA = 0.6060612736223054;
 		
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);

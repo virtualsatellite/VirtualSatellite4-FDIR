@@ -365,7 +365,7 @@ public class POSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
 		final double EXPECTED_MTTF = 1.7;
-		final double EXPECTED_SSA = 0.3333997640435906;
+		final double EXPECTED_SSA = 0.33333333333333337;
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
 		
@@ -384,7 +384,7 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final double EXPECTED_SSA = 0.3265228816711657;
+		final double EXPECTED_SSA = 0.33333249815122734;
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 9;
 		
@@ -402,7 +402,7 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final double EXPECTED_SSA = 0.4937571763091959;
+		final double EXPECTED_SSA = 0.541869705321335;
 		final int EXPECTED_COUNT_STATES = 9;
 		final int EXPECTED_COUNT_TRANSITIONS = 17;
 		
@@ -420,7 +420,7 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final double EXPECTED_SSA = 0.180992517069135;
+		final double EXPECTED_SSA = 0.24001871360398108;
 		final int EXPECTED_COUNT_STATES = 11;
 		final int EXPECTED_COUNT_TRANSITIONS = 21;
 		

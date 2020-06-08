@@ -24,7 +24,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
  * 	of a rate matrix on a probability vector. In: 1809.07110, arXiv, 2018. 
  *
  */
-public class SPSIterator extends MatrixIterator {
+public class SPSIterator extends AMatrixIterator {
 	
 	private static final double BIG = Math.pow(10, 100);
 	private static final int RHO_FACTOR = 18;
@@ -126,12 +126,10 @@ public class SPSIterator extends MatrixIterator {
 	 */
 	private IMatrix initUniformMatrix() {
 		IMatrix uniformMatrix = matrix.copy();
-		double[] diag = uniformMatrix.getDiagonal();
 						
-		for (int i = 0; i < diag.length; i++) {
-			diag[i] += iteratorParams.maxEntry;
+		for (int i = 0; i < uniformMatrix.size(); i++) {
+			uniformMatrix.setValue(i, i, uniformMatrix.getValue(i,  i) + iteratorParams.maxEntry);
 		}
-		uniformMatrix.setDiagonal(diag);
 		return uniformMatrix;
 	}
 	
@@ -151,11 +149,8 @@ public class SPSIterator extends MatrixIterator {
 		 */
 		private double initMaxEntry() {
 			double maxVal = 0;
-			double[] diag = matrix.getDiagonal();
-			int diagLength = diag.length;
-			
-			for (int i = 0; i < diagLength; i++) {
-				maxVal = Math.max(maxVal, Math.abs(diag[i]));    
+			for (int i = 0; i < matrix.size(); i++) {
+				maxVal = Math.max(maxVal, Math.abs(matrix.getValue(i, i)));
 			}		
 			return maxVal;
 		}

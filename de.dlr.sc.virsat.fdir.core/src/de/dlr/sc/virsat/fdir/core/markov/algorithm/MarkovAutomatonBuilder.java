@@ -7,13 +7,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.fdir.core.markov;
+package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 import org.eclipse.core.runtime.SubMonitor;
+
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
 public class MarkovAutomatonBuilder<S extends MarkovState> {
 	

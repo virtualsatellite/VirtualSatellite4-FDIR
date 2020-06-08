@@ -33,11 +33,30 @@ public interface IMatrixIterator {
 	 * Gets the change between the distributions
 	 * @return the change between the distributions
 	 */
-	default double getChange() {
+	default double getChangeSquared() {
 		double change = 0;
 		for (int i = 0; i < getValues().length; ++i) {
-			change += Math.abs(getOldValues()[i] - getValues()[i]);
+			double localChange = getOldValues()[i] - getValues()[i];
+			change += localChange * localChange;
 		}
 		return change;
+	}
+	
+	/**
+	 * Performs iterations until the iterator the values have converged
+	 * @param eps the precision
+	 * @return the converged values
+	 */
+	default double[] converge(double eps) {
+		boolean convergence = false;
+		while (!convergence) {
+			iterate();
+			double change = getChangeSquared();
+			if (change < eps * eps || Double.isNaN(change)) {
+				convergence = true;
+			}
+		}
+		
+		return getValues();
 	}
 }

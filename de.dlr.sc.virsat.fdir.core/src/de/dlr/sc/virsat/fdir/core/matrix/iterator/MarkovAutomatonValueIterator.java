@@ -25,28 +25,36 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
  *
  * @param <S>
  */
-public class MarkovAutomatonValueIterator<S extends MarkovState> extends DecoratedIterator {
+public class MarkovAutomatonValueIterator<S extends MarkovState> extends DecoratedIterator implements IDelegateIterator<S> {
 	
 	private Map<S, Collection<List<MarkovTransition<S>>>> mapNondetStateToTransitionGroups;
 	private List<S> nondeterministicStates;
 	private List<S> probabilisticStates;
 	private MarkovAutomaton<S> ma;
+	private boolean maximize;
+	private Map<MarkovState, Integer> mapStateToIndex;
 	
 	/**
 	 * Standard constructor
 	 * @param deterministicIterator the iterator for handling the update of deterministic states
 	 * @param ma the markov automaton
+	 * @param maximize whether the iterator will try to maximize or minimize the values
 	 */
-	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma) {
+	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma, List<? extends MarkovState> states, boolean maximize) {
 		super(deterministicIterator);
 		
 		this.ma = ma;
+		this.maximize = maximize;
 		
 		nondeterministicStates = new ArrayList<>();
 		probabilisticStates = new ArrayList<>();
 		mapNondetStateToTransitionGroups = new HashMap<>();
+		mapStateToIndex = new HashMap<>();
 		
-		for (S state : ma.getStates()) {
+		for (int i = 0; i < states.size(); ++i) {
+			@SuppressWarnings("unchecked")
+			S state = (S) states.get(i);
+			mapStateToIndex.put(state, i);
 			if (state.isNondet()) {
 				Map<Object, List<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 				mapNondetStateToTransitionGroups.put(state, transitionGroups.values());
@@ -56,41 +64,59 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 			}
 		}
 	}
+	
+	/**
+	 * Standard constructor for maximizing iterators.
+	 * @param deterministicIterator the iterator for handling the update of deterministic states
+	 * @param ma the markov automaton
+	 */
+	public MarkovAutomatonValueIterator(IMatrixIterator deterministicIterator, MarkovAutomaton<S> ma) {
+		this(deterministicIterator, ma, ma.getStates(), true);
+	}
 
 	@Override
 	public void iterate() {
 		super.iterate();
 		
 		for (S nondeterministicState : nondeterministicStates) {
-			double maxValue = Double.NEGATIVE_INFINITY;
 			Collection<List<MarkovTransition<S>>> transitionGroups = mapNondetStateToTransitionGroups.get(nondeterministicState);
 			
+			List<MarkovTransition<S>> bestTransitionGroup = null;
+			double bestValue = maximize ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
 			for (List<MarkovTransition<S>> transitionGroup : transitionGroups) {
-				double expectationValue = getExpectationValue(transitionGroup);
-				maxValue = Math.max(expectationValue, maxValue);
+				double expectationValue = MarkovTransition.getExpectationValue(transitionGroup, mapStateToIndex, getValues());
+				if ((maximize && expectationValue > bestValue) || (!maximize && expectationValue < bestValue)) {
+					bestValue = expectationValue;
+					bestTransitionGroup = transitionGroup;
+				}
 			}
 			
-			getValues()[nondeterministicState.getIndex()] = maxValue;
+			delegateProbabilisticUpdate(mapStateToIndex, mapStateToIndex.get(nondeterministicState), bestValue, bestTransitionGroup);
 		}
 		
 		for (S probabilisticState : probabilisticStates) {
 			List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(probabilisticState);
-			double expectationValue = getExpectationValue(succTransitions);
-			getValues()[probabilisticState.getIndex()] = expectationValue;
+			double expectationValue = MarkovTransition.getExpectationValue(succTransitions, mapStateToIndex, getValues());
+			delegateProbabilisticUpdate(mapStateToIndex, mapStateToIndex.get(probabilisticState), expectationValue, succTransitions);
 		}
 	}
 	
-	/**
-	 * Computes the expectation value for a given transition group
-	 * @param transitionGroup the transition group
-	 * @return the expectation value of the transition group
-	 */
-	private double getExpectationValue(List<MarkovTransition<S>> transitionGroup) {
-		double expectationValue = 0;
-		for (MarkovTransition<S> transition : transitionGroup) {
-			double succValue = getValues()[transition.getTo().getIndex()];
-			expectationValue += transition.getRate() * succValue;
+	public void setMaximize(boolean maximize) {
+		this.maximize = maximize;
+	}
+	
+	public boolean isMaximize() {
+		return maximize;
+	}
+
+	@Override
+	public void delegateProbabilisticUpdate(Map<MarkovState, Integer> mapStateToIndex, int index, double value, List<MarkovTransition<S>> transitions) {
+		getValues()[index] = value;
+		IMatrixIterator decoratedItr = getDecoratedIterator();
+		if (decoratedItr instanceof IDelegateIterator) {
+			@SuppressWarnings("unchecked")
+			IDelegateIterator<S> delegateItr = (IDelegateIterator<S>) decoratedItr;
+			delegateItr.delegateProbabilisticUpdate(mapStateToIndex, index, value, transitions);
 		}
-		return expectationValue;
 	}
 }
