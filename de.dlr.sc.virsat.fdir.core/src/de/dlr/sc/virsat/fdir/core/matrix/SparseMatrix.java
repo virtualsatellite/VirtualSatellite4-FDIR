@@ -10,6 +10,8 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
+import java.util.Arrays;
+
 /**
  * @author piet_ci
  * 
@@ -17,6 +19,9 @@ package de.dlr.sc.virsat.fdir.core.matrix;
  *
  */
 public class SparseMatrix implements IMatrix {
+	
+	private static final int[] EMPTY_INDEX_LIST = new int[0];
+	private static final double[] EMPTY_RATES_LIST = new double[0];
 	
 	private double[] diagonal;
 	private int[][] statePredIndices;
@@ -31,6 +36,11 @@ public class SparseMatrix implements IMatrix {
 		this.setDiagonal(new double[countStates]);
 		this.setStatePredIndices(new int[countStates][]);
 		this.setStatePredRates(new double[countStates][]);
+		
+		for (int i = 0; i < countStates; ++i) {
+			getStatePredIndices()[i] = EMPTY_INDEX_LIST;
+			getStatePredRates()[i] = EMPTY_RATES_LIST;
+		}
 	}
 	
 	/**
@@ -114,18 +124,53 @@ public class SparseMatrix implements IMatrix {
 	@Override
 	public double getValue(int column, int row) {
 		if (column == row) {
-			return diagonal[column];
+			return diagonal[row];
 		}
 		
-		throw new UnsupportedOperationException("SparseMatrix only supports random access of the diagonal and not of the random entry (" + column + ", " + row + ").");
+		int index = getIndex(column, row);
+		return getStatePredRates()[row][index];
 	}
 
 	@Override
 	public void setValue(int column, int row, double value) {
 		if (column == row) {
-			diagonal[column] = value;
+			diagonal[row] = value;
 		} else {
-			throw new UnsupportedOperationException("SparseMatrix only supports random access of the diagonal and not of the random entry (" + column + ", " + row + ").");
+			int index = getIndex(column, row);
+			getStatePredRates()[row][index] = value;
 		}
+	}
+	
+	/**
+	 * Performs a random access to an entry in the sparse matrix.
+	 * If the entry does not exist, the sparse matrix is extended by the new entry.
+	 * 
+	 * ATTENTION: This can be a costful operation since the columns need to be copied every time!
+	 * Using this sparse matrix in time critical scenarios with random access outside of the diagonal is discouraged!
+	 * 
+	 * @param column the column
+	 * @param row the row
+	 * @return the index in the neighbor list that corresponds to the requested row
+	 */
+	private int getIndex(int column, int row) {
+		int[] predIndices = getStatePredIndices()[row];
+		double[] predRates = getStatePredRates()[row];
+		
+		for (int i = 0; i < predIndices.length; ++i) {
+			if (predIndices[i] == column) {
+				return i;
+			}
+		}
+		
+		int index = predIndices.length;
+		int[] newPredIndices = Arrays.copyOf(predIndices, index + 1);
+		double[] newPredRates = Arrays.copyOf(predRates, index + 1);
+		
+		getStatePredIndices()[row] = newPredIndices;
+		getStatePredRates()[row] = newPredRates;
+		
+		newPredIndices[index] = column;
+		
+		return index;
 	}
 }

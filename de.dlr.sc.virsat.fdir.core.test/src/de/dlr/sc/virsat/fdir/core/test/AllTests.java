@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.fdir.core.markov.algorithm.StronglyConnectedComponentFin
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelCheckerTest;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResultTest;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovSchedulerTest;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.LinearProgramIteratorTest;
 import junit.framework.JUnit4TestAdapter;
 
 /**
@@ -38,7 +39,8 @@ import junit.framework.JUnit4TestAdapter;
 	ModelCheckingResultTest.class,
 	MarkovAutomatonBuilderTest.class,
 	StronglyConnectedComponentTest.class,
-	StronglyConnectedComponentFinderTest.class
+	StronglyConnectedComponentFinderTest.class,
+	LinearProgramIteratorTest.class
 	})
 
 public class AllTests {
