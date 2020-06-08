@@ -148,7 +148,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	private void decorateVOTE(VOTE vote, ContainerShape containerShape) {
 		String votingThreshold = String.valueOf(vote.getVotingThreshold());
 		Shape votingTresholdShape = createLabel("\u2265" + votingThreshold, containerShape);
-		link(votingTresholdShape, vote);
+		link(votingTresholdShape, vote.getVotingThresholdBean());
 	}
 	
 	/**
@@ -159,7 +159,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	private void decorateDELAY(DELAY delayNode, ContainerShape containerShape) {
 		String delay = String.valueOf(delayNode.getTime());
 		Shape delayShape = createLabel(delay, containerShape);
-		link(delayShape, delayNode);
+		link(delayShape, delayNode.getTimeBean());
 	}
 	
 	/**
@@ -170,7 +170,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	private void decorateMONITOR(MONITOR observer, ContainerShape containerShape) {
 		String observationRate = String.valueOf(observer.getObservationRate());
 		Shape observationRateShape = createLabel(observationRate, containerShape);
-		link(observationRateShape, observer);
+		link(observationRateShape, observer.getObservationRateBean());
 	}
 	
 	/**
