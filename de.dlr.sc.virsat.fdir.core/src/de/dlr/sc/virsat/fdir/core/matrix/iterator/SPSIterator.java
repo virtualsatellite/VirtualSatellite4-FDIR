@@ -126,12 +126,10 @@ public class SPSIterator extends AMatrixIterator {
 	 */
 	private IMatrix initUniformMatrix() {
 		IMatrix uniformMatrix = matrix.copy();
-		double[] diag = uniformMatrix.getDiagonal();
 						
-		for (int i = 0; i < diag.length; i++) {
-			diag[i] += iteratorParams.maxEntry;
+		for (int i = 0; i < uniformMatrix.size(); i++) {
+			uniformMatrix.setValue(i, i, uniformMatrix.getValue(i,  i) + iteratorParams.maxEntry);
 		}
-		uniformMatrix.setDiagonal(diag);
 		return uniformMatrix;
 	}
 	

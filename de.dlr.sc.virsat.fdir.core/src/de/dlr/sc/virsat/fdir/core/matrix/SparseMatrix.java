@@ -63,7 +63,6 @@ public class SparseMatrix implements IMatrix {
 	/**
 	 * @param diagonal matrix diagonal
 	 */
-	@Override
 	public void setDiagonal(double[] diagonal) {
 		this.diagonal = diagonal.clone();
 	}
@@ -111,5 +110,15 @@ public class SparseMatrix implements IMatrix {
 		t.setStatePredIndices(this.getStatePredIndices());
 		t.setStatePredRates(this.getStatePredRates());
 		return t;
+	}
+
+	@Override
+	public double getValue(int column, int row) {
+		return diagonal[column];
+	}
+
+	@Override
+	public void setValue(int column, int row, double value) {
+		diagonal[column] = value;
 	}
 }
