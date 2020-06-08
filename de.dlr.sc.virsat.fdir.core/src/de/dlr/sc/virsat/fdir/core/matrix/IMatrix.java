@@ -9,8 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.matrix;
 
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
-
 /**
  * Interface for matrices
  * @author piet
@@ -24,15 +22,6 @@ public interface IMatrix {
 	 * @param result resultbuffer
 	 */
 	void multiply(double[] vector, double[] result);
-
-	/**
-	 * Returns an iterator for specific matrix type.
-	 * 
-	 * @param probabilityDistribution probabilityDistribution
-	 * @param eps epsilon
-	 * @return MatrixIterator
-	 */
-	IMatrixIterator getIterator(double[] probabilityDistribution, double eps);
 
 	/**
 	 * @return returns number of states

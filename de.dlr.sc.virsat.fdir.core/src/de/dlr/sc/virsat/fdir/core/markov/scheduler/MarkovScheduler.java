@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
 
@@ -102,7 +103,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		IMatrix bellmanMatrix = matrixFactory.createBellmanMatrix(ma, ma.getStates(), ma.getFinalStates(), true);
 		
 		double[] values = ma.getNonFailSoujornTimes();
-		IMatrixIterator bellmanIterator = bellmanMatrix.getIterator(values, EPS);		
+		IMatrixIterator bellmanIterator = new BellmanIterator(bellmanMatrix, values);		
 		MarkovAutomatonValueIterator<S> valueIterator = new MarkovAutomatonValueIterator<S>(bellmanIterator, ma);
 		return valueIterator;
 	}

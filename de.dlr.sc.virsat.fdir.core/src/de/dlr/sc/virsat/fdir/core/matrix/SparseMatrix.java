@@ -10,9 +10,6 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix;
 
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
-
 /**
  * @author piet_ci
  * 
@@ -102,13 +99,7 @@ public class SparseMatrix implements IMatrix {
 	public void setStatePredRates(double[][] statePredRates) {
 		this.statePredRates = statePredRates.clone();
 	}
-
-
-	@Override
-	public IMatrixIterator getIterator(double[] probabilityDistribution, double eps) {
-		return new SPSIterator(this, probabilityDistribution, eps);
-	}
-
+	
 	/**
 	 * @return countStates
 	 */
