@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.SubMonitor;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
@@ -84,7 +85,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public ModelCheckingResult checkModel(ModelCheckingQuery modelCheckingQuery, SubMonitor subMonitor) {
+	public ModelCheckingResult checkModel(ModelCheckingQuery<? extends MarkovState> modelCheckingQuery, SubMonitor subMonitor) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		

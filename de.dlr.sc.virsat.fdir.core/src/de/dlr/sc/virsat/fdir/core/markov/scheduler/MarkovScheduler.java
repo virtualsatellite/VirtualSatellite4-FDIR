@@ -47,20 +47,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	
 	@Override
 	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery) {
-		List<S> validStates = new ArrayList<>(scheduleQuery.getMa().getStates());
-		for (Entry<IMetric, Double> constraint : scheduleQuery.getConstraints().entrySet()) {
-			IMetric metric = constraint.getKey();
-			Map<S, Double> constraintResults = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), metric);
-			
-			Set<S> invalidatedStates = new HashSet<>();
-			for (S state : validStates) {
-				if (state.isMarkovian() && constraintResults.get(state) < constraint.getValue()) {
-					invalidatedStates.add(state);
-				}
-			}
-			validStates.removeAll(invalidatedStates);
-		}
-		
+		List<S> validStates = getValidStates(scheduleQuery);
 		results = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), MTTF.MTTF);
 		
 		Queue<S> toProcess = new LinkedList<>();
@@ -88,6 +75,29 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	}
 	
 	/**
+	 * Computes the states that fulfill all constraints in the schedule query
+	 * @param scheduleQuery the schedule query
+	 * @return the states in the ma that fulfill all queries
+	 */
+	private List<S> getValidStates(ScheduleQuery<S> scheduleQuery) {
+		List<S> validStates = new ArrayList<>(scheduleQuery.getMa().getStates());
+		for (Entry<IMetric, Double> constraint : scheduleQuery.getConstraints().entrySet()) {
+			IMetric metric = constraint.getKey();
+			Map<S, Double> constraintResults = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), metric);
+			
+			Set<S> invalidatedStates = new HashSet<>();
+			for (S state : validStates) {
+				if (state.isMarkovian() && constraintResults.get(state) < constraint.getValue()) {
+					invalidatedStates.add(state);
+				}
+			}
+			validStates.removeAll(invalidatedStates);
+		}
+		
+		return validStates;
+	}
+	
+	/**
 	 * Gets the computed values for each state from the last call to the scheduler
 	 * @return the computed values
 	 */
@@ -103,7 +113,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return a mapping from state to its utility value
 	 */
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, List<S> validStates, S initialMa, IMetric metric) {
-		ModelCheckingQuery modelCheckingQuery = new ModelCheckingQuery(ma, (IBaseMetric) metric);
+		ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, (IBaseMetric) metric);
 		modelCheckingQuery.setStates(validStates);
 		
 		modelChecker.checkModel(modelCheckingQuery, null);

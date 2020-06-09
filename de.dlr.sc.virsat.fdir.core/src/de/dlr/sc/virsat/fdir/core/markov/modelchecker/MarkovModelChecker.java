@@ -63,7 +63,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	private ModelCheckingResult modelCheckingResult;
 	private ModelCheckingStatistics statistics;
 	
-	private ModelCheckingQuery modelCheckingQuery;
+	private ModelCheckingQuery<? extends MarkovState> modelCheckingQuery;
 	private IMatrixFactory matrixFactory;
 	/**
 	 * 
@@ -83,7 +83,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	 * 
 	 */
 	@Override
-	public ModelCheckingResult checkModel(ModelCheckingQuery modelCheckingQuery, SubMonitor subMonitor) {
+	public ModelCheckingResult checkModel(ModelCheckingQuery<? extends MarkovState> modelCheckingQuery, SubMonitor subMonitor) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		subMonitor = SubMonitor.convert(subMonitor);

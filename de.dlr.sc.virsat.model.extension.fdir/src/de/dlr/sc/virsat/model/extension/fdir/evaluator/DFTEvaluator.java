@@ -206,7 +206,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		subMonitor = SubMonitor.convert(subMonitor, COUNT_WORK);
 		
 		mc = dft2MaConverter.convert(root, failableBasicEventsProvider, failLabelProvider, subMonitor.split(1));
-		ModelCheckingQuery modelCheckingQuery = new ModelCheckingQuery(mc, metrics);
+		ModelCheckingQuery<DFTState> modelCheckingQuery = new ModelCheckingQuery<>(mc, metrics);
 		ModelCheckingResult result = markovModelChecker.checkModel(modelCheckingQuery, subMonitor.split(1));
 			
 		statistics.maBuildStatistics.compose(dft2MaConverter.getMaBuilder().getStatistics());
