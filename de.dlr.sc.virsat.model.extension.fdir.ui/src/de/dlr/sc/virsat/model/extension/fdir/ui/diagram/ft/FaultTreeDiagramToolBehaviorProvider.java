@@ -17,6 +17,7 @@ import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IDoubleClickContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
@@ -37,6 +38,7 @@ import org.eclipse.graphiti.tb.IShapeSelectionInfo;
 import org.eclipse.graphiti.tb.ShapeSelectionInfoImpl;
 import org.eclipse.graphiti.util.IColorConstant;
 
+import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirsatCategoryAssignmentOpenEditorFeature;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeCollapseFeature;
@@ -214,5 +216,10 @@ public class FaultTreeDiagramToolBehaviorProvider extends DefaultToolBehaviorPro
 		si.setPrimarySelectionBackgroundColor(IColorConstant.LIGHT_GRAY);
 		si.setSecondarySelectionBackgroundColor(IColorConstant.LIGHT_GRAY);
 		return si;
+	}
+
+	@Override
+	public ICustomFeature getDoubleClickFeature(IDoubleClickContext context) {
+		return new VirsatCategoryAssignmentOpenEditorFeature(getFeatureProvider());
 	}
 }
