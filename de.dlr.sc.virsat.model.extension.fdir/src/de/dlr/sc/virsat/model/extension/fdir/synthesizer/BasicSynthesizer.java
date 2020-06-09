@@ -18,6 +18,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovScheduler;
+import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -34,7 +35,8 @@ public class BasicSynthesizer extends ASynthesizer {
 	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
-		Map<DFTState, List<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(ma, initialMa);
+		ScheduleQuery<DFTState> scheduelQuery = new ScheduleQuery<>(ma, initialMa);
+		Map<DFTState, List<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(scheduelQuery);
 		return new Schedule2RAConverter<>(ma, concept).convert(schedule, initialMa);
 	}
 

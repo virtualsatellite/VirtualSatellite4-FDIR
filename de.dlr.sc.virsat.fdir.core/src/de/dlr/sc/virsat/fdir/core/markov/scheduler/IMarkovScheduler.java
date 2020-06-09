@@ -13,7 +13,6 @@ package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 import java.util.List;
 import java.util.Map;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 
@@ -32,5 +31,5 @@ public interface IMarkovScheduler<S extends MarkovState> {
 	 * @param initialMa the initial state
 	 * @return the schedule
 	 */
-	Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa);
+	Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery);
 }

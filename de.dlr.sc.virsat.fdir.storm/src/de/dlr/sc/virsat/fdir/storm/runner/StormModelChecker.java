@@ -16,9 +16,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.SubMonitor;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
@@ -85,18 +84,18 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, SubMonitor subMonitor, IBaseMetric... metrics) {
+	public ModelCheckingResult checkModel(ModelCheckingQuery modelCheckingQuery, SubMonitor subMonitor) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
-		Storm storm = new Storm(ma, delta, metrics);
+		Storm storm = new Storm(modelCheckingQuery.getMa(), delta, modelCheckingQuery.getMetrics());
 		StormRunner<Double> stormRunner = createStormRunner(storm);
 		
 		modelCheckingResult = new ModelCheckingResult();
 		
 		try {
 			resultExtracted  = stormRunner.run();
-			for (IBaseMetric metric : metrics) {
+			for (IBaseMetric metric : modelCheckingQuery.getMetrics()) {
 				metric.accept(this, null);
 			}
 

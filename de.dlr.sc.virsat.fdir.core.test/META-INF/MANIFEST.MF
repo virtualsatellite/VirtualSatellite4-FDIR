@@ -11,5 +11,6 @@ Export-Package: de.dlr.sc.virsat.fdir.core.markov,
  de.dlr.sc.virsat.fdir.core.markov.algorithm,
  de.dlr.sc.virsat.fdir.core.markov.modelchecker,
  de.dlr.sc.virsat.fdir.core.markov.scheduler,
+ de.dlr.sc.virsat.fdir.core.matrix.iterator,
  de.dlr.sc.virsat.fdir.core.test
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.core.test

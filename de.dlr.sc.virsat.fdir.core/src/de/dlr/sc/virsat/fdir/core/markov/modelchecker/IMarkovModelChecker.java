@@ -11,9 +11,6 @@ package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
 import org.eclipse.core.runtime.SubMonitor;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
 /**
  * Interface for model checkers
@@ -29,7 +26,7 @@ public interface IMarkovModelChecker extends IBaseMetricVisitor {
 	 * @param metrics metrics
 	 * @return a model checking result with the contained metrics
 	 */
-	ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> mc, SubMonitor subMonitor, IBaseMetric... metrics);
+	ModelCheckingResult checkModel(ModelCheckingQuery modelCheckingQuery, SubMonitor subMonitor);
 	
 	/**
 	 * Gets the internal statistics for the last model checking call

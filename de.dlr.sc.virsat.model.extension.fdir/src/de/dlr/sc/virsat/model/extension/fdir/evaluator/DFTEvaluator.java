@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.AProbabilityCurve;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
@@ -205,7 +206,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		subMonitor = SubMonitor.convert(subMonitor, COUNT_WORK);
 		
 		mc = dft2MaConverter.convert(root, failableBasicEventsProvider, failLabelProvider, subMonitor.split(1));
-		ModelCheckingResult result = markovModelChecker.checkModel(mc, subMonitor.split(1), metrics);
+		ModelCheckingQuery modelCheckingQuery = new ModelCheckingQuery(mc, metrics);
+		ModelCheckingResult result = markovModelChecker.checkModel(modelCheckingQuery, subMonitor.split(1));
 			
 		statistics.maBuildStatistics.compose(dft2MaConverter.getMaBuilder().getStatistics());
 		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());	
