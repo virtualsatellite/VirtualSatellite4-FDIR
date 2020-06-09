@@ -1,6 +1,6 @@
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -15,7 +15,7 @@ public class ScheduleQuery<S extends MarkovState> {
 	public ScheduleQuery(MarkovAutomaton<S> ma, S initialState) {
 		this.ma  = ma;
 		this.initialState = initialState;
-		this.constraints = Collections.emptyMap();
+		this.constraints = new HashMap<>();
 	}
 	
 	public MarkovAutomaton<S> getMa() {

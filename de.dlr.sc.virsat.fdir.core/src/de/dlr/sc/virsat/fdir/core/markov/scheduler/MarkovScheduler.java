@@ -54,7 +54,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			
 			Set<S> invalidatedStates = new HashSet<>();
 			for (S state : validStates) {
-				if (constraintResults.get(state) < constraint.getValue()) {
+				if (state.isMarkovian() && constraintResults.get(state) < constraint.getValue()) {
 					invalidatedStates.add(state);
 				}
 			}
@@ -109,21 +109,23 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		modelChecker.checkModel(modelCheckingQuery, null);
 		
 		double[] values = modelChecker.getProbabilityDistribution();
-		Map<S, Double> resultMap = createResultMap(ma, values);
+		Map<S, Double> resultMap = createResultMap(ma, modelCheckingQuery.getStates(), values);
 		return resultMap;
 	}
 	
 	/**
 	 * Transforms the value vector into the value map
 	 * @param ma the markov automaton
+	 * @param states 
 	 * @param values the values from the value iteration
 	 * @return a mapping from states to their value
 	 */
-	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
+	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, List<? extends MarkovState> states, double[] values) {
 		Map<S, Double> resultMap = new LinkedHashMap<S, Double>();
 		
-		for (int i = 0; i < ma.getStates().size(); ++i) {	
-			S state = ma.getStates().get(i);
+		for (int i = 0; i < states.size(); ++i) {	
+			@SuppressWarnings("unchecked")
+			S state = (S) states.get(i);
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
@@ -168,7 +170,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double failProb = ma.getFinalStateProbs().getOrDefault(toState, 0d);
 				transitionGroupProbFail += prob * failProb;
 				
-				double toValue = results.get(toState);
+				double toValue = results.getOrDefault(toState, Double.NEGATIVE_INFINITY);
 				expectationValue += prob * toValue;
 			}
 			

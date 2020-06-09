@@ -289,17 +289,18 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * Gets the initial MTTF according to the Bellman equations with
 	 * MTTF(s) = 0 if s is a fail state and 
 	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
+	 * @param states 
 	 * @param mc the markov chain
 	 * @return the initial probability distribution
 	 */
-	public double[] getNonFailSoujornTimes() {
-		int countStates = getStates().size();
+	public double[] getNonFailSoujornTimes(List<? extends MarkovState> states) {
+		int countStates = states.size();
 		double[] inititalVector = new double[countStates];
 
 		Set<MarkovState> failReachableStates = getStatesWithReachableFailState();
 
 		for (int i = 0; i < countStates; ++i) {
-			MarkovState state = getStates().get(i);
+			MarkovState state = states.get(i);
 			if (state.isMarkovian() && !getFinalStates().contains(state)) {
 				inititalVector[i] = failReachableStates.contains(state) ? 1 / getExitRateForState(state) : Double.POSITIVE_INFINITY;
 			}

@@ -23,6 +23,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
 /**
  * This class tests the Markov Scheduler implementation.
@@ -125,8 +126,6 @@ public class MarkovSchedulerTest {
 		
 		ma.addMarkovianTransition("c", good, bad, 1);
 		
-		System.out.println(ma.toDot());
-		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice1));
@@ -159,5 +158,65 @@ public class MarkovSchedulerTest {
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice));
+	}
+	
+	@Test
+	public void testScheduleConstraintSSA() {
+		// Construct the following MA:
+		// init --- a ---> bad --- 1 ---> badOk --- 1 ---> badFail --- 3 ---> badOk
+		//      --- b ---> good -- 2 ---> goodOk -- 1 ---> goodFail -- 1 ---> goodOk
+		
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		
+		MarkovState initial = new MarkovState();
+		MarkovState bad = new MarkovState();
+		MarkovState good = new MarkovState();
+		MarkovState badOk = new MarkovState();
+		MarkovState goodOk = new MarkovState();
+		MarkovState badFail = new MarkovState();
+		MarkovState goodFail = new MarkovState();
+		
+		ma.addState(initial);
+		ma.addState(bad);
+		ma.addState(good);
+		ma.addState(badOk);
+		ma.addState(goodOk);
+		ma.addState(badFail);
+		ma.addState(goodFail);
+		
+		ma.getEvents().add("a");
+		ma.getEvents().add("b");
+		
+		Object choiceA = ma.addNondeterministicTransition("a", initial, bad);
+		Object choiceB = ma.addNondeterministicTransition("b", initial, good);
+		
+		// CHECKSTYLE:OFF
+		ma.addMarkovianTransition("m", bad, badOk, 1);
+		ma.addMarkovianTransition("m", good, goodOk, 2);
+		
+		ma.addMarkovianTransition("m", badOk, badFail, 1);
+		ma.addMarkovianTransition("m", goodOk, goodFail, 1);
+		
+		ma.addMarkovianTransition("m", badFail, badOk, 3);
+		ma.addMarkovianTransition("m", goodFail, goodOk, 1);
+		// CHECKSTYLE:ON
+		
+		ma.getFinalStateProbs().put(badFail, 1d);
+		ma.getFinalStateProbs().put(goodFail, 1d);
+		
+		System.out.println(ma.toDot());
+		
+		// Without any constraints, the correct choice is choiceA
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
+		assertTrue(schedule.get(initial).contains(choiceA));
+		assertFalse(schedule.get(initial).contains(choiceB));
+		
+		// With an SSA >= 50% constraint, the correct choice is choiceB
+		ScheduleQuery<MarkovState> constrainedQuery = new ScheduleQuery<>(ma, initial);
+		final double MINIMUM_SSA = 0.5;
+		constrainedQuery.getConstraints().put(SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MINIMUM_SSA);
+		schedule = scheduler.computeOptimalScheduler(constrainedQuery);
+		assertFalse(schedule.get(initial).contains(choiceA));
+		assertTrue(schedule.get(initial).contains(choiceB));
 	}
 }

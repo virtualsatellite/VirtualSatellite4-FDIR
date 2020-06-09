@@ -164,7 +164,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), modelCheckingQuery.getMa().getFinalStates(), true);
 		}
 		
-		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa());
+		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getStates());
 		
 		probabilityDistribution = mxIterator.converge(eps);
 		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
