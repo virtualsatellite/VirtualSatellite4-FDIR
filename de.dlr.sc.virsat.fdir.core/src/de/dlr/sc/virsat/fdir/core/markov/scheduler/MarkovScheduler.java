@@ -10,6 +10,7 @@
 
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,16 +18,17 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
-import de.dlr.sc.virsat.fdir.core.matrix.IMatrixFactory;
-import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 
 /**
@@ -37,17 +39,19 @@ import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
  */
 
 public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<S> {
-
+	
 	public static final double EPS = 0.0000000001;
 	
+	private MarkovModelChecker modelChecker = new MarkovModelChecker(0, EPS);
 	private Map<S, Double> results;
 	
 	@Override
-	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
-		results = computeValues(ma, initialMa);
+	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery) {
+		List<S> validStates = getValidStates(scheduleQuery);
+		results = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), MTTF.MTTF);
 		
 		Queue<S> toProcess = new LinkedList<>();
-		toProcess.offer(initialMa);
+		toProcess.offer(scheduleQuery.getInitialState());
 		Set<S> handledNonDetStates = new HashSet<>();
 		
 		Map<S, List<MarkovTransition<S>>> schedule = new HashMap<>();
@@ -55,7 +59,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			S state = toProcess.poll();
 			
 			List<MarkovTransition<S>> succTransitions = state.isNondet() 
-					? selectOptimalTransitionGroup(ma, state) : ma.getSuccTransitions(state);
+					? selectOptimalTransitionGroup(scheduleQuery.getMa(), state) : scheduleQuery.getMa().getSuccTransitions(state);
 			
 			if (succTransitions != null) {
 				schedule.put(state, succTransitions);
@@ -71,6 +75,29 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	}
 	
 	/**
+	 * Computes the states that fulfill all constraints in the schedule query
+	 * @param scheduleQuery the schedule query
+	 * @return the states in the ma that fulfill all queries
+	 */
+	private List<S> getValidStates(ScheduleQuery<S> scheduleQuery) {
+		List<S> validStates = new ArrayList<>(scheduleQuery.getMa().getStates());
+		for (Entry<IMetric, Double> constraint : scheduleQuery.getConstraints().entrySet()) {
+			IMetric metric = constraint.getKey();
+			Map<S, Double> constraintResults = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), metric);
+			
+			Set<S> invalidatedStates = new HashSet<>();
+			for (S state : validStates) {
+				if (state.isMarkovian() && constraintResults.get(state) < constraint.getValue()) {
+					invalidatedStates.add(state);
+				}
+			}
+			validStates.removeAll(invalidatedStates);
+		}
+		
+		return validStates;
+	}
+	
+	/**
 	 * Gets the computed values for each state from the last call to the scheduler
 	 * @return the computed values
 	 */
@@ -81,42 +108,34 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	/**
 	 * Computes a utility value for every node
 	 * @param ma the markov automaton
+	 * @param validStates 
 	 * @param initialMa the initial stae
 	 * @return a mapping from state to its utility value
 	 */
-	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
-		IMatrixIterator valueIterator = createValueIterator(ma);
+	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, List<S> validStates, S initialMa, IMetric metric) {
+		ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, (IBaseMetric) metric);
+		modelCheckingQuery.setStates(validStates);
 		
-		double[] values = valueIterator.converge(EPS);
-		Map<S, Double> resultMap = createResultMap(ma, values);
+		modelChecker.checkModel(modelCheckingQuery, null);
 		
+		double[] values = modelChecker.getProbabilityDistribution();
+		Map<S, Double> resultMap = createResultMap(ma, modelCheckingQuery.getStates(), values);
 		return resultMap;
-	}
-	
-	/**
-	 * Creates the value iterator for the markov automaton
-	 * @param ma the markov automaton
-	 * @return the value iterator
-	 */
-	private IMatrixIterator createValueIterator(MarkovAutomaton<S> ma) {
-		IMatrixFactory matrixFactory = new MatrixFactory();
-		IMatrix bellmanMatrix = matrixFactory.createBellmanMatrix(ma, ma.getStates(), ma.getFinalStates(), true);
-			
-		IMatrixIterator valueIterator = MTTF.MTTF.iterator(bellmanMatrix, ma);
-		return valueIterator;
 	}
 	
 	/**
 	 * Transforms the value vector into the value map
 	 * @param ma the markov automaton
+	 * @param states 
 	 * @param values the values from the value iteration
 	 * @return a mapping from states to their value
 	 */
-	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, double[] values) {
+	private Map<S, Double> createResultMap(MarkovAutomaton<S> ma, List<? extends MarkovState> states, double[] values) {
 		Map<S, Double> resultMap = new LinkedHashMap<S, Double>();
 		
-		for (int i = 0; i < ma.getStates().size(); ++i) {	
-			S state = ma.getStates().get(i);
+		for (int i = 0; i < states.size(); ++i) {	
+			@SuppressWarnings("unchecked")
+			S state = (S) states.get(i);
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
@@ -161,7 +180,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double failProb = ma.getFinalStateProbs().getOrDefault(toState, 0d);
 				transitionGroupProbFail += prob * failProb;
 				
-				double toValue = results.get(toState);
+				double toValue = results.getOrDefault(toState, Double.NEGATIVE_INFINITY);
 				expectationValue += prob * toValue;
 			}
 			

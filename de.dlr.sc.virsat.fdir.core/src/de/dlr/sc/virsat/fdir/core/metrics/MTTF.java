@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.fdir.core.metrics;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,10 +58,11 @@ public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	 * Creates an iterator that converges towards the mean time to failure of the markov automaton.
 	 * @param matrix the matrix representation of the ma
 	 * @param ma the markov automaton
+	 * @param states a subset of states in the amrkov automaton on which the iterator will operate
 	 * @return an iterator that converges towards the MTTF
 	 */
-	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma) {
-		double[] nonFailSoujournTimes = ma.getNonFailSoujornTimes(); 
+	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states) {
+		double[] nonFailSoujournTimes = ma.getNonFailSoujornTimes(states); 
 		return new MarkovAutomatonValueIterator<>(new BellmanIterator(matrix, nonFailSoujournTimes), ma);
 	}
 }

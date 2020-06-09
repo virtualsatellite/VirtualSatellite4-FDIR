@@ -21,6 +21,7 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
 
 /**
  * This class tests the storm scheduler implementation
@@ -62,7 +63,8 @@ public class StormSchedulerTest {
 				return mapStateToChoice;
 			}
 		};
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
+		
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice));
 	}

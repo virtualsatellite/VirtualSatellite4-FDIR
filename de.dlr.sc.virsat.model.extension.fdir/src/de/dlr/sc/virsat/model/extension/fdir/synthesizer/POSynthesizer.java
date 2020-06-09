@@ -18,6 +18,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovScheduler;
+import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
@@ -44,7 +45,8 @@ public class POSynthesizer extends ASynthesizer {
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma
-		Map<BeliefState, List<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(beliefMa, initialBeliefState);
+		ScheduleQuery<BeliefState> scheduleQuery = new ScheduleQuery<>(beliefMa, initialBeliefState);
+		Map<BeliefState, List<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(scheduleQuery);
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState);
 	}
 	
