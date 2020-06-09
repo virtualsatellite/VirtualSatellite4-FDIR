@@ -247,7 +247,6 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		modelCheckingResult.setSteadyStateAvailability(ssa);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void visit(MinimumCutSet minimumCutSet) {
 		// Construct the minimum cut sets as follows:
@@ -271,8 +270,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 				List<?> succTransitions = modelCheckingQuery.getMa().getSuccTransitions(state);
 				for (Object succTransition : succTransitions) {
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) succTransition;
-					MarkovState successor = transition.getTo();
+					MarkovTransition<?> transition = (MarkovTransition<?>) succTransition;
+					MarkovState successor = (MarkovState) transition.getTo();
 					Set<Set<Object>> succMinCuts = mapStateToMinCuts.getOrDefault(successor, Collections.emptySet());
 
 					if (succMinCuts.isEmpty()) {
@@ -313,8 +312,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			if (shouldEnqueuePredecessors) {
 				List<?> predTransitions = modelCheckingQuery.getMa().getPredTransitions(state);
 				for (Object predTransition : predTransitions) {
-					MarkovTransition<? extends MarkovState> transition = (MarkovTransition<? extends MarkovState>) predTransition;
-					MarkovState predecessor = transition.getFrom();
+					MarkovTransition<?> transition = (MarkovTransition<?>) predTransition;
+					MarkovState predecessor = (MarkovState) transition.getFrom();
 					if (!toProcess.contains(predecessor) && !modelCheckingQuery.getMa().getFinalStates().contains(predecessor)) {
 						toProcess.add(predecessor);
 					}
