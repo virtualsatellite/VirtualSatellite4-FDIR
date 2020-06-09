@@ -22,7 +22,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -75,7 +75,7 @@ public class StormModelCheckerTest {
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		ma.addNondeterministicTransition("b", state2, state1); 
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		final double DELTA = 0.000000001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), DELTA);
@@ -104,7 +104,7 @@ public class StormModelCheckerTest {
 		ma.getFinalStateProbs().put(state2, 1d);
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		final double DELTA = 0.00000001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), DELTA);
@@ -142,7 +142,7 @@ public class StormModelCheckerTest {
 		ma.addNondeterministicTransition("c", state2, state3);
 		ma.addNondeterministicTransition("d", state2, state4);
 		ma.addNondeterministicTransition("e", state3, state4);
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		final double DELTA = 0.00000001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), DELTA);
@@ -169,7 +169,7 @@ public class StormModelCheckerTest {
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.STEADY_STATE_AVAILABILITY), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.SSA), null);
 		
 		final double DELTA = 0.01;
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), DELTA);

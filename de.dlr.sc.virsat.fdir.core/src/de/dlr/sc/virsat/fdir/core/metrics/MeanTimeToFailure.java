@@ -29,13 +29,13 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
  * @author sascha
  *
  */
-public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
-	public static final MTTF MTTF = new MTTF();
+public class MeanTimeToFailure implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
+	public static final MeanTimeToFailure MTTF = new MeanTimeToFailure();
 	
 	/**
 	 * Hidden constructor
 	 */
-	private MTTF() {
+	private MeanTimeToFailure() {
 		
 	}
 	

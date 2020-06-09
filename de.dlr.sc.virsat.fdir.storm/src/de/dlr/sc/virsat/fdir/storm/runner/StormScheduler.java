@@ -20,7 +20,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 
 /**
  * 
@@ -43,7 +43,7 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 	@Override
 	public Map<MarkovState, List<MarkovTransition<MarkovState>>> computeOptimalScheduler(ScheduleQuery<MarkovState> scheduleQuery) {
 
-		Storm storm = new Storm(scheduleQuery.getMa(), DELTA, MTTF.MTTF);
+		Storm storm = new Storm(scheduleQuery.getMa(), DELTA, MeanTimeToFailure.MTTF);
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> mapScheduler = new HashMap<>();
 		Map<Integer, Integer> stormResults = runStormScheduler(storm);
 		for (MarkovState fromState : scheduleQuery.getMa().getStates()) {

@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
 import de.dlr.sc.virsat.model.dvlm.calculation.AdvancedFunction;
@@ -145,7 +145,7 @@ public  class FMECAEntry extends AFMECAEntry {
 		FaultTreeNode analysisNode = getFailureCause() != null ? getFailureCause() : getFailureMode();
 		
 		if (analysisNode != null) {			
-			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(analysisNode, MTTF.MTTF);
+			ModelCheckingResult result = ftEvaluator.evaluateFaultTree(analysisNode, MeanTimeToFailure.MTTF);
 			getMeanTimeToFailureBean().setValueAsBaseUnit(result.getMeanTimeToFailure());
 		} else {
 			setMeanTimeToFailure(Double.NaN);

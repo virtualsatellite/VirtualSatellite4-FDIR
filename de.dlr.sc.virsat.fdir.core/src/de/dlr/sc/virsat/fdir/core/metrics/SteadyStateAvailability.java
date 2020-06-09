@@ -31,7 +31,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
  *
  */
 public class SteadyStateAvailability implements IQuantitativeMetric, IDerivedMetric, IBaseMetric {
-	public static final SteadyStateAvailability STEADY_STATE_AVAILABILITY = new SteadyStateAvailability();
+	public static final SteadyStateAvailability SSA = new SteadyStateAvailability();
 
 	/**
 	 * 

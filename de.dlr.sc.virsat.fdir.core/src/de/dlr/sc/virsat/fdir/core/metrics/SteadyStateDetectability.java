@@ -24,8 +24,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
  */
 
 public class SteadyStateDetectability implements IDerivedMetric {
-
-	public static final SteadyStateDetectability STEADY_STATE_DETECTABILITY = new SteadyStateDetectability();
+	public static final SteadyStateDetectability SSD = new SteadyStateDetectability();
 
 	/**
 	 * Hidden private constructor
@@ -37,8 +36,8 @@ public class SteadyStateDetectability implements IDerivedMetric {
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(SteadyStateAvailability.STEADY_STATE_AVAILABILITY));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.OBSERVED), Collections.singleton(SteadyStateAvailability.STEADY_STATE_AVAILABILITY));
+		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(SteadyStateAvailability.SSA));
+		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.OBSERVED), Collections.singleton(SteadyStateAvailability.SSA));
 		return mapFailLabelProviderToMetrics;
 	}
 

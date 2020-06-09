@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Detectability;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
@@ -61,7 +61,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, 
-				Detectability.UNIT_DETECTABILITY, MeanTimeToDetection.MTTD, SteadyStateDetectability.STEADY_STATE_DETECTABILITY);
+				Detectability.UNIT_DETECTABILITY, MeanTimeToDetection.MTTD, SteadyStateDetectability.SSD);
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -99,7 +99,7 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MTTF.MTTF, MeanTimeToDetection.MTTD);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MeanTimeToFailure.MTTF, MeanTimeToDetection.MTTD);
 		
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals(EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
@@ -371,7 +371,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MeanTimeToFailure.MTTF, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -390,7 +390,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -408,7 +408,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -426,7 +426,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
@@ -440,7 +440,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.SSA);
 		
 		// SSA computation isnt stable yet, at least guarantee that its non-zero
 		assertNotEquals(0, result.getSteadyStateAvailability(), TEST_EPSILON);

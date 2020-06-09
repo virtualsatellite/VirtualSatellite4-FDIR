@@ -100,7 +100,7 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 		subMonitor.subTask("Performing Model Checking");
 
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault,
-				new Detectability(maxTime), SteadyStateDetectability.STEADY_STATE_DETECTABILITY, MeanTimeToDetection.MTTD);
+				new Detectability(maxTime), SteadyStateDetectability.SSD, MeanTimeToDetection.MTTD);
 	
 		double meanTimeToDetection = result.getMeanTimeToDetection();
 		double steadyStateDetectability = result.getSteadyStateDetectability();

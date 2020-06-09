@@ -16,7 +16,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
@@ -107,7 +107,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		
 		subMonitor.split(1);
 		subMonitor.subTask("Performing Model Checking");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, subMonitor.split(1), new Reliability(maxTime), MTTF.MTTF);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, subMonitor.split(1), new Reliability(maxTime), MeanTimeToFailure.MTTF);
 		
 		subMonitor.split(1);
 		subMonitor.subTask("Updating Results");
