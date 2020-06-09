@@ -9,8 +9,11 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -63,12 +66,11 @@ public class MarkovSchedulerTest {
 		
 		ma.getFinalStateProbs().put(bad, 1d);
 		
-		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
-		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);
+		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good);
+		ma.addNondeterministicTransition("b", initial, bad);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertTrue(schedule.get(initial).contains(correctChoice));
-		assertFalse(schedule.get(initial).contains(falseChoice));
+		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
 	}
 	
 	@Test
@@ -90,15 +92,14 @@ public class MarkovSchedulerTest {
 		
 		ma.getFinalStateProbs().put(sink, 1d);
 		
-		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
-		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);
+		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good);
+		ma.addNondeterministicTransition("b", initial, bad);
 		
 		ma.addMarkovianTransition("a", good, sink, 1);
 		ma.addMarkovianTransition("b", bad, sink, 2);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertTrue(schedule.get(initial).contains(correctChoice));
-		assertFalse(schedule.get(initial).contains(falseChoice));
+		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
 	}
 
 	@Test
@@ -118,18 +119,16 @@ public class MarkovSchedulerTest {
 		
 		ma.getFinalStateProbs().put(bad, 1d);
 		
-		Object correctChoice = ma.addNondeterministicTransition("a", initial, good, 1);
+		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good, 1);
 		// CHECKSTYLE:OFF
-		Object falseChoice1 = ma.addNondeterministicTransition("b", initial, good, 0.5);
-		Object falseChoice2 = ma.addNondeterministicTransition("b", initial, bad, 0.5);
+		ma.addNondeterministicTransition("b", initial, good, 0.5);
+		ma.addNondeterministicTransition("b", initial, bad, 0.5);
 		// CHECKSTYLE:ON
 		
 		ma.addMarkovianTransition("c", good, bad, 1);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertTrue(schedule.get(initial).contains(correctChoice));
-		assertFalse(schedule.get(initial).contains(falseChoice1));
-		assertFalse(schedule.get(initial).contains(falseChoice2));
+		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
 		
 		Map<MarkovState, Double> values = scheduler.getResults();
 		assertEquals(1, values.get(initial), 0);
@@ -152,12 +151,11 @@ public class MarkovSchedulerTest {
 		
 		ma.getFinalStateProbs().put(bad, 1d);
 		
-		Object correctChoice = ma.addNondeterministicTransition(Collections.emptyList(), initial, bad, 1);
-		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad, 1);
+		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition(Collections.emptyList(), initial, bad, 1);
+		ma.addNondeterministicTransition("b", initial, bad, 1);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertTrue(schedule.get(initial).contains(correctChoice));
-		assertFalse(schedule.get(initial).contains(falseChoice));
+		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
 	}
 	
 	@Test
@@ -187,8 +185,8 @@ public class MarkovSchedulerTest {
 		ma.getEvents().add("a");
 		ma.getEvents().add("b");
 		
-		Object choiceA = ma.addNondeterministicTransition("a", initial, bad);
-		Object choiceB = ma.addNondeterministicTransition("b", initial, good);
+		MarkovTransition<MarkovState> choiceA = ma.addNondeterministicTransition("a", initial, bad);
+		MarkovTransition<MarkovState> choiceB = ma.addNondeterministicTransition("b", initial, good);
 		
 		// CHECKSTYLE:OFF
 		ma.addMarkovianTransition("m", bad, badOk, 1);
@@ -204,19 +202,15 @@ public class MarkovSchedulerTest {
 		ma.getFinalStateProbs().put(badFail, 1d);
 		ma.getFinalStateProbs().put(goodFail, 1d);
 		
-		System.out.println(ma.toDot());
-		
 		// Without any constraints, the correct choice is choiceA
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertTrue(schedule.get(initial).contains(choiceA));
-		assertFalse(schedule.get(initial).contains(choiceB));
+		assertThat(schedule.get(initial), allOf(hasItem(choiceA), hasSize(1)));
 		
 		// With an SSA >= 50% constraint, the correct choice is choiceB
 		ScheduleQuery<MarkovState> constrainedQuery = new ScheduleQuery<>(ma, initial);
 		final double MINIMUM_SSA = 0.5;
 		constrainedQuery.getConstraints().put(SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MINIMUM_SSA);
 		schedule = scheduler.computeOptimalScheduler(constrainedQuery);
-		assertFalse(schedule.get(initial).contains(choiceA));
-		assertTrue(schedule.get(initial).contains(choiceB));
+		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
 	}
 }
