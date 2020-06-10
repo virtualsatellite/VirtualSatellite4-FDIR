@@ -25,7 +25,7 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -56,7 +56,7 @@ public class MarkovModelCheckerTest {
 		ma.getFinalStateProbs().put(state2, 1d);
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		ma.addMarkovianTransition("b", state2, state1, 1);
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		int timepoint = (int) (1 / DELTA) - 1;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), EPSILON);
@@ -87,7 +87,7 @@ public class MarkovModelCheckerTest {
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 		
 		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Availability.UNIT_AVAILABILITY,
-				SteadyStateAvailability.STEADY_STATE_AVAILABILITY), null);
+				SteadyStateAvailability.SSA), null);
 		
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getAvailability()); 
@@ -128,7 +128,7 @@ public class MarkovModelCheckerTest {
 		ma.addNondeterministicTransition("a", nondet, good);
 		ma.addNondeterministicTransition("b", nondet, fail);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.STEADY_STATE_AVAILABILITY), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.SSA), null);
 		
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 	}
@@ -174,7 +174,7 @@ public class MarkovModelCheckerTest {
 		ma.addMarkovianTransition("m", good2, fail2, RATE_GOOD_2_TO_FAIL_2);
 		ma.addMarkovianTransition("m", fail2, good2, RATE_FAIL_2_TO_GOOD_2);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.STEADY_STATE_AVAILABILITY), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.SSA), null);
 		
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 	}

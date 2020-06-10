@@ -24,7 +24,7 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
@@ -103,7 +103,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		BasicEvent a = ftHolder.getNodeByName("A", BasicEvent.class);
 		BasicEvent b = ftHolder.getNodeByName("B", BasicEvent.class);
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, MinimumCutSet.MINCUTSET);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, MinimumCutSet.MINCUTSET);
 		
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
 		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
@@ -134,7 +134,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		BasicEvent a = ftHolder.getNodeByName("A", BasicEvent.class);
 		BasicEvent b = ftHolder.getNodeByName("B", BasicEvent.class);
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, MinimumCutSet.MINCUTSET);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, MinimumCutSet.MINCUTSET);
 		
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
 		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
@@ -164,7 +164,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		BasicEvent a = ftHolder.getNodeByName("A", BasicEvent.class);
 		BasicEvent b = ftHolder.getNodeByName("B", BasicEvent.class);
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, MinimumCutSet.MINCUTSET);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, MinimumCutSet.MINCUTSET);
 		
 		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
 		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
@@ -192,7 +192,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		BasicEvent b = ftHolder.getNodeByName("B", BasicEvent.class);
 		BasicEvent c = ftHolder.getNodeByName("C", BasicEvent.class);
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, MinimumCutSet.MINCUTSET);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, MinimumCutSet.MINCUTSET);
 		
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
@@ -889,7 +889,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		final double EXPECTEDSSA = 0.8885081639540016;
 		
 		Fault fault = createDFT("/resources/galileoRepair/delay1Repair.dft");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MeanTimeToFailure.MTTF, SteadyStateAvailability.SSA);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals("SSA has correct value", EXPECTEDSSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
@@ -981,7 +981,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		final double EXPECTEDSSA = 0;
 		
 		Fault fault = createDFT("/resources/galileo/cm4.dft");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, SteadyStateAvailability.SSA);
 		
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
@@ -1045,8 +1045,8 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileoRepair/and2Repair1.dft");
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MTTF.MTTF, 
-				Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, 
+				Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
 		
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
@@ -1066,7 +1066,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Repair1.dft");
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
 		
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 		assertEquals("Steady State Availability has correct value", EXPECTEDSTEADYSTATE, result.getSteadyStateAvailability(), TEST_EPSILON);
@@ -1104,7 +1104,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, 
-				MeanTimeToDetection.MTTD, SteadyStateDetectability.STEADY_STATE_DETECTABILITY);
+				MeanTimeToDetection.MTTD, SteadyStateDetectability.SSD);
 		
 		assertEquals("MTTD has correct value", EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
 		assertEquals("Steady State Detectability has correct value", EXPECTED_STEADY_STATE_DETECTABILITY, result.getSteadyStateDetectability(), TEST_EPSILON);

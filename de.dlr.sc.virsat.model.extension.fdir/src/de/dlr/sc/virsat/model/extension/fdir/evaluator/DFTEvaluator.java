@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.MetricsDeriver;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -53,6 +54,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private Modularizer modularizer = new Modularizer();
 	private DFTSymmetryChecker symmetryChecker = new DFTSymmetryChecker();
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
+	private MetricsDeriver deriver = new MetricsDeriver();
 	private DFTEvaluationStatistics statistics;
 	
 	/**
@@ -88,7 +90,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		
 		subMonitor = SubMonitor.convert(subMonitor, partitioning.size());
 		Map<FailLabelProvider, ModelCheckingResult> baseResults = computeBaseResults(partitioning, failableBasicEventsProvider, ftHolder, modularization, subMonitor);
-		ModelCheckingResult result = composer.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
+		ModelCheckingResult result = deriver.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
 		
 		int steps = getUniformStepCount(metrics);
 		result.limitPointMetrics(steps);

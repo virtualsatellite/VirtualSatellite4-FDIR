@@ -16,7 +16,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 
 public class ScheduleQuery<S extends MarkovState> {
 	private MarkovAutomaton<S> ma;
@@ -29,7 +29,7 @@ public class ScheduleQuery<S extends MarkovState> {
 		this.ma  = ma;
 		this.initialState = initialState;
 		this.constraints = new HashMap<>();
-		this.objectiveMetric = MTTF.MTTF;
+		this.objectiveMetric = MeanTimeToFailure.MTTF;
 	}
 	
 	public MarkovAutomaton<S> getMa() {

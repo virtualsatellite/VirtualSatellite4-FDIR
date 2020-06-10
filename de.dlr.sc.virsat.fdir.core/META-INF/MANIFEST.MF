@@ -5,7 +5,8 @@ Bundle-SymbolicName: de.dlr.sc.virsat.fdir.core;singleton:=true
 Bundle-Version: 4.10.0.qualifier
 Bundle-Activator: de.dlr.sc.virsat.fdir.core.Activator
 Bundle-Vendor: DLR (German Aerospace Center)
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ de.dlr.sc.virsat.external.lib.commons.math
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: de.dlr.sc.virsat.fdir.core,

@@ -209,7 +209,7 @@ public class MarkovSchedulerTest {
 		// With an SSA >= 50% constraint, the correct choice is choiceB
 		ScheduleQuery<MarkovState> constrainedQuery = new ScheduleQuery<>(ma, initial);
 		final double MINIMUM_SSA = 0.5;
-		constrainedQuery.getConstraints().put(SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MINIMUM_SSA);
+		constrainedQuery.getConstraints().put(SteadyStateAvailability.SSA, MINIMUM_SSA);
 		schedule = scheduler.computeOptimalScheduler(constrainedQuery);
 		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
 	}
@@ -265,7 +265,7 @@ public class MarkovSchedulerTest {
 		
 		// Setting the obejctive to SSA should make the scheduler choose the option that maximizes SSA
 		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
-		maxSSAQuery.setObjectiveMetric(SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		maxSSAQuery.setObjectiveMetric(SteadyStateAvailability.SSA);
 		schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
 		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
 	}

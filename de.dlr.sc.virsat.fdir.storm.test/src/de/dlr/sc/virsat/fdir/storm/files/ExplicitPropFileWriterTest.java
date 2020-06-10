@@ -24,7 +24,7 @@ import org.junit.Test;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.test.TestResourceGetter;
 
@@ -44,7 +44,7 @@ public class ExplicitPropFileWriterTest {
 		final double timeHorizon = 720;
 		Reliability reliability = new Reliability(timeHorizon);
 		
-		new ExplicitPropertiesWriter(DELTA, testFile.getAbsolutePath(), MTTF.MTTF, reliability).writeFile();
+		new ExplicitPropertiesWriter(DELTA, testFile.getAbsolutePath(), MeanTimeToFailure.MTTF, reliability).writeFile();
 		String output = new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())), StandardCharsets.UTF_8);
 		
 		TestResourceGetter testResourceGetter = new TestResourceGetter("de.dlr.sc.virsat.fdir.storm.test");

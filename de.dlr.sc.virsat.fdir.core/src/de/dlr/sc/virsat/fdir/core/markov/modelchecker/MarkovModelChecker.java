@@ -31,7 +31,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -159,7 +159,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	}
 	
 	@Override
-	public void visit(MTTF mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric) {
 		if (mttfBellmanMatrix == null) {
 			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), modelCheckingQuery.getMa().getFinalStates(), true);
 		}
@@ -185,35 +185,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 		IMatrixIterator mtxIterator = availabilityMetric.iterator(generatorMatrix, modelCheckingQuery.getMa(), probabilityDistribution, eps);
 		
-		if (Double.isFinite(availabilityMetric.getTime())) {
-			int steps = (int) (availabilityMetric.getTime() / delta);
-			
-			subMonitor.setWorkRemaining(steps);
-			
-			for (int time = 0; time <= steps; ++time) {
-				subMonitor.split(1);
-				modelCheckingResult.availability.add(1 - getFailRate());
-				mtxIterator.iterate();
-			}
-		} else {
-			final int PROGRESS_COUNT = 100;
-			double oldFailRate = getFailRate();
-			modelCheckingResult.availability.add(oldFailRate);
-
-			boolean convergence = false;
-			while (!convergence) {
-				subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-				mtxIterator.iterate();
-				double newFailRate = getFailRate();
-				modelCheckingResult.availability.add(1 - newFailRate);
-				double change = Math.abs(newFailRate - oldFailRate);
-				oldFailRate = newFailRate;
-				double relativeChange = change / newFailRate;
-				if (relativeChange < eps || !Double.isFinite(change)) {
-					convergence = true;
-					subMonitor.split(PROGRESS_COUNT);
-				}
-			}
+		int steps = (int) (availabilityMetric.getTime() / delta);
+		
+		subMonitor.setWorkRemaining(steps);
+		
+		for (int time = 0; time <= steps; ++time) {
+			subMonitor.split(1);
+			modelCheckingResult.availability.add(1 - getFailRate());
+			mtxIterator.iterate();
 		}
 	}
 

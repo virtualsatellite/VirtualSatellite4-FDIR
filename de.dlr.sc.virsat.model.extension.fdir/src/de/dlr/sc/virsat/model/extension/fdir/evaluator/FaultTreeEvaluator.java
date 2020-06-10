@@ -21,7 +21,7 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.storm.runner.StormModelChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
@@ -63,7 +63,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	@Override
 	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics) {
 		if (metrics.length == 0) {
-			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
+			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF };
 		}
 		
 		FaultTreeNode convertedRoot = root;

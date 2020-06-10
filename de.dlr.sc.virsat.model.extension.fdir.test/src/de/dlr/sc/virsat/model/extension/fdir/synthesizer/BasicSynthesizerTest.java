@@ -282,7 +282,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
@@ -306,7 +306,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
@@ -330,7 +330,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
@@ -353,7 +353,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
 		
 		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
