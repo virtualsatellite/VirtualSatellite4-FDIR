@@ -30,7 +30,7 @@ public class StronglyConnectedComponentFinderTest {
 		//          2 ---> good2 --- 5 ---> fail2 --- 0.5 -> good2
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("m");
+
 		MarkovState init = new MarkovState();
 		MarkovState good1 = new MarkovState();
 		MarkovState fail1 = new MarkovState();

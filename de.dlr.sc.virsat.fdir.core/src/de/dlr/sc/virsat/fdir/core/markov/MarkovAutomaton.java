@@ -150,6 +150,8 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return the created transition
 	 */
 	public MarkovTransition<S> addTransition(Object event, S from, S to, double rate, MarkovStateType type) {
+		getEvents().add(event);
+		
 		MarkovTransition<S> t = new MarkovTransition<>(from, to, rate, event);
 		List<MarkovTransition<S>> transitions = getTransitions(event);
 		

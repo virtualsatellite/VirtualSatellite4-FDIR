@@ -22,7 +22,7 @@ public class StronglyConnectedComponentTest {
 		// init --- 3 ---> good1 --- 2 ---> fail1 --- 4 ---> good1
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("m");
+
 		MarkovState init = new MarkovState();
 		MarkovState good1 = new MarkovState();
 		MarkovState fail1 = new MarkovState();
