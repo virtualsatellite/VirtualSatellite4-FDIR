@@ -49,8 +49,7 @@ public class MarkovModelCheckerTest {
 		MarkovState state1 = new MarkovState();
 		MarkovState state2 = new MarkovState();
 		final double RATE = 6;
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
+
 		ma.addState(state1);
 		ma.addState(state2);
 		ma.getFinalStateProbs().put(state2, 1d);
@@ -73,8 +72,7 @@ public class MarkovModelCheckerTest {
 		MarkovModelChecker modelChecker = new MarkovModelChecker(1, EPSILON);
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
+
 		MarkovState state1 = new MarkovState();
 		MarkovState state2 = new MarkovState();
 		ma.addState(state1);
@@ -103,9 +101,7 @@ public class MarkovModelCheckerTest {
 		// 				   nondet --- a ------------------.> fail
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("m");
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
+
 		MarkovState init = new MarkovState();
 		MarkovState nondet = new MarkovState();
 		MarkovState good = new MarkovState();
@@ -143,7 +139,7 @@ public class MarkovModelCheckerTest {
 		//          2 ---> good2 --- 5 ---> fail2 --- 0.5 -> good2
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("m");
+
 		MarkovState init = new MarkovState();
 		MarkovState good1 = new MarkovState();
 		MarkovState fail1 = new MarkovState();
@@ -188,9 +184,6 @@ public class MarkovModelCheckerTest {
 		MarkovState init = new MarkovState();
 		MarkovState fail = new MarkovState();
 		MarkovState inter = new MarkovState();
-		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
 		
 		ma.addState(init);
 		ma.addState(fail);

@@ -108,7 +108,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		staticAnalysis.perform(ftHolder);
 		
 		events = createEvents();
-		targetMa.getEvents().addAll(events);
 		
 		if (recoveryStrategy != null) {
 			events.addAll(recoveryStrategy.createEventSet());

@@ -61,9 +61,6 @@ public class MarkovSchedulerTest {
 		ma.addState(good);
 		ma.addState(bad);
 		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
-		
 		ma.getFinalStateProbs().put(bad, 1d);
 		
 		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good);
@@ -86,9 +83,6 @@ public class MarkovSchedulerTest {
 		ma.addState(good);
 		ma.addState(bad);
 		ma.addState(sink);
-		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
 		
 		ma.getFinalStateProbs().put(sink, 1d);
 		
@@ -113,9 +107,6 @@ public class MarkovSchedulerTest {
 		ma.addState(initial);
 		ma.addState(good);
 		ma.addState(bad);
-		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
 		
 		ma.getFinalStateProbs().put(bad, 1d);
 		
@@ -145,9 +136,6 @@ public class MarkovSchedulerTest {
 		
 		ma.addState(initial);
 		ma.addState(bad);
-		
-		ma.getEvents().add(Collections.emptyList());
-		ma.getEvents().add("b");
 		
 		ma.getFinalStateProbs().put(bad, 1d);
 		
@@ -181,9 +169,6 @@ public class MarkovSchedulerTest {
 		ma.addState(goodOk);
 		ma.addState(badFail);
 		ma.addState(goodFail);
-		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
 		
 		MarkovTransition<MarkovState> choiceA = ma.addNondeterministicTransition("a", initial, bad);
 		MarkovTransition<MarkovState> choiceB = ma.addNondeterministicTransition("b", initial, good);
@@ -237,9 +222,6 @@ public class MarkovSchedulerTest {
 		ma.addState(goodOk);
 		ma.addState(badFail);
 		ma.addState(goodFail);
-		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
 		
 		MarkovTransition<MarkovState> choiceA = ma.addNondeterministicTransition("a", initial, bad);
 		MarkovTransition<MarkovState> choiceB = ma.addNondeterministicTransition("b", initial, good);
