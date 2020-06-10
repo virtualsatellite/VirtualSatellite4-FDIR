@@ -39,7 +39,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
  *
  */
 
-public class DFTMetricsComposer implements IBaseMetricVisitor {
+public class DFTMetricsComposer {
 	
 	private ModelCheckingResult composedResult;
 	private long k;
@@ -59,7 +59,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor {
 		this.composedResult = new ModelCheckingResult();
 		
 		for (IBaseMetric metric : metrics) {
-			metric.accept(this, subMonitor);
+			metric.accept(metricVisitor, subMonitor);
 		}
 		
 		return composedResult;
@@ -80,55 +80,6 @@ public class DFTMetricsComposer implements IBaseMetricVisitor {
 		}
 		
 		return k;
-	}
-	
-	@Override
-	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
-		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
-		reliabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
-	}
-
-	@Override
-	public void visit(MeanTimeToFailure mttfMetric) {
-		throw new UnsupportedOperationException("MTTF is not composable!");
-	}
-
-	@Override
-	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
-		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
-		availabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getAvailability(), k, -1);
-	}
-
-	@Override
-	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
-		double[] childSteadyStateAvailabilities = new double[subModuleResults.size()];
-		
-		for (int j = 0; j < subModuleResults.size(); ++j) {
-			ModelCheckingResult subModuleResult = subModuleResults.get(j);
-			childSteadyStateAvailabilities[j] = subModuleResult.getSteadyStateAvailability();
-		}
-		
-		double composedSteadyStateAvailability = IQuantitativeMetric.composeProbabilities(childSteadyStateAvailabilities, k);
-		composedResult.setSteadyStateAvailability(composedSteadyStateAvailability);
-	}
-
-
-	@Override
-	public void visit(MinimumCutSet minimumCutSet) {
-		if (k == 1) {
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				composedResult.getMinCutSets().addAll(subModuleResult.getMinCutSets());
-			}
-		} else {
-			@SuppressWarnings("unchecked")
-			Set<Set<Object>>[] allMinCuts = new HashSet[subModuleResults.size()];
-			for (int i = 0; i < subModuleResults.size(); ++i) {
-				allMinCuts[i] = subModuleResults.get(i).getMinCutSets();
-			}
-			
-			Set<Set<Object>> productMinCutSets = minimumCutSet.cartesianComposition(allMinCuts);
-			composedResult.getMinCutSets().addAll(productMinCutSets);
-		}
 	}
 	
 	/**
@@ -169,4 +120,54 @@ public class DFTMetricsComposer implements IBaseMetricVisitor {
 			mapModuleToResult.remove(subModule);
 		}
 	}
+	
+	private IBaseMetricVisitor metricVisitor = new IBaseMetricVisitor() {
+		@Override
+		public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
+			List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
+			reliabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
+		}
+
+		@Override
+		public void visit(MeanTimeToFailure mttfMetric) {
+			throw new UnsupportedOperationException("MTTF is not composable!");
+		}
+
+		@Override
+		public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
+			List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
+			availabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getAvailability(), k, -1);
+		}
+
+		@Override
+		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
+			double[] childSteadyStateAvailabilities = new double[subModuleResults.size()];
+			
+			for (int j = 0; j < subModuleResults.size(); ++j) {
+				ModelCheckingResult subModuleResult = subModuleResults.get(j);
+				childSteadyStateAvailabilities[j] = subModuleResult.getSteadyStateAvailability();
+			}
+			
+			double composedSteadyStateAvailability = IQuantitativeMetric.composeProbabilities(childSteadyStateAvailabilities, k);
+			composedResult.setSteadyStateAvailability(composedSteadyStateAvailability);
+		}
+
+		@Override
+		public void visit(MinimumCutSet minimumCutSet) {
+			if (k == 1) {
+				for (ModelCheckingResult subModuleResult : subModuleResults) {
+					composedResult.getMinCutSets().addAll(subModuleResult.getMinCutSets());
+				}
+			} else {
+				@SuppressWarnings("unchecked")
+				Set<Set<Object>>[] allMinCuts = new HashSet[subModuleResults.size()];
+				for (int i = 0; i < subModuleResults.size(); ++i) {
+					allMinCuts[i] = subModuleResults.get(i).getMinCutSets();
+				}
+				
+				Set<Set<Object>> productMinCutSets = minimumCutSet.cartesianComposition(allMinCuts);
+				composedResult.getMinCutSets().addAll(productMinCutSets);
+			}
+		}
+	};
 }
