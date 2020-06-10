@@ -185,35 +185,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 		IMatrixIterator mtxIterator = availabilityMetric.iterator(generatorMatrix, modelCheckingQuery.getMa(), probabilityDistribution, eps);
 		
-		if (Double.isFinite(availabilityMetric.getTime())) {
-			int steps = (int) (availabilityMetric.getTime() / delta);
-			
-			subMonitor.setWorkRemaining(steps);
-			
-			for (int time = 0; time <= steps; ++time) {
-				subMonitor.split(1);
-				modelCheckingResult.availability.add(1 - getFailRate());
-				mtxIterator.iterate();
-			}
-		} else {
-			final int PROGRESS_COUNT = 100;
-			double oldFailRate = getFailRate();
-			modelCheckingResult.availability.add(oldFailRate);
-
-			boolean convergence = false;
-			while (!convergence) {
-				subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-				mtxIterator.iterate();
-				double newFailRate = getFailRate();
-				modelCheckingResult.availability.add(1 - newFailRate);
-				double change = Math.abs(newFailRate - oldFailRate);
-				oldFailRate = newFailRate;
-				double relativeChange = change / newFailRate;
-				if (relativeChange < eps || !Double.isFinite(change)) {
-					convergence = true;
-					subMonitor.split(PROGRESS_COUNT);
-				}
-			}
+		int steps = (int) (availabilityMetric.getTime() / delta);
+		
+		subMonitor.setWorkRemaining(steps);
+		
+		for (int time = 0; time <= steps; ++time) {
+			subMonitor.split(1);
+			modelCheckingResult.availability.add(1 - getFailRate());
+			mtxIterator.iterate();
 		}
 	}
 

@@ -191,6 +191,7 @@ public class FaultTreeHolder {
 		if (rootParent != null) {
 			StructuralElementInstance rootSei = (StructuralElementInstance) VirSatEcoreUtil.getRootContainer(root.getParent().getStructuralElementInstance(), true);
 			List<StructuralElementInstance> deepChildren = rootSei.getDeepChildren();
+			deepChildren.add(rootSei);
 			for (StructuralElementInstance child : deepChildren) {
 				BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance();
 				beanSei.setStructuralElementInstance(child);
