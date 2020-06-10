@@ -29,7 +29,6 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -48,7 +47,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery) {
 		List<S> validStates = getValidStates(scheduleQuery);
-		results = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), MTTF.MTTF);
+		results = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric());
 		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(scheduleQuery.getInitialState());

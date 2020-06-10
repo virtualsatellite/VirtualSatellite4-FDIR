@@ -159,7 +159,7 @@ public class MarkovSchedulerTest {
 	}
 	
 	@Test
-	public void testScheduleConstraintSSA() {
+	public void testScheduleSSAConstrained() {
 		// Construct the following MA:
 		// init --- a ---> bad --- 1 ---> badOk --- 1 ---> badFail --- 3 ---> badOk
 		//      --- b ---> good -- 2 ---> goodOk -- 1 ---> goodFail -- 1 ---> goodOk
@@ -211,6 +211,62 @@ public class MarkovSchedulerTest {
 		final double MINIMUM_SSA = 0.5;
 		constrainedQuery.getConstraints().put(SteadyStateAvailability.STEADY_STATE_AVAILABILITY, MINIMUM_SSA);
 		schedule = scheduler.computeOptimalScheduler(constrainedQuery);
+		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
+	}
+	
+	@Test
+	public void testScheduleSSAObjective() {
+		// Construct the following MA:
+		// init --- a ---> bad --- 1 ---> badOk --- 1 ---> badFail --- 3 ---> badOk
+		//      --- b ---> good -- 2 ---> goodOk -- 1 ---> goodFail -- 1 ---> goodOk
+		
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		
+		MarkovState initial = new MarkovState();
+		MarkovState bad = new MarkovState();
+		MarkovState good = new MarkovState();
+		MarkovState badOk = new MarkovState();
+		MarkovState goodOk = new MarkovState();
+		MarkovState badFail = new MarkovState();
+		MarkovState goodFail = new MarkovState();
+		
+		ma.addState(initial);
+		ma.addState(bad);
+		ma.addState(good);
+		ma.addState(badOk);
+		ma.addState(goodOk);
+		ma.addState(badFail);
+		ma.addState(goodFail);
+		
+		ma.getEvents().add("a");
+		ma.getEvents().add("b");
+		
+		MarkovTransition<MarkovState> choiceA = ma.addNondeterministicTransition("a", initial, bad);
+		MarkovTransition<MarkovState> choiceB = ma.addNondeterministicTransition("b", initial, good);
+		
+		// CHECKSTYLE:OFF
+		ma.addMarkovianTransition("m", bad, badOk, 1);
+		ma.addMarkovianTransition("m", good, goodOk, 2);
+		
+		ma.addMarkovianTransition("m", badOk, badFail, 1);
+		ma.addMarkovianTransition("m", goodOk, goodFail, 1);
+		
+		ma.addMarkovianTransition("m", badFail, badOk, 3);
+		ma.addMarkovianTransition("m", goodFail, goodOk, 1);
+		// CHECKSTYLE:ON
+		
+		ma.getFinalStateProbs().put(badFail, 1d);
+		ma.getFinalStateProbs().put(goodFail, 1d);
+		
+		// By default the scheduler maximizes MTTF
+		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxMTTFQuery);
+		assertThat(schedule.get(initial), allOf(hasItem(choiceA), hasSize(1)));
+		
+		// Setting the obejctive to SSA should make the scheduler choose the option that maximizes SSA
+		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
+		maxSSAQuery.setObjectiveMetric(SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
 		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
 	}
 }
