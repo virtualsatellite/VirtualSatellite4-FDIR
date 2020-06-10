@@ -142,9 +142,6 @@ public class DFTMetricsComposer implements IBaseMetricVisitor {
 	 */
 	void composeModuleResults(Module module, DFTModularization modularization, SubMonitor subMonitor, IBaseMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult) {
 		ModelCheckingResult result = mapModuleToResult.get(module);
-		if (result != null) {
-			return;
-		}
 
 		List<Module> subModules = modularization.getSubModules(module);		
 		List<ModelCheckingResult> subModuleResults = new ArrayList<>();
