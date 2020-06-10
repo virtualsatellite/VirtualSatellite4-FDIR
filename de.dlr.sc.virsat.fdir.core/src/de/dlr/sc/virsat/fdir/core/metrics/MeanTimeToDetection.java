@@ -53,6 +53,10 @@ public class MeanTimeToDetection implements IDerivedMetric {
 	 * @return the derived mean time to detection
 	 */
 	public double derive(double unobservedMTTF, double observedMTTF) {
+		// If no failure can ever be observed, then the MTTD is 0
+		if (Double.isInfinite(unobservedMTTF)) {
+			return 0;
+		}
 		double meanTimeToDetection = Double.isInfinite(observedMTTF) ? Double.POSITIVE_INFINITY : observedMTTF - unobservedMTTF;
 		return meanTimeToDetection;
 	}

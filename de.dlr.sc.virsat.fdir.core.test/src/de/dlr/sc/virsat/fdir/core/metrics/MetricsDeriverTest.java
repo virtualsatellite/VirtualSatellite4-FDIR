@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.fdir.core.metrics;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,11 +67,61 @@ public class MetricsDeriverTest {
 	
 	@Test
 	public void testDeriveMeanTimeToDetection() {
-		fail("Not yet implemented");
+		Map<FailLabelProvider, ModelCheckingResult> baseResults = new HashMap<>();
+		ModelCheckingResult observedResult = new ModelCheckingResult();
+		ModelCheckingResult unobservedResult = new ModelCheckingResult();
+		// CHECKSTYLE:OFF
+		observedResult.setMeanTimeToFailure(10);
+		unobservedResult.setMeanTimeToFailure(5);
+		// CHECKSTYLE:ON
+		baseResults.put(FailLabelProvider.SINGLETON_FAILED, unobservedResult);
+		baseResults.put(FailLabelProvider.SINGLETON_OBSERVED, observedResult);
+		
+		ModelCheckingResult derivedResult = deriver.derive(baseResults, DELTA, MeanTimeToDetection.MTTD);
+		
+		final double EXPECTED_MTTD = 5;
+		assertEquals(EXPECTED_MTTD, derivedResult.getMeanTimeToDetection(), EPS);
+		
+		// Check the case that the failure is never observed
+		observedResult.setMeanTimeToFailure(Double.POSITIVE_INFINITY);
+		
+		derivedResult = deriver.derive(baseResults, DELTA, MeanTimeToDetection.MTTD);
+		
+		final double EXPECTED_MTTD_NO_OBSERVATION = Double.POSITIVE_INFINITY;
+		assertEquals(EXPECTED_MTTD_NO_OBSERVATION, derivedResult.getMeanTimeToDetection(), EPS);
+		
+		// CHeck the case that the failure never occurs
+		unobservedResult.setMeanTimeToFailure(Double.POSITIVE_INFINITY);
+		
+		derivedResult = deriver.derive(baseResults, DELTA, MeanTimeToDetection.MTTD);
+		
+		final double EXPECTED_MTTD_NO_FAILURE = 0;
+		assertEquals(EXPECTED_MTTD_NO_FAILURE, derivedResult.getMeanTimeToDetection(), EPS);
 	}
 	
 	@Test
 	public void testDeriveSteadyStateDetectability() {
-		fail("Not yet implemented");
+		Map<FailLabelProvider, ModelCheckingResult> baseResults = new HashMap<>();
+		ModelCheckingResult observedResult = new ModelCheckingResult();
+		ModelCheckingResult unobservedResult = new ModelCheckingResult();
+		// CHECKSTYLE:OFF
+		observedResult.setSteadyStateAvailability(0.8);;
+		unobservedResult.setMeanTimeToFailure(5);
+		// CHECKSTYLE:ON
+		baseResults.put(FailLabelProvider.SINGLETON_FAILED, unobservedResult);
+		baseResults.put(FailLabelProvider.SINGLETON_OBSERVED, observedResult);
+		
+		ModelCheckingResult derivedResult = deriver.derive(baseResults, DELTA, MeanTimeToDetection.MTTD);
+		
+		final double EXPECTED_MTTD = 5;
+		assertEquals(EXPECTED_MTTD, derivedResult.getMeanTimeToDetection(), EPS);
+		
+		// Check the case that the failure is never observed
+		observedResult.setMeanTimeToDetection(Double.POSITIVE_INFINITY);
+		
+		derivedResult = deriver.derive(baseResults, DELTA, MeanTimeToDetection.MTTD);
+		
+		final double EXPECTED_MTTD_NO_OBSERVATION = Double.POSITIVE_INFINITY;
+		assertEquals(EXPECTED_MTTD_NO_OBSERVATION, derivedResult.getMeanTimeToDetection(), EPS);
 	}
 }
