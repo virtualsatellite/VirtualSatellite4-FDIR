@@ -22,7 +22,6 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * Metric representing the Mean Time To Failure
@@ -51,7 +50,7 @@ public class MeanTimeToFailure implements IQuantitativeMetric, IBaseMetric, IDer
 	
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
-		return Collections.singletonMap(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(Reliability.INF_RELIABILITY));
+		return Collections.singletonMap(FailLabelProvider.SINGLETON_FAILED, Collections.singleton(Reliability.INF_RELIABILITY));
 	}
 	
 	/**

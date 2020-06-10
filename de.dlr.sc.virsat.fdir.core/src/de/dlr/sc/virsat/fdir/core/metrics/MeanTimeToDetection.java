@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
-
 /**
  * This class represents the mean time to detection metric, which
  * is the mean time interval from the occurence of a fault to its detection
@@ -38,8 +36,8 @@ public class MeanTimeToDetection implements IDerivedMetric {
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(MeanTimeToFailure.MTTF));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.OBSERVED), Collections.singleton(MeanTimeToFailure.MTTF));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_FAILED, Collections.singleton(MeanTimeToFailure.MTTF));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_OBSERVED, Collections.singleton(MeanTimeToFailure.MTTF));
 		return mapFailLabelProviderToMetrics;
 	}
 	

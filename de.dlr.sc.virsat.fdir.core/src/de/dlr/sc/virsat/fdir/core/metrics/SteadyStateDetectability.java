@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
-
 /**
  * This class represents the steady state detectability, which is the time bounded
  * detectability with time bound to infinity.
@@ -36,8 +34,8 @@ public class SteadyStateDetectability implements IDerivedMetric {
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(SteadyStateAvailability.SSA));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.OBSERVED), Collections.singleton(SteadyStateAvailability.SSA));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_FAILED, Collections.singleton(SteadyStateAvailability.SSA));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_OBSERVED, Collections.singleton(SteadyStateAvailability.SSA));
 		return mapFailLabelProviderToMetrics;
 	}
 

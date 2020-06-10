@@ -20,7 +20,7 @@ import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
-public class MetricsDeriver implements IDerivedMetricVisitor {
+public class MetricsDeriver {
 
 	private ModelCheckingResult derivedResult;
 	private Map<FailLabelProvider, ModelCheckingResult> baseResults;
@@ -40,61 +40,61 @@ public class MetricsDeriver implements IDerivedMetricVisitor {
 		this.delta = delta;
 		
 		for (IDerivedMetric metric : metrics) {
-			metric.accept(this);
+			metric.accept(metricVisitor);
 		}
 		
 		return derivedResult;
 	}
 	
-	@Override
-	public void visit(MeanTimeToFailure mttfMetric) {
-		int countFailRates = derivedResult.getFailRates().size();
-		
-		if (countFailRates == 1) {
-			derivedResult.setMeanTimeToFailure(Double.POSITIVE_INFINITY);
-			return;
+	private IDerivedMetricVisitor metricVisitor = new IDerivedMetricVisitor() {
+		@Override
+		public void visit(MeanTimeToFailure mttfMetric) {
+			int countFailRates = derivedResult.getFailRates().size();
+			
+			if (countFailRates == 1) {
+				derivedResult.setMeanTimeToFailure(Double.POSITIVE_INFINITY);
+				return;
+			}
+			
+			double[] x = new double[countFailRates];
+			for (int i = 0; i < countFailRates; ++i) {
+				x[i] = i;
+			}
+			
+			double[] y = new double[countFailRates];
+			for (int i = 0; i < countFailRates; ++i) {
+				y[i] = 1 - derivedResult.getFailRates().get(i);
+			}
+			
+			UnivariateInterpolator interpolator = new SplineInterpolator();
+			UnivariateFunction function = interpolator.interpolate(x, y);
+			
+			UnivariateIntegrator integrator = new SimpsonIntegrator();
+			double integral = integrator.integrate(SimpsonIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, countFailRates - 1);
+			derivedResult.setMeanTimeToFailure(integral * delta);
 		}
 		
-		double[] x = new double[countFailRates];
-		for (int i = 0; i < countFailRates; ++i) {
-			x[i] = i;
+		@Override
+		public void visit(Detectability detectabilityMetrc) {
+			ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+			ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
+			detectabilityMetrc.derive(resultUnobservedFailure.getAvailability(), resultObservedFailure.getAvailability(), derivedResult.getDetectabiity());
 		}
 		
-		double[] y = new double[countFailRates];
-		for (int i = 0; i < countFailRates; ++i) {
-			y[i] = 1 - derivedResult.getFailRates().get(i);
+		@Override
+		public void visit(MeanTimeToDetection meanTimeToDetectionMetric) {
+			ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+			ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
+			double derivedMTTD = meanTimeToDetectionMetric.derive(resultUnobservedFailure.getMeanTimeToFailure(), resultObservedFailure.getMeanTimeToFailure());
+			derivedResult.setMeanTimeToDetection(derivedMTTD);
 		}
-		
-		UnivariateInterpolator interpolator = new SplineInterpolator();
-		UnivariateFunction function = interpolator.interpolate(x, y);
-		
-		UnivariateIntegrator integrator = new SimpsonIntegrator();
-		double integral = integrator.integrate(SimpsonIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, countFailRates - 1);
-		derivedResult.setMeanTimeToFailure(integral * delta);
-	}
-
-	@Override
-	public void visit(Detectability detectabilityMetrc) {
-		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
-		detectabilityMetrc.derive(resultUnobservedFailure.getAvailability(), resultObservedFailure.getAvailability(), derivedResult.getDetectabiity());
-	}
-
-
-	@Override
-	public void visit(MeanTimeToDetection meanTimeToDetectionMetric) {
-		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
-		double derivedMTTD = meanTimeToDetectionMetric.derive(resultUnobservedFailure.getMeanTimeToFailure(), resultObservedFailure.getMeanTimeToFailure());
-		derivedResult.setMeanTimeToDetection(derivedMTTD);
-	}
-
-	@Override
-	public void visit(SteadyStateDetectability steadyStateDetectability) {
-		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
-		double derivedSteadyStateDetectability = steadyStateDetectability.derive(resultUnobservedFailure.getSteadyStateAvailability(), resultObservedFailure.getSteadyStateAvailability());
-		derivedResult.setSteadyStateDetectability(derivedSteadyStateDetectability);
-	}
-
+	
+		@Override
+		public void visit(SteadyStateDetectability steadyStateDetectability) {
+			ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+			ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
+			double derivedSteadyStateDetectability = steadyStateDetectability.derive(resultUnobservedFailure.getSteadyStateAvailability(), resultObservedFailure.getSteadyStateAvailability());
+			derivedResult.setSteadyStateDetectability(derivedSteadyStateDetectability);
+		}
+	};
 }
