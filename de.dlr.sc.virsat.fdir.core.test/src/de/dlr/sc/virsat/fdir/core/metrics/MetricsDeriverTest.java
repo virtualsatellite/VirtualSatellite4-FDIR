@@ -105,23 +105,31 @@ public class MetricsDeriverTest {
 		ModelCheckingResult observedResult = new ModelCheckingResult();
 		ModelCheckingResult unobservedResult = new ModelCheckingResult();
 		// CHECKSTYLE:OFF
-		observedResult.setSteadyStateAvailability(0.8);;
-		unobservedResult.setMeanTimeToFailure(5);
+		observedResult.setSteadyStateAvailability(0.8);
+		unobservedResult.setSteadyStateAvailability(0.4);
 		// CHECKSTYLE:ON
 		baseResults.put(FailLabelProvider.SINGLETON_FAILED, unobservedResult);
 		baseResults.put(FailLabelProvider.SINGLETON_OBSERVED, observedResult);
 		
-		ModelCheckingResult derivedResult = deriver.derive(baseResults, DELTA, MeanTimeToDetection.MTTD);
+		ModelCheckingResult derivedResult = deriver.derive(baseResults, DELTA, SteadyStateDetectability.SSD);
 		
-		final double EXPECTED_MTTD = 5;
-		assertEquals(EXPECTED_MTTD, derivedResult.getMeanTimeToDetection(), EPS);
+		final double EXPECTED_SSD = 0.33333333333333326;
+		assertEquals(EXPECTED_SSD, derivedResult.getSteadyStateDetectability(), EPS);
 		
 		// Check the case that the failure is never observed
-		observedResult.setMeanTimeToDetection(Double.POSITIVE_INFINITY);
+		observedResult.setSteadyStateAvailability(1);
 		
-		derivedResult = deriver.derive(baseResults, DELTA, MeanTimeToDetection.MTTD);
+		derivedResult = deriver.derive(baseResults, DELTA, SteadyStateDetectability.SSD);
 		
-		final double EXPECTED_MTTD_NO_OBSERVATION = Double.POSITIVE_INFINITY;
-		assertEquals(EXPECTED_MTTD_NO_OBSERVATION, derivedResult.getMeanTimeToDetection(), EPS);
+		final double EXPECTED_SSD_NO_OBSERVATION = 0;
+		assertEquals(EXPECTED_SSD_NO_OBSERVATION, derivedResult.getSteadyStateDetectability(), EPS);
+		
+		// Check the case that the failure never occurs
+		unobservedResult.setSteadyStateAvailability(1);
+		
+		derivedResult = deriver.derive(baseResults, DELTA, SteadyStateDetectability.SSD);
+		
+		final double EXPECTED_SSD_NO_FAILURE = 1;
+		assertEquals(EXPECTED_SSD_NO_FAILURE, derivedResult.getSteadyStateDetectability(), EPS);
 	}
 }
