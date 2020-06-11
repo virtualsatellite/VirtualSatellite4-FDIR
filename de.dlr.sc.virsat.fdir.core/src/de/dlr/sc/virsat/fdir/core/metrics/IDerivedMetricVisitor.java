@@ -39,4 +39,10 @@ public interface IDerivedMetricVisitor {
 	 * @param steadyStateDetectability the mean time to detection metric
 	 */
 	void visit(SteadyStateDetectability steadyStateDetectability);
+
+	/**
+	 * Handle the case of a fault tolerance metric
+	 * @param faultTolerance the fault tolerance metric
+	 */
+	void visit(FaultTolerance faultTolerance);
 }

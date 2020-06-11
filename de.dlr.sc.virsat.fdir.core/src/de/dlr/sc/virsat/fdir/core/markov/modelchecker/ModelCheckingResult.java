@@ -31,6 +31,7 @@ public class ModelCheckingResult {
 	private double meanTimeToDetection;
 	private double steadyStateDetectability;
 	protected List<Double> detectabiity = new ArrayList<>();
+	private long faultTolerance;
 	
 	/**
 	 * Sets the mean time to failure
@@ -128,6 +129,22 @@ public class ModelCheckingResult {
 		return detectabiity;
 	}
 
+	/**
+	 * Gets the computed fault tolerance
+	 * @return the fault tolerance
+	 */
+	public long getFaultTolerance() {
+		return faultTolerance;
+	}
+	
+	/**
+	 * Sets the fault tolerance
+	 * @param derivedFaultTolerance the fault tolerance
+	 */
+	public void setFaultTolerance(long derivedFaultTolerance) {
+		this.faultTolerance = derivedFaultTolerance;
+	}
+	
 	/**
 	 * Limits all point wise metrics to the given number of entries
 	 * @param steps the number of points the metric should be limited to
