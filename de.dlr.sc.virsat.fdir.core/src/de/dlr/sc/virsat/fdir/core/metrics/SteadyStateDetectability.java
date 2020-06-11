@@ -21,7 +21,7 @@ import java.util.Set;
  *
  */
 
-public class SteadyStateDetectability implements IDerivedMetric {
+public class SteadyStateDetectability implements IDerivedMetric, IQuantitativeMetric {
 	public static final SteadyStateDetectability SSD = new SteadyStateDetectability();
 
 	/**
