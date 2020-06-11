@@ -15,7 +15,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
-import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIterator;
 
 /**
@@ -105,6 +104,6 @@ public abstract class AProbabilityCurve implements IQuantitativeMetric {
 	 * @return an iterator that gives the curve value after 1 abstract time unit after each iteration
 	 */
 	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, double[] initialDistribution, double eps) {
-		return new MarkovAutomatonValueIterator<>(new SPSIterator(matrix, initialDistribution, eps), ma);
+		return new SPSIterator(matrix, initialDistribution, ma, eps);
 	}
 }

@@ -30,17 +30,16 @@ public class MatrixFactory implements IMatrixFactory {
 	@Override
 	public IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
 		SparseMatrix matrix = new SparseMatrix(ma.getStates().size());
-		int countStates = ma.getStates().size();
 		
-		for (Object event : ma.getEvents()) {
-			for (MarkovTransition<? extends MarkovState> transition : ma.getTransitions(event)) {
-				int fromIndex = transition.getFrom().getIndex();
-				if (!failStatesAreTerminal || !ma.getFinalStates().contains(transition.getFrom())) {
-					matrix.getDiagonal()[fromIndex] -= transition.getRate() * delta;
-				}
+		for (MarkovState state : ma.getStates()) {
+			if (state.isMarkovian() && (!failStatesAreTerminal || !ma.getFinalStates().contains(state))) {
+				int index = state.getIndex();
+				double exitRate = ma.getExitRateForState(state);
+				matrix.getDiagonal()[index] = -1 * exitRate * delta;
 			}
 		}
 		
+		int countStates = ma.getStates().size();
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = ma.getStates().get(i);
 			List<?> transitions = ma.getPredTransitions(state);
@@ -49,8 +48,8 @@ public class MatrixFactory implements IMatrixFactory {
 			matrix.getStatePredRates()[state.getIndex()] = new double[transitions.size()];
 			for (int j = 0; j < transitions.size(); ++j) {
 				MarkovTransition<?> transition = (MarkovTransition<?>) transitions.get(j);
-				if (!failStatesAreTerminal || !ma.getFinalStates().contains(transition.getFrom())) {
-					MarkovState fromState = (MarkovState) transition.getFrom();
+				MarkovState fromState = (MarkovState) transition.getFrom();
+				if (fromState.isMarkovian() && (!failStatesAreTerminal || !ma.getFinalStates().contains(fromState))) {
 					matrix.getStatePredIndices()[state.getIndex()][j] = fromState.getIndex();
 					matrix.getStatePredRates()[state.getIndex()][j] = transition.getRate() * delta;
 				}
