@@ -147,7 +147,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 					MarkovState toState = transition.getTo();
 					if (!toState.getFailLabels().contains(FailLabel.FAILED)) {
 						double toValue = values[toState.getIndex()];
-						value += (1 - toState.getMapFailLabelToProb().getOrDefault(FailLabel.FAILED, 0d)) * toValue * transition.getRate() / exitRate;
+						value += toValue * transition.getRate() / exitRate;
 					}
 				}
 			}

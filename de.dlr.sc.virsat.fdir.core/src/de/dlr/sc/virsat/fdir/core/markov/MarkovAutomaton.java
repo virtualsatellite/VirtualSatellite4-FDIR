@@ -237,6 +237,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 					+ "->" + transition.getTo().getIndex() 
 					+ " [label=\"" + String.valueOf(transition.getEvent()) 
 					+ " : " + transition.getRate() +  "\"]")
+				.sorted()
 				.collect(Collectors.joining("\n")) + "\n");
 		sb.append("}");
 		return sb.toString();
@@ -259,6 +260,11 @@ public class MarkovAutomaton<S extends MarkovState> {
 		return Double.isFinite(rate) && rate > 0;
 	}
 	
+	/**
+	 * Gets the states in the ma which have the labels from the label provider
+	 * @param failLabelProvider the label provider
+	 * @return all states which have at least all states listed in the label provider
+	 */
 	public Set<S> getStatesWithLabels(FailLabelProvider failLabelProvider) {
 		Set<S> statesWithLabel = new HashSet<>();
 		

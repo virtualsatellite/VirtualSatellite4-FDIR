@@ -247,9 +247,14 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		
 		if (isNewState) {
 			targetMa.addState(beliefState);
+			
 			double failProb = beliefState.getFailProb();
 			if (failProb > 0) {
 				beliefState.getMapFailLabelToProb().put(FailLabel.FAILED, failProb);
+			}
+			
+			if (beliefState.representant.getFailLabels().contains(FailLabel.OBSERVED)) {
+				beliefState.getMapFailLabelToProb().put(FailLabel.OBSERVED, 1d);
 			}
 		}
 		
