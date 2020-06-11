@@ -21,15 +21,15 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 
-public class MetricsDeriverTest {
+public class MetricsResultDeriverTest {
 
 	private static final double DELTA = 10;
 	private static final double EPS = 0.00001;
-	private MetricsDeriver deriver;
+	private MetricsResultDeriver deriver;
 	
 	@Before
 	public void setUp() {
-		this.deriver = new MetricsDeriver();
+		this.deriver = new MetricsResultDeriver();
 	}
 
 	@Test

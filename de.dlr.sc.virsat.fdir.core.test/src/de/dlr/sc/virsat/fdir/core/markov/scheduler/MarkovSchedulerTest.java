@@ -294,6 +294,7 @@ public class MarkovSchedulerTest {
 		
 		badFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		goodFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		goodFail.getMapFailLabelToProb().put(FailLabel.OBSERVED, 1d);
 		
 		// By default the scheduler maximizes MTTF
 		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);

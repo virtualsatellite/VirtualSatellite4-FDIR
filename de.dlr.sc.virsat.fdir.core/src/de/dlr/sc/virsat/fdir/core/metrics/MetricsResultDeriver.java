@@ -20,7 +20,7 @@ import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
-public class MetricsDeriver {
+public class MetricsResultDeriver {
 
 	private ModelCheckingResult derivedResult;
 	private Map<FailLabelProvider, ModelCheckingResult> baseResults;
@@ -35,7 +35,7 @@ public class MetricsDeriver {
 	 * @return the derived results
 	 */
 	public ModelCheckingResult derive(Map<FailLabelProvider, ModelCheckingResult> baseResults, double delta, IDerivedMetric... metrics) {
-		this.derivedResult = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
+		this.derivedResult = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
 		this.baseResults = baseResults;
 		this.delta = delta;
 		

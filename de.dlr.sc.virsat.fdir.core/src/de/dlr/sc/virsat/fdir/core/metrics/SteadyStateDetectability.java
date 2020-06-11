@@ -51,12 +51,16 @@ public class SteadyStateDetectability implements IDerivedMetric, IQuantitativeMe
 	 * @return the steady state detectability
 	 */
 	public double derive(double steadyStateAvailability, double observedSteadyStateAvailability) {
+		if (observedSteadyStateAvailability == 0 && steadyStateAvailability != 0) {
+			return 0;
+		}
+		
 		double observedUnavailability = 1 - observedSteadyStateAvailability;
 		double unavailability = 1 - steadyStateAvailability;
 		
 		if (observedUnavailability == 0 && unavailability == 0) {
 			return 1;
-		}
+		} 
 		
 		double steadyStateDetectability = observedUnavailability / unavailability;
 		return steadyStateDetectability;

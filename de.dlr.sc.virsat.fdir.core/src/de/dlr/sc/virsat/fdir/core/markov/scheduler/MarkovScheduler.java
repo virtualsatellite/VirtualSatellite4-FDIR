@@ -28,7 +28,9 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.MetricsStateDeriver;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
@@ -45,12 +47,11 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	
 	private MarkovModelChecker modelChecker = new MarkovModelChecker(0, EPS);
 	private Map<S, Double> results;
+	private MetricsStateDeriver<S> metricStateDeriver = new MetricsStateDeriver<S>();
 	
 	@Override
 	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery) {
 		List<S> validStates = getValidStates(scheduleQuery);
-		
-		Map<FailLabelProvider, IMetric[]> partitionedMetrics = IMetric.partitionMetrics(false, scheduleQuery.getObjectiveMetric());
 		results = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric());
 		
 		Queue<S> toProcess = new LinkedList<>();
@@ -116,14 +117,35 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return a mapping from state to its utility value
 	 */
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, List<S> validStates, S initialMa, IMetric metric) {
-		ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, null, (IBaseMetric) metric);
-		modelCheckingQuery.setStates(validStates);
+		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(false, metric);
+		Map<FailLabelProvider, Map<IMetric, Map<S, Double>>> results = new HashMap<>();
 		
-		modelChecker.checkModel(modelCheckingQuery, null);
+		for (Entry<FailLabelProvider, IMetric[]> entry : partitioning.entrySet()) {
+			FailLabelProvider failLabelProvider = entry.getKey();
+			if (!failLabelProvider.equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
+				Map<IMetric, Map<S, Double>> mapMetricToResults = new HashMap<>();
+				results.put(failLabelProvider, mapMetricToResults);
+				
+				IBaseMetric[] metrics = (IBaseMetric[]) entry.getValue();
+				for (IBaseMetric baseMetric : metrics) {
+					ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, failLabelProvider, baseMetric);
+					modelCheckingQuery.setStates(validStates);
+					
+					modelChecker.checkModel(modelCheckingQuery, null);
+					
+					double[] values = modelChecker.getProbabilityDistribution();
+					Map<S, Double> resultMap = createResultMap(ma, modelCheckingQuery.getStates(), values);
+					
+					mapMetricToResults.put(baseMetric, resultMap);
+				}
+			}
+		}
 		
-		double[] values = modelChecker.getProbabilityDistribution();
-		Map<S, Double> resultMap = createResultMap(ma, modelCheckingQuery.getStates(), values);
-		return resultMap;
+		if (metric instanceof IDerivedMetric && !(metric instanceof IBaseMetric)) {
+			metricStateDeriver.derive(results, (IDerivedMetric) metric);
+		}
+		
+		return results.get(FailLabelProvider.SINGLETON_FAILED).get(metric);
 	}
 	
 	/**
