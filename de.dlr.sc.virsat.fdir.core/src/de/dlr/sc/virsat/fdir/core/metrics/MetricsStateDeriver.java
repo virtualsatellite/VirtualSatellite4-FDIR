@@ -12,7 +12,7 @@ package de.dlr.sc.virsat.fdir.core.metrics;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
@@ -49,11 +49,10 @@ public class MetricsStateDeriver<S extends MarkovState> {
 			Map<S, Double> ssaResultsObserved = mapMetricToResultsObserved.get(SteadyStateAvailability.SSA);
 			Map<S, Double> ssdResults = new HashMap<>();
 			derivedResults.put(steadyStateDetectability, ssdResults);
-			Set<S> states = ssaResultsFailed.keySet();
 			
-			for (S state : states) {
-				double derivedSteadyStateDetectability = steadyStateDetectability.derive(ssaResultsFailed.get(state), ssaResultsObserved.get(state));
-				ssdResults.put(state, derivedSteadyStateDetectability);
+			for (Entry<S, Double> entry : ssaResultsFailed.entrySet()) {
+				double derivedSteadyStateDetectability = steadyStateDetectability.derive(entry.getValue(), ssaResultsObserved.get(entry.getKey()));
+				ssdResults.put(entry.getKey(), derivedSteadyStateDetectability);
 			}
 		}
 		
@@ -66,11 +65,10 @@ public class MetricsStateDeriver<S extends MarkovState> {
 			Map<S, Double> mttfResultsObserved = mapMetricToResultsObserved.get(MeanTimeToFailure.MTTF);
 			Map<S, Double> mttdResults = new HashMap<>();
 			derivedResults.put(meanTimeToDetectionMetric, mttdResults);
-			Set<S> states = mttfResultsFailed.keySet();
 			
-			for (S state : states) {
-				double derivedMeanTimeToDetection = meanTimeToDetectionMetric.derive(mttfResultsFailed.get(state), mttfResultsObserved.get(state));
-				mttdResults.put(state, derivedMeanTimeToDetection);
+			for (Entry<S, Double> entry : mttfResultsFailed.entrySet()) {
+				double derivedMeanTimeToDetection = meanTimeToDetectionMetric.derive(entry.getValue(), mttfResultsObserved.get(entry.getKey()));
+				mttdResults.put(entry.getKey(), derivedMeanTimeToDetection);
 			}
 		}
 		
