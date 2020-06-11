@@ -35,7 +35,7 @@ public class MetricsDeriver {
 	 * @return the derived results
 	 */
 	public ModelCheckingResult derive(Map<FailLabelProvider, ModelCheckingResult> baseResults, double delta, IDerivedMetric... metrics) {
-		this.derivedResult = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
+		this.derivedResult = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
 		this.baseResults = baseResults;
 		this.delta = delta;
 		
