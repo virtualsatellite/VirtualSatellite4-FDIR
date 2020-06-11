@@ -129,6 +129,10 @@ public class DFTState extends MarkovState {
 		return unorderedBes;
 	}
 	
+	/**
+	 * Checks if this state is a fail state
+	 * @return true iff the state contains the FAILED label
+	 */
 	public boolean isFailState() {
 		return getFailLabels().contains(FailLabel.FAILED);
 	}
@@ -561,6 +565,10 @@ public class DFTState extends MarkovState {
 		return mapParentToSymmetryRequirements;
 	}
 
+	/**
+	 * Copies a DFT state
+	 * @return a copy of this state
+	 */
 	public DFTState copy() {
 		return new DFTState(this);
 	}

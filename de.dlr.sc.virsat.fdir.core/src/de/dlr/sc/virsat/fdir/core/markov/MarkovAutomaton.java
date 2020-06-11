@@ -281,8 +281,8 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * Gets the initial MTTF according to the Bellman equations with
 	 * MTTF(s) = 0 if s is a fail state and 
 	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
-	 * @param states 
-	 * @param mc the markov chain
+	 * @param states states that are also in this list will be considered
+	 * @param failLabelProvider the provider defining what is a fail state
 	 * @return the initial probability distribution
 	 */
 	public double[] getNonFailSoujornTimes(List<? extends MarkovState> states, FailLabelProvider failLabelProvider) {
@@ -302,8 +302,8 @@ public class MarkovAutomaton<S extends MarkovState> {
 	
 	/**
 	 * Gets an array with only the soujourn times of fail states.
-	 * @param mc the markoc chain
-	 * @param states 
+	 * @param states only fail states that are also in this list will be considered
+	 * @param failLabelProvider the provider defining what is a fail state
 	 * @return the soujourn times
 	 */
 	public double[] getFailSoujournTimes(List<MarkovState> states, FailLabelProvider failLabelProvider) {

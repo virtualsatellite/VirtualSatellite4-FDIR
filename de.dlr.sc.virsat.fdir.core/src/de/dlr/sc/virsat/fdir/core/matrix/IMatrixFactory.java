@@ -20,7 +20,7 @@ public interface IMatrixFactory {
 	/**
 	 * Creates the generator matrix of a markov automaton
 	 * @param ma the markov automaton
-	 * @param failStatesAreTerminal failStatesAreTerminal
+	 * @param terminalStates the terminal states
 	 * @param delta the matrix will be scaled accoriding to the time delta
 	 * @return the generator matrix
 	 */

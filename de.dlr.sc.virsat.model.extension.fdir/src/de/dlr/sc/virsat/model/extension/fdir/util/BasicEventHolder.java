@@ -182,6 +182,12 @@ public class BasicEventHolder {
 		return QUANTITY_KIND_NONE;
 	}
 	
+	/**
+	 * Creates a command to make the units consistent with the current distribution
+	 * @param editingDomain the editing  domain
+	 * @param be the basic event to synchronize
+	 * @return a command that synchronizes the unit to the distribution type
+	 */
 	public Command createSynchronizeUnitsWIthDistributionCommand(EditingDomain editingDomain, BasicEvent be) {
 		String unit = getDefaultUnitForDistribution();
 		
@@ -190,6 +196,12 @@ public class BasicEventHolder {
 		return cc;
 	}
 	
+	/**
+	 * Creates a command to make the units consistent with the current distribution
+	 * @param editingDomain the editing  domain
+	 * @param be the basic event to synchronize
+	 * @return a command that synchronizes the unit to the distribution type
+	 */
 	public static void synchronizeWithDistribution(EditingDomain editingDomain, BasicEvent be) {
 		BasicEventHolder beHolder = new BasicEventHolder(be);
 		

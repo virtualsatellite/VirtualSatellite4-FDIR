@@ -35,6 +35,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private PODFTState initialStateMa;
 	private BeliefStateEquivalence beliefStateEquivalence;
 	
+	/**
+	 * Configures the belief state space generation
+	 * @param ma the totally observable markov automaton
+	 * @param initialStateMa the initial state of the markov automaton
+	 */
 	public void configure(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa) {
 		this.ma = ma;
 		this.initialStateMa = initialStateMa;
