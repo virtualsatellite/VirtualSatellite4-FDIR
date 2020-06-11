@@ -549,7 +549,8 @@ public class DFTEvaluatorTest extends ATestCase {
 			0.009900992541486747, 
 			0.01960788132185907, 
 			0.029126402494759823, 
-			0.0384621219374548
+			0.0384621219374548,
+			0.04762043993632954
 		};
 		final double EXPECTEDMTTF = 1.25;
 		
@@ -574,6 +575,8 @@ public class DFTEvaluatorTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
+		
+		System.out.println(result.getFailRates());
 		
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
