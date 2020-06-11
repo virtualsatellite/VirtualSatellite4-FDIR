@@ -10,20 +10,29 @@
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
 import java.util.List;
+import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 
 public class ModelCheckingQuery<S extends MarkovState> {
+	
+	public static final FailLabelProvider DEFAULT_FAIL_LABEL_PROVIDER = FailLabelProvider.SINGLETON_FAILED;
+	
 	private MarkovAutomaton<? extends MarkovState> ma;
 	private IBaseMetric[] metrics;
 	private List<S> states;
+	private FailLabelProvider failLabelProvider;
+	private Set<S> failStates;
 	
-	public ModelCheckingQuery(MarkovAutomaton<S> ma, IBaseMetric... metrics) {
+	public ModelCheckingQuery(MarkovAutomaton<S> ma, FailLabelProvider failLabelProvider, IBaseMetric... metrics) {
 		this.ma = ma;
 		this.metrics = metrics;
 		this.states = ma.getStates();
+		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : DEFAULT_FAIL_LABEL_PROVIDER;
+		this.failStates = ma.getStatesWithLabels(this.failLabelProvider);
 	}
 	
 	public MarkovAutomaton<? extends MarkovState> getMa() {
@@ -40,5 +49,13 @@ public class ModelCheckingQuery<S extends MarkovState> {
 	
 	public void setStates(List<S> states) {
 		this.states = states;
+	}
+	
+	public FailLabelProvider getFailLabelProvider() {
+		return failLabelProvider;
+	}
+	
+	public Set<S> getFailStates() {
+		return failStates;
 	}
 }

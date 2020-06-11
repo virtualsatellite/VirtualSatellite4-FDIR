@@ -10,6 +10,12 @@
 package de.dlr.sc.virsat.fdir.core.markov;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * Abstract class for representing a state in a Markov structure
@@ -19,6 +25,7 @@ import java.util.Comparator;
 public class MarkovState {
 	protected int index;
 	private MarkovStateType type = MarkovStateType.MARKOVIAN;
+	private Map<FailLabel, Double> mapFailLabelToProb = new HashMap<>();
 	
 	/**
 	 * Gets the index of this state
@@ -54,6 +61,14 @@ public class MarkovState {
 	
 	public boolean isProbabilisic() {
 		return type.equals(MarkovStateType.PROBABILISTIC);
+	}
+	
+	public Map<FailLabel, Double> getMapFailLabelToProb() {
+		return mapFailLabelToProb;
+	}
+	
+	public Set<FailLabel> getFailLabels() {
+		return mapFailLabelToProb.keySet();
 	}
 	
 	@Override

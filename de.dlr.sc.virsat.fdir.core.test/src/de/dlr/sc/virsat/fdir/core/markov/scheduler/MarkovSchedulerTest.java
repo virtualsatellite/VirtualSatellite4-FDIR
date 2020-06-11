@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
 /**
@@ -61,7 +62,7 @@ public class MarkovSchedulerTest {
 		ma.addState(good);
 		ma.addState(bad);
 		
-		ma.getFinalStateProbs().put(bad, 1d);
+		bad.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		ma.addNondeterministicTransition("b", initial, bad);
@@ -84,7 +85,7 @@ public class MarkovSchedulerTest {
 		ma.addState(bad);
 		ma.addState(sink);
 		
-		ma.getFinalStateProbs().put(sink, 1d);
+		sink.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		ma.addNondeterministicTransition("b", initial, bad);
@@ -108,7 +109,7 @@ public class MarkovSchedulerTest {
 		ma.addState(good);
 		ma.addState(bad);
 		
-		ma.getFinalStateProbs().put(bad, 1d);
+		bad.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good, 1);
 		// CHECKSTYLE:OFF
@@ -137,7 +138,7 @@ public class MarkovSchedulerTest {
 		ma.addState(initial);
 		ma.addState(bad);
 		
-		ma.getFinalStateProbs().put(bad, 1d);
+		bad.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition(Collections.emptyList(), initial, bad, 1);
 		ma.addNondeterministicTransition("b", initial, bad, 1);
@@ -184,8 +185,8 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("m", goodFail, goodOk, 1);
 		// CHECKSTYLE:ON
 		
-		ma.getFinalStateProbs().put(badFail, 1d);
-		ma.getFinalStateProbs().put(goodFail, 1d);
+		badFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		goodFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		// Without any constraints, the correct choice is choiceA
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
@@ -237,8 +238,8 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("m", goodFail, goodOk, 1);
 		// CHECKSTYLE:ON
 		
-		ma.getFinalStateProbs().put(badFail, 1d);
-		ma.getFinalStateProbs().put(goodFail, 1d);
+		badFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		goodFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		// By default the scheduler maximizes MTTF
 		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);

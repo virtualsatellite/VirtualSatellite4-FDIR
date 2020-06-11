@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * This class converts the model to explicit drn format
@@ -80,7 +81,7 @@ public class ExplicitDRNFileWriter implements IExplicitFileWriter {
 		printWriter.println("@model");
 		
 		for (MarkovState state : ma.getStates()) {
-			boolean isFinalState = ma.getFinalStates().contains(state);
+			boolean isFinalState = state.getFailLabels().contains(FailLabel.FAILED);
 			
 			if (state.isMarkovian()) {
 				double exitRate = ma.getExitRateForState(state);
@@ -135,7 +136,7 @@ public class ExplicitDRNFileWriter implements IExplicitFileWriter {
 	 */
 	private String getLabel(MarkovState state) {
 		String label = DEFAULT_STATE;
-		if (ma.getFinalStates().contains(state)) {
+		if (state.getFailLabels().contains(FailLabel.FAILED)) {
 			label = FAILED_STATE;
 		} else if (state.getIndex() == 0) {
 			label = INITIAL_STATE;

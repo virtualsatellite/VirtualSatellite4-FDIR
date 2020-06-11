@@ -20,7 +20,6 @@ import java.util.Set;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
@@ -42,13 +41,10 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
-
-	public static final FailLabelProvider DEFAULT_FAIL_LABEL_PROVIDER = new FailLabelProvider(FailLabel.FAILED);
 	
 	private DFTSemantics semantics = DFTSemantics.createNDDFTSemantics();
 	private DFTStaticAnalysis staticAnalysis = new DFTStaticAnalysis();
 	
-	private FailLabelProvider failLabelProvider;
 	private FailableBasicEventsProvider failableBasicEventsProvider;
 	
 	private boolean allowsDontCareFailing = true;
@@ -64,9 +60,8 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @param failLabelProvider the fail label criterion
 	 * @param failableBasicEventsProvider the nodes that need to fail
 	 */
-	public void configure(FaultTreeHolder ftHolder, FailLabelProvider failLabelProvider, FailableBasicEventsProvider failableBasicEventsProvider) {
+	public void configure(FaultTreeHolder ftHolder, FailableBasicEventsProvider failableBasicEventsProvider) {
 		this.ftHolder = ftHolder;
-		this.failLabelProvider = failLabelProvider != null ? failLabelProvider : DEFAULT_FAIL_LABEL_PROVIDER;
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
 	}
 	
@@ -245,7 +240,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 					}
 				}
 				
-				targetMa.addState(succ, succ.getFailState() ? 1 : 0);
+				targetMa.addState(succ);
 				newSuccs.add(succ);
 			}
 			
@@ -270,7 +265,9 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return the list of all events that can occur
 	 */
 	private List<IDFTEvent> getOccurableEvents(DFTState state) {
-		if (state.getFailState() && state.isFaultTreeNodePermanent(ftHolder.getRoot())) {
+		if (state.getFailLabels().contains(FailLabel.FAILED) 
+				&& (!(state instanceof PODFTState) || state.getFailLabels().contains(FailLabel.OBSERVED))
+				&& state.isFaultTreeNodePermanent(ftHolder.getRoot())) {
 			return Collections.emptyList();
 		}
 		
@@ -326,30 +323,13 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @param state the state to check
 	 */
 	private void checkFailState(DFTState state) {
-		for (FailLabel failLabel : failLabelProvider.getFailLabels()) {
-			FaultTreeNode root = ftHolder.getRoot();
-			switch (failLabel) {
-				case FAILED:
-					if (!state.hasFaultTreeNodeFailed(root)) {
-						return;
-					}
-					break;
-				case OBSERVED:
-					if (state instanceof PODFTState && !((PODFTState) state).isNodeFailObserved(root)) {
-						return;
-					}
-					break;
-				case UNOBSERVED:
-					if (state instanceof PODFTState && ((PODFTState) state).isNodeFailObserved(root)) {
-						return;
-					}
-					break;
-				default:
-					break;
-			}
+		if (state.hasFaultTreeNodeFailed(ftHolder.getRoot())) {
+			state.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		}
 		
-		state.setFailState(true);
+		if (state instanceof PODFTState && !((PODFTState) state).isNodeFailObserved(ftHolder.getRoot())) {
+			state.getMapFailLabelToProb().put(FailLabel.OBSERVED, 1d);
+		}
 	}
 	
 	/**

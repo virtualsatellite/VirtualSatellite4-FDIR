@@ -132,7 +132,7 @@ public class BeliefState extends MarkovState {
 	public double getFailProb() {
 		double failProb = 0;
 		for (Entry<PODFTState, Double> entry : mapStateToBelief.entrySet()) {
-			if (entry.getKey().getFailState()) {
+			if (entry.getKey().isFailState()) {
 				failProb += entry.getValue();
 			}
 		}

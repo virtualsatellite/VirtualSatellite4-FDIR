@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -40,7 +41,6 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  */
 
 public class DFTState extends MarkovState {
-	private boolean isFailState;
 	private RecoveryStrategy recoveryStrategy;
 	
 	protected FaultTreeHolder ftHolder;
@@ -129,20 +129,8 @@ public class DFTState extends MarkovState {
 		return unorderedBes;
 	}
 	
-	/**
-	 * Sets whether this DFT state should be marked as a fail state
-	 * @param isFailState true iff the dft state is a fail state
-	 */
-	public void setFailState(boolean isFailState) {
-		this.isFailState = isFailState;
-	}
-	
-	/**
-	 * Whether this state is a fail state
-	 * @return true iff this state is a fail state
-	 */
-	public boolean getFailState() {
-		return isFailState;
+	public boolean isFailState() {
+		return getFailLabels().contains(FailLabel.FAILED);
 	}
 	
 	@Override
@@ -153,7 +141,7 @@ public class DFTState extends MarkovState {
 		
 		res += "\"";
 		
-		if (isFailState) {
+		if (isFailState()) {
 			res += ", color=\"red\"";
 		} else if (isNondet()) {
 			res += ", color=\"blue\"";
@@ -551,7 +539,7 @@ public class DFTState extends MarkovState {
 			return false;
 		}
 		
-		if (isFailState != other.isFailState) {
+		if (!getFailLabels().equals(other.getFailLabels())) {
 			return false;
 		}
 		

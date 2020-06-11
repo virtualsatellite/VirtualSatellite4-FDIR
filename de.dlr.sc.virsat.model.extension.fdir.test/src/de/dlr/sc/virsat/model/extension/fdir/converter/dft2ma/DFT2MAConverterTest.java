@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
@@ -90,7 +91,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		assertTrue(event2.isImmediate());
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
-		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStatesWithLabels(FailLabelProvider.SINGLETON_FAILED).size());
 	}
 	
 	@Test
@@ -105,7 +106,7 @@ public class DFT2MAConverterTest extends ATestCase {
 
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
-		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStatesWithLabels(FailLabelProvider.SINGLETON_FAILED).size());
 	}
 	
 	@Test
@@ -120,7 +121,7 @@ public class DFT2MAConverterTest extends ATestCase {
 
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
-		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStatesWithLabels(FailLabelProvider.SINGLETON_FAILED).size());
 	}
 	
 	@Test
@@ -135,7 +136,7 @@ public class DFT2MAConverterTest extends ATestCase {
 
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
-		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStatesWithLabels(FailLabelProvider.SINGLETON_FAILED).size());
 	}
 	
 	@Test
@@ -150,7 +151,7 @@ public class DFT2MAConverterTest extends ATestCase {
 
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
-		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getFinalStates().size());
+		assertEquals(EXPECTED_COUNT_FINAL_STATES, ma.getStatesWithLabels(FailLabelProvider.SINGLETON_FAILED).size());
 	}
 	
 	@Test
@@ -159,6 +160,8 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		dft2MaConverter.getStateSpaceGenerator().setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
+		
+		System.out.println(ma.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 5;
