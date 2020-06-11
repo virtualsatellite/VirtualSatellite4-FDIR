@@ -22,6 +22,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * This class tests the storm scheduler implementation
@@ -43,7 +44,7 @@ public class StormSchedulerTest {
 		ma.addState(bad);
 		ma.addState(sink);
 		
-		ma.getFinalStateProbs().put(sink, 1d);
+		sink.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);

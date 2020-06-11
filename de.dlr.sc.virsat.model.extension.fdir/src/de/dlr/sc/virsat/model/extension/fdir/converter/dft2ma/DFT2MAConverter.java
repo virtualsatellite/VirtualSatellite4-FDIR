@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.A2MAConverter;
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
@@ -39,11 +38,10 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 	 * @param monitor the monitor
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
-	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, 
-			FailLabelProvider failLabelProvider, SubMonitor monitor) {
+	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, SubMonitor monitor) {
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
 		FaultTreeHolder ftHolder = new FaultTreeHolder(holderRoot);
-		stateSpaceGenerator.configure(ftHolder, failLabelProvider, failableBasicEventsProvider);
+		stateSpaceGenerator.configure(ftHolder, failableBasicEventsProvider);
 		MarkovAutomaton<DFTState> ma = maBuilder.build(stateSpaceGenerator, monitor);
 		return ma;
 	}
@@ -55,7 +53,7 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root) {
-		return convert(root, null, null, null);
+		return convert(root, null, null);
 	}
 	
 	/**

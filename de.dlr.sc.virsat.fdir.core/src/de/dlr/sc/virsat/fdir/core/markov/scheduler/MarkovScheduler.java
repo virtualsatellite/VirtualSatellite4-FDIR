@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -112,7 +113,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @return a mapping from state to its utility value
 	 */
 	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, List<S> validStates, S initialMa, IMetric metric) {
-		ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, (IBaseMetric) metric);
+		ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, null, (IBaseMetric) metric);
 		modelCheckingQuery.setStates(validStates);
 		
 		modelChecker.checkModel(modelCheckingQuery, null);
@@ -138,15 +139,15 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
-			} else if (ma.getFinalStates().contains(state)) {
+			} else if (state.getFailLabels().contains(FailLabel.FAILED)) {
 				// To differentiate between fail states we also compute their MTTF
 				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
 				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
-					if (!ma.getFinalStates().contains(toState)) {
+					if (!toState.getFailLabels().contains(FailLabel.FAILED)) {
 						double toValue = values[toState.getIndex()];
-						value += (1 - ma.getFinalStateProbs().getOrDefault(toState, 0d)) * toValue * transition.getRate() / exitRate;
+						value += toValue * transition.getRate() / exitRate;
 					}
 				}
 			}
@@ -176,7 +177,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			for (MarkovTransition<S> transition : transitionGroup) {
 				double prob = transition.getRate();
 				MarkovState toState = transition.getTo();
-				double failProb = ma.getFinalStateProbs().getOrDefault(toState, 0d);
+				double failProb = toState.getMapFailLabelToProb().getOrDefault(FailLabel.FAILED, 0d);
 				transitionGroupProbFail += prob * failProb;
 				
 				double toValue = results.getOrDefault(toState, Double.NEGATIVE_INFINITY);

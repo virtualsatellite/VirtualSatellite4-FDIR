@@ -48,8 +48,8 @@ public class SteadyStateAvailability implements IQuantitativeMetric, IBaseMetric
 	 * @param states a subset of states of the ma on which the ssa will be computed
 	 * @return an iterator that converges towards the ssa on the given state subset
 	 */
-	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, List<MarkovState> states) {
-		double[] baseFailCosts = ma.getFailSoujournTimes(states);
+	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, List<MarkovState> states, FailLabelProvider failLabelProvider) {
+		double[] baseFailCosts = ma.getFailSoujournTimes(states, failLabelProvider);
 		double[] baseTotalCosts = ma.getSoujournTimes(states);
 		IMatrixIterator ssaIterator = new MarkovAutomatonValueIterator<>(
 				new SSAIterator<>(matrix, baseFailCosts, baseTotalCosts), ma, states, false

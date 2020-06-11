@@ -20,11 +20,11 @@ public interface IMatrixFactory {
 	/**
 	 * Creates the generator matrix of a markov automaton
 	 * @param ma the markov automaton
-	 * @param failStatesAreTerminal failStatesAreTerminal
+	 * @param terminalStates the terminal states
 	 * @param delta the matrix will be scaled accoriding to the time delta
 	 * @return the generator matrix
 	 */
-	IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta);
+	IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, Set<? extends MarkovState> terminalStates, double delta);
 
 	/**
 	 * This creates a matrix representing bellman equations on the induced Markov Decision Process of a Markov Automaton.

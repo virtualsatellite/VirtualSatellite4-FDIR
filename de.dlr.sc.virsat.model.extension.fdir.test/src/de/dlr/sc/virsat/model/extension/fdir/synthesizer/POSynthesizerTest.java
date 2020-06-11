@@ -141,8 +141,8 @@ public class POSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 		
-		final int EXPECTED_COUNT_STATES = 3;
-		final int EXPECTED_COUNT_TRANSITIONS = 3;
+		final int EXPECTED_COUNT_STATES = 5;
+		final int EXPECTED_COUNT_TRANSITIONS = 6;
 		final double EXPECTED_MTTF = 0.5;
 		
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());

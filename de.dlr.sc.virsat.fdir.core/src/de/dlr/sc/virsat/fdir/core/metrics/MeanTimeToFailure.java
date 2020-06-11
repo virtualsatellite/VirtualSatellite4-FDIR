@@ -60,8 +60,8 @@ public class MeanTimeToFailure implements IQuantitativeMetric, IBaseMetric, IDer
 	 * @param states a subset of states in the amrkov automaton on which the iterator will operate
 	 * @return an iterator that converges towards the MTTF
 	 */
-	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states) {
-		double[] nonFailSoujournTimes = ma.getNonFailSoujornTimes(states); 
+	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states, FailLabelProvider failLabelProvider) {
+		double[] nonFailSoujournTimes = ma.getNonFailSoujornTimes(states, failLabelProvider); 
 		return new MarkovAutomatonValueIterator<>(new BellmanIterator(matrix, nonFailSoujournTimes), ma);
 	}
 }

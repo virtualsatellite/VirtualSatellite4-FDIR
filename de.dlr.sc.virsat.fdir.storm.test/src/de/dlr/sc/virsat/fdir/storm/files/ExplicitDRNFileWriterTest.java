@@ -26,6 +26,7 @@ import com.google.common.io.CharStreams;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.fdir.core.test.TestResourceGetter;
 
 /**
@@ -49,7 +50,7 @@ public class ExplicitDRNFileWriterTest {
 		ma.addState(fail);
 		ma.addState(nondet);
 		
-		ma.getFinalStateProbs().put(fail, 1d);
+		fail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		final double RATE = 10;
 		ma.addMarkovianTransition("a", init, fail, RATE);

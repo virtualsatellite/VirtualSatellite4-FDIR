@@ -28,11 +28,11 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 public class MatrixFactory implements IMatrixFactory {
 	
 	@Override
-	public IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, boolean failStatesAreTerminal, double delta) {		
+	public IMatrix createGeneratorMatrix(MarkovAutomaton<? extends MarkovState> ma, Set<? extends MarkovState> terminalStates, double delta) {		
 		SparseMatrix matrix = new SparseMatrix(ma.getStates().size());
 		
 		for (MarkovState state : ma.getStates()) {
-			if (state.isMarkovian() && (!failStatesAreTerminal || !ma.getFinalStates().contains(state))) {
+			if (state.isMarkovian() && !terminalStates.contains(state)) {
 				int index = state.getIndex();
 				double exitRate = ma.getExitRateForState(state);
 				matrix.getDiagonal()[index] = -1 * exitRate * delta;
@@ -49,7 +49,7 @@ public class MatrixFactory implements IMatrixFactory {
 			for (int j = 0; j < transitions.size(); ++j) {
 				MarkovTransition<?> transition = (MarkovTransition<?>) transitions.get(j);
 				MarkovState fromState = (MarkovState) transition.getFrom();
-				if (fromState.isMarkovian() && (!failStatesAreTerminal || !ma.getFinalStates().contains(fromState))) {
+				if (fromState.isMarkovian() && !terminalStates.contains(fromState)) {
 					matrix.getStatePredIndices()[state.getIndex()][j] = fromState.getIndex();
 					matrix.getStatePredRates()[state.getIndex()][j] = transition.getRate() * delta;
 				}
