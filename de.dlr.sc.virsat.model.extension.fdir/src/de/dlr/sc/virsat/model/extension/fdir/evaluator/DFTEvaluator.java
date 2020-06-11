@@ -84,7 +84,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		
 		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
 		
-		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(metrics, modularization != null);
+		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(modularization != null, metrics);
 		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitioning.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
 		
 		subMonitor = SubMonitor.convert(subMonitor, partitioning.size());

@@ -292,8 +292,8 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("m", goodFail, goodOk, 1);
 		// CHECKSTYLE:ON
 		
-		ma.getFinalStateProbs().put(badFail, 1d);
-		ma.getFinalStateProbs().put(goodFail, 1d);
+		badFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		goodFail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		// By default the scheduler maximizes MTTF
 		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);

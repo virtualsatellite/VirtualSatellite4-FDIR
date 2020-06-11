@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
@@ -48,6 +49,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery) {
 		List<S> validStates = getValidStates(scheduleQuery);
+		
+		Map<FailLabelProvider, IMetric[]> partitionedMetrics = IMetric.partitionMetrics(false, scheduleQuery.getObjectiveMetric());
 		results = computeValues(scheduleQuery.getMa(), validStates, scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric());
 		
 		Queue<S> toProcess = new LinkedList<>();
