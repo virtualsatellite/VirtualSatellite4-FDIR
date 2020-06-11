@@ -116,12 +116,12 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	/**
-	 * Performs a DFT evaluation for the given base metrics with the given fail criteria
+	 * Performs a DFT evaluation for the base metrics in the given metrics partitioning
 	 * @param ftHolder the fault tree holder
 	 * @param failableBasicEventsProvider the node fail criteria
 	 * @param modularization optionally a modularization of the dft
 	 * @param subMonitor eclipse ui element for progress reporting
-	 * @return the model checking result
+	 * @return a mapping from fail label to model checking result
 	 */
 	private Map<FailLabelProvider, ModelCheckingResult> evaluateFaultTree(FaultTreeHolder ftHolder, FailableBasicEventsProvider failableBasicEventsProvider, Map<FailLabelProvider, IMetric[]> partitioning, DFTModularization modularization, SubMonitor monitor) {
 		final int COUNT_WORK = (modularization != null ? 2 * modularization.getModulesToModelCheck().size() : 2) + partitioning.size() - 1;
@@ -196,13 +196,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	/**
-	 * Model checks a tree
-	 * @param ma 
+	 * Model checks a markov automaton for base metric in the given metric partitioning
+	 * @param ma the markov automaton of a dft or module of a dft
 	 * @param subMonitor eclipse ui element for progress reporting
-	 * @param metrics the metrics to model check
-	 * @param failableBasicEventsProvider the nodes that need to fail
-	 * @param failLabelProvider the labels that will make a node considered to be failed
-	 * @return the result object containing the metrics
+	 * @param partitioning a partitioning of the metrics
+	 * @return a mapping from fail label provider to the results
 	 */
 	private Map<FailLabelProvider, ModelCheckingResult> modelCheck(MarkovAutomaton<DFTState> ma, SubMonitor subMonitor, Map<FailLabelProvider, IMetric[]> partitioning) {
 		final int COUNT_WORK = partitioning.size() - 1;
@@ -213,11 +211,10 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 			if (!entry.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
 				ModelCheckingQuery<DFTState> modelCheckingQuery = new ModelCheckingQuery<>(ma, entry.getKey(), (IBaseMetric[]) entry.getValue());
 				ModelCheckingResult result = markovModelChecker.checkModel(modelCheckingQuery, subMonitor.split(1));
+				statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());	
 				baseResults.put(entry.getKey(), result);
 			}
 		}
-		
-		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());	
 		
 		return baseResults;
 	}
