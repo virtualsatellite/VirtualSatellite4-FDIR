@@ -161,8 +161,6 @@ public class DFT2MAConverterTest extends ATestCase {
 		dft2MaConverter.getStateSpaceGenerator().setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(root);
 		
-		System.out.println(ma.toDot());
-		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 5;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());

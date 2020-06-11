@@ -165,7 +165,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), modelCheckingQuery.getFailStates(), true);
 		}
 		
-		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getStates());
+		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), modelCheckingQuery.getFailLabelProvider());
 		
 		probabilityDistribution = mxIterator.converge(eps);
 		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
@@ -208,7 +208,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		for (StronglyConnectedComponent endSCC : endSCCs) {
 			IMatrix bellmanMatrixSCC = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), endSCC.getStates(), Collections.emptySet(), true);
-			IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(bellmanMatrixSCC, modelCheckingQuery.getMa(), endSCC.getStates());
+			IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(bellmanMatrixSCC, modelCheckingQuery.getMa(), endSCC.getStates(), modelCheckingQuery.getFailLabelProvider());
 			probabilityDistribution = mtxIterator.converge(eps);
 			if (!Double.isFinite(probabilityDistribution[0])) {
 				probabilityDistribution[0] = 1;

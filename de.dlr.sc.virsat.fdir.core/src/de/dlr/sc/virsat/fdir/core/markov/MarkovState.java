@@ -13,7 +13,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 

@@ -327,7 +327,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			state.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		}
 		
-		if (state instanceof PODFTState && !((PODFTState) state).isNodeFailObserved(ftHolder.getRoot())) {
+		if (state instanceof PODFTState && ((PODFTState) state).isNodeFailObserved(ftHolder.getRoot())) {
 			state.getMapFailLabelToProb().put(FailLabel.OBSERVED, 1d);
 		}
 	}
