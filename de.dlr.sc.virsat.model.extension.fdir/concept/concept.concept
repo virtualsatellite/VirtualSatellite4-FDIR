@@ -305,14 +305,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		
 		EnumProperty objectiveMetric values [
 			MeanTimeToFailure=0, SteadyStateAvailability=1, SteadyStateDetectability=2
-		] default MeanTimeToFailure quantityKind "Dimensionless" unit "No Unit" description "The matrix that will be maximized";
-		Type constraints[] of Category MetricConstraint description "The metric constraints";
-	}
-	
-	Category MetricConstraint {
-		EnumProperty metric values [
-			MeanTimeToFailure=0, SteadyStateAvailability=1, SteadyStateDetectability=2, FaultTolerance=3, MeanTimeToDetection=4
-		] quantityKind "Dimensionless" unit "No Unit" description "The metric will be used to constrain the valid synthesis solutions";
-		FloatProperty value description "The minimum/maximum (depending on the metric) allowed value by this constraint";
+		] default MeanTimeToFailure quantityKind "Dimensionless" unit "No Unit" description "The metric that will be maximized";
+		Resource lastGenerationLog description "Link to a log file for the last synthesis call";
 	}
 }

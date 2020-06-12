@@ -187,10 +187,6 @@
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomatonGen"
 		pathToImage="resources/icons/RecoveryAutomatonGen.gif">
 	</conceptImage>
-	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.MetricConstraint"
-		pathToImage="resources/icons/MetricConstraint.gif">
-	</conceptImage>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
 	<command
@@ -340,10 +336,6 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomatonGen"
 		name="Add RecoveryAutomatonGen">
-	</command>
-	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMetricConstraint"
-		name="Add MetricConstraint">
 	</command>
 	</extension>
 	<extension point="org.eclipse.ui.commandImages">
@@ -532,11 +524,6 @@
 	      disabledIcon="resources/icons/RecoveryAutomatonGen_disabled.gif"
 	      icon="resources/icons/RecoveryAutomatonGen.gif">
 	</image>
-	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMetricConstraint"
-	      disabledIcon="resources/icons/MetricConstraint_disabled.gif"
-	      icon="resources/icons/MetricConstraint.gif">
-	</image>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 	<handler
@@ -686,10 +673,6 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddRecoveryAutomatonGenHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomatonGen">
-	</handler>
-	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMetricConstraintHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMetricConstraint">
 	</handler>
 	</extension>
 	<extension point="org.eclipse.ui.menus">
@@ -1550,28 +1533,6 @@
 				</with>
 			</visibleWhen>
 		</command>
-		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMetricConstraint"
-			style="push">
-			<visibleWhen
-				checkEnabled="true">
-				<with
-					variable="selection">
-					<iterate
-						ifEmpty="false"
-						operator="and">
-						<test 
-							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
-							value="true" 
-							forcePluginActivation="true">
-						</test>		
-						<instanceof
-							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
-						</instanceof>
-					</iterate>
-				</with>
-			</visibleWhen>
-		</command>
 		</menuContribution>
 		<menuContribution allPopups="false"
 			locationURI="popup:de.dlr.sc.virsat.model.extension.fdir.menu?after=structuralElements">
@@ -2180,21 +2141,6 @@
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionRecoveryAutomatonGen">
 		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonGenConstraintsMetricConstraint"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonGenConstraintsMetricConstraint">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMetricConstraint"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMetricConstraint">
-		</uiSnippet>
-		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetMetricConstraint"
-		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionMetricConstraint">
-		</uiSnippet>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
 <!-- Graphiti Diagrams -->	
@@ -2428,12 +2374,6 @@
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomaton">
 	</uiSnippet>
-	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
-	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
-	</uiSnippet>
-
 	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"

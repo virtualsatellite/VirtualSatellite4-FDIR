@@ -27,7 +27,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.MONITORTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEventTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrixTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.MetricConstraintTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTETest;
 import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransitionTest;
@@ -105,7 +104,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	FaultEventTransitionTest.class,
 	TimeoutTransitionTest.class,
 	RecoveryAutomatonGenTest.class,
-	MetricConstraintTest.class,
 	Migrator1v0Test.class,
 	Migrator1v1Test.class,
 	Migrator1v2Test.class,

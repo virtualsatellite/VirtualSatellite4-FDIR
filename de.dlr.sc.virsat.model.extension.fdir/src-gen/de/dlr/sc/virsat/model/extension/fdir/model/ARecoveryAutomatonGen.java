@@ -15,17 +15,16 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.MetricConstraint;
+import org.eclipse.emf.common.util.URI;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ResourcePropertyInstance;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyResource;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
@@ -55,7 +54,7 @@ public abstract class ARecoveryAutomatonGen extends GenericCategory implements I
 	
 	// property name constants
 	public static final String PROPERTY_OBJECTIVEMETRIC = "objectiveMetric";
-	public static final String PROPERTY_CONSTRAINTS = "constraints";
+	public static final String PROPERTY_LASTGENERATIONLOG = "lastGenerationLog";
 	
 	// ObjectiveMetric enumeration value names
 	public static final String OBJECTIVEMETRIC_MeanTimeToFailure_NAME = "MeanTimeToFailure";
@@ -122,19 +121,34 @@ public abstract class ARecoveryAutomatonGen extends GenericCategory implements I
 	}
 	
 	// *****************************************************************
-	// * Array Attribute: constraints
+	// * Attribute: lastGenerationLog
 	// *****************************************************************
-	private IBeanList<MetricConstraint> constraints = new TypeSafeComposedPropertyInstanceList<>(MetricConstraint.class);
+	private BeanPropertyResource lastGenerationLog = new BeanPropertyResource();
 	
-	private void safeAccessConstraints() {
-		if (constraints.getArrayInstance() == null) {
-			constraints.setArrayInstance((ArrayInstance) helper.getPropertyInstance("constraints"));
+	private void safeAccessLastGenerationLog() {
+		if (lastGenerationLog.getTypeInstance() == null) {
+			lastGenerationLog.setTypeInstance((ResourcePropertyInstance) helper.getPropertyInstance("lastGenerationLog"));
 		}
 	}
 	
-	public IBeanList<MetricConstraint> getConstraints() {
-		safeAccessConstraints();
-		return constraints;
+	public Command setLastGenerationLog(EditingDomain ed, URI value) {
+		safeAccessLastGenerationLog();
+		return this.lastGenerationLog.setValue(ed, value);
+	}
+	
+	public void setLastGenerationLog(URI value) {
+		safeAccessLastGenerationLog();
+		this.lastGenerationLog.setValue(value);
+	}
+	
+	public URI getLastGenerationLog() {
+		safeAccessLastGenerationLog();
+		return lastGenerationLog.getValue();
+	}
+	
+	public BeanPropertyResource getLastGenerationLogBean() {
+		safeAccessLastGenerationLog();
+		return lastGenerationLog;
 	}
 	
 	

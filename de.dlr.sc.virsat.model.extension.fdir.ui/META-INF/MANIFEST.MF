@@ -51,5 +51,4 @@ Export-Package: de.dlr.sc.virsat.model.extension.fdir.propertyTester,
  de.dlr.sc.virsat.model.extension.fdir.ui.handler,
  de.dlr.sc.virsat.model.extension.fdir.ui.preferences,
  de.dlr.sc.virsat.model.extension.fdir.ui.snippet,
- de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom,
  de.dlr.sc.virsat.model.extension.fdir.ui.wizards
