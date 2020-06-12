@@ -58,6 +58,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	/* Buffers */
 
 	private double[] probabilityDistribution;
+	private Map<MarkovState, Object> mapStateToQualitativeResult;
 
 	/* Results */
 	
@@ -303,6 +304,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 		Set<Set<Object>> minCuts = mapStateToMinCuts.getOrDefault(modelCheckingQuery.getMa().getStates().get(0), Collections.emptySet());
 		modelCheckingResult.getMinCutSets().addAll(minCuts);
+		
+		mapStateToQualitativeResult = new HashMap<>();
+		mapStateToQualitativeResult.putAll(mapStateToMinCuts);
 	}
 
 	/**
@@ -338,7 +342,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		return delta;
 	}
 	
-	public double[] getProbabilityDistribution() {
+	public double[] getQuantitativeResults() {
 		return probabilityDistribution;
+	}
+	
+	public Map<MarkovState, Object> getQualitativeResults() {
+		return mapStateToQualitativeResult;
 	}
 }

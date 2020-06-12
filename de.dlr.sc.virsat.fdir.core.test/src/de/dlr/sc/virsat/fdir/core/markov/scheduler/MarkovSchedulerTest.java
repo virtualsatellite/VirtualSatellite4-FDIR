@@ -27,6 +27,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.fdir.core.metrics.FaultTolerance;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 
@@ -305,6 +306,44 @@ public class MarkovSchedulerTest {
 		ScheduleQuery<MarkovState> maxSSDQuery = new ScheduleQuery<>(ma, initial);
 		maxSSDQuery.setObjectiveMetric(SteadyStateDetectability.SSD);
 		schedule = scheduler.computeOptimalScheduler(maxSSDQuery);
+		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
+	}
+	
+	@Test
+	public void testScheduleFaultToleranceObjective() {
+		// Construct the following MA:
+		// init --- a ---> bad --- 100 --> fail
+		//      --- b ---> good1 -- 1 ---> good2 -- 1 ---> fail
+		
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		
+		MarkovState initial = new MarkovState();
+		MarkovState bad = new MarkovState();
+		MarkovState good1 = new MarkovState();
+		MarkovState good2 = new MarkovState();
+		MarkovState fail = new MarkovState();
+		
+		ma.addState(initial);
+		ma.addState(bad);
+		ma.addState(good1);
+		ma.addState(good2);
+		ma.addState(fail);
+		
+		// CHECKSTYLE:OFF
+		ma.addNondeterministicTransition("a", initial, bad);
+		MarkovTransition<MarkovState> choiceB = ma.addNondeterministicTransition("b", initial, good1);
+		ma.addMarkovianTransition("m1", bad, fail, 100);
+		ma.addMarkovianTransition("m1", good1, good2, 1);
+		ma.addMarkovianTransition("m2", good2, fail, 1);
+		// CHECKSTYLE:ON
+		
+		fail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		
+		// Setting the objective to fault tolerance should make the scheduler pick "b" since
+		// a needs 1 event to occur and b needs 2
+		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
+		maxSSAQuery.setObjectiveMetric(FaultTolerance.FAULT_TOLERANCE);
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
 		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
 	}
 }
