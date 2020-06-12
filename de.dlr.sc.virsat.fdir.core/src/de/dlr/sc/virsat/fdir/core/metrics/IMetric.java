@@ -33,12 +33,12 @@ public interface IMetric {
 	/**
 	 * Splits the given set of metrics into a set of basic and derived metrics.
 	 * Also, if necessary, adds new metrics that are required to perform the composition.
-	 * @param metrics the original metrics
 	 * @param deriveIfPossible if a metric is both a base metric and a derived metric, then this flag
 	 * will prioritize derivation. If set to false, the metric will be considered a base metric.
+	 * @param metrics the original metrics
 	 * @return a map with the partitioned metrics
 	 */
-	static Map<FailLabelProvider, IMetric[]> partitionMetrics(IMetric[] metrics, boolean deriveIfPossible) {
+	static Map<FailLabelProvider, IMetric[]> partitionMetrics(boolean deriveIfPossible, IMetric... metrics) {
 		Map<FailLabelProvider, List<IMetric>> partitioningWithList = new HashMap<>();
 		partitioningWithList.put(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER, new ArrayList<>());
 		

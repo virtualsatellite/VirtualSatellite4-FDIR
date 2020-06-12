@@ -14,15 +14,15 @@ import java.util.Map;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
-import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 
 public class ScheduleQuery<S extends MarkovState> {
 	private MarkovAutomaton<S> ma;
 	private S initialState;
 	
-	private IBaseMetric objectiveMetric;
+	private IQuantitativeMetric objectiveMetric;
 	private Map<IMetric, Double> constraints;
 	
 	public ScheduleQuery(MarkovAutomaton<S> ma, S initialState) {
@@ -44,11 +44,11 @@ public class ScheduleQuery<S extends MarkovState> {
 		return constraints;
 	}
 	
-	public IBaseMetric getObjectiveMetric() {
+	public IMetric getObjectiveMetric() {
 		return objectiveMetric;
 	}
 	
-	public void setObjectiveMetric(IBaseMetric objectiveMetric) {
+	public void setObjectiveMetric(IQuantitativeMetric objectiveMetric) {
 		this.objectiveMetric = objectiveMetric;
 	}
 }

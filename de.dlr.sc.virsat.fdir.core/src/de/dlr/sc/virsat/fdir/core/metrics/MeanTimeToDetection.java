@@ -21,7 +21,7 @@ import java.util.Set;
  *
  */
 
-public class MeanTimeToDetection implements IDerivedMetric {
+public class MeanTimeToDetection implements IDerivedMetric, IQuantitativeMetric {
 
 	public static final MeanTimeToDetection MTTD = new MeanTimeToDetection();
 

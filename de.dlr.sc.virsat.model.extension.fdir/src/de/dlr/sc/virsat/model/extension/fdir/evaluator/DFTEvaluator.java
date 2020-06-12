@@ -24,7 +24,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MetricsDeriver;
+import de.dlr.sc.virsat.fdir.core.metrics.MetricsResultDeriver;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -53,7 +53,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private Modularizer modularizer = new Modularizer();
 	private DFTSymmetryChecker symmetryChecker = new DFTSymmetryChecker();
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
-	private MetricsDeriver deriver = new MetricsDeriver();
+	private MetricsResultDeriver deriver = new MetricsResultDeriver();
 	private DFTEvaluationStatistics statistics;
 	
 	/**
@@ -84,7 +84,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		
 		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
 		
-		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(metrics, modularization != null);
+		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(modularization != null, metrics);
 		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitioning.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
 		
 		subMonitor = SubMonitor.convert(subMonitor, partitioning.size());
