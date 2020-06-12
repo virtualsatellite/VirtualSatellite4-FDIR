@@ -27,6 +27,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.fdir.core.metrics.FaultTolerance;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 
@@ -336,10 +337,12 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("m2", good2, fail, 1);
 		// CHECKSTYLE:ON
 		
+		fail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		
 		// Setting the objective to fault tolerance should make the scheduler pick "b" since
 		// a needs 1 event to occur and b needs 2
 		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
-		//maxSSAQuery.setObjectiveMetric(FaultTolerance.FAULT_TOLERANCE);
+		maxSSAQuery.setObjectiveMetric(FaultTolerance.FAULT_TOLERANCE);
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
 		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
 	}

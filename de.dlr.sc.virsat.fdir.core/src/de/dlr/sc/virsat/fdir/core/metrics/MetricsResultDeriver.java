@@ -96,5 +96,12 @@ public class MetricsResultDeriver {
 			double derivedSteadyStateDetectability = steadyStateDetectability.derive(resultUnobservedFailure.getSteadyStateAvailability(), resultObservedFailure.getSteadyStateAvailability());
 			derivedResult.setSteadyStateDetectability(derivedSteadyStateDetectability);
 		}
+
+		@Override
+		public void visit(FaultTolerance faultTolerance) {
+			ModelCheckingResult resultMinCutSets = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
+			long derivedFaultTolerance = faultTolerance.derive(resultMinCutSets.getMinCutSets());
+			derivedResult.setFaultTolerance(derivedFaultTolerance);
+		}
 	};
 }

@@ -13,13 +13,14 @@ package de.dlr.sc.virsat.fdir.core.metrics;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
-public class MetricsStateDeriver<S extends MarkovState> {
+public class MetricsStateDeriver {
 
-	private Map<FailLabelProvider, Map<IMetric, Map<S, Double>>> baseResults;
-	private Map<IMetric, Map<S, Double>> derivedResults;
+	private Map<FailLabelProvider, Map<IMetric, Map<MarkovState, ?>>> baseResults;
+	private Map<IMetric, Map<MarkovState, ?>> derivedResults;
 	
 	/**
 	 * Computes the values on a per state basis for each derived metric
@@ -27,7 +28,7 @@ public class MetricsStateDeriver<S extends MarkovState> {
 	 * @param metrics the derived mertics to compute
 	 * @return a mapping from metric to state values
 	 */
-	public Map<IMetric, Map<S, Double>> derive(Map<FailLabelProvider, Map<IMetric, Map<S, Double>>> baseResults, IDerivedMetric... metrics) {
+	public Map<IMetric, Map<MarkovState, ?>> derive(Map<FailLabelProvider, Map<IMetric, Map<MarkovState, ?>>> baseResults, IDerivedMetric... metrics) {
 		this.baseResults = baseResults;
 		derivedResults = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
 		
@@ -38,19 +39,20 @@ public class MetricsStateDeriver<S extends MarkovState> {
 		return derivedResults;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private IDerivedMetricVisitor metricsVisitor = new IDerivedMetricVisitor() {
 		
 		@Override
 		public void visit(SteadyStateDetectability steadyStateDetectability) {
-			Map<IMetric, Map<S, Double>> mapMetricToResultsFailed = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
-			Map<IMetric, Map<S, Double>> mapMetricToResultsObserved = baseResults.get(FailLabelProvider.SINGLETON_OBSERVED);
+			Map<IMetric, Map<MarkovState, ?>> mapMetricToResultsFailed = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
+			Map<IMetric, Map<MarkovState, ?>> mapMetricToResultsObserved = baseResults.get(FailLabelProvider.SINGLETON_OBSERVED);
 			
-			Map<S, Double> ssaResultsFailed = mapMetricToResultsFailed.get(SteadyStateAvailability.SSA);
-			Map<S, Double> ssaResultsObserved = mapMetricToResultsObserved.get(SteadyStateAvailability.SSA);
-			Map<S, Double> ssdResults = new HashMap<>();
+			Map<MarkovState, Double> ssaResultsFailed = (Map<MarkovState, Double>) mapMetricToResultsFailed.get(SteadyStateAvailability.SSA);
+			Map<MarkovState, Double> ssaResultsObserved = (Map<MarkovState, Double>) mapMetricToResultsObserved.get(SteadyStateAvailability.SSA);
+			Map<MarkovState, Double> ssdResults = new HashMap<>();
 			derivedResults.put(steadyStateDetectability, ssdResults);
 			
-			for (Entry<S, Double> entry : ssaResultsFailed.entrySet()) {
+			for (Entry<MarkovState, Double> entry : ssaResultsFailed.entrySet()) {
 				double derivedSteadyStateDetectability = steadyStateDetectability.derive(entry.getValue(), ssaResultsObserved.get(entry.getKey()));
 				ssdResults.put(entry.getKey(), derivedSteadyStateDetectability);
 			}
@@ -58,17 +60,31 @@ public class MetricsStateDeriver<S extends MarkovState> {
 		
 		@Override
 		public void visit(MeanTimeToDetection meanTimeToDetectionMetric) {
-			Map<IMetric, Map<S, Double>> mapMetricToResultsFailed = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
-			Map<IMetric, Map<S, Double>> mapMetricToResultsObserved = baseResults.get(FailLabelProvider.SINGLETON_OBSERVED);
+			Map<IMetric, Map<MarkovState, ?>> mapMetricToResultsFailed = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
+			Map<IMetric, Map<MarkovState, ?>> mapMetricToResultsObserved = baseResults.get(FailLabelProvider.SINGLETON_OBSERVED);
 			
-			Map<S, Double> mttfResultsFailed = mapMetricToResultsFailed.get(MeanTimeToFailure.MTTF);
-			Map<S, Double> mttfResultsObserved = mapMetricToResultsObserved.get(MeanTimeToFailure.MTTF);
-			Map<S, Double> mttdResults = new HashMap<>();
+			Map<MarkovState, Double> mttfResultsFailed = (Map<MarkovState, Double>) mapMetricToResultsFailed.get(MeanTimeToFailure.MTTF);
+			Map<MarkovState, Double> mttfResultsObserved = (Map<MarkovState, Double>) mapMetricToResultsObserved.get(MeanTimeToFailure.MTTF);
+			Map<MarkovState, Double> mttdResults = new HashMap<>();
 			derivedResults.put(meanTimeToDetectionMetric, mttdResults);
 			
-			for (Entry<S, Double> entry : mttfResultsFailed.entrySet()) {
+			for (Entry<MarkovState, Double> entry : mttfResultsFailed.entrySet()) {
 				double derivedMeanTimeToDetection = meanTimeToDetectionMetric.derive(entry.getValue(), mttfResultsObserved.get(entry.getKey()));
 				mttdResults.put(entry.getKey(), derivedMeanTimeToDetection);
+			}
+		}
+		
+		@Override
+		public void visit(FaultTolerance faultTolerance) {
+			Map<IMetric, Map<MarkovState, ?>> mapMetricToResultsFailed = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
+			
+			Map<MarkovState, Set<Set<Object>>> minCutResultMap =  (Map<MarkovState, Set<Set<Object>>>) mapMetricToResultsFailed.get(MinimumCutSet.MINCUTSET);
+			Map<MarkovState, Double> faultToleranceResults = new HashMap<>();
+			derivedResults.put(faultTolerance, faultToleranceResults);
+			
+			for (Entry<MarkovState, Set<Set<Object>>> entry : minCutResultMap.entrySet()) {
+				double derivedFaulTolerance = faultTolerance.derive(entry.getValue());
+				faultToleranceResults.put(entry.getKey(), derivedFaulTolerance);
 			}
 		}
 		
