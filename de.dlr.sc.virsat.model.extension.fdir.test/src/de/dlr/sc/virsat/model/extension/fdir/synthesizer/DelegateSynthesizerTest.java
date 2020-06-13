@@ -44,7 +44,7 @@ public class DelegateSynthesizerTest extends ATestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		ISynthesizer mockSynthesizer = new ISynthesizer() {
 			@Override
-			public RecoveryAutomaton synthesize(Fault fault, SubMonitor subMonitor) {
+			public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
 				return ra;
 			}
 		};
@@ -55,7 +55,7 @@ public class DelegateSynthesizerTest extends ATestCase {
 			};
 		};
 		
-		assertEquals(ra, synthesizer.synthesize(null));
+		assertEquals(ra, synthesizer.synthesize(null, null));
 	}
 
 }

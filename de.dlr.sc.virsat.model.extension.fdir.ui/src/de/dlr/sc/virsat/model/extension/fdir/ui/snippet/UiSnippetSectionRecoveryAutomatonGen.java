@@ -9,7 +9,16 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import java.io.ByteArrayInputStream;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.SWT;
@@ -20,6 +29,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
+import de.dlr.sc.virsat.apps.ui.Activator;
+import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -27,7 +38,9 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonGen;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 import de.dlr.sc.virsat.project.editingDomain.VirSatTransactionalEditingDomain;
+import de.dlr.sc.virsat.project.structure.VirSatProjectCommons;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 
@@ -43,6 +56,8 @@ public class UiSnippetSectionRecoveryAutomatonGen extends AUiSnippetSectionRecov
 	
 	private static final String BUTTON_GENERATE_RECOVERY_AUTOMATON_TEXT = "Generate Recovery Automaton";
 	
+	private ISynthesizer synthesizer = new DelegateSynthesizer();
+	
 	@Override
 	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {
 		super.createSwt(toolkit, editingDomain, composite, initModel);
@@ -54,15 +69,37 @@ public class UiSnippetSectionRecoveryAutomatonGen extends AUiSnippetSectionRecov
 		Button buttonGenerateRecoverystrategy = toolkit.createButton(buttonSectionBody, BUTTON_GENERATE_RECOVERY_AUTOMATON_TEXT, SWT.PUSH);
 		buttonGenerateRecoverystrategy.addSelectionListener(new SelectionListener() { 
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent event) {
 				VirSatTransactionalEditingDomain virSatEd = (VirSatTransactionalEditingDomain) editingDomain;
 				RecoveryAutomatonGen beanRaGen = new RecoveryAutomatonGen((CategoryAssignment) model);
+				String objectiveMetricName = beanRaGen.getObjectiveMetric();
+				IMetric objectiveMetric = RecoveryAutomatonGen.getObjectiveMetricFromName(objectiveMetricName);
 				IBeanStructuralElementInstance beanSei = beanRaGen.getParent();
 				Fault fault = beanSei.getFirst(Fault.class);
 				
 				if (fault != null) {
-					ISynthesizer synthesizer = new DelegateSynthesizer();
-					RecoveryAutomaton ra = synthesizer.synthesize(fault);
+					SynthesisQuery synthesisQuery = new SynthesisQuery(fault);
+					synthesisQuery.setObjectiveMetric(objectiveMetric);
+					RecoveryAutomaton ra = synthesizer.synthesize(synthesisQuery, null);
+					String statistics = synthesizer.getStatistics().toString();
+					
+					IFolder documentFolder = VirSatProjectCommons.getDocumentFolder(beanSei.getStructuralElementInstance());
+					IFile logFile = documentFolder.getFile(RecoveryAutomatonGen.LOG_FILE_NAME);
+					
+					try {
+						if (logFile.exists()) {
+							logFile.delete(true, new NullProgressMonitor());
+						}
+						logFile.create(new ByteArrayInputStream(statistics.getBytes()), true, new NullProgressMonitor());
+						String logFileFilePath = logFile.getFullPath().toOSString();
+						URI uri = URI.createPlatformResourceURI(logFileFilePath, false);
+						
+						Command setCommand = beanRaGen.setLastGenerationLog(virSatEd, uri);
+						virSatEd.getCommandStack().execute(setCommand);
+					} catch (CoreException e) {
+						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.getPluginId(), "Failed to create log file for synthesis", e));
+					}
+					
 					Command addCommand = beanSei.add(virSatEd, ra);
 					virSatEd.getCommandStack().execute(addCommand);
 				}

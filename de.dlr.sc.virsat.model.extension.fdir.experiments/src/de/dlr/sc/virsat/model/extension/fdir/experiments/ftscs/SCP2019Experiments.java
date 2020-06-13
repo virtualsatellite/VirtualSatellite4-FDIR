@@ -23,6 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimi
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
  * This class produces the experimental data for the Science of Computer Programming (SCP) Journal paper
@@ -54,7 +55,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 
 		ComposedMinimizer basicMinimizer = new ComposedMinimizer();
 		basicMinimizer.addMinimizer(new FinalStateMinimizer());
@@ -106,7 +107,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		System.out.println("Original #states: " + ra.getStates().size());
 		System.out.println("Original #transitions: " + ra.getTransitions().size());
 		saveRA(ra, "scp/2019/nestedMCS/original");
@@ -167,7 +168,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 
 		ComposedMinimizer basicMinimizer = new ComposedMinimizer();
 		basicMinimizer.addMinimizer(new FinalStateMinimizer());
@@ -253,7 +254,7 @@ public class SCP2019Experiments extends ASynthesizerExperiment {
 			
 			BasicSynthesizer synthesizer = new BasicSynthesizer();
 			synthesizer.setMinimizer(null);
-			RecoveryAutomaton ra = synthesizer.synthesize(tle);
+			RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 			
 			RecoveryAutomaton[] benchmarkRas = createBenchmarkRas(ra);
 			long timeStart = System.currentTimeMillis();

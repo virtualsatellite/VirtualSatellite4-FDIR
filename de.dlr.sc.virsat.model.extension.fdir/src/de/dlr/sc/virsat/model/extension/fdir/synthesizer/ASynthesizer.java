@@ -58,10 +58,11 @@ public abstract class ASynthesizer implements ISynthesizer {
 	protected SynthesisStatistics statistics;
 	
 	@Override
-	public RecoveryAutomaton synthesize(Fault fault, SubMonitor subMonitor) {
+	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
 		statistics = new SynthesisStatistics();
 		statistics.time = System.currentTimeMillis();
 		
+		Fault fault = synthesisQuery.getFault();
 		concept = fault.getConcept();
 		
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
