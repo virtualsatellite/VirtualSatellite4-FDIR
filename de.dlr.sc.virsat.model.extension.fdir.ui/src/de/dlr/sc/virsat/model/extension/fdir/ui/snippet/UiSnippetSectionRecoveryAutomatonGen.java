@@ -79,7 +79,9 @@ public class UiSnippetSectionRecoveryAutomatonGen extends AUiSnippetSectionRecov
 				
 				if (fault != null) {
 					SynthesisQuery synthesisQuery = new SynthesisQuery(fault);
-					synthesisQuery.setObjectiveMetric(objectiveMetric);
+					if (objectiveMetric != null) {
+						synthesisQuery.setObjectiveMetric(objectiveMetric);
+					}
 					RecoveryAutomaton ra = synthesizer.synthesize(synthesisQuery, null);
 					String statistics = synthesizer.getStatistics().toString();
 					
