@@ -9,6 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 
 // *****************************************************************
 // * Class Declaration
@@ -23,4 +27,16 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
  * 
  */
 public class UiSnippetTableRecoveryAutomatonGen extends AUiSnippetTableRecoveryAutomatonGen {
+	public static final int SINGLE_LINE_TABLE_HEIGHT = 35;
+	
+	@Override
+	protected Table createDefaultTable(FormToolkit toolkit, Composite sectionBody) {
+		Table table = super.createDefaultTable(toolkit, sectionBody);
+	
+		GridData gridDataTable = (GridData) table.getLayoutData();
+		gridDataTable.heightHint = SINGLE_LINE_TABLE_HEIGHT;
+		
+		table.setLayoutData(gridDataTable);
+		return table;
+	}
 }
