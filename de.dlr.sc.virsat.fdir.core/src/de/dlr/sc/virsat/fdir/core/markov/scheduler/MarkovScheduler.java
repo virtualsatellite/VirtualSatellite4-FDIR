@@ -111,7 +111,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 						mapMetricToResults.put(baseMetric, values);
 					} else {
 						double[] values = modelChecker.getQuantitativeResults();
-						Map<MarkovState, Object> resultMap = createResultMap(ma, modelCheckingQuery.getStates(), values);
+						Map<MarkovState, Object> resultMap = createResultMap(ma, values);
 						mapMetricToResults.put(baseMetric, resultMap);
 					}
 				}
@@ -135,11 +135,11 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @param values the values from the value iteration
 	 * @return a mapping from states to their value
 	 */
-	private Map<MarkovState, Object> createResultMap(MarkovAutomaton<S> ma, List<? extends MarkovState> states, double[] values) {
+	private Map<MarkovState, Object> createResultMap(MarkovAutomaton<S> ma, double[] values) {
 		Map<MarkovState, Object> resultMap = new LinkedHashMap<MarkovState, Object>();
 		
-		for (int i = 0; i < states.size(); ++i) {	
-			MarkovState state = states.get(i);
+		for (int i = 0; i < ma.getStates().size(); ++i) {	
+			MarkovState state = ma.getStates().get(i);
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;

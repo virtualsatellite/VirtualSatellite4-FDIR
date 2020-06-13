@@ -163,10 +163,10 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(MeanTimeToFailure mttfMetric) {
 		if (mttfBellmanMatrix == null) {
-			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), modelCheckingQuery.getFailStates(), true);
+			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), modelCheckingQuery.getFailStates(), true);
 		}
 		
-		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), modelCheckingQuery.getFailLabelProvider());
+		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), modelCheckingQuery.getFailLabelProvider());
 		
 		probabilityDistribution = mxIterator.converge(eps);
 		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
@@ -220,7 +220,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 		
-		IMatrix transitionMatrixToEndSCCs = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), endSCCStates, true);
+		IMatrix transitionMatrixToEndSCCs = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), endSCCStates, true);
 		IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(transitionMatrixToEndSCCs, modelCheckingQuery.getMa(), ssas);
 		probabilityDistribution = mtxIterator.converge(eps);
 		
