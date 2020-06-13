@@ -289,12 +289,23 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 	
 	Category FaultEventTransition extends Transition {
-		Reference guards [] of Type FaultTreeNode;
+		Reference guards[] of Type FaultTreeNode;
 		BooleanProperty isRepair default false;
 	}
 	
 	Category TimeoutTransition extends Transition {
 		FloatProperty time default 0.0 quantityKind "Time" unit "Second";
 	}
+	
+	/* Components describing the synthesis configration */
+	
+	Category RecoveryAutomatonGen {
+		Applicable For All;
+		Cardinality 1;
+		
+		EnumProperty objectiveMetric values [
+			MeanTimeToFailure=0, SteadyStateAvailability=1, SteadyStateDetectability=2
+		] default MeanTimeToFailure quantityKind "Dimensionless" unit "No Unit" description "The metric that will be maximized";
+		Resource lastGenerationLog description "Link to a log file for the last synthesis call";
+	}
 }
-

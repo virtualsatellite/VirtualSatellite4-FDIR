@@ -19,6 +19,7 @@ import org.junit.runners.MethodSorters;
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
  * A test case for benchmarking experiments
@@ -42,31 +43,31 @@ public class DemoExperiments extends ASynthesizerExperiment {
 	@Test
 	public void testRC11() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	@Test
 	public void testAHRS1() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/ahrs/ahrs1.dft");
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	@Test
 	public void testCMSimple() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 
 	@Test
 	public void testCM1() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	@Test
 	public void testCM2() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	/* ***************************************************************************
@@ -77,34 +78,34 @@ public class DemoExperiments extends ASynthesizerExperiment {
 	public void testRC11WithoutModularizer() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/rc/rc-1-1-sc.dft");
 		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	@Test
 	public void testAHRS1WithoutModularizer() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/ahrs/ahrs1.dft");
 		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	@Test
 	public void testCMSimpleWithoutModularizer() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm_simple.dft");
 		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	@Test
 	public void testCM1WithoutModularizer() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm1.dft");
 		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 	
 	@Test
 	public void testCM2WithoutModularizer() throws Exception {
 		Fault fault = createDFT("/resources/rise/2019/cm/cm2.dft");
 		synthesizer.setModularizer(null);
-		synthesizer.synthesize(fault);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
 	}
 }

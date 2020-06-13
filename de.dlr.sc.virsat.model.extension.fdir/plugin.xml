@@ -161,6 +161,10 @@
 			id="de.dlr.sc.virsat.model.extension.fdir.TimeoutTransition"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition">
 		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomatonGen"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonGen">
+		</CategoryAssignmentBean>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
 <extension point="de.dlr.sc.virsat.model.edit.ConceptMigrator">

@@ -52,7 +52,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateObsOr2ObsBe2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2ObsBe2Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final double EXPECTED_MTTD = 0.75;
 		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
@@ -73,7 +73,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsCsp2() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsCsp2.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
@@ -88,7 +88,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsCsp2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsCsp2Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
@@ -108,7 +108,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2BEDelayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2BEDelayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
@@ -124,7 +124,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
@@ -139,7 +139,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 6;
@@ -154,7 +154,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2SharedSafePrimaryDelayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2SharedSafePrimaryDelayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
@@ -169,7 +169,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2SharedSafeSpareDelayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2SharedSafeSpareDelayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
@@ -184,7 +184,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2SharedDelayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2SharedSafeSpareDelayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
@@ -199,7 +199,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2ObsBE() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBE.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 3;
 		final int EXPECTED_COUNT_TRANSITIONS = 4;
@@ -214,7 +214,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2ObsBEDelayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBEDelayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 5;
@@ -229,7 +229,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2ObsBEUnreliable() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 7;
 		final int EXPECTED_COUNT_TRANSITIONS = 10;
@@ -244,7 +244,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2ObsBERepairUnreliable() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2ObsBERepairUnreliable.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 12;
 		final int EXPECTED_COUNT_TRANSITIONS = 22;
@@ -260,7 +260,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsMemory1RDEP() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsMemory1RDEP.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 5;
@@ -279,7 +279,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsMemory2RDEP() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsMemory2RDEP.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 9;
@@ -298,7 +298,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsMemory1RepairRDEP() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsMemory1RepairRDEP.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 6;
@@ -322,7 +322,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsMemory2RepairRDEP() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsMemory2RepairRDEP.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 10;
@@ -346,7 +346,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2BeCsp2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObs/obsOr2BeCsp2Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int EXPECTED_COUNT_STATES = 1;
 		final int EXPECTED_COUNT_TRANSITIONS = 1;
@@ -362,7 +362,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsCsp2Repair1() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final double EXPECTED_MTTF = 1.7;
 		final double EXPECTED_SSA = 0.33333333333333337;
@@ -382,7 +382,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsCsp2Repair1Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair1Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final double EXPECTED_SSA = 0.33333249815122734;
 		final int EXPECTED_COUNT_STATES = 5;
@@ -400,7 +400,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsCsp2Repair2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2Repair2Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final double EXPECTED_SSA = 0.541869705321335;
 		final int EXPECTED_COUNT_STATES = 9;
@@ -418,7 +418,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsCsp2ObsRepair2Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final double EXPECTED_SSA = 0.24001871360398108;
 		final int EXPECTED_COUNT_STATES = 11;
@@ -436,7 +436,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Test
 	public void testSynthesizeObsOr2Csp2Repair1Delayed() throws IOException {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsOr2Csp2Repair1Delayed.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		

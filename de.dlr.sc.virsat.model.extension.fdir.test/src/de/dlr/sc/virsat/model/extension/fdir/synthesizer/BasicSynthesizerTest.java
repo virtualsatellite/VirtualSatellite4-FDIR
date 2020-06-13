@@ -65,7 +65,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
 		
 		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
@@ -83,7 +83,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/2csp2Shared.dft");
 
 		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault).getFailRates(), EXPECTED);
@@ -94,7 +94,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_MTTF = 1;
 		
 		Fault fault = createDFT("/resources/galileo/csp1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 1;
 		final int NUM_TRANSITIONS = 0;
@@ -115,7 +115,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		};
 		
 		Fault fault = createDFT("/resources/galileo/csp2.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -127,7 +127,7 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateHECS11() throws IOException {
 		Fault fault = createDFT("/resources/galileo/hecs_1_1_0_np.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 
 		final int NUM_STATES = 2;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -138,7 +138,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_MTTF = 677.7777777777778;
 		
 		Fault fault = createDFT("/resources/galileo/cm_simple1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 3;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -156,7 +156,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.0273547
 		};
 		Fault fault = createDFT("/resources/galileo/cm_simple2.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -177,7 +177,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_MTTF = 0.28062467694389703;
 		
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 3;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -201,7 +201,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_MTTF = 0.32784729178994587;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 5;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -226,7 +226,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_MTTF = 0.36334134426339687;
 		
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 9;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -251,7 +251,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_MTTF = 24365.03442441116;
 		
 		Fault fault = createDFT("/resources/galileo/vgs1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -275,7 +275,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_SSA = 0.5000005000000001;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -299,7 +299,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_SSA = 0.7142864724603194;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 4;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -323,7 +323,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_SSA = 0.6470577570952566;
 		
 		Fault fault = createDFT("/resources/galileoRepair/csp2Repair2BadSpare.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 5;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -346,7 +346,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		final double EXPECTED_SSA = 0.6060612736223054;
 		
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Csp2Repair1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 8;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -362,7 +362,7 @@ public class BasicSynthesizerTest extends ATestCase {
 	@Test
 	public void testEvaluateCsp2Or2Exp1Prob1Exp1() throws IOException {
 		Fault fault = createDFT("/resources/galileoUniform/csp2Or2Exp1Prob1Exp1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		final int NUM_STATES = 2;
 		assertEquals(NUM_STATES, ra.getStates().size());
@@ -381,7 +381,7 @@ public class BasicSynthesizerTest extends ATestCase {
 		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 		
 		Fault fault = createDFT("/resources/galileo/pand2ColdSpare1Shared.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
 		System.out.println(ra.toDot());
 		

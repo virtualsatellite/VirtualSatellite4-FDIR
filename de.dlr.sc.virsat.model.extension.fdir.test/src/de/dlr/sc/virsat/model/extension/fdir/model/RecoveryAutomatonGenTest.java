@@ -7,16 +7,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.command;
+package de.dlr.sc.virsat.model.extension.fdir.model;
 
+// *****************************************************************
+// * Import Statements
+// *****************************************************************
+
+
+
+// *****************************************************************
+// * Class Declaration
+// *****************************************************************
 
 /**
  * Auto Generated Class inheriting from Generator Gap Class
  * 
  * This class is generated once, do your changes here
  * 
- * The action is only available if the reference monitors have observed a failure.
+ * 
  * 
  */
-public class CreateAddArrayElementMonitorsCommand extends ACreateAddArrayElementMonitorsCommand {
+public class RecoveryAutomatonGenTest extends ARecoveryAutomatonGenTest {
+
 }

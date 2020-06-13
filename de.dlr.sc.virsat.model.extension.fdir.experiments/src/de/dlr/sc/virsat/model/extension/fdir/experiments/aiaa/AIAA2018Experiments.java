@@ -23,6 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
  * This class produces the experimental data for the Journal of Aerospace Information Systems (JAI AIAA)
@@ -48,10 +49,10 @@ public class AIAA2018Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(tle);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2018/memory2WithFDEP/synthesized");
 		synthesizer = new BasicSynthesizer();
-		ra = synthesizer.synthesize(tle);
+		ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2018/memory2WithFDEP/synthesizedMinimized");
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
@@ -94,7 +95,7 @@ public class AIAA2018Experiments extends ASynthesizerExperiment {
 			
 			BasicSynthesizer synthesizer = new BasicSynthesizer();
 			synthesizer.setMinimizer(new ComposedMinimizer());
-			RecoveryAutomaton ra = synthesizer.synthesize(tle);
+			RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 			
 			FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
 			ndDFTftEvaluator.evaluateFaultTree(tle);

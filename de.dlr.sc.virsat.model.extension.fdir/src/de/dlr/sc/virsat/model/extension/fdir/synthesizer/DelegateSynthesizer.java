@@ -26,11 +26,12 @@ public class DelegateSynthesizer implements ISynthesizer {
 
 	protected ISynthesizer basicSynthesizer = new BasicSynthesizer();
 	protected ISynthesizer poSynthesizer = new POSynthesizer();
+	protected ISynthesizer delegate;
 
 	@Override
-	public RecoveryAutomaton synthesize(Fault fault, SubMonitor subMonitor) {
-		ISynthesizer delegate = chooseSynthesizer(fault);
-		return delegate.synthesize(fault, subMonitor);
+	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
+		delegate = chooseSynthesizer(synthesisQuery.getFault());
+		return delegate.synthesize(synthesisQuery, subMonitor);
 	}
 	
 	/**
@@ -41,5 +42,10 @@ public class DelegateSynthesizer implements ISynthesizer {
 	public ISynthesizer chooseSynthesizer(Fault fault) {
 		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 		return ftHolder.isPartialObservable() ? poSynthesizer : basicSynthesizer;
+	}
+	
+	@Override
+	public Object getStatistics() {
+		return delegate.getStatistics();
 	}
 }

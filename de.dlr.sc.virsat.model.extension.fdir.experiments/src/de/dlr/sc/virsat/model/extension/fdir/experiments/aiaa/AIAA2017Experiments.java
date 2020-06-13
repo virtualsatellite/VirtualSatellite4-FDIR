@@ -20,6 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
  * This class produces the experimental data for the AIAA Aerospace conference
@@ -45,10 +46,10 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(tle);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/switch2AndRedundancy/synthesized");
 		synthesizer = new BasicSynthesizer();
-		ra = synthesizer.synthesize(tle);
+		ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/switch2AndRedundancy/synthesizedMinimized");
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
@@ -75,10 +76,10 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(tle);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/memory2/synthesized");
 		synthesizer = new BasicSynthesizer();
-		ra = synthesizer.synthesize(tle);
+		ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/memory2/synthesizedMinimized");
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);

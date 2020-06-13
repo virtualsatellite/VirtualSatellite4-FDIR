@@ -32,6 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
@@ -103,8 +104,7 @@ public class ASynthesizerExperiment {
 					testFolder(file, folderPath + "/" + file.getName());
 				} else {
 					Fault fault = createDFT(folderPath + "/" + file.getName());
-					System.out.println(fault.getFaultTree().toDot());
-					synthesizer.synthesize(fault);
+					synthesizer.synthesize(new SynthesisQuery(fault), null);
 					saveStatistics(synthesizer.getStatistics(), file.getName(), "rise/2019/" + folder.getName());
 				}
 			}
@@ -142,7 +142,7 @@ public class ASynthesizerExperiment {
 					if (matchingFiles != null && matchingFiles.length != 0) {
 						File benchmarkFile = matchingFiles[0];
 						Fault fault = createDFT(filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName());
-						synthesizer.synthesize(fault);
+						synthesizer.synthesize(new SynthesisQuery(fault), null);
 						saveStatistics(synthesizer.getStatistics(), benchmarkFile.getName(), saveFileName);
 					}
 				}

@@ -36,6 +36,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysisTest;
 import de.dlr.sc.virsat.model.extension.fdir.validator.FdirValidatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CutSetTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonGenTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeActionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ORTest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1Test;
@@ -102,6 +103,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	StateTest.class,
 	FaultEventTransitionTest.class,
 	TimeoutTransitionTest.class,
+	RecoveryAutomatonGenTest.class,
 	Migrator1v0Test.class,
 	Migrator1v1Test.class,
 	Migrator1v2Test.class,

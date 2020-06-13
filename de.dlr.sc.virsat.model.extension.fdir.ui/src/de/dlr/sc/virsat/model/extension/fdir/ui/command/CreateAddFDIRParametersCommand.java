@@ -17,7 +17,6 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
-import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
@@ -34,8 +33,8 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParameters;
 public class CreateAddFDIRParametersCommand extends ACreateAddFDIRParametersCommand {
 	@Override
 	public Command create(EditingDomain editingDomain, EObject owner, Concept activeConcept) {
-		BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance((StructuralElementInstance) owner);
-		if (beanSei.getParentSeiBean() != null) {
+		StructuralElementInstance sei = (StructuralElementInstance) owner;
+		if (sei.getParent() != null) {
 			return UnexecutableCommand.INSTANCE;
 		}
 		

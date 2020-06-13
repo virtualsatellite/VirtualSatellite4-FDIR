@@ -10,15 +10,19 @@
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetGenericPropertyInstances;
 
 
 /**
- * Auto Generated Class inheriting from Generator Gap Class
+ * Auto Generated Abstract Generator Gap Class
  * 
- * This class is generated once, do your changes here
+ * Don't Manually modify this class
  * 
- * The action is only available if the reference monitors have observed a failure.
  * 
- */
-public class UiSnippetTableRepairActionMonitors extends AUiSnippetTableRepairActionMonitors implements IUiSnippet {
+ * 
+ */	
+public abstract class AUiSnippetSectionRecoveryAutomatonGen extends AUiSnippetGenericPropertyInstances implements IUiSnippet {
+	public AUiSnippetSectionRecoveryAutomatonGen() {
+		super("de.dlr.sc.virsat.model.extension.fdir", "RecoveryAutomatonGen");
+	}
 }
