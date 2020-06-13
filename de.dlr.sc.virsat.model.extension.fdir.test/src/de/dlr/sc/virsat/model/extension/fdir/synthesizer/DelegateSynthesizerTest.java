@@ -55,7 +55,7 @@ public class DelegateSynthesizerTest extends ATestCase {
 			};
 		};
 		
-		assertEquals(ra, synthesizer.synthesize(null, null));
+		assertEquals(ra, synthesizer.synthesize(new SynthesisQuery(null), null));
 	}
 
 }
