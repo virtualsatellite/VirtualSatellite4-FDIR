@@ -54,7 +54,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCsp2WithoutModularization() throws IOException {
+	public void testSynthesizeCsp2WithoutModularization() throws IOException {
 		final double[] EXPECTED = {
 			9.9e-05,
 			0.0003921,
@@ -72,7 +72,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 
 	@Test
-	public void testEvaluate2Csp2SharedWithoutModularization() throws IOException {
+	public void testSynthesize2Csp2SharedWithoutModularization() throws IOException {
 		final double[] EXPECTED = {
 			1.55e-05,
 			0.0001194,
@@ -90,7 +90,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateHECS11() throws IOException {
+	public void testSynthesizeHECS11() throws IOException {
 		Fault fault = createDFT("/resources/galileo/hecs_1_1_0_np.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 
@@ -99,7 +99,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCMSimple1() throws IOException {
+	public void testSynthesizeCMSimple1() throws IOException {
 		final double EXPECTED_MTTF = 677.7777777777778;
 		
 		Fault fault = createDFT("/resources/galileo/cm_simple1.dft");
@@ -113,7 +113,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCMSimple2() throws IOException {
+	public void testSynthesizeCMSimple2() throws IOException {
 		final double[] EXPECTED = {
 			0.0060088,
 			0.0122455,
@@ -131,7 +131,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCM1() throws IOException {
+	public void testSynthesizeCM1() throws IOException {
 		final double[] EXPECTED = {
 			6.297637696713145E-5,
 			4.654263248058321E-4,
@@ -156,7 +156,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCM2() throws IOException {
+	public void testSynthesizeCM2() throws IOException {
 		final double[] EXPECTED = {
 			3.791152502763406E-5, 
 			1.5199560899314957E-4, 
@@ -181,7 +181,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateCM3() throws IOException {
+	public void testSynthesizeCM3() throws IOException {
 		final double[] EXPECTED = {
 			2.166214533082528e-07,
 			2.166214533082528e-07,
@@ -299,7 +299,7 @@ public class ModularSynthesizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void testEvaluateOr2PoCsp1ToCsp1() throws IOException {
+	public void testSynthesizeObsOr2PoCsp1ToCsp1() throws IOException {
 		final double EXPECTED_MTTF = 0.75;
 		
 		Fault fault = createDFT("/resources/galileoObs/obsOr2PoCsp1ToCsp1.dft");
@@ -313,5 +313,23 @@ public class ModularSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
+	public void testSynthesizeObsCsp2ObsRepair2Delayed() throws IOException {
+		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
+		
+		final double EXPECTED_SSA = 0.24001871360398108;
+		final int EXPECTED_COUNT_STATES = 11;
+		final int EXPECTED_COUNT_TRANSITIONS = 21;
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, SteadyStateAvailability.SSA);
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
 }
