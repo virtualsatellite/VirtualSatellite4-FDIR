@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2020 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import java.util.HashSet;
@@ -44,7 +53,6 @@ public class ModularSynthesizer implements ISynthesizer {
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault);
 			Set<Module> trimmedModules = ftTrimmer.trimModulesAll(modules);
-			
 			statistics.countTrimmedModules = modules.size() - trimmedModules.size();
 			
 			Set<RecoveryAutomaton> ras = new HashSet<>();
@@ -52,25 +60,34 @@ public class ModularSynthesizer implements ISynthesizer {
 				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = module.getMapCopyToOriginal();
 				mapGeneratedToGenerator.replaceAll((key, value) ->  conversionResult.getMapGeneratedToGenerator().get(value));
 				
-				SynthesisQuery moduleSynthesisQuery = new SynthesisQuery(module.getRootNode());
-				RecoveryAutomaton ra = delegateSynthesizer.synthesize(moduleSynthesisQuery, subMonitor);
-				statistics.compose(delegateSynthesizer.getStatistics());
-				statistics.maxModuleSize = Math.max(statistics.maxModuleSize, module.getNodes().size());
-				
-				ra.remapToGeneratorNodes(mapGeneratedToGenerator);
+				RecoveryAutomaton ra = synthesizeModule(synthesisQuery, module.getRootNodeCopy(), mapGeneratedToGenerator, subMonitor);
 				ras.add(ra);
 			}
 			
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
-			synthesizedRA = delegateSynthesizer.synthesize(synthesisQuery, subMonitor);
-			statistics.compose(delegateSynthesizer.getStatistics());
-			statistics.maxModuleSize = conversionResult.getMapGeneratedToGenerator().values().size();
-			
-			synthesizedRA.remapToGeneratorNodes(conversionResult.getMapGeneratedToGenerator());
+			synthesizedRA = synthesizeModule(synthesisQuery, fault, conversionResult.getMapGeneratedToGenerator(), subMonitor);
 		}
 		
 		statistics.time = System.currentTimeMillis() - statistics.time;
+		return synthesizedRA;
+	}
+
+	/**
+	 * Synthesizes the recovery automaton for a single module.
+	 * @param synthesisQuery the original synthessi query
+	 * @param moduleRoot the root of the module
+	 * @param mapGeneratedToGenerator mapping from module nodes to original nodes
+	 * @param subMonitor a monitor
+	 * @return the synthesized ra
+	 */
+	private RecoveryAutomaton synthesizeModule(SynthesisQuery synthesisQuery, FaultTreeNode moduleRoot, Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator, SubMonitor subMonitor) {
+		SynthesisQuery delegateSynthesisQuery = new SynthesisQuery(moduleRoot);
+		delegateSynthesisQuery.setObjectiveMetric(synthesisQuery.getObjectiveMetric());
+		RecoveryAutomaton synthesizedRA = delegateSynthesizer.synthesize(delegateSynthesisQuery, subMonitor);
+		statistics.compose(delegateSynthesizer.getStatistics());
+		statistics.maxModuleSize = Math.max(statistics.maxModuleSize, mapGeneratedToGenerator.size());
+		synthesizedRA.remapToGeneratorNodes(mapGeneratedToGenerator);
 		return synthesizedRA;
 	}
 

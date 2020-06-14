@@ -45,7 +45,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(root, subMonitor);
 		
 		if (minimizer != null) {
-			minimizer.minimize(synthesizedRA, synthesisQuery.getRoot());
+			minimizer.minimize(synthesizedRA, root);
 			statistics.minimizationStatistics.compose(minimizer.getStatistics());
 		}
 		
