@@ -36,8 +36,8 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonGen;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 import de.dlr.sc.virsat.project.editingDomain.VirSatTransactionalEditingDomain;
 import de.dlr.sc.virsat.project.structure.VirSatProjectCommons;
@@ -56,7 +56,7 @@ public class UiSnippetSectionRecoveryAutomatonGen extends AUiSnippetSectionRecov
 	
 	private static final String BUTTON_GENERATE_RECOVERY_AUTOMATON_TEXT = "Generate Recovery Automaton";
 	
-	private ISynthesizer synthesizer = new DelegateSynthesizer();
+	private ISynthesizer synthesizer = new ModularSynthesizer();
 	
 	@Override
 	public void createSwt(FormToolkit toolkit, EditingDomain editingDomain, Composite composite, EObject initModel) {

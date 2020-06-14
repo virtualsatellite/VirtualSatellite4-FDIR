@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
@@ -47,12 +48,18 @@ public class DelegateSynthesizerTest extends ATestCase {
 			public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
 				return ra;
 			}
+
+			@Override
+			public SynthesisStatistics getStatistics() {
+				return new SynthesisStatistics();
+			}
 		};
 		
 		DelegateSynthesizer synthesizer = new DelegateSynthesizer() {
-			public ISynthesizer chooseSynthesizer(Fault fault) {
+			@Override
+			public ISynthesizer chooseSynthesizer(FaultTreeNode root) {
 				return mockSynthesizer;
-			};
+			}
 		};
 		
 		assertEquals(ra, synthesizer.synthesize(new SynthesisQuery(null), null));

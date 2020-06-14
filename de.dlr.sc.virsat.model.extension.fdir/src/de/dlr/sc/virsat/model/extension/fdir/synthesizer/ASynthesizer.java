@@ -9,34 +9,14 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeTrimmer;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.IModularizer;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
-import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 
@@ -48,11 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimize
 
 public abstract class ASynthesizer implements ISynthesizer {
 
-	protected DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
-	protected IModularizer modularizer = new Modularizer();
-	protected FaultTreeTrimmer ftTrimmer = new FaultTreeTrimmer();
 	protected ARecoveryAutomatonMinimizer minimizer = ComposedMinimizer.createDefaultMinimizer();
-	protected ParallelComposer pc = new ParallelComposer();
 	
 	protected Concept concept;
 	protected SynthesisStatistics statistics;
@@ -61,65 +37,24 @@ public abstract class ASynthesizer implements ISynthesizer {
 	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
 		statistics = new SynthesisStatistics();
 		statistics.time = System.currentTimeMillis();
+		statistics.countModules = 1;
 		
-		Fault fault = synthesisQuery.getFault();
-		concept = fault.getConcept();
+		FaultTreeNode root  = synthesisQuery.getRoot();
+		concept = root.getConcept();
 		
-		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
-		fault = (Fault) conversionResult.getRoot();
+		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(root, subMonitor);
 		
-		RecoveryAutomaton synthesizedRA;
-		if (modularizer != null) {
-			Set<Module> modules = modularizer.getModules(fault);
-			Set<Module> trimmedModules = ftTrimmer.trimModulesAll(modules);
-			
-			statistics.countModules = trimmedModules.size();
-			statistics.countTrimmedModules = modules.size() - statistics.countModules;
-			
-			Set<RecoveryAutomaton> ras = new HashSet<>();
-			for (Module module : trimmedModules) {
-				statistics.maxModuleSize = Math.max(statistics.maxModuleSize, module.getNodes().size());
-				
-				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = module.getMapCopyToOriginal();
-				mapGeneratedToGenerator.replaceAll((key, value) ->  conversionResult.getMapGeneratedToGenerator().get(value));
-				RecoveryAutomaton ra = convertToRecoveryAutomaton(module.getRootNodeCopy(), mapGeneratedToGenerator, subMonitor);
-				ras.add(ra);
-			}
-			
-			synthesizedRA = pc.compose(ras, concept);
-		} else {
-			statistics.countModules = 1;
-			statistics.maxModuleSize = conversionResult.getMapGeneratedToGenerator().values().size();
-			
-			synthesizedRA = convertToRecoveryAutomaton(fault, conversionResult.getMapGeneratedToGenerator(), subMonitor);
+		if (minimizer != null) {
+			minimizer.minimize(synthesizedRA, root);
+			statistics.minimizationStatistics.compose(minimizer.getStatistics());
 		}
+		
+		statistics.maxModuleRaSize = synthesizedRA.getStates().size();
 		
 		statistics.time = System.currentTimeMillis() - statistics.time;
 		return synthesizedRA;
 	}
 
-	/**
-	 * @param subMonitor
-	 * @param mapGeneratedToGenerator
-	 * @param root
-	 * @return
-	 */
-	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root, Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator, 
-			SubMonitor subMonitor) {
-		RecoveryAutomaton ra = convertToRecoveryAutomaton(root, subMonitor);
-		
-		if (minimizer != null) {
-			minimizer.minimize(ra, root);
-			statistics.minimizationStatistics.compose(minimizer.getStatistics());
-		}
-		
-		remapToGeneratorNodes(ra, mapGeneratedToGenerator);
-		
-		statistics.maxModuleRaSize = ra.getStates().size();
-		
-		return ra;
-	}
-	
 	/**
 	 * Creates the converter for creating markov automata out of dft
 	 * @return the converter
@@ -141,64 +76,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 */
 	public void setMinimizer(ARecoveryAutomatonMinimizer minimizer) {
 		this.minimizer = minimizer;
-	}
-	
-	/**
-	 * Sets the modularizer that will be used to modularize the fault tree
-	 * @param modularizer the modularizer
-	 */
-	public void setModularizer(IModularizer modularizer) {
-		this.modularizer = modularizer;
-	}
-	
-	/**
-	 * Gets the equipped modularizer
-	 * @return the equipped modularizer
-	 */
-	public IModularizer getModularizer() {
-		return modularizer;
-	}
-	
-	/**
-	 * Set the fault tree trimmer. If null, no trimmer will be used and fault tree will not be trimmed.
-	 * @param ftTrimmer the trimmer
-	 */
-	public void setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
-		this.ftTrimmer = ftTrimmer;
-	}
-	
-	/**
-	 * Maps all references from generated nodes to references of the generator nodes
-	 * @param ra the recovery automaton
-	 * @param mapGeneratedToGenerator from the generated fault tree nodes to the generated ones
-	 */
-	protected void remapToGeneratorNodes(RecoveryAutomaton ra, Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator) {
-		for (Transition t : ra.getTransitions()) {
-			if (t instanceof FaultEventTransition) {
-				FaultEventTransition fet = (FaultEventTransition) t;
-				List<FaultTreeNode> generatorGuards = new ArrayList<>();
-				
-				for (FaultTreeNode guard : fet.getGuards()) {
-					if (guard.getTypeInstance() != null) {
-						FaultTreeNode generatorGuard = mapGeneratedToGenerator.get(guard);
-						generatorGuards.add(generatorGuard);
-					}
-				}
-				fet.getGuards().clear();
-				fet.getGuards().addAll(generatorGuards);
-			}
-			
-		    for (RecoveryAction recoveryAction : t.getRecoveryActions()) {
-		    	if (recoveryAction instanceof ClaimAction) {
-		    		ClaimAction claimAction = (ClaimAction) recoveryAction;
-		    		claimAction.setClaimSpare(mapGeneratedToGenerator.get(claimAction.getClaimSpare()));
-		    		claimAction.setSpareGate((SPARE) mapGeneratedToGenerator.get(claimAction.getSpareGate()));
-		    	} else if (recoveryAction instanceof FreeAction) {
-		    		FreeAction freeAction = (FreeAction) recoveryAction;
-		    		freeAction.setFreeSpare(mapGeneratedToGenerator.get(freeAction.getFreeSpare()));
-		    	}
-		    }
-		}
 	}
 	
 	/**

@@ -18,7 +18,7 @@ import org.junit.runners.MethodSorters;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
@@ -29,12 +29,12 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DemoExperiments extends ASynthesizerExperiment {
 	
-	protected BasicSynthesizer synthesizer;
+	protected ModularSynthesizer synthesizer;
 	
 	@Before
 	public void setUp() {
 		super.setUp();
-		synthesizer = new BasicSynthesizer();
+		synthesizer = new ModularSynthesizer();
 	}
 	
 	/* ***************************************************************************

@@ -40,6 +40,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartit
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolderTest;
@@ -63,6 +64,7 @@ import junit.framework.JUnit4TestAdapter;
 		BasicSynthesizerTest.class,
 		POSynthesizerTest.class,
 		DelegateSynthesizerTest.class,
+		ModularSynthesizerTest.class,
 		Schedule2RAConverterTest.class,
 		DFT2GalileoDFTTest.class,
 		OrthogonalPartitionRefinementMinimizerTest.class,

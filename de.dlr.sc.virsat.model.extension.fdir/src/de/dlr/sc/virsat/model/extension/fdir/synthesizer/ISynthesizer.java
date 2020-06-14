@@ -34,7 +34,5 @@ public interface ISynthesizer {
 	 * Gets the internal statistics of the last call to the synthesis method
 	 * @return the statistics of the last call of the synthesis method
 	 */
-	default Object getStatistics() {
-		return new Object();
-	}
+	SynthesisStatistics getStatistics();
 }
