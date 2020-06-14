@@ -63,6 +63,7 @@ public class DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new StandardSPARESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SEQ, new SEQSemantics());
 		return semantics;
 	}
 	

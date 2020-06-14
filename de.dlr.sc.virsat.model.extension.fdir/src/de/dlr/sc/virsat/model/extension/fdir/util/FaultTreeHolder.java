@@ -30,6 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.model.SEQ;
 
 /**
  * This helper class holds fault tree data and provides interferable data
@@ -82,6 +83,18 @@ public class FaultTreeHolder {
 			
 			faultTrees.add(node.getFault().getFaultTree());
 			toProcess.addAll(processNode(node, ftHelper));
+		}
+		
+		for (FaultTreeNode node : ftHelper.getAllNodes(root.getFault())) {
+			if (node instanceof SEQ) {
+				mapTypeToNodes.get(node.getFaultTreeNodeType()).add(node);
+				if (!nodes.add(node)) {
+					continue;
+				}
+				
+				faultTrees.add(node.getFault().getFaultTree());
+				processNode(node, ftHelper);
+			}
 		}
 	}
 	

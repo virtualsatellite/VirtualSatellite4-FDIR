@@ -177,6 +177,21 @@ public class DFTEvaluatorTest extends ATestCase {
 	}
 	
 	@Test
+	public void testEvaluateAnd2Seq2() throws IOException {
+		final double EXPECTEDMTTF = 3.75;
+		final int EXPECTEDSTATES = 3;
+		final int EXPECTEDTRANSITIONS = 2;
+		
+		Fault fault = createDFT("/resources/galileo/and2Seq2.dft");
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, MinimumCutSet.MINCUTSET);
+		
+		assertEquals("Markov Chain has correct state size", EXPECTEDSTATES, dftEvaluator.getStatistics().maBuildStatistics.maxStates);
+		assertEquals("Markov Chain has correct transition count", EXPECTEDTRANSITIONS, dftEvaluator.getStatistics().maBuildStatistics.maxTransitions);
+		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
+	}
+	
+	@Test
 	public void testEvaluateOr2And() throws IOException {
 		final double[] EXPECTED = {
 			2.38e-05,
@@ -984,8 +999,8 @@ public class DFTEvaluatorTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF, SteadyStateAvailability.SSA);
 		
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
-		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
-		assertEquals("SSA has correct value", EXPECTEDSSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertEquals("MTTF has correct value", result.getMeanTimeToFailure(), EXPECTEDMTTF, TEST_EPSILON);
+		assertEquals("SSA has correct value", result.getSteadyStateAvailability(), EXPECTEDSSA, TEST_EPSILON);
 	}
 	
 	@Test

@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.SEQ;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
@@ -294,6 +295,27 @@ public class DFTState extends MarkovState {
 	 * @param activation true to activate, false to deactivate
 	 */
 	public void setNodeActivation(FaultTreeNode node, boolean activation) {
+		List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
+		for (FaultTreeNode parent : parents) {
+			if (parent instanceof SEQ) {
+				List<FaultTreeNode> seqChildren = ftHolder.getNodes(parent, EdgeType.CHILD);
+				for (FaultTreeNode seqChild : seqChildren) {
+					if (isNodeActive(seqChild) && !hasFaultTreeNodeFailed(seqChild)) {
+						return;
+					}
+					
+					if (!isNodeActive(seqChild)) {
+						if (seqChild.equals(node)) {
+							break;
+						} else {
+							return;
+						}
+					}
+				}
+			}
+		}
+		
+		
 		if (node instanceof Fault) {
 			Fault fault = (Fault) node;
 			boolean hasChanged = false;
