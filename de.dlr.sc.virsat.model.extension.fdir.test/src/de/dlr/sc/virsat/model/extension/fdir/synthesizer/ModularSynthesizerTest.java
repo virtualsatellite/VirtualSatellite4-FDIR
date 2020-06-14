@@ -40,16 +40,16 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  *
  */
 
-public class BasicSynthesizerTest extends ATestCase {
+public class ModularSynthesizerTest extends ATestCase {
 
-	protected BasicSynthesizer synthesizer;
+	protected ModularSynthesizer synthesizer;
 	protected FaultTreeEvaluator ftEvaluator;
 	
 	@Before
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		synthesizer = new BasicSynthesizer();
+		synthesizer = new ModularSynthesizer();
 		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 	}
 	

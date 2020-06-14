@@ -27,6 +27,18 @@ public class SynthesisStatistics {
 	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics();
 	//CHECKSTYLE:ON
 	
+	/**
+	 * Composes the statistics with the statistics of another call of a synthesizer
+	 * @param other statistics of another synthesizer
+	 */
+	public void compose(SynthesisStatistics other) {
+		this.countModules += other.countModules;
+		this.countTrimmedModules += other.countTrimmedModules;
+		this.maxModuleRaSize = Math.max(maxModuleRaSize, other.maxModuleRaSize);
+		this.maBuildStatistics.compose(other.maBuildStatistics);
+		this.minimizationStatistics.compose(other.minimizationStatistics);
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

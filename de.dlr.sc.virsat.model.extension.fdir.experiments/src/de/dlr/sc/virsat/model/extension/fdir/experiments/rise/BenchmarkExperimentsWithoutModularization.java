@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 
 /**
  * A test case for benchmarking experiments
@@ -32,7 +32,7 @@ public class BenchmarkExperimentsWithoutModularization extends ASynthesizerExper
 	@Before
 	public void setUp() {
 		super.setUp();
-		synthesizer = new BasicSynthesizer();
+		synthesizer = new ModularSynthesizer();
 		synthesizer.setModularizer(null);
 	}
 	
