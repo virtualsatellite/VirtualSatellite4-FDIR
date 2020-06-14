@@ -297,4 +297,21 @@ public class ModularSynthesizerTest extends ATestCase {
 			System.out.println(i + " " + reliability1.get(i) + " " + reliability2.get(i));
 		}
 	}
+	
+	@Test
+	public void testEvaluateOr2PoCsp1ToCsp1() throws IOException {
+		final double EXPECTED_MTTF = 0.75;
+		
+		Fault fault = createDFT("/resources/galileoObs/obsOr2PoCsp1ToCsp1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
+		
+		final int NUM_STATES = 1;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		final int NUM_TRANSITIONS = 2;
+		assertEquals(NUM_TRANSITIONS, ra.getTransitions().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(fault).getMeanTimeToFailure(), TEST_EPSILON);
+	}
 }
