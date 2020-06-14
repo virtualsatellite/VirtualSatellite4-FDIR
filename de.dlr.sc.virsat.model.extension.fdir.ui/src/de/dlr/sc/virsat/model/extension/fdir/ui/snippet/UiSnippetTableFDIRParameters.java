@@ -45,7 +45,11 @@ public class UiSnippetTableFDIRParameters extends AUiSnippetTableFDIRParameters 
 	
 	@Override
 	public boolean isActive(EObject model) {
-		StructuralElementInstance sei = (StructuralElementInstance) model;
-		return sei.getParent() == null && super.isActive(model);
+		if (model instanceof StructuralElementInstance) {
+			StructuralElementInstance sei = (StructuralElementInstance) model;
+			return sei.getParent() == null && super.isActive(model);
+		}
+		
+		return false;
 	}
 }

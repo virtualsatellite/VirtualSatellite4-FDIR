@@ -37,6 +37,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.POR;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORI;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.SAND;
+import de.dlr.sc.virsat.model.extension.fdir.model.SEQ;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 
@@ -125,6 +126,8 @@ public class FaultTreeBuilder {
 				return new MONITOR(concept);
 			case DELAY:
 				return new DELAY(concept);
+			case SEQ:
+				return new SEQ(concept);
 			default:
 				throw new RuntimeException("Cannot create FaultTree Gate: Unknown type " + type); 
 		}

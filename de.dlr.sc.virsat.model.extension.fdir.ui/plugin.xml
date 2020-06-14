@@ -64,6 +64,10 @@
 		pathToImage="resources/icons/PANDI.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.SEQ"
+		pathToImage="resources/icons/SEQ.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
 		pathToImage="resources/icons/MONITOR.gif">
 	</conceptImage>
@@ -230,6 +234,10 @@
 		name="Add PANDI">
 	</command>
 	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ"
+		name="Add SEQ">
+	</command>
+	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
 		name="Add MONITOR">
 	</command>
@@ -388,6 +396,11 @@
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddPANDI"
 	      disabledIcon="resources/icons/PANDI_disabled.gif"
 	      icon="resources/icons/PANDI.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ"
+	      disabledIcon="resources/icons/SEQ_disabled.gif"
+	      icon="resources/icons/SEQ.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
@@ -565,6 +578,10 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddPANDIHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddPANDI">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddSEQHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMONITORHandler"
@@ -919,6 +936,28 @@
 		</command>
 		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddPANDI"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1647,6 +1686,16 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionPANDI">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetSEQ"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableSEQ">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetSEQ"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionSEQ">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMONITOR">
@@ -1760,6 +1809,11 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesPANDI"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesPANDI">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesSEQ"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesSEQ">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesMONITOR"
