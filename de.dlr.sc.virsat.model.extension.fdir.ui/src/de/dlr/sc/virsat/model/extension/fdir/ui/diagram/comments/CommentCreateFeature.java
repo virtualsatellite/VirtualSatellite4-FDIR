@@ -14,7 +14,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
 
@@ -27,7 +26,7 @@ import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
 public class CommentCreateFeature extends AbstractCreateFeature {
 
 	public static final String DEFAULT_COMMENT_TEXT = "comment";
-	
+
 	/**
 	 * Standard constructor
 	 * @param fp the feature provider
@@ -39,7 +38,7 @@ public class CommentCreateFeature extends AbstractCreateFeature {
 	@Override
 	public boolean canCreate(ICreateContext context) {
 		ContainerShape cs = context.getTargetContainer();
-		return cs instanceof Diagram && DiagramHelper.hasDiagramWritePermission(cs);
+		return cs instanceof ContainerShape && DiagramHelper.hasDiagramWritePermission(cs);
 	}
 
 	@Override
@@ -47,7 +46,7 @@ public class CommentCreateFeature extends AbstractCreateFeature {
 		addGraphicalRepresentation(context, DEFAULT_COMMENT_TEXT);
 		return new Object[] { DEFAULT_COMMENT_TEXT };
 	}
-	
+
 	@Override
 	public String getCreateImageId() {
 		return "Comment";

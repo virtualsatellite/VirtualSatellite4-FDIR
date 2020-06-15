@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNo
 
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
@@ -46,17 +47,23 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 
 	public static final int PADDING_X = 10;
 	public static final int PADDING_Y = 10;
-	
+
 	public static final double SPARE_RELATIVE_TYPE_Y = 2d / 3;
 	public static final int SPARE_RECT_POS_Y = 12;
 	public static final double SPARE_RECT_REL_POS_X = 0.5;
-	
-	
+
+	private static final String TRUE = "true";
+	private static final String IS_COMMENT = "is-comment";
+	private static final String BELONGS_TO_FAULT_NODE = "Belongs-to-fault-node";
+	private static final String Y_POS_REL_TO_FAULT_NODE = "y-pos-rel-to-fault-node";
+	private static final String X_POS_REL_TO_FAULT_NODE = "x-pos-rel-to-fault-node";
+
+
 	/**
 	 * Default Constructor
 	 * @param fp the feature provider
 	 */
-	
+
 	public FaultTreeNodeLayoutFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -65,7 +72,7 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 	public boolean canLayout(ILayoutContext context) {
 		// return true, if pictogram element is linked to an element
 		PictogramElement pe = context.getPictogramElement();
-		
+
 		Object businessObject = getBusinessObjectForPictogramElement(pe);
 		return businessObject instanceof FaultTreeNode && super.canLayout(context);
 	}
@@ -73,10 +80,10 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 	@Override
 	public boolean layout(ILayoutContext context) {
 		boolean anythingChanged = false;
-		
+
 		PictogramElement pe = context.getPictogramElement();
 		FaultTreeNode bean = (FaultTreeNode) getBusinessObjectForPictogramElement(pe);
-		
+
 		if (pe instanceof ContainerShape) {
 			ContainerShape containerShape = (ContainerShape) pe;
 			GraphicsAlgorithm containerGa = containerShape.getGraphicsAlgorithm();
@@ -87,35 +94,35 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 			Text nameText = (Text) nameShape.getGraphicsAlgorithm();
 			IDimension nameDimension = GraphitiUi.getUiLayoutService().calculateTextSize("   " + nameText.getValue() + "   ", nameText.getFont());
 			int nameHeight = nameDimension.getHeight();
-			
+
 			int width = 0;
 			int height = 0;
-			
+
 			if (containerGa instanceof Polygon) {
 				width = containerGa.getWidth();
 				height = containerGa.getHeight();
 			}  else {
 				width = nameDimension.getWidth() + 2 * PADDING_X;
 				height = nameHeight + 2 * PADDING_Y;
-				
+
 				if (bean instanceof SPARE || bean instanceof DELAY || bean instanceof MONITOR) {
 					height += PADDING_X;
 				}
 			}
-			
+
 			anythingChanged |= layoutGa(nameText, 0, PADDING_Y, width, nameHeight);
 			anythingChanged |= layoutGa(containerGa, containerGa.getX(), containerGa.getY(), width, height);
-			
+
 			List<Anchor> inputAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.INPUT);
 			AnchorUtil.sortAnchorsForXPosition(inputAnchors);
-			
+
 			for (int i = 0; i < inputAnchors.size(); ++i) {
 				BoxRelativeAnchor anchor = (BoxRelativeAnchor) inputAnchors.get(i);
 				double relativeWidth = (double) (i + 1) / (inputAnchors.size() + 1);
 				if (bean instanceof SPARE || bean instanceof MONITOR) {
 					relativeWidth /= 2;
-				} 
-				
+				}
+
 				if (bean instanceof ADEP) {
 					anchor.setRelativeWidth(0);
 					anchor.setRelativeHeight(relativeWidth);
@@ -126,7 +133,9 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 					anchor.setRelativeWidth(relativeWidth);
 				}
 			}
-			
+
+			anythingChanged |= layoutComments(containerShape, bean);
+
 			if (bean instanceof SPARE) {
 				anythingChanged |= layoutSPARE(containerShape, width, nameText.getHeight(), bean);
 			} else if (bean instanceof VOTE) {
@@ -136,11 +145,49 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 			} else if (bean instanceof MONITOR) {
 				anythingChanged |= layoutOBSERVER(containerShape, width, height, nameText.getFont(), bean);
 			}
-		} 
-        
+		}
+
 		return anythingChanged;
 	}
-	
+
+	/**
+	 * @param containerShape to layout comments for
+	 * @param bean business object of pictogram
+	 * @return true iff there is any change
+	 */
+	private boolean layoutComments(ContainerShape containerShape, FaultTreeNode bean) {
+		boolean anythingChanged = false;
+		ContainerShape parent = containerShape.getContainer();
+
+		EList<Shape> children = parent.getChildren();
+		for (Object element : children) {
+			Shape shape = (Shape) element;
+			if (isComment(shape) && shapeBelongsToFaultNode(shape, bean)) {
+				int xPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, X_POS_REL_TO_FAULT_NODE));
+				int yPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE));
+				Graphiti.getGaService().setLocation(shape.getGraphicsAlgorithm(), containerShape.getGraphicsAlgorithm().getX() + xPos, containerShape.getGraphicsAlgorithm().getY() + yPos);
+				anythingChanged = true;
+			}
+		}
+		return anythingChanged;
+	}
+
+	private boolean shapeBelongsToFaultNode(Shape shape, FaultTreeNode bean) {
+		String propertyValue = Graphiti.getPeService().getPropertyValue(shape, BELONGS_TO_FAULT_NODE);
+		if (propertyValue == null) {
+			return false;
+		}
+		return propertyValue.equals(bean.getUuid());
+	}
+
+	private boolean isComment(Shape shape) {
+		String propertyValue = Graphiti.getPeService().getPropertyValue(shape, IS_COMMENT);
+		if (propertyValue == null) {
+			return false;
+		}
+		return propertyValue.equals(TRUE);
+	}
+
 	/**
 	 * Layouts a SPARE gate
 	 * @param containerShape the container shape
@@ -158,17 +205,17 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 		int spareRectY = height + SPARE_RECT_POS_Y;
 		int spareRectWidth = spareRectX;
 		int spareRectHeight = containerShape.getGraphicsAlgorithm().getHeight() - spareRectY;
-	
+
 		List<Anchor> spareAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.SPARE);
 		for (int i = 0; i < spareAnchors.size(); ++i) {
 			BoxRelativeAnchor anchor = (BoxRelativeAnchor) spareAnchors.get(i);
 			double relativeWidth = (1 + ((double) (i + 1) / (spareAnchors.size() + 1))) / 2;
 			anchor.setRelativeWidth(relativeWidth);
 		}
-		
+
 		return layoutGa(spareGa, spareRectX, spareRectY, spareRectWidth, spareRectHeight);
 	}
-	
+
 	/**
 	 * Layouts a VOTE gate
 	 * @param containerShape the container shape
@@ -184,15 +231,15 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 		Text voteTresholdGa = (Text) voteTresholdShape.getGraphicsAlgorithm();
 		IDimension voteTresholdDimension = GraphitiUi.getUiLayoutService()
 				.calculateTextSize(voteTresholdGa.getValue(), font);
-		
+
 		int voteTresholdX = 0;
 		int voteTresholdY = height - voteTresholdDimension.getHeight() - AnchorUtil.ANCHOR_HEIGHT;
 		int voteTresholdWidth = width;
 		int voteTresholdHeight = voteTresholdDimension.getHeight();
-		
+
 		return layoutGa(voteTresholdGa, voteTresholdX, voteTresholdY, voteTresholdWidth, voteTresholdHeight);
 	}
-	
+
 	/**
 	 * Layouts a DELAY gate
 	 * @param containerShape the container shape
@@ -208,15 +255,15 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 		Text delayGa = (Text) delayShape.getGraphicsAlgorithm();
 		IDimension delayDimension = GraphitiUi.getUiLayoutService()
 				.calculateTextSize(delayGa.getValue(), font);
-		
+
 		int delayX = 0;
 		int delayY = height - delayDimension.getHeight() - PADDING_Y;
 		int delayWidth = width;
 		int delayHeight = delayDimension.getHeight();
-		
+
 		return layoutGa(delayGa, delayX, delayY, delayWidth, delayHeight);
 	}
-	
+
 	/**
 	 * Layouts an OBSERVER gate
 	 * @param containerShape the container shape
@@ -232,22 +279,22 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 		Text delayGa = (Text) delayShape.getGraphicsAlgorithm();
 		IDimension delayDimension = GraphitiUi.getUiLayoutService()
 				.calculateTextSize(delayGa.getValue(), font);
-		
+
 		int observationRateX = 0;
 		int observationRateY = height - delayDimension.getHeight() - PADDING_Y;
 		int observationRateWidth = width;
 		int observationRateHeight = delayDimension.getHeight();
-		
+
 		List<Anchor> observerAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.OBSERVER);
 		for (int i = 0; i < observerAnchors.size(); ++i) {
 			BoxRelativeAnchor anchor = (BoxRelativeAnchor) observerAnchors.get(i);
 			double relativeWidth = (1 + ((double) (i + 1) / (observerAnchors.size() + 1))) / 2;
 			anchor.setRelativeWidth(relativeWidth);
 		}
-		
+
 		return layoutGa(delayGa, observationRateX, observationRateY, observationRateWidth, observationRateHeight);
 	}
-	
+
 	/**
 	 * Sets the x, y, width and height of the passed ga.
 	 * Also checks if there were any changes
@@ -260,27 +307,27 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 	 */
 	private boolean layoutGa(GraphicsAlgorithm ga, int x, int y, int width, int height) {
 		boolean anythingChanged = false;
-		
+
 		if (ga.getWidth() != width) {
 			ga.setWidth(width);
 			anythingChanged = true;
 		}
-		
+
 		if (ga.getHeight() != height) {
 			ga.setHeight(height);
 			anythingChanged = true;
 		}
-		
+
 		if (ga.getX() != x) {
 			ga.setX(x);
 			anythingChanged = true;
 		}
-		
+
 		if (ga.getY() != y) {
 			ga.setY(y);
 			anythingChanged = true;
 		}
-		
+
 		return anythingChanged;
 	}
 }
