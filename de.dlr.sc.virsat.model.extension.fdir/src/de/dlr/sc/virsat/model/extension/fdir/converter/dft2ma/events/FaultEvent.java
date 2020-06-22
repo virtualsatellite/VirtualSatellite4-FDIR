@@ -37,7 +37,6 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	private BasicEventHolder beHolder;
 	
 	private boolean isRepair;
-	private boolean isOrderDependent;
 	private boolean isTransient;
 	
 	/**
@@ -51,7 +50,6 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 		this.isRepair = isRepair;
 		this.beHolder = ftHolder.getBasicEventHolder(be);
 		
-		isOrderDependent = staticAnalysis.getOrderDependentBasicEvents().contains(be);
 		isTransient = staticAnalysis.getTransientNodes().contains(be);
 	}
 	
@@ -117,7 +115,7 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	
 	@Override
 	public void execute(DFTState state) {
-		state.executeBasicEvent(be, isRepair, isOrderDependent, isTransient);
+		state.executeBasicEvent(be, isRepair, isTransient);
 	}
 	
 	@Override

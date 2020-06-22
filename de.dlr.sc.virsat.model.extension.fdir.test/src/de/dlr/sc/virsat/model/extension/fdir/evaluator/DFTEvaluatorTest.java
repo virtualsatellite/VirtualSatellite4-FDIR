@@ -1018,6 +1018,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
+	
 	/*
 	@Test
 	public void testEvaluateVGS1() throws IOException {
@@ -1028,7 +1029,7 @@ public class DFTEvaluatorTest extends ATestCase {
 			3.6800586466036515E-8
 		};
 		
-		Fault fault = createDFT("/resources/galileo/vgs4.dft");
+		Fault fault = createDFT("/resources/galileo/vgs1.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		
 		final double EXPECTEDMTTF = 39595.24895;
@@ -1036,6 +1037,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	*/
+	
 	@Test
 	public void testFTPP4() throws IOException {
 		final double EXPECTEDMTTF = 4589.925801049426;
