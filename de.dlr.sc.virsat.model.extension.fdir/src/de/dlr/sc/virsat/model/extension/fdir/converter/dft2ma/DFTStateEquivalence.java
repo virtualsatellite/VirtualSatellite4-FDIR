@@ -19,7 +19,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 
 public class DFTStateEquivalence {
 
-	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToDFTStates = new HashMap<>();
+	private Map<Set<BasicEvent>, Map<List<BasicEvent>, List<DFTState>>> decisionTree = new HashMap<>();
 	
 	/**
 	 * Adds an equivalence class for a given state into the equivalence relation
@@ -27,12 +27,8 @@ public class DFTStateEquivalence {
 	 * @return the existing equivalence class
 	 */
 	private List<DFTState> addStateClass(DFTState state) {
-		List<DFTState> dftStates = mapUnorderedBesToDFTStates.get(state.getUnorderedBes());
-		if (dftStates == null) {
-			dftStates = new ArrayList<>();
-			mapUnorderedBesToDFTStates.put(state.getUnorderedBes(), dftStates);
-		}
-		
+		Map<List<BasicEvent>, List<DFTState>> orderedDecisionNode = decisionTree.computeIfAbsent(state.getUnorderedBes(), key -> new HashMap<>());
+		List<DFTState> dftStates = orderedDecisionNode.computeIfAbsent(state.getOrderedBes(), key -> new ArrayList<>());
 		return dftStates;
 	}
 	

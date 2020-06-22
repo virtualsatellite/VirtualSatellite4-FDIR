@@ -299,7 +299,6 @@ public class DFTState extends MarkovState {
 			return;
 		}
 		
-		
 		if (node instanceof Fault) {
 			Fault fault = (Fault) node;
 			boolean hasChanged = false;
@@ -566,10 +565,6 @@ public class DFTState extends MarkovState {
 		}
 		
 		if (!other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares())) {
-			return false;
-		}
-		
-		if (!orderedBes.equals(other.orderedBes)) {
 			return false;
 		}
 		
