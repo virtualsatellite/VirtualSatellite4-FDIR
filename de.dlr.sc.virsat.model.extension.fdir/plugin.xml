@@ -58,6 +58,10 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PANDI">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.SEQ"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.SEQ">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MONITOR">
 		</CategoryAssignmentBean>

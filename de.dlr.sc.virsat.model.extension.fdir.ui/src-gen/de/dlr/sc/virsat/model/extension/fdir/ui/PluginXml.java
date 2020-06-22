@@ -207,6 +207,10 @@ public class PluginXml {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.DELAY";
 			public static final String PATHTOIMAGE = "resources/icons/DELAY.gif";
 		}	
+		public static class ConceptImageSEQ {
+			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.SEQ";
+			public static final String PATHTOIMAGE = "resources/icons/SEQ.gif";
+		}	
 		public static class ConceptImageADEP {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.ADEP";
 			public static final String PATHTOIMAGE = "resources/icons/ADEP.gif";

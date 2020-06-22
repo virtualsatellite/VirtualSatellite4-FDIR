@@ -23,7 +23,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateTest;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryCheckerTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTSymmetryCheckerTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTMetricsComposerTest;
@@ -59,7 +59,7 @@ import junit.framework.JUnit4TestAdapter;
 		DFT2BasicDFTConverterTest.class, 
 		DFT2MAConverterTest.class, 
 		DFTStateTest.class,
-		FaultTreeSymmetryCheckerTest.class,
+		DFTSymmetryCheckerTest.class,
 		GalileoDFT2DFTTest.class,
 		BasicSynthesizerTest.class,
 		POSynthesizerTest.class,

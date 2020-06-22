@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DelaySem
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.FaultSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.PORSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.SEQSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.VOTESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -53,6 +54,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new PONDSPARESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SEQ, new SEQSemantics());
 		return semantics;
 	}
 	

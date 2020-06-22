@@ -34,7 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  *
  */
 
-public class FaultTreeSymmetryCheckerTest extends ATestCase {
+public class DFTSymmetryCheckerTest extends ATestCase {
 
 	private DFTSymmetryChecker symmetryChecker = new DFTSymmetryChecker();
 	

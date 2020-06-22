@@ -116,6 +116,11 @@ public class AnchorUtil {
     		   	.collect(Collectors.toList());
 	}
 	
+	public static Anchor getOutputAnchor(AnchorContainer anchorContainer) {
+		List<Anchor> anchors = getAnchors(anchorContainer, AnchorType.OUTPUT);
+		return anchors.isEmpty() ? null : anchors.get(0);
+	}
+	
 	/**
 	 * Sorts anchors according to their X position
 	 * @param anchors the list of anchors that will be sorted

@@ -47,7 +47,7 @@ public class FaultTreeNodeMoveFeature extends VirSatMoveShapeFeature {
 			Anchor end = targetConnection.getEnd();
 			
 			Anchor inputAnchor = AnchorUtil.getFreeAnchors(containerShape, AnchorType.INPUT).get(0);
-			Anchor outputAnchor = AnchorUtil.getAnchors(containerShape, AnchorType.OUTPUT).get(0);
+			Anchor outputAnchor = AnchorUtil.getOutputAnchor(containerShape);
 			
 			ReconnectionContext reconnectionContext = new ReconnectionContext(targetConnection, start, inputAnchor, null);
 			reconnectionContext.setReconnectType(ReconnectionContext.RECONNECT_TARGET);

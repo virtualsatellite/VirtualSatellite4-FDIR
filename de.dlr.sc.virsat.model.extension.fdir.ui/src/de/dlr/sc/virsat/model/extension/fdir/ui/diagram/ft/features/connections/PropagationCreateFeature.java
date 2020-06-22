@@ -78,7 +78,7 @@ public class PropagationCreateFeature extends AbstractCreateConnectionFeature {
 		PictogramElement sourcePictogramElement = context.getSourcePictogramElement();
 		Object sourcePicObj = getBusinessObjectForPictogramElement(sourcePictogramElement);
 		if (sourcePicObj instanceof FaultTreeNode) {
-			sourceAnchor = AnchorUtil.getAnchors((AnchorContainer) sourcePictogramElement, AnchorType.OUTPUT).get(0);
+			sourceAnchor = AnchorUtil.getOutputAnchor((AnchorContainer) sourcePictogramElement);
 		}
 		return sourceAnchor;
 	}

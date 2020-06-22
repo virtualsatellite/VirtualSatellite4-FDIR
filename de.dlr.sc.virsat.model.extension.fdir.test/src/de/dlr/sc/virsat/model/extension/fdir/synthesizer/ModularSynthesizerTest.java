@@ -204,9 +204,9 @@ public class ModularSynthesizerTest extends ATestCase {
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	} 
 	
-	
+	/*
 	@Test
-	public void testSynthesizeVGS1() throws IOException {
+	public void testSynthesizeVGS4() throws IOException {
 		final double[] EXPECTED = {
 			4.920028708951688E-8,
 			9.840114835741478E-8,
@@ -215,10 +215,10 @@ public class ModularSynthesizerTest extends ATestCase {
 		};
 		final double EXPECTED_MTTF = 24365.03442441116;
 		
-		Fault fault = createDFT("/resources/galileo/vgs1.dft");
+		Fault fault = createDFT("/resources/galileo/vgs4.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
-		final int NUM_STATES = 1;
+		final int NUM_STATES = 8;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
@@ -228,6 +228,7 @@ public class ModularSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	}
+	*/
 	
 	@Test
 	public void testSynthesizeFdep1Csp2Repair1() throws IOException {

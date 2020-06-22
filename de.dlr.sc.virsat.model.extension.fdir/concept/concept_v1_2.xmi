@@ -17,6 +17,7 @@
   <categories name="SAND" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
   <categories name="PORI" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
   <categories name="PANDI" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="SEQ" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
   <categories name="MONITOR" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="observationRate" quantityKindName="Frequency" unitName="Hertz" defaultValue="0"/>
   </categories>
@@ -60,7 +61,7 @@
     <properties xsi:type="dvlm_cppd:ComposedProperty" name="basicEvents" description="Failure modes that directly cause this Fault" type="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
       <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.21/@properties.2/@values.3">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.22/@properties.2/@values.3">
       <values name="Catastrophic" value="4"/>
       <values name="Critical" value="3"/>
       <values name="Major" value="2"/>
@@ -87,7 +88,7 @@
   </categories>
   <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
     <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" unitName="Per Hour"/>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="distribution" description="Distribution of the failure process" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.23/@properties.1/@values.0">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="distribution" description="Distribution of the failure process" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.24/@properties.1/@values.0">
       <values name="EXP" value="0"/>
       <values name="UNIFORM" value="1"/>
     </properties>
@@ -141,7 +142,7 @@
       <values name="Occasional" value="3"/>
       <values name="Probable" value="4"/>
     </properties>
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.24/@properties.4/@values.4">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.25/@properties.4/@values.4">
       <values name="Unknown" value="0"/>
       <values name="ExtremelyUnlikely" value="4"/>
       <values name="Unlikely" value="3"/>
@@ -334,7 +335,7 @@
     <properties xsi:type="dvlm_cppd:FloatProperty" name="time" quantityKindName="Time" unitName="Second" defaultValue="0.0"/>
   </categories>
   <categories name="RecoveryAutomatonGen" isApplicableForAll="true" cardinality="1">
-    <properties xsi:type="dvlm_cppd:EnumProperty" name="objectiveMetric" description="The metric that will be maximized" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.42/@properties.0/@values.0">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="objectiveMetric" description="The metric that will be maximized" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.43/@properties.0/@values.0">
       <values name="MeanTimeToFailure" value="0"/>
       <values name="SteadyStateAvailability" value="1"/>
       <values name="SteadyStateDetectability" value="2"/>

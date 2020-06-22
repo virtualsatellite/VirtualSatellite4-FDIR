@@ -77,6 +77,10 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		initialState.setRecoveryStrategy(recoveryStrategy);
 		initialState.setType(hasImmediateEvents(initialState) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 		
+		for (FaultTreeNode seqNode : ftHolder.getNodes(FaultTreeNodeType.SEQ)) {
+			initialState.setFaultTreeNodePermanent(seqNode, true);
+		}
+		
 		return initialState;
 	}
 
