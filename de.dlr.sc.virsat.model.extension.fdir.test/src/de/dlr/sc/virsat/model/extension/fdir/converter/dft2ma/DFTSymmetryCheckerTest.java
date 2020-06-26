@@ -10,8 +10,8 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;

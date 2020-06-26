@@ -21,16 +21,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.LogStream;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.messages.ExecCreation;
+import org.mandas.docker.client.messages.HostConfig;
+import org.mandas.docker.client.messages.HostConfig.Bind;
+import org.mandas.docker.client.messages.Image;
+import org.mandas.docker.client.messages.PortBinding;
 
 import com.google.common.collect.ImmutableSet;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ExecCreation;
-import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.HostConfig.Bind;
-import com.spotify.docker.client.messages.Image;
-import com.spotify.docker.client.messages.PortBinding;
 
 import de.dlr.sc.virsat.fdir.storm.files.IFileProvider;
 
@@ -152,7 +152,7 @@ public class DockerHelper {
 		randomPort.add(PortBinding.randomPort("0.0.0.0"));
 		portBindings.put("443", randomPort);
 
-		return HostConfig.builder().portBindings(portBindings).appendBinds(binds).build();
+		return HostConfig.builder().portBindings(portBindings).binds(binds).build();
 	}
 	
 	/**
