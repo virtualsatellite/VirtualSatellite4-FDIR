@@ -23,6 +23,7 @@ import org.eclipse.graphiti.services.Graphiti;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatMoveShapeFeature;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil.AnchorType;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.connections.PropagationCreateFeature;
@@ -34,9 +35,6 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.connections.
  */
 public class FaultTreeNodeMoveFeature extends VirSatMoveShapeFeature {
 
-	private static final String TRUE = "true";
-	private static final String IS_COMMENT = "is-comment";
-	private static final String BELONGS_TO_FAULT_NODE = "Belongs-to-fault-node";
 	private static final String Y_POS_REL_TO_FAULT_NODE = "y-pos-rel-to-fault-node";
 	private static final String X_POS_REL_TO_FAULT_NODE = "x-pos-rel-to-fault-node";
 
@@ -88,28 +86,11 @@ public class FaultTreeNodeMoveFeature extends VirSatMoveShapeFeature {
 		EList<Shape> children = parent.getChildren();
 		for (Object element : children) {
 			Shape shape = (Shape) element;
-			if (isComment(shape) && shapeBelongsToFaultNode(shape, bean)) {
+			if (CommentUtil.isComment(shape) && CommentUtil.shapeBelongsToFaultNode(shape, bean)) {
 				int xPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, X_POS_REL_TO_FAULT_NODE));
 				int yPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE));
 				Graphiti.getGaService().setLocation(shape.getGraphicsAlgorithm(), containerShape.getGraphicsAlgorithm().getX() + xPos, containerShape.getGraphicsAlgorithm().getY() + yPos);
 			}
 		}
 	}
-
-	private boolean shapeBelongsToFaultNode(Shape shape, FaultTreeNode bean) {
-		String propertyValue = Graphiti.getPeService().getPropertyValue(shape, BELONGS_TO_FAULT_NODE);
-		if (propertyValue == null) {
-			return false;
-		}
-		return propertyValue.equals(bean.getUuid());
-	}
-
-	private boolean isComment(Shape shape) {
-		String propertyValue = Graphiti.getPeService().getPropertyValue(shape, IS_COMMENT);
-		if (propertyValue == null) {
-			return false;
-		}
-		return propertyValue.equals(TRUE);
-	}
-
 }
