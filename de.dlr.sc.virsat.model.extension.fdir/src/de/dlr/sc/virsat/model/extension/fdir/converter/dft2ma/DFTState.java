@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,8 +55,6 @@ public class DFTState extends MarkovState {
 	private BitSet failingNodes;
 	
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
-	
-	private List<BasicEvent> orderedBes;
 	private Set<BasicEvent> unorderedBes;
 	
 	/**
@@ -73,7 +70,6 @@ public class DFTState extends MarkovState {
 		activeFaults = new HashSet<>();
 		permanentNodes = new BitSet(countNodes);
 		failingNodes = new BitSet(countNodes);
-		orderedBes = new ArrayList<>();
 		unorderedBes = new HashSet<>();
 	}
 	
@@ -82,7 +78,6 @@ public class DFTState extends MarkovState {
 	 * @param other the markov state that will be copied
 	 */
 	public DFTState(DFTState other) {
-		orderedBes = new ArrayList<>(other.orderedBes);
 		unorderedBes = new HashSet<>(other.unorderedBes);
 		activeFaults = new HashSet<>(other.activeFaults);
 		mapNodeToAffectors = new HashMap<>();
@@ -114,20 +109,8 @@ public class DFTState extends MarkovState {
 		return recoveryStrategy;
 	}
 	
-	/**
-	 * Gets the ordered bes that have occured in this state
-	 * @return a list of ordered bes
-	 */
-	public List<BasicEvent> getOrderedBes() {
-		return orderedBes;
-	}
-	
-	/**
-	 * Gets the unordered bes that have occured in this state
-	 * @return a set of unordered bes
-	 */
-	public Set<BasicEvent> getUnorderedBes() {
-		return unorderedBes;
+	public BitSet getFailedNodes() {
+		return failedNodes;
 	}
 	
 	/**
@@ -174,7 +157,7 @@ public class DFTState extends MarkovState {
 		if (failedNodes.isEmpty() && mapSpareToClaimedSpares.isEmpty()) {
 			ftInfix = " initial";
 		} else {
-			ftInfix = " " + unorderedBes.toString() + orderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
+			ftInfix = " " + unorderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
 		}
 		
 		return index + ftInfix + raSuffix;
@@ -299,7 +282,6 @@ public class DFTState extends MarkovState {
 			return;
 		}
 		
-		
 		if (node instanceof Fault) {
 			Fault fault = (Fault) node;
 			boolean hasChanged = false;
@@ -417,7 +399,7 @@ public class DFTState extends MarkovState {
 				for (FaultTreeNode subNode : subNodes) {
 					if (subNode instanceof BasicEvent) {
 						BasicEvent be = (BasicEvent) subNode;
-						executeBasicEvent(be, false, staticAnalysis.getOrderDependentBasicEvents().contains(be), false);
+						executeBasicEvent(be, false, false);
 					} else if (!toProcess.contains(subNode)) {
 						int subNodeID = ftHolder.getNodeIndex(subNode);
 						if (!permanentNodes.get(subNodeID)) {
@@ -435,20 +417,14 @@ public class DFTState extends MarkovState {
 	 * Executes a single basic event in the current state
 	 * @param be the basic event to execute
 	 * @param isRepair whether its the repair or a failure event
-	 * @param isOrderDependent whether the event has order depencies
 	 * @param isTransient whether the event occurss transiently or permanently
 	 * @return true iff the basic event successfully caused some change
 	 */
-	public boolean executeBasicEvent(BasicEvent be, boolean isRepair, boolean isOrderDependent, boolean isTransient) {
-		if (isOrderDependent && getOrderedBes().contains(be)) {
-			return false;
-		}
-		
-		Collection<BasicEvent> beCollection = isOrderDependent ? getOrderedBes() : getUnorderedBes();
+	public boolean executeBasicEvent(BasicEvent be, boolean isRepair, boolean isTransient) {
 		setFaultTreeNodeFailed(be, !isRepair);
 		setFaultTreeNodePermanent(be, !isTransient);
 		
-		return isRepair ? beCollection.remove(be) : beCollection.add(be);
+		return isRepair ? unorderedBes.remove(be) : unorderedBes.add(be);
 	}
 	
 	/**
@@ -523,7 +499,12 @@ public class DFTState extends MarkovState {
 					hasChangedNodeState |= setFaultTreeNodeFailed(node, false);
 				} 
 				
-				getAffectors(node).remove(depTrigger);
+				Set<FaultTreeNode> affectors = getAffectors(node);
+				affectors.remove(depTrigger);
+				
+				if (affectors.isEmpty()) {
+					mapNodeToAffectors.remove(node);
+				}
 			}
 		}
 	
@@ -544,10 +525,7 @@ public class DFTState extends MarkovState {
 	 * @return the set of all failed basic events
 	 */
 	public Set<BasicEvent> getFailedBasicEvents() {
-		Set<BasicEvent> failedBasicEvents = new HashSet<>();
-		failedBasicEvents.addAll(orderedBes);
-		failedBasicEvents.addAll(unorderedBes);
-		return failedBasicEvents;
+		return unorderedBes;
 	}
 	
 	/**
@@ -569,10 +547,6 @@ public class DFTState extends MarkovState {
 			return false;
 		}
 		
-		if (!orderedBes.equals(other.orderedBes)) {
-			return false;
-		}
-		
 		if (!permanentNodes.equals(other.permanentNodes)) {
 			return false;
 		}
@@ -582,6 +556,10 @@ public class DFTState extends MarkovState {
 		}
 		
 		if (!failingNodes.equals(other.failingNodes)) {
+			return false;
+		}
+		
+		if (!mapNodeToAffectors.equals(other.mapNodeToAffectors)) {
 			return false;
 		}
 		

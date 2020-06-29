@@ -10,16 +10,14 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 
 public class DFTStateEquivalence {
 
-	private Map<Set<BasicEvent>, List<DFTState>> mapUnorderedBesToDFTStates = new HashMap<>();
+	private Map<BitSet, List<DFTState>> decisionTree = new HashMap<>();
 	
 	/**
 	 * Adds an equivalence class for a given state into the equivalence relation
@@ -27,10 +25,10 @@ public class DFTStateEquivalence {
 	 * @return the existing equivalence class
 	 */
 	private List<DFTState> addStateClass(DFTState state) {
-		List<DFTState> dftStates = mapUnorderedBesToDFTStates.get(state.getUnorderedBes());
+		List<DFTState> dftStates = decisionTree.get(state.getFailedNodes());
 		if (dftStates == null) {
 			dftStates = new ArrayList<>();
-			mapUnorderedBesToDFTStates.put(state.getUnorderedBes(), dftStates);
+			decisionTree.put(state.getFailedNodes(), dftStates);
 		}
 		
 		return dftStates;
