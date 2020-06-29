@@ -41,6 +41,7 @@
 <setEntry value="de.dlr.sc.virsat.external.lib.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.fdir.branding.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.fdir.galileo.feature:default"/>
+<setEntry value="de.dlr.sc.virsat.fdir.storm.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.graphiti.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.license.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.model.calculation.feature:default"/>
