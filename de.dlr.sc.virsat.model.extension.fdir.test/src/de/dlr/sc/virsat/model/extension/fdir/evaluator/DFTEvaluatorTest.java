@@ -10,8 +10,8 @@
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,8 +24,8 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
-import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;

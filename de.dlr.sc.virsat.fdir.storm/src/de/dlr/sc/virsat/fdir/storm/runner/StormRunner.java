@@ -18,14 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerCreation;
-import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.HostConfig.Bind;
+import org.mandas.docker.client.DefaultDockerClient;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.exceptions.DockerCertificateException;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.messages.ContainerConfig;
+import org.mandas.docker.client.messages.ContainerCreation;
+import org.mandas.docker.client.messages.HostConfig;
+import org.mandas.docker.client.messages.HostConfig.Bind;
 
 import de.dlr.sc.virsat.fdir.storm.docker.DockerHelper;
 import de.dlr.sc.virsat.fdir.storm.files.InstanceFileGenerator;
@@ -173,7 +173,7 @@ public class StormRunner<S> implements IStormRunner<S> {
 	 */
 	private String createContainer(DockerClient docker) throws DockerException, InterruptedException {
 		String mount = DockerHelper.convertDOSPathToDockerPath(DOCKER_TEMP_PATH);
-		HostConfig hostConfig = DockerHelper.getDockerHostConfig(Bind.from(mount).to(DOCKER_DATA_PATH).build());
+		HostConfig hostConfig = DockerHelper.getDockerHostConfig(Bind.builder().from(mount).to(DOCKER_DATA_PATH).build());
 
 		// Create container with exposed ports
 		ContainerConfig containerConfig = ContainerConfig.builder().hostConfig(hostConfig).image(DOCKER_IMAGE_STORM)

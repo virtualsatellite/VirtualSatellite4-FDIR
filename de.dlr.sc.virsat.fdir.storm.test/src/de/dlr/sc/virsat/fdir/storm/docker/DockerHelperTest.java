@@ -15,13 +15,13 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 
 import org.junit.Test;
-
-import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.HostConfig.Bind;
+import org.mandas.docker.client.messages.HostConfig;
+import org.mandas.docker.client.messages.HostConfig.Bind;
 
 /**
  * This class tests the DockerHelper class
- * @author muel_s8
+ 
+import org.mandas.docker.client.messages.HostConfig.Bind;* @author muel_s8
  *
  */
 
@@ -36,7 +36,7 @@ public class DockerHelperTest {
 	
 	@Test
 	public void testGetDockerHostConfig() {
-		HostConfig hostConfig = DockerHelper.getDockerHostConfig(Bind.from("//c/").to("//d/").build());
+		HostConfig hostConfig = DockerHelper.getDockerHostConfig(Bind.builder().from("//c/").to("//d/").build());
 		assertNotNull(hostConfig);
 		assertEquals(Arrays.asList("//c/://d/"), hostConfig.binds());
 	}
