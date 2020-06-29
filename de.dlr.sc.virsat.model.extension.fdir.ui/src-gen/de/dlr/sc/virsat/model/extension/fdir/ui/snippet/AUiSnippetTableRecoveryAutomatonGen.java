@@ -9,13 +9,14 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddRecoveryAutomatonGenCommand;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
-import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetArrayInstancePropertyTable;
-import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddArrayElementMonitorsCommand;
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.AUiSnippetGenericCategoryAssignmentTable;
 
+;
 
 /**
  * Auto Generated Abstract Generator Gap Class
@@ -25,17 +26,16 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.command.CreateAddArrayElementMon
  * 
  * 
  */	
-public abstract class AUiSnippetTableRepairActionMonitors extends AUiSnippetArrayInstancePropertyTable implements IUiSnippet {
-
-	public AUiSnippetTableRepairActionMonitors() {
+public abstract class AUiSnippetTableRecoveryAutomatonGen extends AUiSnippetGenericCategoryAssignmentTable implements IUiSnippet {
+	public AUiSnippetTableRecoveryAutomatonGen() {
 		super("de.dlr.sc.virsat.model.extension.fdir",
-			"monitors",
-			"RepairAction",
+			"RecoveryAutomatonGen",
+			"de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomatonGen",
 			STYLE_ADD_BUTTON | STYLE_REMOVE_BUTTON | STYLE_EDITOR_BUTTON);
 	}
 
 	@Override
 	protected Command createAddCommand(EditingDomain editingDomain, Concept activeConcept) {
-		return new CreateAddArrayElementMonitorsCommand().create(editingDomain, getArrayInstance(model), null);
+		return new CreateAddRecoveryAutomatonGenCommand().create(editingDomain, model, activeConcept);
 	}
 }

@@ -7,7 +7,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.ui.command;
+package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
+
+import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 
 /**
@@ -15,8 +17,8 @@ package de.dlr.sc.virsat.model.extension.fdir.ui.command;
  * 
  * This class is generated once, do your changes here
  * 
- * The action is only available if the reference monitors have observed a failure.
+ * 
  * 
  */
-public class CreateAddArrayElementMonitorsCommand extends ACreateAddArrayElementMonitorsCommand {
+public class UiSnippetSectionSEQ extends AUiSnippetSectionSEQ implements IUiSnippet {
 }

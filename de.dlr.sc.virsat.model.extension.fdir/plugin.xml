@@ -58,6 +58,10 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PANDI">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.SEQ"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.SEQ">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MONITOR">
 		</CategoryAssignmentBean>
@@ -160,6 +164,10 @@
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.TimeoutTransition"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomatonGen"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonGen">
 		</CategoryAssignmentBean>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->

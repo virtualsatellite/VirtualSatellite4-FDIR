@@ -21,6 +21,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
+
 /**
  * Implementation of a markov automaton.
  * @author muel_s8
@@ -42,22 +44,6 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 */
 	public List<S> getStates() {
 		return states;
-	}
-	
-	/**
-	 * Gets a set of all final states
-	 * @return a set of final states
-	 */
-	public Set<S> getFinalStates() {
-		return finalStateProbs.keySet();
-	}
-	
-	/**
-	 * Gets the mapping from state to the probability of being a final state
-	 * @return the final state probablity
-	 */
-	public Map<S, Double> getFinalStateProbs() {
-		return finalStateProbs;
 	}
 	
 	/**
@@ -127,20 +113,6 @@ public class MarkovAutomaton<S extends MarkovState> {
 	}
 	
 	/**
-	 * Adds a state with the given final prob.
-	 * If the final prob is non-zero, the state is added to the final states.
-	 * @param state the state to add
-	 * @param finalProb the final state prob
-	 */
-	public void addState(S state, double finalProb) {
-		addState(state);
-		
-		if (finalProb > 0) {
-			getFinalStateProbs().put(state, finalProb);
-		}
-	}
-	
-	/**
 	 * Add a new markov transition to the automaton
 	 * @param event the transition event
 	 * @param from the starting state of the transition
@@ -150,6 +122,8 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return the created transition
 	 */
 	public MarkovTransition<S> addTransition(Object event, S from, S to, double rate, MarkovStateType type) {
+		getEvents().add(event);
+		
 		MarkovTransition<S> t = new MarkovTransition<>(from, to, rate, event);
 		List<MarkovTransition<S>> transitions = getTransitions(event);
 		
@@ -263,6 +237,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 					+ "->" + transition.getTo().getIndex() 
 					+ " [label=\"" + String.valueOf(transition.getEvent()) 
 					+ " : " + transition.getRate() +  "\"]")
+				.sorted()
 				.collect(Collectors.joining("\n")) + "\n");
 		sb.append("}");
 		return sb.toString();
@@ -286,22 +261,39 @@ public class MarkovAutomaton<S extends MarkovState> {
 	}
 	
 	/**
+	 * Gets the states in the ma which have the labels from the label provider
+	 * @param failLabelProvider the label provider
+	 * @return all states which have at least all states listed in the label provider
+	 */
+	public Set<S> getStatesWithLabels(FailLabelProvider failLabelProvider) {
+		Set<S> statesWithLabel = new HashSet<>();
+		
+		for (S state : getStates()) {
+			if (state.getFailLabels().containsAll(failLabelProvider.getFailLabels())) {
+				statesWithLabel.add(state);
+			}
+		}
+		
+		return statesWithLabel;
+	}
+	
+	/**
 	 * Gets the initial MTTF according to the Bellman equations with
 	 * MTTF(s) = 0 if s is a fail state and 
 	 * MTTF(s) = 1/ExitRate(s) if s is not a fail state
-	 * @param states 
-	 * @param mc the markov chain
+	 * @param states states that are also in this list will be considered
+	 * @param failLabelProvider the provider defining what is a fail state
 	 * @return the initial probability distribution
 	 */
-	public double[] getNonFailSoujornTimes(List<? extends MarkovState> states) {
+	public double[] getNonFailSoujornTimes(List<? extends MarkovState> states, FailLabelProvider failLabelProvider) {
 		int countStates = states.size();
 		double[] inititalVector = new double[countStates];
 
-		Set<MarkovState> failReachableStates = getStatesWithReachableFailState();
+		Set<MarkovState> failReachableStates = getStatesWithReachableFailState(failLabelProvider);
 
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = states.get(i);
-			if (state.isMarkovian() && !getFinalStates().contains(state)) {
+			if (state.isMarkovian() && !state.getFailLabels().containsAll(failLabelProvider.getFailLabels())) {
 				inititalVector[i] = failReachableStates.contains(state) ? 1 / getExitRateForState(state) : Double.POSITIVE_INFINITY;
 			}
 		}
@@ -310,17 +302,17 @@ public class MarkovAutomaton<S extends MarkovState> {
 	
 	/**
 	 * Gets an array with only the soujourn times of fail states.
-	 * @param mc the markoc chain
-	 * @param states 
+	 * @param states only fail states that are also in this list will be considered
+	 * @param failLabelProvider the provider defining what is a fail state
 	 * @return the soujourn times
 	 */
-	public double[] getFailSoujournTimes(List<MarkovState> states) {
+	public double[] getFailSoujournTimes(List<MarkovState> states, FailLabelProvider failLabelProvider) {
 		int countStates = states.size();
 		double[] inititalVector = new double[countStates];
 
 		for (int i = 0; i < countStates; ++i) {
 			MarkovState state = states.get(i);
-			if (state.isMarkovian() && getFinalStates().contains(state)) {
+			if (state.isMarkovian() && state.getFailLabels().containsAll(failLabelProvider.getFailLabels())) {
 				inititalVector[i] = 1 / getExitRateForState(state);
 			}
 		}
@@ -333,16 +325,7 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @return the soujourn times
 	 */
 	public double[] getSoujournTimes(List<MarkovState> states) {
-		int countStates = states.size();
-		double[] inititalVector = new double[countStates];
-
-		for (int i = 0; i < countStates; ++i) {
-			MarkovState state = states.get(i);
-			if (state.isMarkovian()) {
-				inititalVector[i] = 1 / getExitRateForState(state);
-			}
-		}
-		return inititalVector;
+		return getFailSoujournTimes(states, FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
 	}
 
 	/**
@@ -350,9 +333,9 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * @param mc the markov chain
 	 * @return the set of states that can reach a fail state
 	 */
-	public Set<MarkovState> getStatesWithReachableFailState() {
+	public Set<MarkovState> getStatesWithReachableFailState(FailLabelProvider failLabelProvider) {
 		Queue<MarkovState> toProcess = new LinkedList<>();
-		toProcess.addAll(getFinalStates());
+		toProcess.addAll(getStatesWithLabels(failLabelProvider));
 		Set<MarkovState> failReachableStates = new HashSet<>();
 
 		while (!toProcess.isEmpty()) {

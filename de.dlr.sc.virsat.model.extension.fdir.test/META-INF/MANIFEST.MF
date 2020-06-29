@@ -7,6 +7,7 @@ Bundle-Vendor: DLR (German Aerospace Center)
 Fragment-Host: de.dlr.sc.virsat.model.extension.fdir
 Export-Package: de.dlr.sc.virsat.model.extension.fdir.calculation,
  de.dlr.sc.virsat.model.extension.fdir.converter,
+ de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis,
  de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft,
  de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma,
  de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po,

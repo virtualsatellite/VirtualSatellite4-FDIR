@@ -20,6 +20,7 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponent;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 public class StronglyConnectedComponentFinderTest {
 
@@ -30,7 +31,7 @@ public class StronglyConnectedComponentFinderTest {
 		//          2 ---> good2 --- 5 ---> fail2 --- 0.5 -> good2
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("m");
+
 		MarkovState init = new MarkovState();
 		MarkovState good1 = new MarkovState();
 		MarkovState fail1 = new MarkovState();
@@ -42,8 +43,8 @@ public class StronglyConnectedComponentFinderTest {
 		ma.addState(fail1);
 		ma.addState(good2);
 		ma.addState(fail2);
-		ma.getFinalStateProbs().put(fail1, 1d);
-		ma.getFinalStateProbs().put(fail2, 1d);
+		fail1.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		fail2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		final double RATE_INIT_TO_GOOD_1 = 3;
 		final double RATE_GOOD_1_TO_FAIL_1 = 2;

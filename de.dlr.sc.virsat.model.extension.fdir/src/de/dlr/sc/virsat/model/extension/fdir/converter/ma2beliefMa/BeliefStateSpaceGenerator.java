@@ -23,6 +23,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
@@ -34,6 +35,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private PODFTState initialStateMa;
 	private BeliefStateEquivalence beliefStateEquivalence;
 	
+	/**
+	 * Configures the belief state space generation
+	 * @param ma the totally observable markov automaton
+	 * @param initialStateMa the initial state of the markov automaton
+	 */
 	public void configure(MarkovAutomaton<DFTState> ma, PODFTState initialStateMa) {
 		this.ma = ma;
 		this.initialStateMa = initialStateMa;
@@ -245,8 +251,16 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		boolean isNewState = beliefState == equivalentBeliefState;
 		
 		if (isNewState) {
+			targetMa.addState(beliefState);
+			
 			double failProb = beliefState.getFailProb();
-			targetMa.addState(beliefState, failProb);
+			if (failProb > 0) {
+				beliefState.getMapFailLabelToProb().put(FailLabel.FAILED, failProb);
+			}
+			
+			if (beliefState.representant.getFailLabels().contains(FailLabel.OBSERVED)) {
+				beliefState.getMapFailLabelToProb().put(FailLabel.OBSERVED, 1d);
+			}
 		}
 		
 		return equivalentBeliefState;

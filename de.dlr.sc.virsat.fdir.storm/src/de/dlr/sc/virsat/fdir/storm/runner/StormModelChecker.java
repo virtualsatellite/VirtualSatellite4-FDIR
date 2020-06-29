@@ -23,7 +23,7 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -63,7 +63,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 
 
 	@Override
-	public void visit(MTTF mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric) {
 		modelCheckingResult.setMeanTimeToFailure(resultExtracted.get(startIndex));
 		startIndex++;
 	}

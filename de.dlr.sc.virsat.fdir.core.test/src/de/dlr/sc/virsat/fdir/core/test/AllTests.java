@@ -26,6 +26,7 @@ import de.dlr.sc.virsat.fdir.core.matrix.iterator.LinearProgramIteratorTest;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIteratorTest;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIteratorTest;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.SSAIteratorTest;
+import de.dlr.sc.virsat.fdir.core.metrics.MetricsResultDeriverTest;
 import junit.framework.JUnit4TestAdapter;
 
 /**
@@ -48,7 +49,8 @@ import junit.framework.JUnit4TestAdapter;
 	BellmanIteratorTest.class,
 	MarkovAutomatonValueIteratorTest.class,
 	SPSIteratorTest.class,
-	SSAIteratorTest.class
+	SSAIteratorTest.class,
+	MetricsResultDeriverTest.class
 	})
 
 public class AllTests {

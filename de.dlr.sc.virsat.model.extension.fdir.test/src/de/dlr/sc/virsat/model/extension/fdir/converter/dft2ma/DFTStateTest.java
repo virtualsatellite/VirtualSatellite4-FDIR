@@ -71,30 +71,17 @@ public class DFTStateTest extends ATestCase {
 		
 		DFTState state = new DFTState(ftHolder);
 		
-		assertTrue(state.getOrderedBes().isEmpty());
-		assertTrue(state.getUnorderedBes().isEmpty());
+		assertTrue(state.getFailedBasicEvents().isEmpty());
 		
-		state.executeBasicEvent(be, false, false, false);
+		state.executeBasicEvent(be, false, false);
 		
-		assertTrue(state.getOrderedBes().isEmpty());
-		assertTrue(state.getUnorderedBes().contains(be));
+		assertTrue(state.getFailedBasicEvents().contains(be));
 		assertTrue(state.hasFaultTreeNodeFailed(be));
 		assertTrue(state.isFaultTreeNodePermanent(be));
 		
-		state.executeBasicEvent(be, true, false, false);
+		state.executeBasicEvent(be, true, false);
 		
-		assertTrue(state.getOrderedBes().isEmpty());
-		assertTrue(state.getUnorderedBes().isEmpty());
+		assertTrue(state.getFailedBasicEvents().isEmpty());
 		assertFalse(state.hasFaultTreeNodeFailed(be));
-		
-		state.executeBasicEvent(be, false, true, true);
-		
-		assertTrue(state.getOrderedBes().contains(be));
-		assertTrue(state.getUnorderedBes().isEmpty());
-		assertFalse(state.isFaultTreeNodePermanent(be));
-		
-		state.executeBasicEvent(be, false, true, true);
-		
-		assertEquals(1, state.getOrderedBes().size());
 	}
 }

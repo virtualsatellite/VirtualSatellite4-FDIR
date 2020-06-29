@@ -16,6 +16,11 @@ public class BellmanIterator extends LinearProgramIterator {
 	
 	private double[] stateCosts;
 
+	/**
+	 * Standard constructor
+	 * @param matrix the bellman matrix
+	 * @param stateCosts the costs of being in a state per each time unit
+	 */
 	public BellmanIterator(IMatrix matrix, double[] stateCosts) {
 		super(matrix, stateCosts.clone());
 		this.stateCosts = stateCosts;

@@ -11,7 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import org.eclipse.core.runtime.SubMonitor;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -26,11 +26,12 @@ public class DelegateSynthesizer implements ISynthesizer {
 
 	protected ISynthesizer basicSynthesizer = new BasicSynthesizer();
 	protected ISynthesizer poSynthesizer = new POSynthesizer();
+	protected ISynthesizer delegate;
 
 	@Override
-	public RecoveryAutomaton synthesize(Fault fault, SubMonitor subMonitor) {
-		ISynthesizer delegate = chooseSynthesizer(fault);
-		return delegate.synthesize(fault, subMonitor);
+	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
+		delegate = chooseSynthesizer(synthesisQuery.getRoot());
+		return delegate.synthesize(synthesisQuery, subMonitor);
 	}
 	
 	/**
@@ -38,8 +39,13 @@ public class DelegateSynthesizer implements ISynthesizer {
 	 * @param fault the root of the fault tree
 	 * @return the chosen synthesizer
 	 */
-	public ISynthesizer chooseSynthesizer(Fault fault) {
-		FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+	public ISynthesizer chooseSynthesizer(FaultTreeNode root) {
+		FaultTreeHolder ftHolder = new FaultTreeHolder(root.getFault());
 		return ftHolder.isPartialObservable() ? poSynthesizer : basicSynthesizer;
+	}
+	
+	@Override
+	public SynthesisStatistics getStatistics() {
+		return delegate.getStatistics();
 	}
 }

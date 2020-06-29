@@ -22,6 +22,8 @@ import java.util.Set;
 public class FailLabelProvider {
 	
 	public static final FailLabelProvider EMPTY_FAIL_LABEL_PROVIDER = new FailLabelProvider();
+	public static final FailLabelProvider SINGLETON_FAILED = new FailLabelProvider(FailLabel.FAILED);
+	public static final FailLabelProvider SINGLETON_OBSERVED = new FailLabelProvider(FailLabel.OBSERVED);
 	
 	/**
 	 * This enum lists the relevant fail labels
@@ -29,7 +31,7 @@ public class FailLabelProvider {
 	 *
 	 */
 	public enum FailLabel {
-		FAILED, OBSERVED, UNOBSERVED
+		FAILED, OBSERVED
 	}
 
 	private Set<FailLabel> failLabels;

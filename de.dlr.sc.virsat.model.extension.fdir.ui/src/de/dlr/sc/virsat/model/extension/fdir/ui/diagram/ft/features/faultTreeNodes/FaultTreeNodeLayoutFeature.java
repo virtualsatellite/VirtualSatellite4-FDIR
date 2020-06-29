@@ -32,6 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
+import de.dlr.sc.virsat.model.extension.fdir.model.SEQ;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil;
@@ -57,7 +58,6 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 	private static final String BELONGS_TO_FAULT_NODE = "Belongs-to-fault-node";
 	private static final String Y_POS_REL_TO_FAULT_NODE = "y-pos-rel-to-fault-node";
 	private static final String X_POS_REL_TO_FAULT_NODE = "x-pos-rel-to-fault-node";
-
 
 	/**
 	 * Default Constructor
@@ -144,11 +144,14 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 				anythingChanged |= layoutDELAY(containerShape, width, height, nameText.getFont(), bean);
 			} else if (bean instanceof MONITOR) {
 				anythingChanged |= layoutOBSERVER(containerShape, width, height, nameText.getFont(), bean);
+			} else if (bean instanceof SEQ) {
+				anythingChanged |= layoutSEQ(containerShape, width, height, nameText.getFont(), bean);
 			}
 		}
 
 		return anythingChanged;
 	}
+
 
 	/**
 	 * @param containerShape to layout comments for
@@ -293,6 +296,29 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 		}
 
 		return layoutGa(delayGa, observationRateX, observationRateY, observationRateWidth, observationRateHeight);
+	}
+
+	/**
+	 * Layouts the arrow position of the SEQ gate
+	 * @param containerShape the container shape
+	 * @param width the width
+	 * @param height the height
+	 * @param font the font
+	 * @param bean the bean
+	 * @return true iff there was a change
+	 */
+	private boolean layoutSEQ(ContainerShape containerShape, int width, int height, Font font, FaultTreeNode bean) {
+		Shape seqShape = containerShape.getChildren()
+				.get(0);
+
+		GraphicsAlgorithm seqArrowGa = seqShape.getGraphicsAlgorithm();
+		int x = (width - FaultTreeNodeGraphicsFactory.GATE_WIDTH) / 2;
+		if (seqArrowGa.getX() != x) {
+			seqArrowGa.setX(x);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

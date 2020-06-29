@@ -22,20 +22,19 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIterator;
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * Metric representing the Mean Time To Failure
  * @author sascha
  *
  */
-public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
-	public static final MTTF MTTF = new MTTF();
+public class MeanTimeToFailure implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
+	public static final MeanTimeToFailure MTTF = new MeanTimeToFailure();
 	
 	/**
 	 * Hidden constructor
 	 */
-	private MTTF() {
+	private MeanTimeToFailure() {
 		
 	}
 	
@@ -51,7 +50,7 @@ public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
-		return Collections.singletonMap(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(Reliability.INF_RELIABILITY));
+		return Collections.singletonMap(FailLabelProvider.SINGLETON_FAILED, Collections.singleton(Reliability.INF_RELIABILITY));
 	}
 	
 	/**
@@ -61,8 +60,8 @@ public class MTTF implements IQuantitativeMetric, IBaseMetric, IDerivedMetric {
 	 * @param states a subset of states in the amrkov automaton on which the iterator will operate
 	 * @return an iterator that converges towards the MTTF
 	 */
-	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states) {
-		double[] nonFailSoujournTimes = ma.getNonFailSoujornTimes(states); 
+	public IMatrixIterator iterator(IMatrix matrix, MarkovAutomaton<? extends MarkovState> ma, List<? extends MarkovState> states, FailLabelProvider failLabelProvider) {
+		double[] nonFailSoujournTimes = ma.getNonFailSoujornTimes(states, failLabelProvider); 
 		return new MarkovAutomatonValueIterator<>(new BellmanIterator(matrix, nonFailSoujournTimes), ma);
 	}
 }

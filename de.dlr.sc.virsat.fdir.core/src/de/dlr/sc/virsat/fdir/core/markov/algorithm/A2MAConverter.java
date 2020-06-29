@@ -23,6 +23,10 @@ public abstract class A2MAConverter<S extends MarkovState, G extends AStateSpace
 	protected G stateSpaceGenerator = createStateSpaceGenerator();
 	protected MarkovAutomatonBuilder<S> maBuilder = new MarkovAutomatonBuilder<S>();
 	
+	/**
+	 * Creates the state space generator for the converter
+	 * @return the state space generator
+	 */
 	protected abstract G createStateSpaceGenerator();
 	
 	/**

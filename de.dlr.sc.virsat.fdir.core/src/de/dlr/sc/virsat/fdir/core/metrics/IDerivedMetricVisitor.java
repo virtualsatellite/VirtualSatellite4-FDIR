@@ -20,13 +20,7 @@ public interface IDerivedMetricVisitor {
 	 * Handle the case of a mean time to failure metric
 	 * @param mttfMetric the mttf metric
 	 */
-	void visit(MTTF mttfMetric);
-	
-	/**
-	 * Handle the case of a steady state availability metric
-	 * @param steadyStateAvailabilityMetric the steadyStateAvailability metric
-	 */
-	void visit(SteadyStateAvailability steadyStateAvailabilityMetric);
+	void visit(MeanTimeToFailure mttfMetric);
 	
 	/**
 	 * Handle the case of a detectability metric
@@ -45,4 +39,10 @@ public interface IDerivedMetricVisitor {
 	 * @param steadyStateDetectability the mean time to detection metric
 	 */
 	void visit(SteadyStateDetectability steadyStateDetectability);
+
+	/**
+	 * Handle the case of a fault tolerance metric
+	 * @param faultTolerance the fault tolerance metric
+	 */
+	void visit(FaultTolerance faultTolerance);
 }

@@ -17,29 +17,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
-import org.apache.commons.math3.analysis.integration.UnivariateIntegrator;
-import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
-import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
-import de.dlr.sc.virsat.fdir.core.metrics.Detectability;
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
-import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetricVisitor;
 import de.dlr.sc.virsat.fdir.core.metrics.IQuantitativeMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
-import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToDetection;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
-import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateDetectability;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
@@ -51,13 +39,11 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
  *
  */
 
-public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVisitor {
+public class DFTMetricsComposer {
 	
 	private ModelCheckingResult composedResult;
-	private Map<FailLabelProvider, ModelCheckingResult> baseResults;
 	private long k;
 	private List<ModelCheckingResult> subModuleResults;
-	private double delta;
 	
 	/**
 	 * Compose operation for composable metrics. Composes the results of the sub modules.
@@ -73,28 +59,7 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 		this.composedResult = new ModelCheckingResult();
 		
 		for (IBaseMetric metric : metrics) {
-			metric.accept(this, subMonitor);
-		}
-		
-		return composedResult;
-	}
-	
-	
-	/**
-	 * Derivation operation of deriavable metrics. Calculates the metrics from
-	 * already calculated metrics in the given result
-	 * @param baseResults the given results
-	 * @param metrics the metrics to derive
-	 * @param delta the model checking delta
-	 * @return the derived results
-	 */
-	public ModelCheckingResult derive(Map<FailLabelProvider, ModelCheckingResult> baseResults, double delta, IDerivedMetric... metrics) {
-		this.composedResult = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		this.baseResults = baseResults;
-		this.delta = delta;
-		
-		for (IDerivedMetric metric : metrics) {
-			metric.accept(this);
+			metric.accept(metricVisitor, subMonitor);
 		}
 		
 		return composedResult;
@@ -117,103 +82,6 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 		return k;
 	}
 	
-	@Override
-	public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
-		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
-		reliabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
-	}
-
-	@Override
-	public void visit(MTTF mttfMetric) {
-		int countFailRates = composedResult.getFailRates().size();
-		
-		if (countFailRates == 1) {
-			composedResult.setMeanTimeToFailure(Double.POSITIVE_INFINITY);
-			return;
-		}
-		
-		double[] x = new double[countFailRates];
-		for (int i = 0; i < countFailRates; ++i) {
-			x[i] = i;
-		}
-		
-		double[] y = new double[countFailRates];
-		for (int i = 0; i < countFailRates; ++i) {
-			y[i] = 1 - composedResult.getFailRates().get(i);
-		}
-		
-		UnivariateInterpolator interpolator = new SplineInterpolator();
-		UnivariateFunction function = interpolator.interpolate(x, y);
-		
-		UnivariateIntegrator integrator = new SimpsonIntegrator();
-		double integral = integrator.integrate(SimpsonIntegrator.DEFAULT_MAX_ITERATIONS_COUNT, function, 0, countFailRates - 1);
-		composedResult.setMeanTimeToFailure(integral * delta);
-	}
-
-	@Override
-	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
-		List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
-		availabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getAvailability(), k, -1);
-	}
-
-	@Override
-	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
-		double[] childSteadyStateAvailabilities = new double[subModuleResults.size()];
-		
-		for (int j = 0; j < subModuleResults.size(); ++j) {
-			ModelCheckingResult subModuleResult = subModuleResults.get(j);
-			childSteadyStateAvailabilities[j] = subModuleResult.getSteadyStateAvailability();
-		}
-		
-		double composedSteadyStateAvailability = IQuantitativeMetric.composeProbabilities(childSteadyStateAvailabilities, k);
-		composedResult.setSteadyStateAvailability(composedSteadyStateAvailability);
-	}
-
-
-	@Override
-	public void visit(MinimumCutSet minimumCutSet) {
-		if (k == 1) {
-			for (ModelCheckingResult subModuleResult : subModuleResults) {
-				composedResult.getMinCutSets().addAll(subModuleResult.getMinCutSets());
-			}
-		} else {
-			@SuppressWarnings("unchecked")
-			Set<Set<Object>>[] allMinCuts = new HashSet[subModuleResults.size()];
-			for (int i = 0; i < subModuleResults.size(); ++i) {
-				allMinCuts[i] = subModuleResults.get(i).getMinCutSets();
-			}
-			
-			Set<Set<Object>> productMinCutSets = minimumCutSet.cartesianComposition(allMinCuts);
-			composedResult.getMinCutSets().addAll(productMinCutSets);
-		}	
-	}
-
-
-	@Override
-	public void visit(Detectability detectabilityMetrc) {
-		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
-		detectabilityMetrc.derive(resultUnobservedFailure.getAvailability(), resultObservedFailure.getAvailability(), composedResult.getDetectabiity());
-	}
-
-
-	@Override
-	public void visit(MeanTimeToDetection meanTimeToDetectionMetric) {
-		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
-		double derivedMTTD = meanTimeToDetectionMetric.derive(resultUnobservedFailure.getMeanTimeToFailure(), resultObservedFailure.getMeanTimeToFailure());
-		composedResult.setMeanTimeToDetection(derivedMTTD);
-	}
-
-
-	@Override
-	public void visit(SteadyStateDetectability steadyStateDetectability) {
-		ModelCheckingResult resultUnobservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED));
-		ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.OBSERVED));
-		double derivedSteadyStateDetectability = steadyStateDetectability.derive(resultUnobservedFailure.getSteadyStateAvailability(), resultObservedFailure.getSteadyStateAvailability());
-		composedResult.setSteadyStateDetectability(derivedSteadyStateDetectability);
-	}
-	
 	/**
 	 * Composes the model checking results for the leaf modules into the model checking result
 	 * of the top level module
@@ -225,9 +93,6 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 	 */
 	void composeModuleResults(Module module, DFTModularization modularization, SubMonitor subMonitor, IBaseMetric[] metrics, Map<Module, ModelCheckingResult> mapModuleToResult) {
 		ModelCheckingResult result = mapModuleToResult.get(module);
-		if (result != null) {
-			return;
-		}
 
 		List<Module> subModules = modularization.getSubModules(module);		
 		List<ModelCheckingResult> subModuleResults = new ArrayList<>();
@@ -255,4 +120,54 @@ public class DFTMetricsComposer implements IBaseMetricVisitor, IDerivedMetricVis
 			mapModuleToResult.remove(subModule);
 		}
 	}
+	
+	private IBaseMetricVisitor metricVisitor = new IBaseMetricVisitor() {
+		@Override
+		public void visit(Reliability reliabilityMetric, SubMonitor subMonitor) {
+			List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getFailRates()).collect(Collectors.toList());
+			reliabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getFailRates(), k, 1);
+		}
+
+		@Override
+		public void visit(MeanTimeToFailure mttfMetric) {
+			throw new UnsupportedOperationException("MTTF is not composable!");
+		}
+
+		@Override
+		public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
+			List<List<Double>> probabilityCurves = subModuleResults.stream().map(result -> result.getAvailability()).collect(Collectors.toList());
+			availabilityMetric.composeProbabilityCurve(probabilityCurves, composedResult.getAvailability(), k, -1);
+		}
+
+		@Override
+		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
+			double[] childSteadyStateAvailabilities = new double[subModuleResults.size()];
+			
+			for (int j = 0; j < subModuleResults.size(); ++j) {
+				ModelCheckingResult subModuleResult = subModuleResults.get(j);
+				childSteadyStateAvailabilities[j] = subModuleResult.getSteadyStateAvailability();
+			}
+			
+			double composedSteadyStateAvailability = IQuantitativeMetric.composeProbabilities(childSteadyStateAvailabilities, k);
+			composedResult.setSteadyStateAvailability(composedSteadyStateAvailability);
+		}
+
+		@Override
+		public void visit(MinimumCutSet minimumCutSet) {
+			if (k == 1) {
+				for (ModelCheckingResult subModuleResult : subModuleResults) {
+					composedResult.getMinCutSets().addAll(subModuleResult.getMinCutSets());
+				}
+			} else {
+				@SuppressWarnings("unchecked")
+				Set<Set<Object>>[] allMinCuts = new HashSet[subModuleResults.size()];
+				for (int i = 0; i < subModuleResults.size(); ++i) {
+					allMinCuts[i] = subModuleResults.get(i).getMinCutSets();
+				}
+				
+				Set<Set<Object>> productMinCutSets = minimumCutSet.cartesianComposition(allMinCuts);
+				composedResult.getMinCutSets().addAll(productMinCutSets);
+			}
+		}
+	};
 }

@@ -18,7 +18,7 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
  */
 
 public enum FaultTreeNodeType {
-	FAULT, AND, OR, VOTE, SPARE, POR_I, PAND_I, SAND, POR, PAND, BASIC_EVENT, FDEP, RDEP, PDEP, MONITOR, DELAY;
+	FAULT, AND, OR, VOTE, SPARE, POR_I, PAND_I, SAND, POR, PAND, BASIC_EVENT, FDEP, RDEP, PDEP, MONITOR, DELAY, SEQ;
 	
 	/**
 	 * Checks if this is an order dependent fault tree node type
@@ -31,6 +31,7 @@ public enum FaultTreeNodeType {
 			case SAND:
 			case POR:
 			case PAND:
+			case SEQ:
 				return true;
 			default:
 				return false;
@@ -63,5 +64,13 @@ public enum FaultTreeNodeType {
 			default: 
 				return false;
 		}
+	}
+
+	/**
+	 * Returns true iff this gate has an output
+	 * @return true iff the gate has an output
+	 */
+	public boolean hasOutput() {
+		return !this.equals(SEQ);
 	}
 }

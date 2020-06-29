@@ -25,10 +25,11 @@ import org.junit.Test;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * 
@@ -49,14 +50,13 @@ public class MarkovModelCheckerTest {
 		MarkovState state1 = new MarkovState();
 		MarkovState state2 = new MarkovState();
 		final double RATE = 6;
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
+
 		ma.addState(state1);
 		ma.addState(state2);
-		ma.getFinalStateProbs().put(state2, 1d);
+		state2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		ma.addMarkovianTransition("b", state2, state1, 1);
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Reliability.UNIT_RELIABILITY, MTTF.MTTF), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		int timepoint = (int) (1 / DELTA) - 1;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), EPSILON);
@@ -73,21 +73,20 @@ public class MarkovModelCheckerTest {
 		MarkovModelChecker modelChecker = new MarkovModelChecker(1, EPSILON);
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
+
 		MarkovState state1 = new MarkovState();
 		MarkovState state2 = new MarkovState();
 		ma.addState(state1);
 		ma.addState(state2);
-		ma.getFinalStateProbs().put(state2, 1d);
+		state2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		final double RATE1 = 1.2;
 		final double RATE2 = 1.2;
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, Availability.UNIT_AVAILABILITY,
-				SteadyStateAvailability.STEADY_STATE_AVAILABILITY), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, Availability.UNIT_AVAILABILITY,
+				SteadyStateAvailability.SSA), null);
 		
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 		assertEquals(EXPECTED_POINT_AVAILABILITY, result.getAvailability()); 
@@ -103,9 +102,7 @@ public class MarkovModelCheckerTest {
 		// 				   nondet --- a ------------------.> fail
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("m");
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
+
 		MarkovState init = new MarkovState();
 		MarkovState nondet = new MarkovState();
 		MarkovState good = new MarkovState();
@@ -115,7 +112,7 @@ public class MarkovModelCheckerTest {
 		ma.addState(nondet);
 		ma.addState(good);
 		ma.addState(fail);
-		ma.getFinalStateProbs().put(fail, 1d);
+		fail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		final double RATE_INIT_TO_NONDET = 5;
 		final double RATE_GOOD_TO_FAIL = 2;
@@ -128,7 +125,7 @@ public class MarkovModelCheckerTest {
 		ma.addNondeterministicTransition("a", nondet, good);
 		ma.addNondeterministicTransition("b", nondet, fail);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.STEADY_STATE_AVAILABILITY), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, SteadyStateAvailability.SSA), null);
 		
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 	}
@@ -143,7 +140,7 @@ public class MarkovModelCheckerTest {
 		//          2 ---> good2 --- 5 ---> fail2 --- 0.5 -> good2
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		ma.getEvents().add("m");
+
 		MarkovState init = new MarkovState();
 		MarkovState good1 = new MarkovState();
 		MarkovState fail1 = new MarkovState();
@@ -155,8 +152,8 @@ public class MarkovModelCheckerTest {
 		ma.addState(fail1);
 		ma.addState(good2);
 		ma.addState(fail2);
-		ma.getFinalStateProbs().put(fail1, 1d);
-		ma.getFinalStateProbs().put(fail2, 1d);
+		fail1.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		fail2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		final double RATE_INIT_TO_GOOD_1 = 3;
 		final double RATE_GOOD_1_TO_FAIL_1 = 2;
@@ -174,7 +171,7 @@ public class MarkovModelCheckerTest {
 		ma.addMarkovianTransition("m", good2, fail2, RATE_GOOD_2_TO_FAIL_2);
 		ma.addMarkovianTransition("m", fail2, good2, RATE_FAIL_2_TO_GOOD_2);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, SteadyStateAvailability.STEADY_STATE_AVAILABILITY), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, SteadyStateAvailability.SSA), null);
 		
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), EPSILON);
 	}
@@ -189,26 +186,23 @@ public class MarkovModelCheckerTest {
 		MarkovState fail = new MarkovState();
 		MarkovState inter = new MarkovState();
 		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
-		
 		ma.addState(init);
 		ma.addState(fail);
 		ma.addState(inter);
-		ma.getFinalStateProbs().put(fail, 1d);
+		fail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		ma.addMarkovianTransition("c", init, fail, 1);
 		ma.addMarkovianTransition("b", init, inter, 1);
 		ma.addMarkovianTransition("a", inter, fail, 1);
 		
-		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, MinimumCutSet.MINCUTSET), null);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, MinimumCutSet.MINCUTSET), null);
 		
 		final int COUNT_EXPECTED_MINCUT_SETS = 2;
 		assertEquals(COUNT_EXPECTED_MINCUT_SETS, result.getMinCutSets().size());
 		assertThat(result.getMinCutSets(), hasItem(Collections.singleton("c")));
 		assertThat(result.getMinCutSets(), hasItem(new HashSet<>(Arrays.asList("a", "b"))));
 		
-		result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, new MinimumCutSet(1)), null);
+		result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, new MinimumCutSet(1)), null);
 		
 		final int COUNT_EXPECTED_MINCUT_SETS_RESTRICTED = 1;
 		assertEquals(COUNT_EXPECTED_MINCUT_SETS_RESTRICTED, result.getMinCutSets().size());

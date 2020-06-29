@@ -31,7 +31,9 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
@@ -45,7 +47,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 public class ASynthesizerExperiment {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
-	protected BasicSynthesizer synthesizer;
+	protected ModularSynthesizer synthesizer;
 	
 	protected Concept concept;
 	protected FaultTreeBuilder ftBuilder;
@@ -56,7 +58,7 @@ public class ASynthesizerExperiment {
 		concept = ConceptXmiLoader.loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
 		this.ftBuilder = new FaultTreeBuilder(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
-		this.synthesizer = new BasicSynthesizer();
+		this.synthesizer = new ModularSynthesizer();
 	}
 	
 	/**
@@ -103,8 +105,7 @@ public class ASynthesizerExperiment {
 					testFolder(file, folderPath + "/" + file.getName());
 				} else {
 					Fault fault = createDFT(folderPath + "/" + file.getName());
-					System.out.println(fault.getFaultTree().toDot());
-					synthesizer.synthesize(fault);
+					synthesizer.synthesize(new SynthesisQuery(fault), null);
 					saveStatistics(synthesizer.getStatistics(), file.getName(), "rise/2019/" + folder.getName());
 				}
 			}
@@ -119,7 +120,7 @@ public class ASynthesizerExperiment {
 	 * @param synthesizer the synthesizer
 	 * @throws IOException exception
 	 */
-	protected void testFile(File file, String filePath, String saveFileName, BasicSynthesizer synthesizer) throws IOException {
+	protected void testFile(File file, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {
 		
 		String entireFile = new String(Files.readAllBytes(file.toPath()));
 		
@@ -142,7 +143,7 @@ public class ASynthesizerExperiment {
 					if (matchingFiles != null && matchingFiles.length != 0) {
 						File benchmarkFile = matchingFiles[0];
 						Fault fault = createDFT(filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName());
-						synthesizer.synthesize(fault);
+						synthesizer.synthesize(new SynthesisQuery(fault), null);
 						saveStatistics(synthesizer.getStatistics(), benchmarkFile.getName(), saveFileName);
 					}
 				}

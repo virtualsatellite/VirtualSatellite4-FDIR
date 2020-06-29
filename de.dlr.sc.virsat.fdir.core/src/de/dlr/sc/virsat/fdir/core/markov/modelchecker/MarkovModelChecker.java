@@ -30,8 +30,9 @@ import de.dlr.sc.virsat.fdir.core.matrix.IMatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.MatrixFactory;
 import de.dlr.sc.virsat.fdir.core.matrix.iterator.IMatrixIterator;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -57,6 +58,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	/* Buffers */
 
 	private double[] probabilityDistribution;
+	private Map<MarkovState, Object> mapStateToQualitativeResult;
 
 	/* Results */
 	
@@ -114,7 +116,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 
 		if (generatorMatrixTerminal == null) {
-			generatorMatrixTerminal = matrixFactory.createGeneratorMatrix(modelCheckingQuery.getMa(), true, delta);
+			generatorMatrixTerminal = matrixFactory.createGeneratorMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getFailStates(), delta);
 		}
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");					
@@ -159,12 +161,12 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	}
 	
 	@Override
-	public void visit(MTTF mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric) {
 		if (mttfBellmanMatrix == null) {
-			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), modelCheckingQuery.getMa().getFinalStates(), true);
+			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), modelCheckingQuery.getFailStates(), true);
 		}
 		
-		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getStates());
+		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), modelCheckingQuery.getFailLabelProvider());
 		
 		probabilityDistribution = mxIterator.converge(eps);
 		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
@@ -177,7 +179,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	@Override
 	public void visit(Availability availabilityMetric, SubMonitor subMonitor) {
 		if (generatorMatrix == null) {
-			generatorMatrix = matrixFactory.createGeneratorMatrix(modelCheckingQuery.getMa(), false, delta);
+			generatorMatrix = matrixFactory.createGeneratorMatrix(modelCheckingQuery.getMa(), Collections.emptySet(), delta);
 		}
 		
 		subMonitor.setTaskName("Running Markov Checker on Model");
@@ -185,35 +187,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		probabilityDistribution = getInitialProbabilityDistribution();
 		IMatrixIterator mtxIterator = availabilityMetric.iterator(generatorMatrix, modelCheckingQuery.getMa(), probabilityDistribution, eps);
 		
-		if (Double.isFinite(availabilityMetric.getTime())) {
-			int steps = (int) (availabilityMetric.getTime() / delta);
-			
-			subMonitor.setWorkRemaining(steps);
-			
-			for (int time = 0; time <= steps; ++time) {
-				subMonitor.split(1);
-				modelCheckingResult.availability.add(1 - getFailRate());
-				mtxIterator.iterate();
-			}
-		} else {
-			final int PROGRESS_COUNT = 100;
-			double oldFailRate = getFailRate();
-			modelCheckingResult.availability.add(oldFailRate);
-
-			boolean convergence = false;
-			while (!convergence) {
-				subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-				mtxIterator.iterate();
-				double newFailRate = getFailRate();
-				modelCheckingResult.availability.add(1 - newFailRate);
-				double change = Math.abs(newFailRate - oldFailRate);
-				oldFailRate = newFailRate;
-				double relativeChange = change / newFailRate;
-				if (relativeChange < eps || !Double.isFinite(change)) {
-					convergence = true;
-					subMonitor.split(PROGRESS_COUNT);
-				}
-			}
+		int steps = (int) (availabilityMetric.getTime() / delta);
+		
+		subMonitor.setWorkRemaining(steps);
+		
+		for (int time = 0; time <= steps; ++time) {
+			subMonitor.split(1);
+			modelCheckingResult.availability.add(1 - getFailRate());
+			mtxIterator.iterate();
 		}
 	}
 
@@ -228,7 +209,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		for (StronglyConnectedComponent endSCC : endSCCs) {
 			IMatrix bellmanMatrixSCC = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), endSCC.getStates(), Collections.emptySet(), true);
-			IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(bellmanMatrixSCC, modelCheckingQuery.getMa(), endSCC.getStates());
+			IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(bellmanMatrixSCC, modelCheckingQuery.getMa(), endSCC.getStates(), modelCheckingQuery.getFailLabelProvider());
 			probabilityDistribution = mtxIterator.converge(eps);
 			if (!Double.isFinite(probabilityDistribution[0])) {
 				probabilityDistribution[0] = 1;
@@ -239,7 +220,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			}
 		}
 		
-		IMatrix transitionMatrixToEndSCCs = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getStates(), endSCCStates, true);
+		IMatrix transitionMatrixToEndSCCs = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), endSCCStates, true);
 		IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(transitionMatrixToEndSCCs, modelCheckingQuery.getMa(), ssas);
 		probabilityDistribution = mtxIterator.converge(eps);
 		
@@ -252,8 +233,8 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		// Construct the minimum cut sets as follows:
 		// MinCuts(s) = UNION_{(s, a, s')} ( {a} \cross MinCuts(s') )
 		// MinCuts(f) = \emptyset for any fail state f
-
-		Set<? extends MarkovState> failStates = modelCheckingQuery.getMa().getFinalStates();
+		
+		Set<? extends MarkovState> failStates = modelCheckingQuery.getFailStates();
 		Queue<MarkovState> toProcess = new LinkedList<>();
 		toProcess.addAll(failStates);
 
@@ -263,7 +244,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 			MarkovState state = toProcess.poll();
 
 			boolean shouldEnqueuePredecessors = false;
-			if (!modelCheckingQuery.getMa().getFinalStates().contains(state)) {
+			if (!failStates.contains(state)) {
 				// Update the mincuts
 				Set<Set<Object>> oldMinCuts = mapStateToMinCuts.get(state);
 				Set<Set<Object>> minCuts = new HashSet<>();
@@ -314,7 +295,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 				for (Object predTransition : predTransitions) {
 					MarkovTransition<?> transition = (MarkovTransition<?>) predTransition;
 					MarkovState predecessor = (MarkovState) transition.getFrom();
-					if (!toProcess.contains(predecessor) && !modelCheckingQuery.getMa().getFinalStates().contains(predecessor)) {
+					if (!toProcess.contains(predecessor) && !failStates.contains(predecessor)) {
 						toProcess.add(predecessor);
 					}
 				}
@@ -323,6 +304,9 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 
 		Set<Set<Object>> minCuts = mapStateToMinCuts.getOrDefault(modelCheckingQuery.getMa().getStates().get(0), Collections.emptySet());
 		modelCheckingResult.getMinCutSets().addAll(minCuts);
+		
+		mapStateToQualitativeResult = new HashMap<>();
+		mapStateToQualitativeResult.putAll(mapStateToMinCuts);
 	}
 
 	/**
@@ -334,7 +318,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		double res = 0;
 
 		for (MarkovState state : modelCheckingQuery.getMa().getStates()) {
-			if (modelCheckingQuery.getMa().getFinalStates().contains(state)) {
+			if (state.getFailLabels().contains(FailLabel.FAILED)) {
 				res += probabilityDistribution[state.getIndex()];
 			}
 		}
@@ -358,7 +342,11 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		return delta;
 	}
 	
-	public double[] getProbabilityDistribution() {
+	public double[] getQuantitativeResults() {
 		return probabilityDistribution;
+	}
+	
+	public Map<MarkovState, Object> getQualitativeResults() {
+		return mapStateToQualitativeResult;
 	}
 }

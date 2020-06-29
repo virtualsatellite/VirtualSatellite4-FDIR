@@ -91,8 +91,8 @@ public class FaultTreeHelper {
 
 		for (FaultTree faultTree : faultTrees) {
 			for (FaultTreeEdge edge : getEdges(edgeType, faultTree)) {
-				if (edge.getTo().equals(node)) {
-					nodes.add(edge.getFrom());
+				if (edgeType.equals(EdgeType.PARENT) ? edge.getFrom().equals(node) : edge.getTo().equals(node)) {
+					nodes.add(edgeType.equals(EdgeType.PARENT) ? edge.getTo() : edge.getFrom());
 				}
 			}
 		}

@@ -15,6 +15,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+
 /**
  * This class tests the MarkovAutomaton class
  * @author muel_s8
@@ -94,7 +96,7 @@ public class MarkovAutomatonTest {
 		MarkovState state3 = new MarkovState();
 		MarkovState state4 = new MarkovState();
 
-		ma.getFinalStateProbs().put(state2, 1d);
+		state2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		ma.addState(state1);
 		ma.addState(state2);

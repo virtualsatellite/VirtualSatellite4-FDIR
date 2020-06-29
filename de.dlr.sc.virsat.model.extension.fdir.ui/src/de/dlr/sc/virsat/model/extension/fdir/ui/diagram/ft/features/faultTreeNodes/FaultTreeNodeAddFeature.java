@@ -50,6 +50,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	public static final IColorConstant OBSERVER_PORT_COLOR = IColorConstant.LIGHT_GRAY;
 	
 	public static final int INDEX_SPARE_RECT_SHAPE = 0;
+	public static final int INDEX_SEQ_ARROW_SHAPE = 0;
 	public static final int INDEX_VOTE_TRESHOLD_SHAPE = 1;
 	public static final int INDEX_DELAY_SHAPE = 1;
 	public static final int INDEX_OBSERVATION_RATE_SHAPE = 1;
@@ -125,9 +126,11 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 			decorateMONITOR((MONITOR) addedNode, containerShape);
 		}
 		
-		Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
-		link(outputAnchor, addedNode);
-				
+		if (addedNode.getFaultTreeNodeType().hasOutput()) {
+			Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
+			link(outputAnchor, addedNode);
+		}
+		
 		Graphiti.getPeService().setPropertyValue(containerShape, FAULT_TREE_NODE_TYPE_KEY, addedNode.getFaultTreeNodeType().toString());
 		updatePictogramElement(containerShape);
 		

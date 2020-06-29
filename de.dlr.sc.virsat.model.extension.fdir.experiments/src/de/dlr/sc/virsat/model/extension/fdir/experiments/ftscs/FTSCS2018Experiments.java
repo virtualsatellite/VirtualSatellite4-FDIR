@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimi
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
  * This class produces the experimental data for the Formal Techniques for Safety Critical Systems
@@ -40,7 +41,7 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		System.out.println("Original #states: " + ra.getStates().size());
 		System.out.println("Original #transitions: " + ra.getTransitions().size());
 		saveRA(ra, "ftscs/mcs/original");
@@ -123,7 +124,7 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 			ftBuilder.connectSpare(tle, backup, spare2);
 			
 			BasicSynthesizer synthesizer = new BasicSynthesizer();
-			RecoveryAutomaton ra = synthesizer.synthesize(tle);
+			RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 
 			int statesMa = synthesizer.getStatistics().maBuildStatistics.maxStates;
 			int statesMinimizedRa = ra.getStates().size();

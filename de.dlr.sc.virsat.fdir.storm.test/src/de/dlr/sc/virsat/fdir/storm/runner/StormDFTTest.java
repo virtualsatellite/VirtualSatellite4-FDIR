@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 
 /**
@@ -32,7 +32,7 @@ public class StormDFTTest {
 	public void testBuildCommandWithArgs() {
 		StormDFT stormDFT = new StormDFT();
 		stormDFT.addMetric(new Reliability(1));
-		stormDFT.addMetric(MTTF.MTTF);
+		stormDFT.addMetric(MeanTimeToFailure.MTTF);
 		stormDFT.setDelta(1);
 		String[] instancePath = {"//c/Users/test"};
 		String[] commandWithArgs = stormDFT.buildCommandWithArgs(instancePath, false);

@@ -9,10 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+
+import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 
 // *****************************************************************
 // * Class Declaration
@@ -38,5 +41,15 @@ public class UiSnippetTableFDIRParameters extends AUiSnippetTableFDIRParameters 
 		
 		table.setLayoutData(gridDataTable);
 		return table;
+	}
+	
+	@Override
+	public boolean isActive(EObject model) {
+		if (model instanceof StructuralElementInstance) {
+			StructuralElementInstance sei = (StructuralElementInstance) model;
+			return sei.getParent() == null && super.isActive(model);
+		}
+		
+		return false;
 	}
 }

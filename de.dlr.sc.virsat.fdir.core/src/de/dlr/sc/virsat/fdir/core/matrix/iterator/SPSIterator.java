@@ -10,6 +10,12 @@
 
 package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
 
 /**
@@ -34,6 +40,8 @@ public class SPSIterator extends AMatrixIterator {
 	private double[] vpro;
 	private double[] vprotmp;
 	private double[] vsum;
+	private List<MarkovState> probabilisticStates;
+	private MarkovAutomaton<? extends MarkovState> ma;
 	
 	/**
 	 * Implementation of a MatrixIterator using custom sparse matrices
@@ -42,7 +50,7 @@ public class SPSIterator extends AMatrixIterator {
 	 * @param probabilityDistribution the initial probability distribution
 	 * @param eps the precision epsilon
 	 */
-	public SPSIterator(IMatrix generatorMatrix, double[] probabilityDistribution, double eps) {
+	public SPSIterator(IMatrix generatorMatrix, double[] probabilityDistribution, MarkovAutomaton<? extends MarkovState> ma, double eps) {
 		super(generatorMatrix, probabilityDistribution);	
 		this.iteratorParams = new IteratorParams(eps);
 		
@@ -50,12 +58,32 @@ public class SPSIterator extends AMatrixIterator {
 		this.vpro = new double[probabilityDistribution.length];
 		this.vprotmp = new double[probabilityDistribution.length];
 		this.matrix = initUniformMatrix();
+		this.ma = ma;
+		
+		probabilisticStates = new ArrayList<>();
+		for (MarkovState state : ma.getStates()) {
+			if (state.isProbabilisic()) {
+				probabilisticStates.add(state);
+			}
+		}
 	}
 
 	/**
 	 * Performs one update iteration
 	 */
 	public void iterate() {
+		for (MarkovState probabilisticState : probabilisticStates) {
+			int indexFrom = probabilisticState.getIndex();
+			List<?> succTransitions = ma.getSuccTransitions(probabilisticState);
+			for (Object succTransition : succTransitions) {
+				MarkovTransition<?> markovTransition = (MarkovTransition<?>) succTransition;
+				MarkovState stateTo = (MarkovState) markovTransition.getTo();
+				int indexTo = stateTo.getIndex();
+				vsum[indexTo] += vsum[indexFrom] * markovTransition.getRate();
+			}
+			vsum[indexFrom] = 0;
+		}
+		
 		double b = calcManhattanNorm();
 		double c = 0;
 		

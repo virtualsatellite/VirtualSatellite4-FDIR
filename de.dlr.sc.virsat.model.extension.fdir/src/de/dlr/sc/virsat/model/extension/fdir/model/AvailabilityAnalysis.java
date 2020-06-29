@@ -107,7 +107,7 @@ public class AvailabilityAnalysis extends AAvailabilityAnalysis {
 
 		subMonitor.subTask("Performing Model Checking");
 		ModelCheckingResult result = ftEvaluator
-				.evaluateFaultTree(fault, subMonitor.split(1), new Availability(maxTime), SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+				.evaluateFaultTree(fault, subMonitor.split(1), new Availability(maxTime), SteadyStateAvailability.SSA);
 		
 		
 		subMonitor.subTask("Updating Results");
