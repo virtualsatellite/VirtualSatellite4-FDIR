@@ -18,6 +18,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatMoveShapeFeature;
+import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
 
 /**
  * This class handles the drag & drop behavior of Fault Tree nodes for easy reconnection
@@ -36,9 +37,9 @@ public class CommentMoveFeature extends VirSatMoveShapeFeature {
 
 	@Override
 	public boolean canMoveShape(IMoveShapeContext context) {
-		ContainerShape targetContainer = context.getTargetContainer();
-		if (targetContainer instanceof ContainerShape) {
-			return true;
+		ContainerShape target = context.getTargetContainer();
+		if (context.getSourceContainer() != null && target != null) {
+			return DiagramHelper.hasDiagramWritePermission(context.getPictogramElement()) && (target instanceof ContainerShape);
 		}
 		return false;
 	}
