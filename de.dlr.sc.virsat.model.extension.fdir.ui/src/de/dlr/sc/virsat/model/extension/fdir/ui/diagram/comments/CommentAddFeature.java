@@ -27,7 +27,6 @@ import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeGraphicsFactory;
 
@@ -50,10 +49,6 @@ public class CommentAddFeature extends AbstractAddFeature {
 
 	public static final double TEXT_TRANSPARENCY = 0.3;
 	public static final double BOX_TRANSPARENCY = 0.3;
-
-	private static final String Y_POS_REL_TO_FAULT_NODE = "y-pos-rel-to-fault-node";
-	private static final String X_POS_REL_TO_FAULT_NODE = "x-pos-rel-to-fault-node";
-	private static final String BELONGS_TO_FAULT_NODE = "Belongs-to-fault-node";
 
 	/**
 	 * Standard constructor
@@ -114,10 +109,7 @@ public class CommentAddFeature extends AbstractAddFeature {
 
 		//Associate Comment with Fault Node
 		Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(target);
-		String faultUuid = ((FaultTreeNode) businessObjectForPictogramElement).getUuid();
-		Graphiti.getPeService().setPropertyValue(containerShape, BELONGS_TO_FAULT_NODE, faultUuid);
-		Graphiti.getPeService().setPropertyValue(containerShape, X_POS_REL_TO_FAULT_NODE, String.valueOf(context.getX()));
-		Graphiti.getPeService().setPropertyValue(containerShape, Y_POS_REL_TO_FAULT_NODE, String.valueOf(context.getY()));
+		CommentUtil.linkShapeWithFaultTreeNode(context, containerShape, businessObjectForPictogramElement);
 
 		return containerShape;
 	}

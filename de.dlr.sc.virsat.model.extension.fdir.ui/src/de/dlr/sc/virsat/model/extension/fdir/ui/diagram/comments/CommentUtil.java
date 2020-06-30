@@ -10,13 +10,19 @@
 
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments;
 
+import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IMoveShapeContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 public class CommentUtil {
-	private static final String BELONGS_TO_FAULT_NODE = "Belongs-to-fault-node";
+	private static final String BELONGS_TO_FAULT_NODE = "belongs-to-fault-node";
+	private static final String Y_POS_REL_TO_FAULT_NODE = "y-pos-rel-to-fault-node";
+	private static final String X_POS_REL_TO_FAULT_NODE = "x-pos-rel-to-fault-node";
+
 	private static final String IS_COMMENT = "is-comment";
 	private static final String TRUE = "true";
 
@@ -37,5 +43,23 @@ public class CommentUtil {
 			return false;
 		}
 		return propertyValue.equals(TRUE);
+	}
+
+	public static void linkShapeWithFaultTreeNode(IMoveShapeContext context, Shape shape, Object businessObjectForPictogramElement) {
+		String faultUuid = ((FaultTreeNode) businessObjectForPictogramElement).getUuid();
+		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, faultUuid);
+		Graphiti.getPeService().setPropertyValue(shape, X_POS_REL_TO_FAULT_NODE, String.valueOf(context.getX()));
+		Graphiti.getPeService().setPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE, String.valueOf(context.getY()));
+	}
+
+	public static void linkShapeWithFaultTreeNode(IAddContext context, ContainerShape shape, Object businessObjectForPictogramElement) {
+		String faultUuid = ((FaultTreeNode) businessObjectForPictogramElement).getUuid();
+		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, faultUuid);
+		Graphiti.getPeService().setPropertyValue(shape, X_POS_REL_TO_FAULT_NODE, String.valueOf(context.getX()));
+		Graphiti.getPeService().setPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE, String.valueOf(context.getY()));
+	}
+
+	public static void setShapeDetached(Shape shape) {
+		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, "");
 	}
 }

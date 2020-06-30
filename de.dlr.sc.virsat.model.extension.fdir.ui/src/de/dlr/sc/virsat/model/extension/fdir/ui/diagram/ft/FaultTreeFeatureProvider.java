@@ -68,6 +68,8 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.NullObjectUpdateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentDirectEditFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentMoveFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.basicEvents.BasicEventAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.basicEvents.BasicEventRemoveFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.basicEvents.BasicEventsConnectionAddFeature;
@@ -252,7 +254,7 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 
 		return super.getLayoutFeature(context);
 	}
-	
+
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IDirectEditingContext context) {
 		if (Graphiti.getPeService().getPropertyValue(context.getPictogramElement(), CommentAddFeature.IS_COMMENT_KEY) != null) {
@@ -315,6 +317,10 @@ public class FaultTreeFeatureProvider extends VirSatDiagramFeatureProvider {
 
 		if (object instanceof FaultTreeNode) {
 			return new FaultTreeNodeMoveFeature(this);
+		}
+
+		if (CommentUtil.isComment(context.getShape())) {
+			return new CommentMoveFeature(this);
 		}
 
 		return super.getMoveShapeFeature(context);
