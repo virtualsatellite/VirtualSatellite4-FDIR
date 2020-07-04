@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -70,7 +69,8 @@ public class MarkovSchedulerTest {
 		ma.addNondeterministicTransition("b", initial, bad);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(correctChoice));
+		assertThat(schedule.get(initial), hasSize(1));
 	}
 	
 	@Test
@@ -96,7 +96,8 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("b", bad, sink, 2);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(correctChoice));
+		assertThat(schedule.get(initial), hasSize(1));
 	}
 
 	@Test
@@ -122,7 +123,8 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("c", good, bad, 1);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(correctChoice));
+		assertThat(schedule.get(initial), hasSize(1));
 		
 		Map<MarkovState, Double> values = scheduler.getResults();
 		assertEquals(1, values.get(initial), 0);
@@ -146,7 +148,8 @@ public class MarkovSchedulerTest {
 		ma.addNondeterministicTransition("b", initial, bad, 1);
 		
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
-		assertThat(schedule.get(initial), allOf(hasItem(correctChoice), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(correctChoice));
+		assertThat(schedule.get(initial), hasSize(1));
 	}
 	
 	@Test
@@ -193,13 +196,15 @@ public class MarkovSchedulerTest {
 		// By default the scheduler maximizes MTTF
 		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxMTTFQuery);
-		assertThat(schedule.get(initial), allOf(hasItem(choiceA), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(choiceA));
+		assertThat(schedule.get(initial), hasSize(1));
 		
 		// Setting the obejctive to SSA should make the scheduler choose the option that maximizes SSA
 		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
 		maxSSAQuery.setObjectiveMetric(SteadyStateAvailability.SSA);
 		schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
-		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(choiceB));
+		assertThat(schedule.get(initial), hasSize(1));
 	}
 	
 	@Test
@@ -247,13 +252,15 @@ public class MarkovSchedulerTest {
 		// By default the scheduler maximizes MTTF
 		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxMTTFQuery);
-		assertThat(schedule.get(initial), allOf(hasItem(choiceA), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(choiceA));
+		assertThat(schedule.get(initial), hasSize(1));
 		
 		// Setting the obejctive to SSD should make the scheduler choose the option that maximizes SSD
 		ScheduleQuery<MarkovState> maxSSDQuery = new ScheduleQuery<>(ma, initial);
 		maxSSDQuery.setObjectiveMetric(SteadyStateDetectability.SSD);
 		schedule = scheduler.computeOptimalScheduler(maxSSDQuery);
-		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(choiceB));
+		assertThat(schedule.get(initial), hasSize(1));
 	}
 	
 	@Test
@@ -291,6 +298,7 @@ public class MarkovSchedulerTest {
 		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
 		maxSSAQuery.setObjectiveMetric(FaultTolerance.FAULT_TOLERANCE);
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
-		assertThat(schedule.get(initial), allOf(hasItem(choiceB), hasSize(1)));
+		assertThat(schedule.get(initial), hasItem(choiceB));
+		assertThat(schedule.get(initial), hasSize(1));
 	}
 }
