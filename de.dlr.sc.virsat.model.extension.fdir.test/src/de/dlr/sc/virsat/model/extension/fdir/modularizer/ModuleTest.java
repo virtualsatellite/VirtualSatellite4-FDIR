@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -118,7 +117,8 @@ public class ModuleTest extends ATestCase {
 		List<FaultTreeNode> monitors = ftHolder.getNodes(csp, EdgeType.MONITOR);
 		FaultTreeNode o = ftHolder.getNodeByName("O", MONITOR.class);
 		
-		assertThat(monitors, allOf(hasItems(o), hasSize(1)));
+		assertThat(monitors, hasItems(o));
+		assertThat(monitors, hasSize(1));
 	}
 	
 	@Test
@@ -158,9 +158,11 @@ public class ModuleTest extends ATestCase {
 		FaultTreeNode o = ftHolder.getNodeByName("O", MONITOR.class);
 		
 		List<FaultTreeNode> monitors = ftHolder.getNodes(a, EdgeType.MONITOR);
-		assertThat(monitors, allOf(hasItems(o), hasSize(1)));
+		assertThat(monitors, hasItems(o));
+		assertThat(monitors, hasSize(1));
 		
 		List<FaultTreeNode> children = ftHolder.getNodes(o, EdgeType.CHILD);
-		assertThat(children, allOf(hasItems(c), hasSize(1)));
+		assertThat(children, hasItems(c));
+		assertThat(children, hasSize(1));
 	}
 }
