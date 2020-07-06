@@ -165,7 +165,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 		@Override
 		public Double[] getValuesY(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
+			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());
@@ -183,7 +183,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 		public Double[] getValuesX(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			double maxTime = relAnalysis.getRemainingMissionTime();
-			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
+			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());

@@ -15,24 +15,20 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysis;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTree;
-import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysis;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
-import de.dlr.sc.virsat.model.extension.fdir.model.DetectabilityAnalysis;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ComposedPropertyInstance;
 
 
@@ -148,6 +144,19 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		return basicEvents;
 	}
 	
+	private IBeanList<BeanPropertyComposed<BasicEvent>> basicEventsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessBasicEventsBean() {
+		if (basicEventsBean.getArrayInstance() == null) {
+			basicEventsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("basicEvents"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<BasicEvent>> getBasicEventsBean() {
+		safeAccessBasicEventsBean();
+		return basicEventsBean;
+	}
+	
 	// *****************************************************************
 	// * Attribute: severity
 	// *****************************************************************
@@ -187,16 +196,21 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	// *****************************************************************
 	// * Attribute: faultTree
 	// *****************************************************************
-	private FaultTree faultTree = new FaultTree();
+	private BeanPropertyComposed<FaultTree> faultTree = new BeanPropertyComposed<>();
 	
 	private void safeAccessFaultTree() {
 		if (faultTree.getTypeInstance() == null) {
 			ComposedPropertyInstance propertyInstance = (ComposedPropertyInstance) helper.getPropertyInstance("faultTree");
-			faultTree.setTypeInstance(propertyInstance.getTypeInstance());
+			faultTree.setTypeInstance(propertyInstance);
 		}
 	}
 	
-	public FaultTree getFaultTree () {
+	public FaultTree getFaultTree() {
+		safeAccessFaultTree();
+		return faultTree.getValue();
+	}
+	
+	public BeanPropertyComposed<FaultTree> getFaultTreeBean() {
 		safeAccessFaultTree();
 		return faultTree;
 	}
@@ -217,6 +231,19 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		return reliabilityAnalysis;
 	}
 	
+	private IBeanList<BeanPropertyComposed<ReliabilityAnalysis>> reliabilityAnalysisBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessReliabilityAnalysisBean() {
+		if (reliabilityAnalysisBean.getArrayInstance() == null) {
+			reliabilityAnalysisBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("reliabilityAnalysis"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<ReliabilityAnalysis>> getReliabilityAnalysisBean() {
+		safeAccessReliabilityAnalysisBean();
+		return reliabilityAnalysisBean;
+	}
+	
 	// *****************************************************************
 	// * Array Attribute: availabilityAnalysis
 	// *****************************************************************
@@ -233,6 +260,19 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		return availabilityAnalysis;
 	}
 	
+	private IBeanList<BeanPropertyComposed<AvailabilityAnalysis>> availabilityAnalysisBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessAvailabilityAnalysisBean() {
+		if (availabilityAnalysisBean.getArrayInstance() == null) {
+			availabilityAnalysisBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityAnalysis"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<AvailabilityAnalysis>> getAvailabilityAnalysisBean() {
+		safeAccessAvailabilityAnalysisBean();
+		return availabilityAnalysisBean;
+	}
+	
 	// *****************************************************************
 	// * Array Attribute: detectabilityAnalysis
 	// *****************************************************************
@@ -247,6 +287,19 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 	public IBeanList<DetectabilityAnalysis> getDetectabilityAnalysis() {
 		safeAccessDetectabilityAnalysis();
 		return detectabilityAnalysis;
+	}
+	
+	private IBeanList<BeanPropertyComposed<DetectabilityAnalysis>> detectabilityAnalysisBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessDetectabilityAnalysisBean() {
+		if (detectabilityAnalysisBean.getArrayInstance() == null) {
+			detectabilityAnalysisBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectabilityAnalysis"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<DetectabilityAnalysis>> getDetectabilityAnalysisBean() {
+		safeAccessDetectabilityAnalysisBean();
+		return detectabilityAnalysisBean;
 	}
 	
 	

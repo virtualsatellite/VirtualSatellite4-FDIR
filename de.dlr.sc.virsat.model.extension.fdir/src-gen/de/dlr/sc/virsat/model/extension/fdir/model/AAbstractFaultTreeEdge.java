@@ -12,21 +12,17 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
-import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import org.eclipse.core.runtime.CoreException;
-import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
-import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
+import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.SetCommand;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 
 
 // *****************************************************************
@@ -80,97 +76,61 @@ public abstract class AAbstractFaultTreeEdge extends GenericCategory implements 
 	// *****************************************************************
 	// * Attribute: from
 	// *****************************************************************
-	private FaultTreeNode from;
+	private BeanPropertyReference<FaultTreeNode> from = new BeanPropertyReference<>();
 	
 	private void safeAccessFrom() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("from");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (from == null) {
-				createFrom(ca);
-			}
-			from.setTypeInstance(ca);
-		} else {
-			from = null;
-		}
+		from.setTypeInstance(propertyInstance);
 	}
 	
-	private void createFrom(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			from = (FaultTreeNode) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public FaultTreeNode getFrom() {
 		safeAccessFrom();
-		return from;
+		return from.getValue();
 	}
 	
 	public Command setFrom(EditingDomain ed, FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("from");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessFrom();
+		return from.setValue(ed, value);
 	}
 	
 	public void setFrom(FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("from");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessFrom();
+		from.setValue(value);
+	}
+	
+	public BeanPropertyReference<FaultTreeNode> getFromBean() {
+		safeAccessFrom();
+		return from;
 	}
 	
 	// *****************************************************************
 	// * Attribute: to
 	// *****************************************************************
-	private FaultTreeNode to;
+	private BeanPropertyReference<FaultTreeNode> to = new BeanPropertyReference<>();
 	
 	private void safeAccessTo() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("to");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (to == null) {
-				createTo(ca);
-			}
-			to.setTypeInstance(ca);
-		} else {
-			to = null;
-		}
+		to.setTypeInstance(propertyInstance);
 	}
 	
-	private void createTo(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			to = (FaultTreeNode) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public FaultTreeNode getTo() {
 		safeAccessTo();
-		return to;
+		return to.getValue();
 	}
 	
 	public Command setTo(EditingDomain ed, FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("to");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessTo();
+		return to.setValue(ed, value);
 	}
 	
 	public void setTo(FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("to");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessTo();
+		to.setValue(value);
+	}
+	
+	public BeanPropertyReference<FaultTreeNode> getToBean() {
+		safeAccessTo();
+		return to;
 	}
 	
 	

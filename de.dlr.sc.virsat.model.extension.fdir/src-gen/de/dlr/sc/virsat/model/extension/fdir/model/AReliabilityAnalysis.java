@@ -226,17 +226,17 @@ public abstract class AReliabilityAnalysis extends GenericCategory implements IB
 	// *****************************************************************
 	// * Array Attribute: reliabilityCurve
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> reliabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> reliabilityCurveBean = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessReliabilityCurve() {
-		if (reliabilityCurve.getArrayInstance() == null) {
-			reliabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("reliabilityCurve"));
+	private void safeAccessReliabilityCurveBean() {
+		if (reliabilityCurveBean.getArrayInstance() == null) {
+			reliabilityCurveBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("reliabilityCurve"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getReliabilityCurve() {
-		safeAccessReliabilityCurve();
-		return reliabilityCurve;
+	public IBeanList<BeanPropertyFloat> getReliabilityCurveBean() {
+		safeAccessReliabilityCurveBean();
+		return reliabilityCurveBean;
 	}
 	
 	

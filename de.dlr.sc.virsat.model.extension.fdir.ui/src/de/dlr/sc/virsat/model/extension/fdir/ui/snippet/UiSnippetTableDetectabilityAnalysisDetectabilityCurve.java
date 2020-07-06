@@ -174,7 +174,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve
 		@Override
 		public Double[] getValuesY(Object object) {
 			DetectabilityAnalysis detectabilityAnalysis = (DetectabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurve();
+			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurveBean();
 
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, detectabilityCurve.size());
@@ -192,7 +192,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve
 		public Double[] getValuesX(Object object) {
 			DetectabilityAnalysis detectabilityAnalysis = (DetectabilityAnalysis) object;
 			double maxTime = detectabilityAnalysis.getRemainingMissionTime();
-			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurve();
+			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurveBean();
 
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, detectabilityCurve.size());

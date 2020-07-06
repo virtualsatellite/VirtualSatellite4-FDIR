@@ -14,27 +14,23 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import org.eclipse.core.runtime.CoreException;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
-import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyInstanceList;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.SetCommand;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 
 
 // *****************************************************************
@@ -131,49 +127,31 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 	// *****************************************************************
 	// * Attribute: failure
 	// *****************************************************************
-	private Fault failure;
+	private BeanPropertyReference<Fault> failure = new BeanPropertyReference<>();
 	
 	private void safeAccessFailure() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (failure == null) {
-				createFailure(ca);
-			}
-			failure.setTypeInstance(ca);
-		} else {
-			failure = null;
-		}
+		failure.setTypeInstance(propertyInstance);
 	}
 	
-	private void createFailure(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			failure = (Fault) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public Fault getFailure() {
 		safeAccessFailure();
-		return failure;
+		return failure.getValue();
 	}
 	
 	public Command setFailure(EditingDomain ed, Fault value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessFailure();
+		return failure.setValue(ed, value);
 	}
 	
 	public void setFailure(Fault value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessFailure();
+		failure.setValue(value);
+	}
+	
+	public BeanPropertyReference<Fault> getFailureBean() {
+		safeAccessFailure();
+		return failure;
 	}
 	
 	// *****************************************************************
@@ -190,6 +168,19 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		public IBeanList<BasicEvent> getBasicEvents() {
 			safeAccessBasicEvents();
 			return basicEvents;
+		}
+		
+		private IBeanList<BeanPropertyReference<BasicEvent>> basicEventsBean = new TypeSafeReferencePropertyBeanList<>();
+		
+		private void safeAccessBasicEventsBean() {
+			if (basicEventsBean.getArrayInstance() == null) {
+				basicEventsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("basicEvents"));
+			}
+		}
+		
+		public IBeanList<BeanPropertyReference<BasicEvent>> getBasicEventsBean() {
+			safeAccessBasicEventsBean();
+			return basicEventsBean;
 		}
 	
 	// *****************************************************************

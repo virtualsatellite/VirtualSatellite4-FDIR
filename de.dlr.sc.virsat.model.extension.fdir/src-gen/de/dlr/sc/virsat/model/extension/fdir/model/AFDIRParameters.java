@@ -22,11 +22,12 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
-import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrix;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
@@ -156,33 +157,33 @@ public abstract class AFDIRParameters extends GenericCategory implements IBeanCa
 	// *****************************************************************
 	// * Array Attribute: probabilityLevels
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> probabilityLevels = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> probabilityLevelsBean = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessProbabilityLevels() {
-		if (probabilityLevels.getArrayInstance() == null) {
-			probabilityLevels.setArrayInstance((ArrayInstance) helper.getPropertyInstance("probabilityLevels"));
+	private void safeAccessProbabilityLevelsBean() {
+		if (probabilityLevelsBean.getArrayInstance() == null) {
+			probabilityLevelsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("probabilityLevels"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getProbabilityLevels() {
-		safeAccessProbabilityLevels();
-		return probabilityLevels;
+	public IBeanList<BeanPropertyFloat> getProbabilityLevelsBean() {
+		safeAccessProbabilityLevelsBean();
+		return probabilityLevelsBean;
 	}
 	
 	// *****************************************************************
 	// * Array Attribute: detectionLevels
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> detectionLevels = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> detectionLevelsBean = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessDetectionLevels() {
-		if (detectionLevels.getArrayInstance() == null) {
-			detectionLevels.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectionLevels"));
+	private void safeAccessDetectionLevelsBean() {
+		if (detectionLevelsBean.getArrayInstance() == null) {
+			detectionLevelsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectionLevels"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getDetectionLevels() {
-		safeAccessDetectionLevels();
-		return detectionLevels;
+	public IBeanList<BeanPropertyFloat> getDetectionLevelsBean() {
+		safeAccessDetectionLevelsBean();
+		return detectionLevelsBean;
 	}
 	
 	// *****************************************************************
@@ -199,6 +200,19 @@ public abstract class AFDIRParameters extends GenericCategory implements IBeanCa
 	public IBeanList<CriticalityMatrix> getCriticalityMatrices() {
 		safeAccessCriticalityMatrices();
 		return criticalityMatrices;
+	}
+	
+	private IBeanList<BeanPropertyComposed<CriticalityMatrix>> criticalityMatricesBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessCriticalityMatricesBean() {
+		if (criticalityMatricesBean.getArrayInstance() == null) {
+			criticalityMatricesBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("criticalityMatrices"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<CriticalityMatrix>> getCriticalityMatricesBean() {
+		safeAccessCriticalityMatricesBean();
+		return criticalityMatricesBean;
 	}
 	
 	

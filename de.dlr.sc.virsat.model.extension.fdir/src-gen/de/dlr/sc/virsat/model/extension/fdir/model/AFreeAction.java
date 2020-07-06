@@ -12,21 +12,16 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
-import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import org.eclipse.core.runtime.CoreException;
-import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
-import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
+import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.SetCommand;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.dvlm.categories.Category;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 
 
 // *****************************************************************
@@ -79,49 +74,31 @@ public abstract class AFreeAction extends RecoveryAction implements IBeanCategor
 	// *****************************************************************
 	// * Attribute: freeSpare
 	// *****************************************************************
-	private FaultTreeNode freeSpare;
+	private BeanPropertyReference<FaultTreeNode> freeSpare = new BeanPropertyReference<>();
 	
 	private void safeAccessFreeSpare() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("freeSpare");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (freeSpare == null) {
-				createFreeSpare(ca);
-			}
-			freeSpare.setTypeInstance(ca);
-		} else {
-			freeSpare = null;
-		}
+		freeSpare.setTypeInstance(propertyInstance);
 	}
 	
-	private void createFreeSpare(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			freeSpare = (FaultTreeNode) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public FaultTreeNode getFreeSpare() {
 		safeAccessFreeSpare();
-		return freeSpare;
+		return freeSpare.getValue();
 	}
 	
 	public Command setFreeSpare(EditingDomain ed, FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("freeSpare");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessFreeSpare();
+		return freeSpare.setValue(ed, value);
 	}
 	
 	public void setFreeSpare(FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("freeSpare");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessFreeSpare();
+		freeSpare.setValue(value);
+	}
+	
+	public BeanPropertyReference<FaultTreeNode> getFreeSpareBean() {
+		safeAccessFreeSpare();
+		return freeSpare;
 	}
 	
 	
