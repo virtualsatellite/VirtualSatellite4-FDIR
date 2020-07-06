@@ -175,7 +175,7 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 		@Override
 		public Double[] getValuesY(Object object) {
 			AvailabilityAnalysis availabilityAnalysis = (AvailabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurve();
+			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, availabilityCurve.size());
@@ -193,7 +193,7 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 		public Double[] getValuesX(Object object) {
 			AvailabilityAnalysis availabilityAnalysis = (AvailabilityAnalysis) object;
 			double maxTime = availabilityAnalysis.getRemainingMissionTime();
-			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurve();
+			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, availabilityCurve.size());

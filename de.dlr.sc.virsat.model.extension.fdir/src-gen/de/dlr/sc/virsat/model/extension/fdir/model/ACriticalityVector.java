@@ -75,17 +75,17 @@ public abstract class ACriticalityVector extends GenericCategory implements IBea
 	// *****************************************************************
 	// * Array Attribute: isCritical
 	// *****************************************************************
-	private IBeanList<BeanPropertyBoolean> isCritical = new TypeSafeArrayInstanceList<>(BeanPropertyBoolean.class);
+	private IBeanList<BeanPropertyBoolean> isCriticalBean = new TypeSafeArrayInstanceList<>(BeanPropertyBoolean.class);
 	
-	private void safeAccessIsCritical() {
-		if (isCritical.getArrayInstance() == null) {
-			isCritical.setArrayInstance((ArrayInstance) helper.getPropertyInstance("isCritical"));
+	private void safeAccessIsCriticalBean() {
+		if (isCriticalBean.getArrayInstance() == null) {
+			isCriticalBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("isCritical"));
 		}
 	}
 	
-	public IBeanList<BeanPropertyBoolean> getIsCritical() {
-		safeAccessIsCritical();
-		return isCritical;
+	public IBeanList<BeanPropertyBoolean> getIsCriticalBean() {
+		safeAccessIsCriticalBean();
+		return isCriticalBean;
 	}
 	
 	

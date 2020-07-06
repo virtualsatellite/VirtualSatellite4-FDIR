@@ -95,7 +95,7 @@ public class DetectabilityAnalysisTest extends ADetectabilityAnalysisTest {
 		analysisCommand.execute();
 
 		final long EXPECTED_NUMBER_OF_DETECTABILITY_VALUES = 101;
-		assertEquals(EXPECTED_NUMBER_OF_DETECTABILITY_VALUES, detectabilityAnalysis.getDetectabilityCurve().size());
+		assertEquals(EXPECTED_NUMBER_OF_DETECTABILITY_VALUES, detectabilityAnalysis.getDetectabilityCurveBean().size());
 		final double EPS = 0.001;
 		
 		final double EXPECTED_MEAN_TIME_TO_DETECTION = 0;

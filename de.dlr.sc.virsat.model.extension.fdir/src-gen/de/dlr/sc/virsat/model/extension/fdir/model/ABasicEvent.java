@@ -15,7 +15,6 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.RepairAction;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
@@ -24,11 +23,12 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 
 
 // *****************************************************************
@@ -246,6 +246,19 @@ public abstract class ABasicEvent extends FaultEvent implements IBeanCategoryAss
 	public IBeanList<RepairAction> getRepairActions() {
 		safeAccessRepairActions();
 		return repairActions;
+	}
+	
+	private IBeanList<BeanPropertyComposed<RepairAction>> repairActionsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessRepairActionsBean() {
+		if (repairActionsBean.getArrayInstance() == null) {
+			repairActionsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("repairActions"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<RepairAction>> getRepairActionsBean() {
+		safeAccessRepairActionsBean();
+		return repairActionsBean;
 	}
 	
 	

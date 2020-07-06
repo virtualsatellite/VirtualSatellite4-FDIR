@@ -90,7 +90,7 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 		analysisCommand.execute();
 
 		final long EXPECTED_NUMBER_OF_RELIABILITY_VALUES = 11;
-		assertEquals(EXPECTED_NUMBER_OF_RELIABILITY_VALUES, reliabilityAnalysis.getReliabilityCurve().size());
+		assertEquals(EXPECTED_NUMBER_OF_RELIABILITY_VALUES, reliabilityAnalysis.getReliabilityCurveBean().size());
 		final double EPS = 0.001;
 		assertEquals(1, reliabilityAnalysis.getMeanTimeToFailure(), EPS);
 	}

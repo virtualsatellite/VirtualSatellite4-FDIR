@@ -109,7 +109,7 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 		createDefaultColumn(COLUMN_SEVERTY_NAME);
 		
 		CriticalityMatrix cm = new CriticalityMatrix((CategoryAssignment) model);
-		AProperty isCriticalProperty = (AProperty) cm.getCriticalityMatrix().get(0).getIsCritical().get(0).getTypeInstance().getType();
+		AProperty isCriticalProperty = (AProperty) cm.getCriticalityMatrix().get(0).getIsCriticalBean().get(0).getTypeInstance().getType();
 		for (int i = 0; i < FMECAEntry.PL_NAMES.length; ++i) {
 			final int level = i + 1;
 			String columnName = level + " - " + FMECAEntry.PL_NAMES[i];
@@ -139,7 +139,7 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 					
 					ComposedPropertyInstance cpi = (ComposedPropertyInstance) element;
 					CriticalityVector cv = new CriticalityVector(cpi.getTypeInstance());
-					Object criticalityElement = cv.getIsCritical().get(level - 1).getTypeInstance();
+					Object criticalityElement = cv.getIsCriticalBean().get(level - 1).getTypeInstance();
 					return criticalityElement;
 				}
 			});
@@ -177,7 +177,7 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 				String label = severity + " - " + FMECAEntry.SL_NAMES[index];
 				return label;
 			} else {
-				redirectNotification(cv.getIsCritical().get(columnIndex - 1).getTypeInstance(), object);
+				redirectNotification(cv.getIsCriticalBean().get(columnIndex - 1).getTypeInstance(), object);
 				int criticality = columnIndex * severity * detection;
 				return String.valueOf(criticality);
 			}
@@ -193,7 +193,7 @@ public class UiSnippetTableCriticalityMatrixCriticalityMatrix extends AUiSnippet
 			ComposedPropertyInstance cpi = (ComposedPropertyInstance) object;
 			CriticalityVector cv = new CriticalityVector(cpi.getTypeInstance());
 			if (columnIndex > 0) {
-				boolean isCritical = cv.getIsCritical().get(columnIndex - 1).getValue();
+				boolean isCritical = cv.getIsCriticalBean().get(columnIndex - 1).getValue();
 				if (isCritical) {
 					return CRITICAL_COLOR;
 				} else {

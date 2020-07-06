@@ -13,14 +13,14 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
@@ -93,6 +93,19 @@ public abstract class AFaultTree extends GenericCategory implements IBeanCategor
 		return gates;
 	}
 	
+	private IBeanList<BeanPropertyComposed<Gate>> gatesBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessGatesBean() {
+		if (gatesBean.getArrayInstance() == null) {
+			gatesBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("gates"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<Gate>> getGatesBean() {
+		safeAccessGatesBean();
+		return gatesBean;
+	}
+	
 	// *****************************************************************
 	// * Array Attribute: propagations
 	// *****************************************************************
@@ -107,6 +120,19 @@ public abstract class AFaultTree extends GenericCategory implements IBeanCategor
 	public IBeanList<FaultTreeEdge> getPropagations() {
 		safeAccessPropagations();
 		return propagations;
+	}
+	
+	private IBeanList<BeanPropertyComposed<FaultTreeEdge>> propagationsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessPropagationsBean() {
+		if (propagationsBean.getArrayInstance() == null) {
+			propagationsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("propagations"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<FaultTreeEdge>> getPropagationsBean() {
+		safeAccessPropagationsBean();
+		return propagationsBean;
 	}
 	
 	// *****************************************************************
@@ -125,6 +151,19 @@ public abstract class AFaultTree extends GenericCategory implements IBeanCategor
 		return spares;
 	}
 	
+	private IBeanList<BeanPropertyComposed<FaultTreeEdge>> sparesBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessSparesBean() {
+		if (sparesBean.getArrayInstance() == null) {
+			sparesBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("spares"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<FaultTreeEdge>> getSparesBean() {
+		safeAccessSparesBean();
+		return sparesBean;
+	}
+	
 	// *****************************************************************
 	// * Array Attribute: deps
 	// *****************************************************************
@@ -141,6 +180,19 @@ public abstract class AFaultTree extends GenericCategory implements IBeanCategor
 		return deps;
 	}
 	
+	private IBeanList<BeanPropertyComposed<FaultTreeEdge>> depsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessDepsBean() {
+		if (depsBean.getArrayInstance() == null) {
+			depsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("deps"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<FaultTreeEdge>> getDepsBean() {
+		safeAccessDepsBean();
+		return depsBean;
+	}
+	
 	// *****************************************************************
 	// * Array Attribute: observations
 	// *****************************************************************
@@ -155,6 +207,19 @@ public abstract class AFaultTree extends GenericCategory implements IBeanCategor
 	public IBeanList<FaultTreeEdge> getObservations() {
 		safeAccessObservations();
 		return observations;
+	}
+	
+	private IBeanList<BeanPropertyComposed<FaultTreeEdge>> observationsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessObservationsBean() {
+		if (observationsBean.getArrayInstance() == null) {
+			observationsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("observations"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<FaultTreeEdge>> getObservationsBean() {
+		safeAccessObservationsBean();
+		return observationsBean;
 	}
 	
 	

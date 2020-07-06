@@ -15,14 +15,15 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
-import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVector;
 
 
 // *****************************************************************
@@ -86,6 +87,19 @@ public abstract class ACriticalityMatrix extends GenericCategory implements IBea
 	public IBeanList<CriticalityVector> getCriticalityMatrix() {
 		safeAccessCriticalityMatrix();
 		return criticalityMatrix;
+	}
+	
+	private IBeanList<BeanPropertyComposed<CriticalityVector>> criticalityMatrixBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessCriticalityMatrixBean() {
+		if (criticalityMatrixBean.getArrayInstance() == null) {
+			criticalityMatrixBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("criticalityMatrix"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<CriticalityVector>> getCriticalityMatrixBean() {
+		safeAccessCriticalityMatrixBean();
+		return criticalityMatrixBean;
 	}
 	
 	

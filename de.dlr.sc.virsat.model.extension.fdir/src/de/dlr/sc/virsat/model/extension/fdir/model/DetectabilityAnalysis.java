@@ -115,7 +115,7 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 				double detectability = result.getDetectabiity().get(result.getDetectabiity().size() - 1);
 				getDetectabilityBean().setValueAsBaseUnit(detectability);
 				getMeanTimeToDetectionBean().setValueAsBaseUnit(meanTimeToDetection);
-				getDetectabilityCurve().clear();
+				getDetectabilityCurveBean().clear();
 				for (int i = 0; i < result.getDetectabiity().size(); ++i) {
 					createNewDetectabilityCurveEntry(result.getDetectabiity().get(i));
 				}
@@ -131,10 +131,10 @@ public  class DetectabilityAnalysis extends ADetectabilityAnalysis {
 	 */
 	private void createNewDetectabilityCurveEntry(double value) {
 		CategoryInstantiator ci = new CategoryInstantiator();
-		APropertyInstance pi = ci.generateInstance(getDetectabilityCurve().getArrayInstance());
+		APropertyInstance pi = ci.generateInstance(getDetectabilityCurveBean().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
 		newBeanProperty.setValueAsBaseUnit(value);
-		getDetectabilityCurve().add(newBeanProperty);
+		getDetectabilityCurveBean().add(newBeanProperty);
 	}
 }

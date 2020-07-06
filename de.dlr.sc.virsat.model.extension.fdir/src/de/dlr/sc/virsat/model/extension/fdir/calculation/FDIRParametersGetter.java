@@ -57,12 +57,12 @@ public class FDIRParametersGetter implements IInputGetter {
 		FDIRParameters fdirParameters = new FDIRParameters(ca);
 		List<NumberLiteralResult> results = new ArrayList<>();
 		
-		for (APropertyInstance pi : fdirParameters.getProbabilityLevels().getArrayInstance().getArrayInstances()) {
+		for (APropertyInstance pi : fdirParameters.getProbabilityLevelsBean().getArrayInstance().getArrayInstances()) {
 			NumberLiteralResult nlr = (NumberLiteralResult) vpg.get(pi);
 			results.add(nlr);
 		}
 		
-		for (APropertyInstance pi : fdirParameters.getDetectionLevels().getArrayInstance().getArrayInstances()) {
+		for (APropertyInstance pi : fdirParameters.getDetectionLevelsBean().getArrayInstance().getArrayInstances()) {
 			NumberLiteralResult nlr = (NumberLiteralResult) vpg.get(pi);
 			results.add(nlr);
 		}

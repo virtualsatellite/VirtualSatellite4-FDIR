@@ -42,7 +42,7 @@ public class FDIRParametersTest extends AFDIRParametersTest {
 		FDIRParameters fdirParameters = new FDIRParameters(concept);
 		fdirParameters.setDefaultProbablityThresholds();
 		
-		Object[] plTresholds = fdirParameters.getProbabilityLevels()
+		Object[] plTresholds = fdirParameters.getProbabilityLevelsBean()
 				.stream().map(pl -> pl.getValue()).toArray();
 		
 		assertArrayEquals(OpClassifyPL.DEFAULT_PL_THRESHOLDS, plTresholds);
@@ -53,7 +53,7 @@ public class FDIRParametersTest extends AFDIRParametersTest {
 		FDIRParameters fdirParameters = new FDIRParameters(concept);
 		fdirParameters.setDefaultDetectabilityThresholds();
 		
-		Object[] dlTresholds = fdirParameters.getDetectionLevels()
+		Object[] dlTresholds = fdirParameters.getDetectionLevelsBean()
 				.stream().map(dl -> dl.getValue()).toArray();
 		
 		assertArrayEquals(OpClassifyDL.DEFAULT_DL_THRESHOLDS, dlTresholds);
