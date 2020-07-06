@@ -118,8 +118,8 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 			int y = containerGa.getY();
 
 			// Set top left diagram border margins of fault tree nodes to prevent context menu clipping
-			x = x < TOP_LEFT_X_BORDER_MARGIN ? TOP_LEFT_X_BORDER_MARGIN : x;
-			y = y < TOP_LEFT_Y_BORDER_MARGIN ? TOP_LEFT_Y_BORDER_MARGIN : y;
+			x = Math.max(x, TOP_LEFT_X_BORDER_MARGIN);
+			y = Math.max(y, TOP_LEFT_Y_BORDER_MARGIN);
 
 			anythingChanged |= layoutGa(containerGa, x, y, width, height);
 
