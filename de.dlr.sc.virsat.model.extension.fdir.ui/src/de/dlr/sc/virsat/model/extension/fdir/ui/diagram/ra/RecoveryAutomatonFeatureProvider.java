@@ -50,10 +50,13 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.NullObjectUpdateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentCreateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentDirectEditFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentMoveFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments.CommentUtil;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata.MinimizeRAFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.recoveryAutomata.RecoveryAutomatonAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateCreateFeature;
+import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateLayoutFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateMoveFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateSetAsInitialStateFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states.StateUnsetAsInitialStateFeature;
@@ -71,16 +74,16 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.
  */
 
 public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvider {
-	
+
 	/**
 	 * Default constructor
 	 * @param dtp the diagram type provider
 	 */
-	
+
 	public RecoveryAutomatonFeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
 	}
-	
+
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
 		List<ICreateFeature> createFeatures = new ArrayList<>();
@@ -88,127 +91,127 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 		createFeatures.add(new StateCreateFeature(this));
 		return createFeatures.toArray(new ICreateFeature[createFeatures.size()]);
 	}
-	
+
 	@Override
 	public IAddFeature getAddFeature(IAddContext context) {
 		Object newObject = context.getNewObject();
-		
+
 		if (newObject instanceof CategoryAssignment) {
 			CategoryAssignment ca = (CategoryAssignment) newObject;
-			
+
 			if (ca.getType().getName().equals(RecoveryAutomaton.class.getSimpleName())) {
 				return new RecoveryAutomatonAddFeature(this);
 			}
-			
+
 			if (ca.getType().getName().equals(State.class.getSimpleName())) {
 				return new StateAddFeature(this);
 			}
-			
+
 			if (ca.getType().getName().equals(Transition.class.getSimpleName())) {
 				return new TransitionAddFeature(this);
 			}
 		}
-		
+
 		if (newObject instanceof RecoveryAutomaton) {
 			return new RecoveryAutomatonAddFeature(this);
 		}
-		
+
 		if (newObject instanceof State) {
 			return new StateAddFeature(this);
 		}
-		
+
 		if (newObject instanceof Transition) {
 			return new TransitionAddFeature(this);
 		}
-		
+
 		if (newObject instanceof String) {
 			return new CommentAddFeature(this);
 		}
-		
+
 		return super.getAddFeature(context);
 	}
-	
+
 	@Override
 	public IUpdateFeature getUpdateFeature(IUpdateContext context) {
 		PictogramElement pe = context.getPictogramElement();
-		
+
 		if (Graphiti.getPeService().getPropertyValue(pe, CommentAddFeature.IS_COMMENT_KEY) != null) {
 			return null;
 		}
-		
+
 		Object object = getBusinessObjectForPictogramElement(pe);
-		
+
 		if (Graphiti.getPeService().getPropertyValue(pe, StateAddFeature.IS_STATE_KEY) != null) {
 			if (object == null) {
 				return new NullObjectUpdateFeature(this);
 			}
-			
+
 			return new StateUpdateFeature(this);
 		}
-		
+
 		if (Graphiti.getPeService().getPropertyValue(pe, TransitionAddFeature.IS_TRANSITION_KEY) != null) {
 			if (object == null) {
 				return new NullObjectUpdateFeature(this);
 			}
-			
+
 			return new TransitionUpdateFeature(this);
 		}
-				
+
 		return super.getUpdateFeature(context);
 	}
-	
+
 	@Override
 	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		
+
 		if (object instanceof RecoveryAutomaton || object instanceof State || object instanceof Transition) {
 			return new BeanDeleteFeature(this);
 		}
-		
+
 		return super.getDeleteFeature(context);
 	}
-	
+
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
 		return super.getRemoveFeature(context);
 	}
-	
+
 	@Override
 	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
-		return super.getLayoutFeature(context);
+		return new StateLayoutFeature(this);
 	}
-	
+
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IDirectEditingContext context) {
 		if (Graphiti.getPeService().getPropertyValue(context.getPictogramElement(), CommentAddFeature.IS_COMMENT_KEY) != null) {
 			return new CommentDirectEditFeature(this);
 		}
-		
+
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		
+
 		if (object instanceof State) {
 			return new BeanDirectEditNameFeature(this);
 		}
-		
+
 		return super.getDirectEditingFeature(context);
 	}
-	
+
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
 		return new ICreateConnectionFeature[] { new FaultEventTransitionCreateFeature(this), new TimeoutTransitionCreateFeature(this) };
 	}
-	
+
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IReconnectionContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getConnection());
-		
+
 		if (object instanceof Transition) {
 			return new TransitionReconnectionFeature(this);
 		}
-		
+
 		return super.getReconnectionFeature(context);
 	}
-	
+
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		PictogramElement[] pe = context.getPictogramElements();
@@ -235,11 +238,15 @@ public class RecoveryAutomatonFeatureProvider extends VirSatDiagramFeatureProvid
 	@Override
 	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
 		Object object = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		
+
 		if (object instanceof State) {
 			return new StateMoveFeature(this);
 		}
-		
+
+		if (CommentUtil.isComment(context.getShape())) {
+			return new CommentMoveFeature(this);
+		}
+
 		return super.getMoveShapeFeature(context);
 	}
 }
