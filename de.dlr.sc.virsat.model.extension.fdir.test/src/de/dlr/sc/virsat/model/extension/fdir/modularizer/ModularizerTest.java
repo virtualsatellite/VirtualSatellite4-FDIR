@@ -296,11 +296,16 @@ public class ModularizerTest extends ATestCase {
 		Module aModule = Module.getModule(modules, a);
 		
 		//CHECKSTYLE:OFF
-		assertThat(rootModule.getNodes(), allOf(hasSize(1), hasItems(root)));
-		assertThat(andModule.getNodes(), allOf(hasSize(1), hasItems(and)));
-		assertThat(pand1Module.getNodes(), allOf(hasSize(5), hasItems(pand1, c, beC, b, beB)));
-		assertThat(pand2Module.getNodes(), allOf(hasSize(5), hasItems(pand2, d, beD, e, beE)));
-		assertThat(aModule.getNodes(), allOf(hasSize(2), hasItems(a, beA)));
+		assertThat(rootModule.getNodes(), hasItems(root));
+		assertThat(rootModule.getNodes(), hasSize(1));
+		assertThat(andModule.getNodes(),hasItems(and));
+		assertThat(andModule.getNodes(), hasSize(1));
+		assertThat(pand1Module.getNodes(), hasItems(pand1, c, beC, b, beB));
+		assertThat(pand1Module.getNodes(), hasSize(5));
+		assertThat(pand2Module.getNodes(), hasItems(pand2, d, beD, e, beE));
+		assertThat(pand2Module.getNodes(), hasSize(5));
+		assertThat(aModule.getNodes(), hasItems(a, beA));
+		assertThat(aModule.getNodes(), hasSize(2));
 		//CHECKSTYLE:ON
 	}
 	

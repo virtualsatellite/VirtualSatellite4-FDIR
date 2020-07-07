@@ -22,9 +22,9 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.swt.ChartComposite;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.experimental.chart.swt.ChartComposite;
 
 import de.dlr.sc.virsat.commons.ui.jface.viewer.ISeriesXYValueLabelProvider;
 import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
@@ -165,7 +165,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 		@Override
 		public Double[] getValuesY(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
+			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());
@@ -183,7 +183,7 @@ public class UiSnippetTableReliabilityAnalysisReliabilityCurve
 		public Double[] getValuesX(Object object) {
 			ReliabilityAnalysis relAnalysis = (ReliabilityAnalysis) object;
 			double maxTime = relAnalysis.getRemainingMissionTime();
-			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurve();
+			IBeanList<BeanPropertyFloat> reliabilityCurve = relAnalysis.getReliabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, reliabilityCurve.size());

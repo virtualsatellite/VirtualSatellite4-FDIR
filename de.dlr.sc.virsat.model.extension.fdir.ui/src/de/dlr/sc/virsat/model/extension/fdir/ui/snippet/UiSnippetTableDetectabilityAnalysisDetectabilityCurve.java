@@ -24,9 +24,9 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.swt.ChartComposite;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.experimental.chart.swt.ChartComposite;
 
 import de.dlr.sc.virsat.commons.ui.jface.viewer.ISeriesXYValueLabelProvider;
 import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
@@ -174,7 +174,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve
 		@Override
 		public Double[] getValuesY(Object object) {
 			DetectabilityAnalysis detectabilityAnalysis = (DetectabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurve();
+			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurveBean();
 
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, detectabilityCurve.size());
@@ -192,7 +192,7 @@ public class UiSnippetTableDetectabilityAnalysisDetectabilityCurve
 		public Double[] getValuesX(Object object) {
 			DetectabilityAnalysis detectabilityAnalysis = (DetectabilityAnalysis) object;
 			double maxTime = detectabilityAnalysis.getRemainingMissionTime();
-			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurve();
+			IBeanList<BeanPropertyFloat> detectabilityCurve = detectabilityAnalysis.getDetectabilityCurveBean();
 
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, detectabilityCurve.size());

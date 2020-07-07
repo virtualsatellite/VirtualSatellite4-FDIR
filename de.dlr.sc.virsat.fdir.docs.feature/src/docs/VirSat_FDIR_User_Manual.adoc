@@ -356,7 +356,26 @@ _{type}_ image:faultTrees/{type}.png[{type} icon]::
  They only exist in the diagram.
  This also means, that if a diagram is deleted, then so are the contained comments.
 -- Graphical representation:::
-image:faultTrees/{type}_Diagram.png[Representation in graphical editor]
+image:faultTrees/{type}_Diagram.png[Representation in graphical editor]:::
+The above image shows a free floating comment, not associated with any diagram element. It can be placed or dragged freely on 
+the diagram's canvas.
+
+-- Sticky note comments:::
+You can create a sticky note comment by placing a new comment onto an existing fault tree node or
+by dragging an existing comment onto another fault tree node in the diagram.
+image:faultTrees/{type}_Sticky_Create.png[Create Sticky Note]:::
+By becoming a sticky note, the respective comment will be attached to the specific fault tree node and 
+thus will follow it along, while the fault tree node gets moved around or being auto-layouted.
+It is possible to rearrange the sticky note by moving it within the bounds of the corresponding
+fault tree diagram node 
+image:faultTrees/{type}_Sticky_Rearrange.png[Rearrange Sticky Note]:::
+or to make the sticky note a normal detached comment once again by 
+dragging the sticky note to a free area of the diagram canvas. 
+image:faultTrees/{type}_Sticky_Detach.png[Detach Sticky Note]:::
+Furthermore, sticky notes can be 
+reassigned to another fault tree node by dragging and dropping it from its currently attached
+fault tree node to a new one.
+image:faultTrees/{type}_Sticky_Reassign.png[Reassign Sticky Note]:::
 
 Collapse and Expand::  
 -- Description:::

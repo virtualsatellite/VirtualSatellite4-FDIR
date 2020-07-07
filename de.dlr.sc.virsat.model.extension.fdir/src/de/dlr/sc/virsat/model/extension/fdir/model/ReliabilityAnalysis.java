@@ -118,7 +118,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 			protected void doExecute() {
 				getReliabilityBean().setValueAsBaseUnit(1 - result.getFailRates().get(result.getFailRates().size() - 1));
 				getMeanTimeToFailureBean().setValueAsBaseUnit(mttf);
-				getReliabilityCurve().clear();
+				getReliabilityCurveBean().clear();
 				for (int i = 0; i < result.getFailRates().size(); ++i) {
 					createNewReliabilityCurveEntry(1 - result.getFailRates().get(i));
 				}
@@ -134,10 +134,10 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 	 */
 	private void createNewReliabilityCurveEntry(double value) {
 		CategoryInstantiator ci = new CategoryInstantiator();
-		APropertyInstance pi = ci.generateInstance(getReliabilityCurve().getArrayInstance());
+		APropertyInstance pi = ci.generateInstance(getReliabilityCurveBean().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
 		newBeanProperty.setValueAsBaseUnit(value);
-		getReliabilityCurve().add(newBeanProperty);
+		getReliabilityCurveBean().add(newBeanProperty);
 	}
 }

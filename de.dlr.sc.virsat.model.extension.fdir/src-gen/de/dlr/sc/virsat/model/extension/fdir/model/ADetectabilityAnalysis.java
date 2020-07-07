@@ -263,17 +263,17 @@ public abstract class ADetectabilityAnalysis extends GenericCategory implements 
 	// *****************************************************************
 	// * Array Attribute: detectabilityCurve
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> detectabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> detectabilityCurveBean = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessDetectabilityCurve() {
-		if (detectabilityCurve.getArrayInstance() == null) {
-			detectabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectabilityCurve"));
+	private void safeAccessDetectabilityCurveBean() {
+		if (detectabilityCurveBean.getArrayInstance() == null) {
+			detectabilityCurveBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectabilityCurve"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getDetectabilityCurve() {
-		safeAccessDetectabilityCurve();
-		return detectabilityCurve;
+	public IBeanList<BeanPropertyFloat> getDetectabilityCurveBean() {
+		safeAccessDetectabilityCurveBean();
+		return detectabilityCurveBean;
 	}
 	
 	

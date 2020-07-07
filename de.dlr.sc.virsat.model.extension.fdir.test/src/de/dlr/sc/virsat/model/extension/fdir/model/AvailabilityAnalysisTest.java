@@ -94,7 +94,7 @@ public class AvailabilityAnalysisTest extends AAvailabilityAnalysisTest {
 		analysisCommand.execute();
 
 		final long EXPECTED_NUMBER_OF_AVAILABILITY_VALUES = (long) (MISSION_TIME / TEST_DELTA + 1);
-		assertEquals(EXPECTED_NUMBER_OF_AVAILABILITY_VALUES, availabilityAnalysis.getAvailabilityCurve().size());
+		assertEquals(EXPECTED_NUMBER_OF_AVAILABILITY_VALUES, availabilityAnalysis.getAvailabilityCurveBean().size());
 		final double EPS = 0.001;
 		final double EXPECTED_STEADY_STATE_AVAILABILITY = 0.5;
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, availabilityAnalysis.getSteadyStateAvailability(), EPS);

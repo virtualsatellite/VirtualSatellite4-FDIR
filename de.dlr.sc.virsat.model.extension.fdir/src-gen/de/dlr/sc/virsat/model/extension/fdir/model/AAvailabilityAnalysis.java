@@ -226,17 +226,17 @@ public abstract class AAvailabilityAnalysis extends GenericCategory implements I
 	// *****************************************************************
 	// * Array Attribute: availabilityCurve
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> availabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> availabilityCurveBean = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessAvailabilityCurve() {
-		if (availabilityCurve.getArrayInstance() == null) {
-			availabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityCurve"));
+	private void safeAccessAvailabilityCurveBean() {
+		if (availabilityCurveBean.getArrayInstance() == null) {
+			availabilityCurveBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityCurve"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getAvailabilityCurve() {
-		safeAccessAvailabilityCurve();
-		return availabilityCurve;
+	public IBeanList<BeanPropertyFloat> getAvailabilityCurveBean() {
+		safeAccessAvailabilityCurveBean();
+		return availabilityCurveBean;
 	}
 	
 	
