@@ -47,6 +47,9 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.AnchorUtil.AnchorType
 
 public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 
+	private static final int TOP_LEFT_X_BORDER_MARGIN = 30;
+	private static final int TOP_LEFT_Y_BORDER_MARGIN = 30;
+
 	public static final int PADDING_X = 10;
 	public static final int PADDING_Y = 10;
 
@@ -109,7 +112,16 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 			}
 
 			anythingChanged |= layoutGa(nameText, 0, PADDING_Y, width, nameHeight);
-			anythingChanged |= layoutGa(containerGa, containerGa.getX(), containerGa.getY(), width, height);
+
+
+			int x = containerGa.getX();
+			int y = containerGa.getY();
+
+			// Set top left diagram border margins of fault tree nodes to prevent context menu clipping
+			x = Math.max(x, TOP_LEFT_X_BORDER_MARGIN);
+			y = Math.max(y, TOP_LEFT_Y_BORDER_MARGIN);
+
+			anythingChanged |= layoutGa(containerGa, x, y, width, height);
 
 			List<Anchor> inputAnchors = AnchorUtil.getAnchors(containerShape, AnchorType.INPUT);
 			AnchorUtil.sortAnchorsForXPosition(inputAnchors);
