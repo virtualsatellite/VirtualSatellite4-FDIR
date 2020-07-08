@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft;
 
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
+import org.eclipse.elk.core.math.ElkPadding;
 import org.eclipse.elk.core.options.CoreOptions;
 import org.eclipse.elk.core.options.Direction;
 import org.eclipse.elk.core.options.PortConstraints;
@@ -30,20 +31,29 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNod
  */
 
 public class FaultTreeLayoutConnector extends VirSatGraphitiDiagramLayoutConnector {
+	private static final int TOP_PADDING = 30;
+	private static final int LEFT_PADDING = 30;
+
+
 	@Override
 	public LayoutMapping buildLayoutGraph(IWorkbenchPart workbenchPart, Object diagramPart) {
 		LayoutMapping mapping = super.buildLayoutGraph(workbenchPart, diagramPart);
 
+
+
 		ElkNode topNode = mapping.getLayoutGraph();
 		topNode.setProperty(CoreOptions.DIRECTION, Direction.UP);
 		topNode.setProperty(LayeredOptions.MERGE_EDGES, true);
+
+		// Set border margin for top left corner so context menu is not clipping
+		topNode.setProperty(CoreOptions.PADDING, new ElkPadding(TOP_PADDING, LEFT_PADDING, 0, 0));
 		return mapping;
 	}
 
 	@Override
 	protected ElkNode createNode(LayoutMapping mapping, ElkNode parentNode, Shape shape) {
 		ElkNode childNode = super.createNode(mapping, parentNode, shape);
-		
+
 		String typeProperty = Graphiti.getPeService().getPropertyValue(shape, FaultTreeNodeAddFeature.FAULT_TREE_NODE_TYPE_KEY);
 		if (typeProperty != null) {
 			FaultTreeNodeType type = FaultTreeNodeType.valueOf(typeProperty);
@@ -51,13 +61,13 @@ public class FaultTreeLayoutConnector extends VirSatGraphitiDiagramLayoutConnect
 				childNode.setProperty(CoreOptions.PORT_CONSTRAINTS, PortConstraints.FIXED_ORDER);
 				return childNode;
 			}
-			
+
 			if (type == FaultTreeNodeType.SPARE || type == FaultTreeNodeType.MONITOR) {
 				childNode.setProperty(CoreOptions.PORT_CONSTRAINTS, PortConstraints.FIXED_RATIO);
 				return childNode;
 			}
 		}
-		
+
 		childNode.setProperty(CoreOptions.PORT_CONSTRAINTS, PortConstraints.FIXED_SIDE);
 		return childNode;
 	}
