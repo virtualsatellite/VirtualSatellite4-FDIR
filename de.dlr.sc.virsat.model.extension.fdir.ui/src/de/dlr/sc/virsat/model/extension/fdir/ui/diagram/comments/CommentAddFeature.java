@@ -27,6 +27,7 @@ import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
+import de.dlr.sc.virsat.model.concept.types.IBeanUuid;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeAddFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeGraphicsFactory;
 
@@ -109,7 +110,7 @@ public class CommentAddFeature extends AbstractAddFeature {
 
 		//Associate Comment with Fault Node
 		Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(target);
-		CommentUtil.linkShapeWithEntity(context, containerShape, businessObjectForPictogramElement);
+		CommentUtil.linkShapeWithEntity(context, containerShape, (IBeanUuid) businessObjectForPictogramElement);
 
 		return containerShape;
 	}

@@ -19,6 +19,7 @@ import org.eclipse.graphiti.services.Graphiti;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatMoveShapeFeature;
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
+import de.dlr.sc.virsat.model.concept.types.IBeanUuid;
 
 /**
  * This class handles the drag & drop behavior of Fault Tree nodes for easy reconnection
@@ -57,7 +58,7 @@ public class CommentMoveFeature extends VirSatMoveShapeFeature {
 			Graphiti.getPeService().sendToFront(shape);
 
 			Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(target);
-			CommentUtil.linkShapeWithEntity(context, shape, businessObjectForPictogramElement);
+			CommentUtil.linkShapeWithEntity(context, shape, (IBeanUuid) businessObjectForPictogramElement);
 		} else if (targetParent == null && target instanceof Diagram) {
 			CommentUtil.setShapeDetached(shape);
 			super.moveShape(context);

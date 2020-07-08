@@ -28,6 +28,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatLayoutFeature;
+import de.dlr.sc.virsat.model.concept.types.IBeanUuid;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.DELAY;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -156,7 +157,7 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 	 * @param bean business object of pictogram
 	 * @return true iff there is any change
 	 */
-	private boolean layoutComments(ContainerShape containerShape, Object bean) {
+	private boolean layoutComments(ContainerShape containerShape, IBeanUuid bean) {
 		boolean anythingChanged = false;
 		ContainerShape parent = containerShape.getContainer();
 
