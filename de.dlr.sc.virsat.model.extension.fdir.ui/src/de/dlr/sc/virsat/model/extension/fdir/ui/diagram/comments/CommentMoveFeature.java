@@ -57,7 +57,7 @@ public class CommentMoveFeature extends VirSatMoveShapeFeature {
 			Graphiti.getPeService().sendToFront(shape);
 
 			Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(target);
-			CommentUtil.linkShapeWithFaultTreeNode(context, shape, businessObjectForPictogramElement);
+			CommentUtil.linkShapeWithEntity(context, shape, businessObjectForPictogramElement);
 		} else if (targetParent == null && target instanceof Diagram) {
 			CommentUtil.setShapeDetached(shape);
 			super.moveShape(context);

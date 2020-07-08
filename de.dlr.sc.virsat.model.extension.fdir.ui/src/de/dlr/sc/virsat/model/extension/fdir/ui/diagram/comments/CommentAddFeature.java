@@ -109,7 +109,7 @@ public class CommentAddFeature extends AbstractAddFeature {
 
 		//Associate Comment with Fault Node
 		Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(target);
-		CommentUtil.linkShapeWithFaultTreeNode(context, containerShape, businessObjectForPictogramElement);
+		CommentUtil.linkShapeWithEntity(context, containerShape, businessObjectForPictogramElement);
 
 		return containerShape;
 	}

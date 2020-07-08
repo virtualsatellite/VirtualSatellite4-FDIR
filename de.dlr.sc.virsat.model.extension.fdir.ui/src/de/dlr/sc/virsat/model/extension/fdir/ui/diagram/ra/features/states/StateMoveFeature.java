@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.states;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
@@ -18,8 +17,6 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirSatMoveShapeFeature;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -32,9 +29,6 @@ import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ra.features.transitions.
  *
  */
 public class StateMoveFeature extends VirSatMoveShapeFeature {
-
-	private static final String Y_POS_REL_TO_FAULT_NODE = "y-pos-rel-to-fault-node";
-	private static final String X_POS_REL_TO_FAULT_NODE = "x-pos-rel-to-fault-node";
 
 	/**
 	 * Standard constructor
@@ -68,27 +62,7 @@ public class StateMoveFeature extends VirSatMoveShapeFeature {
 			new FaultEventTransitionCreateFeature(getFeatureProvider()).create(createConnectionContext);
 
 		}
-
 		super.moveShape(context);
-		moveComments(containerShape, bean);
+		CommentUtil.moveComments(containerShape, bean);
 	}
-
-	/**
-	 * @param containerShape to layout comments for
-	 * @param bean business object of pictogram
-	 */
-	private void moveComments(ContainerShape containerShape, State bean) {
-		ContainerShape parent = containerShape.getContainer();
-
-		EList<Shape> children = parent.getChildren();
-		for (Object element : children) {
-			Shape shape = (Shape) element;
-			if (CommentUtil.isComment(shape) && CommentUtil.shapeBelongsToStateNode(shape, bean)) {
-				int xPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, X_POS_REL_TO_FAULT_NODE));
-				int yPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE));
-				Graphiti.getGaService().setLocation(shape.getGraphicsAlgorithm(), containerShape.getGraphicsAlgorithm().getX() + xPos, containerShape.getGraphicsAlgorithm().getY() + yPos);
-			}
-		}
-	}
-
 }

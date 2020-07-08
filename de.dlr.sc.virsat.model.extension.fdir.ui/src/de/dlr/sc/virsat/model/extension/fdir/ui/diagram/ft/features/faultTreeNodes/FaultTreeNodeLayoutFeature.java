@@ -156,14 +156,14 @@ public class FaultTreeNodeLayoutFeature extends VirSatLayoutFeature {
 	 * @param bean business object of pictogram
 	 * @return true iff there is any change
 	 */
-	private boolean layoutComments(ContainerShape containerShape, FaultTreeNode bean) {
+	private boolean layoutComments(ContainerShape containerShape, Object bean) {
 		boolean anythingChanged = false;
 		ContainerShape parent = containerShape.getContainer();
 
 		EList<Shape> children = parent.getChildren();
 		for (Object element : children) {
 			Shape shape = (Shape) element;
-			if (CommentUtil.isComment(shape) && CommentUtil.shapeBelongsToFaultNode(shape, bean)) {
+			if (CommentUtil.isComment(shape) && CommentUtil.shapeBelongsToEntity(shape, bean)) {
 				int xPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, X_POS_REL_TO_FAULT_NODE));
 				int yPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE));
 				Graphiti.getGaService().setLocation(shape.getGraphicsAlgorithm(), containerShape.getGraphicsAlgorithm().getX() + xPos, containerShape.getGraphicsAlgorithm().getY() + yPos);
