@@ -10,13 +10,14 @@
 
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.comments;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.concept.types.IBeanUuid;
 
 public class CommentUtil {
 	private static final String BELONGS_TO_FAULT_NODE = "belongs-to-fault-node";
@@ -29,7 +30,12 @@ public class CommentUtil {
 	private CommentUtil() {
 	}
 
-	public static boolean shapeBelongsToFaultNode(Shape shape, FaultTreeNode bean) {
+	/**
+	 * @param shape
+	 * @param bean business object
+	 * @return true if shape belongs to specified business object
+	 */
+	public static boolean shapeBelongsToEntity(Shape shape, IBeanUuid bean) {
 		String propertyValue = Graphiti.getPeService().getPropertyValue(shape, BELONGS_TO_FAULT_NODE);
 		if (propertyValue == null) {
 			return false;
@@ -45,21 +51,47 @@ public class CommentUtil {
 		return propertyValue.equals(TRUE);
 	}
 
-	public static void linkShapeWithFaultTreeNode(IMoveShapeContext context, Shape shape, Object businessObjectForPictogramElement) {
-		String faultUuid = ((FaultTreeNode) businessObjectForPictogramElement).getUuid();
-		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, faultUuid);
+	/**
+	 * @param context current move context
+	 * @param shape comment shape
+	 * @param businessObjectForPictogramElement
+	 */
+	public static void linkShapeWithEntity(IMoveShapeContext context, Shape shape, IBeanUuid businessObjectForPictogramElement) {
+		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, businessObjectForPictogramElement.getUuid());
 		Graphiti.getPeService().setPropertyValue(shape, X_POS_REL_TO_FAULT_NODE, String.valueOf(context.getX()));
 		Graphiti.getPeService().setPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE, String.valueOf(context.getY()));
 	}
 
-	public static void linkShapeWithFaultTreeNode(IAddContext context, ContainerShape shape, Object businessObjectForPictogramElement) {
-		String faultUuid = ((FaultTreeNode) businessObjectForPictogramElement).getUuid();
-		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, faultUuid);
+	/**
+	 * @param context current add context
+	 * @param shape comment shape
+	 * @param businessObjectForPictogramElement
+	 */
+	public static void linkShapeWithEntity(IAddContext context, ContainerShape shape, IBeanUuid businessObjectForPictogramElement) {
+		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, businessObjectForPictogramElement.getUuid());
 		Graphiti.getPeService().setPropertyValue(shape, X_POS_REL_TO_FAULT_NODE, String.valueOf(context.getX()));
 		Graphiti.getPeService().setPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE, String.valueOf(context.getY()));
 	}
 
 	public static void setShapeDetached(Shape shape) {
 		Graphiti.getPeService().setPropertyValue(shape, BELONGS_TO_FAULT_NODE, "");
+	}
+
+	/**
+	 * @param containerShape
+	 * @param bean
+	 */
+	public static void moveComments(ContainerShape containerShape, IBeanUuid bean) {
+		ContainerShape parent = containerShape.getContainer();
+
+		EList<Shape> children = parent.getChildren();
+		for (Object element : children) {
+			Shape shape = (Shape) element;
+			if (CommentUtil.isComment(shape) && CommentUtil.shapeBelongsToEntity(shape, bean)) {
+				int xPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, X_POS_REL_TO_FAULT_NODE));
+				int yPos = Integer.parseInt(Graphiti.getPeService().getPropertyValue(shape, Y_POS_REL_TO_FAULT_NODE));
+				Graphiti.getGaService().setLocation(shape.getGraphicsAlgorithm(), containerShape.getGraphicsAlgorithm().getX() + xPos, containerShape.getGraphicsAlgorithm().getY() + yPos);
+			}
+		}
 	}
 }
