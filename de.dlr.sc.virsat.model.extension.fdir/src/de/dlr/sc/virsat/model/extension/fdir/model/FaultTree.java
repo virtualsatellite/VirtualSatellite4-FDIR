@@ -131,7 +131,7 @@ public  class FaultTree extends AFaultTree {
 	 * that can contribute to recovering the top level fault of this fault tree
 	 * @return a list of all local recovery actions
 	 */
-	public List<String> getPotentialRecoveryActions() {
+	public List<String> getCompensations() {
 		List<String> potentialRecoveryActions = new ArrayList<>();
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(getRoot());

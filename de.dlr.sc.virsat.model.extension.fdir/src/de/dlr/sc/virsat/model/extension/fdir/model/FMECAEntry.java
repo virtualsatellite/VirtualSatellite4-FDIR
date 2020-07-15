@@ -153,26 +153,24 @@ public  class FMECAEntry extends AFMECAEntry {
 		
 		getFailureEffects().addAll(getFailure().getFaultTree().getAffectedFaults());
 		
-		Set<String> proposedRecoveryActions = new HashSet<>();
-		proposedRecoveryActions.addAll(getFailure().getFaultTree().getPotentialRecoveryActions());
+		Set<String> compensations = new HashSet<>();
+		compensations.addAll(getFailure().getFaultTree().getCompensations());
 		if (getFailureMode() != null) {
-			proposedRecoveryActions.addAll(getFailureMode().getFault().getFaultTree().getPotentialRecoveryActions());
+			compensations.addAll(getFailureMode().getFault().getFaultTree().getCompensations());
 		}
 		if (getFailureCause() != null) {
-			proposedRecoveryActions.addAll(getFailureCause().getFault().getFaultTree().getPotentialRecoveryActions());
+			compensations.addAll(getFailureCause().getFault().getFaultTree().getCompensations());
 		}
 		
-		
 		CategoryInstantiator ci = new CategoryInstantiator();
-		for (String proposedRecoveryAction : proposedRecoveryActions) {
+		for (String compensation : compensations) {
 			APropertyInstance pi = ci.generateInstance(getCompensationBean().getArrayInstance());
 			BeanPropertyString newBeanProperty = new BeanPropertyString();
 			newBeanProperty.setTypeInstance((ValuePropertyInstance) pi);
-			newBeanProperty.setValue(proposedRecoveryAction);
+			newBeanProperty.setValue(compensation);
 			getCompensationBean().add(newBeanProperty);
 		}
 		
-
 		if (fdirParameters != null) {
 			Equation equation = getTypeInstance().getEquationSection().getEquations().get(0);
 			AdvancedFunction opClassifyPL = (AdvancedFunction) equation.getExpression();

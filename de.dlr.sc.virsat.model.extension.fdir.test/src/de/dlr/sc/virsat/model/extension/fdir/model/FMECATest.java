@@ -217,7 +217,31 @@ public class FMECATest extends AFMECATest {
 	}
 	
 	@Test
-	public void testGenerateEntriesMitigation() {
+	public void testGenerateEntriesCompensationRepair() {
+		Fault fault = new Fault(concept);
+		beanSei.add(fault);
+		
+		Fault fm = new Fault(concept);
+		BasicEvent cause = new BasicEvent(concept);
+		
+		RepairAction repairAction = new RepairAction(concept);
+		repairAction.setName("Reset");
+		cause.getRepairActions().add(repairAction);
+		
+		ftBuilder.connect(fault, fm, fault);
+		fm.getBasicEvents().add(cause);
+		cause.setHotFailureRate(1);
+		
+		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());
+		assertEquals(1, entries.size());
+		
+		FMECAEntry entry = entries.get(0);
+		assertEquals(1, entry.getCompensationBean().size());
+		assertEquals(repairAction.getName(), entry.getCompensationBean().get(0).getValue());
+	}
+	
+	@Test
+	public void testGenerateEntriesCompensationSpare() {
 		Fault fault = new Fault(concept);
 		beanSei.add(fault);
 		
@@ -225,10 +249,6 @@ public class FMECATest extends AFMECATest {
 		Fault red = new Fault(concept);
 		red.setName("Redundancy");
 		BasicEvent cause = new BasicEvent(concept);
-		
-		RepairAction repairAction = new RepairAction(concept);
-		repairAction.setName("Reset");
-		cause.getRepairActions().add(repairAction);
 		
 		fm.getBasicEvents().add(cause);
 		cause.setHotFailureRate(1);
@@ -242,8 +262,37 @@ public class FMECATest extends AFMECATest {
 		assertEquals(1, entries.size());
 		
 		FMECAEntry entry = entries.get(0);
-		assertEquals(2, entry.getCompensationBean().size());
-		assertEquals(repairAction.getName(), entry.getCompensationBean().get(1).getValue());
+		assertEquals(1, entry.getCompensationBean().size());
 		assertEquals("Switch to Redundancy", entry.getCompensationBean().get(0).getValue());
+	}
+	
+	@Test
+	public void testGenerateEntriesCompensationAnd() {
+		Fault fault = new Fault(concept);
+		beanSei.add(fault);
+		
+		Fault fm = new Fault(concept);
+		fm.setName("Primary");
+		Fault hotRed = new Fault(concept);
+		hotRed.setName("HotRedundancy");
+		BasicEvent cause = new BasicEvent(concept);
+		
+		fm.getBasicEvents().add(cause);
+		cause.setHotFailureRate(1);
+		
+		AND andGate = (AND) ftBuilder.createGate(fault, FaultTreeNodeType.AND);
+		ftBuilder.connect(fault, andGate, fault);
+		ftBuilder.connect(fault, fm, andGate);
+		ftBuilder.connect(fault, hotRed, andGate);
+		
+		List<FMECAEntry> entries = fmeca.generateEntries(new NullProgressMonitor());
+		assertEquals(2, entries.size());
+		
+		FMECAEntry entry1 = entries.get(0);
+		assertEquals(1, entry1.getCompensationBean().size());
+		assertEquals("HotRedundancy", entry1.getCompensationBean().get(0).getValue());
+		FMECAEntry entry2 = entries.get(1);
+		assertEquals(1, entry2.getCompensationBean().size());
+		assertEquals("Primary", entry2.getCompensationBean().get(0).getValue());
 	}
 }
