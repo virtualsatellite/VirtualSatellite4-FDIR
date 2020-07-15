@@ -47,6 +47,63 @@ For details check the Virtual Satellite 4 CORE User Manual.
 
 In the following sections, the various categories, means of analysis, etc. will be elaborated.
 
+=== Quick Start Tutorial
+
+This short tutorial is intended to familiarize you in a quick way with the common FDIR workflow. 
+For this purpose, a simple FDIR model shall be created using the points mentioned in the previous
+section as an example.
+
+:type: Tutorial
+. Create a new Virsat FDIR project
+image:tutorial/{type}_Create_Project.png[Create Project]::
+
+
+. Double-click Repository in the left-hand menu (Virsat Navigator), then click the "Add from Registry" button in the 
+opening view to load the appropriate concepts.
+image:tutorial/{type}_Add_Concept.png[Add Concepts]::
+
+
+. For your changes to take effect, you must save them upon closing the Tab
+image:tutorial/{type}_Save_Concept.png[Save Concepts]::
+
+. Add a system by adding a Configuration Tree
+image:tutorial/{type}_Add_ConfigurationTree.png[Add Configuration tree]::
+
+. Rename system to "Satellite" for example.
+image:tutorial/{type}_Rename_System.png[Rename System]::
+
+. Add a subsystem by adding an Element Configuration to the Configuration tree and name it "FDIR" for example.
+image:tutorial/{type}_Add_ElementConfiguration.png[Add Element Configuration]::
+image:tutorial/{type}_Rename_ElementConfiguration.png[Rename Element Configuration]::
+
+. Add a fault to the Element Configuration node and open it from the Virsat Navigator by double-clicking.
+image:tutorial/{type}_Add_Fault.png[Add fault]::
+
+. In the view that now opens, you can adjust the severity settings, add basic events and equations and enable various analyses.
+image:tutorial/{type}_Severity_Settings.png[Severity setting]::
+image:tutorial/{type}_Add_BasicEvents.png[Add Basic Events]::
+image:tutorial/{type}_Availability_Analysis.png[Availability Analysis]::
+image:tutorial/{type}_Save_Fault.png[Save fault changes]::
+image:tutorial/{type}_Add_Equation.png[Add Equation]::
+
+. Open the Diagram Editor
+image:tutorial/{type}_Open_DiagramEditor.png[Open Diagram Editor]::
+
+. Here you can model your fault tree with the tools in the palette on the right hand side. 
+image:tutorial/{type}_FaultTree_Modelling.png[Fault Tree Modelling]::
+
+. Afterwards you can auto layout the tree
+image:tutorial/{type}_AutoLayout.png[Auto Layout]::
+
+. Double clicking the basic event node opens a view where you can make further adjustments to 
+the basic event as for example adding equations to it.
+image:tutorial/{type}_BasicEvent_Equation.png[Basic Event Equation]::
+
+. It is also possible to add FDIR parameters to the system as follows.
+image:tutorial/{type}_Add_FDIR_Parameters.png[Add FDIR Parameters]::
+image:tutorial/{type}_FDIR_Parameters.png[FDIR Parameters]::
+Here you can make further settings.
+
 == Fault Modeling
 
 Fault modeling forms the core of VirSat4 FDIR and is the primary activity required to perform any FDIR analysis.
