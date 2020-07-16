@@ -290,9 +290,9 @@ public class FMECATest extends AFMECATest {
 		
 		FMECAEntry entry1 = entries.get(0);
 		assertEquals(1, entry1.getCompensationBean().size());
-		assertEquals("HotRedundancy", entry1.getCompensationBean().get(0).getValue());
+		assertEquals("Primary", entry1.getCompensationBean().get(0).getValue());
 		FMECAEntry entry2 = entries.get(1);
 		assertEquals(1, entry2.getCompensationBean().size());
-		assertEquals("Primary", entry2.getCompensationBean().get(0).getValue());
+		assertEquals("HotRedundancy", entry2.getCompensationBean().get(0).getValue());
 	}
 }

@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import java.util.List;
-import java.util.Set;
 
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
@@ -87,7 +86,7 @@ public class Fault extends AFault {
 		
 		for (Fault potentialParentFault : otherFaults) {
 			FaultTreeHolder ftHolder = new FaultTreeHolder(potentialParentFault);
-			Set<Fault> childFaults = ftHolder.getChildFaults(potentialParentFault);
+			List<Fault> childFaults = ftHolder.getChildFaults(potentialParentFault);
 			if (childFaults.contains(this)) {
 				return false;
 			}

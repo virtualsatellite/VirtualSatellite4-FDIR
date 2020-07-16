@@ -9,29 +9,23 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
 // * Class Declaration
@@ -124,42 +118,6 @@ public  class FaultTree extends AFaultTree {
 			}
 		});
 		return affectedFaults;
-	}
-
-	/**
-	 * Gets all recovery actions directly contained in this fault tree
-	 * that can contribute to recovering the top level fault of this fault tree
-	 * @return a list of all local recovery actions
-	 */
-	public List<String> getCompensations() {
-		List<String> potentialRecoveryActions = new ArrayList<>();
-		
-		FaultTreeHolder ftHolder = new FaultTreeHolder(getRoot());
-		List<BasicEvent> basicEvents = ftHolder.getChildFaults(getRoot()).stream()
-				.flatMap(fault -> fault.getBasicEvents().stream())
-				.collect(Collectors.toList());
-		
-		basicEvents.addAll(getRoot().getBasicEvents());
-		
-		for (BasicEvent be : basicEvents) {
-			double transientRepairRate = BasicEventHolder.getRateValue(be.getRepairRateBean());
-			if (MarkovAutomaton.isRateDefined(transientRepairRate)) {
-				potentialRecoveryActions.add("Transient Failure");
-			}
-			for (RepairAction repairAction : be.getRepairActions()) {
-				potentialRecoveryActions.add(repairAction.getName());
-			}
-		}
-		
-		for (FaultTreeEdge spareEdge : getSpares()) {
-			FaultTreeNode from = spareEdge.getFrom();
-			if (from != null) {
-				String recoveryAction = "Switch to " + (from.getParent() != null ? from.getParent().getName() + "." : "") + from.getName();
-				potentialRecoveryActions.add(recoveryAction);
-			}
-		}
-		
-		return potentialRecoveryActions;
 	}
 	
 	/**

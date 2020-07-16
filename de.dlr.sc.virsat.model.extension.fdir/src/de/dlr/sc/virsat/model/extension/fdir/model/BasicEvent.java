@@ -13,6 +13,12 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+
+import java.util.List;
+
+import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 
 // *****************************************************************
@@ -81,5 +87,19 @@ public  class BasicEvent extends ABasicEvent {
 		return getHotFailureRateBean().getValueToBaseUnit() == be.getHotFailureRateBean().getValueToBaseUnit()
 				&& getColdFailureRateBean().getValueToBaseUnit() == be.getColdFailureRateBean().getValueToBaseUnit()
 				&& getRepairRateBean().getValueToBaseUnit() == be.getRepairRateBean().getValueToBaseUnit();
+	}
+	
+	@Override
+	public List<String> getCompensations(FaultTreeHolder ftHolder) {
+		List<String> compensations = super.getCompensations(ftHolder);
+		double transientRepairRate = BasicEventHolder.getRateValue(getRepairRateBean());
+		if (MarkovAutomaton.isRateDefined(transientRepairRate)) {
+			compensations.add("Transient Failure");
+		}
+		for (RepairAction repairAction : getRepairActions()) {
+			compensations.add(repairAction.getName());
+		}
+		
+		return compensations;
 	}
 }

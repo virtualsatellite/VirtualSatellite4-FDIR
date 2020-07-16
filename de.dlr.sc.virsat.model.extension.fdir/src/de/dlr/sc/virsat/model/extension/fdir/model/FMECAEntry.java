@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
 // * Class Declaration
@@ -154,12 +155,13 @@ public  class FMECAEntry extends AFMECAEntry {
 		getFailureEffects().addAll(getFailure().getFaultTree().getAffectedFaults());
 		
 		Set<String> compensations = new HashSet<>();
-		compensations.addAll(getFailure().getFaultTree().getCompensations());
 		if (getFailureMode() != null) {
-			compensations.addAll(getFailureMode().getFault().getFaultTree().getCompensations());
+			FaultTreeHolder ftHolder = new FaultTreeHolder(getFailure().getFault());
+			compensations.addAll(getFailureMode().getCompensations(ftHolder));
 		}
 		if (getFailureCause() != null) {
-			compensations.addAll(getFailureCause().getFault().getFaultTree().getCompensations());
+			FaultTreeHolder ftHolder = new FaultTreeHolder(getFailureMode().getFault());
+			compensations.addAll(getFailureCause().getCompensations(ftHolder));
 		}
 		
 		CategoryInstantiator ci = new CategoryInstantiator();
