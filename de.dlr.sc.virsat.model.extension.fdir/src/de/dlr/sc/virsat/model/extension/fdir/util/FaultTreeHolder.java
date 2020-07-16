@@ -387,19 +387,24 @@ public class FaultTreeHolder {
 	
 	/**
 	 * Gets all direct child faults of this fault
-	 * @param fault the fault
+	 * @param node the fault
 	 * @return the set of direct child faults
 	 */
-	public Set<Fault> getChildFaults(Fault fault) {
-		Set<Fault> childFaults = new HashSet<>();
+	public List<Fault> getChildFaults(FaultTreeNode root) {
+		List<Fault> childFaults = new ArrayList<>();
 		Queue<FaultTreeNode> nodes = new LinkedList<FaultTreeNode>();
-		nodes.add(fault);
+		nodes.add(root);
 		
 		while (!nodes.isEmpty()) {
 			FaultTreeNode node = nodes.poll();
 			List<FaultTreeNode> children = getNodes(node, EdgeType.CHILD);
 			for (FaultTreeNode child : children) {
-				if (!(child instanceof Fault && childFaults.add((Fault) child))) {
+				if (child instanceof Fault) {
+					Fault childFault = (Fault) child;
+					if (!childFaults.contains(childFault)) {
+						childFaults.add(childFault);
+					}
+				} else {
 					nodes.add(child);
 				}
 			}
@@ -416,8 +421,8 @@ public class FaultTreeHolder {
 	 * @param fault the fault
 	 * @return all failure modes for the root event
 	 */
-	public Set<FaultEvent> getFailureModes(Fault fault) {
-		Set<FaultEvent> failureModes = new HashSet<>(getChildFaults(fault));
+	public List<FaultEvent> getFailureModes(Fault fault) {
+		List<FaultEvent> failureModes = new ArrayList<>(getChildFaults(fault));
 		failureModes.addAll(fault.getBasicEvents());
 		return failureModes;
 	}

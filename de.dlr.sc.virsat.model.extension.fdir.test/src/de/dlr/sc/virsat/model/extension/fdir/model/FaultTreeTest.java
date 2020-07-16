@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -23,10 +22,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElement;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralFactory;
-import de.dlr.sc.virsat.model.dvlm.structural.util.StructuralInstantiator;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 // *****************************************************************
@@ -99,35 +94,5 @@ public class FaultTreeTest extends AFaultTreeTest {
 		
 		assertThat(affectedFaults, hasItem(root));
 		assertThat(affectedFaults, not(hasItem(grandchild)));
-	}
-	
-	@Test
-	public void testGetPotentialRecoveryActions() {
-		StructuralElement se = StructuralFactory.eINSTANCE.createStructuralElement();
-		StructuralElementInstance sei = new StructuralInstantiator().generateInstance(se, "System");
-		
-		Fault root = new Fault(concept);
-		SPARE spareGate = new SPARE(concept);
-		root.getFaultTree().getGates().add(spareGate);
-		Fault child = new Fault(concept);
-		Fault spare = new Fault(concept);
-		BasicEvent be = new BasicEvent(concept);
-		
-		sei.getCategoryAssignments().add(root.getTypeInstance());
-		
-		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
-		ftBuilder.connect(root, spareGate, root);
-		ftBuilder.connect(root, child, spareGate);
-		ftBuilder.connectSpare(root, spare, spareGate);
-		root.getBasicEvents().add(be);
-		
-		RepairAction repairAction = new RepairAction(concept);
-		repairAction.setName("Reset");
-		be.getRepairActions().add(repairAction);
-		
-		List<String> potentialRecoveryActions = root.getFaultTree().getPotentialRecoveryActions();
-		
-		assertEquals(2, potentialRecoveryActions.size());
-		assertThat(potentialRecoveryActions, hasItem(repairAction.getName()));
 	}
 }

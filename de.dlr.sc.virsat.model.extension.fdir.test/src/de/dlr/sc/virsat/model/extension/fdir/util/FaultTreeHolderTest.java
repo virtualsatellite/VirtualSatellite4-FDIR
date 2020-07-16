@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public class FaultTreeHolderTest extends ATestCase {
 		ftBuilder.connect(root, grandchild, notAChild);
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
-		Set<Fault> childFaults = ftHolder.getChildFaults(root);
+		List<Fault> childFaults = ftHolder.getChildFaults(root);
 		
 		assertThat(childFaults, hasItems(child));
 		assertThat(childFaults, not(hasItem(grandchild)));
