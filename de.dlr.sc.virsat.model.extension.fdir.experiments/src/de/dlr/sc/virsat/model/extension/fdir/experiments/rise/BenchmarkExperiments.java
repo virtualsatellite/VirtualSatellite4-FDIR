@@ -12,10 +12,10 @@ package de.dlr.sc.virsat.model.extension.fdir.experiments.rise;
 
 
 import java.io.File;
-import org.junit.Before;
+
 import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 
@@ -26,11 +26,6 @@ import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BenchmarkExperiments extends ASynthesizerExperiment {
-	
-	@Before
-	public void setUp() {
-		super.setUp();
-	}
 	
 	@Test
 	public void testExperimentSet() throws Exception {
