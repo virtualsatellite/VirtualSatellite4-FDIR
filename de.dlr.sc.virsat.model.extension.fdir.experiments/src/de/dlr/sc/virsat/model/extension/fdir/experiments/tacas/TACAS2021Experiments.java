@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package de.dlr.sc.virsat.model.extension.fdir.experiments.rise;
+package de.dlr.sc.virsat.model.extension.fdir.experiments.tacas;
 
 
 
@@ -25,12 +25,26 @@ import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class BenchmarkExperiments extends ASynthesizerExperiment {
+public class TACAS2021Experiments extends ASynthesizerExperiment {
+	
+	private static final String EXPERIMENTS_SET = "tacas/2021";
+	private static final String EXPERIMENTS_PATH = "/resources/tacas/2021";
+	private File experimentSet;
+	
+	@Override
+	public void setUp() {
+		super.setUp();
+		experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
+	}
 	
 	@Test
-	public void testExperimentSet() throws Exception {
-		final File experimentSet = new File("./resources/rise/2019/experimentSet");
-		this.testFile(experimentSet, "/resources/rise/2019", "rise/2019/benchmarkExperimentsStatistics", this.synthesizer);
+	public void experimentWithModularizer() throws Exception {
+		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithModularizer.txt", this.synthesizer);
+	}
+	
+	@Test
+	public void experimentWithoutModulariter() throws Exception {
+		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer.txt", this.synthesizer);
 	}
 
 }

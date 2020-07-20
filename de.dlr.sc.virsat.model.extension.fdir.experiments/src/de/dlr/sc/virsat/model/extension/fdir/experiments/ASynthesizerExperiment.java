@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.experiments;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -93,7 +92,7 @@ public class ASynthesizerExperiment {
 	 * @param folderPath the path to the folder
 	 * @throws IOException exception
 	 */
-	protected void testFolder(File folder, String folderPath) throws IOException {
+	protected void benchmarkFolder(File folder, String folderPath) throws IOException {
 		if (folder.isDirectory()) {
 			System.out.println("Not a directory: " + folder.getAbsolutePath());
 		}
@@ -102,11 +101,9 @@ public class ASynthesizerExperiment {
 		if (files != null) {
 			for (File file : files) {
 				if (file.isDirectory()) {
-					testFolder(file, folderPath + "/" + file.getName());
+					benchmarkFolder(file, folderPath + "/" + file.getName());
 				} else {
-					Fault fault = createDFT(folderPath + "/" + file.getName());
-					synthesizer.synthesize(new SynthesisQuery(fault), null);
-					saveStatistics(synthesizer.getStatistics(), file.getName(), "rise/2019/" + folder.getName());
+					benchmarkDFT(folderPath + "/" + file.getName(), file.getName(), folderPath);
 				}
 			}
 		}
@@ -114,18 +111,20 @@ public class ASynthesizerExperiment {
 	
 	/**
 	 * Tests all of the .dft benchmarks in the given folder
-	 * @param file the file with all the dft names
+	 * @param suite the file with all the dft names
 	 * @param filePath the path to the file
 	 * @param saveFileName the name of the file you wish to save the results to
 	 * @param synthesizer the synthesizer
 	 * @throws IOException exception
 	 */
-	protected void testFile(File file, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {
+	protected void benchmark(File suite, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {	
+		Path path = Paths.get("resources/results/" + saveFileName);
+		Files.deleteIfExists(path);
 		
-		String entireFile = new String(Files.readAllBytes(file.toPath()));
+		String entireFile = new String(Files.readAllBytes(suite.toPath()));
 		
 		for (String filename : entireFile.split("\\r?\\n")) {
-			File parentFolder = file.getParentFile();
+			File parentFolder = suite.getParentFile();
 			
 			File[] childFolders = parentFolder.listFiles();
 			if (childFolders == null) {
@@ -134,21 +133,31 @@ public class ASynthesizerExperiment {
 			
 			for (File childFolder : childFolders) {
 				if (childFolder.isDirectory()) {
-					File[] matchingFiles = childFolder.listFiles(new FilenameFilter() {
-						public boolean accept(File dir, String name) {
-							return name.equals(filename);
-						}
-					});
+					File[] matchingFiles = childFolder.listFiles((File dir, String name) ->
+						name.equals(filename)
+					);
 				
-					if (matchingFiles != null && matchingFiles.length != 0) {
+					if (matchingFiles.length != 0) {
 						File benchmarkFile = matchingFiles[0];
-						Fault fault = createDFT(filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName());
-						synthesizer.synthesize(new SynthesisQuery(fault), null);
-						saveStatistics(synthesizer.getStatistics(), benchmarkFile.getName(), saveFileName);
+						String dftPath = filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName();
+						benchmarkDFT(dftPath, benchmarkFile.getName(), saveFileName);
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Benchmarks a single DFT and saves the statistics
+	 * @param dftPath the path to the dft
+	 * @param benchmarkName the name of the benchmark
+	 * @param statisticsFilePath the path to the file containing the 
+	 * @throws IOException
+	 */
+	protected void benchmarkDFT(String dftPath, String benchmarkName, String statisticsFilePath) throws IOException {
+		Fault fault = createDFT(dftPath);
+		synthesizer.synthesize(new SynthesisQuery(fault), null);
+		saveStatistics(synthesizer.getStatistics(), benchmarkName, statisticsFilePath);
 	}
 	
 	/**
@@ -193,8 +202,12 @@ public class ASynthesizerExperiment {
 	 * @throws IOException exception
 	 */
 	protected static void saveStatistics(SynthesisStatistics statistics, String testName, String filePath) throws IOException {
-		Path path = Paths.get("resources/results/" + filePath + ".txt");
-		Files.createFile(path);
+		Path path = Paths.get("resources/results/" + filePath);
+		Files.createDirectories(path.getParent());
+		
+		if (!Files.exists(path)) {
+			Files.createFile(path);
+		}
 		
 		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 			PrintStream writer = new PrintStream(outFile)) {
