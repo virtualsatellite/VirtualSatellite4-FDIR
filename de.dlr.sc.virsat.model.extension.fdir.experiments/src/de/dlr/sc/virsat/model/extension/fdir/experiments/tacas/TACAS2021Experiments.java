@@ -13,9 +13,7 @@ package de.dlr.sc.virsat.model.extension.fdir.experiments.tacas;
 
 import java.io.File;
 
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 
@@ -24,27 +22,31 @@ import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
  * @author jord_ad
  *
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TACAS2021Experiments extends ASynthesizerExperiment {
 	
 	private static final String EXPERIMENTS_SET = "tacas/2021";
 	private static final String EXPERIMENTS_PATH = "/resources/tacas/2021";
+	private static final long BENCHMARK_TIME_SECONDS = 60 * 10;
+	
 	private File experimentSet;
 	
 	@Override
 	public void setUp() {
 		super.setUp();
+		
 		experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
+		timeoutSeconds = BENCHMARK_TIME_SECONDS;
 	}
 	
 	@Test
 	public void experimentWithModularizer() throws Exception {
-		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithModularizer.txt", this.synthesizer);
+		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithModularizer.txt", synthesizer);
 	}
 	
 	@Test
 	public void experimentWithoutModulariter() throws Exception {
-		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer.txt", this.synthesizer);
+		synthesizer.setModularizer(null);
+		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer.txt", synthesizer);
 	}
 
 }

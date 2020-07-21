@@ -19,6 +19,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 
@@ -46,11 +53,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 public class ASynthesizerExperiment {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
+	private static final long DEFAULT_BENCHMARK_TIMEOUT_SECONDS = 30;
+	
 	protected ModularSynthesizer synthesizer;
 	
 	protected Concept concept;
 	protected FaultTreeBuilder ftBuilder;
 	protected RecoveryAutomatonHelper raHelper;
+	protected long timeoutSeconds = DEFAULT_BENCHMARK_TIMEOUT_SECONDS;
 	
 	@Before
 	public void setUp() {
@@ -118,6 +128,8 @@ public class ASynthesizerExperiment {
 	 * @throws IOException exception
 	 */
 	protected void benchmark(File suite, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {	
+		System.out.println("Creating benchmark data " + saveFileName + ".");
+		
 		Path path = Paths.get("resources/results/" + saveFileName);
 		Files.deleteIfExists(path);
 		
@@ -151,13 +163,33 @@ public class ASynthesizerExperiment {
 	 * Benchmarks a single DFT and saves the statistics
 	 * @param dftPath the path to the dft
 	 * @param benchmarkName the name of the benchmark
-	 * @param statisticsFilePath the path to the file containing the 
+	 * @param statisticsFilePath the path to the file containing the statistics
 	 * @throws IOException
 	 */
 	protected void benchmarkDFT(String dftPath, String benchmarkName, String statisticsFilePath) throws IOException {
-		Fault fault = createDFT(dftPath);
-		synthesizer.synthesize(new SynthesisQuery(fault), null);
-		saveStatistics(synthesizer.getStatistics(), benchmarkName, statisticsFilePath);
+		System.out.print("Benchmarking " + benchmarkName + "...");
+		
+		final Duration timeout = Duration.ofSeconds(timeoutSeconds);
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		
+		final Future<?> handler = executor.submit(() -> {
+			try {
+				Fault fault = createDFT(dftPath);
+				synthesizer.synthesize(new SynthesisQuery(fault), null);
+				saveStatistics(synthesizer.getStatistics(), benchmarkName, statisticsFilePath);
+				System.out.println(" done.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+
+		try {
+		    handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+		} catch (TimeoutException | InterruptedException | ExecutionException e) {
+		    handler.cancel(true);
+		    saveStatistics(null, benchmarkName, statisticsFilePath);
+		    System.out.println(" TIMEOUT.");
+		}
 	}
 	
 	/**
@@ -196,7 +228,7 @@ public class ASynthesizerExperiment {
 	
 	/**
 	 * Write statistic to a file
-	 * @param statistics the statistics
+	 * @param statistics the statistics, null to represent a timeout
 	 * @param testName the name of the test
 	 * @param filePath the path
 	 * @throws IOException exception
@@ -213,7 +245,11 @@ public class ASynthesizerExperiment {
 			PrintStream writer = new PrintStream(outFile)) {
 			writer.println(testName);
 			writer.println("===============================================");
-			writer.println(statistics);
+			if (statistics != null) {
+				writer.println(statistics);
+			} else {
+				writer.println("TIMEOUT");
+			}
 			writer.println();
 		}
 	}

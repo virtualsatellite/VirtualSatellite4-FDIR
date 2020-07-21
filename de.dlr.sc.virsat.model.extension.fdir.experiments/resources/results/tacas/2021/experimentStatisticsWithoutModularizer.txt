@@ -1,0 +1,126 @@
+ahrs1.dft
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		354
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		18
+	* Largest Module RA:		3
+State space generation Statistics: 
+	* Generation Time  :		51
+	* Max States       :		39
+	* Max Transitions  :		90
+Minimization Statistics: 
+	* Minimization Time  :		75
+	* #RemovedStates     :		5
+	* #RemovedTransitions:		10
+
+
+cm_simple.dft
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		647
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		25
+	* Largest Module RA:		4
+State space generation Statistics: 
+	* Generation Time  :		42
+	* Max States       :		127
+	* Max Transitions  :		406
+Minimization Statistics: 
+	* Minimization Time  :		323
+	* #RemovedStates     :		12
+	* #RemovedTransitions:		76
+
+
+cm1.dft
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		5883
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		36
+	* Largest Module RA:		68
+State space generation Statistics: 
+	* Generation Time  :		1837
+	* Max States       :		7341
+	* Max Transitions  :		25742
+Minimization Statistics: 
+	* Minimization Time  :		2146
+	* #RemovedStates     :		229
+	* #RemovedTransitions:		1667
+
+
+cm2.dft
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		130975
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		48
+	* Largest Module RA:		383
+State space generation Statistics: 
+	* Generation Time  :		27256
+	* Max States       :		178487
+	* Max Transitions  :		672864
+Minimization Statistics: 
+	* Minimization Time  :		42538
+	* #RemovedStates     :		2429
+	* #RemovedTransitions:		23352
+
+
+cm5.dft
+===============================================
+TIMEOUT
+
+hecs1-1.dft
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		362913
+	* #Modules         :		1
+	* #Trimmed         :		0
+	* Largest Module   :		32
+	* Largest Module RA:		68
+State space generation Statistics: 
+	* Generation Time  :		176037
+	* Max States       :		1443
+	* Max Transitions  :		8095
+Minimization Statistics: 
+	* Minimization Time  :		79887
+	* #RemovedStates     :		125
+	* #RemovedTransitions:		903
+
+
+hecs2-1.dft
+===============================================
+TIMEOUT
+
+hecs3-1.dft
+===============================================
+TIMEOUT
+
+hecs4-1.dft
+===============================================
+TIMEOUT
+
+hecs5-1.dft
+===============================================
+TIMEOUT
+
+hecs6-1.dft
+===============================================
+TIMEOUT
+
+hecs7-1.dft
+===============================================
+TIMEOUT
+
+hecs8-1.dft
+===============================================
+TIMEOUT
+
+mas1.dft
+===============================================
+TIMEOUT
+
