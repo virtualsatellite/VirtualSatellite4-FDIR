@@ -130,7 +130,7 @@ public class ASynthesizerExperiment {
 	protected void benchmark(File suite, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {	
 		System.out.println("Creating benchmark data " + saveFileName + ".");
 		
-		Path path = Paths.get("resources/results/" + saveFileName);
+		Path path = Paths.get("resources/results/" + saveFileName + ".txt");
 		Files.deleteIfExists(path);
 		
 		String entireFile = new String(Files.readAllBytes(suite.toPath()));
@@ -167,29 +167,26 @@ public class ASynthesizerExperiment {
 	 * @throws IOException
 	 */
 	protected void benchmarkDFT(String dftPath, String benchmarkName, String statisticsFilePath) throws IOException {
-		System.out.print("Benchmarking " + benchmarkName + "...");
+		System.out.print("Benchmarking " + benchmarkName + "... ");
 		
-		final Duration timeout = Duration.ofSeconds(timeoutSeconds);
+		Duration timeout = Duration.ofSeconds(timeoutSeconds);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
+		Fault fault = createDFT(dftPath);
+		SynthesisQuery query = new SynthesisQuery(fault);
 		
 		final Future<?> handler = executor.submit(() -> {
-			try {
-				Fault fault = createDFT(dftPath);
-				synthesizer.synthesize(new SynthesisQuery(fault), null);
-				saveStatistics(synthesizer.getStatistics(), benchmarkName, statisticsFilePath);
-				System.out.println(" done.");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			synthesizer.synthesize(query, null);
 		});
 
 		try {
 		    handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+		    System.out.println("done.");
 		} catch (TimeoutException | InterruptedException | ExecutionException e) {
 		    handler.cancel(true);
-		    saveStatistics(null, benchmarkName, statisticsFilePath);
-		    System.out.println(" TIMEOUT.");
+		    System.out.println("TIMEOUT.");
 		}
+		
+		saveStatistics(synthesizer.getStatistics(), benchmarkName, statisticsFilePath);
 	}
 	
 	/**
@@ -234,7 +231,7 @@ public class ASynthesizerExperiment {
 	 * @throws IOException exception
 	 */
 	protected static void saveStatistics(SynthesisStatistics statistics, String testName, String filePath) throws IOException {
-		Path path = Paths.get("resources/results/" + filePath);
+		Path path = Paths.get("resources/results/" + filePath + ".txt");
 		Files.createDirectories(path.getParent());
 		
 		if (!Files.exists(path)) {
@@ -245,11 +242,7 @@ public class ASynthesizerExperiment {
 			PrintStream writer = new PrintStream(outFile)) {
 			writer.println(testName);
 			writer.println("===============================================");
-			if (statistics != null) {
-				writer.println(statistics);
-			} else {
-				writer.println("TIMEOUT");
-			}
+			writer.println(statistics);
 			writer.println();
 		}
 	}

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.SubMonitor;
 
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
@@ -41,7 +42,8 @@ public class ModularSynthesizer implements ISynthesizer {
 	@Override
 	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
 		statistics = new SynthesisStatistics();
-		statistics.time = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
+		statistics.time = IStatistics.TIMEOUT;
 		
 		Fault fault = synthesisQuery.getRoot().getFault();
 		concept = fault.getConcept();
@@ -53,7 +55,9 @@ public class ModularSynthesizer implements ISynthesizer {
 		if (modularizer != null) {
 			Set<Module> modules = modularizer.getModules(fault);
 			Set<Module> trimmedModules = ftTrimmer.trimModulesAll(modules);
-			statistics.countTrimmedModules = modules.size() - trimmedModules.size();
+			
+			statistics.countModules = modules.size();
+			statistics.countTrimmedModules = statistics.countModules - trimmedModules.size();
 			
 			Set<RecoveryAutomaton> ras = new HashSet<>();
 			for (Module module : trimmedModules) {
@@ -66,10 +70,11 @@ public class ModularSynthesizer implements ISynthesizer {
 			
 			synthesizedRA = pc.compose(ras, concept);
 		} else {
+			statistics.countModules = 1;
 			synthesizedRA = synthesizeModule(synthesisQuery, fault, conversionResult.getMapGeneratedToGenerator(), subMonitor);
 		}
 		
-		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.time = System.currentTimeMillis() - startTime;
 		return synthesizedRA;
 	}
 
@@ -84,9 +89,9 @@ public class ModularSynthesizer implements ISynthesizer {
 	private RecoveryAutomaton synthesizeModule(SynthesisQuery synthesisQuery, FaultTreeNode moduleRoot, Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator, SubMonitor subMonitor) {
 		SynthesisQuery delegateSynthesisQuery = new SynthesisQuery(moduleRoot);
 		delegateSynthesisQuery.setObjectiveMetric(synthesisQuery.getObjectiveMetric());
+		statistics.maxModuleSize = Math.max(statistics.maxModuleSize, mapGeneratedToGenerator.size());
 		RecoveryAutomaton synthesizedRA = delegateSynthesizer.synthesize(delegateSynthesisQuery, subMonitor);
 		statistics.compose(delegateSynthesizer.getStatistics());
-		statistics.maxModuleSize = Math.max(statistics.maxModuleSize, mapGeneratedToGenerator.size());
 		synthesizedRA.remapToGeneratorNodes(mapGeneratedToGenerator);
 		return synthesizedRA;
 	}

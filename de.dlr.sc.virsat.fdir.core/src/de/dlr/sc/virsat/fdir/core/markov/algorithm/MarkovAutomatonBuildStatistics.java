@@ -9,26 +9,28 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
+
 /**
  * This class holds the internal statistics of a call to the DFT2MAConverter
  * @author muel_s8
  *
  */
 
-public class MarkovAutomatonBuildStatistics {
+public class MarkovAutomatonBuildStatistics implements IStatistics {
 	// CHECKSTYLE:OFF
-	public long time;
-	public int maxStates;
-	public int maxTransitions;
+	public long time = NA;
+	public int maxStates = NA;
+	public int maxTransitions = NA;
 	// CHECKSTYLE:ON
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("State space generation Statistics: \n");
-		sb.append("\t* Generation Time  :\t\t"	 		+ time + "\n");
-		sb.append("\t* Max States       :\t\t" 			+ maxStates + "\n");
-		sb.append("\t* Max Transitions  :\t\t" 			+ maxTransitions + "\n");
+		sb.append("\t* Generation Time  :\t\t"	 		+ getPrintValue(time) + "\n");
+		sb.append("\t* Max States       :\t\t" 			+ getPrintValue(maxStates) + "\n");
+		sb.append("\t* Max Transitions  :\t\t" 			+ getPrintValue(maxTransitions) + "\n");
 		return sb.toString();
 	}
 	
@@ -37,7 +39,7 @@ public class MarkovAutomatonBuildStatistics {
 	 * @param other the statistics of another call to the converter
 	 */
 	public void compose(MarkovAutomatonBuildStatistics other) {
-		time += other.time;
+		time = composeAdd(time, other.time);
 		maxStates = Math.max(maxStates, other.maxStates);
 		maxTransitions = Math.max(maxTransitions, other.maxTransitions);
 	}
