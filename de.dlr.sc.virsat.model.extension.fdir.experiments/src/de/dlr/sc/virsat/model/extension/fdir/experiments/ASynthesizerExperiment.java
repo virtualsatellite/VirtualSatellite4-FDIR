@@ -20,6 +20,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +33,7 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Before;
 
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.GalileoDFT2DFT;
@@ -37,6 +41,7 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
@@ -61,6 +66,7 @@ public class ASynthesizerExperiment {
 	protected FaultTreeBuilder ftBuilder;
 	protected RecoveryAutomatonHelper raHelper;
 	protected long timeoutSeconds = DEFAULT_BENCHMARK_TIMEOUT_SECONDS;
+	protected Map<String, SynthesisStatistics> mapBenchmarkToStatistics = new TreeMap<>();
 	
 	@Before
 	public void setUp() {
@@ -113,7 +119,7 @@ public class ASynthesizerExperiment {
 				if (file.isDirectory()) {
 					benchmarkFolder(file, folderPath + "/" + file.getName());
 				} else {
-					benchmarkDFT(folderPath + "/" + file.getName(), file.getName(), folderPath);
+					benchmarkDFT(folderPath + "/" + file.getName(), file.getName());
 				}
 			}
 		}
@@ -129,9 +135,6 @@ public class ASynthesizerExperiment {
 	 */
 	protected void benchmark(File suite, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {	
 		System.out.println("Creating benchmark data " + saveFileName + ".");
-		
-		Path path = Paths.get("resources/results/" + saveFileName + ".txt");
-		Files.deleteIfExists(path);
 		
 		String entireFile = new String(Files.readAllBytes(suite.toPath()));
 		
@@ -152,21 +155,24 @@ public class ASynthesizerExperiment {
 					if (matchingFiles.length != 0) {
 						File benchmarkFile = matchingFiles[0];
 						String dftPath = filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName();
-						benchmarkDFT(dftPath, benchmarkFile.getName(), saveFileName);
+						benchmarkDFT(dftPath, benchmarkFile.getName());
 					}
 				}
 			}
 		}
+		
+		saveStatistics(saveFileName);
+		
+		System.out.println("Finished benchmark data " + saveFileName + ".");
 	}
 	
 	/**
 	 * Benchmarks a single DFT and saves the statistics
 	 * @param dftPath the path to the dft
 	 * @param benchmarkName the name of the benchmark
-	 * @param statisticsFilePath the path to the file containing the statistics
 	 * @throws IOException
 	 */
-	protected void benchmarkDFT(String dftPath, String benchmarkName, String statisticsFilePath) throws IOException {
+	protected void benchmarkDFT(String dftPath, String benchmarkName) throws IOException {
 		System.out.print("Benchmarking " + benchmarkName + "... ");
 		
 		Duration timeout = Duration.ofSeconds(timeoutSeconds);
@@ -186,7 +192,7 @@ public class ASynthesizerExperiment {
 		    System.out.println("TIMEOUT.");
 		}
 		
-		saveStatistics(synthesizer.getStatistics(), benchmarkName, statisticsFilePath);
+		mapBenchmarkToStatistics.put(benchmarkName, synthesizer.getStatistics());
 	}
 	
 	/**
@@ -224,26 +230,62 @@ public class ASynthesizerExperiment {
 	
 	
 	/**
-	 * Write statistic to a file
-	 * @param statistics the statistics, null to represent a timeout
-	 * @param testName the name of the test
+	 * Write statistic to files
 	 * @param filePath the path
 	 * @throws IOException exception
 	 */
-	protected static void saveStatistics(SynthesisStatistics statistics, String testName, String filePath) throws IOException {
-		Path path = Paths.get("resources/results/" + filePath + ".txt");
-		Files.createDirectories(path.getParent());
+	protected void saveStatistics(String filePath) throws IOException {
+		String filePathWithPrefix = "resources/results/" + filePath;
+		Path pathSummary = Paths.get(filePathWithPrefix + "-summary.txt");
+		Files.createDirectories(pathSummary.getParent());
 		
-		if (!Files.exists(path)) {
-			Files.createFile(path);
+		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			PrintStream writer = new PrintStream(outFile)) {
+			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
+				writer.println(entry.getKey());
+				writer.println("===============================================");
+				writer.println(entry.getValue());
+				writer.println();
+			}
 		}
 		
-		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		Path pathSynthesizer = Paths.get(filePathWithPrefix + "-synthesizer.txt");
+		try (OutputStream outFile = Files.newOutputStream(pathSynthesizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
-			writer.println(testName);
-			writer.println("===============================================");
-			writer.println(statistics);
-			writer.println();
+			
+			String header = "benchmarkName," + String.join(",", SynthesisStatistics.getColumns());
+			writer.println(header);
+			
+			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
+				String record = entry.getKey() + "," + String.join(",", entry.getValue().getValues());
+				writer.println(record);
+			}
+		}
+		
+		Path pathMaBuilder = Paths.get(filePathWithPrefix + "-ma-builder.txt");
+		try (OutputStream outFile = Files.newOutputStream(pathMaBuilder, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			PrintStream writer = new PrintStream(outFile)) {
+			
+			String header = "benchmarkName," + String.join(",", MarkovAutomatonBuildStatistics.getColumns());
+			writer.println(header);
+			
+			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
+				String record = entry.getKey() + "," + String.join(",", entry.getValue().maBuildStatistics.getValues());
+				writer.println(record);
+			}
+		}
+		
+		Path pathRaMinimizer = Paths.get(filePathWithPrefix + "-ra-minimizer.txt");
+		try (OutputStream outFile = Files.newOutputStream(pathRaMinimizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			PrintStream writer = new PrintStream(outFile)) {
+			
+			String header = "benchmarkName," + String.join(",", MinimizationStatistics.getColumns());
+			writer.println(header);
+			
+			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
+				String record = entry.getKey() + "," + String.join(",", entry.getValue().minimizationStatistics.getValues());
+				writer.println(record);
+			}
 		}
 	}
 }

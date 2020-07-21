@@ -1,0 +1,2 @@
+benchmarkName,time,countModules,countTrimmedModules,maxModuleSize,maxModuleRaSize
+vgs8.dft,3727,138,138,N/A,N/A

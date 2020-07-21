@@ -9,6 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 
 /**
@@ -42,5 +45,13 @@ public class MinimizationStatistics implements IStatistics {
 		time = composeAdd(time, other.time);
 		removedStates = composeAdd(removedStates, other.removedStates);
 		removedTransitions = composeAdd(removedTransitions, other.removedTransitions);
+	}
+	
+	public static List<String> getColumns() {
+		return Arrays.asList("time", "removedStates", "removedTransitions");
+	}
+	
+	public List<String> getValues() {
+		return Arrays.asList(getPrintValue(time), getPrintValue(removedStates), getPrintValue(removedTransitions));
 	}
 }

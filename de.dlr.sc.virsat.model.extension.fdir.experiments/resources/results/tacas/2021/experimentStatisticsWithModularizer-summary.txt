@@ -1,0 +1,18 @@
+vgs8.dft
+===============================================
+Synthesizer Statistics: 
+	* Synthesis Time   :		3727
+	* #Modules         :		138
+	* #Trimmed         :		138
+	* Largest Module   :		N/A
+	* Largest Module RA:		N/A
+State space generation Statistics: 
+	* Generation Time  :		N/A
+	* Max States       :		N/A
+	* Max Transitions  :		N/A
+Minimization Statistics: 
+	* Minimization Time  :		N/A
+	* #RemovedStates     :		N/A
+	* #RemovedTransitions:		N/A
+
+

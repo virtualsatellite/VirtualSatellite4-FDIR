@@ -12,17 +12,18 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class SynthesisQuery {
-	private FaultTreeNode root;
+	private FaultTreeHolder ftHolder;
 	private IMetric objectiveMetric = MeanTimeToFailure.MTTF;
 	
 	public SynthesisQuery(FaultTreeNode root) {
-		this.root = root;
+		this.ftHolder = new FaultTreeHolder(root.getFault());
 	}
 	
-	public FaultTreeNode getRoot() {
-		return root;
+	public FaultTreeHolder getFTHolder() {
+		return ftHolder;
 	}
 	
 	public void setObjectiveMetric(IMetric objectiveMetric) {

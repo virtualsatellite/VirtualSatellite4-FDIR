@@ -54,13 +54,12 @@ public class DFT2BasicDFTConverter implements IDFT2DFTConverter {
 	 * 
 	 * @return a tree that does not contain syntactic sugar
 	 */
-	public DFT2DFTConversionResult convert(FaultTreeNode root) {
+	public DFT2DFTConversionResult convert(FaultTreeHolder ftHolder) {
+		FaultTreeNode root = ftHolder.getRoot();
+		this.ftHolder = ftHolder;
 		this.concept = root.getConcept();
 
-		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
-		
 		ftBuilder = new FaultTreeBuilder(concept);
-		ftHolder = new FaultTreeHolder(holderRoot);
 		mapNodes = new HashMap<>();
 
 		for (FaultTreeNode node : ftHolder.getNodes(FaultTreeNodeType.FAULT)) {

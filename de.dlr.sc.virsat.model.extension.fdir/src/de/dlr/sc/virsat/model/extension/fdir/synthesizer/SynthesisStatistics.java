@@ -9,6 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
@@ -50,5 +53,14 @@ public class SynthesisStatistics implements IStatistics {
 		sb.append(maBuildStatistics);
 		sb.append(minimizationStatistics);
 		return sb.toString();
+	}
+	
+	public static List<String> getColumns() {
+		return Arrays.asList("time", "countModules", "countTrimmedModules", "maxModuleSize", "maxModuleRaSize");
+	}
+	
+	public List<String> getValues() {
+		return Arrays.asList(getPrintValue(time), getPrintValue(countModules), getPrintValue(countTrimmedModules), 
+				getPrintValue(maxModuleSize), getPrintValue(maxModuleRaSize));
 	}
 }

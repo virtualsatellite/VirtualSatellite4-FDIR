@@ -45,11 +45,10 @@ public class ModularSynthesizer implements ISynthesizer {
 		long startTime = System.currentTimeMillis();
 		statistics.time = IStatistics.TIMEOUT;
 		
-		Fault fault = synthesisQuery.getRoot().getFault();
-		concept = fault.getConcept();
+		concept = synthesisQuery.getFTHolder().getRoot().getConcept();
 		
-		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(fault);
-		fault = (Fault) conversionResult.getRoot();
+		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(synthesisQuery.getFTHolder());
+		Fault fault = (Fault) conversionResult.getRoot();
 		
 		RecoveryAutomaton synthesizedRA;
 		if (modularizer != null) {

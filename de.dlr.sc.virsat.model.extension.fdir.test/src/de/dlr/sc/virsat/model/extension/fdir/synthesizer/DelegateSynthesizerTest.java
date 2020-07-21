@@ -18,9 +18,9 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * This class tests the DelegateSynthesizer
@@ -36,12 +36,12 @@ public class DelegateSynthesizerTest extends ATestCase {
 		Fault poFault = createDFT("/resources/galileoObs/obsCsp2.dft");
 		
 		DelegateSynthesizer synthesizer = new DelegateSynthesizer();
-		assertTrue(synthesizer.chooseSynthesizer(fault) instanceof BasicSynthesizer);
-		assertTrue(synthesizer.chooseSynthesizer(poFault) instanceof POSynthesizer);
+		assertTrue(synthesizer.chooseSynthesizer(new FaultTreeHolder(fault)) instanceof BasicSynthesizer);
+		assertTrue(synthesizer.chooseSynthesizer(new FaultTreeHolder(poFault)) instanceof POSynthesizer);
 	}
 	
 	@Test
-	public void testSynthesize() {
+	public void testSynthesize() throws IOException {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		ISynthesizer mockSynthesizer = new ISynthesizer() {
 			@Override
@@ -57,12 +57,13 @@ public class DelegateSynthesizerTest extends ATestCase {
 		
 		DelegateSynthesizer synthesizer = new DelegateSynthesizer() {
 			@Override
-			public ISynthesizer chooseSynthesizer(FaultTreeNode root) {
+			public ISynthesizer chooseSynthesizer(FaultTreeHolder ftHolder) {
 				return mockSynthesizer;
 			}
 		};
 		
-		assertEquals(ra, synthesizer.synthesize(new SynthesisQuery(null), null));
+		Fault fault = createDFT("/resources/galileo/failureMode.dft");
+		assertEquals(ra, synthesizer.synthesize(new SynthesisQuery(fault), null));
 	}
 
 }

@@ -9,6 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 
 /**
@@ -42,5 +45,13 @@ public class MarkovAutomatonBuildStatistics implements IStatistics {
 		time = composeAdd(time, other.time);
 		maxStates = Math.max(maxStates, other.maxStates);
 		maxTransitions = Math.max(maxTransitions, other.maxTransitions);
+	}
+	
+	public static List<String> getColumns() {
+		return Arrays.asList("time", "maxStates", "maxTransitions");
+	}
+	
+	public List<String> getValues() {
+		return Arrays.asList(getPrintValue(time), getPrintValue(maxStates), getPrintValue(maxTransitions));
 	}
 }

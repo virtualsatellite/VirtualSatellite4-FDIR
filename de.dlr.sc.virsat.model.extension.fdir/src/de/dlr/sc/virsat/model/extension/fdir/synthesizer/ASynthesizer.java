@@ -41,7 +41,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		statistics.time = IStatistics.TIMEOUT;
 		statistics.countModules = 1;
 		
-		FaultTreeNode root  = synthesisQuery.getRoot();
+		FaultTreeNode root  = synthesisQuery.getFTHolder().getRoot();
 		concept = root.getConcept();
 		
 		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(root, subMonitor);
@@ -52,7 +52,6 @@ public abstract class ASynthesizer implements ISynthesizer {
 		}
 		
 		statistics.maxModuleRaSize = synthesizedRA.getStates().size();
-		
 		statistics.time = System.currentTimeMillis() - startTime;
 		return synthesizedRA;
 	}

@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import org.eclipse.core.runtime.SubMonitor;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
@@ -30,17 +29,16 @@ public class DelegateSynthesizer implements ISynthesizer {
 
 	@Override
 	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
-		delegate = chooseSynthesizer(synthesisQuery.getRoot());
+		delegate = chooseSynthesizer(synthesisQuery.getFTHolder());
 		return delegate.synthesize(synthesisQuery, subMonitor);
 	}
 	
 	/**
 	 * Chooses the synthesizer based on the fault tree
-	 * @param fault the root of the fault tree
+	 * @param ftHolder the fault tree data
 	 * @return the chosen synthesizer
 	 */
-	public ISynthesizer chooseSynthesizer(FaultTreeNode root) {
-		FaultTreeHolder ftHolder = new FaultTreeHolder(root.getFault());
+	public ISynthesizer chooseSynthesizer(FaultTreeHolder ftHolder) {
 		return ftHolder.isPartialObservable() ? poSynthesizer : basicSynthesizer;
 	}
 	
