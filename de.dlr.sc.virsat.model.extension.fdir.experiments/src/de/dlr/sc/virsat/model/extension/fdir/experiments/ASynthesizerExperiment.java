@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -106,29 +107,6 @@ public class ASynthesizerExperiment {
 	
 	/**
 	 * Tests all of the .dft benchmarks in the given folder
-	 * @param folder the folder
-	 * @param folderPath the path to the folder
-	 * @throws IOException exception
-	 */
-	protected void benchmarkFolder(File folder, String folderPath) throws IOException {
-		if (folder.isDirectory()) {
-			System.out.println("Not a directory: " + folder.getAbsolutePath());
-		}
-		
-		File[] files = folder.listFiles();
-		if (files != null) {
-			for (File file : files) {
-				if (file.isDirectory()) {
-					benchmarkFolder(file, folderPath + "/" + file.getName());
-				} else {
-					benchmarkDFT(folderPath + "/" + file.getName(), file.getName());
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Tests all of the .dft benchmarks in the given folder
 	 * @param suite the file with all the dft names
 	 * @param filePath the path to the file
 	 * @param saveFileName the name of the file you wish to save the results to
@@ -138,34 +116,35 @@ public class ASynthesizerExperiment {
 	protected void benchmark(File suite, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {	
 		System.out.println("Creating benchmark data " + saveFileName + ".");
 		
-		String entireFile = new String(Files.readAllBytes(suite.toPath()));
-		
-		for (String filename : entireFile.split("\\r?\\n")) {
-			File parentFolder = suite.getParentFile();
-			
-			File[] childFolders = parentFolder.listFiles();
-			if (childFolders == null) {
-				continue;
-			}
-			
-			for (File childFolder : childFolders) {
-				if (childFolder.isDirectory()) {
-					File[] matchingFiles = childFolder.listFiles((File dir, String name) ->
-						name.equals(filename)
-					);
-				
-					if (matchingFiles.length != 0) {
-						File benchmarkFile = matchingFiles[0];
-						String dftPath = filePath + "/" + childFolder.getName() + "/" + benchmarkFile.getName();
-						benchmarkDFT(dftPath, benchmarkFile.getName());
-					}
-				}
-			}
+		List<String> fileNames = Files.readAllLines(suite.toPath());
+		File parentFolder = suite.getParentFile();
+		for (String fileName : fileNames) {
+			Path path = Paths.get(parentFolder.toString(), fileName);
+			File suiteEntry = path.toFile();
+			benchmarkSuiteEntry(suiteEntry);
 		}
 		
 		saveStatistics(saveFileName);
 		
 		System.out.println("Finished benchmark data " + saveFileName + ".");
+	}
+	
+	/**
+	 * Benchmarks a single entry in a benchmark suite.
+	 * If the entry is a folder, recuresively calls itself.
+	 * @param entry the suite entry
+	 * @throws IOException exception
+	 */
+	protected void benchmarkSuiteEntry(File entry) throws IOException {
+		if (entry.isDirectory()) {
+			File[] files = entry.listFiles();
+			for (File file : files) {
+				benchmarkSuiteEntry(file);
+			}
+		} else {
+			Path platformPath = Paths.get(".\\").relativize(entry.toPath());
+			benchmarkDFT("/" + platformPath.toString(), entry.getName());
+		}
 	}
 	
 	/**
@@ -182,7 +161,7 @@ public class ASynthesizerExperiment {
 		Fault fault = createDFT(dftPath);
 		SynthesisQuery query = new SynthesisQuery(fault);
 		
-		// Cretae a monitor so we can properly cancel the synthesis call
+		// Create a monitor so we can properly cancel the synthesis call
 		SubMonitor monitor = SubMonitor.convert(new NullProgressMonitor());
 		
 		final Future<?> handler = executor.submit(() -> {
@@ -235,7 +214,6 @@ public class ASynthesizerExperiment {
 			writer.println(ra.toDot());
 		}
 	}
-	
 	
 	/**
 	 * Write statistic to files

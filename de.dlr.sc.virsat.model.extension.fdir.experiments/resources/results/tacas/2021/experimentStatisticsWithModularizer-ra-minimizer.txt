@@ -1,2 +1,1 @@
 benchmarkName,time,removedStates,removedTransitions
-vgs8.dft,N/A,N/A,N/A
