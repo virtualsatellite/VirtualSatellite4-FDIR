@@ -30,6 +30,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.junit.Before;
 
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
@@ -180,8 +182,11 @@ public class ASynthesizerExperiment {
 		Fault fault = createDFT(dftPath);
 		SynthesisQuery query = new SynthesisQuery(fault);
 		
+		// Cretae a monitor so we can properly cancel the synthesis call
+		SubMonitor monitor = SubMonitor.convert(new NullProgressMonitor());
+		
 		final Future<?> handler = executor.submit(() -> {
-			synthesizer.synthesize(query, null);
+			synthesizer.synthesize(query, monitor);
 		});
 
 		try {
@@ -189,8 +194,11 @@ public class ASynthesizerExperiment {
 		    System.out.println("done.");
 		} catch (TimeoutException | InterruptedException | ExecutionException e) {
 		    handler.cancel(true);
+		    monitor.setCanceled(true);
 		    System.out.println("TIMEOUT.");
 		}
+		
+		executor.shutdownNow();
 		
 		mapBenchmarkToStatistics.put(benchmarkName, synthesizer.getStatistics());
 	}

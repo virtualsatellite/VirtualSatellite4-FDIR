@@ -26,7 +26,7 @@ public class TACAS2021Experiments extends ASynthesizerExperiment {
 	
 	private static final String EXPERIMENTS_SET = "tacas/2021";
 	private static final String EXPERIMENTS_PATH = "/resources/tacas/2021";
-	private static final long BENCHMARK_TIME_SECONDS = 100 * 10;
+	private static final long BENCHMARK_TIME_SECONDS = 60 * 10;
 	
 	private File experimentSet;
 	
