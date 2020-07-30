@@ -51,6 +51,7 @@ public class MarkovAutomatonBuildStatistics implements IStatistics {
 		return Arrays.asList("time", "maxStates", "maxTransitions");
 	}
 	
+	@Override
 	public List<String> getValues() {
 		return Arrays.asList(getPrintValue(time), getPrintValue(maxStates), getPrintValue(maxTransitions));
 	}

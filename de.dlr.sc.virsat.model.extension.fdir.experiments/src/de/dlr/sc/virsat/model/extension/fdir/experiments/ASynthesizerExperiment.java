@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -50,6 +51,7 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
 /**
@@ -69,7 +71,8 @@ public class ASynthesizerExperiment {
 	protected FaultTreeBuilder ftBuilder;
 	protected RecoveryAutomatonHelper raHelper;
 	protected long timeoutSeconds = DEFAULT_BENCHMARK_TIMEOUT_SECONDS;
-	protected Map<String, SynthesisStatistics> mapBenchmarkToStatistics = new TreeMap<>();
+	protected Map<String, SynthesisStatistics> mapBenchmarkToSynthesisStatistics = new TreeMap<>();
+	protected Map<String, FaultTreeStatistics> mapBenchmarkToFaultTreeStatistics = new TreeMap<>();
 	
 	@Before
 	public void setUp() {
@@ -179,7 +182,8 @@ public class ASynthesizerExperiment {
 		
 		executor.shutdownNow();
 		
-		mapBenchmarkToStatistics.put(benchmarkName, synthesizer.getStatistics());
+		mapBenchmarkToSynthesisStatistics.put(benchmarkName, synthesizer.getStatistics());
+		mapBenchmarkToFaultTreeStatistics.put(benchmarkName, query.getFTHolder().getStatistics());
 	}
 	
 	/**
@@ -216,6 +220,29 @@ public class ASynthesizerExperiment {
 	}
 	
 	/**
+	 * Write synthesis statistic to files
+	 * @param filePathWithPrefix the path with prefix
+	 * @param suffix the statistics suffix
+	 * @param columns the columns
+	 * @param getValues the values getter
+	 * @throws IOException exception
+	 */
+	protected void saveStatistics(String filePathWithPrefix, String suffix, List<String> columns, Function<SynthesisStatistics, List<String>> getValues) throws IOException {
+		Path pathSynthesizer = Paths.get(filePathWithPrefix + "-" + suffix + ".txt");
+		try (OutputStream outFile = Files.newOutputStream(pathSynthesizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			PrintStream writer = new PrintStream(outFile)) {
+			
+			String header = "benchmarkName," + String.join(",", columns);
+			writer.println(header);
+			
+			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToSynthesisStatistics.entrySet()) {
+				String record = entry.getKey() + "," + String.join(",", getValues.apply(entry.getValue()));
+				writer.println(record);
+			}
+		}
+	}
+	
+	/**
 	 * Write statistic to files
 	 * @param filePath the path
 	 * @throws IOException exception
@@ -227,51 +254,30 @@ public class ASynthesizerExperiment {
 		
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
-			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
+			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToSynthesisStatistics.entrySet()) {
 				writer.println(entry.getKey());
 				writer.println("===============================================");
 				writer.println(entry.getValue());
+				writer.println(mapBenchmarkToFaultTreeStatistics.get(entry.getKey()));
 				writer.println();
 			}
 		}
 		
-		Path pathSynthesizer = Paths.get(filePathWithPrefix + "-synthesizer.txt");
-		try (OutputStream outFile = Files.newOutputStream(pathSynthesizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+		Path pathFaultTree = Paths.get(filePathWithPrefix + "-fault-tree.txt");
+		try (OutputStream outFile = Files.newOutputStream(pathFaultTree, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			
-			String header = "benchmarkName," + String.join(",", SynthesisStatistics.getColumns());
+			String header = "benchmarkName," + String.join(",", FaultTreeStatistics.getColumns());
 			writer.println(header);
 			
-			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
+			for (Entry<String, FaultTreeStatistics> entry : mapBenchmarkToFaultTreeStatistics.entrySet()) {
 				String record = entry.getKey() + "," + String.join(",", entry.getValue().getValues());
 				writer.println(record);
 			}
 		}
 		
-		Path pathMaBuilder = Paths.get(filePathWithPrefix + "-ma-builder.txt");
-		try (OutputStream outFile = Files.newOutputStream(pathMaBuilder, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-			PrintStream writer = new PrintStream(outFile)) {
-			
-			String header = "benchmarkName," + String.join(",", MarkovAutomatonBuildStatistics.getColumns());
-			writer.println(header);
-			
-			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
-				String record = entry.getKey() + "," + String.join(",", entry.getValue().maBuildStatistics.getValues());
-				writer.println(record);
-			}
-		}
-		
-		Path pathRaMinimizer = Paths.get(filePathWithPrefix + "-ra-minimizer.txt");
-		try (OutputStream outFile = Files.newOutputStream(pathRaMinimizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-			PrintStream writer = new PrintStream(outFile)) {
-			
-			String header = "benchmarkName," + String.join(",", MinimizationStatistics.getColumns());
-			writer.println(header);
-			
-			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToStatistics.entrySet()) {
-				String record = entry.getKey() + "," + String.join(",", entry.getValue().minimizationStatistics.getValues());
-				writer.println(record);
-			}
-		}
+		saveStatistics(filePathWithPrefix, "synthesizer", SynthesisStatistics.getColumns(), SynthesisStatistics::getValues);
+		saveStatistics(filePathWithPrefix, "ma-builder", MarkovAutomatonBuildStatistics.getColumns(), statistics -> statistics.maBuildStatistics.getValues());
+		saveStatistics(filePathWithPrefix, "ra-minimizer", MinimizationStatistics.getColumns(), statistics -> statistics.minimizationStatistics.getValues());
 	}
 }

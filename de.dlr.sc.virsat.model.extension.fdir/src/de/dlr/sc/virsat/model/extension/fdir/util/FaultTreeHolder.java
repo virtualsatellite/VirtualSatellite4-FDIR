@@ -466,4 +466,34 @@ public class FaultTreeHolder {
 		
 		return roots;
 	}
+	
+	/**
+	 * Get a statistics object for the fault tree
+	 * @return the main fault tree statistics
+	 */
+	public FaultTreeStatistics getStatistics() {
+		FaultTreeStatistics statistics = new FaultTreeStatistics();
+		
+		statistics.countNodes = nodes.size();
+		for (FaultTreeNode node : nodes) {
+			if (!node.getFaultTreeNodeType().isStatic()) {
+				statistics.dynamic = true;
+			}
+		}
+		
+		for (BasicEventHolder beHolder : mapBEToBEHolders.values()) {
+			if (beHolder.isRepairDefined()) {
+				statistics.repair = true;
+			}
+		}
+		
+		statistics.partialObservable = isPartialObservable();
+		
+		for (FaultTreeNodeType nodeType : FaultTreeNodeType.values()) {
+			statistics.countNodeType[nodeType.ordinal()] = mapTypeToNodes.getOrDefault(nodeType, Collections.emptySet()).size();
+		}
+		statistics.countNodeType[FaultTreeNodeType.BASIC_EVENT.ordinal()] = mapBEToBEHolders.size();
+		
+		return statistics;
+	}
 }

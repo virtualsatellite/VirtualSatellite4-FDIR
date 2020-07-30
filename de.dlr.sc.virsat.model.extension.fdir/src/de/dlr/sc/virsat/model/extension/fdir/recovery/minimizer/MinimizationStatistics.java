@@ -51,6 +51,7 @@ public class MinimizationStatistics implements IStatistics {
 		return Arrays.asList("time", "removedStates", "removedTransitions");
 	}
 	
+	@Override
 	public List<String> getValues() {
 		return Arrays.asList(getPrintValue(time), getPrintValue(removedStates), getPrintValue(removedTransitions));
 	}

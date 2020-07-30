@@ -10,6 +10,8 @@
 
 package de.dlr.sc.virsat.fdir.core.util;
 
+import java.util.List;
+
 public interface IStatistics {
 	int NA = -2;
 	int TIMEOUT = -1;
@@ -60,4 +62,10 @@ public interface IStatistics {
 		
 		return value1 + value2;
 	}
+	
+	/**
+	 * Get the formatted values of the statistic as a list
+	 * @return the values in a list
+	 */
+	List<String> getValues();
 }

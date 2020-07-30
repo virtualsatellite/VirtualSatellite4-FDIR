@@ -59,6 +59,7 @@ public class SynthesisStatistics implements IStatistics {
 		return Arrays.asList("time", "countModules", "countTrimmedModules", "maxModuleSize", "maxModuleRaSize");
 	}
 	
+	@Override
 	public List<String> getValues() {
 		return Arrays.asList(getPrintValue(time), getPrintValue(countModules), getPrintValue(countTrimmedModules), 
 				getPrintValue(maxModuleSize), getPrintValue(maxModuleRaSize));

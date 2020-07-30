@@ -39,6 +39,23 @@ public enum FaultTreeNodeType {
 	}
 	
 	/**
+	 * Checks if this is a static node type
+	 * @return true iff the node is a static node type
+	 */
+	public boolean isStatic() {
+		switch (this) {
+			case FAULT:
+			case BASIC_EVENT:
+			case OR:
+			case VOTE:
+			case AND:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
+	/**
 	 * Checks if this is a nondetermiistic fault tree node type
 	 * @return true iff the node allows for nondeterministic behavior
 	 */
