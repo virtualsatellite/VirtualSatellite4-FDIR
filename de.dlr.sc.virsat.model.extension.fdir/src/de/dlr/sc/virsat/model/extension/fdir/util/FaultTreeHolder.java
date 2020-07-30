@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -69,6 +70,7 @@ public class FaultTreeHolder {
 	 */
 	private void processFaultTree() {
 		FaultTreeHelper ftHelper = new FaultTreeHelper();
+		Map<EdgeType, Map<FaultTreeNode, List<FaultTreeNode>>> mapEdgeTypesToNodes = ftHelper.getMapEdgeTypeToNodes(faultTrees);
 		
 		Queue<FaultTreeNode> toProcess = new LinkedList<>();
 		toProcess.offer(root);
@@ -81,8 +83,10 @@ public class FaultTreeHolder {
 				continue;
 			}
 			
-			faultTrees.add(node.getFault().getFaultTree());
-			toProcess.addAll(processNode(node, ftHelper));
+			if (faultTrees.add(node.getFault().getFaultTree())) {
+				mapEdgeTypesToNodes = ftHelper.getMapEdgeTypeToNodes(faultTrees);
+			}
+			toProcess.addAll(processNode(node, mapEdgeTypesToNodes));
 		}
 		
 		for (FaultTreeNode node : ftHelper.getAllNodes(root.getFault())) {
@@ -92,8 +96,10 @@ public class FaultTreeHolder {
 					continue;
 				}
 				
-				faultTrees.add(node.getFault().getFaultTree());
-				processNode(node, ftHelper);
+				if (faultTrees.add(node.getFault().getFaultTree())) {
+					mapEdgeTypesToNodes = ftHelper.getMapEdgeTypeToNodes(faultTrees);
+				}
+				processNode(node, mapEdgeTypesToNodes);
 			}
 		}
 	}
@@ -101,14 +107,14 @@ public class FaultTreeHolder {
 	/**
 	 * Processes a single fault tree node
 	 * @param node the fault tree node to process
-	 * @param ftHelper a fault tree helper
+	 * @param mapEdgeTypesToNodes a fault tree helper
 	 * @return a list of nodes that need to be queued
 	 */
-	private List<FaultTreeNode> processNode(FaultTreeNode node, FaultTreeHelper ftHelper) {
+	private List<FaultTreeNode> processNode(FaultTreeNode node, Map<EdgeType, Map<FaultTreeNode, List<FaultTreeNode>>> mapEdgeTypesToNodes) {
 		List<FaultTreeNode> toProcess = new ArrayList<>();
 		
-		List<FaultTreeNode> children = ftHelper.getNodes(EdgeType.CHILD, node, faultTrees);
-		List<FaultTreeNode> spares = ftHelper.getNodes(EdgeType.SPARE, node, faultTrees);
+		List<FaultTreeNode> children = mapEdgeTypesToNodes.get(EdgeType.CHILD).getOrDefault(node, Collections.emptyList());
+		List<FaultTreeNode> spares =  mapEdgeTypesToNodes.get(EdgeType.SPARE).getOrDefault(node, Collections.emptyList());
 		
 		NodeHolder nodeHolder = getNodeHolder(node);
 		nodeHolder.mapEdgeTypeToNodes.put(EdgeType.CHILD, children);
@@ -459,5 +465,35 @@ public class FaultTreeHolder {
 		}
 		
 		return roots;
+	}
+	
+	/**
+	 * Get a statistics object for the fault tree
+	 * @return the main fault tree statistics
+	 */
+	public FaultTreeStatistics getStatistics() {
+		FaultTreeStatistics statistics = new FaultTreeStatistics();
+		
+		statistics.countNodes = nodes.size();
+		for (FaultTreeNode node : nodes) {
+			if (!node.getFaultTreeNodeType().isStatic()) {
+				statistics.dynamic = true;
+			}
+		}
+		
+		for (BasicEventHolder beHolder : mapBEToBEHolders.values()) {
+			if (beHolder.isRepairDefined()) {
+				statistics.repair = true;
+			}
+		}
+		
+		statistics.partialObservable = isPartialObservable();
+		
+		for (FaultTreeNodeType nodeType : FaultTreeNodeType.values()) {
+			statistics.countNodeType[nodeType.ordinal()] = mapTypeToNodes.getOrDefault(nodeType, Collections.emptySet()).size();
+		}
+		statistics.countNodeType[FaultTreeNodeType.BASIC_EVENT.ordinal()] = mapBEToBEHolders.size();
+		
+		return statistics;
 	}
 }

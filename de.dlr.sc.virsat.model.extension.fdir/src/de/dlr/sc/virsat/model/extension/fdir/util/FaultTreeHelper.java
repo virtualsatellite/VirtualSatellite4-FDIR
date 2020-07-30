@@ -11,8 +11,10 @@ package de.dlr.sc.virsat.model.extension.fdir.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -98,6 +100,28 @@ public class FaultTreeHelper {
 		}
 		
 		return nodes;
+	}
+	
+	/**
+	 * Creates a mapping for all edge types
+	 * @param faultTrees the fault trees that will be searched for edges
+	 * @return the desired mapping
+	 */
+	public Map<EdgeType, Map<FaultTreeNode, List<FaultTreeNode>>> getMapEdgeTypeToNodes(Set<FaultTree> faultTrees) {
+		Map<EdgeType, Map<FaultTreeNode, List<FaultTreeNode>>> mapEdgeTypeToNodes = new HashMap<>();
+
+		for (FaultTree faultTree : faultTrees) {
+			for (EdgeType edgeType : EdgeType.values()) {
+				Map<FaultTreeNode, List<FaultTreeNode>> nodes = mapEdgeTypeToNodes.computeIfAbsent(edgeType, key -> new HashMap<>());
+				for (FaultTreeEdge edge : getEdges(edgeType, faultTree)) {
+					FaultTreeNode from = (edgeType.equals(EdgeType.PARENT)) ? edge.getFrom() : edge.getTo();
+					FaultTreeNode to = (edgeType.equals(EdgeType.PARENT)) ? edge.getTo() : edge.getFrom();
+					nodes.computeIfAbsent(from, key -> new ArrayList<>()).add(to);
+				}
+			}
+		}
+		
+		return mapEdgeTypeToNodes;
 	}
 	
 	/**

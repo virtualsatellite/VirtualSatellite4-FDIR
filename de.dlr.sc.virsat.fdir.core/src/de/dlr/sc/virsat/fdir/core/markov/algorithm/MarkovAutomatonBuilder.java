@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 
 public class MarkovAutomatonBuilder<S extends MarkovState> {
 	
@@ -28,7 +29,9 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 	 * @return the new markov automaton
 	 */
 	public MarkovAutomaton<S> build(AStateSpaceGenerator<S> stateSpaceGenerator, SubMonitor monitor) {
-		beginStatisticsRecord();
+		statistics = new MarkovAutomatonBuildStatistics();
+		long startTime = System.currentTimeMillis();
+		statistics.time = IStatistics.TIMEOUT;
 		
 		// Create a new markov automaton and inform the state space generator about it
 		MarkovAutomaton<S> ma = new MarkovAutomaton<>();
@@ -55,27 +58,11 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 			toProcess.addAll(generatedNewSuccs);
 		}
 		
-		endStatisticsRecord(ma);
-		
-		return ma;
-	}
-	
-	/**
-	 * Starts a new statistics measurement
-	 */
-	private void beginStatisticsRecord() {
-		statistics = new MarkovAutomatonBuildStatistics();
-		statistics.time = System.currentTimeMillis();
-	}
-	
-	/**
-	 * Finishes an ongoing statistics measurement
-	 * @param ma the finished markov automaton
-	 */
-	private void endStatisticsRecord(MarkovAutomaton<S> ma) {
 		statistics.maxStates = ma.getStates().size();
 		statistics.maxTransitions = ma.getTransitions().size();
-		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.time = System.currentTimeMillis() - startTime;
+		
+		return ma;
 	}
 	
 	/**

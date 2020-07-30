@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -36,10 +37,11 @@ public abstract class ASynthesizer implements ISynthesizer {
 	@Override
 	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
 		statistics = new SynthesisStatistics();
-		statistics.time = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
+		statistics.time = IStatistics.TIMEOUT;
 		statistics.countModules = 1;
 		
-		FaultTreeNode root  = synthesisQuery.getRoot();
+		FaultTreeNode root  = synthesisQuery.getFTHolder().getRoot();
 		concept = root.getConcept();
 		
 		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(root, subMonitor);
@@ -50,8 +52,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		}
 		
 		statistics.maxModuleRaSize = synthesizedRA.getStates().size();
-		
-		statistics.time = System.currentTimeMillis() - statistics.time;
+		statistics.time = System.currentTimeMillis() - startTime;
 		return synthesizedRA;
 	}
 
@@ -87,7 +88,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root, SubMonitor subMonitor) {
 		DFT2MAConverter dft2maConverter = createDFT2MAConverter();
 		dft2maConverter.getStateSpaceGenerator().getStaticAnalysis().setSymmetryChecker(null);
-		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(root);
+		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(root, null, subMonitor);
 		
 		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2maConverter.getMaBuilder().getInitialState(), subMonitor);
 		statistics.maBuildStatistics.compose(dft2maConverter.getMaBuilder().getStatistics());

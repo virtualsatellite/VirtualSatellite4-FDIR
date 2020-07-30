@@ -1,0 +1,17 @@
+toplevel "System";
+"System" or "X" "Y";
+"X" pand "X1" "X2";
+"X1" or "E" "D";
+"X2" or "A" "B";
+"Y" or "Y1" "Y2";
+"Y1" wsp "A" "C";
+"Y2" wsp "B" "C";
+"Z" wsp "P1" "P2";
+"F" fdep "Z" "E";
+"A" lambda=0.00015 dorm=0;
+"B" lambda=0.00020 dorm=0;
+"C" lambda=0.00010 dorm=0;
+"D" lambda=0.00035 dorm=0;
+"E" lambda=0.00055 dorm=0;
+"P1" lambda=0.0025 dorm=0;
+"P2" lambda=0.0030 dorm=0;
