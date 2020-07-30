@@ -58,7 +58,6 @@ Germany
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
-
    <plugins>
    </plugins>
 
@@ -156,6 +155,8 @@ Germany
       <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
       <feature id="de.dlr.sc.virsat.excel.feature" installMode="root"/>
       <feature id="de.dlr.sc.virsat.fdir.storm.feature" installMode="root"/>
+      <feature id="org.polarion.eclipse.team.svn.connector" installMode="root"/>
+      <feature id="org.polarion.eclipse.team.svn.connector.svnkit18" installMode="root"/>
    </features>
 
    <configurations>
@@ -166,11 +167,6 @@ Germany
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
-
-   <repositories>
-      <repository location="http://community.polarion.com/projects/subversive/download/eclipse/6.0/update-site/" enabled="true" />
-      <repository location="http://community.polarion.com/projects/subversive/download/eclipse/6.0/update-site/" enabled="true" />
-   </repositories>
 
    <preferencesInfo>
       <targetfile overwrite="false"/>
