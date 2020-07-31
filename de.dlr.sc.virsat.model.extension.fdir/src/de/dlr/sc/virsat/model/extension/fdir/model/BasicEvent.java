@@ -84,9 +84,10 @@ public  class BasicEvent extends ABasicEvent {
 		}
 		
 		BasicEvent be = (BasicEvent) other;
-		return getHotFailureRateBean().getValueToBaseUnit() == be.getHotFailureRateBean().getValueToBaseUnit()
-				&& getColdFailureRateBean().getValueToBaseUnit() == be.getColdFailureRateBean().getValueToBaseUnit()
-				&& getRepairRateBean().getValueToBaseUnit() == be.getRepairRateBean().getValueToBaseUnit();
+		
+		return (getHotFailureRateBean().isSet() && be.getHotFailureRateBean().isSet() && getHotFailureRateBean().getValueToBaseUnit() == be.getHotFailureRateBean().getValueToBaseUnit())
+				&& (getColdFailureRateBean().isSet() && be.getColdFailureRateBean().isSet() && getColdFailureRateBean().getValueToBaseUnit() == be.getColdFailureRateBean().getValueToBaseUnit())
+				&& (getRepairRateBean().isSet() && be.getRepairRateBean().isSet() && getRepairRateBean().getValueToBaseUnit() == be.getRepairRateBean().getValueToBaseUnit());
 	}
 	
 	@Override
