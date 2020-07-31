@@ -1,6 +1,6 @@
 # Virtual Satellite 4 FDIR
 
-This content is produced and maintained by German Aerospace Center (DLR), Simulation and Software Technology.
+This content was engendered by Deutsches Zentrum fuer Luft- und Raumfahrt e.V., German Aerospace Center, DLR and is protected under DLR copyright, © DLR 2020.
 
 ## Project License
 
@@ -9,6 +9,7 @@ terms of the Eclipse Public License 2.0 which is available at
 http://www.eclipse.org/legal/epl-2.0.
 
 SPDX-License-Identifier: EPL-2.0
+
 
 ## Third-party Content
 
@@ -20,19 +21,31 @@ Apache Commons CLI
 
  * License: Apache License, 2.0
 
+Apache Commons CSV
+
+ * License: Apache License, 2.0
+
 Apache Commons Math
 
  * License: Apache License, 2.0
+
+Jersey JAX RS RI 
+
+* License: Eclipse Public License, 2.0
 
 JFreeChart
 
  * License: GNU Lesser General Public Licence (LGPL), 2.1
 
-Nebula Widgets Incubation
+JSON Simple
 
- * License: Eclipse Public License, 1.0
+ * License: Apache License, 2.0
  
-Eclipse Layout Kernel
+MAT File Library
+
+ * License: Apache License, 2.0
+
+Nebula Widgets Incubation
 
  * License: Eclipse Public License, 1.0
 
@@ -56,9 +69,12 @@ ZeroMQ 4.1.4 and Jzmq 3.1.0
 
  * License: GNU Lesser General Public Licence (LGPL), 3
 
-## DLR logo and images 
+## DLR trade mark and copyrighted material other than S/W
 
-(c) Copyright by DLR (German Aerospace Center) Institute for Software Technology 2020. The DLR logo, CEF logo and DLR images are under copyright of DLR (German Aerospace Center), <https://www.dlr.de/>. The DLR logo, CEF Logo and images cannot be altered or used without DLR&apos;s permission. DLR logo and images are provided for the use under the following conditions <https://www.dlr.de/EN/Service/Imprint/imprint_node.html>.
+The DLR trade mark (as  the word mark DLR or as combination DLR with the DLR Logo)  is a registered and protected trade mark and may not be used without DLR�s prior written permission. 
+
+Copyrighted content other than the S/W provided under the indicated Eclipse License Conditions such as images, photographs, videos and texts which are indicated as being under DLR�s copyright through copyright notice ( i. g.� DLR 2020) are provided for use under the Terms of use as provided for on DLRs webpage <https://www.dlr.de>.
+
 
 ## Cryptography
 

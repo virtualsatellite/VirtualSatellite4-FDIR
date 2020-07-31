@@ -6,14 +6,17 @@
    <aboutInfo>
       <image path="/de.dlr.sc.virsat.fdir.branding.ui/resources/images/Branding/Configuration.gif"/>
       <text>
-         Virtual Satellite - FDIR
+         Virtual Satellite 4 - CEF
+
 Version 4.12.0
 
-(c) Copyright by DLR (German Aerospace Center) Institute for Software Technology 2020. 
+© Copyright by DLR (Deutsches Zentrum fuer Luft- und Raumfahrt e. V., German Aerospace Center) 2020. 
 
-The DLR logo, CEF logo and DLR images are under copyright of DLR (German Aerospace Center), https://www.dlr.de/. 
-The DLR logo, CEF logo and images cannot be altered or used without DLR&apos;s permission. 
-DLR logo and images are provided for the use under the following conditions https://www.dlr.de/EN/Service/Imprint/imprint_node.html
+The DLR trade mark (as  the word mark DLR or as combination DLR with the DLR Logo)  is a registered and protected trade mark and may not be used without DLR´s prior written permission. 
+
+Copyrighted content other than the S/W provided under the indicated Eclipse License Conditions such as the images, photographs, videos and texts which are indicated as being under DLR´s copyright through copyright notice (i. g. © DLR 2020)  are provided for use under the Terms of use as provided for on DLRs webpage www.dlr.de
+
+The CEF logo and images cannot be altered or used without DLR&apos;s permission.
 
 German Aerospace Center (DLR) e.V.
 Lilienthalplatz 7
@@ -57,6 +60,7 @@ Germany
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
+
 
    <plugins>
    </plugins>
