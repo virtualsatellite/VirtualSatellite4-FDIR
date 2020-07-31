@@ -2,7 +2,7 @@
 <feature
       id="de.dlr.sc.virsat.fdir.storm.feature"
       label="VirSat STORM Feature"
-      version="4.10.0.qualifier"
+      version="4.12.0.qualifier"
       provider-name="DLR (German Aerospace Center)"
       plugin="de.dlr.sc.virsat.fdir.branding.ui"
       license-feature="de.dlr.sc.virsat.fdir.license.feature">
@@ -248,6 +248,76 @@ by German Aerospace Center (DLR e.V.)
 
    <plugin
          id="org.mandas.docker-client"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.auth.oauth2-http"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.http-client.google-http-client"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.auth.google-auth-library-credentials"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.auto.value.auto-value-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.http-client.google-http-client-jackson2"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.j2objc.j2objc-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.opencensus.opencensus-api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.opencensus.opencensus-contrib-http-util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.grpc.grpc-context"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="jakarta.xml.bind"
          download-size="0"
          install-size="0"
          version="0.0.0"

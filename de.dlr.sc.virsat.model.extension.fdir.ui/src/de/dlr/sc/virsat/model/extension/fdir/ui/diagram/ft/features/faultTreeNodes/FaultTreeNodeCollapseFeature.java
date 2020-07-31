@@ -9,8 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.elk.core.service.DiagramLayoutEngine;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -24,10 +23,10 @@ import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.AbstractFaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * This feature takes care of expanding and collapsing fault trees.
@@ -59,10 +58,10 @@ public class FaultTreeNodeCollapseFeature extends AbstractCustomFeature {
 		
 		for (PictogramElement pe : context.getPictogramElements()) {
 			Fault fault = (Fault) getBusinessObjectForPictogramElement(pe);
-			FaultTreeHelper ftHelper = new FaultTreeHelper();
+			FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
 			
 			if (isCollapse) {
-				List<FaultTreeNode> allSubNodes = ftHelper.getAllNodes(fault);
+				Set<FaultTreeNode> allSubNodes = ftHolder.getAllSubNodes(fault);
 				allSubNodes.remove(fault);
 				
 				PictogramElement[] allSubPes = getFeatureProvider().getDiagramTypeProvider().getNotificationService().calculateRelatedPictogramElements(allSubNodes.toArray());
@@ -77,24 +76,24 @@ public class FaultTreeNodeCollapseFeature extends AbstractCustomFeature {
 				
 		    	updatePictogramElement(pe);
 			} else {
-				List<FaultTreeNode> allLocalSubNodes = ftHelper.getAllLocalNodes(fault);
-				allLocalSubNodes.remove(fault);
+				Set<FaultTreeNode> allSubNodes = ftHolder.getAllLocalSubNodes(fault);
 				
-				for (FaultTreeNode localSubNode : allLocalSubNodes) {
-					AddContext addContext = new AddContext();
-					addContext.setTargetContainer(getDiagram());
-					addGraphicalRepresentation(addContext, localSubNode.getTypeInstance());
+				for (FaultTreeNode localSubNode : allSubNodes) {
+					if (!localSubNode.equals(fault)) {
+						AddContext addContext = new AddContext();
+						addContext.setTargetContainer(getDiagram());
+						addGraphicalRepresentation(addContext, localSubNode.getTypeInstance());
+					}
 				}
 				
-				List<AbstractFaultTreeEdge> edges = new ArrayList<>();
-				edges.addAll(fault.getFaultTree().getPropagations());
-				edges.addAll(fault.getFaultTree().getSpares());
-				edges.addAll(fault.getFaultTree().getDeps());
-				
-				for (AbstractFaultTreeEdge edge : edges) {
-					AddContext addContext = new AddContext();
-					addContext.setTargetContainer(getDiagram());
-					addGraphicalRepresentation(addContext, edge);
+				for (FaultTreeNode localSubNode : allSubNodes) {
+					Set<FaultTreeEdge> edges = ftHolder.getIncomingEdges(localSubNode);
+					
+					for (FaultTreeEdge edge : edges) {
+						AddContext addContext = new AddContext();
+						addContext.setTargetContainer(getDiagram());
+						addGraphicalRepresentation(addContext, edge);
+					}
 				}
 			}
 		}
