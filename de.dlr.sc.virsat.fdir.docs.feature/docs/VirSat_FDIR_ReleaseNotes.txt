@@ -3,6 +3,39 @@ VirSat FDIR Release Notes
 
 VirSat FDIR is based on VirSat Core. Please don't forget to read the Release Notes of VirSat Core as well!
 
+Release 4.12.0 (31st July 2020)
+----------------------------------
+
+New Features:
+	Added repair semantics for non-deterministic fault trees - #190 Feature
+	Added repair semantics for recovery automaton minimization - #235 Feature
+	Added support for minimizing recovery automata defined on partial observable fault trees - #245 Feature
+	Added app for generating fault trees out of product trees of FDIR services - #222 Feature 
+	Added timeout transition for recovery automata - #278 #280 Feature
+	Implemented support for UNIFORM distribution type in basic events - #242 Feature
+	Implemented semantics for partial observable fault trees with repair - #268 Feature
+	Implemented support for observation dependent repair rates - #304 Feature
+	Implemented support to apply best-fit synthesis algorithm to a fault tree module - #312 #361 Feature 
+	Added direct editing support for all numeric values in the diagram editor - #333 Feature
+	Implemented support for turning comments into sticky notes - #337 #370 #383 Feature
+	Added category for configuring synthesis configuration - #339 #341 Feature
+	Implemented SEQ gate - #362 Feature
+	Upgraded to BIRT 4.16.0 - #372 Feature
+
+Usability Updates:
+	Restricted FDIRParameters to be only allowed to be added at the root level of a tree - #230 Comfort/usability
+	Added user manual - #221 #246 #263 #277 #289 #291 #293 #314 #316 Documentation
+	Implemented ability to directly connect ports of fault tree nodes without activating the edge tool - #283 #317 Comfort/usability
+	Improved highlighting of selected object in fault tree diagram editor - #318 Comfort/usability
+	Added compartments and sorted entries in the fault tree diagram editor - #319 Comfort/usability
+	Increased border margin for auto-layouting fault tree nodes in the diagram editor - #320 Comfort/usability
+	Double clicking on a fault tree node in the diagram editor now opens the corresponding editor - #338 Comfort/usability
+
+Fixed Bug:
+	Fixed numerical stability issues in SteadyStateAvailability calculcations - #58 Bug
+	Fixed bug where too many entries were generated for FMECA tables - #160 Bug
+	Fixed issue where deleting a sub node in a fault tree could lead to an NPE - #228 Bug
+
 Release 4.10.0 (13th December 2019)
 ----------------------------------
 
