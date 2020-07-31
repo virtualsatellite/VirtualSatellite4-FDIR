@@ -379,6 +379,72 @@ public class FaultTreeHolder {
 	}
 	
 	/**
+	 * Gets all subnodes for a fault.
+	 * @return all sub nodes of the fault
+	 */
+	public Set<FaultTreeNode> getAllSubNodes(Fault fault) {
+		Set<FaultTreeNode> allSubNodes = new HashSet<>();
+		
+		Queue<FaultTreeNode> toProcess = new LinkedList<>();
+		toProcess.offer(fault);
+		allSubNodes.addAll(toProcess);
+		
+		while (!toProcess.isEmpty()) {
+			FaultTreeNode node = toProcess.poll();
+			getMapNodeToSubNodes().get(node).forEach(child -> {
+				if (!allSubNodes.contains(child)) {
+					allSubNodes.add(child);
+					toProcess.add(child);
+				}
+			});
+		}
+		
+		return allSubNodes;
+	}
+	
+	/**
+	 * Gets all local sub nodes of a fault.
+	 * I.e. all sub nodes until the next level of faults.
+	 * @param fault the fault
+	 * @return a set of all local sub nodes
+	 */
+	public Set<FaultTreeNode> getAllLocalSubNodes(Fault fault) {
+		Set<FaultTreeNode> allSubNodes = getAllSubNodes(fault);
+		Set<FaultTreeNode> allLocalSubNodes = new HashSet<>(allSubNodes);
+		for (FaultTreeNode node : allSubNodes) {
+			if (node instanceof Fault && !node.equals(fault)) {
+				Fault subFault = (Fault) node;
+				Set<FaultTreeNode> subSubNodes = getAllSubNodes(subFault);
+				subSubNodes.remove(subFault);
+				allLocalSubNodes.removeAll(subSubNodes);
+
+			}
+		}
+		
+		return allLocalSubNodes;
+	}
+	
+	/**
+	 * Gets all incomfing edges for a give fault tree node
+	 * @param node the node
+	 * @return the incoming edges for a fault tree node
+	 */
+	public Set<FaultTreeEdge> getIncomingEdges(FaultTreeNode node) {
+		Set<FaultTreeEdge> incomingEdges = new HashSet<>();
+		FaultTreeHelper ftHelper = new FaultTreeHelper();
+		for (FaultTree ft : faultTrees) {
+			List<FaultTreeEdge> edges = ftHelper.getEdges(ft.getRoot());
+			for (FaultTreeEdge edge : edges) {
+				if (edge.getTo().equals(node)) {
+					incomingEdges.add(edge);
+				}
+			}
+		}
+		
+		return incomingEdges;
+	}
+	
+	/**
 	 * Gets a fault tree node by name
 	 * @param name the name of the node
 	 * @param ftnClazz the fault tree node type

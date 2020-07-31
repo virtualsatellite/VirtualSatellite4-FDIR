@@ -10,8 +10,10 @@
 package de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -40,10 +42,12 @@ import org.eclipse.graphiti.util.IColorConstant;
 
 import de.dlr.sc.virsat.graphiti.ui.diagram.feature.VirsatCategoryAssignmentOpenEditorFeature;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdge;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeCollapseFeature;
 import de.dlr.sc.virsat.model.extension.fdir.ui.diagram.ft.features.faultTreeNodes.FaultTreeNodeCreateFeature;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * Provides the tool behavior provider for fault tree diagrams.
@@ -81,13 +85,19 @@ public class FaultTreeDiagramToolBehaviorProvider extends DefaultToolBehaviorPro
 			if (iCustomFeature instanceof FaultTreeNodeCollapseFeature) {
 				Fault fault = (Fault) getFeatureProvider().getBusinessObjectForPictogramElement(pe);
 
-				FaultTreeHelper ftHelper = new FaultTreeHelper();
-				List<Object> allLocalSubObjects = new ArrayList<>(ftHelper.getAllLocalNodes(fault));
+				FaultTreeHolder ftHolder = new FaultTreeHolder(fault);
+				Set<FaultTreeNode> allLocalSubNodes = ftHolder.getAllLocalSubNodes(fault);
+				Set<Object> allLocalSubObjects = new HashSet<>(allLocalSubNodes);
 				allLocalSubObjects.remove(fault);
-				allLocalSubObjects.addAll(fault.getFaultTree().getPropagations());
-				allLocalSubObjects.addAll(fault.getFaultTree().getSpares());
-				allLocalSubObjects.addAll(fault.getFaultTree().getDeps());
-				allLocalSubObjects.addAll(fault.getFaultTree().getObservations());
+				
+				for (FaultTreeNode subNode : allLocalSubNodes) {
+					Set<FaultTreeEdge> edges = ftHolder.getIncomingEdges(subNode);
+					for (FaultTreeEdge edge : edges) {
+						if (allLocalSubObjects.contains(edge.getFrom())) {
+							allLocalSubObjects.addAll(edges);
+						}
+					}
+				}
 
 				if (allLocalSubObjects.isEmpty()) {
 					break;
