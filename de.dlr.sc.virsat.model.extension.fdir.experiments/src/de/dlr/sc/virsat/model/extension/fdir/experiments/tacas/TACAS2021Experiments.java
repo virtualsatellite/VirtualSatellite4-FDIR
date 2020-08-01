@@ -52,5 +52,12 @@ public class TACAS2021Experiments extends ASynthesizerExperiment {
 		synthesizer.setModularizer(null);
 		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer", synthesizer);
 	}
+	
+	@Test
+	public void experimentRepairWithoutModulariter() throws Exception {
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-reair");
+		synthesizer.setModularizer(null);
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer-repair", synthesizer);
+	}
 
 }
