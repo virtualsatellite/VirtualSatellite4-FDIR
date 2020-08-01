@@ -28,25 +28,29 @@ public class TACAS2021Experiments extends ASynthesizerExperiment {
 	private static final String EXPERIMENTS_PATH = "/resources/tacas/2021";
 	private static final long BENCHMARK_TIME_SECONDS = 1 * 10;
 	
-	private File experimentSet;
-	
 	@Override
 	public void setUp() {
 		super.setUp();
-		
-		experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
 		timeoutSeconds = BENCHMARK_TIME_SECONDS;
 	}
 	
 	@Test
 	public void experimentWithModularizer() throws Exception {
-		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithModularizer", synthesizer);
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithModularizer", synthesizer);
+	}
+	
+	@Test
+	public void experimentRepairWithModularizer() throws Exception {
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-repair");
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithModularizer-repair", synthesizer);
 	}
 	
 	@Test
 	public void experimentWithoutModulariter() throws Exception {
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
 		synthesizer.setModularizer(null);
-		this.benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer", synthesizer);
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer", synthesizer);
 	}
 
 }
