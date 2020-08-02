@@ -39,6 +39,7 @@ import org.junit.Before;
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
@@ -73,6 +74,9 @@ public class ASynthesizerExperiment {
 	protected long timeoutSeconds = DEFAULT_BENCHMARK_TIMEOUT_SECONDS;
 	protected Map<String, SynthesisStatistics> mapBenchmarkToSynthesisStatistics = new TreeMap<>();
 	protected Map<String, FaultTreeStatistics> mapBenchmarkToFaultTreeStatistics = new TreeMap<>();
+	protected int countSolved;
+	protected long totalSolveTime;
+	
 	
 	@Before
 	public void setUp() {
@@ -184,6 +188,11 @@ public class ASynthesizerExperiment {
 		
 		mapBenchmarkToSynthesisStatistics.put(benchmarkName, synthesizer.getStatistics());
 		mapBenchmarkToFaultTreeStatistics.put(benchmarkName, query.getFTHolder().getStatistics());
+		
+		if (synthesizer.getStatistics().time != IStatistics.TIMEOUT) {
+			countSolved++;
+			totalSolveTime += synthesizer.getStatistics().time;
+		}
 	}
 	
 	/**
@@ -254,13 +263,7 @@ public class ASynthesizerExperiment {
 		
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
-			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToSynthesisStatistics.entrySet()) {
-				writer.println(entry.getKey());
-				writer.println("===============================================");
-				writer.println(entry.getValue());
-				writer.println(mapBenchmarkToFaultTreeStatistics.get(entry.getKey()));
-				writer.println();
-			}
+			writer.println("#solved,totalSolveTime");
 		}
 		
 		Path pathFaultTree = Paths.get(filePathWithPrefix + "-fault-tree.txt");
