@@ -103,9 +103,11 @@ public class ModularSynthesizer implements ISynthesizer {
 	/**
 	 * Sets the modularizer that will be used to modularize the fault tree
 	 * @param modularizer the modularizer
+	 * @return 
 	 */
-	public void setModularizer(IModularizer modularizer) {
+	public ModularSynthesizer setModularizer(IModularizer modularizer) {
 		this.modularizer = modularizer;
+		return this;
 	}
 	
 	/**
@@ -119,8 +121,10 @@ public class ModularSynthesizer implements ISynthesizer {
 	/**
 	 * Set the fault tree trimmer. If null, no trimmer will be used and fault tree will not be trimmed.
 	 * @param ftTrimmer the trimmer
+	 * @return 
 	 */
-	public void setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
+	public ModularSynthesizer setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
 		this.ftTrimmer = ftTrimmer;
+		return this;
 	}
 }
