@@ -17,12 +17,16 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ComposedPropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesFactory;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 /**
  * Takes a collection of Recovery Automata and performs parallel construction on them
@@ -33,7 +37,7 @@ public class ParallelComposer {
 	
 	private Map<State, List<Integer>> mapStateToPos;
 	private Map<List<Integer>, State> mapPosToState;
-	private Map<RecoveryAutomaton, Map<State, List<Transition>>> mapRAtoTransitionMap;
+	private Map<RecoveryAutomaton, RecoveryAutomatonHolder> mapRAtoRaHolder;
 	private Map<State, Integer> mapStateToInt;
 	protected Concept concept;
 	
@@ -59,7 +63,9 @@ public class ParallelComposer {
 		
 		this.mapStateToPos = new HashMap<>();
 		this.mapPosToState = new HashMap<>();
-		this.mapRAtoTransitionMap = new HashMap<>();
+		this.mapRAtoRaHolder = new HashMap<>();
+		
+		ras.stream().forEach(ra -> mapRAtoRaHolder.put(ra, new RecoveryAutomatonHolder(ra)));
 		
 		Map<RecoveryAutomaton, List<State>> mapRAtoStates = this.createMapRAtoStates(ras);
 		indexStates(ras, mapRAtoStates);
@@ -67,7 +73,6 @@ public class ParallelComposer {
 		
 		RecoveryAutomaton result = new RecoveryAutomaton(concept);
 		mapRAtoStates.put(result, result.getStates());
-		List<Transition> resultTransitions = result.getTransitions();
 		RecoveryAutomatonHelper rah = new RecoveryAutomatonHelper(concept);
 		
 		State startState = createNewState(result, initialPos, mapRAtoStates);
@@ -75,8 +80,6 @@ public class ParallelComposer {
 		
 		Stack<State> dfsStack = new Stack<State>();
 		dfsStack.push(startState);
-
-		List<Transition> intermediateTransitions = new ArrayList<Transition>();
 		
 		while (!dfsStack.isEmpty()) {
 			State fromState = dfsStack.pop();
@@ -86,9 +89,11 @@ public class ParallelComposer {
 			for (RecoveryAutomaton ra : ras) {
 				Integer fromStateIndex = mapStateToPos.get(fromState).get(currRA);
 				State originalFromState = mapRAtoStates.get(ra).get(fromStateIndex);
+				RecoveryAutomatonHolder originalRah = mapRAtoRaHolder.get(ra);
 				
-				for (Transition t : mapRAtoTransitionMap.get(ra).get(originalFromState)) {
-					int changedNum = mapStateToInt.get(t.getTo());
+				for (Transition transition : originalRah.getStateHolder(originalFromState).getOutgoingTransitions()) {
+					State originalToState = originalRah.getMapTransitionToTransitionHolder().get(transition).getTo();
+					int changedNum = mapStateToInt.get(originalToState);
 					List<Integer> toPos = new ArrayList<>(fromPos);
 					toPos.set(currRA, changedNum);
 					
@@ -97,18 +102,28 @@ public class ParallelComposer {
 						toState = createNewState(result, toPos, mapRAtoStates);
 						dfsStack.push(toState);
 					}
-					if (t instanceof FaultEventTransition) {
-						FaultEventTransition copiedTransition = rah.copyFaultEventTransition((FaultEventTransition) t);
-						copiedTransition.setFrom(fromState);
-						copiedTransition.setTo(toState);
-						intermediateTransitions.add(copiedTransition);
+					
+					Transition copiedTransition = null;
+					if (transition instanceof FaultEventTransition) {
+						copiedTransition = rah.copyFaultEventTransition((FaultEventTransition) transition);
+					} else if (transition instanceof TimeoutTransition) {
+						copiedTransition = rah.copyTimeoutTransition((TimeoutTransition) transition);
+					} else {
+						throw new RuntimeException("Unknown transition type " +  transition);
 					}
+					
+					copiedTransition.getFromBean().setValue(fromState);
+					copiedTransition.getToBean().setValue(toState);
+					
+					// Low level add to the transitions to avoid bean overhead
+					ComposedPropertyInstance cpi = PropertyinstancesFactory.eINSTANCE.createComposedPropertyInstance();
+					cpi.setTypeInstance(copiedTransition.getTypeInstance());
+					result.getTransitionsBean().getArrayInstance().getArrayInstances().add(cpi);
 				}
+				
 				currRA++;
 			}
 		}
-		
-		resultTransitions.addAll(intermediateTransitions);
 		
 		return result;
 	}
@@ -137,10 +152,7 @@ public class ParallelComposer {
 	private void indexStates(Set<RecoveryAutomaton> ras, Map<RecoveryAutomaton, List<State>> mapRAtoState) {
 		mapStateToInt = new HashMap<State, Integer>();
 		
-		RecoveryAutomatonHelper rah = new RecoveryAutomatonHelper(concept);
 		for (RecoveryAutomaton ra : ras) {
-			mapRAtoTransitionMap.put(ra, rah.getCurrentTransitions(ra));
-			
 			for (int i = 0; i < mapRAtoState.get(ra).size(); ++i) {
 				mapStateToInt.put(mapRAtoState.get(ra).get(i), i);
 			}
