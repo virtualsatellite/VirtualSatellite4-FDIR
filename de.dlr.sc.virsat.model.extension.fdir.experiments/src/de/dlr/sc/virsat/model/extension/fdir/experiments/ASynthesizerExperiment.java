@@ -66,6 +66,7 @@ public class ASynthesizerExperiment {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
 	private static final long DEFAULT_BENCHMARK_TIMEOUT_SECONDS = 30;
+	private static final long BENCHMARK_SLEEP = 1000;
 	
 	protected ModularSynthesizer synthesizer;
 	
@@ -154,8 +155,18 @@ public class ASynthesizerExperiment {
 				benchmarkSuiteEntry(file, synthesizerSupplier);
 			}
 		} else {
-			Path platformPath = Paths.get(".\\").relativize(entry.toPath());
-			benchmarkDFT("/" + platformPath.toString(), entry.getName(), synthesizerSupplier);
+			boolean runBenchmark = true;
+			while (runBenchmark) {
+				try {
+					Path platformPath = Paths.get(".\\").relativize(entry.toPath());
+					benchmarkDFT("/" + platformPath.toString(), entry.getName(), synthesizerSupplier);
+					runBenchmark = false;
+				} catch (OutOfMemoryError e) {
+					System.out.println("Got OOM during benchmark setup! Cleaning and then trying again.");
+				}
+				
+				clean();
+			}
 		}
 	}
 	
@@ -167,9 +178,6 @@ public class ASynthesizerExperiment {
 	 * @throws IOException
 	 */
 	protected void benchmarkDFT(String dftPath, String benchmarkName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
-		System.gc();
-		System.runFinalization();
-		
 		System.out.print("Benchmarking " + benchmarkName + "... ");
 		
 		Duration timeout = Duration.ofSeconds(timeoutSeconds);
@@ -189,14 +197,8 @@ public class ASynthesizerExperiment {
 		    handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
 		    System.out.println("DONE.");
 		} catch (ExecutionException e) {
-			if (e.getCause() instanceof OutOfMemoryError) {
-				benchmarkSynthesizer.getStatistics().time = IStatistics.OOM;
-				System.out.println("OUT OF MEMORY.");
-			} else {
-				benchmarkSynthesizer.getStatistics().time = IStatistics.NA;
-				e.printStackTrace();
-				System.out.println("ERROR.");
-			}
+			benchmarkSynthesizer.getStatistics().time = IStatistics.OOM;
+			System.out.println("OUT OF MEMORY.");
 		} catch (TimeoutException | InterruptedException e) {
 		    handler.cancel(true);
 		    monitor.setCanceled(true);
@@ -218,13 +220,22 @@ public class ASynthesizerExperiment {
 			totalSolveTime += benchmarkSynthesizer.getStatistics().time;
 		}
 		
+		try {
+			executor.awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			// Nothing to handle here
+		}
+	}
+	
+	/**
+	 * Sleep some to give the gc time to trigger, especially
+ 	 * if a out of memory exception just a occurred
+	 */
+	private void clean() {
 		System.gc();
 		System.runFinalization();
 		
 		try {
-			// Sleep some to give the gc time to trigger, especially
-			// if a out of memory exception just a occured
-			final long BENCHMARK_SLEEP = 1000;
 			Thread.sleep(BENCHMARK_SLEEP);
 		} catch (InterruptedException e) {
 			// Nothing to handle here

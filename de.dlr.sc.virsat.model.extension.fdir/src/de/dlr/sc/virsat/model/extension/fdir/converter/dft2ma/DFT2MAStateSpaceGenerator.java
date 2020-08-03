@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
@@ -41,6 +43,8 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
+	
+	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 512;
 	
 	private DFTSemantics semantics = DFTSemantics.createNDDFTSemantics();
 	private DFTStaticAnalysis staticAnalysis = new DFTStaticAnalysis();
@@ -83,14 +87,24 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		return initialState;
 	}
+	
+	private long maxMemory = Runtime.getRuntime().maxMemory();
 
 	@Override
-	public List<DFTState> generateSuccs(DFTState state) {
+	public List<DFTState> generateSuccs(DFTState state, SubMonitor monitor) {
 		List<DFTState> newSuccs = new ArrayList<>();
 		List<IDFTEvent> occurableEvents = getOccurableEvents(state);
 		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
+			// Eclipse trick for doing progress updates with unknown ending time
+			final int PROGRESS_COUNT = 100;
+			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+			long freeMemory = maxMemory - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
+			if (freeMemory < MEMORY_THRESHOLD) {
+				throw new RuntimeException("Close to out of memory. Aborting so we can still maintain an operational state.");
+			}
+			
 			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);

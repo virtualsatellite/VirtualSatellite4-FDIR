@@ -17,6 +17,11 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubMonitor;
+
+import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ComposedPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesFactory;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
@@ -35,19 +40,24 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  */
 public class ParallelComposer {
 	
+	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 512;
+	
 	private Map<State, List<Integer>> mapStateToPos;
 	private Map<List<Integer>, State> mapPosToState;
 	private Map<RecoveryAutomaton, RecoveryAutomatonHolder> mapRAtoRaHolder;
 	private Map<State, Integer> mapStateToInt;
 	protected Concept concept;
 	
+	private long maxMemory = Runtime.getRuntime().maxMemory();
+	
 	/**
 	 * Takes a set of Recovery Automata and returns the composed Recovery Automaton
 	 * @param ras the set of Recovery Automata
 	 * @param concept the concept
+	 * @param monitor a monitor
 	 * @return the composed recovery automaton
 	 */
-	public RecoveryAutomaton compose(Set<RecoveryAutomaton> ras, Concept concept) {
+	public RecoveryAutomaton compose(Set<RecoveryAutomaton> ras, Concept concept, IProgressMonitor monitor) {
 		this.concept = concept;
 		if (ras == null) {
 			return null;
@@ -65,9 +75,11 @@ public class ParallelComposer {
 		this.mapPosToState = new HashMap<>();
 		this.mapRAtoRaHolder = new HashMap<>();
 		
+		SubMonitor subMonitor = SubMonitor.convert(monitor);
+		
 		ras.stream().forEach(ra -> mapRAtoRaHolder.put(ra, new RecoveryAutomatonHolder(ra)));
 		
-		Map<RecoveryAutomaton, List<State>> mapRAtoStates = this.createMapRAtoStates(ras);
+		Map<RecoveryAutomaton, IBeanList<State>> mapRAtoStates = this.createMapRAtoStates(ras);
 		indexStates(ras, mapRAtoStates);
 		List<Integer> initialPos = ras.stream().map(ra -> 0).collect(Collectors.toList());
 		
@@ -82,13 +94,23 @@ public class ParallelComposer {
 		dfsStack.push(startState);
 		
 		while (!dfsStack.isEmpty()) {
+			if (subMonitor.isCanceled()) {
+				throw new OperationCanceledException();
+			}
+			
+			long freeMemory = maxMemory - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
+			if (freeMemory < MEMORY_THRESHOLD) {
+				throw new RuntimeException("Close to out of memory. Aborting so we can still maintain an operational state.");
+			}
+			
 			State fromState = dfsStack.pop();
 			List<Integer> fromPos = mapStateToPos.get(fromState);
 			
 			int currRA = 0;
 			for (RecoveryAutomaton ra : ras) {
 				Integer fromStateIndex = mapStateToPos.get(fromState).get(currRA);
-				State originalFromState = mapRAtoStates.get(ra).get(fromStateIndex);
+				State originalFromState = new State(((ComposedPropertyInstance) mapRAtoStates.get(ra)
+						.getArrayInstance().getArrayInstances().get(fromStateIndex)).getTypeInstance());
 				RecoveryAutomatonHolder originalRah = mapRAtoRaHolder.get(ra);
 				
 				for (Transition transition : originalRah.getStateHolder(originalFromState).getOutgoingTransitions()) {
@@ -135,12 +157,16 @@ public class ParallelComposer {
 	 * @param mapRAtoState map of RA to states
 	 * @return a new State
 	 */
-	private State createNewState(RecoveryAutomaton ra, List<Integer> pos, Map<RecoveryAutomaton, List<State>> mapRAtoState) {			
+	private State createNewState(RecoveryAutomaton ra, List<Integer> pos, Map<RecoveryAutomaton, IBeanList<State>> mapRAtoState) {			
 		State newState = new State(concept);
 		newState.setName(pos.stream().map(Object::toString).collect(Collectors.joining()));
 		mapStateToPos.put(newState, pos);
 		mapPosToState.put(pos, newState);
-		mapRAtoState.get(ra).add(newState);
+		
+		// Low level add to the transitions to avoid bean overhead
+		ComposedPropertyInstance cpi = PropertyinstancesFactory.eINSTANCE.createComposedPropertyInstance();
+		cpi.setTypeInstance(newState.getTypeInstance());
+		mapRAtoState.get(ra).getArrayInstance().getArrayInstances().add(cpi);
 		return newState;
 	}
 	
@@ -149,7 +175,7 @@ public class ParallelComposer {
 	 * @param ras the set of recovery automata
 	 * @param mapRAtoState map of RA to its states
 	 */
-	private void indexStates(Set<RecoveryAutomaton> ras, Map<RecoveryAutomaton, List<State>> mapRAtoState) {
+	private void indexStates(Set<RecoveryAutomaton> ras, Map<RecoveryAutomaton, IBeanList<State>> mapRAtoState) {
 		mapStateToInt = new HashMap<State, Integer>();
 		
 		for (RecoveryAutomaton ra : ras) {
@@ -164,8 +190,8 @@ public class ParallelComposer {
 	 * @param ras the set of RAs
 	 * @return the map of each RA to its states
 	 */
-	private Map<RecoveryAutomaton, List<State>> createMapRAtoStates(Set<RecoveryAutomaton> ras) {
-		Map<RecoveryAutomaton, List<State>> mapRAtoStates = new HashMap<RecoveryAutomaton, List<State>>();
+	private Map<RecoveryAutomaton, IBeanList<State>> createMapRAtoStates(Set<RecoveryAutomaton> ras) {
+		Map<RecoveryAutomaton, IBeanList<State>> mapRAtoStates = new HashMap<RecoveryAutomaton, IBeanList<State>>();
 		ras.forEach(ra -> mapRAtoStates.put(ra, ra.getStates()));
 		return mapRAtoStates;
 	}

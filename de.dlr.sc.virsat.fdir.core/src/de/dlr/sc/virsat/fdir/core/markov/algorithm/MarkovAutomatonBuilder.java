@@ -21,8 +21,6 @@ import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 
 public class MarkovAutomatonBuilder<S extends MarkovState> {
 	
-	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 4;
-	
 	private MarkovAutomatonBuildStatistics statistics = new MarkovAutomatonBuildStatistics();
 	private S initialState;
 
@@ -51,17 +49,8 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		
 		// Actual state space generation loop
 		while (!toProcess.isEmpty()) {
-			// Eclipse trick for doing progress updates with unknown ending time
-			final int PROGRESS_COUNT = 100;
-			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-			
-			long freeMemory = Runtime.getRuntime().freeMemory();
-			if (freeMemory < MEMORY_THRESHOLD) {
-				throw new RuntimeException("Close to out of memory. Aborting so we can still maintain an operational state.");
-			}
-			
 			S state = toProcess.poll();
-			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state);
+			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state, monitor);
 			toProcess.addAll(generatedNewSuccs);
 		}
 		

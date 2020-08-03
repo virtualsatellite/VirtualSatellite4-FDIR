@@ -67,7 +67,7 @@ public class ModularSynthesizer implements ISynthesizer {
 				ras.add(ra);
 			}
 			
-			synthesizedRA = pc.compose(ras, concept);
+			synthesizedRA = pc.compose(ras, concept, subMonitor);
 		} else {
 			statistics.countModules = 1;
 			synthesizedRA = synthesizeModule(synthesisQuery, fault, conversionResult.getMapGeneratedToGenerator(), subMonitor);
