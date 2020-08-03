@@ -168,6 +168,7 @@ public class ASynthesizerExperiment {
 	 */
 	protected void benchmarkDFT(String dftPath, String benchmarkName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
 		System.gc();
+		System.runFinalization();
 		
 		System.out.print("Benchmarking " + benchmarkName + "... ");
 		
@@ -215,6 +216,18 @@ public class ASynthesizerExperiment {
 		} else {
 			countSolved++;
 			totalSolveTime += benchmarkSynthesizer.getStatistics().time;
+		}
+		
+		System.gc();
+		System.runFinalization();
+		
+		try {
+			// Sleep some to give the gc time to trigger, especially
+			// if a out of memory exception just a occured
+			final long BENCHMARK_SLEEP = 1000;
+			Thread.sleep(BENCHMARK_SLEEP);
+		} catch (InterruptedException e) {
+			// Nothing to handle here
 		}
 	}
 	

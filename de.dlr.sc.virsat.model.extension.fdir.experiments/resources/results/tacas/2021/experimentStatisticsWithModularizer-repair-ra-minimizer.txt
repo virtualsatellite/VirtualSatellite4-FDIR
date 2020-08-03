@@ -1,3 +1,2 @@
 benchmarkName,time,removedStates,removedTransitions
-AHRS-1-repair.dft,1960,0,4
-AHRS-2-repair.dft,N/A,N/A,N/A
+AHRS-1-repair.dft,2076,0,4

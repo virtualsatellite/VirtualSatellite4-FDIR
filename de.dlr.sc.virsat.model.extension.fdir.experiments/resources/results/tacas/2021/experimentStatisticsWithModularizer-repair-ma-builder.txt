@@ -1,3 +1,2 @@
 benchmarkName,time,maxStates,maxTransitions
-AHRS-1-repair.dft,504,506,1466
-AHRS-2-repair.dft,N/A,N/A,N/A
+AHRS-1-repair.dft,410,506,1466
