@@ -9,6 +9,16 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.ui.snippet;
 
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.jface.viewers.EditingSupport;
+
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.categories.propertydefinitions.AProperty;
+import de.dlr.sc.virsat.model.dvlm.categories.propertydefinitions.EnumProperty;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
+import de.dlr.sc.virsat.uiengine.ui.cellEditor.aproperties.EnumPropertyCellEditingSupport;
 import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
 
 
@@ -21,4 +31,23 @@ import de.dlr.sc.virsat.uiengine.ui.editor.snippets.IUiSnippet;
  * 
  */
 public class UiSnippetTableFaultBasicEventsBasicEvent extends AUiSnippetTableFaultBasicEventsBasicEvent implements IUiSnippet {
+	
+	@Override
+	protected EditingSupport createEditingSupport(EditingDomain editingDomain, AProperty property) {
+		if (property.getName().equals(BasicEvent.PROPERTY_DISTRIBUTION)) {
+			EnumPropertyCellEditingSupport editingSupport = new EnumPropertyCellEditingSupport(editingDomain, columnViewer, (EnumProperty) property) {
+				@Override
+				protected void setValue(Object element, Object userInputValue) {
+					super.setValue(element, userInputValue);
+					APropertyInstance pi = getPropertyInstance(element);
+					BasicEvent be = new BasicEvent((CategoryAssignment) pi.eContainer());
+					BasicEventHolder.synchronizeWithDistribution(editingDomain, be);
+				}
+			};
+			
+			return editingSupport;
+		}
+		
+		return super.createEditingSupport(editingDomain, property);
+	}
 }

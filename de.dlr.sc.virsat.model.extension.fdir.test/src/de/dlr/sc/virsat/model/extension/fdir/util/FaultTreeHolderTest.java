@@ -12,12 +12,12 @@ package de.dlr.sc.virsat.model.extension.fdir.util;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -52,14 +52,14 @@ public class FaultTreeHolderTest extends ATestCase {
 		Fault grandchild = new Fault(concept);
 		Fault notAChild = new Fault(concept);
 		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
-		ftHelper.connect(root, intermediateNode, root);
-		ftHelper.connect(root, child, intermediateNode);
-		ftHelper.connect(child, grandchild, child);
-		ftHelper.connect(root, grandchild, notAChild);
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
+		ftBuilder.connect(root, intermediateNode, root);
+		ftBuilder.connect(root, child, intermediateNode);
+		ftBuilder.connect(child, grandchild, child);
+		ftBuilder.connect(root, grandchild, notAChild);
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
-		Set<Fault> childFaults = ftHolder.getChildFaults(root);
+		List<Fault> childFaults = ftHolder.getChildFaults(root);
 		
 		assertThat(childFaults, hasItems(child));
 		assertThat(childFaults, not(hasItem(grandchild)));

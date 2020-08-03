@@ -14,23 +14,20 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import org.eclipse.core.runtime.CoreException;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.SetCommand;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
-import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
+import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
 // *****************************************************************
@@ -45,7 +42,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
  * 
  * 
  */	
-public abstract class ARecoveryAutomaton extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class ARecoveryAutomaton extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomaton";
 	
@@ -85,49 +82,31 @@ public abstract class ARecoveryAutomaton extends ABeanCategoryAssignment impleme
 	// *****************************************************************
 	// * Attribute: initial
 	// *****************************************************************
-	private State initial;
+	private BeanPropertyReference<State> initial = new BeanPropertyReference<>();
 	
 	private void safeAccessInitial() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("initial");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (initial == null) {
-				createInitial(ca);
-			}
-			initial.setTypeInstance(ca);
-		} else {
-			initial = null;
-		}
+		initial.setTypeInstance(propertyInstance);
 	}
 	
-	private void createInitial(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			initial = (State) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public State getInitial() {
 		safeAccessInitial();
-		return initial;
+		return initial.getValue();
 	}
 	
 	public Command setInitial(EditingDomain ed, State value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("initial");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessInitial();
+		return initial.setValue(ed, value);
 	}
 	
 	public void setInitial(State value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("initial");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessInitial();
+		initial.setValue(value);
+	}
+	
+	public BeanPropertyReference<State> getInitialBean() {
+		safeAccessInitial();
+		return initial;
 	}
 	
 	// *****************************************************************
@@ -146,6 +125,19 @@ public abstract class ARecoveryAutomaton extends ABeanCategoryAssignment impleme
 		return states;
 	}
 	
+	private IBeanList<BeanPropertyComposed<State>> statesBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessStatesBean() {
+		if (statesBean.getArrayInstance() == null) {
+			statesBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("states"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<State>> getStatesBean() {
+		safeAccessStatesBean();
+		return statesBean;
+	}
+	
 	// *****************************************************************
 	// * Array Attribute: transitions
 	// *****************************************************************
@@ -160,6 +152,19 @@ public abstract class ARecoveryAutomaton extends ABeanCategoryAssignment impleme
 	public IBeanList<Transition> getTransitions() {
 		safeAccessTransitions();
 		return transitions;
+	}
+	
+	private IBeanList<BeanPropertyComposed<Transition>> transitionsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessTransitionsBean() {
+		if (transitionsBean.getArrayInstance() == null) {
+			transitionsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("transitions"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<Transition>> getTransitionsBean() {
+		safeAccessTransitionsBean();
+		return transitionsBean;
 	}
 	
 	

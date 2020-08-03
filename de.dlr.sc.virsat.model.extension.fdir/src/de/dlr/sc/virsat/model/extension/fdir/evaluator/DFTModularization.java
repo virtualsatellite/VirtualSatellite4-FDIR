@@ -14,11 +14,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -50,15 +52,15 @@ public class DFTModularization {
 	 * @param ftHolder the fault tree holder
 	 * @param symmetryChecker optionally a symmetry checker
 	 */
-	public DFTModularization(Modularizer modularizer, FaultTreeHolder ftHolder, FaultTreeSymmetryChecker symmetryChecker) {
+	public DFTModularization(Modularizer modularizer, FaultTreeHolder ftHolder, DFTSymmetryChecker symmetryChecker) {
 		Fault rootFault = (Fault) ftHolder.getRoot();
-		modules = modularizer.getModules(rootFault.getFaultTree());
+		modules = modularizer.getModules(rootFault);
 		
 		if (!modules.isEmpty()) {
 			topLevelModule = getModule(rootFault);
 			modulesToModelCheck = computeModulesToModelCheck();
 			
-			if (modulesToModelCheck.size() > 1 && symmetryChecker != null) {
+			if (modulesToModelCheck.size() > 1) {
 				mapNodeToRepresentant = createMapNodeToRepresentant(ftHolder, symmetryChecker);
 			}
 		}
@@ -95,13 +97,12 @@ public class DFTModularization {
 	 * @param symmetryChecker the symmetry checker
 	 * @return a mapping from a node to the symmetric representant
 	 */
-	private Map<FaultTreeNode, FaultTreeNode> createMapNodeToRepresentant(FaultTreeHolder ftHolder, FaultTreeSymmetryChecker symmetryChecker) {
+	private Map<FaultTreeNode, FaultTreeNode> createMapNodeToRepresentant(FaultTreeHolder ftHolder, DFTSymmetryChecker symmetryChecker) {
 		Map<FaultTreeNode, FaultTreeNode> mapNodeToRepresentant = new HashMap<>();
-		Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
-		Map<FaultTreeNode, Set<FaultTreeNode>> symmetryReductionInverted = symmetryChecker.invertSymmetryReduction(symmetryReduction);
+		SymmetryReduction symmetryReduction = symmetryChecker.computeSymmetryReduction(ftHolder, ftHolder);
 				
-		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.entrySet()) {
-			if (symmetryReductionInverted.get(entry.getKey()).isEmpty()) {
+		for (Entry<FaultTreeNode, List<FaultTreeNode>> entry : symmetryReduction.getBiggerRelation().entrySet()) {
+			if (symmetryReduction.getSmallerNodes(entry.getKey()).isEmpty()) {
 				mapNodeToRepresentant.put(entry.getKey(), entry.getKey());
 				for (FaultTreeNode biggerNode : entry.getValue()) {
 					mapNodeToRepresentant.put(biggerNode, entry.getKey());
@@ -118,7 +119,7 @@ public class DFTModularization {
 	 * @return the module for the fault tree node, or null of no such module exists
 	 */
 	Module getModule(FaultTreeNode node) {
-		return modules.stream().filter(module -> module.getRootNode().equals(node)).findAny().orElse(null);
+		return Module.getModule(modules, node);
 	}
 	
 	/**
@@ -167,7 +168,7 @@ public class DFTModularization {
 			
 			boolean shouldModelCheck = module.getModuleNodes().size() > 1;
 			if (!shouldModelCheck) {
-				FaultTreeNode moduleRoot = module.getModuleNodes().get(0).getFaultTreeNode();
+				FaultTreeNode moduleRoot = module.getModuleRoot().getFaultTreeNode();
 				
 				if (moduleRoot instanceof Fault) {
 					shouldModelCheck = !((Fault) moduleRoot).getBasicEvents().isEmpty();
@@ -186,13 +187,26 @@ public class DFTModularization {
 			if (shouldModelCheck) {
 				modulesToModelCheck.add(module);
 			} else {
-				for (FaultTreeNodePlus ftChildPlus : module.getModuleRoot().getChildren()) {
-					Module subModule = getModule(ftChildPlus.getFaultTreeNode());
+				List<Module> subModules = getSubModules(module);
+				for (Module subModule : subModules) {
 					toProcess.add(subModule);
 				}
 			}
 		}
 		
 		return modulesToModelCheck;
+	}
+	
+	/**
+	 * Gets the sub modules for a given module
+	 * @param module the module
+	 * @return the submodules of the module
+	 */
+	public List<Module> getSubModules(Module module) {
+		List<FaultTreeNodePlus> children = module.getModuleRoot().getChildren();
+		List<Module> subModules = children.stream()
+				.map(child -> getModule(child.getFaultTreeNode()))
+				.collect(Collectors.toList());
+		return subModules;
 	}
 }

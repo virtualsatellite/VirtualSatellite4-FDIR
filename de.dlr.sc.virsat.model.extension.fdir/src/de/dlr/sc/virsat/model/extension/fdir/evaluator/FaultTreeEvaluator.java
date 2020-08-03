@@ -21,13 +21,13 @@ import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.storm.runner.StormModelChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.IDFT2DFTConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -63,7 +63,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	@Override
 	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, FailableBasicEventsProvider failNodeProvider, SubMonitor subMonitor, IMetric... metrics) {
 		if (metrics.length == 0) {
-			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MTTF.MTTF };
+			metrics = new IMetric[] { Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF };
 		}
 		
 		FaultTreeNode convertedRoot = root;
@@ -73,7 +73,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			convertedRoot = conversionResult.getRoot();
 		}
 		
-		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : failNodeProvider;
+		FailableBasicEventsProvider failNodeProviderRemapped = failNodeProvider != null ? remapFailLabelProvider(failNodeProvider) : null;
 		
 		ModelCheckingResult result = evaluator.evaluateFaultTree(convertedRoot, failNodeProviderRemapped, subMonitor, metrics);
 		if (!result.getMinCutSets().isEmpty()) {
@@ -145,15 +145,6 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 	 */
 	public void addPreprocessConverter(IDFT2DFTConverter dft2DftConverter) {
 		preprocessConverters.add(dft2DftConverter);
-	}
-
-	/**
-	 * Creates a fault tree evaluator with a default setup
-	 * @param isNondeterministic whether the evaluator uses Non-deterministic fault trees
-	 * @return a fault tree evaluator
-	 */
-	public static FaultTreeEvaluator createDefaultFaultTreeEvaluator(boolean isNondeterministic) {
-		return createDefaultFaultTreeEvaluator(isNondeterministic, DEFAULT_DELTA, DEFAULT_EPS);
 	}
 	
 	/**

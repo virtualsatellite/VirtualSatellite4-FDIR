@@ -40,7 +40,6 @@ public class FinalStateMinimizerTest extends ATestCase {
 	
 	@Test
 	public void basicTest() {
-		
 		final int INITIAL_STATES = 2;
 		final int FINAL_STATES = 1;
 		final int FINAL_TRANSITIONS = 1; 
@@ -57,12 +56,12 @@ public class FinalStateMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition01, fault);
 		raHelper.assignInputs(transition11, fault);
 		
-		FaultTreeNode spare = ftHelper.createGate(fault, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare = ftBuilder.createGate(fault, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action = new ClaimAction(concept);
 		action.setClaimSpare(spare);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action));
+		raHelper.assignAction(transition01, action.copy());
 		
 		minimizer.minimize(ra);
 		
@@ -98,8 +97,8 @@ public class FinalStateMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition01_2, fault2);
 		raHelper.assignInputs(transition11_2, fault2);
 		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
@@ -107,8 +106,8 @@ public class FinalStateMinimizerTest extends ATestCase {
 		ClaimAction action2 = new ClaimAction(concept);
 		action2.setClaimSpare(spare2);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition01_2, raHelper.copyClaimAction(action2));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition01_2, action2.copy());
 		
 		minimizer.minimize(ra);
 		
@@ -118,7 +117,6 @@ public class FinalStateMinimizerTest extends ATestCase {
 	
 	@Test 
 	public void multipleStatesTest() {
-		
 		final int INITIAL_STATES = 4;
 		final int FINAL_STATES = 3;
 		final int FINAL_TRANSITIONS = 4; 
@@ -144,8 +142,8 @@ public class FinalStateMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition13, fault1);
 		raHelper.assignInputs(transition23, fault2);
 		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
@@ -153,10 +151,10 @@ public class FinalStateMinimizerTest extends ATestCase {
 		ClaimAction action2 = new ClaimAction(concept);
 		action2.setClaimSpare(spare2);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition13, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition23, raHelper.copyClaimAction(action1));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition02, action2.copy());
+		raHelper.assignAction(transition13, action1.copy());
+		raHelper.assignAction(transition23, action1.copy());
 		
 		minimizer.minimize(ra);
 		

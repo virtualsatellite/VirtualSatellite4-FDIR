@@ -32,7 +32,7 @@ public class FaultValidator {
 	public boolean validate(Fault fault) {
 		boolean allInfoValid = true;
 		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(fault.getConcept());
+		FaultTreeHelper ftHelper = new FaultTreeHelper();
 		for (FaultTreeEdge fte : ftHelper.getEdges(fault)) {
 			if (fte.getFrom() == null) {
 				allInfoValid = false;

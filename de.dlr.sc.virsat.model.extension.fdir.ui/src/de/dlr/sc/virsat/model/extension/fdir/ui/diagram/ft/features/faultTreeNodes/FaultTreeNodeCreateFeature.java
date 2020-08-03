@@ -22,7 +22,7 @@ import de.dlr.sc.virsat.model.extension.fdir.Activator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.Gate;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 import de.dlr.sc.virsat.project.editingDomain.VirSatTransactionalEditingDomain;
 
 /**
@@ -61,8 +61,8 @@ public class FaultTreeNodeCreateFeature extends VirSatCreateFeature {
 			BeanStructuralElementInstance beanSei = new BeanStructuralElementInstance(owningSei);
 			return beanSei.add(ed, new Fault(concept));
 		} else {
-			FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
-			Gate gate = ftHelper.createGate(type);
+			FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
+			Gate gate = ftBuilder.createGate(type);
 			
 			Fault fault = (Fault) getBusinessObjectForPictogramElement(getDiagram().getChildren().get(0));
 			return fault.getFaultTree().getGates().add(ed, gate);

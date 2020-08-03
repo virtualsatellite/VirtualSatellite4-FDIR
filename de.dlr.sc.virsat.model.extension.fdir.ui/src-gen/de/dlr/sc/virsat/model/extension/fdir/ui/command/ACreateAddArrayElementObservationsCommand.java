@@ -24,7 +24,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
  * 
  * Don't Manually modify this class
  * 
- * 
+ * The action is only available if the referenced node failures are being observed.
  * 
  */	
 public abstract class ACreateAddArrayElementObservationsCommand {

@@ -15,8 +15,16 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="children" unique="false"
         upperBound="-1" eType="#//GalileoFaultTreeNode"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="lambda" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="prob" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dorm" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="repairActions" upperBound="-1"
+        eType="#//GalileoRepairAction" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GalileoRepairAction">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="repair" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="observartions" unique="false"
+        upperBound="-1" eType="#//GalileoFaultTreeNode"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GalileoNodeType"/>
   <eClassifiers xsi:type="ecore:EClass" name="Named" eSuperTypes="#//GalileoNodeType">
@@ -27,10 +35,8 @@
         upperBound="-1" eType="#//GalileoFaultTreeNode"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="observationRate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Rdep" eSuperTypes="#//GalileoNodeType">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rateFactor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//GalileoNodeType">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="time" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Parametrized" eSuperTypes="#//GalileoNodeType">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="typeName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="parameter" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
 </ecore:EPackage>

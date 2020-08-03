@@ -1,0 +1,3 @@
+Tmax=? [F "failed"];
+Pmin=? [F<=360.0 "failed"];
+Pmin=? [F<=720.0 "failed"];

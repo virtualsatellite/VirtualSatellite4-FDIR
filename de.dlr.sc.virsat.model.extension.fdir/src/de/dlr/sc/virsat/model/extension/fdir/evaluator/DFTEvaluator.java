@@ -17,16 +17,17 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.AProbabilityCurve;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.MetricsResultDeriver;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -47,13 +48,12 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	private DFTSemantics defaultSemantics;
 	private DFTSemantics poSemantics;
 	
-	private MarkovAutomaton<DFTState> mc;
-	private RecoveryStrategy recoveryStrategy;
 	private IMarkovModelChecker markovModelChecker;
-	private DFT2MAConverter dft2MAConverter = new DFT2MAConverter();
-	private Modularizer modularizer;
-	private FaultTreeSymmetryChecker symmetryChecker;
+	private DFT2MAConverter dft2MaConverter = new DFT2MAConverter();
+	private Modularizer modularizer = new Modularizer();
+	private DFTSymmetryChecker symmetryChecker = new DFTSymmetryChecker();
 	private DFTMetricsComposer composer = new DFTMetricsComposer();
+	private MetricsResultDeriver deriver = new MetricsResultDeriver();
 	private DFTEvaluationStatistics statistics;
 	
 	/**
@@ -67,13 +67,11 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		this.defaultSemantics = defaultSemantics;
 		this.poSemantics = poSemantics;
 		this.markovModelChecker = markovModelChecker;
-		this.modularizer = new Modularizer();
-		this.modularizer.setBEOptimization(false);
 	}
 
 	@Override
 	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
-		this.recoveryStrategy = recoveryStrategy;
+		dft2MaConverter.getStateSpaceGenerator().setRecoveryStrategy(recoveryStrategy);
 	}
 
 	@Override
@@ -82,23 +80,30 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		statistics.time = System.currentTimeMillis();
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
-		configureDFT2MAConverter(ftHolder, metrics, failableBasicEventsProvider);
+		dft2MaConverter.configure(ftHolder, chooseSemantics(ftHolder), metrics, failableBasicEventsProvider);
 		
 		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
 		
-		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(metrics, modularization != null);
-	
-		Map<FailLabelProvider, ModelCheckingResult> baseResults = new HashMap<>();
-		for (Entry<FailLabelProvider, IMetric[]> metricPartition : partitioning.entrySet()) {
-			if (!metricPartition.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
-				IBaseMetric[] baseMetrics = (IBaseMetric[]) metricPartition.getValue();
-				ModelCheckingResult result = evaluateFaultTree(ftHolder, failableBasicEventsProvider, metricPartition.getKey(), modularization, subMonitor, baseMetrics);
-				baseResults.put(metricPartition.getKey(), result);
-			}
-		}
-		
+		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(modularization != null, metrics);
 		IDerivedMetric[] derivedMetrics = (IDerivedMetric[]) partitioning.get(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER);
-		ModelCheckingResult result = composer.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
+		
+		subMonitor = SubMonitor.convert(subMonitor, partitioning.size());
+		Map<FailLabelProvider, ModelCheckingResult> baseResults = evaluateFaultTree(ftHolder, failableBasicEventsProvider, partitioning, modularization, subMonitor);
+		ModelCheckingResult result = deriver.derive(baseResults, markovModelChecker.getDelta(), derivedMetrics);
+		
+		int steps = getUniformStepCount(metrics);
+		result.limitPointMetrics(steps);
+		
+		statistics.time = System.currentTimeMillis() - statistics.time;
+		return result;
+	}
+	
+	/**
+	 * Computes the uniform step count for curve type metrics
+	 * @param metrics the metrics to consider
+	 * @return the number of points each curve metric should have
+	 */
+	private int getUniformStepCount(IMetric[] metrics) {
 		int steps = 0;
 		for (IMetric metric : metrics) {
 			if (metric instanceof AProbabilityCurve) {
@@ -106,49 +111,64 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 				steps = Math.max(steps, (int) (time / markovModelChecker.getDelta()) + 1);
 			}
 		}
-		result.limitPointMetrics(steps);
 		
-		statistics.time = System.currentTimeMillis() - statistics.time;
-		return result;
+		return steps;
 	}
 	
-	
 	/**
-	 * Performs a DFT evaluation for the given base metrics with and the given fail criteria
+	 * Performs a DFT evaluation for the base metrics in the given metrics partitioning
 	 * @param ftHolder the fault tree holder
 	 * @param failableBasicEventsProvider the node fail criteria
-	 * @param failLabelProvider the labeling fail criteria
 	 * @param modularization optionally a modularization of the dft
 	 * @param subMonitor eclipse ui element for progress reporting
-	 * @param baseMetrics the metrics to model check
-	 * @return the model checking result
+	 * @return a mapping from fail label to model checking result
 	 */
-	private ModelCheckingResult evaluateFaultTree(FaultTreeHolder ftHolder, FailableBasicEventsProvider failableBasicEventsProvider, FailLabelProvider failLabelProvider, DFTModularization modularization, SubMonitor subMonitor, IBaseMetric... baseMetrics) {
-		if (modularization != null) {
-			Module topLevelModule = modularization.getTopLevelModule();
-			Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
+	private Map<FailLabelProvider, ModelCheckingResult> evaluateFaultTree(FaultTreeHolder ftHolder, FailableBasicEventsProvider failableBasicEventsProvider, Map<FailLabelProvider, IMetric[]> partitioning, DFTModularization modularization, SubMonitor monitor) {
+		final int COUNT_WORK = (modularization != null ? 2 * modularization.getModulesToModelCheck().size() : 2) + partitioning.size() - 1;
+		SubMonitor subMonitor = SubMonitor.convert(monitor, COUNT_WORK);
+		
+		if (modularization == null) {
+			MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(ftHolder.getRoot(), failableBasicEventsProvider, subMonitor.split(1));
+			statistics.maBuildStatistics.compose(dft2MaConverter.getMaBuilder().getStatistics());
 			
-			for (Module module : modularization.getModulesToModelCheck()) {
-				if (modularization.getMapNodeToRepresentant() != null) {
-					FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(module.getRootNode());
-					Module representantModule =  modularization.getModule(representant);
-					ModelCheckingResult representantResult = mapModuleToResult.get(representantModule);
-					if (representantResult == null) {
-						representantResult = modelCheck(representantModule.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider);
-						mapModuleToResult.put(representantModule, representantResult);
-					}
-					mapModuleToResult.put(module, representantResult);
-				} else {
-					ModelCheckingResult moduleResult = modelCheck(module.getRootNode(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider);
-					mapModuleToResult.put(module, moduleResult);
-				}
-			}
-			
-			composer.composeModuleResults(topLevelModule, modularization, subMonitor, baseMetrics, mapModuleToResult);
-			return mapModuleToResult.get(modularization.getTopLevelModule());
-		} else {
-			return modelCheck(ftHolder.getRoot(), subMonitor, baseMetrics, failableBasicEventsProvider, failLabelProvider);
+			return modelCheck(ma, subMonitor.split(1), partitioning);
 		}
+		
+		Module topLevelModule = modularization.getTopLevelModule();
+		Map<Module, Map<FailLabelProvider, ModelCheckingResult>> mapModuleToBaseResults = new HashMap<>();
+		
+		// Build the mapping of module to model checking results per fail label provider
+		for (Module module : modularization.getModulesToModelCheck()) {
+			FaultTreeNode representant = modularization.getMapNodeToRepresentant().get(module.getRootNode());
+			Module representantModule =  modularization.getModule(representant);
+			
+			MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(module.getRootNode(), failableBasicEventsProvider, subMonitor.split(1));
+			statistics.maBuildStatistics.compose(dft2MaConverter.getMaBuilder().getStatistics());
+			
+			Map<FailLabelProvider, ModelCheckingResult> representantBaseResults = mapModuleToBaseResults
+					.computeIfAbsent(representantModule, key -> modelCheck(ma, subMonitor.split(1), partitioning));
+			mapModuleToBaseResults.put(module, representantBaseResults);
+		}
+		// Extract for each fail label provider a mapping from module to results to compose the leaf modules
+		// upwards until hitting the top level module
+		for (Entry<FailLabelProvider, IMetric[]> entry : partitioning.entrySet()) {
+			FailLabelProvider failLabelProvider = entry.getKey();
+			if (!failLabelProvider.equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
+				Map<Module, ModelCheckingResult> mapModuleToResult = new HashMap<>();
+				for (Module module : modularization.getModulesToModelCheck()) {
+					Map<FailLabelProvider, ModelCheckingResult> baseResults = mapModuleToBaseResults.get(module);
+					mapModuleToResult.put(module, baseResults.get(failLabelProvider));
+				}
+				
+				IBaseMetric[] baseMetrics = (IBaseMetric[]) entry.getValue();
+				composer.composeModuleResults(topLevelModule, modularization, subMonitor.split(1), baseMetrics, mapModuleToResult);
+				ModelCheckingResult topLevelResult = mapModuleToResult.get(topLevelModule);
+				
+				mapModuleToBaseResults.computeIfAbsent(topLevelModule, key -> new HashMap<>()).put(failLabelProvider, topLevelResult);
+			}
+		}
+		
+		return mapModuleToBaseResults.get(topLevelModule);
 	}
 	
 	/**
@@ -158,9 +178,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	 * @return the modularization
 	 */
 	private DFTModularization getModularization(FaultTreeHolder ftHolder, FailableBasicEventsProvider failNodeProvider) {
-		boolean canModularize = modularizer != null 
-				&& ftHolder.getRoot() instanceof Fault
-				&& dft2MAConverter.getDftSemantics() != poSemantics
+		boolean canModularize = ftHolder.getRoot() instanceof Fault
+				&& dft2MaConverter.getStateSpaceGenerator().getDftSemantics() != poSemantics
 				&& failNodeProvider == null;
 		
 		if (!canModularize) {
@@ -177,66 +196,27 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 	}
 	
 	/**
-	 * Configures the state space generator
-	 * @param ftHolder the fault tree to convert
-	 * @param metrics the metrics to evaluate
-	 * @param failableBasicEventsProvider the basic events provider
+	 * Model checks a markov automaton for base metric in the given metric partitioning
+	 * @param ma the markov automaton of a dft or module of a dft
+	 * @param subMonitor eclipse ui element for progress reporting
+	 * @param partitioning a partitioning of the metrics
+	 * @return a mapping from fail label provider to the results
 	 */
-	private void configureDFT2MAConverter(FaultTreeHolder ftHolder, IMetric[] metrics, FailableBasicEventsProvider failableBasicEventsProvider) {
-		dft2MAConverter.setSemantics(chooseSemantics(ftHolder));
-		dft2MAConverter.setRecoveryStrategy(recoveryStrategy);
-		dft2MAConverter.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
+	private Map<FailLabelProvider, ModelCheckingResult> modelCheck(MarkovAutomaton<DFTState> ma, SubMonitor subMonitor, Map<FailLabelProvider, IMetric[]> partitioning) {
+		final int COUNT_WORK = partitioning.size() - 1;
+		subMonitor = SubMonitor.convert(subMonitor, COUNT_WORK);
 		
-		if (dft2MAConverter.getDftSemantics() == poSemantics) {
-			dft2MAConverter.setSymmetryChecker(null);
-			dft2MAConverter.setAllowsDontCareFailing(false);
-		} else {
-			dft2MAConverter.setSymmetryChecker(new FaultTreeSymmetryChecker());
-			dft2MAConverter.setAllowsDontCareFailing(true);
-		}
-		
-		if (failableBasicEventsProvider != null) {
-			dft2MAConverter.setSymmetryChecker(null);
-		}
-	}
-	
-	/**
-	 * Checks if there is a qualitative metric
-	 * @param metrics the metrics
-	 * @return true iff at least one metric is qualitative
-	 */
-	private boolean hasQualitativeMetric(IMetric[] metrics) {
-		for (IMetric metric : metrics) {
-			if (metric instanceof IQualitativeMetric) {
-				return true;
+		Map<FailLabelProvider, ModelCheckingResult> baseResults = new HashMap<>(); 
+		for (Entry<FailLabelProvider, IMetric[]> entry : partitioning.entrySet()) {
+			if (!entry.getKey().equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
+				ModelCheckingQuery<DFTState> modelCheckingQuery = new ModelCheckingQuery<>(ma, entry.getKey(), (IBaseMetric[]) entry.getValue());
+				ModelCheckingResult result = markovModelChecker.checkModel(modelCheckingQuery, subMonitor.split(1));
+				statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());	
+				baseResults.put(entry.getKey(), result);
 			}
 		}
 		
-		return false;
-	}
-	
-	/**
-	 * Model checks a tree
-	 * @param root the root of the tree
-	 * @param subMonitor eclipse ui element for progress reporting
-	 * @param metrics the metrics to model check
-	 * @param failableBasicEventsProvider the nodes that need to fail
-	 * @param failLabelProvider the labels that will make a node considered to be failed
-	 * @return the result object containing the metrics
-	 */
-	private ModelCheckingResult modelCheck(FaultTreeNode root, SubMonitor subMonitor, IBaseMetric[] metrics, FailableBasicEventsProvider failableBasicEventsProvider, FailLabelProvider failLabelProvider) {
-		mc = dft2MAConverter.convert(root, failableBasicEventsProvider, failLabelProvider);
-		ModelCheckingResult result = markovModelChecker.checkModel(mc, subMonitor, metrics);
-			
-		statistics.stateSpaceGenerationStatistics.compose(dft2MAConverter.getStatistics());
-		statistics.modelCheckingStatistics.compose(markovModelChecker.getStatistics());	
-		
-		return result;
-	}
-	
-	@Override
-	public DFTEvaluationStatistics getStatistics() {
-		return statistics;
+		return baseResults;
 	}
 	
 	/**
@@ -252,27 +232,8 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		}
 	}
 	
-	/**
-	 * Gets the DFT2MA converter
-	 * @return the converter
-	 */
-	public DFT2MAConverter getDft2MAConverter() {
-		return dft2MAConverter;
-	}
-	
-	/**
-	 * Configures the modularizer
-	 * @param modularizer the modularizer
-	 */
-	public void setModularizer(Modularizer modularizer) {
-		this.modularizer = modularizer;
-	}
-	
-	/**
-	 * Configures the symmetry checker
-	 * @param symmetryChecker the symmetry checker
-	 */
-	public void setSymmetryChecker(FaultTreeSymmetryChecker symmetryChecker) {
-		this.symmetryChecker = symmetryChecker;
+	@Override
+	public DFTEvaluationStatistics getStatistics() {
+		return statistics;
 	}
 }

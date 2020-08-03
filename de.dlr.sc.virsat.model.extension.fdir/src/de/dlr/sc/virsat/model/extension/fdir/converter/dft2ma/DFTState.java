@@ -9,28 +9,29 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
-import de.dlr.sc.virsat.model.extension.fdir.model.RDEP;
+import de.dlr.sc.virsat.model.extension.fdir.model.SEQ;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.BasicEventHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -40,8 +41,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
  */
 
 public class DFTState extends MarkovState {
-	protected boolean isFailState;
-	protected RecoveryStrategy recoveryStrategy;
+	private RecoveryStrategy recoveryStrategy;
 	
 	protected FaultTreeHolder ftHolder;
 	
@@ -55,9 +55,7 @@ public class DFTState extends MarkovState {
 	private BitSet failingNodes;
 	
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements;
-	
-	List<BasicEvent> orderedBes;
-	Set<BasicEvent> unorderedBes;
+	private Set<BasicEvent> unorderedBes;
 	
 	/**
 	 * Default Constructor
@@ -65,13 +63,13 @@ public class DFTState extends MarkovState {
 	 */
 	public DFTState(FaultTreeHolder ftHolder) {
 		this.ftHolder = ftHolder;
-		failedNodes = new BitSet(ftHolder.getNodes().size());
-		mapSpareToClaimedSpares = new HashMap<>();
+		int countNodes = ftHolder.getNodes().size();
+		failedNodes = new BitSet();
+		mapSpareToClaimedSpares = new HashMap<>(countNodes);
 		mapNodeToAffectors = new HashMap<>();
 		activeFaults = new HashSet<>();
-		permanentNodes = new BitSet(ftHolder.getNodes().size());
-		failingNodes = new BitSet(ftHolder.getNodes().size());
-		orderedBes = new ArrayList<>();
+		permanentNodes = new BitSet(countNodes);
+		failingNodes = new BitSet(countNodes);
 		unorderedBes = new HashSet<>();
 	}
 	
@@ -80,15 +78,19 @@ public class DFTState extends MarkovState {
 	 * @param other the markov state that will be copied
 	 */
 	public DFTState(DFTState other) {
-		orderedBes = new ArrayList<>(other.orderedBes);
 		unorderedBes = new HashSet<>(other.unorderedBes);
 		activeFaults = new HashSet<>(other.activeFaults);
-		mapNodeToAffectors = new HashMap<>(other.mapNodeToAffectors);
+		mapNodeToAffectors = new HashMap<>();
+		for (Entry<FaultTreeNode, Set<FaultTreeNode>> entry : other.mapNodeToAffectors.entrySet()) {
+			mapNodeToAffectors.put(entry.getKey(), new HashSet<>(entry.getValue()));
+		}
 		mapSpareToClaimedSpares = new HashMap<>(other.mapSpareToClaimedSpares);
 		failedNodes = (BitSet) other.failedNodes.clone();
 		permanentNodes = (BitSet) other.permanentNodes.clone();
 		failingNodes = (BitSet) other.failingNodes.clone();
 		ftHolder = other.ftHolder;
+		recoveryStrategy = other.recoveryStrategy;
+		index = other.index + 1;
 	}
 	
 	/**
@@ -107,12 +109,16 @@ public class DFTState extends MarkovState {
 		return recoveryStrategy;
 	}
 	
+	public BitSet getFailedNodes() {
+		return failedNodes;
+	}
+	
 	/**
-	 * Sets whether this DFT state should be marked as a fail state
-	 * @param isFailState true iff the dft state is a fail state
+	 * Checks if this state is a fail state
+	 * @return true iff the state contains the FAILED label
 	 */
-	public void setFailState(boolean isFailState) {
-		this.isFailState = isFailState;
+	public boolean isFailState() {
+		return getFailLabels().contains(FailLabel.FAILED);
 	}
 	
 	@Override
@@ -123,8 +129,12 @@ public class DFTState extends MarkovState {
 		
 		res += "\"";
 		
-		if (isFailState) {
+		if (isFailState()) {
 			res += ", color=\"red\"";
+		} else if (isNondet()) {
+			res += ", color=\"blue\"";
+		} else if (isProbabilisic()) {
+			res += ", color=\"green\"";
 		}
 		
 		res += "]";
@@ -147,7 +157,7 @@ public class DFTState extends MarkovState {
 		if (failedNodes.isEmpty() && mapSpareToClaimedSpares.isEmpty()) {
 			ftInfix = " initial";
 		} else {
-			ftInfix = " " + unorderedBes.toString() + orderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
+			ftInfix = " " + unorderedBes.toString() + " | C" +  mapSpareToClaimedSpares.toString();
 		}
 		
 		return index + ftInfix + raSuffix;
@@ -159,22 +169,6 @@ public class DFTState extends MarkovState {
 	 */
 	public FaultTreeHolder getFTHolder() {
 		return ftHolder;
-	}
-	
-	/**
-	 * Get the map from spare gate to claimed spare
-	 * @return a mapping from spare gates to claimed spares
-	 */
-	public Map<FaultTreeNode, FaultTreeNode> getSpareClaims() {
-		return mapSpareToClaimedSpares;
-	}
-	
-	/**
-	 * Get the set of nodes that have failed
-	 * @return set of failed nodes
-	 */
-	public BitSet getFailedNodes() {
-		return failedNodes;
 	}
 	
 	/**
@@ -260,10 +254,13 @@ public class DFTState extends MarkovState {
 	 * Updates the permanent state of the given fault tree
 	 * @param node the node to modify
 	 * @param permanent the permanence of the node state
+	 * @return true iff the permanence was changed
 	 */
-	public void setFaultTreeNodePermanent(FaultTreeNode node, boolean permanent) {
+	public boolean setFaultTreeNodePermanent(FaultTreeNode node, boolean permanent) {
 		int nodeID = ftHolder.getNodeIndex(node);
+		boolean hasChanged = permanentNodes.get(nodeID) != permanent;
 		permanentNodes.set(nodeID, permanent);
+		return hasChanged;
 	}
 	
 	/**
@@ -276,51 +273,92 @@ public class DFTState extends MarkovState {
 	}
 	
 	/**
-	 * Activates the passed node in a given state
-	 * @param node the node to activate
+	 * Changes the activation state of the passed node in this state
+	 * @param node the node to activate/deactivate
+	 * @param activation true to activate, false to deactivate
 	 */
-	public void activateNode(FaultTreeNode node) {
-		if (node instanceof BasicEvent) {
-			activeFaults.add(node.getFault());
+	public void setNodeActivation(FaultTreeNode node, boolean activation) {
+		if (isNodeSEQConstrained(node)) {
 			return;
 		}
 		
 		if (node instanceof Fault) {
-			activeFaults.add((Fault) node);
+			Fault fault = (Fault) node;
+			boolean hasChanged = false;
+			if (activation) {
+				hasChanged = activeFaults.add(fault);
+			} else {
+				hasChanged = activeFaults.remove(fault);
+			}
 			
-			// All depenency gates in a fault are considered activated as soon as the parent fault is activated 
-			if (!ftHolder.getMapNodeToDEPTriggers().isEmpty()) {
-				for (FaultTreeNode gate : node.getFault().getFaultTree().getGates()) {
-					if (gate instanceof ADEP) {
-						if (!activeFaults.contains(gate)) {
-							activateNode(gate);
+			if (!hasChanged) {
+				return;
+			}
+			
+			// All depenency gates in a fault are considered activated as soon as the parent fault is activated
+			for (FaultTreeNode gate : fault.getFaultTree().getGates()) {
+				if (gate instanceof ADEP) {
+					if (activeFaults.contains(gate) ^ activation) {
+						setNodeActivation(gate, activation);
+					}
+				}
+			}
+			
+			for (FaultTreeNode be : ftHolder.getNodes(fault, EdgeType.BE)) {
+				BasicEventHolder beHolder = ftHolder.getBasicEventHolder((BasicEvent) be);
+				if (activation && beHolder.isImmediateDistribution()) {
+					setFaultTreeNodePermanent(be, false);
+				}
+			}
+		}
+		
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD, EdgeType.MONITOR);
+		for (FaultTreeNode child : children) {
+			if (node instanceof ADEP && ftHolder.getNodes(child, EdgeType.PARENT).size() > 1) {
+				continue;
+			}
+			if (!activeFaults.contains(child)) {
+				setNodeActivation(child, activation);
+			}
+		}
+	}
+
+	/**
+	 * Checks if a node is currently constrained by a SEQ gate.
+	 * @param node the node to be checked
+	 */
+	private boolean isNodeSEQConstrained(FaultTreeNode node) {
+		List<FaultTreeNode> parents = ftHolder.getNodes(node, EdgeType.PARENT);
+		for (FaultTreeNode parent : parents) {
+			if (parent instanceof SEQ) {
+				List<FaultTreeNode> seqChildren = ftHolder.getNodes(parent, EdgeType.CHILD);
+				for (FaultTreeNode seqChild : seqChildren) {
+					if (isNodeActive(seqChild) && !hasFaultTreeNodeFailed(seqChild)) {
+						return true;
+					}
+					
+					if (!isNodeActive(seqChild)) {
+						if (seqChild.equals(node)) {
+							break;
+						} else {
+							return true;
 						}
 					}
 				}
 			}
-			
-			for (FaultTreeNode be : ftHolder.getMapFaultToBasicEvents().getOrDefault(node, Collections.emptyList())) {
-				for (FaultTreeNode trigger : ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList())) {
-					if (!activeFaults.contains(trigger)) {
-						activateNode(trigger);
-					}
-				}
-			}
 		}
 		
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().getOrDefault(node, Collections.emptyList());
-		for (FaultTreeNode child : children) {
-			if (node instanceof ADEP && ftHolder.getMapNodeToParents().get(child).size() > 1) {
-				continue;
-			}
-			if (!activeFaults.contains(child)) {
-				activateNode(child);
-			}
-		}
-		
-		List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
-		for (MONITOR monitor : monitors) {
-			activateNode(monitor);
+		return false;
+	}
+	
+	/**
+	 * Sets the node activation for all elements in the passed list of nodes
+	 * @param nodes the list of nodes
+	 * @param activation the activation state that should be set
+	 */
+	public void setNodeActivations(List<FaultTreeNode> nodes, boolean activation) {
+		for (FaultTreeNode node : nodes) {
+			setNodeActivation(node, activation);
 		}
 	}
 	
@@ -328,15 +366,15 @@ public class DFTState extends MarkovState {
 	 * Makes a DFT state uniform by failing all basic events and nodes about we
 	 * dont care what exact state we have
 	 * @param changedNodes the nodes that have changed in this dft state
-	 * @param orderDependentBasicEvents set of basic events that are dependent
+	 * @param staticAnalysis static anaylsis data
 	 */
-	public void failDontCares(List<FaultTreeNode> changedNodes, Set<BasicEvent> orderDependentBasicEvents) {
+	public void failDontCares(List<FaultTreeNode> changedNodes, DFTStaticAnalysis staticAnalysis) {
 		Stack<FaultTreeNode> toProcess = new Stack<>();
 		toProcess.addAll(changedNodes);
 		
 		while (!toProcess.isEmpty()) {
 			FaultTreeNode ftn = toProcess.pop();
-			List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(ftn);
+			List<FaultTreeNode> parents = ftHolder.getNodes(ftn, EdgeType.PARENT);
 
 			boolean allParentsPermanent = !parents.isEmpty();
 			for (FaultTreeNode parent : parents) {
@@ -353,15 +391,16 @@ public class DFTState extends MarkovState {
 				permanentNodes.set(nodeID);
 				activeFaults.remove(ftn);
 				
-				if (removeClaimedSparesOnFailure(ftn)) {
-					mapSpareToClaimedSpares.remove(ftn);
-				}
+				removeClaimedSparesOnPermanentFailureIfPossible(ftn);
 			}
 			
 			if (permanentNodes.get(nodeID)) {
 				List<FaultTreeNode> subNodes = ftHolder.getMapNodeToSubNodes().getOrDefault(ftn, Collections.emptyList());
 				for (FaultTreeNode subNode : subNodes) {
-					if (!toProcess.contains(subNode)) {
+					if (subNode instanceof BasicEvent) {
+						BasicEvent be = (BasicEvent) subNode;
+						executeBasicEvent(be, false, false);
+					} else if (!toProcess.contains(subNode)) {
 						int subNodeID = ftHolder.getNodeIndex(subNode);
 						if (!permanentNodes.get(subNodeID)) {
 							toProcess.push(subNode);
@@ -369,40 +408,23 @@ public class DFTState extends MarkovState {
 					}
 				}
 				
-				
-				List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(ftn, Collections.emptyList());
-				for (FaultTreeNode be : basicEvents) {
-					int beID = ftHolder.getNodeIndex(be);
-					failedNodes.set(beID);
-					permanentNodes.set(beID);
-					if (orderDependentBasicEvents.contains(be)) {
-						if (!orderedBes.contains(be)) {
-							orderedBes.add((BasicEvent) be);
-						}
-					} else {
-						unorderedBes.add((BasicEvent) be);
-					}
-					
-					List<FaultTreeNode> deps = ftHolder.getMapNodeToDEPTriggers().getOrDefault(be, Collections.emptyList());
-					for (FaultTreeNode dep : deps) {
-						if (!toProcess.contains(dep)) {
-							int depID = ftHolder.getNodeIndex(dep);
-							if (!permanentNodes.get(depID)) {
-								toProcess.push(dep);
-							}
-						}
-					}
-				}
-				
-				if (removeClaimedSparesOnFailure(ftn)) {
-					mapSpareToClaimedSpares.remove(ftn);
-				}
+				removeClaimedSparesOnPermanentFailureIfPossible(ftn);
 			}
 		}
+	}
+	
+	/**
+	 * Executes a single basic event in the current state
+	 * @param be the basic event to execute
+	 * @param isRepair whether its the repair or a failure event
+	 * @param isTransient whether the event occurss transiently or permanently
+	 * @return true iff the basic event successfully caused some change
+	 */
+	public boolean executeBasicEvent(BasicEvent be, boolean isRepair, boolean isTransient) {
+		setFaultTreeNodeFailed(be, !isRepair);
+		setFaultTreeNodePermanent(be, !isTransient);
 		
-		if (recoveryStrategy != null && isFaultTreeNodePermanent(ftHolder.getRoot())) {
-			recoveryStrategy = recoveryStrategy.reset();
-		}
+		return isRepair ? unorderedBes.remove(be) : unorderedBes.add(be);
 	}
 	
 	/**
@@ -411,8 +433,33 @@ public class DFTState extends MarkovState {
 	 * @param node the node to check
 	 * @return per default true for all permanent nodes
 	 */
-	protected boolean removeClaimedSparesOnFailure(FaultTreeNode node) {
-		return isFaultTreeNodePermanent(node);
+	protected boolean removeClaimedSparesOnPermanentFailureIfPossible(FaultTreeNode node) {
+		for (FaultTreeNode parent : ftHolder.getNodes(node, EdgeType.PARENT)) {
+			if (!isFaultTreeNodePermanent(parent)) {
+				return false;
+			}
+		}
+		
+		FaultTreeNode oldClaimingSpareGate = mapSpareToClaimedSpares.remove(node);
+		if (oldClaimingSpareGate != null) {
+			List<FaultTreeNode> spares = ftHolder.getNodes(oldClaimingSpareGate, EdgeType.SPARE);
+			boolean hasClaim = false;
+			for (FaultTreeNode spare : spares) {
+				FaultTreeNode claimingSpareGateOther = getMapSpareToClaimedSpares().get(spare);
+				if (claimingSpareGateOther != null && oldClaimingSpareGate.equals(claimingSpareGateOther)) {
+					hasClaim = true;
+					break;
+				}
+			}
+			
+			if (!hasClaim) {
+				for (FaultTreeNode primary : ftHolder.getNodes(oldClaimingSpareGate, EdgeType.CHILD)) {
+					setNodeActivation(primary, true);
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -426,7 +473,8 @@ public class DFTState extends MarkovState {
 		
 		for (FaultTreeNode depTrigger : depTriggers) {
 			if (hasFaultTreeNodeFailed(depTrigger)) {
-				hasChangedNodeState = true;
+				boolean addAffector = false;
+				
 				if (depTrigger instanceof FDEP) {
 					hasChangedNodeState |= setFaultTreeNodeFailed(node, true);
 					
@@ -434,14 +482,28 @@ public class DFTState extends MarkovState {
 					if (permanentNodes.get(nodeIDTrigger)) {
 						int nodeID = ftHolder.getNodeIndex(node);
 						permanentNodes.set(nodeID, true);
+					} else if (hasChangedNodeState) {
+						addAffector = true;
 					}
-				} else if (depTrigger instanceof RDEP) {
-					Set<FaultTreeNode> affectors = mapNodeToAffectors.get(node);
-					if (affectors == null) {
-						affectors = new HashSet<>();
-						mapNodeToAffectors.put(node, affectors);
-					}
+				} else {
+					addAffector = true;
+				}
+				
+				if (addAffector) {
+					Set<FaultTreeNode> affectors = mapNodeToAffectors.computeIfAbsent(node, v -> new HashSet<>());
 					affectors.add(depTrigger);
+				}
+				
+			} else if (getAffectors(node).contains(depTrigger)) {
+				if (depTrigger instanceof FDEP) {
+					hasChangedNodeState |= setFaultTreeNodeFailed(node, false);
+				} 
+				
+				Set<FaultTreeNode> affectors = getAffectors(node);
+				affectors.remove(depTrigger);
+				
+				if (affectors.isEmpty()) {
+					mapNodeToAffectors.remove(node);
 				}
 			}
 		}
@@ -457,49 +519,13 @@ public class DFTState extends MarkovState {
 	public Set<FaultTreeNode> getAffectors(FaultTreeNode node) {
 		return mapNodeToAffectors.getOrDefault(node, Collections.emptySet());
 	}
-	
-	/**
-	 * Gets the extra fail rate factor for a given basic event
-	 * @param be the basic event
-	 * @return the extra fail rate factor
-	 */
-	public double getExtraRateFactor(BasicEvent be) {
-		Set<FaultTreeNode> affectors = getAffectors(be);
-		double extraRateFactor = 1;
-		for (FaultTreeNode affector : affectors) {
-			if (affector instanceof RDEP) {
-				RDEP rdep = (RDEP) affector;
-				extraRateFactor += rdep.getRateChangeBean().getValueToBaseUnit() - 1;
-			}
-		}
-		return extraRateFactor;
-	}
-	
-	/**
-	 * Checks if the fail state of any node in the given list is different in the given two states
-	 * @param stateOther another state
-	 * @param nodes list of nodes to be checked
-	 * @return true iff there exists a fault tree node such that state1 and state2 do not agree on the fail state of that fault tree node
-	 */
-	public boolean hasFailStateChanged(DFTState stateOther, List<FaultTreeNode> nodes) {
-		for (FaultTreeNode node : nodes) {
-			if (hasFaultTreeNodeFailed(node) != stateOther.hasFaultTreeNodeFailed(node)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
 
 	/**
 	 * Gets the set of all failed basic events
 	 * @return the set of all failed basic events
 	 */
 	public Set<BasicEvent> getFailedBasicEvents() {
-		Set<BasicEvent> failedBasicEvents = new HashSet<>();
-		failedBasicEvents.addAll(orderedBes);
-		failedBasicEvents.addAll(unorderedBes);
-		return failedBasicEvents;
+		return unorderedBes;
 	}
 	
 	/**
@@ -509,71 +535,35 @@ public class DFTState extends MarkovState {
 	 * @return true iff also the claims and the order of the ordered failed basic events match
 	 */
 	public boolean isEquivalent(DFTState other) {
-		if (recoveryStrategy != null) {
-			if (!recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
-				return false;
-			}
-		}
-			
-		boolean sameClaims = other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares());	
-		if (sameClaims) {
-			boolean sameFms = orderedBes.size() == other.orderedBes.size() && orderedBes.equals(other.orderedBes);
-			if (sameFms) {
-				boolean sameFailingNodes = failingNodes.equals(other.failingNodes);
-				return sameFailingNodes;
-			}
+		if (!getType().equals(other.getType())) {
+			return false;
 		}
 		
-		return false;
-	}
-	
-	
-	/**
-	 * Creates the symmetry requirements for this state
-	 * @param predecessor the predecessor state
-	 * @param basicEvent the basic event that has failed
-	 * @param symmetryReduction the symmetry reduction
-	 */
-	public void createSymmetryRequirements(DFTState predecessor, BasicEvent basicEvent, Map<FaultTreeNode, List<FaultTreeNode>> symmetryReduction) {
-		if (mapParentToSymmetryRequirements == null) {
-			mapParentToSymmetryRequirements = new HashMap<>(predecessor.getMapParentToSymmetryRequirements());
-		} else {
-			mapParentToSymmetryRequirements.putAll(predecessor.getMapParentToSymmetryRequirements());
+		if (recoveryStrategy != null && !recoveryStrategy.getCurrentState().equals(other.getRecoveryStrategy().getCurrentState())) {				
+			return false;
 		}
 		
-		Queue<FaultTreeNode> queue = new LinkedList<>();
-		Set<FaultTreeNode> allParents = ftHolder.getMapNodeToAllParents().get(basicEvent);
-		queue.add(basicEvent);
-		
-		while (!queue.isEmpty()) {
-			FaultTreeNode node = queue.poll();
-			List<FaultTreeNode> biggerNodes = symmetryReduction.get(node);
-			if (biggerNodes != null && !biggerNodes.isEmpty()) {
-				List<FaultTreeNode> parents = ftHolder.getMapNodeToParents().get(node);
-				for (FaultTreeNode parent : parents) {
-					boolean continueToParent = hasFaultTreeNodeFailed(parent);
-					
-					if (!continueToParent) {
-						Set<FaultTreeNode> processedBiggerParents = new HashSet<>();
-						for (FaultTreeNode biggerNode : biggerNodes) {
-							List<FaultTreeNode> biggerParents = ftHolder.getMapNodeToParents().get(biggerNode);
-							for (FaultTreeNode biggerParent : biggerParents) {
-								if (processedBiggerParents.add(biggerParent)) {
-									if (!allParents.contains(biggerParent)) {
-										Set<FaultTreeNode> symmetryRequirements = mapParentToSymmetryRequirements.computeIfAbsent(biggerParent, v -> new HashSet<>());
-										continueToParent |= symmetryRequirements.add(biggerNode);
-									}
-								}
-							}
-						}
-					}
-					
-					if (continueToParent) {
-						queue.add(parent);
-					}
-				}
-			}
+		if (!other.getMapSpareToClaimedSpares().equals(getMapSpareToClaimedSpares())) {
+			return false;
 		}
+		
+		if (!permanentNodes.equals(other.permanentNodes)) {
+			return false;
+		}
+		
+		if (!getFailLabels().equals(other.getFailLabels())) {
+			return false;
+		}
+		
+		if (!failingNodes.equals(other.failingNodes)) {
+			return false;
+		}
+		
+		if (!mapNodeToAffectors.equals(other.mapNodeToAffectors)) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -585,5 +575,52 @@ public class DFTState extends MarkovState {
 			mapParentToSymmetryRequirements = new HashMap<>();
 		}
 		return mapParentToSymmetryRequirements;
+	}
+
+	/**
+	 * Copies a DFT state
+	 * @return a copy of this state
+	 */
+	public DFTState copy() {
+		return new DFTState(this);
+	}
+	
+	/**
+	 * Gets a currently working and claimed spare or primary for a spare gate
+	 * @param spareGate the spare gate
+	 * @return a working unit or null if there is none
+	 */
+	public FaultTreeNode getWorkingUnit(FaultTreeNode spareGate) {
+		List<FaultTreeNode> spares = getFTHolder().getNodes(spareGate, EdgeType.SPARE);
+		
+		boolean hasClaim = false;
+		for (FaultTreeNode spare : spares) {
+			FaultTreeNode spareGateOther = getMapSpareToClaimedSpares().get(spare);
+			if (spareGate.equals(spareGateOther)) {
+				hasClaim = true;
+				if (!hasFaultTreeNodeFailed(spare)) {
+					return spare;
+				}
+			}
+		}
+		
+		if (hasClaim) {
+			return null;
+		}
+		
+		boolean anyPrimaryFailed = false;
+		List<FaultTreeNode> primaries = getFTHolder().getNodes(spareGate, EdgeType.CHILD);
+		for (FaultTreeNode primary : primaries) {
+			if (hasFaultTreeNodeFailed(primary)) {
+				anyPrimaryFailed = true;
+				break;
+			}
+		}
+		
+		if (!anyPrimaryFailed && !primaries.isEmpty()) {
+			return primaries.get(0);
+		}
+		
+		return null;
 	}
 }

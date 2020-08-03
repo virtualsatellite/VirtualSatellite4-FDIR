@@ -14,6 +14,7 @@ import java.util.List;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -26,31 +27,36 @@ public class PORSemantics implements INodeSemantics {
 
 	@Override
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
-			FaultTreeHolder ftHolder, GenerationResult generationResult) {
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+			GenerationResult generationResult) {
+		FaultTreeHolder ftHolder = state.getFTHolder();
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
+		boolean hasChanged = false;
 		
-		boolean firstChildFailed = state.hasFaultTreeNodeFailed(children.get(0));
-		boolean existsOtherChildThatFailed = false;
-		for (int i = 1; i < children.size(); ++i) {
-			if (state.hasFaultTreeNodeFailed(children.get(i))) {
-				existsOtherChildThatFailed = true;
-				if (state.isFaultTreeNodePermanent(children.get(i))) {
-					state.setFaultTreeNodePermanent(node, true);
+		FaultTreeNode firstChild = children.get(0);
+		boolean firstChildFailed = state.hasFaultTreeNodeFailed(firstChild);
+		
+		if (!pred.hasFaultTreeNodeFailed(node)) {
+			for (int i = 1; i < children.size(); ++i) {
+				if (state.hasFaultTreeNodeFailed(children.get(i))) {
+					// There exists another child besides the fist one that has failed
+					hasChanged |= state.setFaultTreeNodeFailed(node, false);
+					if (state.isFaultTreeNodePermanent(children.get(i))) {
+						hasChanged |= state.setFaultTreeNodePermanent(node, true);
+					}
+					return hasChanged;
 				}
-				break;
 			}
 		}
 		
-		if (existsOtherChildThatFailed) {
-			return state.setFaultTreeNodeFailed(node, false);
-		} else if (firstChildFailed) {
-			if (state.isFaultTreeNodePermanent(children.get(0))) {
-				state.setFaultTreeNodePermanent(node, true);
+		
+		if (firstChildFailed) {
+			if (state.isFaultTreeNodePermanent(firstChild)) {
+				hasChanged |= state.setFaultTreeNodePermanent(node, true);
 			}
-			return state.setFaultTreeNodeFailed(node, true);
+			hasChanged |= state.setFaultTreeNodeFailed(node, true);
 		}
 		
-		return false;
+		return hasChanged;
 	}
 
 }

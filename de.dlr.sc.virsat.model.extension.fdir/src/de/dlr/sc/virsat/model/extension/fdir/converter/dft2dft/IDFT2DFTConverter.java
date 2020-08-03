@@ -9,7 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft;
 
+import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * This class provides an interface for DFT Model to DFT Model conversions
@@ -20,9 +22,19 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 public interface IDFT2DFTConverter {
 	
 	/**
+	 * Takes a fault tree and returns the root node of the converted tree
+	 * @param ftHolder the fault tree data
+	 * @return the root of the converted fault tree
+	 */
+	DFT2DFTConversionResult convert(FaultTreeHolder ftHolder);
+	
+	/**
 	 * Takes a fault tree root node and returns the root node of the converted tree
 	 * @param root a fault tree root node
 	 * @return the root of the converted fault tree
 	 */
-	DFT2DFTConversionResult convert(FaultTreeNode root);
+	default DFT2DFTConversionResult convert(FaultTreeNode root) {
+		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
+		return convert(new FaultTreeHolder(holderRoot));
+	}
 }

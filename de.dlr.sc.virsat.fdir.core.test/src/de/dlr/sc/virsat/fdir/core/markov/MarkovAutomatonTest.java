@@ -15,6 +15,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+
 /**
  * This class tests the MarkovAutomaton class
  * @author muel_s8
@@ -83,5 +85,63 @@ public class MarkovAutomatonTest {
 		
 		ma.addNondeterministicTransition("b", state2, state1);
 		assertFalse(ma.isCTMC());
+	}
+	
+	@Test
+	public void testGetExitRateForState() {
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		MarkovState state1 = new MarkovState();
+		MarkovState state2 = new MarkovState();
+		
+		MarkovState state3 = new MarkovState();
+		MarkovState state4 = new MarkovState();
+
+		state2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		
+		ma.addState(state1);
+		ma.addState(state2);
+		ma.addState(state3);
+		ma.addState(state4);
+		
+		final double RATE1 = 0.8;
+		final double RATE2 = 0.2;
+		final double RATE3 = 0.1;
+		final double RATE4 = 0.4;
+		final double RATE5 = 0.3;
+		
+		final double EXPECTEDEXITRATE = 0.8;
+		
+		ma.addMarkovianTransition("a", state1, state2, RATE1);
+		ma.addMarkovianTransition("b", state1, state2, RATE2);
+		
+		ma.addMarkovianTransition("c", state3, state3, RATE3);
+		ma.addMarkovianTransition("c", state3, state4, RATE4);
+		ma.addMarkovianTransition("d", state3, state4, RATE5);
+
+		assertEquals(1, ma.getExitRateForState(state1), 0);
+		assertEquals(0, ma.getExitRateForState(state2), 0);
+		assertEquals(EXPECTEDEXITRATE, ma.getExitRateForState(state3), 0);
+	}
+	
+	@Test
+	public void testToString() {
+		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		MarkovState state1 = new MarkovState();
+		MarkovState state2 = new MarkovState();
+		
+		ma.addState(state1);
+		ma.addState(state2);
+		
+		ma.addNondeterministicTransition("a", state1, state2);
+		
+		String dotRepresentation = ma.toString();
+		final String EXPECTED_DOT_REPRESENTATION = 
+				"digraph ma {\n" 
+			+		"0\n" 
+			+		"1\n" 
+			+		"0->1 [label=\"a : 1.0\"]\n"
+			+ 	"}";
+		
+		assertEquals("Correct dot representation", EXPECTED_DOT_REPRESENTATION, dotRepresentation);
 	}
 }

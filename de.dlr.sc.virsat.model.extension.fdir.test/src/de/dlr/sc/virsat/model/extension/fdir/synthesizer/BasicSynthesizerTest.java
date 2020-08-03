@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ * Copyright (c) 2020 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -16,17 +16,14 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.Availability;
+import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
-
-/**
- * This class tests the BasicSynthesizer.
- * @author muel_s8
- *
- */
 
 public class BasicSynthesizerTest extends ATestCase {
 
@@ -40,144 +37,125 @@ public class BasicSynthesizerTest extends ATestCase {
 		synthesizer = new BasicSynthesizer();
 		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 	}
+
+	@Test
+	public void testEvaluateCsp1() throws IOException {
+		final double EXPECTED_MTTF = 1;
+		
+		FaultTreeNode root = createBasicDFT("/resources/galileo/csp1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		
+		final int NUM_STATES = 1;
+		final int NUM_TRANSITIONS = 0;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		assertEquals(NUM_TRANSITIONS, ra.getTransitions().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+	}
 	
 	@Test
-	public void testEvaluateCsp2WithoutModularization() throws IOException {
+	public void testEvaluateCsp2() throws IOException {
 		final double[] EXPECTED = {
 			9.9e-05,
 			0.0003921,
 			0.0008735,
 			0.0015375
 		};
-
-		Fault fault = createDFT("/resources/galileo/csp2.dft");
 		
-		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		FaultTreeNode root = createBasicDFT("/resources/galileo/csp2.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
 		
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
-	}
-
-	@Test
-	public void testEvaluate2Csp2SharedWithoutModularization() throws IOException {
-		final double[] EXPECTED = {
-			1.55e-05,
-			0.0001194,
-			0.0003891,
-			0.0008909
-		};
-		
-		Fault fault = createDFT("/resources/galileo/2csp2Shared.dft");
-
-		synthesizer.setModularizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
-	}
-
-	@Test
-	public void testEvaluateCsp2() throws IOException {
-		Fault fault = createDFT("/resources/galileo/csp2.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(root).getFailRates(), EXPECTED);
 	}
 	
 	@Test
-	public void testEvaluateCsp2WithoutBEOptimization() throws IOException {
-		Fault fault = createDFT("/resources/galileo/csp2.dft");
-		synthesizer.setBEOptimizationOn(false);
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-
+	public void testSynthesizeCsp2Repair1() throws IOException {
+		final double[] EXPECTED = {
+			0.9999016501226037,
+			0.9996130705668653, 
+			0.9991436794433161, 
+			0.9985025233486501
+		};
+		final double EXPECTED_SSA = 0.5000005000000001;
+		
+		FaultTreeNode root = createBasicDFT("/resources/galileoRepair/csp2Repair1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		
 		final int NUM_STATES = 1;
 		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
+		
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 	}
-	
-	@Test
-	public void testEvaluateHECS11() throws IOException {
-		Fault fault = createDFT("/resources/galileo/hecs_1_1_0_np.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
 
-		final int NUM_STATES = 2;
-		assertEquals(NUM_STATES, ra.getStates().size());
-	}
-	
 	@Test
-	public void testEvaluateCMSimple() throws IOException {
+	public void testSynthesizeCsp2Repair2BadPrimary() throws IOException {
 		final double[] EXPECTED = {
-			0.0060088,
-			0.0122455,
-			0.0191832,
-			0.0273548
+			0.9999019760517075, 
+			0.9996156202699334, 
+			0.999152094789556, 
+			0.9985220320778355
 		};
-		Fault fault = createDFT("/resources/galileo/cm_simple.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		final double EXPECTED_SSA = 0.7142864724603194;
+		
+		FaultTreeNode root = createBasicDFT("/resources/galileoRepair/csp2Repair2BadPrimary.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
 		
 		final int NUM_STATES = 4;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
+		
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 	}
 	
 	@Test
-	public void testEvaluateCM1() throws IOException {
+	public void testSynthesizeCsp2Repair2BadSpare() throws IOException {
 		final double[] EXPECTED = {
-			6.297634506950505e-05,
-			4.654260986536632e-04,
-			0.0016928828332256056,  
-			0.004302923685329981
+			0.9999018132903527, 
+			0.9996143485896306, 
+			0.999147902777298, 
+			0.9985123259997293
 		};
-		Fault fault = createDFT("/resources/galileo/cm1.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+		final double EXPECTED_SSA = 0.6470577570952566;
+		
+		FaultTreeNode root = createBasicDFT("/resources/galileoRepair/csp2Repair2BadSpare.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		
+		final int NUM_STATES = 5;
+		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Availability.UNIT_AVAILABILITY, SteadyStateAvailability.SSA);
+		
+		assertEquals(EXPECTED_SSA, result.getSteadyStateAvailability(), TEST_EPSILON);
+		assertIterationResultsEquals(result.getAvailability(), EXPECTED);
 	}
 	
 	@Test
-	public void testEvaluateCM2() throws IOException {
-		final double[] EXPECTED = {
-			3.791112982388163e-05,
-			1.5198531228025698e-04,
-			3.748693875510452e-04,
-			7.984689349664446e-04
-		};
-		Fault fault = createDFT("/resources/galileo/cm2.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
+	public void testEvaluateCsp2Or2Exp1Prob1Exp1() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoUniform/csp2Or2Exp1Prob1Exp1.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		
+		final int NUM_STATES = 2;
+		assertEquals(NUM_STATES, ra.getStates().size());
+		
+		final double EXPECTED_MTTF = 0.4833333333333333;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 	}
-	
-	@Test
-	public void testEvaluateCM3() throws IOException {
-		final double[] EXPECTED = {
-			2.166214533082528e-07,
-			2.166214533082528e-07,
-			2.8658522870311545e-06,
-			1.851515224177692e-05
-		};
-		Fault fault = createDFT("/resources/galileo/cm3.dft");
-		RecoveryAutomaton ra = synthesizer.synthesize(fault);
-		
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertIterationResultsEquals(ftEvaluator.evaluateFaultTree(fault), EXPECTED);
-	} 
-	
-	
-	@Test
-	public void testSynthesizeVGS1() throws IOException {
-		Fault fault = createDFT("/resources/galileo/vgs1.dft");
-		synthesizer.synthesize(fault);
-	} 
-	
-	@Test
-	public void testSynthesizeCM4() throws IOException {
-		Fault fault = createDFT("/resources/galileo/cm4.dft");
-		synthesizer.synthesize(fault);
-	} 
 }

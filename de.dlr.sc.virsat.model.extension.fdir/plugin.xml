@@ -2,17 +2,17 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension point="de.dlr.sc.virsat.model.Concept">
-	<concept
-	          id="de.dlr.sc.virsat.model.extension.fdir"
-	          version="1.1"
-	          xmi="concept/concept.xmi">
-	    </concept>
+		<concept
+			id="de.dlr.sc.virsat.model.extension.fdir"
+			version="1.2"
+			xmi="concept/concept.xmi">
+		</concept>
 	</extension>
-	<extension point="de.dlr.sc.virsat.build.DvlmValidator">
+	<extension point="de.dlr.sc.virsat.model.DvlmValidator">
 		<dvlmValidator>
 			<seiValidator
 				id="de.dlr.sc.virsat.model.extension.fdir"
-				class="de.dlr.sc.virsat.model.extension.fdir.validator.StructuralElementInstanceValidator">
+				class="de.dlr.sc.virsat.model.extension.fdir.validator.FdirValidator">
 			</seiValidator>
 		</dvlmValidator>
 	</extension>
@@ -58,6 +58,10 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.PANDI">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.SEQ"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.SEQ">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.MONITOR">
 		</CategoryAssignmentBean>
@@ -88,6 +92,10 @@
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.Fault"
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.Fault">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.RepairAction"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.RepairAction">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
 			id="de.dlr.sc.virsat.model.extension.fdir.BasicEvent"
@@ -154,8 +162,12 @@
 			caBean="de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition">
 		</CategoryAssignmentBean>
 		<CategoryAssignmentBean
-			id="de.dlr.sc.virsat.model.extension.fdir.TimedTransition"
-			caBean="de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition">
+			id="de.dlr.sc.virsat.model.extension.fdir.TimeoutTransition"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition">
+		</CategoryAssignmentBean>
+		<CategoryAssignmentBean
+			id="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomatonGen"
+			caBean="de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonGen">
 		</CategoryAssignmentBean>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
@@ -173,6 +185,14 @@
 		version="1.1"
 		class="de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1"
 		xmi="concept/concept_v1_1.xmi">
+	</migrator>
+</extension>
+<extension point="de.dlr.sc.virsat.model.edit.ConceptMigrator">
+	<migrator
+		id="de.dlr.sc.virsat.model.extension.fdir"
+		version="1.2"
+		class="de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v2"
+		xmi="concept/concept_v1_2.xmi">
 	</migrator>
 </extension>
 	<!-- Plugin.XML Protected Region End -->

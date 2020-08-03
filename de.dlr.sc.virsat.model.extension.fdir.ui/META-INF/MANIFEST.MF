@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VirSat Model Extension FDIR UI
 Bundle-SymbolicName: de.dlr.sc.virsat.model.extension.fdir.ui;singleton:=true
-Bundle-Version: 4.10.0.qualifier
+Bundle-Version: 4.12.0.qualifier
 Require-Bundle: de.dlr.sc.virsat.model,
  de.dlr.sc.virsat.project,
  de.dlr.sc.virsat.apps.ui,
@@ -28,7 +28,9 @@ Require-Bundle: de.dlr.sc.virsat.model,
  de.dlr.sc.virsat.commons.ui,
  de.dlr.sc.virsat.fdir.galileo,
  com.google.guava,
- org.eclipse.core.jobs
+ org.eclipse.core.jobs,
+ de.dlr.sc.virsat.model.ext.core,
+ de.dlr.sc.virsat.fdir.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: German Aerospace Center (DLR)
@@ -50,5 +52,4 @@ Export-Package: de.dlr.sc.virsat.model.extension.fdir.propertyTester,
  de.dlr.sc.virsat.model.extension.fdir.ui.handler,
  de.dlr.sc.virsat.model.extension.fdir.ui.preferences,
  de.dlr.sc.virsat.model.extension.fdir.ui.snippet,
- de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom,
  de.dlr.sc.virsat.model.extension.fdir.ui.wizards

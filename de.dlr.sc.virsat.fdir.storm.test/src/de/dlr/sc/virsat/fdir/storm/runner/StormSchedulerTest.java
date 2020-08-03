@@ -13,14 +13,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
  * This class tests the storm scheduler implementation
@@ -42,10 +44,7 @@ public class StormSchedulerTest {
 		ma.addState(bad);
 		ma.addState(sink);
 		
-		ma.getEvents().add("a");
-		ma.getEvents().add("b");
-		
-		ma.getFinalStates().add(sink);
+		sink.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		Object correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		Object falseChoice = ma.addNondeterministicTransition("b", initial, bad);
@@ -62,7 +61,8 @@ public class StormSchedulerTest {
 				return mapStateToChoice;
 			}
 		};
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(ma, initial);
+		
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
 		assertTrue(schedule.get(initial).contains(correctChoice));
 		assertFalse(schedule.get(initial).contains(falseChoice));
 	}

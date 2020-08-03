@@ -12,7 +12,6 @@ package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 
 /**
  * Absract base class for fault tree evaluators
@@ -25,11 +24,6 @@ public abstract class AFaultTreeEvaluator implements IFaultTreeEvaluator {
 	@Override
 	public ModelCheckingResult evaluateFaultTree(FaultTreeNode root, IMetric... metrics) {
 		return evaluateFaultTree(root, null, metrics);
-	}
-
-	@Override
-	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
-		
 	}
 
 	@Override

@@ -10,7 +10,10 @@
 
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 /**
@@ -21,20 +24,41 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 public abstract class ARecoveryAutomatonMinimizer {
 
-	protected MinimizationStatistics statistics;
+	private MinimizationStatistics statistics;
 
 	/**
 	 * Main method to override and perform the actual minimization
 	 * @param raHolder the recovery automaton to minimize
+	 * @param ftHolder the fault tree upon which the recovery automaton is based. Choose null
+	 * if no additional fault tree information is supplied.
 	 */
-	protected abstract void minimize(RecoveryAutomatonHolder raHolder);
+	protected abstract void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder);
+	
+	/**
+	 * Main interface minimization method
+	 * @param ra the recovery automaton to be minimized
+	 * @param root the root of the associated fault tree
+	 */
+	public void minimize(RecoveryAutomaton ra, FaultTreeNode root) {
+		statistics = new MinimizationStatistics();
+		long startTime = System.currentTimeMillis();
+		statistics.time = IStatistics.TIMEOUT;
+		statistics.removedStates = ra.getStates().size();
+		statistics.removedTransitions = ra.getTransitions().size();
+		
+		minimize(new RecoveryAutomatonHolder(ra), new FaultTreeHolder(root));
+		
+		statistics.time = System.currentTimeMillis() - startTime;
+		statistics.removedStates = statistics.removedStates - ra.getStates().size();
+		statistics.removedTransitions = statistics.removedTransitions - ra.getTransitions().size();
+	}
 	
 	/**
 	 * Main interface minimization method
 	 * @param ra the recovery automaton to be minimized
 	 */
 	public void minimize(RecoveryAutomaton ra) {
-		minimize(new RecoveryAutomatonHolder(ra));
+		minimize(new RecoveryAutomatonHolder(ra), null);
 	}
 	
 	/**

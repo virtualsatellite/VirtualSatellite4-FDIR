@@ -1,0 +1,5 @@
+toplevel "tle";
+"tle" and "A" "B";
+"seq" seq "A" "B";
+"A" lambda=0.4;
+"B" lambda=0.8;

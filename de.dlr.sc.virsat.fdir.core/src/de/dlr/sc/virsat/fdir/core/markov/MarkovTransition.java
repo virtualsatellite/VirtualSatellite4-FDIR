@@ -9,6 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * A transition in a markov automaton
  * @author muel_s8
@@ -21,7 +24,6 @@ public class MarkovTransition<S> {
 	private S to;
 	private double rate;
 	private Object event;
-	private boolean isMarkovian;
 	
 	/**
 	 * Constructor creating a new markov automaton transition
@@ -29,15 +31,13 @@ public class MarkovTransition<S> {
 	 * @param to the end state of the transition
 	 * @param rate the transition rate
 	 * @param event the transition event
-	 * @param isMarkovian whether the transition is markovian
 	 */
 	
-	public MarkovTransition(S from, S to, double rate, Object event, boolean isMarkovian) {
+	public MarkovTransition(S from, S to, double rate, Object event) {
 		this.from = from;
 		this.to = to;
 		this.rate = rate;
 		this.event = event;
-		this.isMarkovian = isMarkovian;
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class MarkovTransition<S> {
 	 * @return a copy of this markov transition
 	 */
 	public MarkovTransition<S> copy() {
-		return new MarkovTransition<S>(from, to, rate, event, isMarkovian);
+		return new MarkovTransition<S>(from, to, rate, event);
 	}
 	
 	/**
@@ -118,14 +118,21 @@ public class MarkovTransition<S> {
 	
 	@Override
 	public String toString() {
-		return  from.toString() + " --- " + event.toString() + ", " + rate + " ---> "  + to.toString();
+		return from.toString() + " --- " + event.toString() + ", " + rate + " ---> " + to.toString();
 	}
 	
 	/**
-	 * Checks if this is a Markovian transition or an immediate nondeterministic transition
-	 * @return true iff the transition is Markovian
+	 * Computes the expectation value for a given transition group
+	 * @param transitionGroup the transition group
+	 * @return the expectation value of the transition group
 	 */
-	public boolean isMarkovian() {
-		return isMarkovian;
+	public static <S extends MarkovState> double getExpectationValue(List<MarkovTransition<S>> transitionGroup, 
+			Map<MarkovState, Integer> mapStateToIndex, double[] values) {
+		double expectationValue = 0;
+		for (MarkovTransition<S> transition : transitionGroup) {
+			double succValue = values[mapStateToIndex.get(transition.getTo())];
+			expectationValue += transition.getRate() * succValue;
+		}
+		return expectationValue;
 	}
 }

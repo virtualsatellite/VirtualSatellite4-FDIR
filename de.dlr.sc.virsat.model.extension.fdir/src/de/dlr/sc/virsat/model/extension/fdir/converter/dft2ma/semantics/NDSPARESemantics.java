@@ -16,9 +16,9 @@ import java.util.Map;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -34,45 +34,79 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class NDSPARESemantics extends StandardSPARESemantics {
 	
 	private Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction = new HashMap<>();
-	private IStateGenerator stateGenerator;
+	private Map<FaultTreeNode, FreeAction> mapNodeToFreeAction = new HashMap<>();
 	
-	protected boolean propagateWithoutClaiming = false;
-	
-	/**
-	 * Standard constructor
-	 * @param stateGenerator the state generator
-	 */
-	public NDSPARESemantics(IStateGenerator stateGenerator) {
-		this.stateGenerator = stateGenerator;
-	}
+	protected boolean propagateWithoutActions = false;
 
 	@Override
 	protected boolean hasFailed(boolean foundSpare) {
 		return true;
 	}
+
+	@Override
+	protected boolean isSingleClaim() {
+		return propagateWithoutActions;
+	}
 	
 	@Override
 	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		return !propagateWithoutClaiming && super.canClaim(pred, state, node, ftHolder);
+		return !propagateWithoutActions && super.canClaim(pred, state, node, ftHolder);
 	}
 	
 	@Override
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state,
 			GenerationResult generationResult) {
 		
+		DFTState newState = null;
+		List<RecoveryAction> extendedRecoveryActions = null;
 		List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 		
-		ClaimAction ca = getOrCreateClaimAction(node, spare, mapNodeToNodeToClaimAction);
-		DFTState newState = stateGenerator.generateState(state);
+		for (RecoveryAction ra : recoveryActions) {
+			if (ra instanceof ClaimAction) {
+				ClaimAction otherClaimAction = (ClaimAction) ra;
+				if (otherClaimAction.getClaimSpare().equals(spare)) {
+					return false;
+				}
+			} else if (ra instanceof FreeAction) {
+				FreeAction freeAction = (FreeAction) ra;
+				if (freeAction.getFreeSpare().equals(spare)) {
+					return false;
+				}
+			}
+		}
+		
+		DFTState generatorState = generationResult.getGeneratorState();
+		FaultTreeNode currentClaimantGenerator = generatorState.getMapSpareToClaimedSpares().get(spare);
+		
+		if (currentClaimantGenerator != null && currentClaimantGenerator.equals(node)) {
+			return false;
+		}
+		
+		FaultTreeNode currentClaimant = state.getMapSpareToClaimedSpares().get(spare);
+		boolean reclaim = currentClaimant != null;
+		
+		if (reclaim) {
+			performFree(spare, state, generationResult);
+			newState = generationResult.getGeneratedStates().get(generationResult.getGeneratedStates().size() - 1);
+			extendedRecoveryActions = generationResult.getMapStateToRecoveryActions().get(newState);
+		} else {
+			newState = state.copy();
+			extendedRecoveryActions = new ArrayList<>(recoveryActions);
+		}
+		
+		ClaimAction ca = getOrCreateClaimAction(node, spare);
 		ca.execute(newState);
-		newState.setFaultTreeNodeFailed(node, false);
-		List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
 
+		FaultTreeNode workingUnit = newState.getWorkingUnit(node);
+		boolean hasWorkingUnit = workingUnit != null;
+		newState.setFaultTreeNodeFailed(node, !hasWorkingUnit);
+		
 		extendedRecoveryActions.add(ca);
 		generationResult.getMapStateToRecoveryActions().put(newState, extendedRecoveryActions);
 		
-		newState.activateNode(spare);
-		generationResult.getGeneratedStates().add(newState);
+		if (!reclaim) {
+			generationResult.getGeneratedStates().add(newState);
+		}
 		
 		return false;
 	}
@@ -81,10 +115,9 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	 * Gets or creates a new claim action
 	 * @param gate the gate doing the claiming
 	 * @param spare the spare getting claimed
-	 * @param mapNodeToNodeToClaimAction a cashing of existing claim actions
 	 * @return a claim action
 	 */
-	protected ClaimAction getOrCreateClaimAction(SPARE gate, FaultTreeNode spare, Map<FaultTreeNode, Map<FaultTreeNode, ClaimAction>> mapNodeToNodeToClaimAction) {
+	protected ClaimAction getOrCreateClaimAction(SPARE gate, FaultTreeNode spare) {
 		Map<FaultTreeNode, ClaimAction> mapNodeToClaimAction = mapNodeToNodeToClaimAction.get(gate);
 		if (mapNodeToClaimAction == null) {
 			mapNodeToClaimAction = new HashMap<>();
@@ -102,11 +135,50 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 		return ca;
 	}
 	
+	@Override
+	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+		if (!propagateWithoutActions) {
+			List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
+	
+			FreeAction fa = getOrCreateFreeAction(spare);
+			DFTState newState = state.copy();
+			
+			FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
+			fa.execute(newState);
+			
+			FaultTreeNode workingUnit = newState.getWorkingUnit(claimingSpareGate);
+			boolean hasWorkingUnit = workingUnit != null;
+			newState.setFaultTreeNodeFailed(claimingSpareGate, !hasWorkingUnit);
+	
+			List<RecoveryAction> extendedRecoveryActions = new ArrayList<>(recoveryActions);
+	
+			extendedRecoveryActions.add(fa);
+			generationResult.getMapStateToRecoveryActions().put(newState, extendedRecoveryActions);
+	
+			generationResult.getGeneratedStates().add(newState);
+		}
+	}
+
+	/**
+	 * Creates a new free action or recycles an existing one if possible
+	 * @param spare the spare to free
+	 * @return the created free action
+	 */
+	protected FreeAction getOrCreateFreeAction(FaultTreeNode spare) {
+		FreeAction fa = mapNodeToFreeAction.get(spare);
+		if (fa == null) {
+			fa = new FreeAction(spare.getConcept());
+			fa.setFreeSpare(spare);
+			mapNodeToFreeAction.put(spare, fa);
+		}
+		return fa;
+	}
+	
 	/**
 	 * Sets the propagation flag
-	 * @param propagateWithoutClaiming whether this gate should prevent the propagation or not
+	 * @param propagateWithoutActions whether this gate should prevent the propagation or not
 	 */
-	public void setPropagateWithoutClaiming(boolean propagateWithoutClaiming) {
-		this.propagateWithoutClaiming = propagateWithoutClaiming;
+	public void setPropagateWithoutActions(boolean propagateWithoutActions) {
+		this.propagateWithoutActions = propagateWithoutActions;
 	}
 }

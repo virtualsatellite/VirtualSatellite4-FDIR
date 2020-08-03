@@ -11,10 +11,9 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -23,11 +22,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElement;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralFactory;
-import de.dlr.sc.virsat.model.dvlm.structural.util.StructuralInstantiator;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 // *****************************************************************
 // * Import Statements
@@ -62,10 +57,10 @@ public class FaultTreeTest extends AFaultTreeTest {
 		Fault child = new Fault(concept);
 		Fault spare = new Fault(concept);
 		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
-		ftHelper.connect(root, spareGate, root);
-		ftHelper.connect(root, child, spareGate);
-		ftHelper.connectSpare(root, spare, spareGate);
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
+		ftBuilder.connect(root, spareGate, root);
+		ftBuilder.connect(root, child, spareGate);
+		ftBuilder.connectSpare(root, spare, spareGate);
 		
 		Set<Fault> childSpares = root.getFaultTree().getChildSpares();
 		
@@ -90,41 +85,14 @@ public class FaultTreeTest extends AFaultTreeTest {
 		resource.getContents().add(child.getTypeInstance());
 		resource.getContents().add(grandchild.getTypeInstance());
 		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
-		ftHelper.connect(root, intermediateNode, root);
-		ftHelper.connect(root, child, intermediateNode);
-		ftHelper.connect(child, grandchild, child);
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
+		ftBuilder.connect(root, intermediateNode, root);
+		ftBuilder.connect(root, child, intermediateNode);
+		ftBuilder.connect(child, grandchild, child);
 		
 		Set<Fault> affectedFaults = child.getFaultTree().getAffectedFaults();
 		
 		assertThat(affectedFaults, hasItem(root));
 		assertThat(affectedFaults, not(hasItem(grandchild)));
-	}
-	
-	@Test
-	public void testGetPotentialRecoveryActions() {
-		StructuralElement se = StructuralFactory.eINSTANCE.createStructuralElement();
-		StructuralElementInstance sei = new StructuralInstantiator().generateInstance(se, "System");
-		
-		Fault root = new Fault(concept);
-		SPARE spareGate = new SPARE(concept);
-		root.getFaultTree().getGates().add(spareGate);
-		Fault child = new Fault(concept);
-		Fault spare = new Fault(concept);
-		BasicEvent be = new BasicEvent(concept);
-		
-		sei.getCategoryAssignments().add(root.getTypeInstance());
-		
-		FaultTreeHelper ftHelper = new FaultTreeHelper(concept);
-		ftHelper.connect(root, spareGate, root);
-		ftHelper.connect(root, child, spareGate);
-		ftHelper.connectSpare(root, spare, spareGate);
-		root.getBasicEvents().add(be);
-		be.setRepairAction("Restart");
-		
-		List<String> potentialRecoveryActions = root.getFaultTree().getPotentialRecoveryActions();
-		
-		assertEquals(2, potentialRecoveryActions.size());
-		assertThat(potentialRecoveryActions, hasItem(be.getRepairAction()));
 	}
 }

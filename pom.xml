@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dlr.sc.virsat.fdir</groupId>
 	<artifactId>de.dlr.sc.virsat.fdir.parent</artifactId>
-	<version>4.10.0-SNAPSHOT</version>
+	<version>4.12.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<profiles>
@@ -49,7 +49,8 @@
 				<module>de.dlr.sc.virsat.fdir.galileo.tests</module>
 
 				<module>de.dlr.sc.virsat.fdir.branding.ui</module>
-				<module>de.dlr.sc.virsat.fdir.test</module>
+				
+				<module>de.dlr.sc.virsat.fdir.swtbot.test</module>
 			</modules>
 		</profile>
 		<profile>
@@ -62,6 +63,7 @@
 				<module>de.dlr.sc.virsat.fdir.docs.feature</module>
 				
 				<module>de.dlr.sc.virsat.fdir.galileo.feature</module>
+				<module>de.dlr.sc.virsat.fdir.storm.feature</module>
 				<module>de.dlr.sc.virsat.model.extension.fdir.feature</module>
 			</modules>
 		</profile>

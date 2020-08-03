@@ -9,6 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -102,6 +106,40 @@ public class RecoveryAutomaton extends ARecoveryAutomaton {
 				minimizer.minimize(RecoveryAutomaton.this);
 			}
 		};
+	}
+	
+	/**
+	 * Maps all references from generated nodes to references of the generator nodes
+	 * @param ra the recovery automaton
+	 * @param mapGeneratedToGenerator from the generated fault tree nodes to the generated ones
+	 */
+	public void remapToGeneratorNodes(Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator) {
+		for (Transition t : getTransitions()) {
+			if (t instanceof FaultEventTransition) {
+				FaultEventTransition fet = (FaultEventTransition) t;
+				List<FaultTreeNode> generatorGuards = new ArrayList<>();
+				
+				for (FaultTreeNode guard : fet.getGuards()) {
+					if (guard.getTypeInstance() != null) {
+						FaultTreeNode generatorGuard = mapGeneratedToGenerator.get(guard);
+						generatorGuards.add(generatorGuard);
+					}
+				}
+				fet.getGuards().clear();
+				fet.getGuards().addAll(generatorGuards);
+			}
+			
+		    for (RecoveryAction recoveryAction : t.getRecoveryActions()) {
+		    	if (recoveryAction instanceof ClaimAction) {
+		    		ClaimAction claimAction = (ClaimAction) recoveryAction;
+		    		claimAction.setClaimSpare(mapGeneratedToGenerator.get(claimAction.getClaimSpare()));
+		    		claimAction.setSpareGate((SPARE) mapGeneratedToGenerator.get(claimAction.getSpareGate()));
+		    	} else if (recoveryAction instanceof FreeAction) {
+		    		FreeAction freeAction = (FreeAction) recoveryAction;
+		    		freeAction.setFreeSpare(mapGeneratedToGenerator.get(freeAction.getFreeSpare()));
+		    	}
+		    }
+		}
 	}
 
 }

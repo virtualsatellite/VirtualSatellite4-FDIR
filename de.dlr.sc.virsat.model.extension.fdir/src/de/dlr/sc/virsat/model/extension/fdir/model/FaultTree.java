@@ -9,13 +9,10 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -29,7 +26,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropert
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 // *****************************************************************
 // * Class Declaration
@@ -123,45 +119,12 @@ public  class FaultTree extends AFaultTree {
 		});
 		return affectedFaults;
 	}
-
-	/**
-	 * Gets all recovery actions directly contained in this fault tree
-	 * that can contribute to recovering the top level fault of this fault tree
-	 * @return a list of all local recovery actions
-	 */
-	public List<String> getPotentialRecoveryActions() {
-		List<String> potentialRecoveryActions = new ArrayList<>();
-		
-		FaultTreeHolder ftHolder = new FaultTreeHolder(getRoot());
-		List<BasicEvent> basicEvents = ftHolder.getChildFaults(getRoot()).stream()
-				.flatMap(fault -> fault.getBasicEvents().stream())
-				.collect(Collectors.toList());
-		
-		basicEvents.addAll(getRoot().getBasicEvents());
-		
-		for (BasicEvent be : basicEvents) {
-			String repairAction = be.getRepairAction();
-			if (repairAction != null && !repairAction.equals("")) {
-				potentialRecoveryActions.add(repairAction);
-			}
-		}
-		
-		for (FaultTreeEdge spareEdge : getSpares()) {
-			FaultTreeNode from = spareEdge.getFrom();
-			if (from != null) {
-				String recoveryAction = "Switch to " + (from.getParent() != null ? from.getParent().getName() + "." : "") + from.getName();
-				potentialRecoveryActions.add(recoveryAction);
-			}
-		}
-		
-		return potentialRecoveryActions;
-	}
 	
 	/**
 	 * Creates a dot representation of this fault tree
 	 * @return the dot representation
 	 */
 	public String toDot() {
-		return new FaultTreeHelper(concept).toDot(this);
+		return new FaultTreeHelper().toDot(this);
 	}
 }

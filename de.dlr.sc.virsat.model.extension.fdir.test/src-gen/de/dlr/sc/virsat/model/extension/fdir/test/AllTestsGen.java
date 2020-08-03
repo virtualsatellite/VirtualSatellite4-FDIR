@@ -29,19 +29,24 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEventTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityMatrixTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PDEPTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTETest;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransitionTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.SEQTest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v0Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.AvailabilityAnalysisTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.MCSAnalysisTest;
+import de.dlr.sc.virsat.model.extension.fdir.validator.FdirValidatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CutSetTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonGenTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FreeActionTest;
-import de.dlr.sc.virsat.model.extension.fdir.validator.StructuralElementInstanceValidatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ORTest;
 import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v1Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeEdgeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.RDEPTest;
+import de.dlr.sc.virsat.model.extension.fdir.model.RepairActionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.CriticalityVectorTest;
+import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v2Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDIRParametersTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FMECATest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ANDTest;
@@ -53,7 +58,6 @@ import de.dlr.sc.virsat.model.extension.fdir.model.SANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORITest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PORTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FMECAEntryTest;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransitionTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
@@ -74,6 +78,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	SANDTest.class,
 	PORITest.class,
 	PANDITest.class,
+	SEQTest.class,
 	MONITORTest.class,
 	DELAYTest.class,
 	FDEPTest.class,
@@ -82,6 +87,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	FaultTreeEdgeTest.class,
 	FaultTreeTest.class,
 	FaultTest.class,
+	RepairActionTest.class,
 	BasicEventTest.class,
 	CutSetTest.class,
 	CriticalityVectorTest.class,
@@ -98,10 +104,12 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	FreeActionTest.class,
 	StateTest.class,
 	FaultEventTransitionTest.class,
-	TimedTransitionTest.class,
+	TimeoutTransitionTest.class,
+	RecoveryAutomatonGenTest.class,
 	Migrator1v0Test.class,
 	Migrator1v1Test.class,
-	StructuralElementInstanceValidatorTest.class,
+	Migrator1v2Test.class,
+	FdirValidatorTest.class,
 				})
 
 /**

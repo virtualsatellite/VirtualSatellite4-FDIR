@@ -2,17 +2,21 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VirSat FDIR CORE
 Bundle-SymbolicName: de.dlr.sc.virsat.fdir.core;singleton:=true
-Bundle-Version: 4.10.0.qualifier
+Bundle-Version: 4.12.0.qualifier
 Bundle-Activator: de.dlr.sc.virsat.fdir.core.Activator
 Bundle-Vendor: DLR (German Aerospace Center)
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ de.dlr.sc.virsat.external.lib.commons.math
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.fdir.core.markov,
+ de.dlr.sc.virsat.fdir.core.markov.algorithm,
  de.dlr.sc.virsat.fdir.core.markov.modelchecker,
  de.dlr.sc.virsat.fdir.core.markov.scheduler,
  de.dlr.sc.virsat.fdir.core.matrix,
- de.dlr.sc.virsat.fdir.core.metrics
+ de.dlr.sc.virsat.fdir.core.matrix.iterator,
+ de.dlr.sc.virsat.fdir.core.metrics,
+ de.dlr.sc.virsat.fdir.core.util
 Eclipse-ExtensibleAPI: true
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.core

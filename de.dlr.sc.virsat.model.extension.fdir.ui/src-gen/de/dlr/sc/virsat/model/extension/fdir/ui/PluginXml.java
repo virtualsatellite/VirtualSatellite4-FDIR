@@ -133,9 +133,9 @@ public class PluginXml {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition";
 			public static final String NAME = "Add FaultEventTransition";
 		}	
-		public static class CommandAddTimedTransition {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition";
-			public static final String NAME = "Add TimedTransition";
+		public static class CommandAddTimeoutTransition {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimeoutTransition";
+			public static final String NAME = "Add TimeoutTransition";
 		}	
 		public static class CommandopenFaultInDiagramEditor {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.openFaultInDiagramEditor";
@@ -206,6 +206,10 @@ public class PluginXml {
 		public static class ConceptImageDELAY {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.DELAY";
 			public static final String PATHTOIMAGE = "resources/icons/DELAY.gif";
+		}	
+		public static class ConceptImageSEQ {
+			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.SEQ";
+			public static final String PATHTOIMAGE = "resources/icons/SEQ.gif";
 		}	
 		public static class ConceptImageADEP {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.ADEP";
@@ -307,9 +311,9 @@ public class PluginXml {
 			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.FaultEventTransition";
 			public static final String PATHTOIMAGE = "resources/icons/FaultEventTransition.gif";
 		}	
-		public static class ConceptImageTimedTransition {
-			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.TimedTransition";
-			public static final String PATHTOIMAGE = "resources/icons/TimedTransition.gif";
+		public static class ConceptImageTimeoutTransition {
+			public static final String FULLQUALIFIEDID = "de.dlr.sc.virsat.model.extension.fdir.TimeoutTransition";
+			public static final String PATHTOIMAGE = "resources/icons/TimeoutTransition.gif";
 		}	
 	}
 	public static class uiSnippets {
@@ -708,10 +712,10 @@ public class PluginXml {
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
 			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsFaultEventTransition";
 		}	
-		public static class UiSnippetTableUiSnippetRecoveryAutomatonTransitionsTimedTransition {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTimedTransition";
+		public static class UiSnippetTableUiSnippetRecoveryAutomatonTransitionsTimeoutTransition {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTimeoutTransition";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
-			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTimedTransition";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTimeoutTransition";
 		}	
 		public static class UiSnippetTableUiSnippetClaimAction {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetClaimAction";
@@ -768,25 +772,25 @@ public class PluginXml {
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
 			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionRecoveryActionsFreeAction";
 		}	
-		public static class UiSnippetTableUiSnippetTimedTransition {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransition";
+		public static class UiSnippetTableUiSnippetTimeoutTransition {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimeoutTransition";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
-			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransition";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimeoutTransition";
 		}	
-		public static class UiSnippetSectionUiSnippetTimedTransition {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTimedTransition";
+		public static class UiSnippetSectionUiSnippetTimeoutTransition {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTimeoutTransition";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
-			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTimedTransition";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTimeoutTransition";
 		}	
-		public static class UiSnippetTableUiSnippetTimedTransitionRecoveryActionsClaimAction {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsClaimAction";
+		public static class UiSnippetTableUiSnippetTimeoutTransitionRecoveryActionsClaimAction {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimeoutTransitionRecoveryActionsClaimAction";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
-			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsClaimAction";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimeoutTransitionRecoveryActionsClaimAction";
 		}	
-		public static class UiSnippetTableUiSnippetTimedTransitionRecoveryActionsFreeAction {
-			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsFreeAction";
+		public static class UiSnippetTableUiSnippetTimeoutTransitionRecoveryActionsFreeAction {
+			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimeoutTransitionRecoveryActionsFreeAction";
 			public static final String SECTION = "de.dlr.sc.virsat.model.extension.fdir.ui.Section";
-			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsFreeAction";
+			public static final String SNIPPET = "de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimeoutTransitionRecoveryActionsFreeAction";
 		}	
 		public static class UiSnippetFdirGeneration {
 			public static final String ID = "de.dlr.sc.virsat.model.extension.fdir.generation";
@@ -924,9 +928,9 @@ public class PluginXml {
 			public static final String CLASSNAME = "de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFaultEventTransitionHandler";
 			public static final String COMMANDID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition";
 		}	
-		public static class HandlerAddTimedTransitionHandler {
-			public static final String CLASSNAME = "de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTimedTransitionHandler";
-			public static final String COMMANDID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition";
+		public static class HandlerAddTimeoutTransitionHandler {
+			public static final String CLASSNAME = "de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTimeoutTransitionHandler";
+			public static final String COMMANDID = "de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimeoutTransition";
 		}	
 		public static class HandlerOpenFaultInDiagramEditorHandler {
 			public static final String CLASSNAME = "de.dlr.sc.virsat.model.extension.fdir.ui.handler.OpenFaultInDiagramEditorHandler";

@@ -13,30 +13,26 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.concept.list.TypeSafeArrayInstanceList;
+import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
-import org.eclipse.core.runtime.CoreException;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyBeanList;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
-import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
-import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyInstanceList;
-import org.eclipse.emf.edit.domain.EditingDomain;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
-import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
-import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyInstanceList;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.SetCommand;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
 // *****************************************************************
@@ -51,7 +47,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
  * 
  * 
  */	
-public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class AFMECAEntry extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.FMECAEntry";
 	
@@ -121,145 +117,91 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	// *****************************************************************
 	// * Attribute: failure
 	// *****************************************************************
-	private Fault failure;
+	private BeanPropertyReference<Fault> failure = new BeanPropertyReference<>();
 	
 	private void safeAccessFailure() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (failure == null) {
-				createFailure(ca);
-			}
-			failure.setTypeInstance(ca);
-		} else {
-			failure = null;
-		}
+		failure.setTypeInstance(propertyInstance);
 	}
 	
-	private void createFailure(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			failure = (Fault) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public Fault getFailure() {
 		safeAccessFailure();
-		return failure;
+		return failure.getValue();
 	}
 	
 	public Command setFailure(EditingDomain ed, Fault value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessFailure();
+		return failure.setValue(ed, value);
 	}
 	
 	public void setFailure(Fault value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failure");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessFailure();
+		failure.setValue(value);
+	}
+	
+	public BeanPropertyReference<Fault> getFailureBean() {
+		safeAccessFailure();
+		return failure;
 	}
 	
 	// *****************************************************************
 	// * Attribute: failureMode
 	// *****************************************************************
-	private FaultEvent failureMode;
+	private BeanPropertyReference<FaultEvent> failureMode = new BeanPropertyReference<>();
 	
 	private void safeAccessFailureMode() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failureMode");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (failureMode == null) {
-				createFailureMode(ca);
-			}
-			failureMode.setTypeInstance(ca);
-		} else {
-			failureMode = null;
-		}
+		failureMode.setTypeInstance(propertyInstance);
 	}
 	
-	private void createFailureMode(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			failureMode = (FaultEvent) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public FaultEvent getFailureMode() {
 		safeAccessFailureMode();
-		return failureMode;
+		return failureMode.getValue();
 	}
 	
 	public Command setFailureMode(EditingDomain ed, FaultEvent value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failureMode");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessFailureMode();
+		return failureMode.setValue(ed, value);
 	}
 	
 	public void setFailureMode(FaultEvent value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failureMode");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessFailureMode();
+		failureMode.setValue(value);
+	}
+	
+	public BeanPropertyReference<FaultEvent> getFailureModeBean() {
+		safeAccessFailureMode();
+		return failureMode;
 	}
 	
 	// *****************************************************************
 	// * Attribute: failureCause
 	// *****************************************************************
-	private FaultEvent failureCause;
+	private BeanPropertyReference<FaultEvent> failureCause = new BeanPropertyReference<>();
 	
 	private void safeAccessFailureCause() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failureCause");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (failureCause == null) {
-				createFailureCause(ca);
-			}
-			failureCause.setTypeInstance(ca);
-		} else {
-			failureCause = null;
-		}
+		failureCause.setTypeInstance(propertyInstance);
 	}
 	
-	private void createFailureCause(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			failureCause = (FaultEvent) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public FaultEvent getFailureCause() {
 		safeAccessFailureCause();
-		return failureCause;
+		return failureCause.getValue();
 	}
 	
 	public Command setFailureCause(EditingDomain ed, FaultEvent value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failureCause");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessFailureCause();
+		return failureCause.setValue(ed, value);
 	}
 	
 	public void setFailureCause(FaultEvent value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("failureCause");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessFailureCause();
+		failureCause.setValue(value);
+	}
+	
+	public BeanPropertyReference<FaultEvent> getFailureCauseBean() {
+		safeAccessFailureCause();
+		return failureCause;
 	}
 	
 	// *****************************************************************
@@ -276,6 +218,19 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 		public IBeanList<Fault> getFailureEffects() {
 			safeAccessFailureEffects();
 			return failureEffects;
+		}
+		
+		private IBeanList<BeanPropertyReference<Fault>> failureEffectsBean = new TypeSafeReferencePropertyBeanList<>();
+		
+		private void safeAccessFailureEffectsBean() {
+			if (failureEffectsBean.getArrayInstance() == null) {
+				failureEffectsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("failureEffects"));
+			}
+		}
+		
+		public IBeanList<BeanPropertyReference<Fault>> getFailureEffectsBean() {
+			safeAccessFailureEffectsBean();
+			return failureEffectsBean;
 		}
 	
 	// *****************************************************************
@@ -425,17 +380,17 @@ public abstract class AFMECAEntry extends ABeanCategoryAssignment implements IBe
 	// *****************************************************************
 	// * Array Attribute: compensation
 	// *****************************************************************
-	private IBeanList<BeanPropertyString> compensation = new TypeSafeArrayInstanceList<>(BeanPropertyString.class);
+	private IBeanList<BeanPropertyString> compensationBean = new TypeSafeArrayInstanceList<>(BeanPropertyString.class);
 	
-	private void safeAccessCompensation() {
-		if (compensation.getArrayInstance() == null) {
-			compensation.setArrayInstance((ArrayInstance) helper.getPropertyInstance("compensation"));
+	private void safeAccessCompensationBean() {
+		if (compensationBean.getArrayInstance() == null) {
+			compensationBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("compensation"));
 		}
 	}
 	
-	public IBeanList<BeanPropertyString> getCompensation() {
-		safeAccessCompensation();
-		return compensation;
+	public IBeanList<BeanPropertyString> getCompensationBean() {
+		safeAccessCompensationBean();
+		return compensationBean;
 	}
 	
 	

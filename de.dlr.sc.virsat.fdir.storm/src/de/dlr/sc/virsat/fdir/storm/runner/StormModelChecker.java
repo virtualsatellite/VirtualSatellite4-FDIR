@@ -16,14 +16,14 @@ import java.util.List;
 
 import org.eclipse.core.runtime.SubMonitor;
 
-import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.IMarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -63,7 +63,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 
 
 	@Override
-	public void visit(MTTF mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric) {
 		modelCheckingResult.setMeanTimeToFailure(resultExtracted.get(startIndex));
 		startIndex++;
 	}
@@ -85,18 +85,18 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public ModelCheckingResult checkModel(MarkovAutomaton<? extends MarkovState> ma, SubMonitor subMonitor, IBaseMetric... metrics) {
+	public ModelCheckingResult checkModel(ModelCheckingQuery<? extends MarkovState> modelCheckingQuery, SubMonitor subMonitor) {
 		statistics = new ModelCheckingStatistics();
 		statistics.time = System.currentTimeMillis();
 		
-		Storm storm = new Storm(ma, delta, metrics);
+		Storm storm = new Storm(modelCheckingQuery.getMa(), delta, modelCheckingQuery.getMetrics());
 		StormRunner<Double> stormRunner = createStormRunner(storm);
 		
 		modelCheckingResult = new ModelCheckingResult();
 		
 		try {
 			resultExtracted  = stormRunner.run();
-			for (IBaseMetric metric : metrics) {
+			for (IBaseMetric metric : modelCheckingQuery.getMetrics()) {
 				metric.accept(this, null);
 			}
 

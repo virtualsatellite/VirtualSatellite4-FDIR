@@ -9,29 +9,28 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DelaySemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.FaultSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.PORSemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.SEQSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.VOTESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
-import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHelper;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -45,29 +44,29 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 * Creates a partial observable nondeterministic DFT semantics
 	 * @return creates a partial observable nondeterministic DFT semantics
 	 */
-	public static DFTSemantics createPONDDFTSemantics() {
+	public static PONDDFTSemantics createPONDDFTSemantics() {
 		PONDDFTSemantics semantics = new PONDDFTSemantics();
-		semantics.stateGenerator = new PODFTStateGenerator();
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FAULT, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.FDEP, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.RDEP, new FaultSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.VOTE, new VOTESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.POR, new PORSemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.MONITOR, new FaultSemantics());
-		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new PONDSPARESemantics(semantics.stateGenerator));
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SPARE, new PONDSPARESemantics());
 		semantics.mapTypeToSemantics.put(FaultTreeNodeType.DELAY, new DelaySemantics());
+		semantics.mapTypeToSemantics.put(FaultTreeNodeType.SEQ, new SEQSemantics());
 		return semantics;
 	}
 	
 	@Override
-	public Set<IDFTEvent> createEventSet(FaultTreeHolder ftHolder) {
-		Set<IDFTEvent> events = super.createEventSet(ftHolder);
+	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
+		List<IDFTEvent> events = super.createEvents(ftHolder, staticAnalysis);
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
-			List<MONITOR> monitors = ftHolder.getMapNodeToMonitors().getOrDefault(node, Collections.emptyList());
+			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
 			double observationRate = 0;
-			for (MONITOR observer : monitors) {
-				observationRate += observer.getObservationRateBean().getValueToBaseUnit();
+			for (FaultTreeNode observer : monitors) {
+				observationRate += ((MONITOR) observer).getObservationRateBean().getValueToBaseUnit();
 			}
 			
 			if (observationRate > 0) {
@@ -80,116 +79,132 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public List<FaultTreeNode> updateFaultTreeNodeToFailedMap(FaultTreeHolder ftHolder, DFTState pred,
-			List<DFTState> succs, Map<DFTState, List<RecoveryAction>> recoveryActions, IDFTEvent event) {
+	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+		IDFTEvent event = stateUpdateResult.getStateUpdate().getEvent();
+		DFTState pred = stateUpdateResult.getStateUpdate().getState();
 		
-		boolean anyObservation = false;
-		List<FaultTreeNode> changedNodes = null;
-		Set<FaultTreeNode> possiblyFailedSpareGates = new HashSet<>();
-		FaultTreeHelper ftHelper = new FaultTreeHelper(event.getNode().getConcept());
-		
-		if (event instanceof ObservationEvent) {
-			FaultTreeNode observedNode = event.getNode();
-			anyObservation = true;
-			changedNodes = new ArrayList<>();
-			
-			for (DFTState state : succs) {
-				PODFTState poState = (PODFTState) state;
-				poState.setNodeFailObserved(observedNode, state.hasFaultTreeNodeFailed(observedNode));
-				for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(observedNode)) {
-					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(observedNode));
-				}
-				
-				for (FaultTreeNode child : ftHelper.getAllNodes(observedNode.getFault())) {
-					if (child instanceof SPARE) {
-						possiblyFailedSpareGates.add(child);
-					}
-				}
-			}
-		} else {
-			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(true);
-			changedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, event);
-			for (DFTState state : succs) {
-				for (FaultTreeNode node : changedNodes) {
-					boolean isObserved = existsNonFailedImmediateObserver(state, ftHolder, node);
-					if (isObserved) {
-						anyObservation = true;
-						PODFTState poState = (PODFTState) state;
-						poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
-						
-						for (FaultTreeNode parent : ftHolder.getMapNodeToAllParents().get(node)) {
-							poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
-						}
-						
-						for (FaultTreeNode child : ftHelper.getAllNodes(node.getFault())) {
-							if (child instanceof SPARE) {
-								possiblyFailedSpareGates.add(child);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		if (anyObservation) {
-			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutClaiming(false);
-			Queue<FaultTreeNode> spareGates = new LinkedList<>(possiblyFailedSpareGates);
-			List<FaultTreeNode> repairedNodes = super.updateFaultTreeNodeToFailedMap(ftHolder, pred, succs, recoveryActions, spareGates);
-			
-			for (DFTState state : succs) {
-				for (FaultTreeNode node : repairedNodes) {
-					boolean isObserved = existsNonFailedImmediateObserver(state, ftHolder, node);
-					if (isObserved) {
-						PODFTState poState = (PODFTState) state;
-						poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
-					}
-				}
-			}
-		}
-		
+		FaultTreeHolder ftHolder = pred.getFTHolder();
+		boolean hasRecoveryStrategy = hasRecoveryStrategy(pred);
+		boolean anyObservation = checkObservationEvent(event, stateUpdateResult.getSuccs());
 
-		DFTState baseSucc = succs.remove(0);
-		succs.add(baseSucc);
+		if (!anyObservation || hasRecoveryStrategy) {
+			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
+			super.propagateStateUpdate(stateUpdateResult, worklist);
+			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
+		}
 		
-		return changedNodes;
+		anyObservation |= propagateObservations(stateUpdateResult);
+		
+		if (anyObservation && !hasRecoveryStrategy) {
+			Set<FaultTreeNode> nondetGates = getNondeterministicGates(ftHolder);
+			
+			worklist = new LinkedList<>(nondetGates);
+			stateUpdateResult.getChangedNodes().clear();
+			super.propagateStateUpdate(stateUpdateResult, worklist);
+			propagateObservations(stateUpdateResult);
+		}
 	}
 	
 	/**
-	 * Checks if a node is being observed
-	 * @param state the current state
-	 * @param ftHolder the fault tree data holder
-	 * @param node the node to check for observation
-	 * @return true iff the node is being observed
+	 * Gets the gates capable of nondeterminism from the fault tree
+	 * @param ftHolder the fault tree holder
+	 * @return the set of nondeterministic nodes
 	 */
-	private boolean existsNonFailedImmediateObserver(DFTState state, FaultTreeHolder ftHolder, FaultTreeNode node) {
-		if (node instanceof MONITOR) {
-			return true;
+	private Set<FaultTreeNode> getNondeterministicGates(FaultTreeHolder ftHolder) {
+		Set<FaultTreeNode> spareGatesToCheck = new HashSet<>();
+		
+		for (FaultTreeNode child : ftHolder.getNodes(FaultTreeNodeType.SPARE)) {
+			spareGatesToCheck.add(child);
 		}
 		
-		List<MONITOR> observers = ftHolder.getMapNodeToMonitors().get(node);
-		if (observers != null) {
-			for (MONITOR observer : observers) {
-				if (!state.hasFaultTreeNodeFailed(observer) && observer.getObservationRate() == 0) {
-					return true;
+		return spareGatesToCheck;
+	}
+	
+	/**
+	 * Handles an observation event
+	 * @param event the event to handle
+	 * @param succs the current successor list
+	 * @return true iff the event was an observation event
+	 */
+	private boolean checkObservationEvent(IDFTEvent event, List<DFTState> succs) {
+		if (event instanceof ObservationEvent) {
+			FaultTreeNode observedNode = event.getNode();
+			
+			for (DFTState state : succs) {
+				PODFTState poState = (PODFTState) state;
+				Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(observedNode);
+				for (FaultTreeNode parent : allParents) {
+					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
 				}
 			}
+			
+			return true;
 		}
 		
 		return false;
 	}
 	
-	@Override
-	public Set<FaultTreeNode> extractRecoveryActionInput(FaultTreeHolder ftHolder, DFTState pred, IDFTEvent event, List<FaultTreeNode> changedNodes) {
-		Set<FaultTreeNode> observedNodes = new HashSet<>();
-		if (existsNonFailedImmediateObserver(pred, ftHolder, event.getNode())) {
-			observedNodes.add(event.getNode());
-		}
-		
-		for (FaultTreeNode node : changedNodes) {
-			if (existsNonFailedImmediateObserver(pred, ftHolder, node)) {
-				observedNodes.add(node);
+	/**
+	 * Handles a propagation step for the observability information
+	 * @param stateUpdateResult accumulator for saving results from the update
+	 * @return true if an observation was made during the propagation
+	 */
+	private boolean propagateObservations(StateUpdateResult stateUpdateResult) {
+		boolean anyObservation = false;
+		for (DFTState state : stateUpdateResult.getSuccs()) {
+			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
+				PODFTState poState = (PODFTState) state;
+				boolean isObserved = poState.existsObserver(node, false, false);
+				if (isObserved) {
+					anyObservation = true;
+					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
+					
+					Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(node);
+					for (FaultTreeNode parent : allParents) {
+						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
+					}
+				}
 			}
 		}
+		
+		return anyObservation;
+	}
+	
+	@Override
+	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdateResult stateUpdateResult) {
+		Set<FaultTreeNode> observedNodes = new HashSet<>();
+		IDFTEvent event = stateUpdateResult.getStateUpdate().getEvent();
+		DFTState state = stateUpdateResult.getStateUpdate().getState();
+		
+		if (event instanceof ObservationEvent) {
+			observedNodes.add(event.getNode());
+		} else {
+			if (!(state instanceof PODFTState)) {
+				throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);
+			}
+			
+			PODFTState poPred = (PODFTState) state;
+			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
+				if (poPred.existsObserver(node, false, false)) {
+					observedNodes.add(node);
+				}
+			}
+		}
+		
 		return observedNodes;
+	}
+	
+	/**
+	 * Checks if the state is governed by a recovery strategy
+	 * @param pred the current dft state
+	 * @return true iff the dft state has a recovery strategy
+	 */
+	private boolean hasRecoveryStrategy(DFTState pred) {
+		return pred.getRecoveryStrategy() != null;
+	}
+	
+	@Override
+	public DFTState generateState(FaultTreeHolder ftHolder) {
+		return new PODFTState(ftHolder);
 	}
 }

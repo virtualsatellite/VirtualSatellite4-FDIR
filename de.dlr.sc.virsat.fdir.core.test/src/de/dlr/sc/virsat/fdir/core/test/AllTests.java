@@ -14,9 +14,19 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonTest;
+import de.dlr.sc.virsat.fdir.core.markov.MarkovTransitionTest;
+import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponentTest;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuilderTest;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.StronglyConnectedComponentFinderTest;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelCheckerTest;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResultTest;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovSchedulerTest;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.BellmanIteratorTest;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.LinearProgramIteratorTest;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.MarkovAutomatonValueIteratorTest;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.SPSIteratorTest;
+import de.dlr.sc.virsat.fdir.core.matrix.iterator.SSAIteratorTest;
+import de.dlr.sc.virsat.fdir.core.metrics.MetricsResultDeriverTest;
 import junit.framework.JUnit4TestAdapter;
 
 /**
@@ -27,10 +37,20 @@ import junit.framework.JUnit4TestAdapter;
 @RunWith(Suite.class)
 
 @SuiteClasses({ 
+	MarkovTransitionTest.class,
 	MarkovAutomatonTest.class,
 	MarkovModelCheckerTest.class,
 	MarkovSchedulerTest.class,
-	ModelCheckingResultTest.class
+	ModelCheckingResultTest.class,
+	MarkovAutomatonBuilderTest.class,
+	StronglyConnectedComponentTest.class,
+	StronglyConnectedComponentFinderTest.class,
+	LinearProgramIteratorTest.class,
+	BellmanIteratorTest.class,
+	MarkovAutomatonValueIteratorTest.class,
+	SPSIteratorTest.class,
+	SSAIteratorTest.class,
+	MetricsResultDeriverTest.class
 	})
 
 public class AllTests {

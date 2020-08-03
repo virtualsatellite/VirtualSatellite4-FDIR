@@ -14,23 +14,20 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import org.eclipse.core.runtime.CoreException;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.SetCommand;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
+import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
 // *****************************************************************
@@ -45,7 +42,7 @@ import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
  * 
  * 
  */	
-public abstract class ATransition extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class ATransition extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.Transition";
 	
@@ -85,97 +82,61 @@ public abstract class ATransition extends ABeanCategoryAssignment implements IBe
 	// *****************************************************************
 	// * Attribute: from
 	// *****************************************************************
-	private State from;
+	private BeanPropertyReference<State> from = new BeanPropertyReference<>();
 	
 	private void safeAccessFrom() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("from");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (from == null) {
-				createFrom(ca);
-			}
-			from.setTypeInstance(ca);
-		} else {
-			from = null;
-		}
+		from.setTypeInstance(propertyInstance);
 	}
 	
-	private void createFrom(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			from = (State) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public State getFrom() {
 		safeAccessFrom();
-		return from;
+		return from.getValue();
 	}
 	
 	public Command setFrom(EditingDomain ed, State value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("from");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessFrom();
+		return from.setValue(ed, value);
 	}
 	
 	public void setFrom(State value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("from");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessFrom();
+		from.setValue(value);
+	}
+	
+	public BeanPropertyReference<State> getFromBean() {
+		safeAccessFrom();
+		return from;
 	}
 	
 	// *****************************************************************
 	// * Attribute: to
 	// *****************************************************************
-	private State to;
+	private BeanPropertyReference<State> to = new BeanPropertyReference<>();
 	
 	private void safeAccessTo() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("to");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (to == null) {
-				createTo(ca);
-			}
-			to.setTypeInstance(ca);
-		} else {
-			to = null;
-		}
+		to.setTypeInstance(propertyInstance);
 	}
 	
-	private void createTo(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			to = (State) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public State getTo() {
 		safeAccessTo();
-		return to;
+		return to.getValue();
 	}
 	
 	public Command setTo(EditingDomain ed, State value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("to");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessTo();
+		return to.setValue(ed, value);
 	}
 	
 	public void setTo(State value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("to");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessTo();
+		to.setValue(value);
+	}
+	
+	public BeanPropertyReference<State> getToBean() {
+		safeAccessTo();
+		return to;
 	}
 	
 	// *****************************************************************
@@ -192,6 +153,19 @@ public abstract class ATransition extends ABeanCategoryAssignment implements IBe
 	public IBeanList<RecoveryAction> getRecoveryActions() {
 		safeAccessRecoveryActions();
 		return recoveryActions;
+	}
+	
+	private IBeanList<BeanPropertyComposed<RecoveryAction>> recoveryActionsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessRecoveryActionsBean() {
+		if (recoveryActionsBean.getArrayInstance() == null) {
+			recoveryActionsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("recoveryActions"));
+		}
+	}
+	
+	public IBeanList<BeanPropertyComposed<RecoveryAction>> getRecoveryActionsBean() {
+		safeAccessRecoveryActionsBean();
+		return recoveryActionsBean;
 	}
 	
 	

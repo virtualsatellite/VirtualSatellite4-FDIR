@@ -24,9 +24,9 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.swt.ChartComposite;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.experimental.chart.swt.ChartComposite;
 
 import de.dlr.sc.virsat.commons.ui.jface.viewer.ISeriesXYValueLabelProvider;
 import de.dlr.sc.virsat.commons.ui.jface.viewer.XYSplineChartViewer;
@@ -175,7 +175,7 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 		@Override
 		public Double[] getValuesY(Object object) {
 			AvailabilityAnalysis availabilityAnalysis = (AvailabilityAnalysis) object;
-			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurve();
+			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, availabilityCurve.size());
@@ -193,7 +193,7 @@ public class UiSnippetTableAvailabilityAnalysisAvailabilityCurve extends AUiSnip
 		public Double[] getValuesX(Object object) {
 			AvailabilityAnalysis availabilityAnalysis = (AvailabilityAnalysis) object;
 			double maxTime = availabilityAnalysis.getRemainingMissionTime();
-			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurve();
+			IBeanList<BeanPropertyFloat> availabilityCurve = availabilityAnalysis.getAvailabilityCurveBean();
 			
 			// Limit the maximum number of visualized points
 			int steps = Math.min(MAX_POINTS, availabilityCurve.size());

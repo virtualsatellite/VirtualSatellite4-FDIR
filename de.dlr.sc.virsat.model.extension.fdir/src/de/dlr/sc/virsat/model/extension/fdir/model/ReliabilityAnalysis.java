@@ -16,7 +16,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
@@ -107,7 +107,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		
 		subMonitor.split(1);
 		subMonitor.subTask("Performing Model Checking");
-		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, subMonitor.split(1), new Reliability(maxTime), MTTF.MTTF);
+		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, subMonitor.split(1), new Reliability(maxTime), MeanTimeToFailure.MTTF);
 		
 		subMonitor.split(1);
 		subMonitor.subTask("Updating Results");
@@ -118,7 +118,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 			protected void doExecute() {
 				getReliabilityBean().setValueAsBaseUnit(1 - result.getFailRates().get(result.getFailRates().size() - 1));
 				getMeanTimeToFailureBean().setValueAsBaseUnit(mttf);
-				getReliabilityCurve().clear();
+				getReliabilityCurveBean().clear();
 				for (int i = 0; i < result.getFailRates().size(); ++i) {
 					createNewReliabilityCurveEntry(1 - result.getFailRates().get(i));
 				}
@@ -134,10 +134,10 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 	 */
 	private void createNewReliabilityCurveEntry(double value) {
 		CategoryInstantiator ci = new CategoryInstantiator();
-		APropertyInstance pi = ci.generateInstance(getReliabilityCurve().getArrayInstance());
+		APropertyInstance pi = ci.generateInstance(getReliabilityCurveBean().getArrayInstance());
 		BeanPropertyFloat newBeanProperty = new BeanPropertyFloat();
 		newBeanProperty.setTypeInstance((UnitValuePropertyInstance) pi);
 		newBeanProperty.setValueAsBaseUnit(value);
-		getReliabilityCurve().add(newBeanProperty);
+		getReliabilityCurveBean().add(newBeanProperty);
 	}
 }

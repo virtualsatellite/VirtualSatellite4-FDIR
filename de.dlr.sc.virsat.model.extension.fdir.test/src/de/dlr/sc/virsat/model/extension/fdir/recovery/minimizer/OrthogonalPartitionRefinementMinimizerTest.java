@@ -21,6 +21,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
 
 /**
  * This class tests the OrthogonalPartitionRefinementMinimizer
@@ -40,8 +41,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 	}
 	
 	@Test 
-	public void testMinimzeStatesWithEmptyActions() {
-		
+	public void testMinimizeStatesWithEmptyActions() {
 		final int INITIAL_STATES = 2;
 		final int RESULTING_STATES = 1; 
 		
@@ -55,16 +55,13 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.createStates(ra, INITIAL_STATES); 
 		
 		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		FaultEventTransition transition11 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
 		
 		raHelper.assignInputs(transition01, fault);
-		raHelper.assignInputs(transition11, fault);
 		
 		minimizer.minimize(ra);
 		
 		assertEquals(RESULTING_STATES, ra.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
-		
 	}
 	
 	@Test 
@@ -84,18 +81,15 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.createStates(ra, INITIAL_STATES); 
 		
 		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
-		FaultEventTransition transition11 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
-
-		raHelper.assignInputs(transition01, fault1, fault2);
-		raHelper.assignInputs(transition11, fault2, fault1);
 		
-		FaultTreeNode spare = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
+		raHelper.assignInputs(transition01, fault1, fault2);
+		
+		FaultTreeNode spare = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
 		ClaimAction action = new ClaimAction(concept);
 		action.setClaimSpare(spare);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action));
-		raHelper.assignAction(transition11, raHelper.copyClaimAction(action));
-
+		raHelper.assignAction(transition01, action.copy());
+		
 		minimizer.minimize(ra);
 		
 		assertEquals(RESULTING_STATES, ra.getStates().size());
@@ -108,7 +102,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		final int INITIAL_STATES = 3;
 		final int RESULTING_STATES = 2; 
 		
-		final int RESULTING_TRANSITIONS = 4;
+		final int RESULTING_TRANSITIONS = 3;
 		
 		Fault fault1 = new Fault(concept);
 		fault1.setName("Fault1");
@@ -118,22 +112,16 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
 		raHelper.createStates(ra, INITIAL_STATES); 
 		
-		FaultEventTransition transition00 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(0));
-		FaultEventTransition transition11 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
-		FaultEventTransition newTransition11 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
 		FaultEventTransition transition20 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(0));
 		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
 		FaultEventTransition transition21 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(1));
 		
-		raHelper.assignInputs(transition00, fault1);
 		raHelper.assignInputs(transition01, fault2);
-		raHelper.assignInputs(transition11, fault1);
-		raHelper.assignInputs(newTransition11, fault2);
 		raHelper.assignInputs(transition20, fault1);
 		raHelper.assignInputs(transition21, fault2);
 		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action0 = new ClaimAction(concept);
 		action0.setClaimSpare(spare1);
@@ -141,12 +129,9 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare2);
 		
-		raHelper.assignAction(transition00, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition11, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(newTransition11, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition20, raHelper.copyClaimAction(action0));
-		raHelper.assignAction(transition21, raHelper.copyClaimAction(action0));
+		raHelper.assignAction(transition01, action0.copy());
+		raHelper.assignAction(transition20, action0.copy());
+		raHelper.assignAction(transition21, action0.copy());
 		
 		minimizer.minimize(ra);
 		
@@ -175,11 +160,96 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 	}
 	
 	@Test
-	public void completeTest() {
+	public void testRepair() {
+		final int INITIAL_STATES = 2;
+		final int RESULTING_STATES = 1;
+		final int RESULTING_TRANSITIONS = 2;
 		
+		Fault fault = new Fault(concept);
+		
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		raHelper.createStates(ra, INITIAL_STATES); 
+		
+		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		FaultEventTransition transition10 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(0));
+		
+		raHelper.assignInputs(transition01, fault);
+		raHelper.assignInputs(transition10, fault);
+		
+		transition10.setIsRepair(true);
+		
+		minimizer.minimize(ra);
+		
+		assertEquals(RESULTING_STATES, ra.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, ra.getTransitions().size());
+	}
+
+	@Test 
+	public void testRepeatedEventSubset() {
+		final int INITIAL_STATES = 3;
+		final int RESULTING_STATES = 1; 
+		final int RESULTING_TRANSITIONS = 1; 
+		
+		Fault fault = new Fault(concept);
+		Fault fault1 = new Fault(concept);
+		Fault fault2 = new Fault(concept);
+		
+		// initial recovery automaton with non-empty recovery action list
+		RecoveryAutomaton ra = new RecoveryAutomaton(concept);
+		
+		raHelper.createStates(ra, INITIAL_STATES); 
+		
+		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
+		raHelper.assignInputs(transition01, fault1, fault2);
+		
+		FaultEventTransition transition12 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(2));
+		raHelper.assignInputs(transition12, fault1);
+		
+		FaultTreeNode spare = ftBuilder.createGate(fault, FaultTreeNodeType.SPARE);
+		ClaimAction action = new ClaimAction(concept);
+		action.setClaimSpare(spare);
+		
+		raHelper.assignAction(transition01, action.copy());
+		raHelper.assignAction(transition12, action.copy());
+		
+		RecoveryAutomaton raCopy = raHelper.copyRA(ra);
+		minimizer.minimize(raCopy, fault);
+		
+		assertEquals(RESULTING_STATES, raCopy.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS, raCopy.getTransitions().size());
+		
+		// If the event is partially observable, then we cannot disable it
+		final int RESULTING_STATES_PO = 3; 
+		final int RESULTING_TRANSITIONS_PO = 2; 
+		
+		FaultTreeBuilder ftBuilder = new FaultTreeBuilder(concept);
+		FaultTreeNode monitor = ftBuilder.createGate(fault, FaultTreeNodeType.MONITOR);
+		ftBuilder.connectObserver(fault, fault1, monitor);
+		
+		raCopy = raHelper.copyRA(ra);
+		minimizer.minimize(raCopy, fault);
+		
+		assertEquals(RESULTING_STATES_PO, raCopy.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS_PO, raCopy.getTransitions().size());
+		
+		// If the monitor is failed, then we know that the event cannot be repeated
+		final int RESULTING_STATES_FAILED_MONITOR = 1; 
+		final int RESULTING_TRANSITIONS_FAILED_MONITOR = 1; 
+		
+		raHelper.assignInputs(transition01, monitor);
+		
+		raCopy = raHelper.copyRA(ra);
+		minimizer.minimize(raCopy, fault);
+		
+		assertEquals(RESULTING_STATES_FAILED_MONITOR, raCopy.getStates().size());
+		assertEquals(RESULTING_TRANSITIONS_FAILED_MONITOR, raCopy.getTransitions().size());
+	}
+	
+	@Test
+	public void testComplete() {
 		final int INITIAL_STATES = 5;
 		final int RESULTING_STATES = 3; 
-		final int RESULTING_TRANSITIONS = 13; 
+		final int RESULTING_TRANSITIONS = 6;
 		
 		Fault fault1 = new Fault(concept);
 		fault1.setName("Fault1");
@@ -192,7 +262,6 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.createStates(ra, INITIAL_STATES); 
 		
 		//CHECKSTYLE:OFF
-		FaultEventTransition transition00 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(0));
 		FaultEventTransition transition01 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(1));
 		FaultEventTransition transition02 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(2));
 		FaultEventTransition transition13 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(3));
@@ -201,15 +270,8 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		FaultEventTransition transition24 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(4));
 		FaultEventTransition transition24_2 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(4));
 		FaultEventTransition transition23 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(3));	
-		FaultEventTransition transition33 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(3));
-		FaultEventTransition transition33_2 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(3));
-		FaultEventTransition transition33_3 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(3));
-		FaultEventTransition transition44 = raHelper.createFaultEventTransition(ra, ra.getStates().get(4), ra.getStates().get(4));
-		FaultEventTransition transition44_2 = raHelper.createFaultEventTransition(ra, ra.getStates().get(4), ra.getStates().get(4));
-		FaultEventTransition transition44_3 = raHelper.createFaultEventTransition(ra, ra.getStates().get(4), ra.getStates().get(4));
 		//CHECKSTYLE:ON
 		
-		raHelper.assignInputs(transition00, fault3);
 		raHelper.assignInputs(transition01, fault1);
 		raHelper.assignInputs(transition02, fault2);
 		raHelper.assignInputs(transition13, fault1);
@@ -218,16 +280,10 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition24, fault1);
 		raHelper.assignInputs(transition24_2, fault2);
 		raHelper.assignInputs(transition23, fault3);
-		raHelper.assignInputs(transition33, fault1);
-		raHelper.assignInputs(transition33_2, fault2);
-		raHelper.assignInputs(transition33_3, fault3);
-		raHelper.assignInputs(transition44, fault1);
-		raHelper.assignInputs(transition44_2, fault2);
-		raHelper.assignInputs(transition44_3, fault3);
 		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare3 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare3 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
@@ -238,14 +294,14 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		ClaimAction action3 = new ClaimAction(concept);
 		action3.setClaimSpare(spare3);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition13, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition13_2, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition14, raHelper.copyClaimAction(action3));
-		raHelper.assignAction(transition24, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition24_2, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition23, raHelper.copyClaimAction(action3));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition02, action2.copy());
+		raHelper.assignAction(transition13, action1.copy());
+		raHelper.assignAction(transition13_2, action2.copy());
+		raHelper.assignAction(transition14, action3.copy());
+		raHelper.assignAction(transition24, action1.copy());
+		raHelper.assignAction(transition24_2, action2.copy());
+		raHelper.assignAction(transition23, action3.copy());
 		
 		minimizer.minimize(ra);
 		
@@ -281,8 +337,8 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition13, fault1);
 		raHelper.assignInputs(transition23, fault2);
 		                                                                                                                                                                                                    
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
@@ -290,10 +346,10 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		ClaimAction action2 = new ClaimAction(concept);
 		action2.setClaimSpare(spare2);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition13, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition23, raHelper.copyClaimAction(action1));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition02, action2.copy());
+		raHelper.assignAction(transition13, action2.copy());
+		raHelper.assignAction(transition23, action1.copy());
 		
 		minimizer.minimize(ra);
 		
@@ -306,7 +362,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 	public void testMergeThreeOrthogonal() {
 		final int INITIAL_STATES = 5;
 		final int RESULTING_STATES = 3; 
-		final int RESULTING_TRANSITIONS = 7;
+		final int RESULTING_TRANSITIONS = 6;
 		
 		Fault fault1 = new Fault(concept);
 		fault1.setName("Fault1");
@@ -325,11 +381,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		FaultEventTransition transition03 = raHelper.createFaultEventTransition(ra, ra.getStates().get(0), ra.getStates().get(3));
 		FaultEventTransition transition14 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(4));
 		FaultEventTransition transition24 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(4));
-		FaultEventTransition transition34 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(4));
-		
-		FaultEventTransition transition22 = raHelper.createFaultEventTransition(ra, ra.getStates().get(2), ra.getStates().get(2));
-		FaultEventTransition transition33 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(3));
-		FaultEventTransition transition11 = raHelper.createFaultEventTransition(ra, ra.getStates().get(1), ra.getStates().get(1));
+		FaultEventTransition transition34 = raHelper.createFaultEventTransition(ra, ra.getStates().get(3), ra.getStates().get(4));	
 		//CHECKSTYLE:ON
 		
 		raHelper.assignInputs(transition01, fault1);
@@ -339,21 +391,17 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition24, fault1);
 		raHelper.assignInputs(transition34, fault1);
 		
-		raHelper.assignInputs(transition11, fault1);
-		raHelper.assignInputs(transition22, fault2);
-		raHelper.assignInputs(transition33, fault2);
-		
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
 		
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
 		
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition03, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition14, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition24, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition34, raHelper.copyClaimAction(action1));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition02, action1.copy());
+		raHelper.assignAction(transition03, action1.copy());
+		raHelper.assignAction(transition14, action1.copy());
+		raHelper.assignAction(transition24, action1.copy());
+		raHelper.assignAction(transition34, action1.copy());
 		
 		minimizer.minimize(ra);
 		

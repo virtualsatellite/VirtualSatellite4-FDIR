@@ -83,8 +83,8 @@ public class ComposedMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition33, fault1);
 		raHelper.assignInputs(transition33_2, fault2);
 
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
@@ -92,10 +92,10 @@ public class ComposedMinimizerTest extends ATestCase {
 		ClaimAction action2 = new ClaimAction(concept);
 		action2.setClaimSpare(spare2);
 
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition13, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition23, raHelper.copyClaimAction(action1));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition02, action2.copy());
+		raHelper.assignAction(transition13, action2.copy());
+		raHelper.assignAction(transition23, action1.copy());
 
 		minimizer.minimize(ra);
 
@@ -169,9 +169,9 @@ public class ComposedMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition44_2, fault2);
 		raHelper.assignInputs(transition44_3, fault3);
 
-		FaultTreeNode spare1 = ftHelper.createGate(fault1, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare2 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
-		FaultTreeNode spare3 = ftHelper.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare1 = ftBuilder.createGate(fault1, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare2 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
+		FaultTreeNode spare3 = ftBuilder.createGate(fault2, FaultTreeNodeType.SPARE);
 
 		ClaimAction action1 = new ClaimAction(concept);
 		action1.setClaimSpare(spare1);
@@ -182,14 +182,14 @@ public class ComposedMinimizerTest extends ATestCase {
 		ClaimAction action3 = new ClaimAction(concept);
 		action3.setClaimSpare(spare3);
 
-		raHelper.assignAction(transition01, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition02, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition13, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition13_2, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition14, raHelper.copyClaimAction(action3));
-		raHelper.assignAction(transition24, raHelper.copyClaimAction(action1));
-		raHelper.assignAction(transition24_2, raHelper.copyClaimAction(action2));
-		raHelper.assignAction(transition23, raHelper.copyClaimAction(action3));
+		raHelper.assignAction(transition01, action1.copy());
+		raHelper.assignAction(transition02, action2.copy());
+		raHelper.assignAction(transition13, action1.copy());
+		raHelper.assignAction(transition13_2, action2.copy());
+		raHelper.assignAction(transition14, action3.copy());
+		raHelper.assignAction(transition24, action1.copy());
+		raHelper.assignAction(transition24_2, action2.copy());
+		raHelper.assignAction(transition23, action3.copy());
 
 		minimizer.minimize(ra);
 

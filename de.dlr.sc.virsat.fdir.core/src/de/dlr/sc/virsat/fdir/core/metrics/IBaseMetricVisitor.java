@@ -30,7 +30,7 @@ public interface IBaseMetricVisitor {
 	 * Handle the case of a mean time to failure metric
 	 * @param mttfMetric the mttf metric
 	 */
-	void visit(MTTF mttfMetric);
+	void visit(MeanTimeToFailure mttfMetric);
 	
 	/**
 	 * Handle the case of a point availability metric

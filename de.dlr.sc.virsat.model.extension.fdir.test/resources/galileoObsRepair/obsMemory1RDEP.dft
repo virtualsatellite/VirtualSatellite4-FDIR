@@ -1,0 +1,9 @@
+toplevel "System";
+"System" or "SPARE1";
+"SPARE1" csp "Memory1" "Memory2" "Memory3";
+"Memory1" lambda=1;
+"Memory2" lambda=5;
+"Memory3" lambda=0.25;
+"RDEP" rdep rateFactor=200 "Decay" "Memory3";
+"Decay" lambda=0.0001;
+"O" observer "SPARE1" obsRate=0;

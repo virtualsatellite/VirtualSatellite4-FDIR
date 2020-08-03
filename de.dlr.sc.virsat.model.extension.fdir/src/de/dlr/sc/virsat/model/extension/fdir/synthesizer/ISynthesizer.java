@@ -9,7 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
-import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 
@@ -24,7 +25,14 @@ public interface ISynthesizer {
 	/**
 	 * Synthesizes a recovery automaton.
 	 * @param fault the fault
+	 * @param subMonitor the progress monitor
 	 * @return the synthesized recovery automaton
 	 */
-	RecoveryAutomaton synthesize(Fault fault);
+	RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor);
+	
+	/**
+	 * Gets the internal statistics of the last call to the synthesis method
+	 * @return the statistics of the last call of the synthesis method
+	 */
+	SynthesisStatistics getStatistics();
 }

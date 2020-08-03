@@ -12,7 +12,6 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -125,12 +124,12 @@ public  class FMECA extends AFMECA {
 		for (Fault failure : failures) {
 			SubMonitor iterationMonitor = subMonitor.split(1);
 			FaultTreeHolder ftHolder = new FaultTreeHolder(failure);
-			Set<FaultEvent> failureModes = ftHolder.getFailureModes(failure);
+			List<FaultEvent> failureModes = ftHolder.getFailureModes(failure);
 			iterationMonitor.setWorkRemaining(failureModes.size());
 			for (FaultEvent failureMode : failureModes) {
 				if (failureMode instanceof Fault) {
 					Fault nonBasicFailureMode = (Fault) failureMode; 
-					Set<FaultEvent> failureCauses = ftHolder.getFailureModes(nonBasicFailureMode);
+					List<FaultEvent> failureCauses = ftHolder.getFailureModes(nonBasicFailureMode);
 					
 					for (FaultEvent failureCause : failureCauses) {
 						entries.add(generateEntry(failure, failureMode, failureCause, iterationMonitor.split(1)));

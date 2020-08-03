@@ -12,6 +12,7 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 /**
@@ -24,11 +25,9 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 	private List<ARecoveryAutomatonMinimizer> minimizers = new ArrayList<>();
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder) {
-		statistics = new MinimizationStatistics();
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
 		for (ARecoveryAutomatonMinimizer minimizer : minimizers) {
-			minimizer.minimize(raHolder);
-			statistics.compose(minimizer.getStatistics());
+			minimizer.minimize(raHolder, ftHolder);
 		}
 	}
 	
@@ -46,21 +45,11 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 	 */
 	public static ComposedMinimizer createDefaultMinimizer() {
 		ComposedMinimizer composedMinimizer = new ComposedMinimizer();
+		composedMinimizer.addMinimizer(new PartitionRefinementMinimizer());
 		composedMinimizer.addMinimizer(new FinalStateMinimizer());
 		composedMinimizer.addMinimizer(new PartitionRefinementMinimizer());
 		composedMinimizer.addMinimizer(new OrthogonalPartitionRefinementMinimizer());
 		composedMinimizer.addMinimizer(new CleanMinimizer());
-		return composedMinimizer;
-	}
-	
-	
-	/**
-	 * Returns a composed minimizer as a series of minimizers  
-	 * @return composed minimizer
-	 */
-	public static ComposedMinimizer createEndMinimizer() {
-		ComposedMinimizer composedMinimizer = new ComposedMinimizer();
-		composedMinimizer.addMinimizer(new FinalStateMinimizer());
 		return composedMinimizer;
 	}
 }

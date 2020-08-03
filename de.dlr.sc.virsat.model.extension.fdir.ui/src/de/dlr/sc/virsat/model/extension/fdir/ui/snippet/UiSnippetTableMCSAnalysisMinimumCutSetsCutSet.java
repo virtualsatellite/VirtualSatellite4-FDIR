@@ -60,7 +60,7 @@ public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTab
 	 * @author muel_s8
 	 *
 	 */
-	private class CriticalityLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
+	private static class CriticalityLabelProvider extends VirSatTransactionalAdapterFactoryLabelProvider
 		implements ITableColorProvider {
 
 		private ITableLabelProvider tableLabelProvider;
@@ -79,6 +79,11 @@ public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTab
 		public String getColumnText(Object object, int columnIndex) {
 			ComposedPropertyInstance cpi = (ComposedPropertyInstance) object;
 			CategoryAssignment ca = cpi.getTypeInstance();
+			
+			if (ca == null) {
+				return "";
+			}
+			
 			CutSet cutSet = new CutSet(ca);
 			redirectNotification(cutSet, object, true);
 			
@@ -104,6 +109,11 @@ public class UiSnippetTableMCSAnalysisMinimumCutSetsCutSet extends AUiSnippetTab
 		public Color getBackground(Object object, int columnIndex) {
 			ComposedPropertyInstance cpi = (ComposedPropertyInstance) object;
 			CategoryAssignment ca = cpi.getTypeInstance();
+			
+			if (ca == null) {
+				return null;
+			}
+			
 			CutSet cutSet = new CutSet(ca);
 			
 			if (columnIndex == CRITICALITY_COLUMN) {

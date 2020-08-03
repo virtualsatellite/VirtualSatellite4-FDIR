@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "VirSat DLR FDIR Concept"  version 1.1
+Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "VirSat DLR FDIR Concept"  version 1.2
 {
 	
 	/* Components for describing the fault model */
@@ -57,6 +57,10 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 	
 	Category PANDI extends Gate {
+		
+	}
+	
+	Category SEQ extends Gate {
 		
 	}
 	
@@ -118,11 +122,19 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Type detectabilityAnalysis[] of Category DetectabilityAnalysis description "Optional detectability analysis information for this single fault";
 	}
 	
-	Category BasicEvent extends FaultEvent {
-		FloatProperty hotFailureRate quantityKind "Frequency" unit "Per Hour";
-		FloatProperty coldFailureRate default 0.0 quantityKind "Frequency" unit "Per Hour";
+	Category RepairAction {
 		FloatProperty repairRate default 0.0 quantityKind "Frequency" unit "Per Hour";
-		StringProperty repairAction description "Description of the action(s) needed to be performed for the repair.";
+		Reference observations[] of Type FaultTreeNode description "The action is only available if the referenced node failures are being observed.";
+	}
+	
+	Category BasicEvent extends FaultEvent {
+		FloatProperty hotFailureRate unit "Per Hour";
+		EnumProperty distribution values [
+			EXP=0, UNIFORM=1
+		] default EXP quantityKind "Dimensionless" unit "No Unit" description "Distribution of the failure process";
+		FloatProperty coldFailureRate default 0.0 quantityKind "Frequency" unit "Per Hour";
+		FloatProperty repairRate default 0.0 quantityKind "Frequency" unit "Per Hour" description "Transient repair rate.";
+		Type repairActions [] of Category RepairAction description "Conditional repair actions that can be performed if certain observations are made.";
 	}
 	
 	Category CutSet {
@@ -281,12 +293,23 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 	}
 	
 	Category FaultEventTransition extends Transition {
-		Reference guards [] of Type FaultTreeNode;
+		Reference guards[] of Type FaultTreeNode;
 		BooleanProperty isRepair default false;
 	}
 	
-	Category TimedTransition extends Transition {
+	Category TimeoutTransition extends Transition {
 		FloatProperty time default 0.0 quantityKind "Time" unit "Second";
 	}
+	
+	/* Components describing the synthesis configration */
+	
+	Category RecoveryAutomatonGen {
+		Applicable For All;
+		Cardinality 1;
+		
+		EnumProperty objectiveMetric values [
+			MeanTimeToFailure=0, SteadyStateAvailability=1, SteadyStateDetectability=2
+		] default MeanTimeToFailure quantityKind "Dimensionless" unit "No Unit" description "The metric that will be maximized";
+		Resource lastGenerationLog description "Link to a log file for the last synthesis call";
+	}
 }
-

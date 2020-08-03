@@ -18,11 +18,11 @@ import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyBoolean;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
 // *****************************************************************
@@ -37,7 +37,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
  * 
  * 
  */	
-public abstract class ACriticalityVector extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class ACriticalityVector extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.CriticalityVector";
 	
@@ -75,17 +75,17 @@ public abstract class ACriticalityVector extends ABeanCategoryAssignment impleme
 	// *****************************************************************
 	// * Array Attribute: isCritical
 	// *****************************************************************
-	private IBeanList<BeanPropertyBoolean> isCritical = new TypeSafeArrayInstanceList<>(BeanPropertyBoolean.class);
+	private IBeanList<BeanPropertyBoolean> isCriticalBean = new TypeSafeArrayInstanceList<>(BeanPropertyBoolean.class);
 	
-	private void safeAccessIsCritical() {
-		if (isCritical.getArrayInstance() == null) {
-			isCritical.setArrayInstance((ArrayInstance) helper.getPropertyInstance("isCritical"));
+	private void safeAccessIsCriticalBean() {
+		if (isCriticalBean.getArrayInstance() == null) {
+			isCriticalBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("isCritical"));
 		}
 	}
 	
-	public IBeanList<BeanPropertyBoolean> getIsCritical() {
-		safeAccessIsCritical();
-		return isCritical;
+	public IBeanList<BeanPropertyBoolean> getIsCriticalBean() {
+		safeAccessIsCriticalBean();
+		return isCriticalBean;
 	}
 	
 	

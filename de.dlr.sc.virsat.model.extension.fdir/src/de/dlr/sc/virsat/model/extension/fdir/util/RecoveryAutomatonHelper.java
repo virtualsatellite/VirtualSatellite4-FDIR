@@ -18,15 +18,13 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 
 
@@ -99,8 +97,8 @@ public class RecoveryAutomatonHelper {
 	 * @param time the time guard
 	 * @return transition between the present and the successor states
 	 */
-	public TimedTransition createTimedTransition(RecoveryAutomaton ra, State presentState, State successorState, double time) {
-		TimedTransition transition = new TimedTransition(concept);
+	public TimeoutTransition createTimeoutTransition(RecoveryAutomaton ra, State presentState, State successorState, double time) {
+		TimeoutTransition transition = new TimeoutTransition(concept);
 		
 		transition.setFrom(presentState);
 		transition.setTo(successorState);
@@ -124,12 +122,10 @@ public class RecoveryAutomatonHelper {
 	/**
 	 * Adds an action to a transition  
 	 * @param transition the transition to which the action is added
-	 * @param claimAction the action that will be assigned to the transition 
-	 * @return assignedActions present state recovery actions 
+	 * @param recoveryAction the action that will be assigned to the transition
 	 */
-	public IBeanList<RecoveryAction> assignAction(Transition transition, ClaimAction claimAction) {
-		transition.getRecoveryActions().add(claimAction); 
-		return transition.getRecoveryActions();
+	public void assignAction(Transition transition, RecoveryAction recoveryAction) {
+		transition.getRecoveryActions().add(recoveryAction); 
 	}
 	
 	/**
@@ -188,6 +184,23 @@ public class RecoveryAutomatonHelper {
 	}
 	
 	/**
+	 * Gets the timeout transition of a state if it has one.
+	 * @param ra the recovery automaton
+	 * @param state the state
+	 * @return the timeout transition or null if there is none
+	 */
+	public TimeoutTransition getTimeoutTransition(RecoveryAutomaton ra, State state) {
+		List<Transition> transitions = getCurrentTransitions(ra).get(state);
+		TimeoutTransition timeoutTransition = null;
+		for (Transition transition : transitions) {
+			if (transition instanceof TimeoutTransition) {
+				timeoutTransition = (TimeoutTransition) transition;
+			}
+		}
+		return timeoutTransition;
+	}
+	
+	/**
 	 * Creates a map of previous transitions to states
 	 * @param ra recovery automaton
 	 * @return a map of previous transitions to states
@@ -209,47 +222,33 @@ public class RecoveryAutomatonHelper {
 		
 		return mapStateToPredecessors;
 	}
-
-	/**
-	 * Creates a copy of the given recovery action
-	 * @param recoveryAction the recovery action to copy
-	 * @return the copied recovery action
-	 */
-	public RecoveryAction copyRecoveryAction(RecoveryAction recoveryAction) {
-		if (recoveryAction instanceof ClaimAction) {
-			return copyClaimAction((ClaimAction) recoveryAction);
-		}
-		
-		throw new RuntimeException("Unknown Recovery Action type of recovery action " + recoveryAction.toString());
-	}
-	
-	/**
-	 * Creates a copy of a claimAction
-	 * @param claimAction clamAction whose copy gets created
-	 * @return copy of the claimAction
-	 */
-	public ClaimAction copyClaimAction(ClaimAction claimAction) {
-		
-		ClaimAction copyClaimAction = new ClaimAction(concept);
-		copyClaimAction.setClaimSpare(claimAction.getClaimSpare());
-		copyClaimAction.setSpareGate(claimAction.getSpareGate());
-		
-		return copyClaimAction;
-	}
 	
 	/**
 	 * Computes a map of inputs for every transition in the path to a state 
-	 * @param ra recovery automaton to compute the inputs for
-	 * @param mapStateToPredecessors mapping of state to precessor transitions
-	 * @param mapStateToSuccessors mapping of state to successor transitions 
-	 * @param mapTransitionToTo mapping of a transition to its succesor state
+	 * @param raHolder holde rof the ra data
 	 * @return map of inputs 
 	 */
-	public Map<State, Set<FaultTreeNode>> computeInputs(RecoveryAutomaton ra, Map<State, List<Transition>> mapStateToPredecessors, Map<State, List<Transition>> mapStateToSuccessors, Map<Transition, State> mapTransitionToTo) {
-		Map<State, Set<FaultTreeNode>> mapStateToInputs = new HashMap<>();
+	public Map<State, Map<FaultTreeNode, Boolean>> computeDisabledInputs(RecoveryAutomatonHolder raHolder) {
+		Map<State, Map<FaultTreeNode, Boolean>> mapStateToInputs = new HashMap<>();
+		RecoveryAutomaton ra = raHolder.getRa();
 		
 		for (State s : ra.getStates()) {
-			mapStateToInputs.put(s, new HashSet<>());
+			mapStateToInputs.put(s, new HashMap<>());
+		}
+		
+		// For the initial state all repair events are disabled
+		State initialState = ra.getInitial();
+		if (initialState != null) {
+			Map<FaultTreeNode, Boolean> repairEvents = new HashMap<>();
+			for (Transition transition : raHolder.getRa().getTransitions()) {
+				if (transition instanceof FaultEventTransition) {
+					FaultEventTransition fte = (FaultEventTransition) transition;
+					for (FaultTreeNode guard : fte.getGuards()) {
+						repairEvents.put(guard, true);
+					}
+				}
+			}
+			mapStateToInputs.get(ra.getInitial()).putAll(repairEvents);
 		}
 		
 		Queue<State> queue = new LinkedList<>(ra.getStates());
@@ -257,32 +256,39 @@ public class RecoveryAutomatonHelper {
 			State s = queue.poll();
 			
 			// Compute the updated set of guaranteed inputs
-			Set<FaultTreeNode> newInputs = new HashSet<>();
+			Map<FaultTreeNode, Boolean> newInputs = new HashMap<>();
 			boolean initialInput = true;
-			for (Transition predecessor : mapStateToPredecessors.get(s)) {
-				State predecessorState = predecessor.getFrom();
+			StateHolder stateHolder = raHolder.getStateHolder(s);
+			for (Transition predecessorTransition : stateHolder.getIncomingTransitions()) {
+				State predecessorState = predecessorTransition.getFrom();
 				if (!s.equals(predecessorState)) {
-					Set<FaultTreeNode> incomingInputs = new HashSet<>(mapStateToInputs.get(predecessorState));
-					if (predecessor instanceof FaultEventTransition) {
-						incomingInputs.addAll(((FaultEventTransition) predecessor).getGuards());
+					Map<FaultTreeNode, Boolean> incomingInputs = new HashMap<>(mapStateToInputs.get(predecessorState));
+					if (predecessorTransition instanceof FaultEventTransition) {
+						FaultEventTransition fte = (FaultEventTransition) predecessorTransition;
+						List<FaultTreeNode> guards = fte.getGuards();
+
+						incomingInputs.keySet().removeAll(guards);
+						for (FaultTreeNode guard : guards) {
+							incomingInputs.put(guard, fte.getIsRepair());
+						}
 					}
 					if (initialInput) {
 						initialInput = false;
-						newInputs.addAll(incomingInputs);
+						newInputs.putAll(incomingInputs);
 					} else {
-						newInputs.retainAll(incomingInputs);
+						newInputs.keySet().retainAll(incomingInputs.keySet());
 					}
 				}
 			}
 			
-			Set<FaultTreeNode> oldInputs = mapStateToInputs.get(s); 
+			Map<FaultTreeNode, Boolean> oldInputs = mapStateToInputs.get(s); 
 			if (!newInputs.equals(oldInputs)) {
 				// If no fix point has been reached yet, update the set
 				// and recompute all successors
 				
 				mapStateToInputs.put(s, newInputs);
-				for (Transition successor : mapStateToSuccessors.get(s)) {
-					State successorState = mapTransitionToTo.get(successor);
+				for (Transition successor : stateHolder.getOutgoingTransitions()) {
+					State successorState = raHolder.getTransitionHolder(successor).getTo();
 					if (!queue.contains(successorState)) {
 						queue.offer(successorState);
 					}
@@ -365,8 +371,8 @@ public class RecoveryAutomatonHelper {
 			
 			if (transition instanceof FaultEventTransition) {
 				newTransition = copyFaultEventTransition((FaultEventTransition) transition);
-			} else if (transition instanceof TimedTransition) {
-				newTransition = copyTimedTransition((TimedTransition) transition);
+			} else if (transition instanceof TimeoutTransition) {
+				newTransition = copyTimeoutTransition((TimeoutTransition) transition);
 			} else {
 				throw new RuntimeException("Unknown transition type " +  transition);
 			}
@@ -395,7 +401,7 @@ public class RecoveryAutomatonHelper {
 		}
 		
 		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {
-			newTransition.getRecoveryActions().add(copyRecoveryAction(recoveryAction));
+			newTransition.getRecoveryActions().add(recoveryAction.copy());
 		}
 		
 		return newTransition;
@@ -406,14 +412,33 @@ public class RecoveryAutomatonHelper {
 	 * @param transition the transition to copy
 	 * @return a copy
 	 */
-	public TimedTransition copyTimedTransition(TimedTransition transition) {
-		TimedTransition newTransition = new TimedTransition(concept);
+	public TimeoutTransition copyTimeoutTransition(TimeoutTransition transition) {
+		TimeoutTransition newTransition = new TimeoutTransition(concept);
 		
 		newTransition.setTime(transition.getTimeBean().getValueToBaseUnit());
 		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {
-			newTransition.getRecoveryActions().add(copyRecoveryAction(recoveryAction));
+			newTransition.getRecoveryActions().add(recoveryAction.copy());
 		}
 		
 		return newTransition;
+	}
+
+	/**
+	 * Creates a set of all repairable events
+	 * @param raHolder the recovery automaton data holder
+	 * @return a set of all repairable events
+	 */
+	public Set<FaultTreeNode> computeRepairableEvents(RecoveryAutomatonHolder raHolder) {
+		Set<FaultTreeNode> repairableEvents = new HashSet<>();
+		for (Transition transition : raHolder.getMapTransitionToTransitionHolder().keySet()) {
+			if (transition instanceof FaultEventTransition) {
+				FaultEventTransition fte = (FaultEventTransition) transition;
+				if (fte.getIsRepair()) {
+					repairableEvents.addAll(fte.getGuards());
+				}
+			}
+		}
+		
+		return repairableEvents;
 	}
 }

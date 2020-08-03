@@ -9,6 +9,9 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 // *****************************************************************
 // * Import Statements
@@ -17,6 +20,7 @@ import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 
 // *****************************************************************
 // * Class Declaration
@@ -73,24 +77,33 @@ public  class ClaimAction extends AClaimAction {
 	private FaultTreeNode claimSpare;
 	private FaultTreeNode spareGate;
 	
+	public FaultTreeNode getClaimSpareByUUID(DFTState state) {
+		FaultTreeNode claimSpareOriginal = getClaimSpare();
+		return state.getFTHolder().getNodes().stream()
+				.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
+				.findFirst().get();
+	}
+	
+	public FaultTreeNode getSpareGateByUUID(DFTState state) {
+		SPARE spareGateOriginal = getSpareGate();
+		return state.getFTHolder().getNodes(FaultTreeNodeType.SPARE).stream()
+				.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
+				.findFirst().get();
+	}
+	
 	@Override
 	public void execute(DFTState state) {
 		if (claimSpare == null) {
-			FaultTreeNode claimSpareOriginal = getClaimSpare();
-			claimSpare = state.getFTHolder().getNodes().stream()
-					.filter(node -> node.getUuid().equals(claimSpareOriginal.getUuid()))
-					.findFirst().get();
+			claimSpare = getClaimSpareByUUID(state);
 		}
 		
 		if (spareGate == null) {
-			SPARE spareGateOriginal = getSpareGate();
-			spareGate = state.getFTHolder().getNodes().stream()
-					.filter(node -> node.getUuid().equals(spareGateOriginal.getUuid()))
-					.findFirst().get();
+			spareGate = getSpareGateByUUID(state);
 		}
 		
-		state.getSpareClaims().put(claimSpare, spareGate);
-		state.activateNode(claimSpare);
+		state.getMapSpareToClaimedSpares().put(claimSpare, spareGate);
+		state.setNodeActivation(claimSpare, true);
+		state.setNodeActivations(state.getFTHolder().getNodes(spareGate, EdgeType.CHILD), false);
 	}
 	
 	@Override
@@ -124,5 +137,22 @@ public  class ClaimAction extends AClaimAction {
 		actionLabel = sb.toString();
 		
 		return actionLabel;
+	}
+
+	@Override
+	public RecoveryAction copy() {
+		ClaimAction copyClaimAction = new ClaimAction(getConcept());
+		copyClaimAction.setClaimSpare(getClaimSpare());
+		copyClaimAction.setSpareGate(getSpareGate());
+		return copyClaimAction;
+	}
+
+	@Override
+	public List<FaultTreeNode> getAffectedNodes(DFTState state) {
+		if (spareGate == null) {
+			spareGate = getSpareGateByUUID(state);
+		}
+		
+		return Arrays.asList(spareGate);
 	}
 }

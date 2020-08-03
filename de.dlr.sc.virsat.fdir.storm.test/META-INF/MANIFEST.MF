@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VirSat FDIR STORM Test
 Bundle-SymbolicName: de.dlr.sc.virsat.fdir.storm.test
-Bundle-Version: 4.10.0.qualifier
+Bundle-Version: 4.12.0.qualifier
 Fragment-Host: de.dlr.sc.virsat.fdir.storm
 Automatic-Module-Name: de.dlr.sc.virsat.fdir.storm.test
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -12,4 +12,5 @@ Export-Package: de.dlr.sc.virsat.fdir.storm.docker,
  de.dlr.sc.virsat.fdir.storm.files,
  de.dlr.sc.virsat.fdir.storm.runner,
  de.dlr.sc.virsat.fdir.storm.test
-Import-Package: org.eclipse.core.runtime
+Import-Package: de.dlr.sc.virsat.fdir.core.test,
+ org.eclipse.core.runtime

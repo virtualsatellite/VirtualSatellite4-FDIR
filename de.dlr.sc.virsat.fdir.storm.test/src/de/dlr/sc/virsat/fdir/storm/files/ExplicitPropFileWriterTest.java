@@ -13,16 +13,20 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
+import de.dlr.sc.virsat.fdir.core.test.TestResourceGetter;
 
 /**
  * This class tests the ExplicitPropFileWriter class
@@ -31,26 +35,22 @@ import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
  */
 public class ExplicitPropFileWriterTest {
 	@Test
-	public void testPropFile() throws IOException {
+	public void writeFile() throws IOException {
 		
 		File testFile = File.createTempFile("test1", ".prop");
+		testFile.deleteOnExit();
+		
 		final double DELTA = 360;
 		final double timeHorizon = 720;
 		Reliability reliability = new Reliability(timeHorizon);
-		final IBaseMetric[] METRICS = {MTTF.MTTF, reliability};	
-		new ExplicitPropertiesWriter(DELTA, testFile.getAbsolutePath(), METRICS).writeFile();
 		
-		File expectedFile = File.createTempFile("test1", ".prop");	
-		PrintWriter writer = new PrintWriter(expectedFile);
-		writer.println("Tmax=? [F \"failed\"];");
-		writer.println("Pmin=? [F<=360.0 \"failed\"];");
-		writer.println("Pmin=? [F<=720.0 \"failed\"];");
-		writer.close();
+		new ExplicitPropertiesWriter(DELTA, testFile.getAbsolutePath(), MeanTimeToFailure.MTTF, reliability).writeFile();
+		String output = new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())), StandardCharsets.UTF_8);
 		
-		testFile.deleteOnExit();
-		expectedFile.deleteOnExit();
+		TestResourceGetter testResourceGetter = new TestResourceGetter("de.dlr.sc.virsat.fdir.storm.test");
+		InputStream is = testResourceGetter.getResourceContentAsStream("/resources/writeTest.prop");
+		String expected = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
 		
-		assertEquals(new String(Files.readAllBytes(Paths.get(expectedFile.getAbsolutePath())), StandardCharsets.UTF_8), new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())), StandardCharsets.UTF_8));
-		
+		assertEquals("Written PROP file matches expected PROP file", expected, output);
 	}
 }

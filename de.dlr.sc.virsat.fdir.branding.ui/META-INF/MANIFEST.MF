@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VirSat FDIR Branding
 Bundle-SymbolicName: de.dlr.sc.virsat.fdir.branding.ui;singleton:=true
-Bundle-Version: 4.10.0.qualifier
+Bundle-Version: 4.12.0.qualifier
 Bundle-Activator: de.dlr.sc.virsat.fdir.branding.ui.BrandingPlugin
 Bundle-Vendor: DLR (German Aerospace Center)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

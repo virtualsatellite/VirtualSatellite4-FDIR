@@ -50,6 +50,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	public static final IColorConstant OBSERVER_PORT_COLOR = IColorConstant.LIGHT_GRAY;
 	
 	public static final int INDEX_SPARE_RECT_SHAPE = 0;
+	public static final int INDEX_SEQ_ARROW_SHAPE = 0;
 	public static final int INDEX_VOTE_TRESHOLD_SHAPE = 1;
 	public static final int INDEX_DELAY_SHAPE = 1;
 	public static final int INDEX_OBSERVATION_RATE_SHAPE = 1;
@@ -125,9 +126,11 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 			decorateMONITOR((MONITOR) addedNode, containerShape);
 		}
 		
-		Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
-		link(outputAnchor, addedNode);
-				
+		if (addedNode.getFaultTreeNodeType().hasOutput()) {
+			Anchor outputAnchor = AnchorUtil.createAnchor(containerShape, manageColor(PORT_COLOR), AnchorType.OUTPUT);
+			link(outputAnchor, addedNode);
+		}
+		
 		Graphiti.getPeService().setPropertyValue(containerShape, FAULT_TREE_NODE_TYPE_KEY, addedNode.getFaultTreeNodeType().toString());
 		updatePictogramElement(containerShape);
 		
@@ -148,7 +151,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	private void decorateVOTE(VOTE vote, ContainerShape containerShape) {
 		String votingThreshold = String.valueOf(vote.getVotingThreshold());
 		Shape votingTresholdShape = createLabel("\u2265" + votingThreshold, containerShape);
-		link(votingTresholdShape, vote);
+		link(votingTresholdShape, vote.getVotingThresholdBean());
 	}
 	
 	/**
@@ -159,7 +162,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	private void decorateDELAY(DELAY delayNode, ContainerShape containerShape) {
 		String delay = String.valueOf(delayNode.getTime());
 		Shape delayShape = createLabel(delay, containerShape);
-		link(delayShape, delayNode);
+		link(delayShape, delayNode.getTimeBean());
 	}
 	
 	/**
@@ -170,7 +173,7 @@ public class FaultTreeNodeAddFeature extends VirSatAddShapeFeature {
 	private void decorateMONITOR(MONITOR observer, ContainerShape containerShape) {
 		String observationRate = String.valueOf(observer.getObservationRate());
 		Shape observationRateShape = createLabel(observationRate, containerShape);
-		link(observationRateShape, observer);
+		link(observationRateShape, observer.getObservationRateBean());
 	}
 	
 	/**

@@ -20,13 +20,15 @@ import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyDLTest;
 import de.dlr.sc.virsat.model.extension.fdir.calculation.OpClassifyPLTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.DFT2GalileoDFTTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.GalileoDFT2DFTTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryCheckerTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverterTest;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.FaultTreeSymmetryCheckerTest;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTMetricsComposerTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
+import de.dlr.sc.virsat.model.extension.fdir.modularizer.FaultTreeTrimmerTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModularizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.ModuleTest;
 import de.dlr.sc.virsat.model.extension.fdir.preferences.FaultTreePreferencesTest;
@@ -37,8 +39,8 @@ import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimi
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizerTest;
-import de.dlr.sc.virsat.model.extension.fdir.trimmer.FaultTreeTrimmerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.DelegateSynthesizerTest;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizerTest;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolderTest;
@@ -56,11 +58,13 @@ import junit.framework.JUnit4TestAdapter;
 @SuiteClasses({ 
 		DFT2BasicDFTConverterTest.class, 
 		DFT2MAConverterTest.class, 
-		FaultTreeSymmetryCheckerTest.class,
+		DFTStateTest.class,
+		DFTSymmetryCheckerTest.class,
 		GalileoDFT2DFTTest.class,
 		BasicSynthesizerTest.class,
 		POSynthesizerTest.class,
 		DelegateSynthesizerTest.class,
+		ModularSynthesizerTest.class,
 		Schedule2RAConverterTest.class,
 		DFT2GalileoDFTTest.class,
 		OrthogonalPartitionRefinementMinimizerTest.class,

@@ -15,6 +15,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -27,54 +28,78 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 public class StandardSPARESemantics implements INodeSemantics {
 	
 	@Override
-	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred, FaultTreeHolder ftHolder,
+	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
 			GenerationResult generationResult) {
-		List<FaultTreeNode> spares = ftHolder.getMapNodeToSpares().get(node);
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
 		
-		for (FaultTreeNode child : children) {
-			if (!state.hasFaultTreeNodeFailed(child)) {
-				for (FaultTreeNode spare : spares) {
-					FaultTreeNode claimingGate = state.getMapSpareToClaimedSpares().get(spare);
-					if (claimingGate != null && claimingGate.equals(node)) {
-						state.getMapSpareToClaimedSpares().remove(spare);
-					}
-				}
-				return state.setFaultTreeNodeFailed(node, false);
-			}
+		if (!(node instanceof SPARE)) {
+			throw new IllegalArgumentException("Expected node of type SPARE but instead got node " + node);
 		}
 		
+		FaultTreeHolder ftHolder = state.getFTHolder();
+		SPARE spareGate = (SPARE) node;
+		
+		List<FaultTreeNode> spares = ftHolder.getNodes(spareGate, EdgeType.SPARE);
+		List<FaultTreeNode> children = ftHolder.getNodes(spareGate, EdgeType.CHILD);
+		
+		boolean hasPrimaryFailed = hasPrimaryFailed(state, children);
+		boolean currentClaimWorks = !hasPrimaryFailed;
 		for (FaultTreeNode spare : spares) {
-			if (!state.hasFaultTreeNodeFailed(spare)) {
-				FaultTreeNode spareGate = state.getMapSpareToClaimedSpares().get(spare);
-				if (spareGate != null && spareGate.equals(node)) {
-					return state.setFaultTreeNodeFailed(node, false);
+			FaultTreeNode spareGateOther = state.getMapSpareToClaimedSpares().get(spare);
+			if (spareGateOther != null && spareGateOther.equals(spareGate)) {
+				if (!currentClaimWorks && !state.hasFaultTreeNodeFailed(spare)) {
+					currentClaimWorks = true;
+					
+					if (!isSingleClaim()) {
+						performFree(spare, state, generationResult);
+					}
+				} else {
+					performFree(spare, state, generationResult);
 				}
-			} else {
-				state.getMapSpareToClaimedSpares().remove(spare);
 			}
 		}
 		
-		boolean canClaim = canClaim(pred, state, node, ftHolder);
+		if (currentClaimWorks && isSingleClaim()) {
+			return state.setFaultTreeNodeFailed(spareGate, false);
+		}
+		
+		boolean canClaim = canClaim(pred, state, spareGate, ftHolder);
 		boolean foundSpare = false;
 		
 		if (canClaim) {
 			for (FaultTreeNode spare : spares) {
-				if (!state.hasFaultTreeNodeFailed(spare) && !state.getMapSpareToClaimedSpares().containsKey(spare)) {
-					if (performClaim((SPARE) node, spare, state, generationResult)) {
-						foundSpare = true;
-						break;
-					}
+				if (performClaim(spareGate, spare, state, generationResult)) {
+					foundSpare = true;
+					break;
 				}
 			}
 		}
 		
 		if (hasFailed(foundSpare)) {
-			updatePermanence(state, node, ftHolder);
-			return state.setFaultTreeNodeFailed(node, true);
+			updatePermanence(state, spareGate, ftHolder);
+			return state.setFaultTreeNodeFailed(spareGate, !currentClaimWorks);
 		} 
 		
+		if (foundSpare) {
+			return state.setFaultTreeNodeFailed(node, false);
+		}
+		
 		return false;
+	}
+	
+	/**
+	 * Checks if all primary units have failed
+	 * @param state the current state
+	 * @param children the children
+	 * @return true iff all primaries have failed
+	 */
+	protected boolean hasPrimaryFailed(DFTState state, List<FaultTreeNode> children) {
+		for (FaultTreeNode child : children) {
+			if (!state.hasFaultTreeNodeFailed(child) && state.isNodeActive(child)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -84,13 +109,13 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @param ftHolder the fault tree holder
 	 */
 	protected void updatePermanence(DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		if (state.areFaultTreeNodesPermanent(ftHolder.getMapNodeToChildren().get(node))) {
+		if (state.areFaultTreeNodesPermanent(ftHolder.getNodes(node, EdgeType.CHILD))) {
 			state.setFaultTreeNodePermanent(node, true);
 		}
 	}
 	
 	/**
-	 * Only spares gates whose spares / children have changed their state are allowed to claim
+	 * Override to restrict when a spare gate is allowed to claim
 	 * @param pred predecessor state
 	 * @param state current state
 	 * @param node the node that needs claiming
@@ -98,7 +123,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @return true iff the node is allowed to perform a claim
 	 */
 	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		return state.hasFailStateChanged(pred, ftHolder.getMapNodeToSubNodes().get(node));
+		return true;
 	}
 	
 	/**
@@ -108,6 +133,14 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean hasFailed(boolean foundSpare) {
 		return !foundSpare;
+	}
+	
+	/***
+	 * Checks if one working claim is enough to satisfy a spare gate
+	 * @return true iff the semantics are single claim
+	 */
+	protected boolean isSingleClaim() {
+		return true;
 	}
 	
 	/**
@@ -120,8 +153,34 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state, 
 			GenerationResult generationResult) {
-		state.getSpareClaims().put(spare, node);
-		state.activateNode(spare);
+		
+		if (state.hasFaultTreeNodeFailed(spare)) {
+			return false;
+		}
+		
+		if (state.getMapSpareToClaimedSpares().containsKey(spare)) {
+			return false;
+		}
+			
+		state.getMapSpareToClaimedSpares().put(spare, node);
+		state.setNodeActivation(spare, true);
 		return true;
+	}
+	
+	/**
+	 * Frees a spare from all claims
+	 * @param spare the spare to be freed
+	 * @param state the current state
+	 * @param generationResult accumulator for state space generation results
+	 * @return constant true
+	 */
+	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
+		FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
+		state.getMapSpareToClaimedSpares().remove(spare);
+		state.setNodeActivation(spare, false);
+		
+		for (FaultTreeNode primary : state.getFTHolder().getNodes(claimingSpareGate, EdgeType.CHILD)) {
+			state.setNodeActivation(primary, true);
+		}
 	}
 }

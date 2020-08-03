@@ -9,6 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+
 /**
  * Abstract class for representing a state in a Markov structure
  * @author muel_s8
@@ -16,7 +23,8 @@ package de.dlr.sc.virsat.fdir.core.markov;
  */
 public class MarkovState {
 	protected int index;
-	private boolean markovian = true;
+	private MarkovStateType type = MarkovStateType.MARKOVIAN;
+	private Map<FailLabel, Double> mapFailLabelToProb = new HashMap<>();
 	
 	/**
 	 * Gets the index of this state
@@ -27,18 +35,53 @@ public class MarkovState {
 	}
 	
 	/**
-	 * Sets whether or not this state is markovian
-	 * @param markovian set to true to make the state markovian, set to false to make it immediate nondeterministic
+	 * Sets the type of this state
+	 * @param type the new type of this state
 	 */
-	public void setMarkovian(boolean markovian) {
-		this.markovian = markovian;
+	public void setType(MarkovStateType type) {
+		this.type = type;
 	}
 	
 	/**
-	 * Checks if this state is markovian
-	 * @return true iff the state is markovian, false iff the state is immediate nondeterministic
+	 * Gets the type of this state
+	 * @return the type of this state
 	 */
-	public boolean isMarkovian() {
-		return markovian;
+	public MarkovStateType getType() {
+		return type;
 	}
+	
+	public boolean isMarkovian() {
+		return type.equals(MarkovStateType.MARKOVIAN);
+	}
+	
+	public boolean isNondet() {
+		return type.equals(MarkovStateType.NONDET);
+	}
+	
+	public boolean isProbabilisic() {
+		return type.equals(MarkovStateType.PROBABILISTIC);
+	}
+	
+	public Map<FailLabel, Double> getMapFailLabelToProb() {
+		return mapFailLabelToProb;
+	}
+	
+	public Set<FailLabel> getFailLabels() {
+		return mapFailLabelToProb.keySet();
+	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(index);
+	}
+	
+	/**
+	 * Standard comparator for MarkovStates.
+	 * Usefule for sorting lists and ensuring deterministic behavior.
+	 */
+	public static final Comparator<MarkovState> MARKOVSTATE_COMPARATOR = new Comparator<MarkovState>() {
+		public int compare(MarkovState state1, MarkovState state2) {
+			return Integer.compare(state1.index, state2.index);
+		};
+	};
 }

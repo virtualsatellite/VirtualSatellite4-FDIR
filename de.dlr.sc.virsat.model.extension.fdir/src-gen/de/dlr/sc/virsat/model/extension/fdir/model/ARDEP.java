@@ -15,7 +15,6 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;

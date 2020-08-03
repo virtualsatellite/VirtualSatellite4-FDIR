@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="ASCII"?>
+<dvlm_c:Concept xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dvlm_c="http://www.virsat.sc.dlr.de/dvlm/v8/c" xmlns:dvlm_calc="http://www.virsat.sc.dlr.de/dvlm/v8/calc" xmlns:dvlm_cppd="http://www.virsat.sc.dlr.de/dvlm/v8/cp/cppd" name="de.dlr.sc.virsat.model.extension.fdir" description="VirSat DLR FDIR Concept" version="1.2" displayName="FDIR">
+  <imports importedNamespace="de.dlr.sc.virsat.model.ext.core.*"/>
+  <categories name="FaultTreeNode">
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="FaultEvent" isAbstract="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
+  <categories name="Gate" isAbstract="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
+  <categories name="AND" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="OR" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="VOTE" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
+    <properties xsi:type="dvlm_cppd:IntProperty" name="votingThreshold" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
+  </categories>
+  <categories name="PAND" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="SPARE" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="POR" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="SAND" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="PORI" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="PANDI" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="SEQ" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="MONITOR" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="observationRate" quantityKindName="Frequency" unitName="Hertz" defaultValue="0"/>
+  </categories>
+  <categories name="DELAY" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="time" quantityKindName="Time" unitName="Second" defaultValue="0"/>
+  </categories>
+  <categories name="ADEP" isAbstract="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Gate"/>
+  <categories name="FDEP" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.ADEP"/>
+  <categories name="RDEP" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.ADEP">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="rateChange" description="The change of hot failure rate at the target event when the trigger occurs. " quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+  </categories>
+  <categories name="PDEP" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.ADEP">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="probability" description="The probability that the Probabilistic Dependency Gate fires the dependent events." quantityKindName="Dimensionless" unitName="Percent" defaultValue="0.0"/>
+  </categories>
+  <categories name="AbstractFaultTreeEdge" isAbstract="true">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="from" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="to" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="FaultTreeEdge" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.AbstractFaultTreeEdge"/>
+  <categories name="FaultTree">
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="gates" type="de.dlr.sc.virsat.model.extension.fdir.Gate">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="propagations" type="de.dlr.sc.virsat.model.extension.fdir.FaultTreeEdge">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="spares" type="de.dlr.sc.virsat.model.extension.fdir.FaultTreeEdge">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="deps" type="de.dlr.sc.virsat.model.extension.fdir.FaultTreeEdge">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="observations" type="de.dlr.sc.virsat.model.extension.fdir.FaultTreeEdge">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="Fault" isApplicableForAll="true" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
+    <properties xsi:type="dvlm_cppd:StringProperty" name="detail" description="A description giving more details about this fault"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="basicEvents" description="Failure modes that directly cause this Fault" type="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.22/@properties.2/@values.3">
+      <values name="Catastrophic" value="4"/>
+      <values name="Critical" value="3"/>
+      <values name="Major" value="2"/>
+      <values name="Minor" value="1"/>
+      <values name="Unknown" value="0"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="faultTree" description="The Fault Tree explaining the indirect causes of this Fault" type="de.dlr.sc.virsat.model.extension.fdir.FaultTree"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="reliabilityAnalysis" description="Optional reliability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="availabilityAnalysis" description="Optional availability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="detectabilityAnalysis" description="Optional detectability analysis information for this single fault" type="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+  </categories>
+  <categories name="RepairAction">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="observations" description="The action is only available if the referenced node failures are being observed." referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="BasicEvent" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.FaultEvent">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="hotFailureRate" unitName="Per Hour"/>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="distribution" description="Distribution of the failure process" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.24/@properties.1/@values.0">
+      <values name="EXP" value="0"/>
+      <values name="UNIFORM" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="coldFailureRate" quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="repairRate" description="Transient repair rate." quantityKindName="Frequency" unitName="Per Hour" defaultValue="0.0"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="repairActions" description="Conditional repair actions that can be performed if certain observations are made." type="de.dlr.sc.virsat.model.extension.fdir.RepairAction">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+  </categories>
+  <categories name="CutSet">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
+        <inputs xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
+          <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.meanTimeToFailure"/>
+        </inputs>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.probability"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyDL">
+        <inputs xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.steadyStateDetectability"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.detection"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+        <left xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+          <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.severity"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.probability"/>
+        </left>
+        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.detection"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.CutSet.criticality"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failure" description="The failure that occurs if the basic events occur" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="basicEvents" description="Set of events leading to a top level failure" referenceType="de.dlr.sc.virsat.model.extension.fdir.BasicEvent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Catastrophic" value="4"/>
+      <values name="Critical" value="3"/>
+      <values name="Major" value="2"/>
+      <values name="Minor" value="1"/>
+      <values name="Unknown" value="0"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="probability" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Unknown" value="0"/>
+      <values name="ExtremelyRemote" value="1"/>
+      <values name="Remote" value="2"/>
+      <values name="Occasional" value="3"/>
+      <values name="Probable" value="4"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="detection" description="Detection Level for probability of detection according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.25/@properties.4/@values.4">
+      <values name="Unknown" value="0"/>
+      <values name="ExtremelyUnlikely" value="4"/>
+      <values name="Unlikely" value="3"/>
+      <values name="Likely" value="2"/>
+      <values name="VeryLikely" value="1"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" description="Steady State Detectability obtained from the Fault Tree Analysis" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToDetection" description="Mean Time To Detection obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="CriticalityVector">
+    <properties xsi:type="dvlm_cppd:BooleanProperty" name="isCritical" defaultValue="false">
+      <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="CriticalityMatrix">
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="criticalityMatrix" type="de.dlr.sc.virsat.model.extension.fdir.CriticalityVector">
+      <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="FDIRParameters" isApplicableForAll="true" cardinality="1">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="missionTime" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="probabilityLevels" quantityKindName="Frequency" unitName="Per Hour">
+      <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectionLevels" quantityKindName="Dimensionless" unitName="Percent">
+      <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="criticalityMatrices" type="de.dlr.sc.virsat.model.extension.fdir.CriticalityMatrix">
+      <arrayModifier xsi:type="dvlm_cppd:StaticArrayModifier" arraySize="4"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="FMECA" isApplicableForAll="true" cardinality="1">
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="entries" type="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="FMECAEntry">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:AdvancedFunction" operator="classifyPL">
+        <inputs xsi:type="dvlm_calc:MultiplicationAndDivision" operator="/">
+          <left xsi:type="dvlm_calc:NumberLiteral" value="1"/>
+          <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.meanTimeToFailure"/>
+        </inputs>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:MultiplicationAndDivision" operator="*">
+        <left xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.severity"/>
+        <right xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.probability"/>
+      </expression>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.FMECAEntry.criticality"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failure" description="The loss of a function / item" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failureMode" description="The specific manner in which the failure occurs" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultEvent"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failureCause" description="The cause of the failure mode" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultEvent"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="failureEffects" description="The items / functions affected by the failure" referenceType="de.dlr.sc.virsat.model.extension.fdir.Fault">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="severity" description="Severity Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Catastrophic" value="4"/>
+      <values name="Critical" value="3"/>
+      <values name="Major" value="2"/>
+      <values name="Minor" value="1"/>
+      <values name="Unknown" value="0"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="probability" description="Probability Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit">
+      <values name="Unknown" value="0"/>
+      <values name="ExtremelyRemote" value="1"/>
+      <values name="Remote" value="2"/>
+      <values name="Occasional" value="3"/>
+      <values name="Probable" value="4"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="criticality" description="Criticality Level according to ECSS-Q-ST-30-02C" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="0"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" description="Mean Time To Failure obtained from the Fault Tree Analysis" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:StringProperty" name="compensation" description="The compensation of the fault, for example a recovery action.">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="ReliabilityAnalysis" cardinality="1">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis.remainingMissionTime"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.timestep"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis.timestep"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="remainingMissionTime" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="reliability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToFailure" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="reliabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="AvailabilityAnalysis" cardinality="1">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis.remainingMissionTime"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.timestep"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis.timestep"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="remainingMissionTime" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="availability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateAvailability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="availabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="DetectabilityAnalysis" cardinality="1">
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.missionTime"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis.remainingMissionTime"/>
+    </equationDefinitions>
+    <equationDefinitions>
+      <expression xsi:type="dvlm_calc:ReferencedDefinitionInput" reference="de.dlr.sc.virsat.model.extension.fdir.FDIRParameters.timestep"/>
+      <result xsi:type="dvlm_calc:TypeDefinitionResult" reference="de.dlr.sc.virsat.model.extension.fdir.DetectabilityAnalysis.timestep"/>
+    </equationDefinitions>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="remainingMissionTime" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="timestep" quantityKindName="Time" unitName="Hour" defaultValue="0.1"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="steadyStateDetectability" quantityKindName="Dimensionless" unitName="Percent"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="meanTimeToDetection" quantityKindName="Time" unitName="Hour"/>
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="detectabilityCurve" quantityKindName="Dimensionless" unitName="Percent">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="MCSAnalysis" isApplicableForAll="true" cardinality="1">
+    <properties xsi:type="dvlm_cppd:IntProperty" name="maxMinimumCutSetSize" unitName="No Unit" defaultValue="0"/>
+    <properties xsi:type="dvlm_cppd:IntProperty" name="faultTolerance" unitName="No Unit"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="minimumCutSets" type="de.dlr.sc.virsat.model.extension.fdir.CutSet">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="RecoveryAutomaton" isApplicableForAll="true" cardinality="1">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="initial" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="states" type="de.dlr.sc.virsat.model.extension.fdir.State">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="transitions" type="de.dlr.sc.virsat.model.extension.fdir.Transition">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="RecoveryAction" isAbstract="true">
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="ClaimAction" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.RecoveryAction">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="spareGate" referenceType="de.dlr.sc.virsat.model.extension.fdir.SPARE"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="claimSpare" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
+  </categories>
+  <categories name="FreeAction" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.RecoveryAction">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="freeSpare" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode"/>
+  </categories>
+  <categories name="State">
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="Transition" isAbstract="true">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="from" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="to" referenceType="de.dlr.sc.virsat.model.extension.fdir.State"/>
+    <properties xsi:type="dvlm_cppd:ComposedProperty" name="recoveryActions" type="de.dlr.sc.virsat.model.extension.fdir.RecoveryAction">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+  <categories name="FaultEventTransition" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Transition">
+    <properties xsi:type="dvlm_cppd:ReferenceProperty" name="guards" referenceType="de.dlr.sc.virsat.model.extension.fdir.FaultTreeNode">
+      <arrayModifier xsi:type="dvlm_cppd:DynamicArrayModifier"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:BooleanProperty" name="isRepair" defaultValue="false"/>
+  </categories>
+  <categories name="TimeoutTransition" extendsCategory="de.dlr.sc.virsat.model.extension.fdir.Transition">
+    <properties xsi:type="dvlm_cppd:FloatProperty" name="time" quantityKindName="Time" unitName="Second" defaultValue="0.0"/>
+  </categories>
+  <categories name="RecoveryAutomatonGen" isApplicableForAll="true" cardinality="1">
+    <properties xsi:type="dvlm_cppd:EnumProperty" name="objectiveMetric" description="The metric that will be maximized" quantityKindName="Dimensionless" unitName="No Unit" defaultValue="//@categories.43/@properties.0/@values.0">
+      <values name="MeanTimeToFailure" value="0"/>
+      <values name="SteadyStateAvailability" value="1"/>
+      <values name="SteadyStateDetectability" value="2"/>
+    </properties>
+    <properties xsi:type="dvlm_cppd:ResourceProperty" name="lastGenerationLog" description="Link to a log file for the last synthesis call"/>
+    <extendsCategory href="platform:/resource/de.dlr.sc.virsat.model.ext.core/concept/concept.xmi#de.dlr.sc.virsat.model.ext.core.GenericCategory"/>
+  </categories>
+</dvlm_c:Concept>

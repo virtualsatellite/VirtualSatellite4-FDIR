@@ -10,14 +10,15 @@
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
-import de.dlr.sc.virsat.model.extension.fdir.model.TimedTransition;
+import de.dlr.sc.virsat.model.extension.fdir.model.TimeoutTransition;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
@@ -64,16 +65,16 @@ public class Schedule2RAConverterTest extends ATestCase {
 		ma.addState(correct);
 		ma.addState(wrong);
 		
-		ma.addMarkovianTransition(Collections.singleton(fault), initial, nondet, 1);
+		ma.addMarkovianTransition(new SimpleEntry<>(Collections.singleton(fault), false), initial, nondet, 1);
 		MarkovTransition<MarkovState> choice = ma.addNondeterministicTransition(Collections.singletonList(ca1), nondet, correct);
 		ma.addNondeterministicTransition(Collections.singletonList(ca2), nondet, wrong);
 		
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
-		schedule.put(nondet, Collections.singleton(choice));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
+		schedule.put(nondet, Collections.singletonList(choice));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
 		RecoveryAutomaton ra = converter.convert(schedule, initial);
-
+		
 		// Expected recovery automaton:
 		// initial ---- fault : ca1 -----> x
 		
@@ -123,21 +124,21 @@ public class Schedule2RAConverterTest extends ATestCase {
 		
 		final double RATE_EXTERNAL = 1;
 		final double RATE_INTERNAL = 0.5;
-		ma.addMarkovianTransition(Collections.EMPTY_SET, initial1, initial2, RATE_INTERNAL);
-		ma.addMarkovianTransition(Collections.singleton(fault), initial1, nondet1, RATE_EXTERNAL);
-		ma.addMarkovianTransition(Collections.singleton(fault), initial2, nondet2, RATE_EXTERNAL);		
+		ma.addMarkovianTransition(new SimpleEntry<>(Collections.EMPTY_SET, false), initial1, initial2, RATE_INTERNAL);
+		ma.addMarkovianTransition(new SimpleEntry<>(Collections.singleton(fault), false), initial1, nondet1, RATE_EXTERNAL);
+		ma.addMarkovianTransition(new SimpleEntry<>(Collections.singleton(fault), false), initial2, nondet2, RATE_EXTERNAL);		
 		MarkovTransition<MarkovState> choice1 = ma.addNondeterministicTransition(Collections.singletonList(ca1), nondet1, correct);
 		MarkovTransition<MarkovState> choice2 = ma.addNondeterministicTransition(Collections.singletonList(ca2), nondet2, correct);
 		ma.addNondeterministicTransition(Collections.singletonList(ca2), nondet1, wrong);
 		ma.addNondeterministicTransition(Collections.singletonList(ca1), nondet2, wrong);
 		
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
-		schedule.put(nondet1, Collections.singleton(choice1));
-		schedule.put(nondet2, Collections.singleton(choice2));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
+		schedule.put(nondet1, Collections.singletonList(choice1));
+		schedule.put(nondet2, Collections.singletonList(choice2));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
 		RecoveryAutomaton ra = converter.convert(schedule, initial1);
-
+		
 		// Expected recovery automaton:
 		// initial --------------- TRANSITION_TIME -------------> timedState
 		// 	   \----- fault : ca1 --> finalState <-- fault : ca2 -----/ 
@@ -158,13 +159,13 @@ public class Schedule2RAConverterTest extends ATestCase {
 				.filter(state -> !state.equals(ra.getInitial()) && !state.equals(finalState))
 				.findFirst().get();
 		
-		TimedTransition timedTransition = (TimedTransition) ra.getTransitions()
+		TimeoutTransition timeoutTransition = (TimeoutTransition) ra.getTransitions()
 				.stream()
 				.filter(transition -> transition.getFrom().equals(ra.getInitial()) && transition.getTo().equals(timedState))
 				.findFirst().get();
 		
 		final double EXPTED_TRANSITION_TIME = 1 / RATE_INTERNAL;
-		assertEquals(EXPTED_TRANSITION_TIME, timedTransition.getTime(), TEST_EPSILON);
+		assertEquals(EXPTED_TRANSITION_TIME, timeoutTransition.getTime(), TEST_EPSILON);
 		assertTrue(raHelper.isConnected(ra, ra.getInitial(), finalState));
 		assertTrue(raHelper.isConnected(ra, timedState, finalState));
 	}
@@ -201,17 +202,17 @@ public class Schedule2RAConverterTest extends ATestCase {
 		
 		final double RATE_EXTERNAL = 1;
 		final double RATE_INTERNAL = 0.5;
-		ma.addMarkovianTransition(Collections.EMPTY_SET, initial1, initial2, RATE_INTERNAL);
-		ma.addMarkovianTransition(Collections.singleton(fault), initial2, nondet, RATE_EXTERNAL);		
+		ma.addMarkovianTransition(new SimpleEntry<>(Collections.emptySet(), false), initial1, initial2, RATE_INTERNAL);
+		ma.addMarkovianTransition(new SimpleEntry<>(Collections.singleton(fault), false), initial2, nondet, RATE_EXTERNAL);		
 		MarkovTransition<MarkovState> choice = ma.addNondeterministicTransition(Collections.singletonList(ca1), nondet, correct);
 		ma.addNondeterministicTransition(Collections.singletonList(ca2), nondet, wrong);
 		
-		Map<MarkovState, Set<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
-		schedule.put(nondet, Collections.singleton(choice));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = new HashMap<>();
+		schedule.put(nondet, Collections.singletonList(choice));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
 		RecoveryAutomaton ra = converter.convert(schedule, initial1);
-
+		
 		// Expected recovery automaton:
 		// initial ---- fault : ca1 -----> x
 		

@@ -33,7 +33,7 @@ public class StructuralElementInstanceValidatorTest extends AStructuralElementIn
 
 	@Test
 	public void testStructuralElementInstanceValidator() {
-		StructuralElementInstanceValidator validator = new StructuralElementInstanceValidator();
+		FdirValidator validator = new FdirValidator();
 		assertTrue(validator.validate(testSei));
 	}
 }

@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
-
 /**
  * This metric represents time bounded detectability, which is the probability
  * that a fault is detected given the that it has occurred.
@@ -39,8 +37,8 @@ public class Detectability extends AProbabilityCurve implements IDerivedMetric {
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(new Availability(time)));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED), Collections.singleton(new Availability(time)));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_FAILED, Collections.singleton(new Availability(time)));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_OBSERVED, Collections.singleton(new Availability(time)));
 		return mapFailLabelProviderToMetrics;
 	}
 
@@ -53,14 +51,21 @@ public class Detectability extends AProbabilityCurve implements IDerivedMetric {
 	 * Derives the detectability curve from the availability curves
 	 * @param unobservedAvailabilityCurve the availability curve for the failure
 	 * @param observedAvailabilityCurve the availability curve for the observed failure
-	 * @param detectabiityCurve the derived detectability curve
+	 * @param detectabilityCurve the derived detectability curve
 	 */
-	public void derive(List<Double> unobservedAvailabilityCurve, List<Double> observedAvailabilityCurve, List<Double> detectabiityCurve) {
+	public void derive(List<Double> unobservedAvailabilityCurve, List<Double> observedAvailabilityCurve, List<Double> detectabilityCurve) {
 		for (int i = 0; i < unobservedAvailabilityCurve.size(); ++i) {
-			Double unobservedAvailability = unobservedAvailabilityCurve.get(i);
-			Double observedAvailability = observedAvailabilityCurve.get(i);
-			Double detectability = (1 - observedAvailability) / (1 - unobservedAvailability);
-			detectabiityCurve.add(detectability);
+			Double unobservedUnavailability = 1 - unobservedAvailabilityCurve.get(i);
+			Double observedUnavailability = 1 - observedAvailabilityCurve.get(i);
+			if (observedUnavailability == 0) {
+				// If the probability of observation is 0, while the probability of failure is 0 as well,
+				// then we have full detectability (1). If the probability of observation is 0, while the
+				// probabiltiy of failure is not 0, then we have no detectability at all (0)
+				detectabilityCurve.add(unobservedUnavailability == 0 ? 1d : 0d);
+			} else {
+				Double detectability = observedUnavailability / unobservedUnavailability;
+				detectabilityCurve.add(detectability);
+			}
 		}
 	}
 }

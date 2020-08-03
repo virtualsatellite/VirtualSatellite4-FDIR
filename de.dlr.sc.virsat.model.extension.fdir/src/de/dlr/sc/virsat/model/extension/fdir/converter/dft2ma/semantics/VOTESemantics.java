@@ -15,6 +15,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.VOTE;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -27,8 +28,14 @@ public class VOTESemantics implements INodeSemantics {
 
 	@Override
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
-			FaultTreeHolder ftHolder, GenerationResult generationResult) {
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+			GenerationResult generationResult) {
+		
+		if (!(node instanceof VOTE)) {
+			throw new IllegalArgumentException("Expected node of type VOTE but got node " + node);
+		}
+		
+		FaultTreeHolder ftHolder = state.getFTHolder();
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.CHILD);
 		
 		int failed = 0;
 		int permanentlyFailed = 0;
@@ -44,14 +51,16 @@ public class VOTESemantics implements INodeSemantics {
 		
 		long votingThreshold = ((VOTE) node).getVotingThreshold();
 		boolean hasFailed = failed >= votingThreshold;
+		boolean hasChanged = false;
 		
 		if (hasFailed) {
 			boolean hasPermanentlyFailed = permanentlyFailed >= votingThreshold;
 			if (hasPermanentlyFailed) {
-				state.setFaultTreeNodePermanent(node, true);
+				hasChanged |= state.setFaultTreeNodePermanent(node, true);
 			} 
 		}
 		
-		return state.setFaultTreeNodeFailed(node, hasFailed);
+		hasChanged |= state.setFaultTreeNodeFailed(node, hasFailed);
+		return hasChanged;
 	}
 }

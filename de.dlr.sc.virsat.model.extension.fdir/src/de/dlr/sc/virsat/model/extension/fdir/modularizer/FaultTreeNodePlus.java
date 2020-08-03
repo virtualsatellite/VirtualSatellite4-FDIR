@@ -10,12 +10,12 @@
 package de.dlr.sc.virsat.model.extension.fdir.modularizer;
 
 
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 
 /**
  * Links each FaultTreeNode in a FaultTree with the first and last date visited.
@@ -25,11 +25,11 @@ import java.util.List;
  */
 
 public class FaultTreeNodePlus {
-
+	
 	private FaultTreeNode node;
-	private Set<FaultTreeNodePlus> visitedFrom;
-	private int firstVisit = 0;
-	private int lastVisit = 0;
+	private Set<FaultTreeNodePlus> visitedFrom = new HashSet<FaultTreeNodePlus>();
+	private int firstVisit;
+	private int lastVisit;
 	private int depth;
 	
 	private boolean harvested = false;
@@ -39,28 +39,8 @@ public class FaultTreeNodePlus {
 	private boolean isDEPDescendant = false;
 	
 	private List<FaultTreeNodePlus> children = new ArrayList<FaultTreeNodePlus>();
-
-	/* CONSTRUCTORS */
 	
-	/**
-	 * Constructor
-	 * @param reference the FaultTreeNode reference
-	 * @param visitedFrom the set of nodes we have visited from
-	 * @param firstVisit date of first visit
-	 * @param lastVisit date of last visit
-	 * @param depth the depth of the node
-	 * @param harvested whether or not the fault tree node has been harvested
-	 */
-	public FaultTreeNodePlus(FaultTreeNode reference, Set<FaultTreeNodePlus> visitedFrom, int firstVisit, int lastVisit, int depth, boolean harvested) {
-		this.node = reference;
-		this.firstVisit = firstVisit;
-		this.lastVisit = lastVisit;
-		
-		this.visitedFrom = new HashSet<FaultTreeNodePlus>();
-		
-		this.depth = depth;
-		this.harvested = harvested;
-	}
+	/* CONSTRUCTORS */
 	
 	/**
 	 * Constructor
@@ -68,7 +48,8 @@ public class FaultTreeNodePlus {
 	 * @param depth the depth
 	 */
 	public FaultTreeNodePlus(FaultTreeNode reference, int depth) {
-		this(reference, null, 0, 0, depth, false);
+		this.node = reference;
+		this.depth = depth;
 	}
 
 	/** 
@@ -82,7 +63,6 @@ public class FaultTreeNodePlus {
 		
 		this.lastVisit = visitDate;
 	}
-	
 	
 	/* ***********************
 	 * GETTERS
@@ -184,10 +164,9 @@ public class FaultTreeNodePlus {
 	 * @param child the child to be added
 	 */
 	void addChild(FaultTreeNodePlus child) {
-		if (this.children == null) {
-			this.children = new ArrayList<FaultTreeNodePlus>();
-		}
-		this.children.add(child);
+		// Since the child lists are created with a FIFO (Stack) processing, we are inverting the order of the children
+		// This inversion needs to be remedied by adding the child at the beginning of the list
+		this.children.add(0, child);
 	}
 	
 	/**
@@ -225,7 +204,6 @@ public class FaultTreeNodePlus {
 		this.harvested = true;
 	}
 	
-	
 	/**
 	 * Add a path to this node
 	 * @param node the node we are visiting from
@@ -240,52 +218,7 @@ public class FaultTreeNodePlus {
 	 * @return true if we have, false if we are visiting from a new path.
 	 */
 	boolean visitedBeforeFromNode(FaultTreeNodePlus node) {
-		if (this.visitedFrom.isEmpty()) {
-			return false;
-		} else if (this.visitedFrom.contains(node)) {
-			return true;
-		}
-		return false;
-	}
-
-	
-	/**
-	 * Returns whether a FaultTreeNodePlus is nondeterministic or not
-	 * @return true if nondeterministic, false otherwise
-	 */
-	public boolean isNondeterministic() {
-		switch (this.getFaultTreeNode().getFaultTreeNodeType()) {
-			case SPARE:
-				return true;
-			default: return false;
-		}
-	}
-	
-	
-	/**
-	 * Returns whether a FaultTreeNodePlus is a priority gate or not
-	 * @return true if priority gate, false otherwise
-	 */
-	public boolean isPriority() {
-		switch (this.getFaultTreeNode().getFaultTreeNodeType()) {
-			case PAND:
-				return true;
-			case POR:
-				return true;
-			default: return false;
-		}
-	}
-	
-	/**
-	 * Returns whether a FaultTreeNodePlus is a dependency gate or not
-	 * @return true if dependency gate, false otherwise
-	 */
-	public boolean isDependency() {
-		switch (this.getFaultTreeNode().getFaultTreeNodeType()) {
-			case FDEP:
-				return true;
-			default: return false;
-		}
+		return this.visitedFrom.contains(node);
 	}
 	
 	/**
@@ -299,7 +232,6 @@ public class FaultTreeNodePlus {
 		}
 		return true;
 	}
-
 	
 	/**
 	 * Override of toString()

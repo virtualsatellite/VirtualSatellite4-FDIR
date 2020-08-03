@@ -20,6 +20,7 @@ import de.dlr.sc.virsat.model.dvlm.structural.StructuralElement;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralFactory;
 import de.dlr.sc.virsat.model.dvlm.structural.util.StructuralInstantiator;
+import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.DFT2GalileoDFT;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
@@ -53,7 +54,7 @@ public class DFT2GalileoDFTTest extends ATestCase {
 		be1.setRepairRate(1);
 		tle.getBasicEvents().add(be1);
 		
-		Gate gate = ftHelper.createGate(tle, FaultTreeNodeType.AND);
+		Gate gate = ftBuilder.createGate(tle, FaultTreeNodeType.AND);
 		
 		Fault fault = new Fault(concept);
 		fault.setName("FAULT");
@@ -64,8 +65,8 @@ public class DFT2GalileoDFTTest extends ATestCase {
 		be2.setHotFailureRate(2);
 		fault.getBasicEvents().add(be2);
 		
-		ftHelper.connect(tle, fault, gate);
-		ftHelper.connect(tle, gate, tle);
+		ftBuilder.connect(tle, fault, gate);
+		ftBuilder.connect(tle, gate, tle);
 		
 		final int TOTAL_NUMBER_OF_BASIC_EVENTS = 2;
 		final int TOTAL_NUMBER_OF_GATES = 3;

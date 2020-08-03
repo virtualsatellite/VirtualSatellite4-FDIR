@@ -24,48 +24,25 @@ public interface IMatrix {
 	void multiply(double[] vector, double[] result);
 
 	/**
-	 * Returns an iterator for specific matrix type.
-	 * 
-	 * @param probabilityDistribution probabilityDistribution
-	 * @param eps epsilon
-	 * @return MatrixIterator
-	 */
-	MatrixIterator getIterator(double[] probabilityDistribution, double eps);
-
-	/**
 	 * @return returns number of states
 	 */
 	int size();
 
 	/**
-	 * @return returns matrix diagonal
+	 * Gets the value at the specified position
+	 * @param column the column
+	 * @param row the row
+	 * @return the value
 	 */
-	double[] getDiagonal();
-
+	double getValue(int column, int row);
+	
 	/**
-	 * @return returns StatePredIndices
+	 * Sets the value at the specified position
+	 * @param column the column
+	 * @param row the row
+	 * @param value the value
 	 */
-	int[][] getStatePredIndices();
-
-	/**
-	 * @return return StatePredRates
-	 */
-	double[][] getStatePredRates();
-
-	/**
-	 * @param diagonal sets new diagonal for this matrix
-	 */
-	void setDiagonal(double[] diagonal);
-
-	/**
-	 * @param statePredIndices sets new StatePredIndices
-	 */
-	void setStatePredIndices(int[][] statePredIndices);
-
-	/**
-	 * @param statePredRates sets new StatePredRates
-	 */
-	void setStatePredRates(double[][] statePredRates);
+	void setValue(int column, int row, double value);
 
 	/**
 	 * @return returns copy of this matrix object

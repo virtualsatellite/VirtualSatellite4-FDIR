@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import de.dlr.sc.virsat.fdir.core.metrics.Availability;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetricVisitor;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
@@ -41,25 +41,20 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	 * @param metrics
 	 *            the metrics
 	 */
-	public ExplicitPropertiesWriter(double delta, String instancePath, IBaseMetric[] metrics) {
+	public ExplicitPropertiesWriter(double delta, String instancePath, IBaseMetric... metrics) {
 		this.delta = delta;
 		this.instancePath = instancePath;
 		this.metrics = metrics;
 	}
 
 	@Override
-	public void writeFile() {
-		try {
-			FileWriter fileWriter = new FileWriter(instancePath);
-			printWriter = new PrintWriter(fileWriter);
-			for (IBaseMetric metric : metrics) {
-				metric.accept(this, null);
-			}
-			printWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void writeFile() throws IOException {
+		FileWriter fileWriter = new FileWriter(instancePath);
+		printWriter = new PrintWriter(fileWriter);
+		for (IBaseMetric metric : metrics) {
+			metric.accept(this, null);
 		}
-
+		printWriter.close();
 	}
 
 	@Override
@@ -72,7 +67,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	}
 
 	@Override
-	public void visit(MTTF mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric) {
 		printWriter.println("Tmax=? [F \"" + FAILED_STATE + "\"];");
 	}
 

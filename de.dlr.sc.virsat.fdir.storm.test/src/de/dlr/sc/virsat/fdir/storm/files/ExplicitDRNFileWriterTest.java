@@ -13,15 +13,21 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.fdir.core.test.TestResourceGetter;
 
 /**
  * This class tests the ExplicitDRNFileWriter class
@@ -31,40 +37,33 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 public class ExplicitDRNFileWriterTest {
 	
 	@Test
-	public void testDRNFile() throws IOException {
+	public void writeFile() throws IOException {
 		File testFile = File.createTempFile("test1", ".drn");	
+		testFile.deleteOnExit();
 		
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		MarkovState state1 = new MarkovState();
-		MarkovState state2 = new MarkovState();
-		ma.addState(state1);
-		ma.addState(state2);
-		ma.getFinalStates().add(state2);
+		MarkovState init = new MarkovState();
+		MarkovState fail = new MarkovState();
+		MarkovState nondet = new MarkovState();
+		
+		ma.addState(init);
+		ma.addState(fail);
+		ma.addState(nondet);
+		
+		fail.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
+		
 		final double RATE = 10;
-		ma.addMarkovianTransition("a", state1, state2, RATE);
-
+		ma.addMarkovianTransition("a", init, fail, RATE);
+		ma.addMarkovianTransition("b", init, nondet, RATE);
+		ma.addNondeterministicTransition("c", nondet, fail);
+		
 		new ExplicitDRNFileWriter(ma, testFile.getAbsolutePath()).writeFile();
+		String output = new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())), StandardCharsets.UTF_8);
 		
-		File expectedFile = File.createTempFile("test2", ".drn");
-		PrintWriter writer = new PrintWriter(expectedFile);
-		writer.print("@type: Markov Automaton\n");
-		writer.print("@parameters\n" + "\n");
-		writer.print("@reward_models\n" + "\n");
-		writer.print("@nr_states" + "\n");
-		writer.print(2 + "\n");		
-		writer.print("@model" + "\n");
-		writer.print("state 0 !" + RATE + " init\n");
-		writer.print("\taction 0\n");
-		writer.print("\t\t" + 1 + " : " + 1.0 + "\n");
-		writer.print("state 1 !1.0 failed\n");
-		writer.print("\taction 0\n");
-		writer.print("\t\t" + 1 + " : " + 1.0 + "\n");
-		writer.close();
+		TestResourceGetter testResourceGetter = new TestResourceGetter("de.dlr.sc.virsat.fdir.storm.test");
+		InputStream is = testResourceGetter.getResourceContentAsStream("/resources/writeTest.drn");
+		String expected = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
 		
-		testFile.deleteOnExit();
-		expectedFile.deleteOnExit();
-		
-		assertEquals(new String(Files.readAllBytes(Paths.get(expectedFile.getAbsolutePath())), StandardCharsets.UTF_8), new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())), StandardCharsets.UTF_8));
-
+		assertEquals("Written DRN file matches expected DRN file", expected, output);
 	}
 }

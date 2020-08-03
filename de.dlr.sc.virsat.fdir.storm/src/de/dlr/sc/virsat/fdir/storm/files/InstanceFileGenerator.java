@@ -30,7 +30,6 @@ public class InstanceFileGenerator {
 	
 	private StormExecutionEnvironment executionEnvironment;
 
-	
 	/**
 	 * Standard constructor
 	 * @param executionEnvironment the execution environemnt

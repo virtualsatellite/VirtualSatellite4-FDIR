@@ -2,29 +2,32 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VirSat Model Extension FDIR
 Bundle-SymbolicName: de.dlr.sc.virsat.model.extension.fdir;singleton:=true
-Bundle-Version: 4.10.0.qualifier
+Bundle-Version: 4.12.0.qualifier
 Bundle-Vendor: German Aerospace Center (DLR)
 Require-Bundle: org.eclipse.core.runtime,
  de.dlr.sc.virsat.model,
- de.dlr.sc.virsat.model.edit,
  de.dlr.sc.virsat.project,
  de.dlr.sc.virsat.build,
  de.dlr.sc.virsat.fdir.galileo,
  de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.model.calculation,
  de.dlr.sc.virsat.fdir.storm,
- de.dlr.sc.virsat.external.lib.commons.math
+ de.dlr.sc.virsat.model.ext.core,
+ de.dlr.sc.virsat.model.edit;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true
 Export-Package: de.dlr.sc.virsat.model.extension.fdir,
  de.dlr.sc.virsat.model.extension.fdir.calculation,
  de.dlr.sc.virsat.model.extension.fdir.command,
- de.dlr.sc.virsat.model.extension.fdir.converter,
+ de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis,
  de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft,
  de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma,
+ de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events,
  de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po,
  de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics,
+ de.dlr.sc.virsat.model.extension.fdir.converter.galileo,
+ de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa,
  de.dlr.sc.virsat.model.extension.fdir.evaluator,
  de.dlr.sc.virsat.model.extension.fdir.marker,
  de.dlr.sc.virsat.model.extension.fdir.migrator,
@@ -34,7 +37,6 @@ Export-Package: de.dlr.sc.virsat.model.extension.fdir,
  de.dlr.sc.virsat.model.extension.fdir.recovery,
  de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer,
  de.dlr.sc.virsat.model.extension.fdir.synthesizer,
- de.dlr.sc.virsat.model.extension.fdir.trimmer,
  de.dlr.sc.virsat.model.extension.fdir.util,
  de.dlr.sc.virsat.model.extension.fdir.validator
 Bundle-Activator: de.dlr.sc.virsat.model.extension.fdir.Activator

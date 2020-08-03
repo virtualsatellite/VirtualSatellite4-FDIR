@@ -10,7 +10,6 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.IStateGenerator;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -25,14 +24,6 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class PONDSPARESemantics extends NDSPARESemantics {
 	
-	/**
-	 * Standard constructor
-	 * @param stateGenerator the state generator
-	 */
-	public PONDSPARESemantics(IStateGenerator stateGenerator) {
-		super(stateGenerator);
-	}
-	
 	@Override
 	protected void updatePermanence(DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
 		if (state.areFaultTreeNodesPermanent(ftHolder.getMapNodeToSubNodes().get(node))) {
@@ -42,6 +33,6 @@ public class PONDSPARESemantics extends NDSPARESemantics {
 	
 	@Override
 	protected boolean canClaim(DFTState pred, DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		return !propagateWithoutClaiming;
+		return !propagateWithoutActions;
 	}
 }

@@ -62,7 +62,7 @@ public  class FDIRParameters extends AFDIRParameters {
 	 */
 	public void setDefaultProbablityThresholds() {
 		for (int i = 0; i < OpClassifyPL.DEFAULT_PL_THRESHOLDS.length; ++i) {
-			BeanPropertyFloat beanFloat = getProbabilityLevels().get(i);
+			BeanPropertyFloat beanFloat = getProbabilityLevelsBean().get(i);
 			beanFloat.setValueAsBaseUnit(OpClassifyPL.DEFAULT_PL_THRESHOLDS[i]);
 		}
 	}
@@ -72,7 +72,7 @@ public  class FDIRParameters extends AFDIRParameters {
 	 */
 	public void setDefaultDetectabilityThresholds() {
 		for (int i = 0; i < OpClassifyDL.DEFAULT_DL_THRESHOLDS.length; ++i) {
-			BeanPropertyFloat beanFloat = getDetectionLevels().get(i);
+			BeanPropertyFloat beanFloat = getDetectionLevelsBean().get(i);
 			beanFloat.setValueAsBaseUnit(OpClassifyDL.DEFAULT_DL_THRESHOLDS[i]);
 		}
 	}
@@ -85,8 +85,8 @@ public  class FDIRParameters extends AFDIRParameters {
 			CriticalityMatrix cm = getCriticalityMatrices().get(detectable - 1);
 			for (int severity = 1; severity <= cm.getCriticalityMatrix().size(); ++severity) {
 				CriticalityVector cv = cm.getCriticalityMatrix().get(cm.getCriticalityMatrix().size() - severity);
-				for (int probability = 1; probability <= cv.getIsCritical().size(); ++probability) {
-					BeanPropertyBoolean isCriticalProperty = cv.getIsCritical().get(probability - 1);
+				for (int probability = 1; probability <= cv.getIsCriticalBean().size(); ++probability) {
+					BeanPropertyBoolean isCriticalProperty = cv.getIsCriticalBean().get(probability - 1);
 					isCriticalProperty.setValue(isDefaultCritical(detectable, severity, probability));
 				}
 			}
@@ -145,7 +145,7 @@ public  class FDIRParameters extends AFDIRParameters {
 	public boolean isCritical(int detectable, int severity, int probability) {
 		CriticalityMatrix cm = getCriticalityMatrices().get(detectable - 1);
 		CriticalityVector cv = cm.getCriticalityMatrix().get(cm.getCriticalityMatrix().size() - severity);
-		boolean isCritical = cv.getIsCritical().get(probability - 1).getValue();
+		boolean isCritical = cv.getIsCriticalBean().get(probability - 1).getValue();
 		return isCritical;
 	}
 }

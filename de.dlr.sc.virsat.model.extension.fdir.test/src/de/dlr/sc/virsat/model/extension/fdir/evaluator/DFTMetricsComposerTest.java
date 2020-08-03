@@ -10,8 +10,8 @@
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.MinimumCutSet;
 
 /**
@@ -50,6 +51,11 @@ public class DFTMetricsComposerTest {
 		result2.getMinCutSets().add(minCut21);
 		
 		subModuleResults = Arrays.asList(result1, result2);
+	}
+	
+	@Test(expected = UnsupportedOperationException.class)
+	public void testComposeMTTF() {
+		dftMetricsComposer.compose(subModuleResults, null, 1, MeanTimeToFailure.MTTF);
 	}
 	
 	@Test

@@ -12,4 +12,4 @@ Automatic-Module-Name: de.dlr.sc.virsat.model.extension.fdir.experiments
 Export-Package: de.dlr.sc.virsat.model.extension.fdir.experiments,
  de.dlr.sc.virsat.model.extension.fdir.experiments.aiaa,
  de.dlr.sc.virsat.model.extension.fdir.experiments.ftscs,
- de.dlr.sc.virsat.model.extension.fdir.experiments.rise
+ de.dlr.sc.virsat.model.extension.fdir.experiments.tacas

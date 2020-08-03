@@ -49,6 +49,14 @@ public class FaultTreeNodeGraphicsFactory {
 	public static final int GATE_WIDTH = 50;
 	public static final int GATE_HEIGHT = 40;
 	
+	public static final int[] SEQ_ARROW_LINE = new int[] { 
+		5, 5,
+		GATE_WIDTH - 5, 5, 
+		GATE_WIDTH - 10, 3,
+		GATE_WIDTH - 5, 5,
+		GATE_WIDTH - 10, 8
+	};
+	
 	public static final int[] AND_POLYGON = new int[] { 
 		GATE_WIDTH * 4 / 6, 0,  
 		GATE_WIDTH * 5 / 6, GATE_HEIGHT / 8,
@@ -146,6 +154,8 @@ public class FaultTreeNodeGraphicsFactory {
 				return createFDEPGa();
 			case MONITOR:
 				return createObserverGateGa();
+			case SEQ:
+				return createSEQGateGa();
 			default:
 				return createDefaultGa();
 		}
@@ -227,9 +237,25 @@ public class FaultTreeNodeGraphicsFactory {
 	 * Creates the OBSERVER graphics algorithm
 	 * @return the OBSERVER graphics algorithm
 	 */
-	private GraphicsAlgorithm createObserverGateGa() {
+	public GraphicsAlgorithm createObserverGateGa() {
 		GraphicsAlgorithm observerGa = createDefaultGa();
 		observerGa.setBackground(observerColorBg);
 		return observerGa;
+	}
+	
+	/**
+	 * Creates the SEQ graphics algorithm
+	 * @return the SEQ graphics algorithm
+	 */
+	public GraphicsAlgorithm createSEQGateGa() {
+		GraphicsAlgorithm seqGa = createDefaultGa();
+		Shape seqArrowShape = Graphiti.getPeCreateService().createShape(containerShape, false);
+		
+		Polyline seqArrow = Graphiti.getGaCreateService().createPolyline(seqArrowShape, SEQ_ARROW_LINE);
+		seqArrow.setLineWidth(LINE_WIDTH);
+		seqArrow.setForeground(colorFg);
+		seqArrow.setBackground(colorBg);
+		
+		return seqGa;
 	}
 }

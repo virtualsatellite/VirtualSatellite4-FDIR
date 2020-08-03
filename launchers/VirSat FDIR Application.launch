@@ -23,7 +23,7 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre8"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Library"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dosgi.requiredJavaVersion=1.8 -Xms1024m -Xmx2048m -Xmx1024m"/>
@@ -41,6 +41,7 @@
 <setEntry value="de.dlr.sc.virsat.external.lib.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.fdir.branding.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.fdir.galileo.feature:default"/>
+<setEntry value="de.dlr.sc.virsat.fdir.storm.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.graphiti.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.license.feature:default"/>
 <setEntry value="de.dlr.sc.virsat.model.calculation.feature:default"/>
@@ -68,7 +69,6 @@
 <setEntry value="org.eclipse.ecf.filetransfer.httpclient45.feature:default"/>
 <setEntry value="org.eclipse.ecf.filetransfer.ssl.feature:default"/>
 <setEntry value="org.eclipse.egit:default"/>
-<setEntry value="org.eclipse.elk.algorithms.feature.source:default"/>
 <setEntry value="org.eclipse.elk.algorithms.feature:default"/>
 <setEntry value="org.eclipse.elk.feature:default"/>
 <setEntry value="org.eclipse.elk.graphiti.feature:default"/>
@@ -93,7 +93,6 @@
 <setEntry value="org.eclipse.emf.mapping.ecore:default"/>
 <setEntry value="org.eclipse.emf.mapping.ui:default"/>
 <setEntry value="org.eclipse.emf.mapping:default"/>
-<setEntry value="org.eclipse.emf.mwe2.launcher:default"/>
 <setEntry value="org.eclipse.emf.transaction:default"/>
 <setEntry value="org.eclipse.emf.validation:default"/>
 <setEntry value="org.eclipse.emf.workspace:default"/>
@@ -106,7 +105,10 @@
 <setEntry value="org.eclipse.graphiti.feature:default"/>
 <setEntry value="org.eclipse.help:default"/>
 <setEntry value="org.eclipse.jdt:default"/>
+<setEntry value="org.eclipse.jgit.gpg.bc:default"/>
+<setEntry value="org.eclipse.jgit.http.apache:default"/>
 <setEntry value="org.eclipse.jgit.ssh.apache:default"/>
+<setEntry value="org.eclipse.jgit.ssh.jsch:default"/>
 <setEntry value="org.eclipse.jgit:default"/>
 <setEntry value="org.eclipse.ocl:default"/>
 <setEntry value="org.eclipse.pde:default"/>

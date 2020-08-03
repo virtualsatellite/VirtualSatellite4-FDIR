@@ -19,7 +19,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.storm.runner.IStormProgram;
 import de.dlr.sc.virsat.fdir.storm.runner.IStormRunner;
@@ -51,7 +51,7 @@ public class StormEvaluatorTest extends ATestCase {
 		});
 		
 		Fault fault = new Fault(concept);
-		ModelCheckingResult result = stormEvaluator.evaluateFaultTree(fault, MTTF.MTTF, new Reliability(1));
+		ModelCheckingResult result = stormEvaluator.evaluateFaultTree(fault, MeanTimeToFailure.MTTF, new Reliability(1));
 		
 		final double EPS = 0.001;
 		assertEquals(1, result.getMeanTimeToFailure(), EPS);

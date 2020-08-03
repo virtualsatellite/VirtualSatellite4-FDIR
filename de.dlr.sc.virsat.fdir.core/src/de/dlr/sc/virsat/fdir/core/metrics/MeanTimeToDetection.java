@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
-
 /**
  * This class represents the mean time to detection metric, which
  * is the mean time interval from the occurence of a fault to its detection
@@ -23,7 +21,7 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
  *
  */
 
-public class MeanTimeToDetection implements IDerivedMetric {
+public class MeanTimeToDetection implements IDerivedMetric, IQuantitativeMetric {
 
 	public static final MeanTimeToDetection MTTD = new MeanTimeToDetection();
 
@@ -38,10 +36,11 @@ public class MeanTimeToDetection implements IDerivedMetric {
 	@Override
 	public Map<FailLabelProvider, Set<IMetric>> getDerivedFrom() {
 		Map<FailLabelProvider, Set<IMetric>> mapFailLabelProviderToMetrics = new HashMap<>();
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED), Collections.singleton(MTTF.MTTF));
-		mapFailLabelProviderToMetrics.put(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED), Collections.singleton(MTTF.MTTF));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_FAILED, Collections.singleton(MeanTimeToFailure.MTTF));
+		mapFailLabelProviderToMetrics.put(FailLabelProvider.SINGLETON_OBSERVED, Collections.singleton(MeanTimeToFailure.MTTF));
 		return mapFailLabelProviderToMetrics;
 	}
+	
 	@Override
 	public void accept(IDerivedMetricVisitor visitor) {
 		visitor.visit(this);
@@ -54,6 +53,10 @@ public class MeanTimeToDetection implements IDerivedMetric {
 	 * @return the derived mean time to detection
 	 */
 	public double derive(double unobservedMTTF, double observedMTTF) {
+		// If no failure can ever be observed, then the MTTD is 0
+		if (Double.isInfinite(unobservedMTTF)) {
+			return 0;
+		}
 		double meanTimeToDetection = Double.isInfinite(observedMTTF) ? Double.POSITIVE_INFINITY : observedMTTF - unobservedMTTF;
 		return meanTimeToDetection;
 	}

@@ -13,18 +13,22 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 
 
 // *****************************************************************
@@ -53,10 +57,17 @@ public abstract class ABasicEvent extends FaultEvent implements IBeanCategoryAss
 	
 	// property name constants
 	public static final String PROPERTY_HOTFAILURERATE = "hotFailureRate";
+	public static final String PROPERTY_DISTRIBUTION = "distribution";
 	public static final String PROPERTY_COLDFAILURERATE = "coldFailureRate";
 	public static final String PROPERTY_REPAIRRATE = "repairRate";
-	public static final String PROPERTY_REPAIRACTION = "repairAction";
+	public static final String PROPERTY_REPAIRACTIONS = "repairActions";
 	
+	// Distribution enumeration value names
+	public static final String DISTRIBUTION_EXP_NAME = "EXP";
+	public static final String DISTRIBUTION_UNIFORM_NAME = "UNIFORM";
+	// Distribution enumeration values
+	public static final String DISTRIBUTION_EXP_VALUE = "0";
+	public static final String DISTRIBUTION_UNIFORM_VALUE = "1";
 	
 	
 	// *****************************************************************
@@ -111,6 +122,42 @@ public abstract class ABasicEvent extends FaultEvent implements IBeanCategoryAss
 	public BeanPropertyFloat getHotFailureRateBean() {
 		safeAccessHotFailureRate();
 		return hotFailureRate;
+	}
+	
+	// *****************************************************************
+	// * Attribute: distribution
+	// *****************************************************************
+	private BeanPropertyEnum distribution = new BeanPropertyEnum();
+	
+	private void safeAccessDistribution() {
+		if (distribution.getTypeInstance() == null) {
+			distribution.setTypeInstance((EnumUnitPropertyInstance) helper.getPropertyInstance("distribution"));
+		}
+	}
+	
+	public Command setDistribution(EditingDomain ed, String value) {
+		safeAccessDistribution();
+		return this.distribution.setValue(ed, value);
+	}
+	
+	public void setDistribution(String value) {
+		safeAccessDistribution();
+		this.distribution.setValue(value);
+	}
+	
+	public String getDistribution() {
+		safeAccessDistribution();
+		return distribution.getValue();
+	}
+	
+	public double getDistributionEnum() {
+		safeAccessDistribution();
+		return distribution.getEnumValue();
+	}
+	
+	public BeanPropertyEnum getDistributionBean() {
+		safeAccessDistribution();
+		return distribution;
 	}
 	
 	// *****************************************************************
@@ -186,34 +233,32 @@ public abstract class ABasicEvent extends FaultEvent implements IBeanCategoryAss
 	}
 	
 	// *****************************************************************
-	// * Attribute: repairAction
+	// * Array Attribute: repairActions
 	// *****************************************************************
-	private BeanPropertyString repairAction = new BeanPropertyString();
+	private IBeanList<RepairAction> repairActions = new TypeSafeComposedPropertyInstanceList<>(RepairAction.class);
 	
-	private void safeAccessRepairAction() {
-		if (repairAction.getTypeInstance() == null) {
-			repairAction.setTypeInstance((ValuePropertyInstance) helper.getPropertyInstance("repairAction"));
+	private void safeAccessRepairActions() {
+		if (repairActions.getArrayInstance() == null) {
+			repairActions.setArrayInstance((ArrayInstance) helper.getPropertyInstance("repairActions"));
 		}
 	}
 	
-	public Command setRepairAction(EditingDomain ed, String value) {
-		safeAccessRepairAction();
-		return this.repairAction.setValue(ed, value);
+	public IBeanList<RepairAction> getRepairActions() {
+		safeAccessRepairActions();
+		return repairActions;
 	}
 	
-	public void setRepairAction(String value) {
-		safeAccessRepairAction();
-		this.repairAction.setValue(value);
+	private IBeanList<BeanPropertyComposed<RepairAction>> repairActionsBean = new TypeSafeComposedPropertyBeanList<>();
+	
+	private void safeAccessRepairActionsBean() {
+		if (repairActionsBean.getArrayInstance() == null) {
+			repairActionsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("repairActions"));
+		}
 	}
 	
-	public String getRepairAction() {
-		safeAccessRepairAction();
-		return repairAction.getValue();
-	}
-	
-	public BeanPropertyString getRepairActionBean() {
-		safeAccessRepairAction();
-		return repairAction;
+	public IBeanList<BeanPropertyComposed<RepairAction>> getRepairActionsBean() {
+		safeAccessRepairActionsBean();
+		return repairActionsBean;
 	}
 	
 	

@@ -12,22 +12,16 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
-import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
-import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
-import org.eclipse.core.runtime.CoreException;
-import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesPackage;
-import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.concept.types.factory.BeanCategoryAssignmentFactory;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
+import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.SetCommand;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
+import de.dlr.sc.virsat.model.dvlm.categories.Category;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 
 
 // *****************************************************************
@@ -81,97 +75,61 @@ public abstract class AClaimAction extends RecoveryAction implements IBeanCatego
 	// *****************************************************************
 	// * Attribute: spareGate
 	// *****************************************************************
-	private SPARE spareGate;
+	private BeanPropertyReference<SPARE> spareGate = new BeanPropertyReference<>();
 	
 	private void safeAccessSpareGate() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("spareGate");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (spareGate == null) {
-				createSpareGate(ca);
-			}
-			spareGate.setTypeInstance(ca);
-		} else {
-			spareGate = null;
-		}
+		spareGate.setTypeInstance(propertyInstance);
 	}
 	
-	private void createSpareGate(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			spareGate = (SPARE) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public SPARE getSpareGate() {
 		safeAccessSpareGate();
-		return spareGate;
+		return spareGate.getValue();
 	}
 	
 	public Command setSpareGate(EditingDomain ed, SPARE value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("spareGate");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessSpareGate();
+		return spareGate.setValue(ed, value);
 	}
 	
 	public void setSpareGate(SPARE value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("spareGate");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessSpareGate();
+		spareGate.setValue(value);
+	}
+	
+	public BeanPropertyReference<SPARE> getSpareGateBean() {
+		safeAccessSpareGate();
+		return spareGate;
 	}
 	
 	// *****************************************************************
 	// * Attribute: claimSpare
 	// *****************************************************************
-	private FaultTreeNode claimSpare;
+	private BeanPropertyReference<FaultTreeNode> claimSpare = new BeanPropertyReference<>();
 	
 	private void safeAccessClaimSpare() {
 		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("claimSpare");
-		CategoryAssignment ca = (CategoryAssignment) propertyInstance.getReference();
-		
-		if (ca != null) {
-			if (claimSpare == null) {
-				createClaimSpare(ca);
-			}
-			claimSpare.setTypeInstance(ca);
-		} else {
-			claimSpare = null;
-		}
+		claimSpare.setTypeInstance(propertyInstance);
 	}
 	
-	private void createClaimSpare(CategoryAssignment ca) {
-		try {
-			BeanCategoryAssignmentFactory beanFactory = new BeanCategoryAssignmentFactory();
-			claimSpare = (FaultTreeNode) beanFactory.getInstanceFor(ca);
-		} catch (CoreException e) {
-			
-		}
-	}
-					
 	public FaultTreeNode getClaimSpare() {
 		safeAccessClaimSpare();
-		return claimSpare;
+		return claimSpare.getValue();
 	}
 	
 	public Command setClaimSpare(EditingDomain ed, FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("claimSpare");
-		CategoryAssignment ca = value.getTypeInstance();
-		return SetCommand.create(ed, propertyInstance, PropertyinstancesPackage.Literals.REFERENCE_PROPERTY_INSTANCE__REFERENCE, ca);
+		safeAccessClaimSpare();
+		return claimSpare.setValue(ed, value);
 	}
 	
 	public void setClaimSpare(FaultTreeNode value) {
-		ReferencePropertyInstance propertyInstance = (ReferencePropertyInstance) helper.getPropertyInstance("claimSpare");
-		if (value != null) {
-			propertyInstance.setReference(value.getTypeInstance());
-		} else {
-			propertyInstance.setReference(null);
-		}
+		safeAccessClaimSpare();
+		claimSpare.setValue(value);
+	}
+	
+	public BeanPropertyReference<FaultTreeNode> getClaimSpareBean() {
+		safeAccessClaimSpare();
+		return claimSpare;
 	}
 	
 	

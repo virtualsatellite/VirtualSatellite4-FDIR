@@ -15,12 +15,15 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
-import de.dlr.sc.virsat.fdir.core.metrics.MTTF;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.fdir.core.metrics.SteadyStateAvailability;
 
@@ -69,11 +72,11 @@ public class StormModelCheckerTest {
 		final double RATE = 6;
 		ma.addState(state1);
 		ma.addState(state2);
-		ma.getFinalStates().add(state2);
+		state2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		ma.addNondeterministicTransition("b", state2, state1); 
 		
-		ModelCheckingResult result = modelChecker.checkModel(ma, null, Reliability.UNIT_RELIABILITY, MTTF.MTTF);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		final double DELTA = 0.000000001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), DELTA);
@@ -99,10 +102,10 @@ public class StormModelCheckerTest {
 		final double RATE = 6;
 		ma.addState(state1);
 		ma.addState(state2);
-		ma.getFinalStates().add(state2);
+		state2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		ma.addMarkovianTransition("a", state1, state2, RATE);
 		
-		ModelCheckingResult result = modelChecker.checkModel(ma, null, Reliability.UNIT_RELIABILITY, MTTF.MTTF);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		final double DELTA = 0.00000001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), DELTA);
@@ -131,7 +134,7 @@ public class StormModelCheckerTest {
 		ma.addState(state2);
 		ma.addState(state3);
 		ma.addState(state4);
-		ma.getFinalStates().add(state4);
+		state4.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		final double RATE1 = 0.6;
 		final double RATE2 = 1.4;
@@ -140,7 +143,7 @@ public class StormModelCheckerTest {
 		ma.addNondeterministicTransition("c", state2, state3);
 		ma.addNondeterministicTransition("d", state2, state4);
 		ma.addNondeterministicTransition("e", state3, state4);
-		ModelCheckingResult result = modelChecker.checkModel(ma, null, Reliability.UNIT_RELIABILITY, MTTF.MTTF);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, Reliability.UNIT_RELIABILITY, MeanTimeToFailure.MTTF), null);
 		
 		final double DELTA = 0.00000001;
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), DELTA);
@@ -160,14 +163,14 @@ public class StormModelCheckerTest {
 		MarkovState state2 = new MarkovState();
 		ma.addState(state1);
 		ma.addState(state2);
-		ma.getFinalStates().add(state2);
+		state2.getMapFailLabelToProb().put(FailLabel.FAILED, 1d);
 		
 		final double RATE1 = 1.2;
 		final double RATE2 = 1.2;
 		ma.addMarkovianTransition("a", state1, state2, RATE1);
 		ma.addMarkovianTransition("b", state2, state1, RATE2);
 		
-		ModelCheckingResult result = modelChecker.checkModel(ma, null, SteadyStateAvailability.STEADY_STATE_AVAILABILITY);
+		ModelCheckingResult result = modelChecker.checkModel(new ModelCheckingQuery<>(ma, null, SteadyStateAvailability.SSA), null);
 		
 		final double DELTA = 0.01;
 		assertEquals(EXPECTED_STEADY_STATE_AVAILABILITY, result.getSteadyStateAvailability(), DELTA);

@@ -24,8 +24,8 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
 // *****************************************************************
@@ -40,7 +40,7 @@ import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
  * 
  * 
  */	
-public abstract class AReliabilityAnalysis extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class AReliabilityAnalysis extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis";
 	
@@ -226,17 +226,17 @@ public abstract class AReliabilityAnalysis extends ABeanCategoryAssignment imple
 	// *****************************************************************
 	// * Array Attribute: reliabilityCurve
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> reliabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> reliabilityCurveBean = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessReliabilityCurve() {
-		if (reliabilityCurve.getArrayInstance() == null) {
-			reliabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("reliabilityCurve"));
+	private void safeAccessReliabilityCurveBean() {
+		if (reliabilityCurveBean.getArrayInstance() == null) {
+			reliabilityCurveBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("reliabilityCurve"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getReliabilityCurve() {
-		safeAccessReliabilityCurve();
-		return reliabilityCurve;
+	public IBeanList<BeanPropertyFloat> getReliabilityCurveBean() {
+		safeAccessReliabilityCurveBean();
+		return reliabilityCurveBean;
 	}
 	
 	

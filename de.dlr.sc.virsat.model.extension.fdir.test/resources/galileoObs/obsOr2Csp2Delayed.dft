@@ -6,5 +6,4 @@ toplevel "tle";
 "b" lambda=1;
 "c" lambda=1;
 "d" lambda=1;
-"O" observer "tle" obsRate=0;
-"O" observer "a" obsRate=1;
+"O" observer "tle" obsRate=0.1;

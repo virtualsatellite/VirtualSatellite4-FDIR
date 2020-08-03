@@ -1,0 +1,4 @@
+toplevel "tle";
+"tle" or "p" "q";
+"p" prob=0.4;
+"q" prob=0.1;

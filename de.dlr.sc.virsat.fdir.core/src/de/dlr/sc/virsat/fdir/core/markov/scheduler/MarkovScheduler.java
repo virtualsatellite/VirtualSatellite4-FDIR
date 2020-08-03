@@ -10,18 +10,29 @@
 
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
+import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
+import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IDerivedMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
+import de.dlr.sc.virsat.fdir.core.metrics.MetricsStateDeriver;
 
 /**
  * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
@@ -31,45 +42,47 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
  */
 
 public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<S> {
-
+	
+	public static final double EPS = 0.0000000001;
+	
+	private MarkovModelChecker modelChecker = new MarkovModelChecker(0, EPS);
+	private Map<MarkovState, Double> results;
+	private MetricsStateDeriver metricStateDeriver = new MetricsStateDeriver();
+	
 	@Override
-	public Map<S, Set<MarkovTransition<S>>> computeOptimalScheduler(MarkovAutomaton<S> ma, S initialMa) {
-		Map<S, Double> results = computeValues(ma, initialMa);
-		for (S failState : ma.getFinalStates()) {
-			results.put(failState, Double.NEGATIVE_INFINITY);
-		}
+	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery) {
+		results = computeValues(scheduleQuery.getMa(), scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric());
 		
 		Queue<S> toProcess = new LinkedList<>();
-		toProcess.offer(initialMa);
+		toProcess.offer(scheduleQuery.getInitialState());
 		Set<S> handledNonDetStates = new HashSet<>();
 		
-		Map<S, Set<MarkovTransition<S>>> schedule = new HashMap<>();
+		Map<S, List<MarkovTransition<S>>> schedule = new HashMap<>();
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
 			
-			for (MarkovTransition<S> markovianTransition : ma.getSuccTransitions(state)) {
-				if (!state.isMarkovian()) {
-					Set<MarkovTransition<S>> bestTransitionGroup = selectOptimalTransitionGroup(ma, results, state);
-					
-					if (bestTransitionGroup != null) {
-						schedule.put(state, bestTransitionGroup);
-						for (MarkovTransition<S> transition : bestTransitionGroup) {
-							S nextState = transition.getTo();
-							if (handledNonDetStates.add(nextState)) {
-								toProcess.offer(nextState);
-							} 
-						}
-					}
-				} else {
-					S nextState = markovianTransition.getTo();
+			List<MarkovTransition<S>> succTransitions = state.isNondet() 
+					? selectOptimalTransitionGroup(scheduleQuery.getMa(), state) : scheduleQuery.getMa().getSuccTransitions(state);
+			
+			if (succTransitions != null) {
+				schedule.put(state, succTransitions);
+				for (MarkovTransition<S> transition : succTransitions) {
+					S nextState = transition.getTo();
 					if (handledNonDetStates.add(nextState)) {
 						toProcess.offer(nextState);
 					} 
 				}
 			}
-		}
-	
+		}	
 		return schedule;
+	}
+	
+	/**
+	 * Gets the computed values for each state from the last call to the scheduler
+	 * @return the computed values
+	 */
+	public Map<MarkovState, Double> getResults() {
+		return results;
 	}
 	
 	/**
@@ -78,95 +91,149 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @param initialMa the initial stae
 	 * @return a mapping from state to its utility value
 	 */
-	private Map<S, Double> computeValues(MarkovAutomaton<S> ma, S initialMa) {
-		boolean converged = false;
-		List<Map<S, Double>> values = new ArrayList<>();
-		int iteration = 0;
-		final double EPS = 0.0000000001;
+	private Map<MarkovState, Double> computeValues(MarkovAutomaton<S> ma, S initialMa, IMetric metric) {
+		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(false, metric);
+		Map<FailLabelProvider, Map<IMetric, Map<MarkovState, ?>>> results = new HashMap<>();
 		
-		while (!converged) {			
-			Map<S, Double> oldValues = values.isEmpty() ? null : values.get(iteration - 1);
-			Map<S, Double> currentValues = new HashMap<>();
-			values.add(currentValues);
-			
-			if (oldValues != null) {
-				converged = true;
-			}
-			
-			for (S state : ma.getStates()) {
-				double value = 0;
-				double maxValue = Double.NEGATIVE_INFINITY;
+		for (Entry<FailLabelProvider, IMetric[]> entry : partitioning.entrySet()) {
+			FailLabelProvider failLabelProvider = entry.getKey();
+			if (!failLabelProvider.equals(FailLabelProvider.EMPTY_FAIL_LABEL_PROVIDER)) {
+				Map<IMetric, Map<MarkovState, ?>> mapMetricToResults = new HashMap<>();
+				results.put(failLabelProvider, mapMetricToResults);
 				
-				if (state.isMarkovian()) {
-					List<MarkovTransition<S>> transitions = ma.getSuccTransitions(state);
-					for (MarkovTransition<S> transition : transitions) {
-						double reward = ma.getFinalStates().contains(transition.getTo()) ? -1 : 0;
-						double prevValue = oldValues != null ? oldValues.get(transition.getTo()) : 0;
-						double newValue = reward + prevValue;
-						value += transition.getRate() * newValue;
-					} 
-				} else {
-					Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
-					for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
-						double expectationValue = 0;
-						for (MarkovTransition<S> transition : transitionGroup) {
-							double reward = ma.getFinalStates().contains(transition.getTo()) ? -1 : 0;
-							double prevValue = oldValues != null ? oldValues.get(transition.getTo()) : 0;
-							double newValue = reward + prevValue;
-							expectationValue += transition.getRate() * newValue;
-						} 
-						
-						maxValue = Math.max(expectationValue, maxValue);
-					}
+				IBaseMetric[] metrics = (IBaseMetric[]) entry.getValue();
+				for (IBaseMetric baseMetric : metrics) {
+					ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, failLabelProvider, baseMetric);
+					modelChecker.checkModel(modelCheckingQuery, null);
 					
-					
-					if (maxValue != Double.NEGATIVE_INFINITY) {
-						value += maxValue;
+					if (baseMetric instanceof IQualitativeMetric) {
+						Map<MarkovState, Object> values = modelChecker.getQualitativeResults();
+						mapMetricToResults.put(baseMetric, values);
+					} else {
+						double[] values = modelChecker.getQuantitativeResults();
+						Map<MarkovState, Object> resultMap = createResultMap(ma, values);
+						mapMetricToResults.put(baseMetric, resultMap);
 					}
 				}
-				
-				currentValues.put(state, value);
-				if (oldValues != null) {
-					double change = value - oldValues.get(state);
-					if (Math.abs(change) >= EPS) {
-						converged = false;
-					} 
-				}
-			}
-	
-			if (!converged) {
-				++iteration;
 			}
 		}
 		
-		return values.get(iteration);
+		if (metric instanceof IDerivedMetric && !(metric instanceof IBaseMetric)) {
+			metricStateDeriver.derive(results, (IDerivedMetric) metric);
+		}
+		
+		@SuppressWarnings("unchecked")
+		Map<MarkovState, Double> numericResults = (Map<MarkovState, Double>) results.get(FailLabelProvider.SINGLETON_FAILED).get(metric);
+		
+		return numericResults;
+	}
+	
+	/**
+	 * Transforms the value vector into the value map
+	 * @param ma the markov automaton
+	 * @param states 
+	 * @param values the values from the value iteration
+	 * @return a mapping from states to their value
+	 */
+	private Map<MarkovState, Object> createResultMap(MarkovAutomaton<S> ma, double[] values) {
+		Map<MarkovState, Object> resultMap = new LinkedHashMap<MarkovState, Object>();
+		
+		for (int i = 0; i < ma.getStates().size(); ++i) {	
+			MarkovState state = ma.getStates().get(i);
+			double value = values[i];		
+			if (Double.isNaN(value)) {
+				value = Double.POSITIVE_INFINITY;
+			} else if (state.getFailLabels().contains(FailLabel.FAILED)) {
+				// To differentiate between fail states we also compute their MTTF
+				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
+				double exitRate = ma.getExitRateForState(state);
+				for (MarkovTransition<S> transition : succTransitions) {
+					MarkovState toState = transition.getTo();
+					if (!toState.getFailLabels().contains(FailLabel.FAILED)) {
+						double toValue = values[toState.getIndex()];
+						value += toValue * transition.getRate() / exitRate;
+					}
+				}
+			}
+			resultMap.put(state, value);
+		}
+		
+		return resultMap;
 	}
 	
 	/**
 	 * Selects the optimal transition group for a given state
 	 * @param ma the markov automaton
-	 * @param results the utility valuation
 	 * @param state the state
 	 * @return the optimal transition group of successor states
 	 */
-	private Set<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, Map<S, Double> results, S state) {
-		Set<MarkovTransition<S>> bestTransitionGroup = null;
+	private List<MarkovTransition<S>> selectOptimalTransitionGroup(MarkovAutomaton<S> ma, S state) {
+		List<MarkovTransition<S>> bestTransitionGroup = null;
 		double bestValue = Double.NEGATIVE_INFINITY;
+		double bestTransitionProbFail = 1;
 		
-		Map<Object, Set<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
+		Map<Object, List<MarkovTransition<S>>> transitionGroups = ma.getGroupedSuccTransitions(state);
 		
-		for (Set<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
+		for (List<MarkovTransition<S>> transitionGroup : transitionGroups.values()) {
 			double expectationValue = 0;
+			double transitionGroupProbFail = 0;
+			
 			for (MarkovTransition<S> transition : transitionGroup) {
-				expectationValue += transition.getRate() * results.get(transition.getTo());
+				double prob = transition.getRate();
+				MarkovState toState = transition.getTo();
+				double failProb = toState.getMapFailLabelToProb().getOrDefault(FailLabel.FAILED, 0d);
+				transitionGroupProbFail += prob * failProb;
+				
+				double toValue = results.getOrDefault(toState, Double.NEGATIVE_INFINITY);
+				expectationValue += prob * toValue;
 			}
-			if (expectationValue >= bestValue) {
-				bestValue = expectationValue;
-				bestTransitionGroup = transitionGroup;
+			
+			if ((transitionGroupProbFail < bestTransitionProbFail)
+					|| (expectationValue + EPS >= bestValue && bestTransitionProbFail >= transitionGroupProbFail)) {
+				boolean isNewBestTransition = bestTransitionGroup == null || (transitionGroupProbFail < bestTransitionProbFail) || expectationValue > bestValue + EPS;
+				
+				if (!isNewBestTransition) {
+					isNewBestTransition = checkMinimality(transitionGroup, bestTransitionGroup);
+				}
+				
+				if (isNewBestTransition) {
+					bestValue = expectationValue;
+					bestTransitionGroup = transitionGroup;
+					bestTransitionProbFail = transitionGroupProbFail;
+				}
+			}
+		}
+	
+		return bestTransitionGroup;
+	}
+	
+	/**
+	 * Checks if a transition group is considered "smaller" than the currently best transition group.
+	 * This is based on the label of the first transition in the group, which works if all transitions in the group
+	 * have the same label. The label is smaller if there are less entries or if the number of entries is the same
+	 * and the string label is smaller.
+	 * @param transitionGroup a transition group
+	 * @param bestTransitionGroup the currently best transition group
+	 * @return true if the transition group is smaller
+	 */
+	private boolean checkMinimality(List<MarkovTransition<S>> transitionGroup, List<MarkovTransition<S>> bestTransitionGroup) {
+		// Prefer to keep the fewer actions over any other actions in case of the same value
+		Object event1 = transitionGroup.iterator().next().getEvent();
+		Object event2 = bestTransitionGroup.iterator().next().getEvent();
+		
+		if (event1 instanceof Collection && event2 instanceof Collection) {
+			Collection<?> eventCollection1 = (Collection<?>) event1;
+			Collection<?> eventCollection2 = (Collection<?>) event2;
+			
+			// To ensure that there is no nondeterminism in the scheduling
+			// the final deciding factor is the string representation of the events
+			if (eventCollection2.size() == eventCollection1.size()) {
+				return eventCollection1.toString().compareTo(eventCollection2.toString()) < 0;
+			} else {
+				return eventCollection1.size() < eventCollection2.size();
 			}
 		}
 		
-		return bestTransitionGroup;
+		return false;
 	}
-
 }

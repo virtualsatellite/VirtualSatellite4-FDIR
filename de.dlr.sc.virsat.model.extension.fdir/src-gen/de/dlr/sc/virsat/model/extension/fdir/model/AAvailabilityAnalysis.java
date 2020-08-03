@@ -24,8 +24,8 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
-import de.dlr.sc.virsat.model.concept.types.category.ABeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
+import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 
 
 // *****************************************************************
@@ -40,7 +40,7 @@ import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
  * 
  * 
  */	
-public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment implements IBeanCategoryAssignment {
+public abstract class AAvailabilityAnalysis extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.AvailabilityAnalysis";
 	
@@ -226,17 +226,17 @@ public abstract class AAvailabilityAnalysis extends ABeanCategoryAssignment impl
 	// *****************************************************************
 	// * Array Attribute: availabilityCurve
 	// *****************************************************************
-	private IBeanList<BeanPropertyFloat> availabilityCurve = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
+	private IBeanList<BeanPropertyFloat> availabilityCurveBean = new TypeSafeArrayInstanceList<>(BeanPropertyFloat.class);
 	
-	private void safeAccessAvailabilityCurve() {
-		if (availabilityCurve.getArrayInstance() == null) {
-			availabilityCurve.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityCurve"));
+	private void safeAccessAvailabilityCurveBean() {
+		if (availabilityCurveBean.getArrayInstance() == null) {
+			availabilityCurveBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("availabilityCurve"));
 		}
 	}
 		
-	public IBeanList<BeanPropertyFloat> getAvailabilityCurve() {
-		safeAccessAvailabilityCurve();
-		return availabilityCurve;
+	public IBeanList<BeanPropertyFloat> getAvailabilityCurveBean() {
+		safeAccessAvailabilityCurveBean();
+		return availabilityCurveBean;
 	}
 	
 	

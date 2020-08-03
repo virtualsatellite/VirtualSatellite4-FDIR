@@ -9,12 +9,12 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
-import java.util.Collections;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
@@ -27,41 +27,16 @@ public class FaultSemantics implements INodeSemantics {
 
 	@Override
 	public boolean handleUpdate(FaultTreeNode node, DFTState state, DFTState pred,
-			FaultTreeHolder ftHolder, GenerationResult generationResult) {
-		List<FaultTreeNode> children = ftHolder.getMapNodeToChildren().get(node);
+			GenerationResult generationResult) {
 		boolean hasFailed = false;
 		
-		List<FaultTreeNode> basicEvents = ftHolder.getMapFaultToBasicEvents().getOrDefault(node, Collections.emptyList());
-		for (FaultTreeNode be : basicEvents) {
-			int nodeID = ftHolder.getNodeIndex(be);
-			if (state.getFailedNodes().get(nodeID)) {
-				hasFailed = true;
-				break;
-			}
-		}
-		
-		if (hasFailed) {
-			boolean hasPermanentlyFailed = false;
-			
-			for (FaultTreeNode be : basicEvents) {
-				if (state.isFaultTreeNodePermanent(be)) {
-					hasPermanentlyFailed = true;
-					break;
-				}
-			}
-			
-			if (hasPermanentlyFailed) {
-				state.setFaultTreeNodePermanent(node, true);
-				return state.setFaultTreeNodeFailed(node, true);
-			}
-		}
-		
+		FaultTreeHolder ftHolder = state.getFTHolder();
+		List<FaultTreeNode> children = ftHolder.getNodes(node, EdgeType.BE, EdgeType.CHILD);
 		for (FaultTreeNode child : children) {
 			if (state.hasFaultTreeNodeFailed(child)) {
 				hasFailed = true;
 				if (state.isFaultTreeNodePermanent(child)) {
-					state.setFaultTreeNodePermanent(node, true);
-					return state.setFaultTreeNodeFailed(node, true);
+					return state.setFaultTreeNodePermanent(node, true) | state.setFaultTreeNodeFailed(node, true);
 				}
 			}
 		}

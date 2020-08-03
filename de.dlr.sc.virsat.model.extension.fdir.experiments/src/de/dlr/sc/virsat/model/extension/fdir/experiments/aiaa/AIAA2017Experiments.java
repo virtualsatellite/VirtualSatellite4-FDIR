@@ -20,6 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
  * This class produces the experimental data for the AIAA Aerospace conference
@@ -45,10 +46,10 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(tle);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/switch2AndRedundancy/synthesized");
 		synthesizer = new BasicSynthesizer();
-		ra = synthesizer.synthesize(tle);
+		ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/switch2AndRedundancy/synthesizedMinimized");
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
@@ -66,20 +67,19 @@ public class AIAA2017Experiments extends ASynthesizerExperiment {
 		System.out.println("--------------------- Experiment: Memory2  ---------------------");
 		Fault tle = createDFT("/resources/aiaa/2017/memory2.dft");
 		
-		FaultTreeEvaluator dftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(false);
-		ModelCheckingResult result = dftEvaluator.evaluateFaultTree(tle);
-		
 		final float DELTA = 0.01f;
+		FaultTreeEvaluator dftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(false, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
+		ModelCheckingResult result = dftEvaluator.evaluateFaultTree(tle);
 		
 		System.out.println("--------------------- Evaluation results for Memory2 with DFT ---------------------");
 		printResults(dftEvaluator, result, DELTA);
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(tle);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/memory2/synthesized");
 		synthesizer = new BasicSynthesizer();
-		ra = synthesizer.synthesize(tle);
+		ra = synthesizer.synthesize(new SynthesisQuery(tle), null);
 		saveRA(ra, "aiaa/2017/memory2/synthesizedMinimized");
 		
 		FaultTreeEvaluator ndDFTftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);

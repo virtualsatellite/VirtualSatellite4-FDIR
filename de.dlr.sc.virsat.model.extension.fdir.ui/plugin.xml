@@ -64,6 +64,10 @@
 		pathToImage="resources/icons/PANDI.gif">
 	</conceptImage>
 	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.SEQ"
+		pathToImage="resources/icons/SEQ.gif">
+	</conceptImage>
+	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.MONITOR"
 		pathToImage="resources/icons/MONITOR.gif">
 	</conceptImage>
@@ -102,6 +106,10 @@
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.Fault"
 		pathToImage="resources/icons/Fault.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.RepairAction"
+		pathToImage="resources/icons/RepairAction.gif">
 	</conceptImage>
 	<conceptImage
 		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.BasicEvent"
@@ -176,8 +184,12 @@
 		pathToImage="resources/icons/FaultEventTransition.gif">
 	</conceptImage>
 	<conceptImage
-		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.TimedTransition"
-		pathToImage="resources/icons/TimedTransition.gif">
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.TimeoutTransition"
+		pathToImage="resources/icons/TimeoutTransition.gif">
+	</conceptImage>
+	<conceptImage
+		fullQualifiedID="de.dlr.sc.virsat.model.extension.fdir.RecoveryAutomatonGen"
+		pathToImage="resources/icons/RecoveryAutomatonGen.gif">
 	</conceptImage>
 	</extension>
 	<extension point="org.eclipse.ui.commands">
@@ -222,6 +234,10 @@
 		name="Add PANDI">
 	</command>
 	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ"
+		name="Add SEQ">
+	</command>
+	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
 		name="Add MONITOR">
 	</command>
@@ -252,6 +268,10 @@
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFault"
 		name="Add Fault">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction"
+		name="Add RepairAction">
 	</command>
 	<command
 		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddBasicEvent"
@@ -318,8 +338,12 @@
 		name="Add FaultEventTransition">
 	</command>
 	<command
-		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
-		name="Add TimedTransition">
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimeoutTransition"
+		name="Add TimeoutTransition">
+	</command>
+	<command
+		id="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomatonGen"
+		name="Add RecoveryAutomatonGen">
 	</command>
 	</extension>
 	<extension point="org.eclipse.ui.commandImages">
@@ -374,6 +398,11 @@
 	      icon="resources/icons/PANDI.gif">
 	</image>
 	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ"
+	      disabledIcon="resources/icons/SEQ_disabled.gif"
+	      icon="resources/icons/SEQ.gif">
+	</image>
+	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
 	      disabledIcon="resources/icons/MONITOR_disabled.gif"
 	      icon="resources/icons/MONITOR.gif">
@@ -412,6 +441,11 @@
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFault"
 	      disabledIcon="resources/icons/Fault_disabled.gif"
 	      icon="resources/icons/Fault.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction"
+	      disabledIcon="resources/icons/RepairAction_disabled.gif"
+	      icon="resources/icons/RepairAction.gif">
 	</image>
 	<image
 	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddBasicEvent"
@@ -494,9 +528,14 @@
 	      icon="resources/icons/FaultEventTransition.gif">
 	</image>
 	<image
-	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
-	      disabledIcon="resources/icons/TimedTransition_disabled.gif"
-	      icon="resources/icons/TimedTransition.gif">
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimeoutTransition"
+	      disabledIcon="resources/icons/TimeoutTransition_disabled.gif"
+	      icon="resources/icons/TimeoutTransition.gif">
+	</image>
+	<image
+	      commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomatonGen"
+	      disabledIcon="resources/icons/RecoveryAutomatonGen_disabled.gif"
+	      icon="resources/icons/RecoveryAutomatonGen.gif">
 	</image>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
@@ -541,6 +580,10 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddPANDI">
 	</handler>
 	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddSEQHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ">
+	</handler>
+	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddMONITORHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR">
 	</handler>
@@ -571,6 +614,10 @@
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddFaultHandler"
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFault">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddRepairActionHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction">
 	</handler>
 	<handler
 		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddBasicEventHandler"
@@ -637,8 +684,12 @@
 		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFaultEventTransition">
 	</handler>
 	<handler
-		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTimedTransitionHandler"
-		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition">
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddTimeoutTransitionHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimeoutTransition">
+	</handler>
+	<handler
+		class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.AddRecoveryAutomatonGenHandler"
+		commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomatonGen">
 	</handler>
 	</extension>
 	<extension point="org.eclipse.ui.menus">
@@ -906,6 +957,28 @@
 			</visibleWhen>
 		</command>
 		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddSEQ"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddMONITOR"
 			style="push">
 			<visibleWhen
@@ -1061,6 +1134,28 @@
 		</command>
 		<command
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddFault"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRepairAction"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1434,7 +1529,29 @@
 			</visibleWhen>
 		</command>
 		<command
-			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimedTransition"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddTimeoutTransition"
+			style="push">
+			<visibleWhen
+				checkEnabled="true">
+				<with
+					variable="selection">
+					<iterate
+						ifEmpty="false"
+						operator="and">
+						<test 
+							property="de.dlr.sc.virsat.model.extension.fdir.ui.propertyTester.conceptEnabled"
+							value="true" 
+							forcePluginActivation="true">
+						</test>		
+						<instanceof
+							value="de.dlr.sc.virsat.model.dvlm.categories.ICategoryAssignmentContainer">
+						</instanceof>
+					</iterate>
+				</with>
+			</visibleWhen>
+		</command>
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.AddRecoveryAutomatonGen"
 			style="push">
 			<visibleWhen
 				checkEnabled="true">
@@ -1569,6 +1686,16 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionPANDI">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetSEQ"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableSEQ">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetSEQ"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionSEQ">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableMONITOR">
@@ -1684,6 +1811,11 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesPANDI">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesSEQ"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesSEQ">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultTreeGatesMONITOR"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultTreeGatesMONITOR">
@@ -1759,6 +1891,21 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultDetectabilityAnalysisDetectabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRepairAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRepairAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetRepairAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionRepairAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRepairActionObservations"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRepairActionObservations">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEvent"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableBasicEvent">
@@ -1767,6 +1914,11 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetBasicEvent"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionBasicEvent">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetBasicEventRepairActionsRepairAction"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableBasicEventRepairActionsRepairAction">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetCutSet"
@@ -1954,9 +2106,9 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsFaultEventTransition">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTimedTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonTransitionsTimeoutTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTimedTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonTransitionsTimeoutTransition">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetClaimAction"
@@ -2014,24 +2166,34 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultEventTransitionRecoveryActionsFreeAction">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimeoutTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimeoutTransition">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTimedTransition"
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetTimeoutTransition"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTimedTransition">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionTimeoutTransition">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsClaimAction"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimeoutTransitionRecoveryActionsClaimAction"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsClaimAction">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimeoutTransitionRecoveryActionsClaimAction">
 		</uiSnippet>
 		<uiSnippet
-		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimedTransitionRecoveryActionsFreeAction"
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetTimeoutTransitionRecoveryActionsFreeAction"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
-		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimedTransitionRecoveryActionsFreeAction">
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableTimeoutTransitionRecoveryActionsFreeAction">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetRecoveryAutomatonGen"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomatonGen">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetRecoveryAutomatonGen"
+		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionRecoveryAutomatonGen">
 		</uiSnippet>
 	</extension>
 	<!-- Plugin.XML Protected Region Start -->
@@ -2267,12 +2429,6 @@
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRecoveryAutomaton">
 	</uiSnippet>
 	<uiSnippet
-	      id="de.dlr.sc.virsat.model.extension.fdir.generation"
-	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.data"
-	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.custom.UiSnippetFdirGenerator">
-	</uiSnippet>
-
-	<uiSnippet
 	      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetFaultReliabilityAnalysisReliabilityAnalysis"
 	      section="de.dlr.sc.virsat.model.extension.fdir.ui.section.analysis"
 	      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableFaultReliabilityAnalysisReliabilityAnalysis">
@@ -2366,6 +2522,31 @@
 		<handler
 			class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.CreateFdirReportHandler"
 			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.createFdirReport">
+		</handler>
+	</extension>
+	
+<!-- FT Generation -->
+
+<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			allPopups="false"
+	        locationURI="menu:de.dlr.sc.virsat.apps.ui.menu.apps?after=additions">
+		<command
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.softwareFTGenerator"
+			style="push">
+		</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.commands">
+		<command
+			id="de.dlr.sc.virsat.model.extension.fdir.ui.command.softwareFTGenerator"
+			name="Software Fault Tree Generator">
+		</command>
+	</extension>
+<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="de.dlr.sc.virsat.model.extension.fdir.ui.handler.SoftwareFTGeneratorHandler"
+			commandId="de.dlr.sc.virsat.model.extension.fdir.ui.command.softwareFTGenerator">
 		</handler>
 	</extension>
 	<!-- Plugin.XML Protected Region End -->

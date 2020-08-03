@@ -22,11 +22,15 @@ GalileoGate returns GalileoFaultTreeNode:
 ;
 
 GalileoBasicEvent returns GalileoFaultTreeNode:
-	name=STRING 'lambda' '=' lambda=Float ('dorm' '=' dorm=Float)? ('repair' '=' repair=Float)?
+	name=STRING ('lambda' '=' lambda=Float | 'prob' '=' prob=Float)  ('dorm' '=' dorm=Float)? (repairActions+=GalileoRepairAction)*
+;
+
+GalileoRepairAction:
+	'repair' '=' repair=Float (name=STRING)? ('observations' observartions+=[GalileoFaultTreeNode|STRING]*)?
 ;
 
 GalileoNodeType:
-	Named | Observer | RDEP| Delay
+	Named | Parametrized | Observer
 ;
 
 Named returns GalileoNodeType:
@@ -37,12 +41,8 @@ Observer returns GalileoNodeType:
 	{Observer} 'observer' (observables+=[GalileoFaultTreeNode|STRING])* 'obsRate' '=' observationRate=Float 
 ;
 
-RDEP returns GalileoNodeType:
-	{Rdep} 'rdep' 'rateFactor' rateFactor=Float
-;
-
-Delay returns GalileoNodeType:
-	{Delay} 'delay' 'time' time=Float
+Parametrized returns GalileoNodeType:
+	{Parametrized} typeName = ('rdep' | 'delay') '=' parameter=Float
 ;
 
 
