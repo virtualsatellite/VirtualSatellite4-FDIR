@@ -60,7 +60,7 @@ public class TACAS2021Experiments extends ASynthesizerExperiment {
 	
 	@Test
 	public void experimentRepairWithoutModulariter() throws Exception {
-		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-reair");
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-repair");
 		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer-repair", nonmodularSynthesizerSupplier);
 	}
 

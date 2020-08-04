@@ -1,2 +1,2 @@
 #solved,#total,#timeouts,#ooms,totalSolveTime
-53,156,4,99,97343
+5,156,7,144,201380
