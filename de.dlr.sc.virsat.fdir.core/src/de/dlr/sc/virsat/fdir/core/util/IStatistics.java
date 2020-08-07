@@ -26,10 +26,6 @@ public interface IStatistics {
 	default String getPrintValue(long value) {
 		if (value == NA) {
 			return "N/A";
-		} else if (value == TIMEOUT) {
-			return "Timeout";
-		} else if (value == OOM) {
-			return "OOM";
 		} else {
 			return String.valueOf(value);
 		}

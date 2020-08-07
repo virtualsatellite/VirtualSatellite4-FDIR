@@ -73,7 +73,7 @@ public class Schedule2RAConverterTest extends ATestCase {
 		schedule.put(nondet, Collections.singletonList(choice));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
-		RecoveryAutomaton ra = converter.convert(schedule, initial);
+		RecoveryAutomaton ra = converter.convert(schedule, initial, null);
 		
 		// Expected recovery automaton:
 		// initial ---- fault : ca1 -----> x
@@ -137,7 +137,7 @@ public class Schedule2RAConverterTest extends ATestCase {
 		schedule.put(nondet2, Collections.singletonList(choice2));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
-		RecoveryAutomaton ra = converter.convert(schedule, initial1);
+		RecoveryAutomaton ra = converter.convert(schedule, initial1, null);
 		
 		// Expected recovery automaton:
 		// initial --------------- TRANSITION_TIME -------------> timedState
@@ -211,7 +211,7 @@ public class Schedule2RAConverterTest extends ATestCase {
 		schedule.put(nondet, Collections.singletonList(choice));
 		
 		Schedule2RAConverter<MarkovState> converter = new Schedule2RAConverter<>(ma, concept);
-		RecoveryAutomaton ra = converter.convert(schedule, initial1);
+		RecoveryAutomaton ra = converter.convert(schedule, initial1, null);
 		
 		// Expected recovery automaton:
 		// initial ---- fault : ca1 -----> x

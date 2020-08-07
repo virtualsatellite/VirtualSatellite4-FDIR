@@ -1,157 +1,157 @@
-benchmarkName,time,countModules,countTrimmedModules,maxModuleSize,maxModuleRaSize
-AHRS-1-repair.dft,2554,2,1,17,187
-AHRS-2-repair.dft,1137,2,1,22,1
-CAS-repair.dft,395,9,7,27,18
-DCAS-repair.dft,598,7,4,31,15
-EMA-repair.dft,722,22,20,11,17
-MAS-2-repair.dft,OOM,24,21,29,N/A
-MAS-repair.dft,OOM,18,16,47,488
-cm_1_1_10_dp_x-repair.dft,OOM,37,26,136,6
-cm_1_1_10_sp_x-repair.dft,OOM,35,24,133,6
-cm_1_1_11_dp_x-repair.dft,OOM,40,28,148,6
-cm_1_1_11_sp_x-repair.dft,OOM,38,26,145,6
-cm_1_1_12_dp_x-repair.dft,OOM,43,30,162,6
-cm_1_1_12_sp_x-repair.dft,OOM,41,28,159,6
-cm_1_1_13_sp_x-repair.dft,OOM,44,30,171,6
-cm_1_1_14_sp_x-repair.dft,OOM,47,32,185,6
-cm_1_1_2_dp_x-repair.dft,374,13,10,32,15
-cm_1_1_2_sp_x-repair.dft,339,11,8,29,15
-cm_1_1_3_dp_x-repair.dft,6395,16,12,44,62
-cm_1_1_3_sp_x-repair.dft,6292,14,10,41,62
-cm_1_1_4_dp_x-repair.dft,OOM,19,14,58,809
-cm_1_1_4_sp_x-repair.dft,OOM,17,12,55,809
-cm_1_1_5_dp_x-repair.dft,OOM,22,16,70,2577
-cm_1_1_5_sp_x-repair.dft,OOM,20,14,67,2577
-cm_1_1_6_dp_x-repair.dft,Timeout,25,18,84,6
-cm_1_1_6_sp_x-repair.dft,Timeout,23,16,81,6
-cm_1_1_7_dp_x-repair.dft,Timeout,28,20,96,6
-cm_1_1_7_sp_x-repair.dft,OOM,26,18,93,6
-cm_1_1_8_dp_x-repair.dft,OOM,31,22,110,6
-cm_1_1_8_sp_x-repair.dft,OOM,29,20,107,6
-cm_1_1_9_dp_x-repair.dft,OOM,34,24,122,6
-cm_1_1_9_sp_x-repair.dft,OOM,32,22,119,6
-cm_2_1_2_dp_x-repair.dft,OOM,26,20,32,15
-cm_2_1_2_sp_x-repair.dft,OOM,22,16,29,15
-cm_2_1_3_dp_x-repair.dft,OOM,32,24,44,62
-cm_2_1_3_sp_x-repair.dft,OOM,28,20,41,62
-cm_2_1_4_dp_x-repair.dft,OOM,38,28,58,809
-cm_2_1_4_sp_x-repair.dft,OOM,34,24,55,809
-cm_2_2_2_dp_x-repair.dft,OOM,26,20,32,15
-cm_2_2_2_sp_x-repair.dft,OOM,22,16,29,15
-cm_2_2_3_dp_x-repair.dft,OOM,32,24,44,62
-cm_2_2_3_sp_x-repair.dft,OOM,28,20,41,62
-cm_2_2_4_dp_x-repair.dft,OOM,38,28,58,809
-cm_2_2_4_sp_x-repair.dft,OOM,34,24,55,809
-cm_3_1_2_dp_x-repair.dft,OOM,38,29,32,15
-cm_3_1_2_sp_x-repair.dft,OOM,32,23,29,15
-cm_3_1_3_dp_x-repair.dft,OOM,47,35,44,62
-cm_3_1_3_sp_x-repair.dft,OOM,41,29,41,62
-cm_3_1_4_dp_x-repair.dft,OOM,56,41,58,809
-cm_3_1_4_sp_x-repair.dft,OOM,50,35,55,809
-cm_3_2_2_dp_x-repair.dft,OOM,38,29,32,15
-cm_3_2_2_sp_x-repair.dft,OOM,32,23,29,15
-cm_3_2_3_dp_x-repair.dft,OOM,47,35,44,62
-cm_3_2_3_sp_x-repair.dft,OOM,41,29,41,62
-cm_3_2_4_dp_x-repair.dft,OOM,56,41,58,809
-cm_3_2_4_sp_x-repair.dft,OOM,50,35,55,809
-cm_3_3_2_dp_x-repair.dft,OOM,38,29,32,15
-cm_3_3_2_sp_x-repair.dft,OOM,32,23,29,15
-cm_3_3_3_dp_x-repair.dft,OOM,47,35,44,62
-cm_3_3_3_sp_x-repair.dft,OOM,41,29,41,62
-cm_3_3_4_dp_x-repair.dft,OOM,56,41,58,809
-cm_3_3_4_sp_x-repair.dft,OOM,50,35,55,809
-hecs_1_1-repair.dft,224,15,14,9,15
-hecs_2_1-repair.dft,545,30,28,9,15
-hecs_2_2-repair.dft,629,30,28,9,15
-hecs_3_1-repair.dft,2330,44,41,9,15
-hecs_3_3-repair.dft,2386,44,41,9,15
-hecs_4_1-repair.dft,OOM,58,54,9,15
-hecs_4_2-repair.dft,OOM,58,54,9,15
-hecs_4_3-repair.dft,OOM,58,54,9,15
-hecs_4_4-repair.dft,OOM,58,54,9,15
-hecs_5_1-repair.dft,OOM,72,67,9,15
-hecs_5_5-repair.dft,OOM,72,67,9,15
-hecs_6_1-repair.dft,OOM,86,80,9,15
-hecs_6_6-repair.dft,OOM,86,80,9,15
-hecs_7_1-repair.dft,OOM,100,93,9,15
-hecs_7_7-repair.dft,OOM,100,93,9,15
-hecs_8_1-repair.dft,OOM,114,106,9,15
-hecs_8_8-repair.dft,OOM,114,106,9,15
-hemps-repair.dft,401,12,11,15,57
-nppwp-repair.dft,4143,2,1,24,523
-rc.1-1-hc-repair.dft,386,35,33,10,15
-rc.1-1-sc-repair.dft,104,15,14,10,6
-rc.1-10-hc-repair.dft,OOM,45,34,10,15
-rc.1-10-sc-repair.dft,OOM,25,15,10,6
-rc.1-15-hc-repair.dft,OOM,50,34,10,15
-rc.1-15-sc-repair.dft,OOM,30,15,10,6
-rc.1-2-hc-repair.dft,732,37,34,10,15
-rc.1-2-sc-repair.dft,231,17,15,10,6
-rc.1-20-hc-repair.dft,OOM,55,34,10,6
-rc.1-20-sc-repair.dft,OOM,35,15,10,6
-rc.1-25-hc-repair.dft,OOM,60,34,10,15
-rc.1-25-sc-repair.dft,OOM,40,15,10,6
-rc.1-3-hc-repair.dft,OOM,38,34,10,15
-rc.1-3-sc-repair.dft,408,18,15,10,6
-rc.1-30-hc-repair.dft,OOM,65,34,10,6
-rc.1-30-sc-repair.dft,OOM,45,15,10,6
-rc.1-4-hc-repair.dft,OOM,39,34,10,15
-rc.1-4-sc-repair.dft,1067,19,15,10,6
-rc.1-5-hc-repair.dft,OOM,40,34,9,N/A
-rc.1-5-sc-repair.dft,OOM,20,15,10,6
-rc.10-1-hc-repair.dft,1737,135,133,10,15
-rc.10-1-sc-repair.dft,1106,115,114,10,6
-rc.10-10-hc-repair.dft,OOM,145,134,10,15
-rc.10-10-sc-repair.dft,OOM,125,115,10,6
-rc.15-1-hc-repair.dft,3009,190,188,10,15
-rc.15-1-sc-repair.dft,2141,170,169,10,6
-rc.15-15-hc-repair.dft,OOM,205,189,10,15
-rc.15-15-sc-repair.dft,OOM,185,170,10,6
-rc.2-1-hc-repair.dft,491,47,45,10,15
-rc.2-1-sc-repair.dft,157,27,26,10,6
-rc.2-2-hc-repair.dft,853,49,46,10,15
-rc.2-2-sc-repair.dft,301,29,27,10,6
-rc.2-3-hc-repair.dft,OOM,50,46,10,15
-rc.2-3-sc-repair.dft,556,30,27,10,6
-rc.2-4-hc-repair.dft,OOM,51,46,10,N/A
-rc.2-4-sc-repair.dft,OOM,31,27,10,6
-rc.20-1-hc-repair.dft,4620,245,243,10,15
-rc.20-1-sc-repair.dft,3569,225,224,10,6
-rc.20-20-hc-repair.dft,OOM,265,244,10,6
-rc.20-20-sc-repair.dft,OOM,245,225,10,N/A
-rc.25-1-hc-repair.dft,6652,300,298,10,15
-rc.25-1-sc-repair.dft,5368,280,279,10,6
-rc.25-25-hc-repair.dft,OOM,325,299,10,6
-rc.25-25-sc-repair.dft,OOM,305,280,10,6
-rc.3-1-hc-repair.dft,596,58,56,10,15
-rc.3-1-sc-repair.dft,222,38,37,10,6
-rc.3-2-hc-repair.dft,OOM,60,57,10,15
-rc.3-2-sc-repair.dft,391,40,38,10,6
-rc.3-3-hc-repair.dft,OOM,61,57,10,15
-rc.3-3-sc-repair.dft,628,41,38,10,6
-rc.3-4-hc-repair.dft,OOM,62,57,10,15
-rc.3-4-sc-repair.dft,OOM,42,38,10,6
-rc.30-1-hc-repair.dft,OOM,355,353,10,15
-rc.30-1-sc-repair.dft,7456,335,334,10,6
-rc.30-30-hc-repair.dft,OOM,385,354,10,6
-rc.30-30-sc-repair.dft,OOM,365,335,10,6
-rc.4-1-hc-repair.dft,721,69,67,10,15
-rc.4-1-sc-repair.dft,398,49,48,10,6
-rc.4-2-hc-repair.dft,OOM,71,68,10,15
-rc.4-2-sc-repair.dft,505,51,49,10,6
-rc.4-3-hc-repair.dft,OOM,72,68,10,15
-rc.4-3-sc-repair.dft,703,52,49,10,6
-rc.4-4-hc-repair.dft,OOM,73,68,10,15
-rc.4-4-sc-repair.dft,OOM,53,49,10,6
-rc.5-1-hc-repair.dft,843,80,78,10,15
-rc.5-1-sc-repair.dft,403,60,59,10,6
-rc.5-5-hc-repair.dft,OOM,85,79,10,15
-rc.5-5-sc-repair.dft,OOM,65,60,10,6
-vgs_1-repair.dft,3069,83,83,N/A,N/A
-vgs_2-repair.dft,2696,79,79,N/A,N/A
-vgs_3-repair.dft,1756,68,68,N/A,N/A
-vgs_4-repair.dft,835556,7,6,153,10
-vgs_5-repair.dft,2031,61,61,N/A,N/A
-vgs_6-repair.dft,2285,74,74,N/A,N/A
-vgs_7-repair.dft,4222,117,117,N/A,N/A
-vgs_8-repair.dft,5466,138,138,N/A,N/A
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
+AHRS-1-repair.dft 573 2 1 17 187
+AHRS-2-repair.dft 491 2 1 22 1
+CAS-repair.dft 181 9 7 27 18
+DCAS-repair.dft 305 7 4 31 15
+EMA-repair.dft 374 22 20 11 17
+MAS-2-repair.dft 1200000 24 21 N/A N/A
+MAS-repair.dft 1800000 18 16 19 488
+cm_1_1_10_dp_x-repair.dft 1800000 37 26 5 6
+cm_1_1_10_sp_x-repair.dft 1800000 35 24 5 6
+cm_1_1_11_dp_x-repair.dft 1800000 40 28 5 6
+cm_1_1_11_sp_x-repair.dft 1800000 38 26 5 6
+cm_1_1_12_dp_x-repair.dft 1800000 43 30 5 6
+cm_1_1_12_sp_x-repair.dft 1800000 41 28 5 6
+cm_1_1_13_sp_x-repair.dft 1800000 44 30 5 6
+cm_1_1_14_sp_x-repair.dft 1800000 47 32 5 6
+cm_1_1_2_dp_x-repair.dft 346 13 10 32 15
+cm_1_1_2_sp_x-repair.dft 329 11 8 29 15
+cm_1_1_3_dp_x-repair.dft 6732 16 12 44 62
+cm_1_1_3_sp_x-repair.dft 6343 14 10 41 62
+cm_1_1_4_dp_x-repair.dft 1800000 19 14 58 809
+cm_1_1_4_sp_x-repair.dft 1800000 17 12 55 809
+cm_1_1_5_dp_x-repair.dft 1800000 22 16 70 2577
+cm_1_1_5_sp_x-repair.dft 1800000 20 14 67 2577
+cm_1_1_6_dp_x-repair.dft 1200000 25 18 5 6
+cm_1_1_6_sp_x-repair.dft 1200000 23 16 5 6
+cm_1_1_7_dp_x-repair.dft 1200000 28 20 5 6
+cm_1_1_7_sp_x-repair.dft 1200000 26 18 5 6
+cm_1_1_8_dp_x-repair.dft 1800000 31 22 N/A N/A
+cm_1_1_8_sp_x-repair.dft 1800000 29 20 5 6
+cm_1_1_9_dp_x-repair.dft 1800000 34 24 5 6
+cm_1_1_9_sp_x-repair.dft 1800000 32 22 5 6
+cm_2_1_2_dp_x-repair.dft 1800000 26 20 32 15
+cm_2_1_2_sp_x-repair.dft 1800000 22 16 29 15
+cm_2_1_3_dp_x-repair.dft 1800000 32 24 44 62
+cm_2_1_3_sp_x-repair.dft 1800000 28 20 41 62
+cm_2_1_4_dp_x-repair.dft 1800000 38 28 58 809
+cm_2_1_4_sp_x-repair.dft 1800000 34 24 55 809
+cm_2_2_2_dp_x-repair.dft 1800000 26 20 32 15
+cm_2_2_2_sp_x-repair.dft 1800000 22 16 29 15
+cm_2_2_3_dp_x-repair.dft 1800000 32 24 44 62
+cm_2_2_3_sp_x-repair.dft 1800000 28 20 41 62
+cm_2_2_4_dp_x-repair.dft 1800000 38 28 58 809
+cm_2_2_4_sp_x-repair.dft 1800000 34 24 55 809
+cm_3_1_2_dp_x-repair.dft 1800000 38 29 32 15
+cm_3_1_2_sp_x-repair.dft 1800000 32 23 29 15
+cm_3_1_3_dp_x-repair.dft 1800000 47 35 44 62
+cm_3_1_3_sp_x-repair.dft 1800000 41 29 41 62
+cm_3_1_4_dp_x-repair.dft 1800000 56 41 58 809
+cm_3_1_4_sp_x-repair.dft 1800000 50 35 55 809
+cm_3_2_2_dp_x-repair.dft 1800000 38 29 32 15
+cm_3_2_2_sp_x-repair.dft 1800000 32 23 29 15
+cm_3_2_3_dp_x-repair.dft 1800000 47 35 44 62
+cm_3_2_3_sp_x-repair.dft 1800000 41 29 41 62
+cm_3_2_4_dp_x-repair.dft 1800000 56 41 58 809
+cm_3_2_4_sp_x-repair.dft 1800000 50 35 55 809
+cm_3_3_2_dp_x-repair.dft 1800000 38 29 32 15
+cm_3_3_2_sp_x-repair.dft 1800000 32 23 29 15
+cm_3_3_3_dp_x-repair.dft 1800000 47 35 44 62
+cm_3_3_3_sp_x-repair.dft 1800000 41 29 41 62
+cm_3_3_4_dp_x-repair.dft 1800000 56 41 58 809
+cm_3_3_4_sp_x-repair.dft 1800000 50 35 55 809
+hecs_1_1-repair.dft 103 15 14 9 15
+hecs_2_1-repair.dft 314 30 28 9 15
+hecs_2_2-repair.dft 320 30 28 9 15
+hecs_3_1-repair.dft 1512 44 41 9 15
+hecs_3_3-repair.dft 1500 44 41 9 15
+hecs_4_1-repair.dft 23407 58 54 9 15
+hecs_4_2-repair.dft 23074 58 54 9 15
+hecs_4_3-repair.dft 23360 58 54 9 15
+hecs_4_4-repair.dft 23543 58 54 9 15
+hecs_5_1-repair.dft 1800000 72 67 9 15
+hecs_5_5-repair.dft 1800000 72 67 9 15
+hecs_6_1-repair.dft 1800000 86 80 9 15
+hecs_6_6-repair.dft 1800000 86 80 9 15
+hecs_7_1-repair.dft 1800000 100 93 9 15
+hecs_7_7-repair.dft 1800000 100 93 9 15
+hecs_8_1-repair.dft 1800000 114 106 9 15
+hecs_8_8-repair.dft 1800000 114 106 9 15
+hemps-repair.dft 254 12 11 15 57
+nppwp-repair.dft 2453 2 1 24 523
+rc.1-1-hc-repair.dft 263 35 33 10 15
+rc.1-1-sc-repair.dft 80 15 14 10 6
+rc.1-10-hc-repair.dft 1800000 45 34 10 15
+rc.1-10-sc-repair.dft 1800000 25 15 10 6
+rc.1-15-hc-repair.dft 1800000 50 34 10 15
+rc.1-15-sc-repair.dft 1800000 30 15 10 6
+rc.1-2-hc-repair.dft 470 37 34 10 15
+rc.1-2-sc-repair.dft 275 17 15 10 6
+rc.1-20-hc-repair.dft 1800000 55 34 10 15
+rc.1-20-sc-repair.dft 1800000 35 15 10 6
+rc.1-25-hc-repair.dft 1800000 60 34 10 15
+rc.1-25-sc-repair.dft 1800000 40 15 10 6
+rc.1-3-hc-repair.dft 1499 38 34 10 15
+rc.1-3-sc-repair.dft 269 18 15 10 6
+rc.1-30-hc-repair.dft 1800000 65 34 10 15
+rc.1-30-sc-repair.dft 1800000 45 15 10 6
+rc.1-4-hc-repair.dft 9123 39 34 10 15
+rc.1-4-sc-repair.dft 684 19 15 10 6
+rc.1-5-hc-repair.dft 65613 40 34 10 15
+rc.1-5-sc-repair.dft 3433 20 15 10 6
+rc.10-1-hc-repair.dft 1068 135 133 10 15
+rc.10-1-sc-repair.dft 664 115 114 10 6
+rc.10-10-hc-repair.dft 1800000 145 134 10 15
+rc.10-10-sc-repair.dft 1800000 125 115 10 6
+rc.15-1-hc-repair.dft 1845 190 188 10 15
+rc.15-1-sc-repair.dft 1339 170 169 10 6
+rc.15-15-hc-repair.dft 1800000 205 189 10 15
+rc.15-15-sc-repair.dft 1800000 185 170 10 6
+rc.2-1-hc-repair.dft 315 47 45 10 15
+rc.2-1-sc-repair.dft 111 27 26 10 6
+rc.2-2-hc-repair.dft 527 49 46 10 15
+rc.2-2-sc-repair.dft 193 29 27 10 6
+rc.2-3-hc-repair.dft 1564 50 46 10 15
+rc.2-3-sc-repair.dft 324 30 27 10 6
+rc.2-4-hc-repair.dft 9054 51 46 10 15
+rc.2-4-sc-repair.dft 738 31 27 10 6
+rc.20-1-hc-repair.dft 2828 245 243 10 15
+rc.20-1-sc-repair.dft 2201 225 224 10 6
+rc.20-20-hc-repair.dft 1800000 265 244 10 15
+rc.20-20-sc-repair.dft 1800000 245 225 10 6
+rc.25-1-hc-repair.dft 4290 300 298 10 15
+rc.25-1-sc-repair.dft 3288 280 279 10 6
+rc.25-25-hc-repair.dft 1800000 325 299 10 15
+rc.25-25-sc-repair.dft 1800000 305 280 10 6
+rc.3-1-hc-repair.dft 412 58 56 10 15
+rc.3-1-sc-repair.dft 155 38 37 10 6
+rc.3-2-hc-repair.dft 602 60 57 10 15
+rc.3-2-sc-repair.dft 241 40 38 10 6
+rc.3-3-hc-repair.dft 1643 61 57 10 15
+rc.3-3-sc-repair.dft 371 41 38 10 6
+rc.3-4-hc-repair.dft 9543 62 57 10 15
+rc.3-4-sc-repair.dft 829 42 38 10 6
+rc.30-1-hc-repair.dft 5571 355 353 10 15
+rc.30-1-sc-repair.dft 4621 335 334 10 6
+rc.30-30-hc-repair.dft 1800000 385 354 10 15
+rc.30-30-sc-repair.dft 1800000 365 335 10 6
+rc.4-1-hc-repair.dft 459 69 67 10 15
+rc.4-1-sc-repair.dft 196 49 48 10 6
+rc.4-2-hc-repair.dft 698 71 68 10 15
+rc.4-2-sc-repair.dft 304 51 49 10 6
+rc.4-3-hc-repair.dft 1762 72 68 10 15
+rc.4-3-sc-repair.dft 476 52 49 10 6
+rc.4-4-hc-repair.dft 9492 73 68 10 15
+rc.4-4-sc-repair.dft 875 53 49 10 6
+rc.5-1-hc-repair.dft 523 80 78 10 15
+rc.5-1-sc-repair.dft 258 60 59 10 6
+rc.5-5-hc-repair.dft 65552 85 79 10 15
+rc.5-5-sc-repair.dft 3977 65 60 10 6
+vgs_1-repair.dft 1907 83 83 N/A N/A
+vgs_2-repair.dft 1655 79 79 N/A N/A
+vgs_3-repair.dft 1080 68 68 N/A N/A
+vgs_4-repair.dft 328410 7 6 153 10
+vgs_5-repair.dft 1161 61 61 N/A N/A
+vgs_6-repair.dft 1362 74 74 N/A N/A
+vgs_7-repair.dft 2514 117 117 N/A N/A
+vgs_8-repair.dft 3296 138 138 N/A N/A

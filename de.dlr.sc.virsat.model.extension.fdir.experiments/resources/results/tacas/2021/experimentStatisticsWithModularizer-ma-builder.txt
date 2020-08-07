@@ -1,157 +1,157 @@
-benchmarkName,time,maxStates,maxTransitions
-AHRS-1.dft,58,83,166
-AHRS-2.dft,216,2100,5904
-CAS.dft,4,33,40
-DCAS.dft,6,31,40
-EMA.dft,3,8,12
-MAS-2.dft,2,32,48
-MAS.dft,208,7738,20905
-cm_1_1_10_dp_x.dft,1,11,12
-cm_1_1_10_sp_x.dft,2,11,12
-cm_1_1_11_dp_x.dft,2,11,12
-cm_1_1_11_sp_x.dft,6,11,12
-cm_1_1_12_dp_x.dft,1,11,12
-cm_1_1_12_sp_x.dft,5,11,12
-cm_1_1_13_sp_x.dft,0,11,12
-cm_1_1_14_sp_x.dft,6,11,12
-cm_1_1_2_dp_x.dft,2,48,68
-cm_1_1_2_sp_x.dft,2,48,68
-cm_1_1_3_dp_x.dft,4,198,327
-cm_1_1_3_sp_x.dft,5,198,327
-cm_1_1_4_dp_x.dft,19,1687,3422
-cm_1_1_4_sp_x.dft,20,1687,3422
-cm_1_1_5_dp_x.dft,91,6733,14952
-cm_1_1_5_sp_x.dft,100,6733,14952
-cm_1_1_6_dp_x.dft,998,54150,134381
-cm_1_1_6_sp_x.dft,971,54150,134381
-cm_1_1_7_dp_x.dft,6588,213756,569510
-cm_1_1_7_sp_x.dft,6417,213756,569510
-cm_1_1_8_dp_x.dft,3,11,12
-cm_1_1_8_sp_x.dft,2,11,12
-cm_1_1_9_dp_x.dft,0,11,12
-cm_1_1_9_sp_x.dft,1,11,12
-cm_2_1_2_dp_x.dft,4,48,68
-cm_2_1_2_sp_x.dft,3,48,68
-cm_2_1_3_dp_x.dft,8,198,327
-cm_2_1_3_sp_x.dft,6,198,327
-cm_2_1_4_dp_x.dft,38,1687,3422
-cm_2_1_4_sp_x.dft,36,1687,3422
-cm_2_2_2_dp_x.dft,3,48,68
-cm_2_2_2_sp_x.dft,2,48,68
-cm_2_2_3_dp_x.dft,3,198,327
-cm_2_2_3_sp_x.dft,3,198,327
-cm_2_2_4_dp_x.dft,37,1687,3422
-cm_2_2_4_sp_x.dft,35,1687,3422
-cm_3_1_2_dp_x.dft,3,48,68
-cm_3_1_2_sp_x.dft,4,48,68
-cm_3_1_3_dp_x.dft,10,198,327
-cm_3_1_3_sp_x.dft,12,198,327
-cm_3_1_4_dp_x.dft,54,1687,3422
-cm_3_1_4_sp_x.dft,58,1687,3422
-cm_3_2_2_dp_x.dft,4,48,68
-cm_3_2_2_sp_x.dft,5,48,68
-cm_3_2_3_dp_x.dft,11,198,327
-cm_3_2_3_sp_x.dft,7,198,327
-cm_3_2_4_dp_x.dft,56,1687,3422
-cm_3_2_4_sp_x.dft,54,1687,3422
-cm_3_3_2_dp_x.dft,3,48,68
-cm_3_3_2_sp_x.dft,2,48,68
-cm_3_3_3_dp_x.dft,9,198,327
-cm_3_3_3_sp_x.dft,12,198,327
-cm_3_3_4_dp_x.dft,61,1687,3422
-cm_3_3_4_sp_x.dft,56,1687,3422
-hecs_1_1.dft,1,31,40
-hecs_2_1.dft,1,31,40
-hecs_2_2.dft,1,31,40
-hecs_3_1.dft,1,31,40
-hecs_3_3.dft,2,31,40
-hecs_4_1.dft,4,31,40
-hecs_4_2.dft,1,31,40
-hecs_4_3.dft,2,31,40
-hecs_4_4.dft,0,31,40
-hecs_5_1.dft,5,31,40
-hecs_5_5.dft,2,31,40
-hecs_6_1.dft,3,31,40
-hecs_6_6.dft,2,31,40
-hecs_7_1.dft,2,31,40
-hecs_7_7.dft,4,31,40
-hecs_8_1.dft,2,31,40
-hecs_8_8.dft,4,31,40
-hemps.dft,0,30,53
-nppwp.dft,3,173,391
-rc.1-1-hc.dft,1,31,40
-rc.1-1-sc.dft,0,11,12
-rc.1-10-hc.dft,2,31,40
-rc.1-10-sc.dft,3,11,12
-rc.1-15-hc.dft,4,31,40
-rc.1-15-sc.dft,4,11,12
-rc.1-2-hc.dft,1,31,40
-rc.1-2-sc.dft,1,11,12
-rc.1-20-hc.dft,7,31,40
-rc.1-20-sc.dft,7,11,12
-rc.1-25-hc.dft,8,31,40
-rc.1-25-sc.dft,11,11,12
-rc.1-3-hc.dft,1,31,40
-rc.1-3-sc.dft,0,11,12
-rc.1-30-hc.dft,12,31,40
-rc.1-30-sc.dft,7,11,12
-rc.1-4-hc.dft,2,31,40
-rc.1-4-sc.dft,3,11,12
-rc.1-5-hc.dft,1,31,40
-rc.1-5-sc.dft,1,11,12
-rc.10-1-hc.dft,2,31,40
-rc.10-1-sc.dft,0,11,12
-rc.10-10-hc.dft,4,31,40
-rc.10-10-sc.dft,1,11,12
-rc.15-1-hc.dft,0,31,40
-rc.15-1-sc.dft,0,11,12
-rc.15-15-hc.dft,5,31,40
-rc.15-15-sc.dft,5,11,12
-rc.2-1-hc.dft,1,31,40
-rc.2-1-sc.dft,1,11,12
-rc.2-2-hc.dft,2,31,40
-rc.2-2-sc.dft,0,11,12
-rc.2-3-hc.dft,3,31,40
-rc.2-3-sc.dft,2,11,12
-rc.2-4-hc.dft,1,31,40
-rc.2-4-sc.dft,0,11,12
-rc.20-1-hc.dft,1,31,40
-rc.20-1-sc.dft,0,11,12
-rc.20-20-hc.dft,6,31,40
-rc.20-20-sc.dft,8,11,12
-rc.25-1-hc.dft,1,31,40
-rc.25-1-sc.dft,1,11,12
-rc.25-25-hc.dft,6,31,40
-rc.25-25-sc.dft,7,11,12
-rc.3-1-hc.dft,1,31,40
-rc.3-1-sc.dft,0,11,12
-rc.3-2-hc.dft,1,31,40
-rc.3-2-sc.dft,0,11,12
-rc.3-3-hc.dft,2,31,40
-rc.3-3-sc.dft,1,11,12
-rc.3-4-hc.dft,1,31,40
-rc.3-4-sc.dft,1,11,12
-rc.30-1-hc.dft,0,31,40
-rc.30-1-sc.dft,0,11,12
-rc.30-30-hc.dft,10,31,40
-rc.30-30-sc.dft,10,11,12
-rc.4-1-hc.dft,0,31,40
-rc.4-1-sc.dft,1,11,12
-rc.4-2-hc.dft,2,31,40
-rc.4-2-sc.dft,1,11,12
-rc.4-3-hc.dft,2,31,40
-rc.4-3-sc.dft,1,11,12
-rc.4-4-hc.dft,3,31,40
-rc.4-4-sc.dft,2,11,12
-rc.5-1-hc.dft,1,31,40
-rc.5-1-sc.dft,0,11,12
-rc.5-5-hc.dft,3,31,40
-rc.5-5-sc.dft,2,11,12
-vgs_1.dft,N/A,N/A,N/A
-vgs_2.dft,N/A,N/A,N/A
-vgs_3.dft,N/A,N/A,N/A
-vgs_4.dft,11,105,280
-vgs_5.dft,N/A,N/A,N/A
-vgs_6.dft,N/A,N/A,N/A
-vgs_7.dft,N/A,N/A,N/A
-vgs_8.dft,N/A,N/A,N/A
+benchmarkName time maxStates maxTransitions
+AHRS-1.dft 3 83 166
+AHRS-2.dft 35 2100 5904
+CAS.dft 1 33 40
+DCAS.dft 0 31 40
+EMA.dft 0 8 12
+MAS-2.dft 178 7172 19815
+MAS.dft N/A N/A N/A
+cm_1_1_10_dp_x.dft 2 11 12
+cm_1_1_10_sp_x.dft N/A N/A N/A
+cm_1_1_11_dp_x.dft 1 11 12
+cm_1_1_11_sp_x.dft 0 11 12
+cm_1_1_12_dp_x.dft 1 11 12
+cm_1_1_12_sp_x.dft 0 11 12
+cm_1_1_13_sp_x.dft 4 11 12
+cm_1_1_14_sp_x.dft 1 11 12
+cm_1_1_2_dp_x.dft 1 48 68
+cm_1_1_2_sp_x.dft 2 48 68
+cm_1_1_3_dp_x.dft 2 198 327
+cm_1_1_3_sp_x.dft 3 198 327
+cm_1_1_4_dp_x.dft 16 1687 3422
+cm_1_1_4_sp_x.dft 21 1687 3422
+cm_1_1_5_dp_x.dft 100 6733 14952
+cm_1_1_5_sp_x.dft 96 6733 14952
+cm_1_1_6_dp_x.dft 941 54150 134381
+cm_1_1_6_sp_x.dft 935 54150 134381
+cm_1_1_7_dp_x.dft 8663 213756 569510
+cm_1_1_7_sp_x.dft 6076 213756 569510
+cm_1_1_8_dp_x.dft 1 11 12
+cm_1_1_8_sp_x.dft N/A N/A N/A
+cm_1_1_9_dp_x.dft 0 11 12
+cm_1_1_9_sp_x.dft 6 11 12
+cm_2_1_2_dp_x.dft 3 48 68
+cm_2_1_2_sp_x.dft 4 48 68
+cm_2_1_3_dp_x.dft 7 198 327
+cm_2_1_3_sp_x.dft 3 198 327
+cm_2_1_4_dp_x.dft 35 1687 3422
+cm_2_1_4_sp_x.dft 35 1687 3422
+cm_2_2_2_dp_x.dft 5 48 68
+cm_2_2_2_sp_x.dft 1 48 68
+cm_2_2_3_dp_x.dft 6 198 327
+cm_2_2_3_sp_x.dft 6 198 327
+cm_2_2_4_dp_x.dft 35 1687 3422
+cm_2_2_4_sp_x.dft 37 1687 3422
+cm_3_1_2_dp_x.dft 3 48 68
+cm_3_1_2_sp_x.dft 3 48 68
+cm_3_1_3_dp_x.dft 6 198 327
+cm_3_1_3_sp_x.dft 6 198 327
+cm_3_1_4_dp_x.dft 52 1687 3422
+cm_3_1_4_sp_x.dft 49 1687 3422
+cm_3_2_2_dp_x.dft 6 48 68
+cm_3_2_2_sp_x.dft 2 48 68
+cm_3_2_3_dp_x.dft 9 198 327
+cm_3_2_3_sp_x.dft 8 198 327
+cm_3_2_4_dp_x.dft 49 1687 3422
+cm_3_2_4_sp_x.dft 51 1687 3422
+cm_3_3_2_dp_x.dft 4 48 68
+cm_3_3_2_sp_x.dft 3 48 68
+cm_3_3_3_dp_x.dft 9 198 327
+cm_3_3_3_sp_x.dft 9 198 327
+cm_3_3_4_dp_x.dft 51 1687 3422
+cm_3_3_4_sp_x.dft 53 1687 3422
+hecs_1_1.dft 0 31 40
+hecs_2_1.dft 2 31 40
+hecs_2_2.dft 2 31 40
+hecs_3_1.dft 2 31 40
+hecs_3_3.dft 1 31 40
+hecs_4_1.dft 0 31 40
+hecs_4_2.dft 2 31 40
+hecs_4_3.dft 2 31 40
+hecs_4_4.dft 1 31 40
+hecs_5_1.dft 2 31 40
+hecs_5_5.dft 3 31 40
+hecs_6_1.dft 3 31 40
+hecs_6_6.dft 3 31 40
+hecs_7_1.dft 4 31 40
+hecs_7_7.dft 3 31 40
+hecs_8_1.dft 3 31 40
+hecs_8_8.dft 5 31 40
+hemps.dft 1 30 53
+nppwp.dft 3 173 391
+rc.1-1-hc.dft 2 31 40
+rc.1-1-sc.dft 0 11 12
+rc.1-10-hc.dft 5 31 40
+rc.1-10-sc.dft 3 11 12
+rc.1-15-hc.dft 4 31 40
+rc.1-15-sc.dft 4 11 12
+rc.1-2-hc.dft 2 31 40
+rc.1-2-sc.dft 1 11 12
+rc.1-20-hc.dft 7 31 40
+rc.1-20-sc.dft 6 11 12
+rc.1-25-hc.dft 7 31 40
+rc.1-25-sc.dft 9 11 12
+rc.1-3-hc.dft 2 31 40
+rc.1-3-sc.dft 0 11 12
+rc.1-30-hc.dft 5 31 40
+rc.1-30-sc.dft 11 11 12
+rc.1-4-hc.dft 1 31 40
+rc.1-4-sc.dft 1 11 12
+rc.1-5-hc.dft 2 31 40
+rc.1-5-sc.dft 1 11 12
+rc.10-1-hc.dft 0 31 40
+rc.10-1-sc.dft 0 11 12
+rc.10-10-hc.dft 4 31 40
+rc.10-10-sc.dft 2 11 12
+rc.15-1-hc.dft 1 31 40
+rc.15-1-sc.dft 0 11 12
+rc.15-15-hc.dft 4 31 40
+rc.15-15-sc.dft 6 11 12
+rc.2-1-hc.dft 1 31 40
+rc.2-1-sc.dft 0 11 12
+rc.2-2-hc.dft 0 31 40
+rc.2-2-sc.dft 1 11 12
+rc.2-3-hc.dft 3 31 40
+rc.2-3-sc.dft 1 11 12
+rc.2-4-hc.dft 1 31 40
+rc.2-4-sc.dft 2 11 12
+rc.20-1-hc.dft 1 31 40
+rc.20-1-sc.dft 0 11 12
+rc.20-20-hc.dft 4 31 40
+rc.20-20-sc.dft 2 11 12
+rc.25-1-hc.dft 0 31 40
+rc.25-1-sc.dft 0 11 12
+rc.25-25-hc.dft 5 31 40
+rc.25-25-sc.dft 5 11 12
+rc.3-1-hc.dft 0 31 40
+rc.3-1-sc.dft 1 11 12
+rc.3-2-hc.dft 1 31 40
+rc.3-2-sc.dft 2 11 12
+rc.3-3-hc.dft 2 31 40
+rc.3-3-sc.dft 2 11 12
+rc.3-4-hc.dft 0 31 40
+rc.3-4-sc.dft 0 11 12
+rc.30-1-hc.dft 0 31 40
+rc.30-1-sc.dft 0 11 12
+rc.30-30-hc.dft 8 31 40
+rc.30-30-sc.dft 8 11 12
+rc.4-1-hc.dft 0 31 40
+rc.4-1-sc.dft 0 11 12
+rc.4-2-hc.dft 0 31 40
+rc.4-2-sc.dft 1 11 12
+rc.4-3-hc.dft 2 31 40
+rc.4-3-sc.dft 0 11 12
+rc.4-4-hc.dft 2 31 40
+rc.4-4-sc.dft 3 11 12
+rc.5-1-hc.dft 1 31 40
+rc.5-1-sc.dft 1 11 12
+rc.5-5-hc.dft 1 31 40
+rc.5-5-sc.dft 2 11 12
+vgs_1.dft N/A N/A N/A
+vgs_2.dft N/A N/A N/A
+vgs_3.dft N/A N/A N/A
+vgs_4.dft 9 69 180
+vgs_5.dft N/A N/A N/A
+vgs_6.dft N/A N/A N/A
+vgs_7.dft N/A N/A N/A
+vgs_8.dft N/A N/A N/A

@@ -31,13 +31,16 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 public class BasicSynthesizer extends ASynthesizer {
 
+	private static final int TICKS = 2;
+	
 	protected IMarkovScheduler<DFTState> scheduler = new MarkovScheduler<>();
 	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
+		subMonitor = SubMonitor.convert(subMonitor, TICKS);
 		ScheduleQuery<DFTState> scheduelQuery = new ScheduleQuery<>(ma, initialMa);
-		Map<DFTState, List<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(scheduelQuery);
-		return new Schedule2RAConverter<>(ma, concept).convert(schedule, initialMa);
+		Map<DFTState, List<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(scheduelQuery, subMonitor.split(1));
+		return new Schedule2RAConverter<>(ma, concept).convert(schedule, initialMa, subMonitor.split(1));
 	}
 
 	@Override

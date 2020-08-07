@@ -1,2 +1,2 @@
-#solved,#total,#timeouts,#ooms,totalSolveTime
-53,156,4,99,97343
+solved timeouts ooms solveTime
+76/156 5 75 677

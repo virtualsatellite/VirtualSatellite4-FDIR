@@ -97,20 +97,30 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
-			// Eclipse trick for doing progress updates with unknown ending time
-			final int PROGRESS_COUNT = 100;
-			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-			long freeMemory = maxMemory - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
-			if (freeMemory < MEMORY_THRESHOLD) {
-				throw new RuntimeException("Close to out of memory. Aborting so we can still maintain an operational state.");
-			}
-			
+			checkCancellation(monitor);
 			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
+			checkCancellation(monitor);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
 		
 		return newSuccs;
+	}
+	
+	/**
+	 * Checks if this long running operation should cancelled / has been cancelled
+	 * and gives user feedback that the operation is still running.
+	 * @param monitor a monitor
+	 */
+	private void checkCancellation(SubMonitor monitor) {
+		// Eclipse trick for doing progress updates with unknown ending time
+		final int PROGRESS_COUNT = 100;
+		monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+		
+		long freeMemory = maxMemory - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
+		if (freeMemory < MEMORY_THRESHOLD) {
+			throw new RuntimeException("Close to out of memory. Aborting so we can still maintain an operational state.");
+		}
 	}
 	
 	@Override

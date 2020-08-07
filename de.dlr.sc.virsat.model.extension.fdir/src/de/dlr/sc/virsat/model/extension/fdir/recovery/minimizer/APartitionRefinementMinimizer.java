@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -58,10 +60,11 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	protected abstract void mergeBlocks(Set<List<State>> blocks);
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		this.raHolder = raHolder;
+		subMonitor = SubMonitor.convert(subMonitor);
 		
-		Set<List<State>> blocks = computeBlocks();
+		Set<List<State>> blocks = computeBlocks(subMonitor);
 		mergeBlocks(blocks);
 	}
 	
@@ -69,11 +72,12 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 * Performs the actual partition refinement algorithm
 	 * to compute the equivalence classes on the recovery automaton.
 	 * Each equivalence class is represented as a "block" list of states.
+	 * @param subMonitor a monitor
 	 * @return the computed block partitions
 	 */
-	protected Set<List<State>> computeBlocks() {
+	protected Set<List<State>> computeBlocks(SubMonitor subMonitor) {
 		Set<List<State>> blocks = createInitialBlocks();
-		refineBlocks(blocks);
+		refineBlocks(blocks, subMonitor);
 		return blocks;
 	}
 	
@@ -121,10 +125,14 @@ public abstract class APartitionRefinementMinimizer extends ARecoveryAutomatonMi
 	 * A partition needs to be split into refined partitions if at least two states
 	 * have a different transition profile.
 	 * @param blocks the partitions to be refined
+	 * @param subMonitor a monitor
 	 */
-	protected void refineBlocks(Set<List<State>> blocks) {
+	protected void refineBlocks(Set<List<State>> blocks, SubMonitor subMonitor) {
 		Queue<List<State>> blocksToProcess = new LinkedList<>(blocks); 
 		while (!blocksToProcess.isEmpty()) {
+			final int PROGRESS_COUNT = 100;
+			subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+			
 			List<State> block = blocksToProcess.poll();
 		
 			if (block.size() <= 1) {

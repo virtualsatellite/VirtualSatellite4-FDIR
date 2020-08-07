@@ -21,6 +21,8 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -67,12 +69,15 @@ public class Schedule2RAConverter<S extends MarkovState> {
 	 * Performs the conversion
 	 * @param schedule the schedule
 	 * @param initialMa the initial state in the ma
+	 * @param subMonitor a monitor
 	 * @return a recovery automaton represenation of the given schedule
 	 */
-	public RecoveryAutomaton convert(Map<S, List<MarkovTransition<S>>> schedule, S initialMa) {
+	public RecoveryAutomaton convert(Map<S, List<MarkovTransition<S>>> schedule, S initialMa, SubMonitor subMonitor) {
 		mapMarkovStateToRaState = new HashMap<>();
 		raHelper = new RecoveryAutomatonHelper(concept);
 		ra = new RecoveryAutomaton(concept);
+		
+		subMonitor = SubMonitor.convert(subMonitor);
 		
 		Queue<S> toProcess = new LinkedList<>();
 		
@@ -81,6 +86,9 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		Set<S> handledNonDetStates = new HashSet<>();
 		
 		while (!toProcess.isEmpty()) {
+			final int PROGRESS_COUNT = 100;
+			subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+			
 			S state = toProcess.poll();
 			List<S> nextStates = handleState(state, schedule, createdTransitions);
 			for (S nextState : nextStates) {

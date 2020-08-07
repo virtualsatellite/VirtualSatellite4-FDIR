@@ -165,10 +165,15 @@ public class ASynthesizerExperiment {
 					System.out.println("Got OOM during benchmark setup! Cleaning and then trying again.");
 				}
 				
+				// Try to bring us into a clean state by triggering the garbage collection
+				// and discarding dead objects. Note that this is only a best effort cleaning.
 				clean();
 			}
 		}
 	}
+	
+	private static final int TIMEOUT_FACTOR = 2;
+	private static final int OUT_OF_MEMROY_FACTORY = 3;
 	
 	/**
 	 * Benchmarks a single DFT and saves the statistics
@@ -180,19 +185,24 @@ public class ASynthesizerExperiment {
 	protected void benchmarkDFT(String dftPath, String benchmarkName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
 		System.out.print("Benchmarking " + benchmarkName + "... ");
 		
+		// Prepare the necessary data and helper classes for the benchmark
 		Duration timeout = Duration.ofSeconds(timeoutSeconds);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		Fault fault = createDFT(dftPath);
 		SynthesisQuery query = new SynthesisQuery(fault);
+		
+		// Using the supplier we generate a fresh new synthesizer to avoid having
+		// previous data influence our measurements
 		ISynthesizer benchmarkSynthesizer = synthesizerSupplier.get();
 		
 		// Create a monitor so we can properly cancel the synthesis call
 		SubMonitor monitor = SubMonitor.convert(new NullProgressMonitor());
 		
+		// Execute the benchmark and handle timeout and out of memory events
 		final Future<?> handler = executor.submit(() -> {
 			benchmarkSynthesizer.synthesize(query, monitor);
 		});
-
+		
 		try {
 		    handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
 		    System.out.println("DONE.");
@@ -205,26 +215,39 @@ public class ASynthesizerExperiment {
 		    System.out.println("TIMEOUT.");
 		}
 		
+		// Terminate the possibily still ongoing benchmark.
+		// Since termination is a cooperative process, we may need to wait some time
+		// until the benchmarked synthesizer hits a point where it checks for cancellation
 		executor.shutdownNow();
+		while (!executor.isTerminated()) {
+			try {
+				executor.awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
+				if (!executor.isTerminated()) {
+					System.out.println("Previous benchmark has not succesfully terminated yet... awaiting termination... ");
+				} 
+			} catch (InterruptedException e) {
+				// Nothing to handle here
+			}
+		}
 		
-		mapBenchmarkToSynthesisStatistics.put(benchmarkName, benchmarkSynthesizer.getStatistics());
-		mapBenchmarkToFaultTreeStatistics.put(benchmarkName, query.getFTHolder().getStatistics());
+		// Memorize the results for later processing
+		// Also mark the timeout and out of memory with special benchmark times depending on the benchmark timeout
+		// This way we can later properly display the data in graphs
 		
 		countTotal++;
 		if (benchmarkSynthesizer.getStatistics().time == IStatistics.OOM) {
 			countOutOfMemory++;
+			benchmarkSynthesizer.getStatistics().time = OUT_OF_MEMROY_FACTORY * TimeUnit.MILLISECONDS.convert(timeoutSeconds, TimeUnit.SECONDS);
 		} else if (benchmarkSynthesizer.getStatistics().time == IStatistics.TIMEOUT) {
 			countTimeout++;
+			benchmarkSynthesizer.getStatistics().time = TIMEOUT_FACTOR * TimeUnit.MILLISECONDS.convert(timeoutSeconds, TimeUnit.SECONDS);
 		} else {
 			countSolved++;
 			totalSolveTime += benchmarkSynthesizer.getStatistics().time;
 		}
 		
-		try {
-			executor.awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			// Nothing to handle here
-		}
+		mapBenchmarkToSynthesisStatistics.put(benchmarkName, benchmarkSynthesizer.getStatistics());
+		mapBenchmarkToFaultTreeStatistics.put(benchmarkName, query.getFTHolder().getStatistics());
 	}
 	
 	/**
@@ -288,11 +311,11 @@ public class ASynthesizerExperiment {
 		try (OutputStream outFile = Files.newOutputStream(pathSynthesizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			
-			String header = "benchmarkName," + String.join(",", columns);
+			String header = "benchmarkName " + String.join(" ", columns);
 			writer.println(header);
 			
 			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToSynthesisStatistics.entrySet()) {
-				String record = entry.getKey() + "," + String.join(",", getValues.apply(entry.getValue()));
+				String record = entry.getKey() + " " + String.join(" ", getValues.apply(entry.getValue()));
 				writer.println(record);
 			}
 		}
@@ -310,23 +333,22 @@ public class ASynthesizerExperiment {
 		
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
-			writer.println("#solved,#total,#timeouts,#ooms,totalSolveTime");
-			writer.print(countSolved + ",");
-			writer.print(countTotal + ",");
-			writer.print(countTimeout + ",");
-			writer.print(countOutOfMemory + ",");
-			writer.print(totalSolveTime);
+			writer.println("solved timeouts ooms solveTime");
+			writer.print(countSolved + "/" + countTotal + " ");
+			writer.print(countTimeout + " ");
+			writer.print(countOutOfMemory + " ");
+			writer.print(TimeUnit.SECONDS.convert(totalSolveTime, TimeUnit.MILLISECONDS));
 		}
 		
 		Path pathFaultTree = Paths.get(filePathWithPrefix + "-fault-tree.txt");
 		try (OutputStream outFile = Files.newOutputStream(pathFaultTree, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			
-			String header = "benchmarkName," + String.join(",", FaultTreeStatistics.getColumns());
+			String header = "benchmarkName " + String.join(" ", FaultTreeStatistics.getColumns());
 			writer.println(header);
 			
 			for (Entry<String, FaultTreeStatistics> entry : mapBenchmarkToFaultTreeStatistics.entrySet()) {
-				String record = entry.getKey() + "," + String.join(",", entry.getValue().getValues());
+				String record = entry.getKey() + " " + String.join(" ", entry.getValue().getValues());
 				writer.println(record);
 			}
 		}

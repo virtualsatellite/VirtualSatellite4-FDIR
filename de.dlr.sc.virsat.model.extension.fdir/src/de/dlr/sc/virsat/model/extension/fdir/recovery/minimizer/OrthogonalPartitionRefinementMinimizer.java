@@ -20,6 +20,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -44,19 +46,19 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	private FaultTreeHolder ftHolder;
 	
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		this.ftHolder = ftHolder;
-		super.minimize(raHolder, ftHolder);
+		super.minimize(raHolder, ftHolder, subMonitor);
 	}
 	
 	@Override
-	protected Set<List<State>> computeBlocks() {
+	protected Set<List<State>> computeBlocks(SubMonitor subMonitor) {
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
 		repairableEvents = raHelper.computeRepairableEvents(raHolder);
 		mapStateToDisabledInputs = raHelper.computeDisabledInputs(raHolder);
 		repeatedEvents = computeRepeatedEvents();
 		
-		return super.computeBlocks();
+		return super.computeBlocks(subMonitor);
 	}
 	
 	/**

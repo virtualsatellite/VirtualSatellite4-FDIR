@@ -10,6 +10,8 @@
 
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -31,22 +33,24 @@ public abstract class ARecoveryAutomatonMinimizer {
 	 * @param raHolder the recovery automaton to minimize
 	 * @param ftHolder the fault tree upon which the recovery automaton is based. Choose null
 	 * if no additional fault tree information is supplied.
+	 * @param subMonitor a monitor
 	 */
-	protected abstract void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder);
+	protected abstract void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor);
 	
 	/**
 	 * Main interface minimization method
 	 * @param ra the recovery automaton to be minimized
 	 * @param root the root of the associated fault tree
+	 * @param subMonitor a monitor
 	 */
-	public void minimize(RecoveryAutomaton ra, FaultTreeNode root) {
+	public void minimize(RecoveryAutomaton ra, FaultTreeNode root, SubMonitor subMonitor) {
 		statistics = new MinimizationStatistics();
 		long startTime = System.currentTimeMillis();
 		statistics.time = IStatistics.TIMEOUT;
 		statistics.removedStates = ra.getStates().size();
 		statistics.removedTransitions = ra.getTransitions().size();
 		
-		minimize(new RecoveryAutomatonHolder(ra), new FaultTreeHolder(root));
+		minimize(new RecoveryAutomatonHolder(ra), new FaultTreeHolder(root), subMonitor);
 		
 		statistics.time = System.currentTimeMillis() - startTime;
 		statistics.removedStates = statistics.removedStates - ra.getStates().size();
@@ -58,7 +62,7 @@ public abstract class ARecoveryAutomatonMinimizer {
 	 * @param ra the recovery automaton to be minimized
 	 */
 	public void minimize(RecoveryAutomaton ra) {
-		minimize(new RecoveryAutomatonHolder(ra), null);
+		minimize(new RecoveryAutomatonHolder(ra), null, null);
 	}
 	
 	/**
