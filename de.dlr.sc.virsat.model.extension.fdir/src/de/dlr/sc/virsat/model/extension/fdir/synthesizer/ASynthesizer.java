@@ -41,7 +41,7 @@ public abstract class ASynthesizer implements ISynthesizer {
 		statistics.time = IStatistics.TIMEOUT;
 		statistics.countModules = 1;
 		
-		int steps = 1 + (minimizer != null ? 1 : 1);
+		int steps = 1 + (minimizer != null ? 1 : 0);
 		subMonitor = SubMonitor.convert(subMonitor, steps);
 		
 		FaultTreeNode root  = synthesisQuery.getFTHolder().getRoot();
