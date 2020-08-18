@@ -13,8 +13,10 @@ package de.dlr.sc.virsat.fdir.core.util;
 import java.util.List;
 
 public interface IStatistics {
-	int NA = -2;
+	
 	int TIMEOUT = -1;
+	int NA = -2;
+	int OOM = -3;
 	
 	/**
 	 * Gets a print value for a statistics entry.
@@ -24,8 +26,6 @@ public interface IStatistics {
 	default String getPrintValue(long value) {
 		if (value == NA) {
 			return "N/A";
-		} else if (value == TIMEOUT) {
-			return "Timeout";
 		} else {
 			return String.valueOf(value);
 		}

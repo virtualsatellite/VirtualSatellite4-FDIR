@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInst
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
+import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEvent;
@@ -51,6 +52,7 @@ public class FaultTreeHolder {
 	private Map<BasicEvent, BasicEventHolder> mapBEToBEHolders;
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapNodeToAllParents;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSubNodes;
+	private Map<Fault, List<ADEP>> mapFaultToContainedDeps;
 	
 	/**
 	 * Standard constructor
@@ -100,6 +102,15 @@ public class FaultTreeHolder {
 					mapEdgeTypesToNodes = ftHelper.getMapEdgeTypeToNodes(faultTrees);
 				}
 				processNode(node, mapEdgeTypesToNodes);
+			}
+		}
+		
+		for (FaultTree ft : faultTrees) {
+			Fault fault = ft.getRoot();
+			for (FaultTreeNode gate : ft.getGates()) {
+				if (gate instanceof ADEP) {
+					mapFaultToContainedDeps.computeIfAbsent(fault, key -> new ArrayList<>()).add((ADEP) gate);
+				}
 			}
 		}
 	}
@@ -232,6 +243,7 @@ public class FaultTreeHolder {
 		mapTypeToNodes = new HashMap<>();
 		nodes = new HashSet<>();
 		faultTrees = new HashSet<>();
+		mapFaultToContainedDeps = new HashMap<>(); 
 		
 		for (FaultTreeNodeType type : FaultTreeNodeType.values()) {
 			mapTypeToNodes.put(type, new HashSet<>());
@@ -531,6 +543,10 @@ public class FaultTreeHolder {
 		}
 		
 		return roots;
+	}
+	
+	public Map<Fault, List<ADEP>> getMapFaultToContainedDeps() {
+		return mapFaultToContainedDeps;
 	}
 	
 	/**

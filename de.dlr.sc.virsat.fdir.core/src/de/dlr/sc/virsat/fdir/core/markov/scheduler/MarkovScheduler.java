@@ -21,6 +21,8 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -50,8 +52,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	private MetricsStateDeriver metricStateDeriver = new MetricsStateDeriver();
 	
 	@Override
-	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery) {
-		results = computeValues(scheduleQuery.getMa(), scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric());
+	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery, SubMonitor subMonitor) {
+		results = computeValues(scheduleQuery.getMa(), scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric(), subMonitor);
 		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(scheduleQuery.getInitialState());
@@ -91,7 +93,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	 * @param initialMa the initial stae
 	 * @return a mapping from state to its utility value
 	 */
-	private Map<MarkovState, Double> computeValues(MarkovAutomaton<S> ma, S initialMa, IMetric metric) {
+	private Map<MarkovState, Double> computeValues(MarkovAutomaton<S> ma, S initialMa, IMetric metric, SubMonitor subMonitor) {
 		Map<FailLabelProvider, IMetric[]> partitioning = IMetric.partitionMetrics(false, metric);
 		Map<FailLabelProvider, Map<IMetric, Map<MarkovState, ?>>> results = new HashMap<>();
 		
@@ -104,7 +106,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				IBaseMetric[] metrics = (IBaseMetric[]) entry.getValue();
 				for (IBaseMetric baseMetric : metrics) {
 					ModelCheckingQuery<S> modelCheckingQuery = new ModelCheckingQuery<>(ma, failLabelProvider, baseMetric);
-					modelChecker.checkModel(modelCheckingQuery, null);
+					modelChecker.checkModel(modelCheckingQuery, subMonitor);
 					
 					if (baseMetric instanceof IQualitativeMetric) {
 						Map<MarkovState, Object> values = modelChecker.getQualitativeResults();

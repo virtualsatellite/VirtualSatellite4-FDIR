@@ -13,6 +13,8 @@ package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 
@@ -27,9 +29,9 @@ public interface IMarkovScheduler<S extends MarkovState> {
 	
 	/**
 	 * Computes the optimal schedule for a given ma
-	 * @param ma the ma
-	 * @param initialMa the initial state
+	 * @param scheduleQuery the query for which the optimal scheduler should be computed
+	 * @param subMonitor a monitor
 	 * @return the schedule
 	 */
-	Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery);
+	Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery, SubMonitor subMonitor);
 }

@@ -35,19 +35,23 @@ import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 public class POSynthesizer extends ASynthesizer {
 
+	private static final int TICKS = 3;
+	
 	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
 	protected IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
+		subMonitor = SubMonitor.convert(subMonitor, TICKS);
+		
 		// Build the actual belief ma
-		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor);
+		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma
 		ScheduleQuery<BeliefState> scheduleQuery = new ScheduleQuery<>(beliefMa, initialBeliefState);
-		Map<BeliefState, List<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(scheduleQuery);
-		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState);
+		Map<BeliefState, List<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(scheduleQuery, subMonitor.split(1));
+		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState, subMonitor.split(1));
 	}
 	
 	@Override

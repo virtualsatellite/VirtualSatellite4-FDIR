@@ -11,6 +11,8 @@ package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
@@ -35,9 +37,9 @@ public abstract class AStateSpaceGenerator<S extends MarkovState> {
 	
 	/**
 	 * Takes a belief state and generates the successor states for it
-	 * @param ma the markov automaton where the generated states will be inserted
-	 * @param beliefState the belief state to consider
+	 * @param state the current state
+	 * @param monitor a monitor
 	 * @return the newly generated states
 	 */
-	public abstract List<S> generateSuccs(S state);
+	public abstract List<S> generateSuccs(S state, SubMonitor monitor);
 }

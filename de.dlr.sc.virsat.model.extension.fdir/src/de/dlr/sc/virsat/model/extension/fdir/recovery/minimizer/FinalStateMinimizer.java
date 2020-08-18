@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
@@ -31,7 +33,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
  */
 public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		RecoveryAutomaton ra = raHolder.getRa();
 		
 		RecoveryAutomatonHelper raHelper = raHolder.getRaHelper();
@@ -39,7 +41,10 @@ public class FinalStateMinimizer extends ARecoveryAutomatonMinimizer {
 		Set<State> finalStates = new HashSet<>();
 		List<Transition> transitionsToRemove = new ArrayList<>();
 		
+		subMonitor = SubMonitor.convert(subMonitor, ra.getStates().size());
 		for (State state1 : ra.getStates()) {
+			subMonitor.split(1);
+			
 			List<Transition> outgoingTransitions1 = raHolder.getStateHolder(state1).getOutgoingTransitions();
 			if (raHelper.isFinalState(ra, state1, outgoingTransitions1) || !raHelper.isFinalStateEquivalent(ra, outgoingTransitions1)) {
 				continue;

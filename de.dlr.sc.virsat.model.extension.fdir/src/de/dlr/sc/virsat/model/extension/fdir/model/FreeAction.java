@@ -61,6 +61,14 @@ public  class FreeAction extends AFreeAction {
 
 	private FaultTreeNode freeSpare;
 	
+	@Override
+	public FaultTreeNode getFreeSpare() {
+		if (freeSpare != null) {
+			return freeSpare;
+		}
+		return super.getFreeSpare();
+	}
+	
 	public FaultTreeNode getFreeSpareByUUID(DFTState state) {
 		FaultTreeNode freeSpareOriginal = getFreeSpare();
 		return state.getFTHolder().getNodes().stream()
