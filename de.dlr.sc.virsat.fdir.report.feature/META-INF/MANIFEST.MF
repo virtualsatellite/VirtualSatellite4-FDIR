@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: VirSat FDIR Reports
+Bundle-SymbolicName: de.dlr.sc.virsat.fdir.report.feature
+Bundle-Version: 4.12.0.qualifier
+Bundle-Vendor: 
+ DLR (German Aerospace Center)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: de.dlr.sc.virsat.fdir.swtbot.test
+Require-Bundle: de.dlr.sc.virsat.model.extension.fdir,
+ de.dlr.sc.virsat.graphiti,
+ org.eclipse.graphiti.mm,
+ org.eclipse.graphiti.ui,
+ org.eclipse.swt,
+ de.dlr.sc.virsat.project,
+ de.dlr.sc.virsat.project.ui,
+ org.eclipse.core.resources

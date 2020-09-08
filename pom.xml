@@ -51,6 +51,7 @@
 				<module>de.dlr.sc.virsat.fdir.branding.ui</module>
 				
 				<module>de.dlr.sc.virsat.fdir.swtbot.test</module>
+				<module>de.dlr.sc.virsat.fdir.report.feature</module>
 			</modules>
 		</profile>
 		<profile>
