@@ -612,9 +612,9 @@ if (count < fmecaEntries.size()) {
 	row["cn"] = entry.getCriticality();
 	
 	compensation = "";
-	for (i = 0; i < entry.getCompensation().size(); ++i) {
-		compensation += entry.getCompensation().get(i).getValue();
-		if (i < entry.getCompensation().size()) {
+	for (i = 0; i < entry.getCompensationBean().size(); ++i) {
+		compensation += entry.getCompensationBean().get(i).getValue();
+		if (i < entry.getCompensationBean().size()) {
 			compensation += ", ";
 		}
 	}
