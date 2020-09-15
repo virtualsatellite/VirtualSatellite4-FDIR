@@ -175,14 +175,12 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @return constant true
 	 */
 	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
-		if (!state.hasFaultTreeNodeFailed(spare)) {
-			FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
-			state.getMapSpareToClaimedSpares().remove(spare);
-			state.setNodeActivation(spare, false);
-			
-			for (FaultTreeNode primary : state.getFTHolder().getNodes(claimingSpareGate, EdgeType.CHILD)) {
-				state.setNodeActivation(primary, true);
-			}
+		FaultTreeNode claimingSpareGate = state.getMapSpareToClaimedSpares().get(spare);
+		state.getMapSpareToClaimedSpares().remove(spare);
+		state.setNodeActivation(spare, false);
+		
+		for (FaultTreeNode primary : state.getFTHolder().getNodes(claimingSpareGate, EdgeType.CHILD)) {
+			state.setNodeActivation(primary, true);
 		}
 	}
 }

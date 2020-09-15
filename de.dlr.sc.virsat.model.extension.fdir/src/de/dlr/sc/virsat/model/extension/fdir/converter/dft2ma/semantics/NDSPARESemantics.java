@@ -137,10 +137,6 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	
 	@Override
 	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
-		if (state.hasFaultTreeNodeFailed(spare)) {
-			return;
-		}
-		
 		if (!propagateWithoutActions) {
 			List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 	

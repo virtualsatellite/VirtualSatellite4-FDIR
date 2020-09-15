@@ -1040,7 +1040,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	
 	@Test
 	public void testFTPP4() throws IOException {
-		final double EXPECTEDMTTF = 4593.675308559839;
+		final double EXPECTEDMTTF = 4589.925801049426;
 		Fault fault = createDFT("/resources/galileo/ftpp4.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
 		assertEquals("MTTF has correct value", EXPECTEDMTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
