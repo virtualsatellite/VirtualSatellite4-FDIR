@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -45,12 +44,12 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	 * @param isRepair true iff this event is a repair event. If false, then this event is a fail event.
 	 * @param ftHolder the fault tree
 	 */
-	public FaultEvent(BasicEvent be, boolean isRepair, FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
+	public FaultEvent(BasicEvent be, boolean isRepair, FaultTreeHolder ftHolder) {
 		this.be = be;
 		this.isRepair = isRepair;
 		this.beHolder = ftHolder.getBasicEventHolder(be);
 		
-		isTransient = staticAnalysis.getTransientNodes().contains(be);
+		isTransient = ftHolder.getStaticAnalysis().getTransientNodes().contains(be);
 	}
 	
 	@Override

@@ -9,7 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -18,8 +17,8 @@ public class ImmediateFaultEvent extends FaultEvent {
 	
 	private boolean isNegative;
 	
-	public ImmediateFaultEvent(BasicEvent be, boolean isRepair, FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis, boolean isNegative) {
-		super(be, isRepair, ftHolder, staticAnalysis);
+	public ImmediateFaultEvent(BasicEvent be, boolean isRepair, FaultTreeHolder ftHolder, boolean isNegative) {
+		super(be, isRepair, ftHolder);
 		this.isNegative = isNegative;
 	}
 	

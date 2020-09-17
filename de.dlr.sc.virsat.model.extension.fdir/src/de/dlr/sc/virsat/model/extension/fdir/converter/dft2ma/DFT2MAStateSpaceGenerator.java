@@ -23,7 +23,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
@@ -49,7 +48,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 512;
 	
 	private DFTSemantics semantics = DFTSemantics.createNDDFTSemantics();
-	private DFTStaticAnalysis staticAnalysis = new DFTStaticAnalysis();
 	
 	private FailableBasicEventsProvider failableBasicEventsProvider;
 	
@@ -71,15 +69,15 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
 		
 		if (semantics instanceof PONDDFTSemantics) {
-			staticAnalysis.setSymmetryChecker(null);
+			ftHolder.getStaticAnalysis().setSymmetryChecker(null);
 			allowsDontCareFailing = false;
 		} else {
-			staticAnalysis.setSymmetryChecker(new DFTSymmetryChecker());
+			ftHolder.getStaticAnalysis().setSymmetryChecker(new DFTSymmetryChecker());
 			allowsDontCareFailing = true;
 		}
 		
 		if (failableBasicEventsProvider != null) {
-			getStaticAnalysis().setSymmetryChecker(null);
+			ftHolder.getStaticAnalysis().setSymmetryChecker(null);
 		}
 		
 	}
@@ -143,7 +141,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		super.init(targetMa);
 		
 		stateEquivalence = new DFTStateEquivalence();
-		staticAnalysis.perform(ftHolder);
+		ftHolder.getStaticAnalysis().perform(ftHolder);
 		
 		events = createEvents();
 		
@@ -162,7 +160,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return
 	 */
 	private List<IDFTEvent> createEvents() {
-		List<IDFTEvent> events = semantics.createEvents(ftHolder, staticAnalysis);
+		List<IDFTEvent> events = semantics.createEvents(ftHolder);
 		Set<IDFTEvent> unoccurableEvents = new HashSet<>();
 		for (IDFTEvent event : events) {
 			if (event.getNode() instanceof BasicEvent && failableBasicEventsProvider != null) {
@@ -266,7 +264,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
 			if (allowsDontCareFailing) {
-				succ.failDontCares(stateUpdateResult.getChangedNodes(), staticAnalysis);
+				succ.failDontCares(stateUpdateResult.getChangedNodes());
 			}
 			
 			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
@@ -275,7 +273,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
 			
 			if (equivalentState == succ) {
-				SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
+				SymmetryReduction symmetryReduction = ftHolder.getStaticAnalysis().getSymmetryReduction();
 				if (symmetryReduction != null) {
 					if (stateUpdate.getEvent() instanceof FaultEvent) {
 						symmetryReduction.createSymmetryRequirements(succ, stateUpdate.getState(), 
@@ -350,7 +348,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private List<StateUpdate> getStateUpdates(DFTState state, List<IDFTEvent> occurableEvents) {
 		List<StateUpdate> stateUpdates = new ArrayList<>();
 		for (IDFTEvent event : occurableEvents) {
-			SymmetryReduction symmetryReduction = staticAnalysis.getSymmetryReduction();
+			SymmetryReduction symmetryReduction = ftHolder.getStaticAnalysis().getSymmetryReduction();
 			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event, state) : 1;
 			if (symmetryMultiplier != SymmetryReduction.SKIP_EVENT) {
 				StateUpdate stateUpdate = new StateUpdate(state, event, symmetryMultiplier);
@@ -389,14 +387,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 */
 	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		this.recoveryStrategy = recoveryStrategy;
-	}
-	
-	/**
-	 * Gets the static analysis setup
-	 * @return the static analysis setup
-	 */
-	public DFTStaticAnalysis getStaticAnalysis() {
-		return staticAnalysis;
 	}
 	
 	/**

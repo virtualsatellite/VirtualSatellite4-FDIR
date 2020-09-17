@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
@@ -88,24 +87,23 @@ public class DFTSemantics {
 	/**
 	 * Creates the list of occurable events
 	 * @param ftHolder the fault tree holder
-	 * @param staticAnalysis the static analysis of the fault tree
 	 * @return the list of all occurable events
 	 */
-	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
+	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
 		List<IDFTEvent> faultEvents = new ArrayList<>();
 		
 		for (BasicEvent be : ftHolder.getBasicEvents()) {
 			BasicEventHolder beHolder = ftHolder.getBasicEventHolder(be);
 			if (allowsRepairEvents && beHolder.isRepairDefined()) {
-				faultEvents.add(new FaultEvent(be, true, ftHolder, staticAnalysis));
+				faultEvents.add(new FaultEvent(be, true, ftHolder));
 			}
 			
 			if (beHolder.isFailureDefined()) {
 				if (beHolder.isImmediateDistribution()) {
-					faultEvents.add(new ImmediateFaultEvent(be, false, ftHolder, staticAnalysis, true));
-					faultEvents.add(new ImmediateFaultEvent(be, false, ftHolder, staticAnalysis, false));
+					faultEvents.add(new ImmediateFaultEvent(be, false, ftHolder, true));
+					faultEvents.add(new ImmediateFaultEvent(be, false, ftHolder, false));
 				} else {
-					faultEvents.add(new FaultEvent(be, false, ftHolder, staticAnalysis));	
+					faultEvents.add(new FaultEvent(be, false, ftHolder));	
 				}
 			}
 		}

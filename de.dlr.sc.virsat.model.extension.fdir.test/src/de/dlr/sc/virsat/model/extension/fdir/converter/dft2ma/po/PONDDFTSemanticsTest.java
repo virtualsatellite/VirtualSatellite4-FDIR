@@ -17,7 +17,6 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
@@ -49,9 +48,7 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		
 		// Setup variables for failing BEs a or c
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
-		
-		DFTStaticAnalysis staticAnalysis = new DFTStaticAnalysis();
-		staticAnalysis.perform(ftHolder);
+		ftHolder.getStaticAnalysis().perform(ftHolder);
 		
 		FaultTreeNode csp = ftHolder.getNodeByName("tle", SPARE.class);
 		FaultTreeNode tle = ftHolder.getNodeByName("tle", Fault.class);
@@ -59,8 +56,8 @@ public class PONDDFTSemanticsTest extends ATestCase {
 		BasicEvent beA = ftHolder.getNodeByName("a", BasicEvent.class);
 		BasicEvent beC = ftHolder.getNodeByName("c", BasicEvent.class);
 		
-		FaultEvent failA = new FaultEvent(beA, false, ftHolder, staticAnalysis);
-		FaultEvent failC = new FaultEvent(beC, false, ftHolder, staticAnalysis);
+		FaultEvent failA = new FaultEvent(beA, false, ftHolder);
+		FaultEvent failC = new FaultEvent(beC, false, ftHolder);
 		
 		PODFTState initial = new PODFTState(ftHolder);
 		

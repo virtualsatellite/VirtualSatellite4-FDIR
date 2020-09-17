@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInst
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.ecore.VirSatEcoreUtil;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -53,6 +54,8 @@ public class FaultTreeHolder {
 	private Map<FaultTreeNode, Set<FaultTreeNode>> mapNodeToAllParents;
 	private Map<FaultTreeNode, List<FaultTreeNode>> mapNodeToSubNodes;
 	private Map<Fault, List<ADEP>> mapFaultToContainedDeps;
+	
+	private DFTStaticAnalysis staticAnalysis = new DFTStaticAnalysis();
 	
 	/**
 	 * Standard constructor
@@ -547,6 +550,14 @@ public class FaultTreeHolder {
 	
 	public Map<Fault, List<ADEP>> getMapFaultToContainedDeps() {
 		return mapFaultToContainedDeps;
+	}
+	
+	/**
+	 * Gets the static analysis data for the contained fault tree
+	 * @return the static analysis data for the contained fault tree
+	 */
+	public DFTStaticAnalysis getStaticAnalysis() {
+		return staticAnalysis;
 	}
 	
 	/**
