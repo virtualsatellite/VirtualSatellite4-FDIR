@@ -349,7 +349,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<StateUpdate> stateUpdates = new ArrayList<>();
 		for (IDFTEvent event : occurableEvents) {
 			SymmetryReduction symmetryReduction = ftHolder.getStaticAnalysis().getSymmetryReduction();
-			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event, state) : 1;
+			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event.getNode(), state) : 1;
 			if (symmetryMultiplier != SymmetryReduction.SKIP_EVENT) {
 				StateUpdate stateUpdate = new StateUpdate(state, event, symmetryMultiplier);
 				stateUpdates.add(stateUpdate);

@@ -21,8 +21,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
@@ -92,15 +90,15 @@ public class SymmetryReduction {
 	}
 	
 	/**
-	 * Gets the symmetry rate multiplier for a given event in a given state
-	 * @param event the event
+	 * Gets the symmetry rate multiplier for a given node in a given state
+	 * @param node the node
 	 * @param state the state
-	 * @return the symmetry rate multiplier or -1 if there is a symmetric event covering this one
+	 * @return the symmetry rate multiplier or -1 if there is a symmetric node covering this one
 	 */
-	public int getSymmetryMultiplier(IDFTEvent event, DFTState state) {
+	public int getSymmetryMultiplier(FaultTreeNode node, DFTState state) {
 		int multiplier = 1;
-		int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
-		if (countBiggerSymmetricEvents == -1) {
+		int countBiggerSymmetricEvents = countBiggerSymmetricNodes(node, state);
+		if (countBiggerSymmetricEvents == SKIP_EVENT) {
 			return SKIP_EVENT;
 		} else {
 			multiplier += countBiggerSymmetricEvents;
@@ -111,24 +109,25 @@ public class SymmetryReduction {
 	
 	/**
 	 * Computes the number of events symmetric to the passed one
-	 * @param event the event
+	 * @param node the node
 	 * @param state the current state
 	 * @return -1 if there exists a smaller symmetric event, otherwise the number of bigger symmetric events
 	 */
-	private int countBiggerSymmetricEvents(IDFTEvent event, DFTState state) {
+	public int countBiggerSymmetricNodes(FaultTreeNode node, DFTState state) {
 		int symmetryMultiplier = 0;
 		
-		if (event instanceof FaultEvent) {
+		if (node != null) {
 			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
-			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(getSmallerNodes(event.getNode()));
-			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, event.getNode())) {
+			Set<FaultTreeNode> smallerNodes = getSmallerNodes(node);
+			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(smallerNodes);
+			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, node)) {
 				return SKIP_EVENT;
 			}
 			
-			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(event.getNode(), Collections.emptyList());
-			for (FaultTreeNode node : symmetricNodes) {
-				if (!failedBasicEvents.contains(node) && isSymmetryReductionApplicable(state, node)) {
+			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(node, Collections.emptyList());
+			for (FaultTreeNode symmetricNode : symmetricNodes) {
+				if (!failedBasicEvents.contains(symmetricNode) && isSymmetryReductionApplicable(state, symmetricNode)) {
 					symmetryMultiplier++;
 				}
 			}
