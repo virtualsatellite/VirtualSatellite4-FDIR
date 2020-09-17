@@ -15,8 +15,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.A2MAConverter;
 import de.dlr.sc.virsat.fdir.core.metrics.IMetric;
 import de.dlr.sc.virsat.fdir.core.metrics.IQualitativeMetric;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
@@ -58,25 +56,12 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 	
 	/**
 	 * Configures the state space generator
-	 * @param ftHolder the fault tree to convert
 	 * @param metrics the metrics to evaluate
 	 * @param failableBasicEventsProvider the basic events provider
 	 */
-	public void configure(FaultTreeHolder ftHolder, DFTSemantics semantics, IMetric[] metrics, FailableBasicEventsProvider failableBasicEventsProvider) {
+	public void configure(DFTSemantics semantics, IMetric[] metrics) {
 		stateSpaceGenerator.setSemantics(semantics);
 		stateSpaceGenerator.getDftSemantics().setAllowsRepairEvents(!hasQualitativeMetric(metrics));
-		
-		if (stateSpaceGenerator.getDftSemantics() instanceof PONDDFTSemantics) {
-			stateSpaceGenerator.getStaticAnalysis().setSymmetryChecker(null);
-			stateSpaceGenerator.setAllowsDontCareFailing(false);
-		} else {
-			stateSpaceGenerator.getStaticAnalysis().setSymmetryChecker(new DFTSymmetryChecker());
-			stateSpaceGenerator.setAllowsDontCareFailing(true);
-		}
-		
-		if (failableBasicEventsProvider != null) {
-			stateSpaceGenerator.getStaticAnalysis().setSymmetryChecker(null);
-		}
 	}
 	
 	/**

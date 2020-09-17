@@ -168,7 +168,7 @@ public class ModularSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
-		final int NUM_STATES = 5;
+		final int NUM_STATES = 4;
 		assertEquals(NUM_STATES, ra.getStates().size());
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));

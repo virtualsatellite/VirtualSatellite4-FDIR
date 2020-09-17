@@ -24,6 +24,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
@@ -31,6 +32,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateFaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
@@ -67,6 +69,19 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	public void configure(FaultTreeHolder ftHolder, FailableBasicEventsProvider failableBasicEventsProvider) {
 		this.ftHolder = ftHolder;
 		this.failableBasicEventsProvider = failableBasicEventsProvider;
+		
+		if (semantics instanceof PONDDFTSemantics) {
+			staticAnalysis.setSymmetryChecker(null);
+			allowsDontCareFailing = false;
+		} else {
+			staticAnalysis.setSymmetryChecker(new DFTSymmetryChecker());
+			allowsDontCareFailing = true;
+		}
+		
+		if (failableBasicEventsProvider != null) {
+			getStaticAnalysis().setSymmetryChecker(null);
+		}
+		
 	}
 	
 	@Override
@@ -382,14 +397,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 */
 	public DFTStaticAnalysis getStaticAnalysis() {
 		return staticAnalysis;
-	}
-
-	/**
-	 * Configugres the propertey whether dont care failing is allowed
-	 * @param allowsDontCareFailing set to true to enable dont care failing of states
-	 */
-	public void setAllowsDontCareFailing(boolean allowsDontCareFailing) {
-		this.allowsDontCareFailing = allowsDontCareFailing;
 	}
 	
 	/**
