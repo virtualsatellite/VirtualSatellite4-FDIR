@@ -77,6 +77,27 @@ public class SymmetryReduction {
 	}
 	
 	/**
+	 * Checks if there exists a symmetric smaller node than the given node
+	 * in the given state that has not yet failed
+	 * @param node the node
+	 * @param state the state
+	 * @return true iff the exists a smaller unfailed node in the given state
+	 */
+	public boolean isSymmetricSmallerNodeUnfailed(FaultTreeNode node, DFTState state) {
+		Set<FaultTreeNode> smallerNodes = getSmallerNodes(node);
+		boolean haveSmallerNodesFailed = true;
+		for (FaultTreeNode smallerNode : smallerNodes) {
+			haveSmallerNodesFailed &= state.hasFaultTreeNodeFailed(smallerNode);
+		}
+		
+		if (!haveSmallerNodesFailed && isSymmetryReductionApplicable(state, node)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Gets all nodes that are smaller than this node
 	 * @param node the node
 	 * @return all smaller nodes
@@ -233,7 +254,7 @@ public class SymmetryReduction {
 	 * @param node the node
 	 * @return true iff symmetry reduction is applicable
 	 */
-	private boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
+	public boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
 		Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements = state.getMapParentToSymmetryRequirements();
 		
 		FaultTreeHolder ftHolder = state.getFTHolder();
