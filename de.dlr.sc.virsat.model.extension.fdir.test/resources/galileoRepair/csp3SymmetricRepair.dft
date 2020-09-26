@@ -1,0 +1,5 @@
+toplevel "tle";
+"tle" csp "A" "B" "C";
+"A" lambda=2 dorm=0 repair=0.5;
+"B" lambda=2 dorm=0 repair=0.5;
+"C" lambda=2 dorm=0 repair=0.5;
