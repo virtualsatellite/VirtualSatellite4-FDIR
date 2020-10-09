@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -39,6 +40,7 @@ import org.junit.Before;
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
@@ -64,6 +66,7 @@ public class ASynthesizerExperiment {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
 	private static final long DEFAULT_BENCHMARK_TIMEOUT_SECONDS = 30;
+	private static final long BENCHMARK_SLEEP = 1000;
 	
 	protected ModularSynthesizer synthesizer;
 	
@@ -73,6 +76,12 @@ public class ASynthesizerExperiment {
 	protected long timeoutSeconds = DEFAULT_BENCHMARK_TIMEOUT_SECONDS;
 	protected Map<String, SynthesisStatistics> mapBenchmarkToSynthesisStatistics = new TreeMap<>();
 	protected Map<String, FaultTreeStatistics> mapBenchmarkToFaultTreeStatistics = new TreeMap<>();
+	
+	protected int countSolved;
+	protected int countTimeout;
+	protected int countOutOfMemory;
+	protected int countTotal;
+	protected long totalSolveTime;
 	
 	@Before
 	public void setUp() {
@@ -113,10 +122,10 @@ public class ASynthesizerExperiment {
 	 * @param suite the file with all the dft names
 	 * @param filePath the path to the file
 	 * @param saveFileName the name of the file you wish to save the results to
-	 * @param synthesizer the synthesizer
+	 * @param synthesizerSupplier a supplier for the synthesizer
 	 * @throws IOException exception
 	 */
-	protected void benchmark(File suite, String filePath, String saveFileName, ISynthesizer synthesizer) throws IOException {	
+	protected void benchmark(File suite, String filePath, String saveFileName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {	
 		System.out.println("Creating benchmark data " + saveFileName + ".");
 		
 		List<String> fileNames = Files.readAllLines(suite.toPath());
@@ -124,7 +133,7 @@ public class ASynthesizerExperiment {
 		for (String fileName : fileNames) {
 			Path path = Paths.get(parentFolder.toString(), fileName);
 			File suiteEntry = path.toFile();
-			benchmarkSuiteEntry(suiteEntry);
+			benchmarkSuiteEntry(suiteEntry, synthesizerSupplier);
 		}
 		
 		saveStatistics(saveFileName);
@@ -136,54 +145,124 @@ public class ASynthesizerExperiment {
 	 * Benchmarks a single entry in a benchmark suite.
 	 * If the entry is a folder, recuresively calls itself.
 	 * @param entry the suite entry
+	 * @param synthesizerSupplier a supplier for the synthesizer
 	 * @throws IOException exception
 	 */
-	protected void benchmarkSuiteEntry(File entry) throws IOException {
+	protected void benchmarkSuiteEntry(File entry, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
 		if (entry.isDirectory()) {
 			File[] files = entry.listFiles();
 			for (File file : files) {
-				benchmarkSuiteEntry(file);
+				benchmarkSuiteEntry(file, synthesizerSupplier);
 			}
 		} else {
-			Path platformPath = Paths.get(".\\").relativize(entry.toPath());
-			benchmarkDFT("/" + platformPath.toString(), entry.getName());
+			boolean runBenchmark = true;
+			while (runBenchmark) {
+				try {
+					Path platformPath = Paths.get(".\\").relativize(entry.toPath());
+					benchmarkDFT("/" + platformPath.toString(), entry.getName(), synthesizerSupplier);
+					runBenchmark = false;
+				} catch (OutOfMemoryError e) {
+					System.out.println("Got OOM during benchmark setup! Cleaning and then trying again.");
+				}
+				
+				// Try to bring us into a clean state by triggering the garbage collection
+				// and discarding dead objects. Note that this is only a best effort cleaning.
+				clean();
+			}
 		}
 	}
+	
+	private static final int TIMEOUT_FACTOR = 2;
+	private static final int OUT_OF_MEMROY_FACTORY = 3;
 	
 	/**
 	 * Benchmarks a single DFT and saves the statistics
 	 * @param dftPath the path to the dft
 	 * @param benchmarkName the name of the benchmark
+	 * @param synthesizerSupplier a supplier for the synthesizer
 	 * @throws IOException
 	 */
-	protected void benchmarkDFT(String dftPath, String benchmarkName) throws IOException {
+	protected void benchmarkDFT(String dftPath, String benchmarkName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
 		System.out.print("Benchmarking " + benchmarkName + "... ");
 		
+		// Prepare the necessary data and helper classes for the benchmark
 		Duration timeout = Duration.ofSeconds(timeoutSeconds);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		Fault fault = createDFT(dftPath);
 		SynthesisQuery query = new SynthesisQuery(fault);
 		
+		// Using the supplier we generate a fresh new synthesizer to avoid having
+		// previous data influence our measurements
+		ISynthesizer benchmarkSynthesizer = synthesizerSupplier.get();
+		
 		// Create a monitor so we can properly cancel the synthesis call
 		SubMonitor monitor = SubMonitor.convert(new NullProgressMonitor());
 		
+		// Execute the benchmark and handle timeout and out of memory events
 		final Future<?> handler = executor.submit(() -> {
-			synthesizer.synthesize(query, monitor);
+			benchmarkSynthesizer.synthesize(query, monitor);
 		});
-
+		
 		try {
 		    handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-		    System.out.println("done.");
-		} catch (TimeoutException | InterruptedException | ExecutionException e) {
+		    System.out.println("DONE.");
+		} catch (ExecutionException e) {
+			benchmarkSynthesizer.getStatistics().time = IStatistics.OOM;
+			System.out.println("OUT OF MEMORY.");
+		} catch (TimeoutException | InterruptedException e) {
 		    handler.cancel(true);
 		    monitor.setCanceled(true);
 		    System.out.println("TIMEOUT.");
 		}
 		
+		// Terminate the possibily still ongoing benchmark.
+		// Since termination is a cooperative process, we may need to wait some time
+		// until the benchmarked synthesizer hits a point where it checks for cancellation
 		executor.shutdownNow();
+		while (!executor.isTerminated()) {
+			try {
+				executor.awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
+				if (!executor.isTerminated()) {
+					System.out.println("Previous benchmark has not succesfully terminated yet... awaiting termination... ");
+				} 
+			} catch (InterruptedException e) {
+				// Nothing to handle here
+			}
+		}
 		
-		mapBenchmarkToSynthesisStatistics.put(benchmarkName, synthesizer.getStatistics());
+		// Memorize the results for later processing
+		// Also mark the timeout and out of memory with special benchmark times depending on the benchmark timeout
+		// This way we can later properly display the data in graphs
+		
+		countTotal++;
+		if (benchmarkSynthesizer.getStatistics().time == IStatistics.OOM) {
+			countOutOfMemory++;
+			benchmarkSynthesizer.getStatistics().time = OUT_OF_MEMROY_FACTORY * TimeUnit.MILLISECONDS.convert(timeoutSeconds, TimeUnit.SECONDS);
+		} else if (benchmarkSynthesizer.getStatistics().time == IStatistics.TIMEOUT) {
+			countTimeout++;
+			benchmarkSynthesizer.getStatistics().time = TIMEOUT_FACTOR * TimeUnit.MILLISECONDS.convert(timeoutSeconds, TimeUnit.SECONDS);
+		} else {
+			countSolved++;
+			totalSolveTime += benchmarkSynthesizer.getStatistics().time;
+		}
+		
+		mapBenchmarkToSynthesisStatistics.put(benchmarkName, benchmarkSynthesizer.getStatistics());
 		mapBenchmarkToFaultTreeStatistics.put(benchmarkName, query.getFTHolder().getStatistics());
+	}
+	
+	/**
+	 * Sleep some to give the gc time to trigger, especially
+ 	 * if a out of memory exception just a occurred
+	 */
+	private void clean() {
+		System.gc();
+		System.runFinalization();
+		
+		try {
+			Thread.sleep(BENCHMARK_SLEEP);
+		} catch (InterruptedException e) {
+			// Nothing to handle here
+		}
 	}
 	
 	/**
@@ -232,11 +311,11 @@ public class ASynthesizerExperiment {
 		try (OutputStream outFile = Files.newOutputStream(pathSynthesizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			
-			String header = "benchmarkName," + String.join(",", columns);
+			String header = "benchmarkName " + String.join(" ", columns);
 			writer.println(header);
 			
 			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToSynthesisStatistics.entrySet()) {
-				String record = entry.getKey() + "," + String.join(",", getValues.apply(entry.getValue()));
+				String record = entry.getKey() + " " + String.join(" ", getValues.apply(entry.getValue()));
 				writer.println(record);
 			}
 		}
@@ -254,24 +333,22 @@ public class ASynthesizerExperiment {
 		
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
-			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToSynthesisStatistics.entrySet()) {
-				writer.println(entry.getKey());
-				writer.println("===============================================");
-				writer.println(entry.getValue());
-				writer.println(mapBenchmarkToFaultTreeStatistics.get(entry.getKey()));
-				writer.println();
-			}
+			writer.println("solved timeouts ooms solveTime");
+			writer.print(countSolved + "/" + countTotal + " ");
+			writer.print(countTimeout + " ");
+			writer.print(countOutOfMemory + " ");
+			writer.print(TimeUnit.SECONDS.convert(totalSolveTime, TimeUnit.MILLISECONDS));
 		}
 		
 		Path pathFaultTree = Paths.get(filePathWithPrefix + "-fault-tree.txt");
 		try (OutputStream outFile = Files.newOutputStream(pathFaultTree, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			
-			String header = "benchmarkName," + String.join(",", FaultTreeStatistics.getColumns());
+			String header = "benchmarkName " + String.join(" ", FaultTreeStatistics.getColumns());
 			writer.println(header);
 			
 			for (Entry<String, FaultTreeStatistics> entry : mapBenchmarkToFaultTreeStatistics.entrySet()) {
-				String record = entry.getKey() + "," + String.join(",", entry.getValue().getValues());
+				String record = entry.getKey() + " " + String.join(" ", entry.getValue().getValues());
 				writer.println(record);
 			}
 		}

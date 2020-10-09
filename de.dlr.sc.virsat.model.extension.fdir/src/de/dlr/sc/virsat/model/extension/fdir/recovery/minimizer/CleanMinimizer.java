@@ -12,6 +12,8 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -26,12 +28,14 @@ import de.dlr.sc.virsat.model.extension.fdir.util.TransitionHolder;
 public class CleanMinimizer extends ARecoveryAutomatonMinimizer {
 
 	@Override
-	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder) {
+	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		List<Transition> transitionsToRemove = new ArrayList<>();
 		
+		subMonitor = SubMonitor.convert(subMonitor, raHolder.getMapStateToStateHolder().keySet().size());
 		for (State state : raHolder.getMapStateToStateHolder().keySet()) {
-			List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
+			subMonitor.split(1);
 			
+			List<Transition> outgoingTransitions = raHolder.getStateHolder(state).getOutgoingTransitions();
 			for (int i = 0; i < outgoingTransitions.size(); i++) {
 				Transition transition1 = outgoingTransitions.get(i);
 				TransitionHolder transitionHolder1 = raHolder.getTransitionHolder(transition1);

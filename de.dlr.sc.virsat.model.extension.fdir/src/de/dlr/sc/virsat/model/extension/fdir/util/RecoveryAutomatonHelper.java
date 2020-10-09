@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
+import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -393,17 +396,8 @@ public class RecoveryAutomatonHelper {
 	 * @return a copy
 	 */
 	public FaultEventTransition copyFaultEventTransition(FaultEventTransition transition) {
-		FaultEventTransition newTransition = new FaultEventTransition(concept);
-		newTransition.setIsRepair(transition.getIsRepair());
-		
-		for (FaultTreeNode fault : transition.getGuards()) {
-			newTransition.getGuards().add(fault);
-		}
-		
-		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {
-			newTransition.getRecoveryActions().add(recoveryAction.copy());
-		}
-		
+		CategoryAssignment ca = EcoreUtil.copy(transition.getTypeInstance());
+		FaultEventTransition newTransition = new FaultEventTransition(ca);
 		return newTransition;
 	}
 	
@@ -413,13 +407,8 @@ public class RecoveryAutomatonHelper {
 	 * @return a copy
 	 */
 	public TimeoutTransition copyTimeoutTransition(TimeoutTransition transition) {
-		TimeoutTransition newTransition = new TimeoutTransition(concept);
-		
-		newTransition.setTime(transition.getTimeBean().getValueToBaseUnit());
-		for (RecoveryAction recoveryAction : transition.getRecoveryActions())  {
-			newTransition.getRecoveryActions().add(recoveryAction.copy());
-		}
-		
+		CategoryAssignment ca = EcoreUtil.copy(transition.getTypeInstance());
+		TimeoutTransition newTransition = new TimeoutTransition(ca);
 		return newTransition;
 	}
 

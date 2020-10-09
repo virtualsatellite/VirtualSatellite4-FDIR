@@ -33,7 +33,9 @@ public class PartitionRefinementMinimizer extends APartitionRefinementMinimizer 
 	
 	@Override
 	protected boolean belongsToBlock(List<State> block, State state) {
-		return raHolder.getStateHolder(state).getGuardProfile().equals(raHolder.getStateHolder(block.get(0)).getGuardProfile());
+		Map<Set<FaultTreeNode>, String> guardProfileState = raHolder.getStateHolder(state).getGuardProfile();
+		Map<Set<FaultTreeNode>, String> guardProfileBlock = raHolder.getStateHolder(block.get(0)).getGuardProfile();
+		return guardProfileState.equals(guardProfileBlock);
 	}
 	
 	@Override

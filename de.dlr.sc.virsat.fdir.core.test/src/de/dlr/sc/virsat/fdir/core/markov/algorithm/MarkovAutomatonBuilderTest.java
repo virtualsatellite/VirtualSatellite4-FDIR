@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.runtime.SubMonitor;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
@@ -37,7 +38,7 @@ public class MarkovAutomatonBuilderTest {
 		
 		AStateSpaceGenerator<MarkovState> mockStateSpaceGenerator = new AStateSpaceGenerator<MarkovState>() {
 			@Override
-			public List<MarkovState> generateSuccs(MarkovState state) {
+			public List<MarkovState> generateSuccs(MarkovState state, SubMonitor monitor) {
 				try {
 					final long SLEEP_TIME = 100;
 					Thread.sleep(SLEEP_TIME);

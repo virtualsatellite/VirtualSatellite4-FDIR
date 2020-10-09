@@ -41,13 +41,16 @@ public abstract class ASynthesizer implements ISynthesizer {
 		statistics.time = IStatistics.TIMEOUT;
 		statistics.countModules = 1;
 		
+		int steps = 1 + (minimizer != null ? 1 : 0);
+		subMonitor = SubMonitor.convert(subMonitor, steps);
+		
 		FaultTreeNode root  = synthesisQuery.getFTHolder().getRoot();
 		concept = root.getConcept();
 		
-		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(root, subMonitor);
+		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(root, subMonitor.split(1));
 		
 		if (minimizer != null) {
-			minimizer.minimize(synthesizedRA, root);
+			minimizer.minimize(synthesizedRA, root, subMonitor.split(1));
 			statistics.minimizationStatistics.compose(minimizer.getStatistics());
 		}
 		

@@ -77,6 +77,22 @@ public  class ClaimAction extends AClaimAction {
 	private FaultTreeNode claimSpare;
 	private FaultTreeNode spareGate;
 	
+	@Override
+	public FaultTreeNode getClaimSpare() {
+		if (claimSpare != null) {
+			return claimSpare;
+		}
+		return super.getClaimSpare();
+	}
+	
+	@Override
+	public SPARE getSpareGate() {
+		if (spareGate != null) {
+			return (SPARE) spareGate;
+		}
+		return super.getSpareGate();
+	}
+	
 	public FaultTreeNode getClaimSpareByUUID(DFTState state) {
 		FaultTreeNode claimSpareOriginal = getClaimSpare();
 		return state.getFTHolder().getNodes().stream()

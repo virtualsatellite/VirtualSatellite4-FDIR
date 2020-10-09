@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
@@ -41,8 +43,7 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 	}
 
 	@Override
-	public Map<MarkovState, List<MarkovTransition<MarkovState>>> computeOptimalScheduler(ScheduleQuery<MarkovState> scheduleQuery) {
-
+	public Map<MarkovState, List<MarkovTransition<MarkovState>>> computeOptimalScheduler(ScheduleQuery<MarkovState> scheduleQuery, SubMonitor subMonitor) {
 		Storm storm = new Storm(scheduleQuery.getMa(), DELTA, MeanTimeToFailure.MTTF);
 		Map<MarkovState, List<MarkovTransition<MarkovState>>> mapScheduler = new HashMap<>();
 		Map<Integer, Integer> stormResults = runStormScheduler(storm);

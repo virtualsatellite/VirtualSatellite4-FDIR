@@ -47,7 +47,7 @@ public class MarkovSchedulerTest {
 		initial.setType(MarkovStateType.NONDET);
 		ma.addState(initial);
 		
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial), null);
 		assertTrue(schedule.isEmpty());
 	}
 	
@@ -68,7 +68,7 @@ public class MarkovSchedulerTest {
 		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition("a", initial, good);
 		ma.addNondeterministicTransition("b", initial, bad);
 		
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial), null);
 		assertThat(schedule.get(initial), hasItem(correctChoice));
 		assertThat(schedule.get(initial), hasSize(1));
 	}
@@ -95,7 +95,7 @@ public class MarkovSchedulerTest {
 		ma.addMarkovianTransition("a", good, sink, 1);
 		ma.addMarkovianTransition("b", bad, sink, 2);
 		
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial), null);
 		assertThat(schedule.get(initial), hasItem(correctChoice));
 		assertThat(schedule.get(initial), hasSize(1));
 	}
@@ -122,7 +122,7 @@ public class MarkovSchedulerTest {
 		
 		ma.addMarkovianTransition("c", good, bad, 1);
 		
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial), null);
 		assertThat(schedule.get(initial), hasItem(correctChoice));
 		assertThat(schedule.get(initial), hasSize(1));
 		
@@ -147,7 +147,7 @@ public class MarkovSchedulerTest {
 		MarkovTransition<MarkovState> correctChoice = ma.addNondeterministicTransition(Collections.emptyList(), initial, bad, 1);
 		ma.addNondeterministicTransition("b", initial, bad, 1);
 		
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial));
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(new ScheduleQuery<>(ma, initial), null);
 		assertThat(schedule.get(initial), hasItem(correctChoice));
 		assertThat(schedule.get(initial), hasSize(1));
 	}
@@ -195,14 +195,14 @@ public class MarkovSchedulerTest {
 		
 		// By default the scheduler maximizes MTTF
 		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxMTTFQuery);
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxMTTFQuery, null);
 		assertThat(schedule.get(initial), hasItem(choiceA));
 		assertThat(schedule.get(initial), hasSize(1));
 		
 		// Setting the obejctive to SSA should make the scheduler choose the option that maximizes SSA
 		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
 		maxSSAQuery.setObjectiveMetric(SteadyStateAvailability.SSA);
-		schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
+		schedule = scheduler.computeOptimalScheduler(maxSSAQuery, null);
 		assertThat(schedule.get(initial), hasItem(choiceB));
 		assertThat(schedule.get(initial), hasSize(1));
 	}
@@ -251,14 +251,14 @@ public class MarkovSchedulerTest {
 		
 		// By default the scheduler maximizes MTTF
 		ScheduleQuery<MarkovState> maxMTTFQuery = new ScheduleQuery<>(ma, initial);
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxMTTFQuery);
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxMTTFQuery, null);
 		assertThat(schedule.get(initial), hasItem(choiceA));
 		assertThat(schedule.get(initial), hasSize(1));
 		
 		// Setting the obejctive to SSD should make the scheduler choose the option that maximizes SSD
 		ScheduleQuery<MarkovState> maxSSDQuery = new ScheduleQuery<>(ma, initial);
 		maxSSDQuery.setObjectiveMetric(SteadyStateDetectability.SSD);
-		schedule = scheduler.computeOptimalScheduler(maxSSDQuery);
+		schedule = scheduler.computeOptimalScheduler(maxSSDQuery, null);
 		assertThat(schedule.get(initial), hasItem(choiceB));
 		assertThat(schedule.get(initial), hasSize(1));
 	}
@@ -297,7 +297,7 @@ public class MarkovSchedulerTest {
 		// a needs 1 event to occur and b needs 2
 		ScheduleQuery<MarkovState> maxSSAQuery = new ScheduleQuery<>(ma, initial);
 		maxSSAQuery.setObjectiveMetric(FaultTolerance.FAULT_TOLERANCE);
-		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxSSAQuery);
+		Map<MarkovState, List<MarkovTransition<MarkovState>>> schedule = scheduler.computeOptimalScheduler(maxSSAQuery, null);
 		assertThat(schedule.get(initial), hasItem(choiceB));
 		assertThat(schedule.get(initial), hasSize(1));
 	}

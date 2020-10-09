@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
@@ -60,11 +62,15 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	}
 	
 	@Override
-	public List<BeliefState> generateSuccs(BeliefState beliefState) {
+	public List<BeliefState> generateSuccs(BeliefState beliefState, SubMonitor monitor) {
 		List<BeliefState> generatedSuccs = new ArrayList<>();
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 		
 		for (Entry<PODFTState, List<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
+			// Eclipse trick for doing progress updates with unknown ending time
+			final int PROGRESS_COUNT = 100;
+			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+			
 			BeliefState beliefSucc = new BeliefState(entry.getKey());
 			BeliefState equivalentBeliefSucc = null;
 			List<MarkovTransition<DFTState>> succTransitions = entry.getValue();

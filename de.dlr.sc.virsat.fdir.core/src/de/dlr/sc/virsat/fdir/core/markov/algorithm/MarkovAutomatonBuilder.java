@@ -49,12 +49,8 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 		
 		// Actual state space generation loop
 		while (!toProcess.isEmpty()) {
-			// Eclipse trick for doing progress updates with unknown ending time
-			final int PROGRESS_COUNT = 100;
-			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-			
 			S state = toProcess.poll();
-			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state);
+			List<S> generatedNewSuccs = stateSpaceGenerator.generateSuccs(state, monitor);
 			toProcess.addAll(generatedNewSuccs);
 		}
 		

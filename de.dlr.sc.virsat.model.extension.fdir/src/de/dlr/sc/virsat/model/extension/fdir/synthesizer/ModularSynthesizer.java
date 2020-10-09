@@ -45,6 +45,7 @@ public class ModularSynthesizer implements ISynthesizer {
 		long startTime = System.currentTimeMillis();
 		statistics.time = IStatistics.TIMEOUT;
 		
+		subMonitor = SubMonitor.convert(subMonitor);
 		concept = synthesisQuery.getFTHolder().getRoot().getConcept();
 		
 		DFT2DFTConversionResult conversionResult = dft2BasicDFT.convert(synthesisQuery.getFTHolder());
@@ -55,6 +56,8 @@ public class ModularSynthesizer implements ISynthesizer {
 			Set<Module> modules = modularizer.getModules(fault);
 			Set<Module> trimmedModules = ftTrimmer.trimModulesAll(modules);
 			
+			subMonitor.setWorkRemaining(trimmedModules.size() + 1);
+			
 			statistics.countModules = modules.size();
 			statistics.countTrimmedModules = statistics.countModules - trimmedModules.size();
 			
@@ -63,14 +66,14 @@ public class ModularSynthesizer implements ISynthesizer {
 				Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator = module.getMapCopyToOriginal();
 				mapGeneratedToGenerator.replaceAll((key, value) ->  conversionResult.getMapGeneratedToGenerator().get(value));
 				
-				RecoveryAutomaton ra = synthesizeModule(synthesisQuery, module.getRootNodeCopy(), mapGeneratedToGenerator, subMonitor);
+				RecoveryAutomaton ra = synthesizeModule(synthesisQuery, module.getRootNodeCopy(), mapGeneratedToGenerator, subMonitor.split(1));
 				ras.add(ra);
 			}
 			
-			synthesizedRA = pc.compose(ras, concept);
+			synthesizedRA = pc.compose(ras, concept, subMonitor);
 		} else {
 			statistics.countModules = 1;
-			synthesizedRA = synthesizeModule(synthesisQuery, fault, conversionResult.getMapGeneratedToGenerator(), subMonitor);
+			synthesizedRA = synthesizeModule(synthesisQuery, fault, conversionResult.getMapGeneratedToGenerator(), subMonitor.split(1));
 		}
 		
 		statistics.time = System.currentTimeMillis() - startTime;
@@ -88,9 +91,9 @@ public class ModularSynthesizer implements ISynthesizer {
 	private RecoveryAutomaton synthesizeModule(SynthesisQuery synthesisQuery, FaultTreeNode moduleRoot, Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator, SubMonitor subMonitor) {
 		SynthesisQuery delegateSynthesisQuery = new SynthesisQuery(moduleRoot);
 		delegateSynthesisQuery.setObjectiveMetric(synthesisQuery.getObjectiveMetric());
-		statistics.maxModuleSize = Math.max(statistics.maxModuleSize, mapGeneratedToGenerator.size());
 		RecoveryAutomaton synthesizedRA = delegateSynthesizer.synthesize(delegateSynthesisQuery, subMonitor);
 		statistics.compose(delegateSynthesizer.getStatistics());
+		statistics.maxModuleSize = Math.max(statistics.maxModuleSize, mapGeneratedToGenerator.size());
 		synthesizedRA.remapToGeneratorNodes(mapGeneratedToGenerator);
 		return synthesizedRA;
 	}
@@ -103,9 +106,11 @@ public class ModularSynthesizer implements ISynthesizer {
 	/**
 	 * Sets the modularizer that will be used to modularize the fault tree
 	 * @param modularizer the modularizer
+	 * @return 
 	 */
-	public void setModularizer(IModularizer modularizer) {
+	public ModularSynthesizer setModularizer(IModularizer modularizer) {
 		this.modularizer = modularizer;
+		return this;
 	}
 	
 	/**
@@ -119,8 +124,10 @@ public class ModularSynthesizer implements ISynthesizer {
 	/**
 	 * Set the fault tree trimmer. If null, no trimmer will be used and fault tree will not be trimmed.
 	 * @param ftTrimmer the trimmer
+	 * @return 
 	 */
-	public void setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
+	public ModularSynthesizer setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
 		this.ftTrimmer = ftTrimmer;
+		return this;
 	}
 }

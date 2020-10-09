@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.dlr.sc.virsat.fdir.license.feature_4.12.0.qualifier.jar" id="de.dlr.sc.virsat.fdir.license.feature" version="4.12.0.qualifier">
+   <feature url="features/de.dlr.sc.virsat.fdir.license.feature_4.12.1.qualifier.jar" id="de.dlr.sc.virsat.fdir.license.feature" version="4.12.1.qualifier">
       <category name="VirSat_FDIR_Features"/>
    </feature>
-   <feature url="features/de.dlr.sc.virsat.fdir.branding.feature_4.12.0.qualifier.jar" id="de.dlr.sc.virsat.fdir.branding.feature" version="4.12.0.qualifier">
+   <feature url="features/de.dlr.sc.virsat.fdir.branding.feature_4.12.1.qualifier.jar" id="de.dlr.sc.virsat.fdir.branding.feature" version="4.12.1.qualifier">
       <category name="VirSat_FDIR_Features"/>
    </feature>
-   <feature url="features/de.dlr.sc.virsat.model.extension.fdir.feature_4.12.0.qualifier.jar" id="de.dlr.sc.virsat.model.extension.fdir.feature" version="4.12.0.qualifier">
+   <feature url="features/de.dlr.sc.virsat.model.extension.fdir.feature_4.12.1.qualifier.jar" id="de.dlr.sc.virsat.model.extension.fdir.feature" version="4.12.1.qualifier">
       <category name="VirSat_FDIR_Features"/>
    </feature>
-   <feature url="features/de.dlr.sc.virsat.fdir.galileo.feature_4.12.0.qualifier.jar" id="de.dlr.sc.virsat.fdir.galileo.feature" version="4.12.0.qualifier">
+   <feature url="features/de.dlr.sc.virsat.fdir.galileo.feature_4.12.1.qualifier.jar" id="de.dlr.sc.virsat.fdir.galileo.feature" version="4.12.1.qualifier">
       <category name="VirSat_FDIR_Features"/>
    </feature>
    <feature id="de.dlr.sc.virsat.fdir.storm.feature">
