@@ -1,4 +1,4 @@
-Target virsat_fdir_development extends virsat_windows {
+Target virsat_fdir_development extends virsat {
 	Import core_development 
 	Import fdir_dependencies
 
