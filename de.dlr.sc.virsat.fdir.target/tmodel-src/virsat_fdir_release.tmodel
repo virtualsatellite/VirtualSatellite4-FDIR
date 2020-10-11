@@ -16,6 +16,7 @@ Target virsat_fdir_release extends virsat_windows {
 		Unit de.dlr.sc.virsat.model.ext.core.feature.feature.group version 4.12.0.r202007311110;
 		Unit de.dlr.sc.virsat.model.calculation.feature.feature.group version 4.12.0.r202007311110;
 		Unit de.dlr.sc.virsat.model.extension.ps.feature.feature.group version 4.12.0.r202007311110;
+		Unit de.dlr.sc.virsat.model.extension.requirements.feature.feature.group version 4.12.0.r202007311110;
 		Unit de.dlr.sc.virsat.model.extension.tests.feature.feature.group version 4.12.0.r202007311110;
 		Unit de.dlr.sc.virsat.model.feature.feature.group version 4.12.0.r202007311110;
 		Unit de.dlr.sc.virsat.project.feature.feature.group version 4.12.0.r202007311110;

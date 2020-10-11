@@ -3,6 +3,18 @@ VirSat FDIR Release Notes
 
 VirSat FDIR is based on VirSat Core. Please don't forget to read the Release Notes of VirSat Core as well!
 
+Release 4.12.1 (9th October 2020)
+----------------------------------
+
+New Features:
+	Created benchmark experiment using FFORT - #396 Feature
+	Delivering Requirements concept from CORE - #400 Feature
+	Added Detectability Analysis section to FDIR Report template - #409 Feature
+	Added Availability Analysis section to FDIR Report template - #408 Feature
+
+Fixed Bug:
+	Fixed broken sections in Reporting template - #403 Bug
+
 Release 4.12.0 (31st July 2020)
 ----------------------------------
 
