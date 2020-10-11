@@ -1,4 +1,4 @@
-Target virsat_fdir_release extends virsat {
+Target virsat_fdir_release extends virsat_windows {
 	Import fdir_dependencies
 	
 	RepositoryLocation VirSat4CoreRelease url "https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/release/4.12.0/4763/" {	
