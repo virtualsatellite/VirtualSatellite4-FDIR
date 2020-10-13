@@ -142,13 +142,28 @@ public class SymmetryReduction {
 			
 			Set<FaultTreeNode> smallerNodes = getSmallerNodes(node);
 			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(smallerNodes);
+			
 			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, node)) {
-				return SKIP_EVENT;
+				
+				// At least one smaller event must also be active to skip this event
+				boolean smallerEventIsActive = false;
+				for (FaultTreeNode smallerNode : smallerNodes) {
+					if (state.isNodeActive(smallerNode.getFault())) {
+						smallerEventIsActive = true;
+						break;
+					}
+				}
+				
+				if (smallerEventIsActive) {
+					return SKIP_EVENT;
+				}
 			}
 			
 			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(node, Collections.emptyList());
 			for (FaultTreeNode symmetricNode : symmetricNodes) {
-				if (!failedBasicEvents.contains(symmetricNode) && isSymmetryReductionApplicable(state, symmetricNode)) {
+				if (!failedBasicEvents.contains(symmetricNode) 
+						&& state.isNodeActive(symmetricNode.getFault())
+						&& isSymmetryReductionApplicable(state, symmetricNode)) {
 					symmetryMultiplier++;
 				}
 			}

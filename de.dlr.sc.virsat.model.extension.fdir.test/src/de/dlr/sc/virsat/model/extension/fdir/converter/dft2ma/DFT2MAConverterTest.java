@@ -50,7 +50,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
 		
-		final int EXPECTED_COUNT_STATES = 11;
+		final int EXPECTED_COUNT_STATES = 12;
 		final int EXPECTED_COUNT_TRANSITIONS = 11;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
@@ -93,8 +93,8 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
 		
-		final int EXPECTED_COUNT_STATES = 11;
-		final int EXPECTED_COUNT_TRANSITIONS = 11;
+		final int EXPECTED_COUNT_STATES = 32;
+		final int EXPECTED_COUNT_TRANSITIONS = 59;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 	}
