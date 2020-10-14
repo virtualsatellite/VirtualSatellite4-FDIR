@@ -369,10 +369,7 @@ public class SymmetryReduction {
 					
 					if (!symmetricSubstitutionsActions.isEmpty()) {
 						List<FaultTreeNode> symmetricSubstitutionActions = symmetricSubstitutionsActions.get(i);
-						int index = 0;
-						for (RecoveryAction action : copy.getRecoveryActions()) {
-							index += action.substituteNodeParameters(symmetricSubstitutionActions, index);
-						}
+						copy.applyNodeSubstiutionOnActions(symmetricSubstitutionActions);
 					}
 				}
 			}
