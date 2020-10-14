@@ -109,7 +109,8 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 * @param ftHolder the fault tree holder
 	 */
 	protected void updatePermanence(DFTState state, FaultTreeNode node, FaultTreeHolder ftHolder) {
-		if (state.areFaultTreeNodesPermanent(ftHolder.getNodes(node, EdgeType.CHILD))) {
+		if (state.areFaultTreeNodesPermanent(ftHolder.getNodes(node, EdgeType.CHILD))
+				&& state.areFaultTreeNodesPermanent(ftHolder.getNodes(node, EdgeType.SPARE))) {
 			state.setFaultTreeNodePermanent(node, true);
 		}
 	}

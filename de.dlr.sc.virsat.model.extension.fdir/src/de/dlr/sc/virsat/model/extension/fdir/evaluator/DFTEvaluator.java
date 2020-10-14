@@ -80,7 +80,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		statistics.time = System.currentTimeMillis();
 		
 		FaultTreeHolder ftHolder = new FaultTreeHolder(root);
-		dft2MaConverter.configure(ftHolder, chooseSemantics(ftHolder), metrics, failableBasicEventsProvider);
+		dft2MaConverter.configure(chooseSemantics(ftHolder), metrics);
 		
 		DFTModularization modularization = getModularization(ftHolder, failableBasicEventsProvider);
 		

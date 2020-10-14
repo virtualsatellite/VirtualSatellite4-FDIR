@@ -86,4 +86,18 @@ public abstract class RecoveryAction extends ARecoveryAction {
 	 * @return the list of affected nodes
 	 */
 	public abstract List<FaultTreeNode> getAffectedNodes(DFTState state);
+	
+	/**
+	 * Gets the fault tree nodes that are parameters to this recovery action
+	 * @return a list of fault tree nodes
+	 */
+	public abstract List<FaultTreeNode> getNodeParameters();
+	
+	/**
+	 * Substitutes the fault tree node parameters with the substitutes given in the list
+	 * @param substitutes the substitute list
+	 * @param index the index at which to access the substitutes
+	 * @return the number of substitutes used
+	 */
+	public abstract int substituteNodeParameters(List<FaultTreeNode> substitutes, int index);
 }
