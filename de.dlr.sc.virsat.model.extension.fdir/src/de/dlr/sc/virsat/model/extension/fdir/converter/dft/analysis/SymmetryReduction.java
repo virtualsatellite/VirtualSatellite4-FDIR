@@ -148,7 +148,7 @@ public class SymmetryReduction {
 				// At least one smaller event must also be active to skip this event
 				boolean smallerEventIsActive = false;
 				for (FaultTreeNode smallerNode : smallerNodes) {
-					if (state.isNodeActive(smallerNode.getFault())) {
+					if (canFail(smallerNode, state)) {
 						smallerEventIsActive = true;
 						break;
 					}
@@ -162,7 +162,7 @@ public class SymmetryReduction {
 			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(node, Collections.emptyList());
 			for (FaultTreeNode symmetricNode : symmetricNodes) {
 				if (!failedBasicEvents.contains(symmetricNode) 
-						&& state.isNodeActive(symmetricNode.getFault())
+						&& canFail(symmetricNode, state)
 						&& isSymmetryReductionApplicable(state, symmetricNode)) {
 					symmetryMultiplier++;
 				}
@@ -170,6 +170,25 @@ public class SymmetryReduction {
 		}
 		
 		return symmetryMultiplier;
+	}
+	
+	/** 
+	 * Internal method to check if a node can fail in the given state,
+	 * given its activation status / dormancy.
+	 * @param node the node to check
+	 * @param state the state
+	 * @return true if the node is either activated or a BE with a cold failure rate
+	 */
+	private boolean canFail(FaultTreeNode node, DFTState state) {
+		if (node instanceof BasicEvent) {
+			BasicEvent be = (BasicEvent) node;
+			boolean canFailDormant = state.getFTHolder().getBasicEventHolder(be).getColdFailureRate() > 0;
+			if (canFailDormant) {
+				return true;
+			}
+		}
+		
+		return state.isNodeActive(node.getFault());
 	}
 	
 	/**
