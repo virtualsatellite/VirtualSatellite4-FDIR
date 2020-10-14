@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
@@ -143,5 +144,16 @@ public  class FreeAction extends AFreeAction {
 			getFreeSpareByUUID(state);
 		}
 		return state.getFTHolder().getNodes(freeSpare, EdgeType.PARENT);
+	}
+
+	@Override
+	public List<FaultTreeNode> getNodeParameters() {
+		return Arrays.asList(getFreeSpare());
+	}
+
+	@Override
+	public int substituteNodeParameters(List<FaultTreeNode> substitutes, int index) {
+		setFreeSpare(substitutes.get(index));
+		return 1;
 	}
 }

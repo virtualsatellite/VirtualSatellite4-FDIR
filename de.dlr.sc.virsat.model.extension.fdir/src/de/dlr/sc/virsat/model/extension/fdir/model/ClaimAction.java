@@ -171,4 +171,16 @@ public  class ClaimAction extends AClaimAction {
 		
 		return Arrays.asList(spareGate);
 	}
+
+	@Override
+	public List<FaultTreeNode> getNodeParameters() {
+		return Arrays.asList(getClaimSpare(), getSpareGate());
+	}
+
+	@Override
+	public int substituteNodeParameters(List<FaultTreeNode> substitutes, int index) {
+		setClaimSpare(substitutes.get(index++));
+		setSpareGate((SPARE) substitutes.get(index++));
+		return 2;
+	}
 }

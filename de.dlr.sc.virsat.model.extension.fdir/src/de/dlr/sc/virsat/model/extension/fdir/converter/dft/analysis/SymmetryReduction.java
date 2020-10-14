@@ -23,13 +23,10 @@ import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
-import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
@@ -353,14 +350,7 @@ public class SymmetryReduction {
 			
 			List<FaultTreeNode> actionNodes = new ArrayList<>();
 			for (RecoveryAction action : transition.getRecoveryActions()) {
-				if (action instanceof ClaimAction) {
-					ClaimAction ca = (ClaimAction) action;
-					actionNodes.add(ca.getClaimSpare());
-					actionNodes.add(ca.getSpareGate());
-				} else if (action instanceof FreeAction) {
-					FreeAction fa = (FreeAction) action;
-					actionNodes.add(fa.getFreeSpare());
-				}
+				actionNodes.addAll(action.getNodeParameters());
 			}
 			List<List<FaultTreeNode>> symmetricSubstitutionsActions = createSymmetricSubstitutions(actionNodes);
 			
@@ -379,16 +369,9 @@ public class SymmetryReduction {
 					
 					if (!symmetricSubstitutionsActions.isEmpty()) {
 						List<FaultTreeNode> symmetricSubstitutionActions = symmetricSubstitutionsActions.get(i);
-						int symmetricSubstitutionActionIndex = 0;
+						int index = 0;
 						for (RecoveryAction action : copy.getRecoveryActions()) {
-							if (action instanceof ClaimAction) {
-								ClaimAction ca = (ClaimAction) action;
-								ca.setClaimSpare(symmetricSubstitutionActions.get(symmetricSubstitutionActionIndex++));
-								ca.setSpareGate((SPARE) symmetricSubstitutionActions.get(symmetricSubstitutionActionIndex++));
-							} else if (action instanceof FreeAction) {
-								FreeAction fa = (FreeAction) action;
-								fa.setFreeSpare(symmetricSubstitutionActions.get(symmetricSubstitutionActionIndex++));
-							}
+							index += action.substituteNodeParameters(symmetricSubstitutionActions, index);
 						}
 					}
 				}
