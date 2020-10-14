@@ -17,14 +17,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.OptionalInt;
 import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.FreeAction;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.model.SPARE;
+import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
 /**
  * This class manages services for a symmetry reduction on DFTs.
@@ -323,5 +332,109 @@ public class SymmetryReduction {
 		}
 		
 		return symmetryReductionInverted;
+	}
+	
+	/**
+	 * Takes a list of transitions and creates a list of symmetric transitions.
+	 * That is, each transition has its trigger event and the nodes mentioned in the recovery actions
+	 * replaced by the respective symmetric nodes
+	 * @param transitions the original transitions
+	 * @return a list of symmetric transitions
+	 */
+	public void createSymmetricTransitions(RecoveryAutomaton ra) {
+		RecoveryAutomatonHelper raHelper = new RecoveryAutomatonHelper(ra.getConcept());
+		List<Transition> symmetricTransitions = new ArrayList<>();
+		for (Transition transition : ra.getTransitions()) {
+			List<List<FaultTreeNode>> symmetricSubstitutionsGuards = new ArrayList<>();
+			if (transition instanceof FaultEventTransition) {
+				FaultEventTransition feTransition = (FaultEventTransition) transition;
+				symmetricSubstitutionsGuards = createSymmetricSubstitutions(feTransition.getGuards());
+			}
+			
+			List<FaultTreeNode> actionNodes = new ArrayList<>();
+			for (RecoveryAction action : transition.getRecoveryActions()) {
+				if (action instanceof ClaimAction) {
+					ClaimAction ca = (ClaimAction) action;
+					actionNodes.add(ca.getClaimSpare());
+					actionNodes.add(ca.getSpareGate());
+				} else if (action instanceof FreeAction) {
+					FreeAction fa = (FreeAction) action;
+					actionNodes.add(fa.getFreeSpare());
+				}
+			}
+			List<List<FaultTreeNode>> symmetricSubstitutionsActions = createSymmetricSubstitutions(actionNodes);
+			
+			int maxSize = Math.max(symmetricSubstitutionsActions.size(), symmetricSubstitutionsGuards.size());
+			if (maxSize > 0) {
+				for (int i = 0; i < maxSize; ++i) {
+					Transition copy = raHelper.copyTransition(transition);
+					symmetricTransitions.add(copy);
+					
+					if (!symmetricSubstitutionsGuards.isEmpty()) {
+						List<FaultTreeNode> symmetricSubstitutionGuards = symmetricSubstitutionsGuards.get(i);
+						FaultEventTransition feTransition = (FaultEventTransition) copy;
+						feTransition.getGuards().clear();
+						feTransition.getGuards().addAll(symmetricSubstitutionGuards);
+					}
+					
+					if (!symmetricSubstitutionsActions.isEmpty()) {
+						List<FaultTreeNode> symmetricSubstitutionActions = symmetricSubstitutionsActions.get(i);
+						int symmetricSubstitutionActionIndex = 0;
+						for (RecoveryAction action : copy.getRecoveryActions()) {
+							if (action instanceof ClaimAction) {
+								ClaimAction ca = (ClaimAction) action;
+								ca.setClaimSpare(symmetricSubstitutionActions.get(symmetricSubstitutionActionIndex++));
+								ca.setSpareGate((SPARE) symmetricSubstitutionActions.get(symmetricSubstitutionActionIndex++));
+							} else if (action instanceof FreeAction) {
+								FreeAction fa = (FreeAction) action;
+								fa.setFreeSpare(symmetricSubstitutionActions.get(symmetricSubstitutionActionIndex++));
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		ra.getTransitions().addAll(symmetricTransitions);
+	}
+	
+	/**
+	 * Takes a list of nodes a creates several substitution lists according to the symmetry reduction.
+	 * Each substitution list is structured as follows:
+	 * For every node in the original list there is either a symmetric node (smaller or bigger)
+	 * or if there is no symmetric node, then the original node itself 
+	 * @param originalNodes a list of nodes
+	 * @return a list of symmetric node substitutions
+	 */
+	private List<List<FaultTreeNode>> createSymmetricSubstitutions(List<FaultTreeNode> originalNodes) {
+		List<List<FaultTreeNode>> allSymmetricNodes = new ArrayList<>();
+		for (FaultTreeNode originalNode : originalNodes) {
+			List<FaultTreeNode> symmetricNodes = new ArrayList<>();
+			symmetricNodes.addAll(getSmallerNodes(originalNode));
+			symmetricNodes.addAll(getBiggerNodes(originalNode));
+			allSymmetricNodes.add(symmetricNodes);
+		}
+		
+		List<List<FaultTreeNode>> symmetricSubstitutions = new ArrayList<>();
+		OptionalInt maxSize = allSymmetricNodes.stream().mapToInt(List::size).max();
+		if (maxSize.isPresent() && maxSize.getAsInt() > 0) {
+			// max size is not present only if there are no symmetric bigger nodes
+			
+			List<FaultTreeNode> symmetricSubstitution = new ArrayList<>();
+			for (int i = 0; i < maxSize.getAsInt(); ++i) {
+				for (List<FaultTreeNode> biggerNodes : allSymmetricNodes) {
+					// Either all nodes have the same number of symmetric nodes
+					// or one has 0 which means itself has to be used
+					if (biggerNodes.isEmpty()) {
+						symmetricSubstitution.add(originalNodes.get(i));
+					} else {
+						symmetricSubstitution.add(biggerNodes.get(i));
+					}
+				}
+			}
+			symmetricSubstitutions.add(symmetricSubstitution);
+		}
+		
+		return symmetricSubstitutions;
 	}
 }

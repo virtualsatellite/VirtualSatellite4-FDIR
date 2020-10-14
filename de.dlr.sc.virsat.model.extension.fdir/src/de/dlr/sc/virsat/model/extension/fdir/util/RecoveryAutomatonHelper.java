@@ -370,16 +370,7 @@ public class RecoveryAutomatonHelper {
 		}
 		
 		for (Transition transition : ra.getTransitions()) {
-			Transition newTransition = null;
-			
-			if (transition instanceof FaultEventTransition) {
-				newTransition = copyFaultEventTransition((FaultEventTransition) transition);
-			} else if (transition instanceof TimeoutTransition) {
-				newTransition = copyTimeoutTransition((TimeoutTransition) transition);
-			} else {
-				throw new RuntimeException("Unknown transition type " +  transition);
-			}
-			
+			Transition newTransition = copyTransition(transition);
 			newTransition.setFrom(mapOldStateToNewState.get(transition.getFrom()));
 			newTransition.setTo(mapOldStateToNewState.get(transition.getTo()));
 			newRA.getTransitions().add(newTransition);
@@ -388,6 +379,21 @@ public class RecoveryAutomatonHelper {
 		newRA.setInitial(mapOldStateToNewState.get(ra.getInitial()));
 		
 		return newRA;
+	}
+	
+	/**
+	 * Copies a transition
+	 * @param transition the transition to copy
+	 * @return a copy
+	 */
+	public Transition copyTransition(Transition transition) {
+		if (transition instanceof FaultEventTransition) {
+			return copyFaultEventTransition((FaultEventTransition) transition);
+		} else if (transition instanceof TimeoutTransition) {
+			return copyTimeoutTransition((TimeoutTransition) transition);
+		} else {
+			throw new RuntimeException("Unknown transition type " +  transition);
+		}
 	}
 	
 	/**

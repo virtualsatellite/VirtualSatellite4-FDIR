@@ -93,8 +93,8 @@ public class ModularSynthesizerTest extends ATestCase {
 	public void testSynthesizeHECS11() throws IOException {
 		Fault fault = createDFT("/resources/galileo/hecs_1_1_0_np.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
-
-		final int NUM_STATES = 2;
+		
+		final int NUM_STATES = 3;
 		assertEquals(NUM_STATES, ra.getStates().size());
 	}
 	
@@ -139,7 +139,7 @@ public class ModularSynthesizerTest extends ATestCase {
 			0.004302925106080927
 
 		};
-		final double EXPECTED_MTTF = 0.28062467694389703;
+		final double EXPECTED_MTTF = 0.28063471864849404;
 		
 		Fault fault = createDFT("/resources/galileo/cm1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
@@ -163,7 +163,7 @@ public class ModularSynthesizerTest extends ATestCase {
 			3.749350399882001E-4, 
 			7.987025488765953E-4
 		};
-		final double EXPECTED_MTTF = 0.32784729178994587;
+		final double EXPECTED_MTTF = 0.3278561781095633;
 		
 		Fault fault = createDFT("/resources/galileo/cm2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
@@ -188,7 +188,7 @@ public class ModularSynthesizerTest extends ATestCase {
 			2.8658522870311545e-06,
 			1.851515224177692e-05
 		};
-		final double EXPECTED_MTTF = 0.36334134426339687;
+		final double EXPECTED_MTTF = 0.36335151578756647;
 		
 		Fault fault = createDFT("/resources/galileo/cm3.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);

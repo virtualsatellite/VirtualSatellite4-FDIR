@@ -19,6 +19,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.MarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
@@ -40,7 +41,15 @@ public class BasicSynthesizer extends ASynthesizer {
 		subMonitor = SubMonitor.convert(subMonitor, TICKS);
 		ScheduleQuery<DFTState> scheduelQuery = new ScheduleQuery<>(ma, initialMa);
 		Map<DFTState, List<MarkovTransition<DFTState>>> schedule = scheduler.computeOptimalScheduler(scheduelQuery, subMonitor.split(1));
-		return new Schedule2RAConverter<>(ma, concept).convert(schedule, initialMa, subMonitor.split(1));
+		RecoveryAutomaton ra = new Schedule2RAConverter<>(ma, concept).convert(schedule, initialMa, subMonitor.split(1));
+		
+		// Add the symmetric transitions
+		SymmetryReduction symmetryReduction = initialMa.getFTHolder().getStaticAnalysis().getSymmetryReduction();
+		if (symmetryReduction != null) {
+			symmetryReduction.createSymmetricTransitions(ra);
+		}
+		
+		return ra;
 	}
 
 	@Override
