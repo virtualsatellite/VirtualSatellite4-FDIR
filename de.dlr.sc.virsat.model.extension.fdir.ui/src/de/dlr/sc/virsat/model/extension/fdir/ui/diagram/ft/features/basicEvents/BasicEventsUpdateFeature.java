@@ -27,6 +27,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 
 /**
  * Update feature for updating fault tree nodes in a fault tree diagram.
+ * 
  * @author muel_s8
  *
  */
@@ -35,9 +36,10 @@ public class BasicEventsUpdateFeature extends VirSatUpdateFeature {
 
 	/**
 	 * Default public constructor.
+	 * 
 	 * @param fp the feature provider
 	 */
-	
+
 	public BasicEventsUpdateFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -51,68 +53,81 @@ public class BasicEventsUpdateFeature extends VirSatUpdateFeature {
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
-		
+
 		BasicEvent bean = (BasicEvent) getBusinessObjectForPictogramElement(pictogramElement);
-		
-        // retrieve name from business model
-        String businessName = bean.getName();
+
 		boolean updateNeeded = false;
-        
-        if (pictogramElement.getGraphicsAlgorithm() instanceof Ellipse) {
-            ContainerShape cs = (ContainerShape) pictogramElement;
-            for (Shape shape : cs.getChildren()) {
-                if (shape.getGraphicsAlgorithm() instanceof Text) {
-                	Text text = (Text) shape.getGraphicsAlgorithm();
-                    String pictogramName = text.getValue();
-                    updateNeeded |= !Objects.equals(pictogramName, businessName);
-                }
-            }
-        } else if (pictogramElement.getGraphicsAlgorithm() instanceof Text) {
-        	Text text = (Text) pictogramElement.getGraphicsAlgorithm();
-            String pictogramName = text.getValue();
-            updateNeeded = !Objects.equals(pictogramName, businessName);
-        }
- 
- 
-        // update needed, if changes have been found
-        
-        if (updateNeeded) {
-            return Reason.createTrueReason("Out of date");
-        } else {
-            return Reason.createFalseReason();
-        }
+
+		if (pictogramElement.getGraphicsAlgorithm() instanceof Ellipse) {
+			ContainerShape cs = (ContainerShape) pictogramElement;
+			Shape nameShape = cs.getChildren().get(0);
+			updateNeeded |= updateNeededName(nameShape, bean);
+			Shape failureRateShape = ((ContainerShape) cs.getChildren().get(1)).getChildren().get(0);
+			updateNeeded |= updateNeededFailureRate(failureRateShape, bean);
+		} else if (pictogramElement.getGraphicsAlgorithm() instanceof Text) {
+			updateNeeded |= updateNeededName(pictogramElement, bean);
+		} else if (pictogramElement.getGraphicsAlgorithm() instanceof Rectangle
+				&& pictogramElement instanceof ContainerShape) {
+			ContainerShape cs = (ContainerShape) pictogramElement;
+			updateNeeded |= updateNeededFailureRate(cs.getChildren().get(0), bean);
+		}
+
+		// update needed, if changes have been found
+
+		if (updateNeeded) {
+			return Reason.createTrueReason("Out of date");
+		} else {
+			return Reason.createFalseReason();
+		}
+	}
+
+	private boolean updateNeededName(PictogramElement pe, BasicEvent be) {
+		Text text = (Text) pe.getGraphicsAlgorithm();
+		String pictogramName = text.getValue();
+		return !Objects.equals(pictogramName, be.getName());
+	}
+
+	private boolean updateNeededFailureRate(PictogramElement pe, BasicEvent be) {
+		Text text = (Text) pe.getGraphicsAlgorithm();
+		String pictogramName = text.getValue();
+		return !Objects.equals(pictogramName, be.getHotFailureRateBean().getValueWithUnit());
 	}
 
 	@Override
 	public boolean update(IUpdateContext context) {
-        // retrieve name from business model
-        PictogramElement pictogramElement = context.getPictogramElement();
-        BasicEvent bean = (BasicEvent) getBusinessObjectForPictogramElement(pictogramElement);
-        String businessName = bean.getName();
-        
-        boolean changeDuringUpdate = false;
-        
-        // Set name in pictogram model
-        ContainerShape cs = (ContainerShape) pictogramElement;
-        if (pictogramElement.getGraphicsAlgorithm() instanceof Ellipse) {
-	        for (Shape shape : cs.getChildren()) {
-	            if (shape.getGraphicsAlgorithm() instanceof Text) {
-	            	Text text = (Text) shape.getGraphicsAlgorithm();
-	                text.setValue(businessName);
-	                changeDuringUpdate = true;
-	            }
-	        } 
-        } else if (pictogramElement.getGraphicsAlgorithm() instanceof Rectangle) {
-        	Text text = (Text) ((ContainerShape) pictogramElement).getChildren().get(0).getGraphicsAlgorithm();
-            text.setValue(bean.getHotFailureRateBean().getValueWithUnit());
-            changeDuringUpdate = true;
-        }
-        
-        if (changeDuringUpdate) {
-        	layoutPictogramElement(pictogramElement);
-        }
-        
+		// retrieve name from business model
+		PictogramElement pictogramElement = context.getPictogramElement();
+		BasicEvent bean = (BasicEvent) getBusinessObjectForPictogramElement(pictogramElement);
+
+		boolean changeDuringUpdate = false;
+
+		// Set name in pictogram model
+		ContainerShape cs = (ContainerShape) pictogramElement;
+		if (pictogramElement.getGraphicsAlgorithm() instanceof Ellipse) {
+			Shape nameShape = cs.getChildren().get(0);
+			changeDuringUpdate |= updateName(nameShape, bean);
+			Shape failureRateShape = ((ContainerShape) cs.getChildren().get(1)).getChildren().get(0);
+			changeDuringUpdate |= updateFailureRate(failureRateShape, bean);
+		} else if (pictogramElement.getGraphicsAlgorithm() instanceof Rectangle) {
+			changeDuringUpdate |= updateFailureRate(((ContainerShape) pictogramElement).getChildren().get(0), bean);
+		}
+
+		if (changeDuringUpdate) {
+			layoutPictogramElement(pictogramElement);
+		}
+
 		return changeDuringUpdate;
 	}
 
+	private boolean updateName(PictogramElement pe, BasicEvent be) {
+		Text text = (Text) pe.getGraphicsAlgorithm();
+		text.setValue(be.getName());
+		return true;
+	}
+
+	private boolean updateFailureRate(PictogramElement pe, BasicEvent be) {
+		Text text = (Text) pe.getGraphicsAlgorithm();
+		text.setValue(be.getHotFailureRateBean().getValueWithUnit());
+		return true;
+	}
 }
