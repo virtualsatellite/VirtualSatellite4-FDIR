@@ -73,7 +73,7 @@ public class BeanPropertyDirectEditValueFeature extends AbstractDirectEditingFea
 		
 		bean.getTypeInstance().setValue(value);
 		
-		ContainerShape cs = DiagramHelper.getUpdateableContainer(getFeatureProvider(), pe);
+		PictogramElement updateablePe = DiagramHelper.getUpdateableElement(getFeatureProvider(), pe);
 		updatePictogramElement(cs);
 	}
 	
