@@ -74,7 +74,7 @@ public class BeanPropertyDirectEditValueFeature extends AbstractDirectEditingFea
 		bean.getTypeInstance().setValue(value);
 		
 		PictogramElement updateablePe = DiagramHelper.getUpdateableElement(getFeatureProvider(), pe);
-		updatePictogramElement(cs);
+		updatePictogramElement(updateablePe);
 	}
 	
 	@Override
