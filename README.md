@@ -21,6 +21,7 @@ Status
 [![Build Status](https://github.com/virtualsatellite/VirtualSatellite4-FDIR/workflows/Build/badge.svg?branch=master)](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR) 
 [![Coverage Status](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR/branch/master/graph/badge.svg)](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR) 
 [![Download virtualsatellite](https://img.shields.io/sourceforge/dt/virtualsatellite.svg)](https://sourceforge.net/projects/virtualsatellite/files/release/) 
+[![DOI](https://zenodo.org/badge/192903036.svg)](https://zenodo.org/badge/latestdoi/192903036)
 for *Master* build.
 
 
