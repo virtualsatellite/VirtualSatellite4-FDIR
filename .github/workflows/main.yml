@@ -313,5 +313,5 @@ jobs:
           ssh_key_pass: ${{ secrets.SF_SSH_KEY_PASS }}
           local_dir: VirSat4_FDIR_Application
           remote_dir: virtualsatellite/VirtualSatellite4-FDIR
-        # if: ${{ steps.build_decision.outputs.deploy_type == 'deploy' }}
+        if: ${{ steps.build_decision.outputs.deploy_type == 'deploy' }}
       
