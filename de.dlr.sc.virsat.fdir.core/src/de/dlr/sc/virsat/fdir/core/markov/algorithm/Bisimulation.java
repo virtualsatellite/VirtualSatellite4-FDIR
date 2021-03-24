@@ -1,6 +1,7 @@
 package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+
 
 
 
@@ -98,8 +100,13 @@ public class Bisimulation {
 	}
 	
 	
+	/**
+	 * It refines the initially created partitions further based on their transitions
+	 * @param blocks the current blocks
+	 */
+	
    public void refineBlocks(Set<Set<MarkovState>> blocks) {
-	//   LinkedHashSet<MarkovState>  blocksToProcess = new LinkedHashSet<>(blocks);
+	   
 	   Queue<Set<MarkovState>> blocksToProcess = new LinkedList<>(blocks);
 	   while (!blocksToProcess.isEmpty()) {
 			
@@ -133,27 +140,46 @@ public class Bisimulation {
 	
    
    public Set<Set<MarkovState>> refineBlock(Set<MarkovState> block) {
-	   Set<Set<MarkovState>> blocks = new HashSet<>();
+	   Map<Map<Object, Set<MarkovState>>, Set<MarkovState>> mapBlockReachabilityMapToRefinedBlock = new HashMap<>();
+	   Set<Set<MarkovState>> refinedblocks = new HashSet<>();
 	   for (MarkovState state : block) {
-			Map<Object, Set<MarkovState>> mapGuardsToBlock = createBlockReachabilityMap(block, state);
-	   }
-	    
-	   	return blocks;
-
+			Map<Object, Set<MarkovState>> mapLabelsOFaStateToOutgoingBlock = createBlockReachabilityMapForAState(block, state);
+			Set<MarkovState> refinedBlock = getEquivalentBlock(mapBlockReachabilityMapToRefinedBlock, mapLabelsOFaStateToOutgoingBlock);
+			if (refinedBlock == null) {
+				refinedBlock = new HashSet<MarkovState>();
+				refinedblocks.add(refinedBlock);
+				mapBlockReachabilityMapToRefinedBlock.put(mapLabelsOFaStateToOutgoingBlock, refinedBlock);
+			}
+			
+			refinedBlock.add(state);
+		}
+		
+	    System.out.println(Arrays.asList(mapBlockReachabilityMapToRefinedBlock));
+		return refinedblocks;
+		
    }
    
-   private Map<Object, Set<MarkovState>> createBlockReachabilityMap(Set<MarkovState> block, MarkovState state) {
-	   Map<Object, Set<MarkovState>> mapLabelsToBlock = new HashMap<>();
+   private Set<MarkovState> getEquivalentBlock(Map<Map<Object, Set<MarkovState>>, Set<MarkovState>> mapBlockReachabilityMapToRefinedBlock, Map<Object, Set<MarkovState>> mapLabelsToBlock) {
+	   Set<MarkovState> refinedblock = mapBlockReachabilityMapToRefinedBlock.get(mapLabelsToBlock);
+	   
+	   
+	   return refinedblock;
+	   
+	   
+   }
+   
+   private Map<Object, Set<MarkovState>> createBlockReachabilityMapForAState(Set<MarkovState> block, MarkovState state) {
+	   Map<Object, Set<MarkovState>> mapLabelsOFaStateToOutgoingBlock = new HashMap<>();
 		for (MarkovTransition<MarkovState> markovtransition : ma.getSuccTransitions(state)) {
 			
 			Set<MarkovState> toBlock = mapStateToBlock.get(markovtransition.getTo());
 			
 			
 			if (toBlock != block) {
-				mapLabelsToBlock.put(markovtransition.getEvent(), toBlock);
+				mapLabelsOFaStateToOutgoingBlock.put(markovtransition.getEvent(), toBlock);
 			}
 		}
-		return mapLabelsToBlock;
+		return mapLabelsOFaStateToOutgoingBlock;
 	}
 	
    
@@ -172,17 +198,27 @@ public class Bisimulation {
    
    
    private Set<Set<MarkovState>> getOutDatedBlocks(Set<Set<MarkovState>> refinedBlocks) {
-	   Set<Set<MarkovState>> outdatedblocks = new HashSet<>();
-	   
-	   return outdatedblocks;
-	   
+	   Set<Set<MarkovState>> outdatedBlocks = new HashSet<>();
+   
+		for (Set<MarkovState> refinedBlock : refinedBlocks) {
+			for (MarkovState state : refinedBlock) {
+				
+				for (MarkovTransition<MarkovState> markovtransition : ma.getPredTransitions(state)) {
+					Set<MarkovState> fromBlock = mapStateToBlock.get(markovtransition.getFrom());
+					outdatedBlocks.add(fromBlock);
+				}
+			}
+		}
+		
+		return outdatedBlocks;
+  
    }
    
 	
 	public Set<Set<MarkovState>> computeEquivalenceClasses() {
 
 		Set<Set<MarkovState>> blocks = createInitialBlocks();
-//		refineBlocks(blocks);
+        refineBlocks(blocks);
 
 		return blocks;
 	}
