@@ -106,14 +106,23 @@ public class Bisimulation {
 
 		
 		for (MarkovTransition<MarkovState> statetransition : stateTransitions) {
+			
+			if (!stateLabels.contains(statetransition.getEvent())) {
+				
+				stateLabels.add(statetransition.getEvent());
+				
+			}
 
-			stateLabels.add(statetransition.getEvent());
+			
 		}
 
 		
 		for (MarkovTransition<MarkovState> blocktransition : blockTransitions) {
-
-			blockLabels.add(blocktransition.getEvent());
+			
+			if (!blockLabels.contains(blocktransition.getEvent())) {
+				blockLabels.add(blocktransition.getEvent());
+			}
+			
 		}
 
 		boolean isequal = blockLabels.equals(stateLabels);
@@ -269,7 +278,7 @@ public class Bisimulation {
 	 */
 	public void mergeBlocks(Set<Set<MarkovState>> blocks) {
 
-//		MarkovState initialMarkovState = ma.;
+
 
 		for (Set<MarkovState> block : blocks) {
 			MarkovState state = block.iterator().next();
@@ -289,22 +298,6 @@ public class Bisimulation {
 
 		}
 
-//		List<MarkovTransition<MarkovState>> markovTransitionsToRemove = new ArrayList<>();
-
-//		for (Set<MarkovState> block : blocks) {
-//			MarkovState state = block.iterator().next();
-//			block.remove(state);
-
-//			for (MarkovState removedState : block) {
-//				markovTransitionsToRemove.addAll(ma.getSuccTransitions(removedState));
-//				markovTransitionsToRemove.addAll(ma.getPredTransitions(removedState));
-//				
-//			}
-
-//			for (MarkovState removedState : block) {
-//				ma.removeState(removedState);
-//			}
-//			
 
 	}
 		
