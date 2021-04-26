@@ -46,7 +46,7 @@ public class Bisimulation {
 	 */
 	public void minimize() {
 		computeEquivalenceClasses();
-		computeQuotient();
+		
 	}
 
 	/**
@@ -273,33 +273,7 @@ public class Bisimulation {
 	}
 	
 	
-	/**
-	 * @param blocks
-	 */
-	public void mergeBlocks(Set<Set<MarkovState>> blocks) {
-
-
-
-		for (Set<MarkovState> block : blocks) {
-			MarkovState state = block.iterator().next();
-			block.remove(state);
-			for (MarkovState removedState : block) {
-				ma.removeState(removedState);
-			}
-			block.add(state);
-			List<MarkovTransition<MarkovState>> stateOutgoingTransitions = ma.getSuccTransitions(state);
-			for (MarkovTransition<MarkovState> stateOutgoingTransition : stateOutgoingTransitions) {
-				MarkovState toState = stateOutgoingTransition.getTo();
-				MarkovState blockRepresentative = mapStateToBlock.get(toState).iterator().next();
-				if (toState != blockRepresentative) {
-					stateOutgoingTransition.setTo(blockRepresentative);
-				}
-			}
-
-		}
-
-
-	}
+	
 		
 		
 		
@@ -322,20 +296,6 @@ public class Bisimulation {
 		return blocks;
 	}
 
-	/**
-	 * Computes Quotient of the equivalence Classes. Basically all the States in an equivalence Class
-	 *  are contracted into Single State
-	 */
-	public void computeQuotient() {
-		
-		Set<Set<MarkovState>> equivalenceClasses = computeEquivalenceClasses();
-		mergeBlocks(equivalenceClasses);
-		
-		
-		
-		
-		
-		
+	
 
-	}
 }
