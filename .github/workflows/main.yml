@@ -68,7 +68,20 @@ jobs:
       - name: Setup - Checkout code
         uses: actions/checkout@v2
       
-
+      # --------------------------------------------
+      # Setup caching for m2 repository
+      # --------------------------------------------
+      - name: Setup - Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository/
+          key: ${{ runner.os }}-local-maven-spotbugs-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-local-maven-spotbugs-
+            ${{ runner.os }}-local-maven-
+            
+      - name: Setup - Clean local Maven repository
+        run: rm -rf ~/.m2/repository/de/dlr/sc/virsat
      
       # --------------------------------------------
       # Perform various setup operations
