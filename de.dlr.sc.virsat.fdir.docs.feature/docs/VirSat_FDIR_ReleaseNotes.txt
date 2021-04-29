@@ -3,6 +3,15 @@ VirSat FDIR Release Notes
 
 VirSat FDIR is based on VirSat Core. Please don't forget to read the Release Notes of VirSat Core as well!
 
+Release 4.13.0 (29th April 2021)
+----------------------------------
+
+New Features:
+	Symmetry reduction for non-deterministic Fault Trees - #402 Feature
+
+Fixed Bug:
+	Basic event failure rate does not updated - #417 Bug
+
 Release 4.12.1 (9th October 2020)
 ----------------------------------
 
