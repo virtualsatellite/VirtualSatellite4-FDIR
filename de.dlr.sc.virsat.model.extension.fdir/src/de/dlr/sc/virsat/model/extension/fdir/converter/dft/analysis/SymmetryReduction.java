@@ -17,16 +17,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.OptionalInt;
 import java.util.Queue;
 import java.util.Set;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
+import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
+import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
+import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
+import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelper;
 
 /**
  * This class manages services for a symmetry reduction on DFTs.
@@ -79,6 +83,27 @@ public class SymmetryReduction {
 	}
 	
 	/**
+	 * Checks if there exists a symmetric smaller node than the given node
+	 * in the given state that has not yet failed
+	 * @param node the node
+	 * @param state the state
+	 * @return true iff the exists a smaller unfailed node in the given state
+	 */
+	public boolean isSymmetricSmallerNodeUnfailed(FaultTreeNode node, DFTState state) {
+		Set<FaultTreeNode> smallerNodes = getSmallerNodes(node);
+		boolean haveSmallerNodesFailed = true;
+		for (FaultTreeNode smallerNode : smallerNodes) {
+			haveSmallerNodesFailed &= state.hasFaultTreeNodeFailed(smallerNode);
+		}
+		
+		if (!haveSmallerNodesFailed && isSymmetryReductionApplicable(state, node)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Gets all nodes that are smaller than this node
 	 * @param node the node
 	 * @return all smaller nodes
@@ -92,15 +117,15 @@ public class SymmetryReduction {
 	}
 	
 	/**
-	 * Gets the symmetry rate multiplier for a given event in a given state
-	 * @param event the event
+	 * Gets the symmetry rate multiplier for a given node in a given state
+	 * @param node the node
 	 * @param state the state
-	 * @return the symmetry rate multiplier or -1 if there is a symmetric event covering this one
+	 * @return the symmetry rate multiplier or -1 if there is a symmetric node covering this one
 	 */
-	public int getSymmetryMultiplier(IDFTEvent event, DFTState state) {
+	public int getSymmetryMultiplier(FaultTreeNode node, DFTState state) {
 		int multiplier = 1;
-		int countBiggerSymmetricEvents = countBiggerSymmetricEvents(event, state);
-		if (countBiggerSymmetricEvents == -1) {
+		int countBiggerSymmetricEvents = countBiggerSymmetricNodes(node, state);
+		if (countBiggerSymmetricEvents == SKIP_EVENT) {
 			return SKIP_EVENT;
 		} else {
 			multiplier += countBiggerSymmetricEvents;
@@ -111,30 +136,65 @@ public class SymmetryReduction {
 	
 	/**
 	 * Computes the number of events symmetric to the passed one
-	 * @param event the event
+	 * @param node the node
 	 * @param state the current state
 	 * @return -1 if there exists a smaller symmetric event, otherwise the number of bigger symmetric events
 	 */
-	private int countBiggerSymmetricEvents(IDFTEvent event, DFTState state) {
+	public int countBiggerSymmetricNodes(FaultTreeNode node, DFTState state) {
 		int symmetryMultiplier = 0;
 		
-		if (event instanceof FaultEvent) {
+		if (node != null) {
 			Set<BasicEvent> failedBasicEvents = state.getFailedBasicEvents();
 			
-			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(getSmallerNodes(event.getNode()));
-			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, event.getNode())) {
-				return SKIP_EVENT;
+			Set<FaultTreeNode> smallerNodes = getSmallerNodes(node);
+			boolean haveNecessaryEventsFailed = failedBasicEvents.containsAll(smallerNodes);
+			
+			if (!haveNecessaryEventsFailed && isSymmetryReductionApplicable(state, node)) {
+				
+				// At least one smaller event must also be active to skip this event
+				boolean smallerEventIsActive = false;
+				for (FaultTreeNode smallerNode : smallerNodes) {
+					if (canFail(smallerNode, state)) {
+						smallerEventIsActive = true;
+						break;
+					}
+				}
+				
+				if (smallerEventIsActive) {
+					return SKIP_EVENT;
+				}
 			}
 			
-			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(event.getNode(), Collections.emptyList());
-			for (FaultTreeNode node : symmetricNodes) {
-				if (!failedBasicEvents.contains(node) && isSymmetryReductionApplicable(state, node)) {
+			List<FaultTreeNode> symmetricNodes = biggerRelation.getOrDefault(node, Collections.emptyList());
+			for (FaultTreeNode symmetricNode : symmetricNodes) {
+				if (!failedBasicEvents.contains(symmetricNode) 
+						&& canFail(symmetricNode, state)
+						&& isSymmetryReductionApplicable(state, symmetricNode)) {
 					symmetryMultiplier++;
 				}
 			}
 		}
 		
 		return symmetryMultiplier;
+	}
+	
+	/** 
+	 * Internal method to check if a node can fail in the given state,
+	 * given its activation status / dormancy.
+	 * @param node the node to check
+	 * @param state the state
+	 * @return true if the node is either activated or a BE with a cold failure rate
+	 */
+	private boolean canFail(FaultTreeNode node, DFTState state) {
+		if (node instanceof BasicEvent) {
+			BasicEvent be = (BasicEvent) node;
+			boolean canFailDormant = state.getFTHolder().getBasicEventHolder(be).getColdFailureRate() > 0;
+			if (canFailDormant) {
+				return true;
+			}
+		}
+		
+		return state.isNodeActive(node.getFault());
 	}
 	
 	/**
@@ -234,7 +294,7 @@ public class SymmetryReduction {
 	 * @param node the node
 	 * @return true iff symmetry reduction is applicable
 	 */
-	private boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
+	public boolean isSymmetryReductionApplicable(DFTState state, FaultTreeNode node) {
 		Map<FaultTreeNode, Set<FaultTreeNode>> mapParentToSymmetryRequirements = state.getMapParentToSymmetryRequirements();
 		
 		FaultTreeHolder ftHolder = state.getFTHolder();
@@ -269,5 +329,92 @@ public class SymmetryReduction {
 		}
 		
 		return symmetryReductionInverted;
+	}
+	
+	/**
+	 * Takes a list of transitions and creates a list of symmetric transitions.
+	 * That is, each transition has its trigger event and the nodes mentioned in the recovery actions
+	 * replaced by the respective symmetric nodes
+	 * @param transitions the original transitions
+	 * @return a list of symmetric transitions
+	 */
+	public void createSymmetricTransitions(RecoveryAutomaton ra) {
+		RecoveryAutomatonHelper raHelper = new RecoveryAutomatonHelper(ra.getConcept());
+		List<Transition> symmetricTransitions = new ArrayList<>();
+		for (Transition transition : ra.getTransitions()) {
+			List<List<FaultTreeNode>> symmetricSubstitutionsGuards = new ArrayList<>();
+			if (transition instanceof FaultEventTransition) {
+				FaultEventTransition feTransition = (FaultEventTransition) transition;
+				symmetricSubstitutionsGuards = createSymmetricSubstitutions(feTransition.getGuards());
+			}
+			
+			List<FaultTreeNode> actionNodes = new ArrayList<>();
+			for (RecoveryAction action : transition.getRecoveryActions()) {
+				actionNodes.addAll(action.getNodeParameters());
+			}
+			List<List<FaultTreeNode>> symmetricSubstitutionsActions = createSymmetricSubstitutions(actionNodes);
+			
+			int maxSize = Math.max(symmetricSubstitutionsActions.size(), symmetricSubstitutionsGuards.size());
+			if (maxSize > 0) {
+				for (int i = 0; i < maxSize; ++i) {
+					Transition copy = raHelper.copyTransition(transition);
+					symmetricTransitions.add(copy);
+					
+					if (!symmetricSubstitutionsGuards.isEmpty()) {
+						List<FaultTreeNode> symmetricSubstitutionGuards = symmetricSubstitutionsGuards.get(i);
+						FaultEventTransition feTransition = (FaultEventTransition) copy;
+						feTransition.getGuards().clear();
+						feTransition.getGuards().addAll(symmetricSubstitutionGuards);
+					}
+					
+					if (!symmetricSubstitutionsActions.isEmpty()) {
+						List<FaultTreeNode> symmetricSubstitutionActions = symmetricSubstitutionsActions.get(i);
+						copy.applyNodeSubstiutionOnActions(symmetricSubstitutionActions);
+					}
+				}
+			}
+		}
+		
+		ra.getTransitions().addAll(symmetricTransitions);
+	}
+	
+	/**
+	 * Takes a list of nodes a creates several substitution lists according to the symmetry reduction.
+	 * Each substitution list is structured as follows:
+	 * For every node in the original list there is either a symmetric node (smaller or bigger)
+	 * or if there is no symmetric node, then the original node itself 
+	 * @param originalNodes a list of nodes
+	 * @return a list of symmetric node substitutions
+	 */
+	private List<List<FaultTreeNode>> createSymmetricSubstitutions(List<FaultTreeNode> originalNodes) {
+		List<List<FaultTreeNode>> allSymmetricNodes = new ArrayList<>();
+		for (FaultTreeNode originalNode : originalNodes) {
+			List<FaultTreeNode> symmetricNodes = new ArrayList<>();
+			symmetricNodes.addAll(getSmallerNodes(originalNode));
+			symmetricNodes.addAll(getBiggerNodes(originalNode));
+			allSymmetricNodes.add(symmetricNodes);
+		}
+		
+		List<List<FaultTreeNode>> symmetricSubstitutions = new ArrayList<>();
+		OptionalInt maxSize = allSymmetricNodes.stream().mapToInt(List::size).max();
+		if (maxSize.isPresent() && maxSize.getAsInt() > 0) {
+			// max size is not present only if there are no symmetric bigger nodes
+			
+			List<FaultTreeNode> symmetricSubstitution = new ArrayList<>();
+			for (int i = 0; i < maxSize.getAsInt(); ++i) {
+				for (List<FaultTreeNode> biggerNodes : allSymmetricNodes) {
+					// Either all nodes have the same number of symmetric nodes
+					// or one has 0 which means itself has to be used
+					if (biggerNodes.isEmpty()) {
+						symmetricSubstitution.add(originalNodes.get(i));
+					} else {
+						symmetricSubstitution.add(biggerNodes.get(i));
+					}
+				}
+			}
+			symmetricSubstitutions.add(symmetricSubstitution);
+		}
+		
+		return symmetricSubstitutions;
 	}
 }

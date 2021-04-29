@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.model;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
@@ -74,5 +75,16 @@ public abstract class Transition extends ATransition {
 	
 	public String getGuardLabel() {
 		return "";
+	}
+	
+	/**
+	 * Apply a substitution of nodes to the recovery actions
+	 * @param substitutes a node substitution
+	 */
+	public void applyNodeSubstiutionOnActions(List<FaultTreeNode> substitutes) {
+		int index = 0;
+		for (RecoveryAction action : getRecoveryActions()) {
+			index += action.substituteNodeParameters(substitutes, index);
+		}
 	}
 }

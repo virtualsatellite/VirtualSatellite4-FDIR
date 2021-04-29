@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
@@ -59,8 +58,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder, DFTStaticAnalysis staticAnalysis) {
-		List<IDFTEvent> events = super.createEvents(ftHolder, staticAnalysis);
+	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
+		List<IDFTEvent> events = super.createEvents(ftHolder);
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);

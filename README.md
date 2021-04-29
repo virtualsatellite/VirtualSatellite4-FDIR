@@ -4,11 +4,26 @@ Virtual Satellite FDIR is a DLR open source software for fault modeling & analys
 
 ## Project Status
 
-Status [![Build Status](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR.svg?branch=development)](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR) [![Coverage Status](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR/branch/development/graph/badge.svg)](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR) [![Download virtualsatellite](https://img.shields.io/sourceforge/dt/virtualsatellite.svg)](https://sourceforge.net/projects/virtualsatellite/files/development/) for *Development* build.
+Status 
+[![Build Status](https://github.com/virtualsatellite/VirtualSatellite4-FDIR/workflows/Build/badge.svg?branch=development)](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR) 
+[![Coverage Status](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR/branch/development/graph/badge.svg)](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR) 
+[![Download virtualsatellite](https://img.shields.io/sourceforge/dt/virtualsatellite.svg)](https://sourceforge.net/projects/virtualsatellite/files/development/) 
+for *Development* build.
 
-Status [![Build Status](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR.svg?branch=integration)](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR) [![Coverage Status](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR/branch/integration/graph/badge.svg)](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR) [![Download virtualsatellite](https://img.shields.io/sourceforge/dt/virtualsatellite.svg)](https://sourceforge.net/projects/virtualsatellite/files/integration/) for *Integration* build.
 
-Status [![Build Status](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR.svg?branch=master)](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR) [![Coverage Status](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR/branch/master/graph/badge.svg)](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR) [![Download virtualsatellite](https://img.shields.io/sourceforge/dt/virtualsatellite.svg)](https://sourceforge.net/projects/virtualsatellite/files/release/) for *Master* build.
+Status 
+[![Build Status](https://github.com/virtualsatellite/VirtualSatellite4-FDIR/workflows/Build/badge.svg?branch=integration)](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR) 
+[![Coverage Status](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR/branch/integration/graph/badge.svg)](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR) 
+[![Download virtualsatellite](https://img.shields.io/sourceforge/dt/virtualsatellite.svg)](https://sourceforge.net/projects/virtualsatellite/files/integration/) 
+for *Integration* build.
+
+Status 
+[![Build Status](https://github.com/virtualsatellite/VirtualSatellite4-FDIR/workflows/Build/badge.svg?branch=master)](https://travis-ci.com/virtualsatellite/VirtualSatellite4-FDIR) 
+[![Coverage Status](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR/branch/master/graph/badge.svg)](https://codecov.io/gh/virtualsatellite/VirtualSatellite4-FDIR) 
+[![Download virtualsatellite](https://img.shields.io/sourceforge/dt/virtualsatellite.svg)](https://sourceforge.net/projects/virtualsatellite/files/release/) 
+[![DOI](https://zenodo.org/badge/192903036.svg)](https://zenodo.org/badge/latestdoi/192903036)
+for *Master* build.
+
 
 ## Purpose
 

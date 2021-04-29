@@ -22,7 +22,6 @@ import java.util.Stack;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTStaticAnalysis;
 import de.dlr.sc.virsat.model.extension.fdir.model.ADEP;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FDEP;
@@ -362,9 +361,8 @@ public class DFTState extends MarkovState {
 	 * Makes a DFT state uniform by failing all basic events and nodes about we
 	 * dont care what exact state we have
 	 * @param changedNodes the nodes that have changed in this dft state
-	 * @param staticAnalysis static anaylsis data
 	 */
-	public void failDontCares(List<FaultTreeNode> changedNodes, DFTStaticAnalysis staticAnalysis) {
+	public void failDontCares(List<FaultTreeNode> changedNodes) {
 		Stack<FaultTreeNode> toProcess = new Stack<>();
 		toProcess.addAll(changedNodes);
 		

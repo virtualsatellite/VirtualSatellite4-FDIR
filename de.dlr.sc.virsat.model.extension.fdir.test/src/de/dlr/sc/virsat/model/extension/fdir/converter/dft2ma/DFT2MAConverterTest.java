@@ -44,6 +44,19 @@ public class DFT2MAConverterTest extends ATestCase {
 	}
 	
 	@Test
+	public void testConvertNondeterministicCsp3Symmetric() throws IOException {
+		dft2MaConverter.getStateSpaceGenerator().setSemantics(DFTSemantics.createNDDFTSemantics());
+		Fault fault = createDFT("/resources/galileo/csp3Symmetric.dft");
+		
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
+		
+		final int EXPECTED_COUNT_STATES = 12;
+		final int EXPECTED_COUNT_TRANSITIONS = 11;
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+	}
+	
+	@Test
 	public void testConvertTransientOrPermanent() throws IOException {
 		Fault fault = createDFT("/resources/galileoRepair/transientOrPermanent.dft");
 		
@@ -69,6 +82,19 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 7;
+		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
+	}
+	
+	@Test
+	public void testConvertNondeterministicCsp3SymmetricRepair() throws IOException {
+		dft2MaConverter.getStateSpaceGenerator().setSemantics(DFTSemantics.createNDDFTSemantics());
+		Fault fault = createDFT("/resources/galileoRepair/csp3SymmetricRepair.dft");
+		
+		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
+		
+		final int EXPECTED_COUNT_STATES = 32;
+		final int EXPECTED_COUNT_TRANSITIONS = 59;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 	}

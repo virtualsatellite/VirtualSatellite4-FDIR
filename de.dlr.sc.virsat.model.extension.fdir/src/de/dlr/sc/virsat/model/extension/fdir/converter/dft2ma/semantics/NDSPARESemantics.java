@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimAction;
@@ -56,6 +57,11 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	@Override
 	protected boolean performClaim(SPARE node, FaultTreeNode spare, DFTState state,
 			GenerationResult generationResult) {
+		
+		SymmetryReduction symmetryReduction = state.getFTHolder().getStaticAnalysis().getSymmetryReduction();
+		if (symmetryReduction != null && symmetryReduction.isSymmetricSmallerNodeUnfailed(spare, state)) {
+			return false;
+		}
 		
 		DFTState newState = null;
 		List<RecoveryAction> extendedRecoveryActions = null;
@@ -138,6 +144,11 @@ public class NDSPARESemantics extends StandardSPARESemantics {
 	@Override
 	protected void performFree(FaultTreeNode spare, DFTState state, GenerationResult generationResult) {
 		if (!propagateWithoutActions) {
+			SymmetryReduction symmetryReduction = state.getFTHolder().getStaticAnalysis().getSymmetryReduction();
+			if (symmetryReduction != null && symmetryReduction.isSymmetricSmallerNodeUnfailed(spare, state)) {
+				return;
+			}
+			
 			List<RecoveryAction> recoveryActions = generationResult.getMapStateToRecoveryActions().get(state);
 	
 			FreeAction fa = getOrCreateFreeAction(spare);
