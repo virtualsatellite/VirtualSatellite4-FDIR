@@ -46,6 +46,7 @@ public class Bisimulation {
 	 */
 	public void minimize() {
 		computeEquivalenceClasses();
+		computeQuotient();
 		
 	}
 
@@ -272,6 +273,59 @@ public class Bisimulation {
 
 	}
 	
+	/**
+	 * This method merges each equivalence class states into a single representative
+	 * state
+	 * 
+	 * @param blocks the equivalence class blocks that are to be merged are given as
+	 *               input
+	 */
+	public void mergeBlocks(Set<Set<MarkovState>> blocks) {
+
+		for (Set<MarkovState> block : blocks) {
+			MarkovState state = block.iterator().next();
+
+			List<MarkovTransition<MarkovState>> stateOutgoingTransitions = ma.getSuccTransitions(state);
+
+			for (int i = stateOutgoingTransitions.size() - 1; i >= 0; i--) {
+				MarkovTransition<MarkovState> stateOutgoingTransition = stateOutgoingTransitions.get(i);
+
+				MarkovState toState = stateOutgoingTransition.getTo();
+				Object stateEvent = stateOutgoingTransition.getEvent();
+				MarkovState blockRepresentative = mapStateToBlock.get(toState).iterator().next();
+
+				if (toState != blockRepresentative) {
+					if (blockRepresentative != state) {
+
+						ma.addNondeterministicTransition(stateEvent, state, blockRepresentative);
+
+					}
+
+				}
+			}
+
+		}
+
+		Queue<Set<MarkovState>> blocksToProcess = new LinkedList<>(blocks);
+		while (!blocksToProcess.isEmpty()) {
+
+			Set<MarkovState> block = blocksToProcess.poll();
+			MarkovState state = block.iterator().next();
+			block.remove(state);
+			for (MarkovState removedState : block) {
+				ma.removeState(removedState);
+			}
+			block.add(state);
+		}
+
+		for (Set<MarkovState> block : blocks) {
+			MarkovState state = block.iterator().next();
+			ma.removeInvalidTransitions(state);
+			ma.removeDuplicateTransitions(state);
+
+		}
+
+	}
 	
 	
 		
@@ -296,6 +350,16 @@ public class Bisimulation {
 		return blocks;
 	}
 
+	/**
+	 * Computes Quotient of the equivalence Classes. Basically all the States in an
+	 * equivalence Class are contracted into Single State
+	 */
+	public void computeQuotient() {
+
+		Set<Set<MarkovState>> equivalenceClasses = computeEquivalenceClasses();
+		mergeBlocks(equivalenceClasses);
+
+	}
 	
 
 }
