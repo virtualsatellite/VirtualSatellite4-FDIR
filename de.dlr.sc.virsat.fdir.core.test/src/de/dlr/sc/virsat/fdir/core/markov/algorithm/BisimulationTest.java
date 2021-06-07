@@ -145,7 +145,6 @@ public class BisimulationTest {
 	 * but with different transitions
 	 */
 	public void testComputeEquivalenceClassesDirectlyByPredecessorAndSuccessorRefinementTest1() {
-
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<MarkovState>();
 
 		MarkovState bisimilar1 = new MarkovState();
@@ -164,14 +163,12 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("b", successor2, successor2);
 
 		Bisimulation bisimulation = new Bisimulation(ma);
-
 		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar2))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor2))));
-
 	}
 
 	@Test
@@ -179,7 +176,6 @@ public class BisimulationTest {
 	 * This method tests the bisimilarity with 2 predecessor and 4 successor states
 	 */
 	public void testComputeEquivalenceClassesDirectlyByPredecessorandSuccessorRefinementTest2() {
-
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<MarkovState>();
 
 		MarkovState bisimilar1 = new MarkovState();
@@ -206,7 +202,6 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("d", successor4, successor4);
 
 		Bisimulation bisimulation = new Bisimulation(ma);
-
 		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
@@ -215,31 +210,27 @@ public class BisimulationTest {
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor2))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor3))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor4))));
-
 	}
 	
-	
-	
-	
 	/**
-	 * This method tests the duplicacy of the same labels 
+	 * This method tests the duplicacy of the same labels
 	 */
 	@Test
 	public void testlabelduplicacy() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
-		
+
 		MarkovState b1 = new MarkovState();
 		MarkovState b2 = new MarkovState();
 		MarkovState s1 = new MarkovState();
 		MarkovState s2 = new MarkovState();
 		MarkovState s3 = new MarkovState();
-		
+
 		ma.addState(b1);
 		ma.addState(s1);
 		ma.addState(s2);
 		ma.addState(b2);
 		ma.addState(s3);
-		
+
 		ma.addNondeterministicTransition("a", b1, s1);
 		ma.addNondeterministicTransition("a", b1, s2);
 		ma.addNondeterministicTransition("a", b2, s3);
@@ -247,17 +238,14 @@ public class BisimulationTest {
 		Bisimulation bisimulation = new Bisimulation(ma);
 		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses();
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(b1, b2))));
-	    assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(s1, s2, s3))));
-		
+		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(s1, s2, s3))));
 	}
 	
 	@Test
-
 	/**
 	 * This method test the ComputeQuotient method which contracts all
 	 * equivalenceClasses States to a single representative State
 	 */
-
 	public void testComputeQuotient1() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
 
@@ -287,39 +275,38 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("c", s2, s5);
 
 		Bisimulation bisimulation = new Bisimulation(ma);
-        bisimulation.computeQuotient();
-        
+		bisimulation.computeQuotient();
+
 		List<MarkovState> states = ma.getStates();
 		final int expectedStates = 3;
 		List<Object> stateLabelsS0 = ma.getSuccEvents(s0);
-        MarkovState s12 = states.contains(s1) ? s1 : s2;
+		MarkovState s12 = states.contains(s1) ? s1 : s2;
 		List<Object> stateLabelsS12 = ma.getSuccEvents(s12);
 		MarkovState s3456 = states.contains(s3) ? s3 : states.contains(s4) ? s4 : states.contains(s5) ? s5 : s6;
 		List<Object> stateIncomingLabelsS3456 = ma.getPredEvents(s3456);
-		
-        assertTrue(stateLabelsS0.containsAll(Arrays.asList("a")));
+
+		assertTrue(stateLabelsS0.containsAll(Arrays.asList("a")));
 		assertTrue(stateLabelsS12.containsAll(Arrays.asList("a", "b", "c")));
 		assertTrue(stateIncomingLabelsS3456.containsAll(Arrays.asList("b", "c")));
 		assertEquals(expectedStates, states.size());
-        
-
 	}
-	
+
 	@Test
 	/**
 	 * This method also tests the ComputeQuotient method
 	 */
 	public void testComputeQuotient2() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<>();
+		
 		MarkovState b1 = new MarkovState();
-
-		MarkovState b2 = new MarkovState();
+        MarkovState b2 = new MarkovState();
 		MarkovState s1 = new MarkovState();
 		MarkovState s2 = new MarkovState();
 		MarkovState s3 = new MarkovState();
 		MarkovState s4 = new MarkovState();
 		MarkovState t1 = new MarkovState();
 		MarkovState t2 = new MarkovState();
+
 		ma.addState(b1);
 		ma.addState(s1);
 		ma.addState(s2);
@@ -341,7 +328,7 @@ public class BisimulationTest {
 
 		Bisimulation bisimulation = new Bisimulation(ma);
 		bisimulation.computeQuotient();
-		
+
 		List<MarkovState> states = ma.getStates();
 		int statesCount = states.size();
 		final int requiredFinalStates = 5;
@@ -349,46 +336,45 @@ public class BisimulationTest {
 		List<Object> stateLabelsB2 = ma.getSuccEvents(b2);
 		MarkovState stateS12 = states.contains(s1) ? s1 : s2;
 		List<Object> stateLabelsS12 = ma.getSuccEvents(stateS12);
-        List<Object> stateLabelsS3 = ma.getSuccEvents(s3);
+		List<Object> stateLabelsS3 = ma.getSuccEvents(s3);
 		MarkovState stateT12S4 = states.contains(t1) ? t1 : states.contains(t2) ? t2 : s4;
 		List<Object> stateLabelsT12S4 = ma.getPredEvents(stateT12S4);
-		
+
 		assertTrue(stateLabelsB1.containsAll(Arrays.asList("a")));
 		assertTrue(stateLabelsB2.containsAll(Arrays.asList("a", "a")));
 		assertTrue(stateLabelsS12.containsAll(Arrays.asList("b", "c")));
 		assertTrue(stateLabelsS3.containsAll(Arrays.asList("b")));
 		assertTrue(stateLabelsT12S4.containsAll(Arrays.asList("c", "a")));
 		assertEquals(requiredFinalStates, statesCount);
-        
 	}
 
 	@Test
 	public void testComputeQuotient3() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<MarkovState>();
+		
 		MarkovState b = new MarkovState();
 		MarkovState s1 = new MarkovState();
 		MarkovState s2 = new MarkovState();
+
 		ma.addState(b);
 		ma.addState(s1);
 		ma.addState(s2);
+
 		ma.addNondeterministicTransition("a", b, s1);
 		ma.addNondeterministicTransition("b", b, s2);
 
 		Bisimulation bisimulation = new Bisimulation(ma);
 		bisimulation.computeQuotient();
-		
+
 		List<MarkovState> states = ma.getStates();
 		int statesCount = states.size();
 		int finalStatesCount = 2;
 		List<Object> stateLabelsB = ma.getSuccEvents(b);
 		List<Object> stateLabelsS12 = ma.getPredEvents(states.contains(s1) ? s1 : s2);
-		
+
 		assertTrue(stateLabelsB.containsAll(Arrays.asList("a", "b")));
 		assertTrue(stateLabelsS12.containsAll(Arrays.asList("a", "b")));
 		assertEquals(statesCount, finalStatesCount);
 	}
 
-
-	
-	
 }

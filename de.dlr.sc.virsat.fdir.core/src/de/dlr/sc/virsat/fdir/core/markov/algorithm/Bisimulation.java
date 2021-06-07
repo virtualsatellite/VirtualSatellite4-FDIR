@@ -32,13 +32,17 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
  *
  */
 public class Bisimulation {
-
+	
 	protected MarkovAutomaton<MarkovState> ma;
 	protected Map<MarkovState, Set<MarkovState>> mapStateToBlock;
 
+	/**
+	 * Constructor class which takes Markov Automata as a parameter
+	 * 
+	 * @param ma
+	 */
 	public Bisimulation(MarkovAutomaton<MarkovState> ma) {
 		this.ma = ma;
-
 	}
 
 	/**
@@ -47,7 +51,6 @@ public class Bisimulation {
 	public void minimize() {
 		computeEquivalenceClasses();
 		computeQuotient();
-		
 	}
 
 	/**
@@ -63,12 +66,10 @@ public class Bisimulation {
 			if (!blocks.remove(block)) {
 				block = new HashSet<>();
 			}
-
 			block.add(state);
 			blocks.add(block);
 			mapStateToBlock.put(state, block);
 		}
-
 		return blocks;
 	}
 
@@ -86,7 +87,6 @@ public class Bisimulation {
 				return block;
 			}
 		}
-
 		return null;
 	}
 
@@ -100,57 +100,37 @@ public class Bisimulation {
 	protected boolean belongsToBlock(Set<MarkovState> block, MarkovState state) {
 		List<Object> stateLabels = new ArrayList<Object>();
 		List<Object> blockLabels = new ArrayList<Object>();
-
 		List<MarkovTransition<MarkovState>> stateTransitions = ma.getSuccTransitions(state);
-
 		List<MarkovTransition<MarkovState>> blockTransitions = ma.getSuccTransitions(block.iterator().next());
-
-		
 		for (MarkovTransition<MarkovState> statetransition : stateTransitions) {
-			
 			if (!stateLabels.contains(statetransition.getEvent())) {
-				
 				stateLabels.add(statetransition.getEvent());
-				
 			}
-
-			
 		}
-
-		
 		for (MarkovTransition<MarkovState> blocktransition : blockTransitions) {
-			
 			if (!blockLabels.contains(blocktransition.getEvent())) {
 				blockLabels.add(blocktransition.getEvent());
 			}
-			
 		}
-
 		boolean isequal = blockLabels.equals(stateLabels);
-
 		return isequal;
 
 	}
 
 	/**
 	 * @param blocks takes as input the blocks created from the
-	 *               createInitialBlocks() method and further refines them
+	 * createInitialBlocks() method and further refines them
 	 */
 	public void refineBlocks(Set<Set<MarkovState>> blocks) {
-
 		Queue<Set<MarkovState>> blocksToProcess = new LinkedList<>(blocks);
 		while (!blocksToProcess.isEmpty()) {
-
 			Set<MarkovState> block = blocksToProcess.poll();
-
 			if (block.size() <= 1) {
 				continue;
 			}
-
 			Set<Set<MarkovState>> refinedBlocks = refineBlock(block);
 			if (refinedBlocks.size() > 1) {
 				blocks.remove(block);
-
 				applyRefinement(blocks, refinedBlocks);
 				Set<Set<MarkovState>> outdatedBlocks = getOutDatedBlocks(refinedBlocks);
 				for (Set<MarkovState> outdatedBlock : outdatedBlocks) {
@@ -159,9 +139,7 @@ public class Bisimulation {
 					}
 				}
 			}
-
 		}
-
 	}
 
 	/**
@@ -184,12 +162,9 @@ public class Bisimulation {
 				refinedBlocks.add(refinedBlock);
 				mapBlockReachabilityMapToRefinedBlock.put(mapLabelsOfAStateToOutgoingBlock, refinedBlock);
 			}
-
 			refinedBlock.add(state);
 		}
-
 		return refinedBlocks;
-
 	}
 
 	/**
@@ -205,9 +180,7 @@ public class Bisimulation {
 			Map<Map<Object, Set<MarkovState>>, Set<MarkovState>> mapBlockReachabilityMapToRefinedBlock,
 			Map<Object, Set<MarkovState>> mapLabelsOfAStateToOutgoingBlock) {
 		Set<MarkovState> refinedblock = mapBlockReachabilityMapToRefinedBlock.get(mapLabelsOfAStateToOutgoingBlock);
-
 		return refinedblock;
-
 	}
 
 	/**
@@ -223,9 +196,7 @@ public class Bisimulation {
 			MarkovState state) {
 		Map<Object, Set<MarkovState>> mapLabelsOfAStateToOutgoingBlock = new HashMap<>();
 		for (MarkovTransition<MarkovState> markovtransition : ma.getSuccTransitions(state)) {
-
 			Set<MarkovState> toBlock = mapStateToBlock.get(markovtransition.getTo());
-
 			if (toBlock != block) {
 				mapLabelsOfAStateToOutgoingBlock.put(markovtransition.getEvent(), toBlock);
 			}
@@ -246,69 +217,51 @@ public class Bisimulation {
 				mapStateToBlock.put(state, refinedBlock);
 			}
 		}
-
 	}
 
 	/**
 	 * Gets the blocks that now have to be rechecked after the given refinement has
-	 * been applied
-	 * 
+	 * been applied 
 	 * @param refinedBlocks a refinement of the blocks
 	 * @return all outdated blocks that need to be rechecked for refinement
 	 */
 	private Set<Set<MarkovState>> getOutDatedBlocks(Set<Set<MarkovState>> refinedBlocks) {
 		Set<Set<MarkovState>> outdatedBlocks = new HashSet<>();
-
 		for (Set<MarkovState> refinedBlock : refinedBlocks) {
 			for (MarkovState state : refinedBlock) {
-
 				for (MarkovTransition<MarkovState> markovtransition : ma.getPredTransitions(state)) {
 					Set<MarkovState> fromBlock = mapStateToBlock.get(markovtransition.getFrom());
 					outdatedBlocks.add(fromBlock);
 				}
 			}
 		}
-
 		return outdatedBlocks;
-
 	}
 	
 	/**
-	 * This method merges each equivalence class states into a single representative
-	 * state
-	 * 
+	 * This method merges each equivalence class states into a 
+	 * single representative state 
 	 * @param blocks the equivalence class blocks that are to be merged are given as
 	 *               input
 	 */
 	public void mergeBlocks(Set<Set<MarkovState>> blocks) {
-
 		for (Set<MarkovState> block : blocks) {
 			MarkovState state = block.iterator().next();
-
 			List<MarkovTransition<MarkovState>> stateOutgoingTransitions = ma.getSuccTransitions(state);
-
 			for (int i = stateOutgoingTransitions.size() - 1; i >= 0; i--) {
 				MarkovTransition<MarkovState> stateOutgoingTransition = stateOutgoingTransitions.get(i);
-
 				MarkovState toState = stateOutgoingTransition.getTo();
 				Object stateEvent = stateOutgoingTransition.getEvent();
 				MarkovState blockRepresentative = mapStateToBlock.get(toState).iterator().next();
-
 				if (toState != blockRepresentative) {
 					if (blockRepresentative != state) {
-
 						ma.addNondeterministicTransition(stateEvent, state, blockRepresentative);
-
 					}
-
 				}
 			}
-
 		}
-
 		Queue<Set<MarkovState>> blocksToProcess = new LinkedList<>(blocks);
 		while (!blocksToProcess.isEmpty()) {
-
 			Set<MarkovState> block = blocksToProcess.poll();
 			MarkovState state = block.iterator().next();
 			block.remove(state);
@@ -317,36 +270,22 @@ public class Bisimulation {
 			}
 			block.add(state);
 		}
-
 		for (Set<MarkovState> block : blocks) {
 			MarkovState state = block.iterator().next();
 			ma.removeInvalidTransitions(state);
 			ma.removeDuplicateTransitions(state);
-
 		}
-
 	}
 	
-	
-		
-		
-		
-		
-		
-	
-
 	/**
 	 * compute the equivalence classes on the Markov automaton. Each equivalence
 	 * class is represented as a "block" list of states.
 	 * 
 	 * @return the computed block partitions
 	 */
-
 	public Set<Set<MarkovState>> computeEquivalenceClasses() {
-
 		Set<Set<MarkovState>> blocks = createInitialBlocks();
 		refineBlocks(blocks);
-
 		return blocks;
 	}
 
@@ -355,11 +294,8 @@ public class Bisimulation {
 	 * equivalence Class are contracted into Single State
 	 */
 	public void computeQuotient() {
-
 		Set<Set<MarkovState>> equivalenceClasses = computeEquivalenceClasses();
 		mergeBlocks(equivalenceClasses);
-
 	}
 	
-
 }

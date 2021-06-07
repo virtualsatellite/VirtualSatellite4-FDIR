@@ -87,11 +87,8 @@ public class MarkovAutomaton<S extends MarkovState> {
 		List<Object> stateLabels = new ArrayList<Object>();
 		List<MarkovTransition<S>> stateOutgoingTransitions = getSuccTransitions(state);
 		for (MarkovTransition<S> stateOutgoingTransition : stateOutgoingTransitions) {
-
 			stateLabels.add(stateOutgoingTransition.getEvent());
-
 		}
-
 		return stateLabels;
 	}
 
@@ -99,17 +96,14 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 * outputs the list of events to a state from its predecessors
 	 * 
 	 * @param state
-	 * @return
+	 * @return list of events of a state
 	 */
 	public List<Object> getPredEvents(Object state) {
 		List<Object> stateLabels = new ArrayList<Object>();
 		List<MarkovTransition<S>> stateOutgoingTransitions = getPredTransitions(state);
 		for (MarkovTransition<S> stateOutgoingTransition : stateOutgoingTransitions) {
-
 			stateLabels.add(stateOutgoingTransition.getEvent());
-
 		}
-
 		return stateLabels;
 	}
 
@@ -267,26 +261,20 @@ public class MarkovAutomaton<S extends MarkovState> {
 	 */
 	public void removeInvalidTransitions(S state) {
 		List<MarkovTransition<S>> succTransitions = getSuccTransitions(state);
-
 		for (int i = succTransitions.size() - 1; i >= 0; i--) {
 			MarkovTransition<S> outgoingTransition = succTransitions.get(i);
-
 			MarkovState toState = outgoingTransition.getTo();
 			if (!getStates().contains(toState)) {
-
 				mapStateToSuccTransitions.get(state).remove(outgoingTransition);
 			}
 		}
 
 		List<MarkovTransition<S>> predTransitions = getPredTransitions(state);
-
 		for (int i = predTransitions.size() - 1; i >= 0; i--) {
 			MarkovTransition<S> incomingTransition = predTransitions.get(i);
-
 			MarkovState fromState = incomingTransition.getFrom();
 			if (!getStates().contains(fromState)) {
 				mapStateToPredTransitions.get(state).remove(incomingTransition);
-
 			}
 		}
 
@@ -295,17 +283,13 @@ public class MarkovAutomaton<S extends MarkovState> {
 	/**
 	 * This method deletes the markov transitions if a state has same transitions to
 	 * a same state witha same event
-	 * 
 	 * @param state
 	 */
 	public void removeDuplicateTransitions(S state) {
-
 		List<MarkovTransition<S>> succTransitions = getSuccTransitions(state);
-
 		for (int i = succTransitions.size() - 1; i > 0; i--) {
 			MarkovTransition<S> outgoingTransition1 = succTransitions.get(i);
 			MarkovTransition<S> outgoingTransition2 = succTransitions.get(i - 1);
-
 			MarkovState toState1 = outgoingTransition1.getTo();
 			MarkovState toState2 = outgoingTransition2.getTo();
 			Object stateEvent1 = outgoingTransition1.getEvent();
@@ -313,17 +297,14 @@ public class MarkovAutomaton<S extends MarkovState> {
 			if (toState1 == toState2 && stateEvent1 == stateEvent2) {
 				List<MarkovTransition<S>> transitions = getTransitions(stateEvent1);
 				transitions.remove(outgoingTransition1);
-
 				mapStateToSuccTransitions.get(state).remove(outgoingTransition1);
 			}
 		}
 
 		List<MarkovTransition<S>> predTransitions = getPredTransitions(state);
-
 		for (int i = predTransitions.size() - 1; i > 0; i--) {
 			MarkovTransition<S> incomingTransition1 = predTransitions.get(i);
 			MarkovTransition<S> incomingTransition2 = predTransitions.get(i - 1);
-
 			MarkovState fromState1 = incomingTransition1.getFrom();
 			MarkovState fromState2 = incomingTransition2.getFrom();
 			Object stateEvent1 = incomingTransition1.getEvent();
@@ -331,11 +312,9 @@ public class MarkovAutomaton<S extends MarkovState> {
 			if (fromState1 == fromState2 && stateEvent1 == stateEvent2) {
 				List<MarkovTransition<S>> transitions = getTransitions(stateEvent1);
 				transitions.remove(incomingTransition1);
-
 				mapStateToSuccTransitions.get(state).remove(incomingTransition1);
 			}
 		}
-
 	}
 
 	/**
