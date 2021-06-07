@@ -349,6 +349,10 @@ public class BisimulationTest {
 	}
 
 	@Test
+	/**
+	 * This method also tests the ComputeQuotient method with 1 predecessor
+	 * and 2 successor states
+	 */
 	public void testComputeQuotient3() {
 		MarkovAutomaton<MarkovState> ma = new MarkovAutomaton<MarkovState>();
 		
