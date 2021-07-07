@@ -24,6 +24,17 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
  */
 public class MA2BeliefMAConverter  extends A2MAConverter<BeliefState, BeliefStateSpaceGenerator> {
 	
+	protected OptimalTransitionsSelector<BeliefState> optimalTransitionsSelector;
+	
+	public MA2BeliefMAConverter() {
+	}
+	
+	public MA2BeliefMAConverter(OptimalTransitionsSelector<BeliefState> anOptimalTransitionSelector) {
+		optimalTransitionsSelector = anOptimalTransitionSelector;
+		System.out.println(optimalTransitionsSelector == null);
+		stateSpaceGenerator = createStateSpaceGenerator();
+	}
+	
 	/**
 	 * Creates a belief markov automaton out of the given markov automaton
 	 * @param ma the markov automaton
@@ -39,6 +50,10 @@ public class MA2BeliefMAConverter  extends A2MAConverter<BeliefState, BeliefStat
 
 	@Override
 	protected BeliefStateSpaceGenerator createStateSpaceGenerator() {
-		return new BeliefStateSpaceGenerator();
+		if (optimalTransitionsSelector == null) {
+			return new BeliefStateSpaceGenerator();
+		} else {
+			return new BeliefStateSpaceGenerator(optimalTransitionsSelector);
+		}
 	}
 }

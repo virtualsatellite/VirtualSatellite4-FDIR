@@ -37,6 +37,17 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	private PODFTState initialStateMa;
 	private BeliefStateEquivalence beliefStateEquivalence;
 	
+	private OptimalTransitionsSelector<BeliefState> optimalTransitionsSelector;
+	private HashSet<BeliefState> goodStates;
+	
+	BeliefStateSpaceGenerator() {
+	}
+	
+	BeliefStateSpaceGenerator(OptimalTransitionsSelector<BeliefState> anOptimalTransitionsSelector) {
+		optimalTransitionsSelector = anOptimalTransitionsSelector;
+		goodStates = new HashSet<>();
+	}
+	
 	/**
 	 * Configures the belief state space generation
 	 * @param ma the totally observable markov automaton
@@ -65,7 +76,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	public List<BeliefState> generateSuccs(BeliefState beliefState, SubMonitor monitor) {
 		List<BeliefState> generatedSuccs = new ArrayList<>();
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
-		
+
 		for (Entry<PODFTState, List<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 			// Eclipse trick for doing progress updates with unknown ending time
 			final int PROGRESS_COUNT = 100;
@@ -94,6 +105,22 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			if (beliefSucc == equivalentBeliefSucc) {
 				generatedSuccs.add(beliefSucc);
 			}
+			
+			if (optimalTransitionsSelector != null && !beliefState.isNondet() && goodStates.add(equivalentBeliefSucc) && !generatedSuccs.contains(equivalentBeliefSucc)) {
+				generatedSuccs.add(equivalentBeliefSucc);
+			}
+		}
+		
+		if (optimalTransitionsSelector != null && beliefState.isNondet()) {
+			List<BeliefState> optimalSuccs = new ArrayList<>();
+			List<MarkovTransition<BeliefState>> optimalTransitions = optimalTransitionsSelector.selectOptimalTransitions(targetMa, beliefState);
+			for (MarkovTransition<BeliefState> optimalTransition : optimalTransitions) {
+				optimalSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
+				if (goodStates.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo())) && !generatedSuccs.contains(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
+					generatedSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
+				}
+			}
+			generatedSuccs = generatedSuccs.stream().filter(optimalSuccs::contains).collect(Collectors.toList());
 		}
 		
 		return generatedSuccs;

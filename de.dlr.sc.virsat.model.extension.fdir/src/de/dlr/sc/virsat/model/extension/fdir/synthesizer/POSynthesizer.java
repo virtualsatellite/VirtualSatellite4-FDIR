@@ -25,6 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.BeliefState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.MA2BeliefMAConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.OptimalTransitionsSelector;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 /**
@@ -37,7 +38,9 @@ public class POSynthesizer extends ASynthesizer {
 
 	private static final int TICKS = 3;
 	
-	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
+	protected OptimalTransitionsSelector optimalTransitionsSelector = new OptimalTransitionsSelector<BeliefState>();
+	
+	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter(optimalTransitionsSelector);
 	protected IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 	
 	@Override
@@ -45,12 +48,15 @@ public class POSynthesizer extends ASynthesizer {
 		subMonitor = SubMonitor.convert(subMonitor, TICKS);
 		
 		// Build the actual belief ma
+		System.out.println(ma.toDot());
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
+		//System.out.println(beliefMa.toDot());
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma
 		ScheduleQuery<BeliefState> scheduleQuery = new ScheduleQuery<>(beliefMa, initialBeliefState);
 		Map<BeliefState, List<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(scheduleQuery, subMonitor.split(1));
+		System.out.println(beliefMa.getStates().size());
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState, subMonitor.split(1));
 	}
 	

@@ -68,6 +68,7 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals("MTTD has correct value", EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
 		final double TEST_EPSILON = 0.00001;
 		assertEquals("Steady State Detectability has correct value", EXPECTED_STEADY_STATE_DETECTABILITY, result.getSteadyStateDetectability(), TEST_EPSILON);
+		System.out.println(ra.toDot());
 	}
 	
 	@Test
@@ -83,6 +84,7 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+		System.out.println(ra.toDot());
 	}
 	
 	@Test
@@ -103,6 +105,7 @@ public class POSynthesizerTest extends ATestCase {
 		
 		assertEquals(EXPECTED_MTTF, result.getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals(EXPECTED_MTTD, result.getMeanTimeToDetection(), TEST_EPSILON);
+		System.out.println(ra.toDot());
 	}
 	
 	@Test
@@ -119,12 +122,14 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+		System.out.println(ra.toDot());
 	}
 
 	@Test
 	public void testSynthesizeObsOr2Csp2() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		//System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;
@@ -140,6 +145,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsOr2Csp2Delayed() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 14;
 		final int EXPECTED_COUNT_TRANSITIONS = 19;
@@ -230,6 +236,10 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsOr2Csp2ObsBEUnreliable() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
+		System.out.println(ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure());
+		System.out.println(ra.getStates().size());
+		System.out.println(ra.getTransitions().size());
 		
 		final int EXPECTED_COUNT_STATES = 7;
 		final int EXPECTED_COUNT_TRANSITIONS = 10;
@@ -245,6 +255,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsOr2Csp2ObsBERepairUnreliable() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsOr2Csp2ObsBERepairUnreliable.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 12;
 		final int EXPECTED_COUNT_TRANSITIONS = 23;
@@ -280,6 +291,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsMemory2RDEP() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsMemory2RDEP.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 9;
@@ -323,6 +335,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsMemory2RepairRDEP() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsMemory2RepairRDEP.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 10;
@@ -363,6 +376,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsCsp2Repair1() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsCsp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
 		
 		final double EXPECTED_MTTF = 1.7;
 		final double EXPECTED_SSA = 0.33333333333333337;
@@ -383,6 +397,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsCsp2Repair1Delayed() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsCsp2Repair1Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
 		
 		final double EXPECTED_SSA = 0.33333249815122734;
 		final int EXPECTED_COUNT_STATES = 5;
@@ -401,6 +416,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsCsp2Repair2Delayed() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsCsp2Repair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
 		
 		final double EXPECTED_SSA = 0.541869705321335;
 		final int EXPECTED_COUNT_STATES = 9;

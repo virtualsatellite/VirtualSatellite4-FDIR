@@ -94,13 +94,13 @@ public class PODFTState extends DFTState {
 	 */
 	public boolean existsObserver(FaultTreeNode node, boolean allowDelay, boolean allowFailed) {
 		if (node instanceof MONITOR) {
-			return true;
+			return false; //true;
 		}
 		
 		List<FaultTreeNode> observers = ftHolder.getNodes(node, EdgeType.MONITOR);
 		for (FaultTreeNode observer : observers) {
 			if ((allowFailed || !hasFaultTreeNodeFailed(observer)) 
-					&& (allowDelay || ((MONITOR) observer).getObservationRate() == 0)) {
+					&& (allowDelay /*|| ((MONITOR) observer).getObservationRate() == 0*/)) {
 				return true;
 			}
 		}

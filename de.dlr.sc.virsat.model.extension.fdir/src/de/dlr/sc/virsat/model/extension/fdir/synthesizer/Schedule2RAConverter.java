@@ -136,6 +136,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			
 			if (!markovianTransition.getTo().isMarkovian()) {
 				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
+				//System.out.println(markovianTransition);
 				MarkovTransition<S> representativeTransition = bestTransitionGroup.iterator().next();
 				
 				Transition raTransition = createTransition(markovianTransition, representativeTransition);

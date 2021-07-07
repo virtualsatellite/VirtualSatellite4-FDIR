@@ -18,6 +18,7 @@ import java.util.Set;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DelaySemantics;
@@ -66,11 +67,18 @@ public class PONDDFTSemantics extends DFTSemantics {
 			double observationRate = 0;
 			for (FaultTreeNode observer : monitors) {
 				observationRate += ((MONITOR) observer).getObservationRateBean().getValueToBaseUnit();
+				for (FaultTreeNode childNode : ftHolder.getNodes(observer, EdgeType.CHILD)) {
+					events.add(new ImmediateObservationEvent(childNode, true));	
+					events.add(new ImmediateObservationEvent(childNode, false));
+				}
 			}
 			
 			if (observationRate > 0) {
 				events.add(new ObservationEvent(node, true));	
-				events.add(new ObservationEvent(node, false));	
+				events.add(new ObservationEvent(node, false));
+			} else if (!monitors.isEmpty()) {
+				events.add(new ImmediateObservationEvent(node, true));	
+				events.add(new ImmediateObservationEvent(node, false));	
 			}
 		}
 		

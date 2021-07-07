@@ -35,6 +35,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantic
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
+import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.OptimalTransitionsSelector;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -115,8 +116,16 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			checkCancellation(monitor);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
-		}
-		
+		}/*
+		if (state.isProbabilisic() && occurableEvents.size() > 1) {
+			List<DFTState> newerSuccs
+			int representantIndex = 0;
+			for (int i = 1; i < newSuccs.) {
+				if (((PODFTState) newSucc).getObservedFailedNodes().size() > ((PODFTState) newSuccs.get(succIndex)).getObservedFailedNodes().size()) {
+					newSuccs.
+				}
+			}
+		}*/
 		return newSuccs;
 	}
 	

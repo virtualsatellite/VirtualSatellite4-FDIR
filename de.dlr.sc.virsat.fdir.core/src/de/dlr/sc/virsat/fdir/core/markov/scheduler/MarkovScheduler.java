@@ -60,6 +60,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		Set<S> handledNonDetStates = new HashSet<>();
 		
 		Map<S, List<MarkovTransition<S>>> schedule = new HashMap<>();
+		int i = 0;
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
 			
@@ -184,6 +185,9 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double prob = transition.getRate();
 				MarkovState toState = transition.getTo();
 				double failProb = toState.getMapFailLabelToProb().getOrDefault(FailLabel.FAILED, 0d);
+				if (prob > 1) {
+					prob = 1;
+				}
 				transitionGroupProbFail += prob * failProb;
 				
 				double toValue = results.getOrDefault(toState, Double.NEGATIVE_INFINITY);
