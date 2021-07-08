@@ -99,22 +99,41 @@ public class Bisimulation {
 	 */
 	protected boolean belongsToBlock(Set<MarkovState> block, MarkovState state) {
 		List<Object> stateLabels = new ArrayList<Object>();
+		List<Object> stateRates = new ArrayList<Object>();
 		List<Object> blockLabels = new ArrayList<Object>();
+		List<Object> blockRates = new ArrayList<Object>();
+		boolean isequal;
 		List<MarkovTransition<MarkovState>> stateTransitions = ma.getSuccTransitions(state);
 		List<MarkovTransition<MarkovState>> blockTransitions = ma.getSuccTransitions(block.iterator().next());
 		for (MarkovTransition<MarkovState> statetransition : stateTransitions) {
-			if (!stateLabels.contains(statetransition.getEvent())) {
-				stateLabels.add(statetransition.getEvent());
+			if (state.isProbabilisic() || state.isMarkovian()) {
+				stateRates.add(statetransition.getRate());
+				if (!stateLabels.contains(statetransition.getEvent())) {
+					stateLabels.add(statetransition.getEvent());
+				}
+			} else {
+				if (!stateLabels.contains(statetransition.getEvent())) {
+					stateLabels.add(statetransition.getEvent());
+				}
 			}
 		}
 		for (MarkovTransition<MarkovState> blocktransition : blockTransitions) {
-			if (!blockLabels.contains(blocktransition.getEvent())) {
-				blockLabels.add(blocktransition.getEvent());
+			if (block.iterator().next().isProbabilisic() || block.iterator().next().isMarkovian()) {
+				blockRates.add(blocktransition.getRate());
+				if (!blockLabels.contains(blocktransition.getEvent())) {
+					blockLabels.add(blocktransition.getEvent());
+				}
+			} else {
+				if (!blockLabels.contains(blocktransition.getEvent())) {
+					blockLabels.add(blocktransition.getEvent());
+				}
 			}
 		}
-		boolean isequal = blockLabels.equals(stateLabels);
+		if (stateRates.isEmpty() && blockRates.isEmpty()) {
+			isequal = blockLabels.equals(stateLabels);
+		}
+		isequal = blockLabels.equals(stateLabels) && stateRates.equals(blockRates);
 		return isequal;
-
 	}
 
 	/**
@@ -245,17 +264,22 @@ public class Bisimulation {
 	 *               input
 	 */
 	public void mergeBlocks(Set<Set<MarkovState>> blocks) {
+		double rate = 0;
+		MarkovTransition<MarkovState> mt;
 		for (Set<MarkovState> block : blocks) {
 			MarkovState state = block.iterator().next();
 			List<MarkovTransition<MarkovState>> stateOutgoingTransitions = ma.getSuccTransitions(state);
 			for (int i = stateOutgoingTransitions.size() - 1; i >= 0; i--) {
 				MarkovTransition<MarkovState> stateOutgoingTransition = stateOutgoingTransitions.get(i);
 				MarkovState toState = stateOutgoingTransition.getTo();
-				Object stateEvent = stateOutgoingTransition.getEvent();
 				MarkovState blockRepresentative = mapStateToBlock.get(toState).iterator().next();
+				Object stateEvent = stateOutgoingTransition.getEvent();
+				if (state.isMarkovian() || state.isProbabilisic()) {
+					rate = stateOutgoingTransition.getRate();
+				}
 				if (toState != blockRepresentative) {
 					if (blockRepresentative != state) {
-						ma.addNondeterministicTransition(stateEvent, state, blockRepresentative);
+						mt = state.isNondet() ? ma.addNondeterministicTransition(stateEvent, state, blockRepresentative) : state.isMarkovian() ? ma.addMarkovianTransition(stateEvent, state, blockRepresentative, rate) : ma.addProbabilisticTransition(stateEvent, state, blockRepresentative, rate);
 					}
 				}
 			}
