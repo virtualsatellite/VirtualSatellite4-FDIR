@@ -265,7 +265,7 @@ public class Bisimulation {
 	 */
 	public void mergeBlocks(Set<Set<MarkovState>> blocks) {
 		double rate = 0;
-		MarkovTransition<MarkovState> mt;
+
 		for (Set<MarkovState> block : blocks) {
 			MarkovState state = block.iterator().next();
 			List<MarkovTransition<MarkovState>> stateOutgoingTransitions = ma.getSuccTransitions(state);
@@ -279,7 +279,13 @@ public class Bisimulation {
 				}
 				if (toState != blockRepresentative) {
 					if (blockRepresentative != state) {
-						mt = state.isNondet() ? ma.addNondeterministicTransition(stateEvent, state, blockRepresentative) : state.isMarkovian() ? ma.addMarkovianTransition(stateEvent, state, blockRepresentative, rate) : ma.addProbabilisticTransition(stateEvent, state, blockRepresentative, rate);
+						if (state.isNondet()) {
+							ma.addNondeterministicTransition(stateEvent, state, blockRepresentative);
+						} else if (state.isMarkovian()) {
+							ma.addMarkovianTransition(stateEvent, state, blockRepresentative, rate);
+						} else {
+							ma.addProbabilisticTransition(stateEvent, state, blockRepresentative, rate);
+						}
 					}
 				}
 			}

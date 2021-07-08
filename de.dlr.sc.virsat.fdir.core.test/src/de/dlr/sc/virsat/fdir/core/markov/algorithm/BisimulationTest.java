@@ -393,8 +393,8 @@ public class BisimulationTest {
 		ma.addState(b2);
 		ma.addState(s1);
 		
-		ma.addProbabilisticTransition("a", b1, s1, 0);
-		ma.addProbabilisticTransition("a", b2, s1, 1);
+		ma.addProbabilisticTransition("a", b1, s1, 1);
+		ma.addProbabilisticTransition("a", b2, s1, 0);
 		
 		Bisimulation bisimulation = new Bisimulation(ma);
 		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses();
@@ -416,9 +416,9 @@ public class BisimulationTest {
 		ma.addState(successor2);
 		ma.addState(successor3);
 
-		ma.addProbabilisticTransition("a", bisimilar1, successor1, 0.6);
-		ma.addProbabilisticTransition("a", bisimilar1, successor2, 0.6);
-		ma.addProbabilisticTransition("a", successor1, successor3, 0.6);
+		ma.addProbabilisticTransition("a", bisimilar1, successor1, 0);
+		ma.addProbabilisticTransition("a", bisimilar1, successor2, 0);
+		ma.addProbabilisticTransition("a", successor1, successor3, 0);
 
 		Bisimulation bisimulation = new Bisimulation(ma);
 		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
@@ -450,10 +450,10 @@ public class BisimulationTest {
 
 		ma.addProbabilisticTransition("a", s0, s1, 0);
 		ma.addProbabilisticTransition("a", s0, s2, 0);
-		ma.addProbabilisticTransition("a", s1, s0, 0.1);
-		ma.addProbabilisticTransition("a", s2, s0, 0.2);
-		ma.addProbabilisticTransition("b", s1, s3, 0.2);
-		ma.addProbabilisticTransition("b", s2, s6, 0.1);
+		ma.addProbabilisticTransition("a", s1, s0, 0);
+		ma.addProbabilisticTransition("a", s2, s0, 1);
+		ma.addProbabilisticTransition("b", s1, s3, 0);
+		ma.addProbabilisticTransition("b", s2, s6, 1);
 		ma.addProbabilisticTransition("c", s1, s4, 0);
 		ma.addProbabilisticTransition("c", s2, s5, 0);
 
@@ -495,8 +495,8 @@ public class BisimulationTest {
 		ma.addState(b2);
 		ma.addState(s1);
 		
-		ma.addMarkovianTransition("a", b1, s1, 1.5);
-		ma.addMarkovianTransition("a", b2, s1, 1.7);
+		ma.addMarkovianTransition("a", b1, s1, 1);
+		ma.addMarkovianTransition("a", b2, s1, 2);
 		
 		Bisimulation bisimulation = new Bisimulation(ma);
 		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses();
@@ -528,10 +528,10 @@ public class BisimulationTest {
 
 		ma.addMarkovianTransition("a", s0, s1, 0);
 		ma.addMarkovianTransition("a", s0, s2, 0);
-		ma.addMarkovianTransition("a", s1, s0, 1.1);
-		ma.addMarkovianTransition("a", s2, s0, 1.2);
-		ma.addMarkovianTransition("b", s1, s3, 0.2);
-		ma.addMarkovianTransition("b", s2, s6, 0.1);
+		ma.addMarkovianTransition("a", s1, s0, 1);
+		ma.addMarkovianTransition("a", s2, s0, 2);
+		ma.addMarkovianTransition("b", s1, s3, 2);
+		ma.addMarkovianTransition("b", s2, s6, 1);
 		ma.addMarkovianTransition("c", s1, s4, 0);
 		ma.addMarkovianTransition("c", s2, s5, 0);
 
