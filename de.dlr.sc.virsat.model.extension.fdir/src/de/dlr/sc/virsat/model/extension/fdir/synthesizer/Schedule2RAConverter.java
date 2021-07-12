@@ -301,7 +301,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			raTransition.setIsRepair(genericEvent.getValue());
 		} else if (event instanceof IDFTEvent) {
 			IDFTEvent dftEvent = (IDFTEvent) event;
-			raTransition.getGuards().add(dftEvent.getNode());
+			raTransition.getGuards().addAll(dftEvent.getNodes());
 			
 			if (event instanceof IRepairableEvent) {
 				raTransition.setIsRepair(((IRepairableEvent) event).isRepair());

@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,14 +64,14 @@ public class PONDDFTSemantics extends DFTSemantics {
 		List<IDFTEvent> events = super.createEvents(ftHolder);
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
+			if (node instanceof MONITOR && !ftHolder.getNodes(node, EdgeType.CHILD).isEmpty()) {
+					events.add(new ImmediateObservationEvent(node, true));	
+					events.add(new ImmediateObservationEvent(node, false));
+			}
 			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
 			double observationRate = 0;
 			for (FaultTreeNode observer : monitors) {
 				observationRate += ((MONITOR) observer).getObservationRateBean().getValueToBaseUnit();
-				for (FaultTreeNode childNode : ftHolder.getNodes(observer, EdgeType.CHILD)) {
-					events.add(new ImmediateObservationEvent(childNode, true));	
-					events.add(new ImmediateObservationEvent(childNode, false));
-				}
 			}
 			
 			if (observationRate > 0) {
@@ -135,17 +136,22 @@ public class PONDDFTSemantics extends DFTSemantics {
 	 */
 	private boolean checkObservationEvent(IDFTEvent event, List<DFTState> succs) {
 		if (event instanceof ObservationEvent) {
-			FaultTreeNode observedNode = event.getNode();
+			Collection<FaultTreeNode> observedNodes = event.getNodes();
 			
-			for (DFTState state : succs) {
-				PODFTState poState = (PODFTState) state;
-				Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(observedNode);
-				for (FaultTreeNode parent : allParents) {
-					poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
+			for (FaultTreeNode observedNode : observedNodes) {
+				
+				for (DFTState state : succs) {
+					PODFTState poState = (PODFTState) state;
+					Set<FaultTreeNode> allParents = state.getFTHolder().getMapNodeToAllParents().get(observedNode);
+					for (FaultTreeNode parent : allParents) {
+						poState.setNodeFailObserved(parent, state.hasFaultTreeNodeFailed(parent));
+					}
 				}
+				
 			}
 			
 			return true;
+			
 		}
 		
 		return false;
@@ -161,7 +167,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		for (DFTState state : stateUpdateResult.getSuccs()) {
 			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 				PODFTState poState = (PODFTState) state;
-				boolean isObserved = poState.existsObserver(node, false, false);
+				boolean isObserved = false;//poState.existsObserver(node, false, false);
 				if (isObserved) {
 					anyObservation = true;
 					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));
@@ -184,7 +190,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		DFTState state = stateUpdateResult.getStateUpdate().getState();
 		
 		if (event instanceof ObservationEvent) {
-			observedNodes.add(event.getNode());
+			observedNodes.addAll(event.getNodes());
 		} else {
 			if (!(state instanceof PODFTState)) {
 				throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);

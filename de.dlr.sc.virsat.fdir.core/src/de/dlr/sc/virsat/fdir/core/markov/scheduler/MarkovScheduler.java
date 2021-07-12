@@ -54,7 +54,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery, SubMonitor subMonitor) {
 		results = computeValues(scheduleQuery.getMa(), scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric(), subMonitor);
-		
+		//System.out.println(results);
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(scheduleQuery.getInitialState());
 		Set<S> handledNonDetStates = new HashSet<>();

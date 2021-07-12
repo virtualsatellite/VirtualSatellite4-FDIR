@@ -30,6 +30,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateFaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
@@ -108,24 +109,38 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	public List<DFTState> generateSuccs(DFTState state, SubMonitor monitor) {
 		List<DFTState> newSuccs = new ArrayList<>();
 		List<IDFTEvent> occurableEvents = getOccurableEvents(state);
+		if (state.isProbabilisic() && occurableEvents.size() > 1) {
+			IRepairableEvent representantEvent = (IRepairableEvent) occurableEvents.iterator().next();
+			boolean isRepair = representantEvent.isRepair();
+			List<FaultTreeNode> eventList = new ArrayList<>();
+			for (IDFTEvent occurableEvent : occurableEvents) {
+				if (((IRepairableEvent) occurableEvent).isRepair() != isRepair) {
+					if (!isRepair) {
+						eventList.clear();
+						isRepair = true;
+					} else {
+						continue;
+					}
+				}
+				eventList.addAll(occurableEvent.getNodes());
+			}
+			ImmediateObservationEvent immediateObservationEvent = new ImmediateObservationEvent(eventList, isRepair);
+			occurableEvents.clear();
+			occurableEvents.add(immediateObservationEvent);
+		}
 		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
 			checkCancellation(monitor);
 			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
+			//Collections.sort(stateUpdateResult.getSuccs(), DFTState.MARKOVSTATE_COMPARATOR);
 			checkCancellation(monitor);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
-		}/*
-		if (state.isProbabilisic() && occurableEvents.size() > 1) {
-			List<DFTState> newerSuccs
-			int representantIndex = 0;
-			for (int i = 1; i < newSuccs.) {
-				if (((PODFTState) newSucc).getObservedFailedNodes().size() > ((PODFTState) newSuccs.get(succIndex)).getObservedFailedNodes().size()) {
-					newSuccs.
-				}
-			}
-		}*/
+		}
+		
+		//System.out.println(targetMa.toDot());
+		
 		return newSuccs;
 	}
 	
@@ -172,10 +187,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<IDFTEvent> events = semantics.createEvents(ftHolder);
 		Set<IDFTEvent> unoccurableEvents = new HashSet<>();
 		for (IDFTEvent event : events) {
-			if (event.getNode() instanceof BasicEvent && failableBasicEventsProvider != null) {
-				BasicEvent be = (BasicEvent) event.getNode();
-				if (!failableBasicEventsProvider.getBasicEvents().contains(be)) {
-					unoccurableEvents.add(event);
+			for (FaultTreeNode node : event.getNodes()) {
+				if (node instanceof BasicEvent && failableBasicEventsProvider != null) {
+					BasicEvent be = (BasicEvent) node;
+					if (!failableBasicEventsProvider.getBasicEvents().contains(be)) {
+						unoccurableEvents.add(event);
+					}
 				}
 			}
 		}
@@ -278,6 +295,21 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 			
+			if (markovSucc != null && hasImmediateEvents(succ)) {
+				for (IDFTEvent event : events) {
+					if (event.canOccur(succ)) {
+						if (event instanceof ImmediateObservationEvent) {
+							if (((ImmediateObservationEvent) event).isRepair()) {
+								succ.setType(MarkovStateType.PROBABILISTIC);
+								break;
+							}
+						} else {
+							succ.setType(MarkovStateType.MARKOVIAN);
+						}
+					}
+				}
+			}
+			
 			checkFailState(succ);
 			DFTState equivalentState = stateEquivalence.getEquivalentState(succ);
 			
@@ -286,7 +318,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 				if (symmetryReduction != null) {
 					if (stateUpdate.getEvent() instanceof FaultEvent) {
 						symmetryReduction.createSymmetryRequirements(succ, stateUpdate.getState(), 
-								(BasicEvent) stateUpdate.getEvent().getNode(), stateUpdateResult.getChangedNodes());
+								(BasicEvent) stateUpdate.getEvent().getNodes().iterator().next(), stateUpdateResult.getChangedNodes());
 					}
 				}
 				
@@ -358,7 +390,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<StateUpdate> stateUpdates = new ArrayList<>();
 		for (IDFTEvent event : occurableEvents) {
 			SymmetryReduction symmetryReduction = ftHolder.getStaticAnalysis().getSymmetryReduction();
-			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event.getNode(), state) : 1;
+			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event.getNodes().iterator().next(), state) : 1;
 			if (symmetryMultiplier != SymmetryReduction.SKIP_EVENT) {
 				StateUpdate stateUpdate = new StateUpdate(state, event, symmetryMultiplier);
 				stateUpdates.add(stateUpdate);

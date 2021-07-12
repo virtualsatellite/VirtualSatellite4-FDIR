@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.evaluator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			for (Object object : minimumCutSet) {
 				if (object instanceof FaultEvent) {
 					FaultEvent fe = (FaultEvent) object;
-					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
+					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNodes().iterator().next());
 					originalMiniumCutSet.add(originalBe);
 				}
 			}

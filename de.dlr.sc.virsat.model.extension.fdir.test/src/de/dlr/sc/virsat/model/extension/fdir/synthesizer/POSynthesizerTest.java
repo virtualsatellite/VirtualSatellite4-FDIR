@@ -129,7 +129,7 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsOr2Csp2() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
-		//System.out.println(ra.toDot());
+		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 2;
 		final int EXPECTED_COUNT_TRANSITIONS = 2;

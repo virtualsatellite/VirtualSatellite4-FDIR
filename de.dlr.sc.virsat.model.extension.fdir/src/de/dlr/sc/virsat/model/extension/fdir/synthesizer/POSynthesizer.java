@@ -9,6 +9,13 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -49,8 +56,24 @@ public class POSynthesizer extends ASynthesizer {
 		
 		// Build the actual belief ma
 		System.out.println(ma.toDot());
+		System.out.println(ma.getStates().size());
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
 		//System.out.println(beliefMa.toDot());
+		Path path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\beliefMa.txt");
+		try {
+			Files.createFile(path);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE); 
+			PrintStream writer = new PrintStream(outFile)) {
+			writer.println(beliefMa.toDot());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma
