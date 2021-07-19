@@ -30,6 +30,7 @@ import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateFaultEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
@@ -96,6 +97,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 					toProcess.offer(nextState);
 				}
 			}
+			//System.out.println(ra.toDot());
 		}
 		
 		ra.getTransitions().addAll(createdTransitions);
@@ -133,13 +135,22 @@ public class Schedule2RAConverter<S extends MarkovState> {
 					continue;
 				}
 			}
+			/*
+			if (event instanceof ImmediateObservationEvent) {
+				mapMarkovStateToRaState.put(toState, getOrCreateRecoveryAutomatonState(ra, state));
+				nextStates.add(toState);
+				continue;
+			}*/
 			
-			if (!markovianTransition.getTo().isMarkovian()) {
+			if (markovianTransition.getTo().isNondet()) {
+				//System.out.print(state);
 				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
+				//System.out.print(bestTransitionGroup);
 				//System.out.println(markovianTransition);
 				MarkovTransition<S> representativeTransition = bestTransitionGroup.iterator().next();
 				
 				Transition raTransition = createTransition(markovianTransition, representativeTransition);
+				//System.out.println(raTransition.getFrom() + " " +raTransition.getTo());
 				createdTransitions.add(raTransition);
 				
 				for (MarkovTransition<S> bestTransition : bestTransitionGroup) {
@@ -256,7 +267,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		State fromRaState = getOrCreateRecoveryAutomatonState(ra, fromState);
 		State toRaState = getOrCreateRecoveryAutomatonState(ra, toState);
 		
-		Transition transition = isInternalTransition(markovianTransition)
+		Transition transition = isInternalTransition(markovianTransition) && !fromState.isProbabilisic()
 				? createTimeoutTransition(fromRaState, toRaState, 1 / markovianTransition.getRate())
 				: createFaultEventTransition(fromRaState, toRaState, event);
 

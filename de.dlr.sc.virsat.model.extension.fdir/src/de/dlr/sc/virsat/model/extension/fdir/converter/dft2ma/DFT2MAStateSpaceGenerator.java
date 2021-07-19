@@ -234,7 +234,11 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 				
 				stateUpdateResult.getSuccs().clear();
 			}
-			targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), markovSucc, stateUpdate.getRate());
+			if (stateUpdate.getState().isProbabilisic()) {
+				targetMa.addProbabilisticTransition(stateUpdate.getEvent(), stateUpdate.getState(), markovSucc, stateUpdate.getRate());
+			} else {
+				targetMa.addMarkovianTransition(stateUpdate.getEvent(), stateUpdate.getState(), markovSucc, stateUpdate.getRate());
+			}
 		}
 		
 		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdateResult, markovSucc);
@@ -300,6 +304,9 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 					if (event.canOccur(succ)) {
 						if (event instanceof ImmediateObservationEvent) {
 							if (((ImmediateObservationEvent) event).isRepair()) {
+								succ.setType(MarkovStateType.PROBABILISTIC);
+								break;
+							} else if (((ImmediateObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
 							}
