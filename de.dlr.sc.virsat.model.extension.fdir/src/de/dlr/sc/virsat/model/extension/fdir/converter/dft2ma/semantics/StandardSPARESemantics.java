@@ -75,7 +75,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 		}
 		
 		if (hasFailed(foundSpare)) {
-			//updatePermanence(state, spareGate, ftHolder);
+			updatePermanence(state, spareGate, ftHolder);
 			return state.setFaultTreeNodeFailed(spareGate, !currentClaimWorks);
 		} 
 		

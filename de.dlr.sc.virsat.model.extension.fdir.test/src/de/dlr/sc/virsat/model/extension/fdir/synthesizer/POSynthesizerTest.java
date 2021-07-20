@@ -237,7 +237,6 @@ public class POSynthesizerTest extends ATestCase {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
 		System.out.println(ra.toDot());
-		System.out.println(ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure());
 		System.out.println(ra.getStates().size());
 		System.out.println(ra.getTransitions().size());
 		
@@ -246,6 +245,7 @@ public class POSynthesizerTest extends ATestCase {
 		final double EXPECTED_MTTF = 0.9153439153439152;
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		System.out.println(ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure());
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());

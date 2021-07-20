@@ -207,9 +207,9 @@ public class DFTSemantics {
 	 */
 	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
-		if (stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
+		/*if (stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
 			return false;
-		}
+		}*/
 		
 		GenerationResult generationResult = new GenerationResult(stateUpdateResult.getBaseSucc(), stateUpdateResult.getMapStateToRecoveryActions());
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();

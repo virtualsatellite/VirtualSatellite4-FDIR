@@ -47,14 +47,6 @@ public class PODFTState extends DFTState {
 	}
 	
 	/**
-	 * Gets the data structure holding the observation information
-	 * @return the data structure holding the observation information
-	 */
-	public BitSet getObservedFailed() {
-		return observedFailed;
-	}
-	
-	/**
 	 * Marks a given node failure as observed / unobserved
 	 * @param node the node
 	 * @param state the observation state

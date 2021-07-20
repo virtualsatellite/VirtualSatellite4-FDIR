@@ -97,7 +97,6 @@ public class Schedule2RAConverter<S extends MarkovState> {
 					toProcess.offer(nextState);
 				}
 			}
-			//System.out.println(ra.toDot());
 		}
 		
 		ra.getTransitions().addAll(createdTransitions);

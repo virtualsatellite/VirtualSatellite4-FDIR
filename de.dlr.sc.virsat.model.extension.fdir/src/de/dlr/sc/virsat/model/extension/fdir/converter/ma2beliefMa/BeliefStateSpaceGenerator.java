@@ -76,7 +76,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	@Override
 	public List<BeliefState> generateSuccs(BeliefState beliefState, SubMonitor monitor) {
-		//System.out.println(beliefState.getIndex());
 		List<BeliefState> generatedSuccs = new ArrayList<>();
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 
@@ -110,20 +109,40 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 						}
 						targetMa.addProbabilisticTransition(observationEvent, beliefState, targetMa.getPredTransitions(beliefState).iterator().next().getFrom(), totalProb);
 					} else {
-						//beliefSucc.setType(MarkovStateType.NONDET);
 						double prob = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
-						equivalentBeliefSucc = addBeliefState(beliefSucc);
-						
-						if (beliefState != equivalentBeliefSucc) {
-							targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, prob);
-						}
+						/*if (optimalTransitionsSelector != null) {
+							boolean isSuboptimal = true;
+							for (PODFTState belief : beliefSucc.mapStateToBelief.keySet()) {
+								if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
+									isSuboptimal = false;
+									break;
+								}
+							}
+							if (isSuboptimal) {
+								beliefSucc.setType(MarkovStateType.MARKOVIAN);
+							}
+						}*/
+							equivalentBeliefSucc = addBeliefState(beliefSucc);
+							if (beliefState != equivalentBeliefSucc) {
+								targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, prob);
+							}
 					}
 				} else {
-				
 					double exitRate = beliefState.getTotalRate(entry.getValue());
 					fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
+					/*if (optimalTransitionsSelector != null) {
+						boolean isSuboptimal = true;
+						for (PODFTState belief : beliefSucc.mapStateToBelief.keySet()) {
+							if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
+								isSuboptimal = false;
+								break;
+							}
+						}
+						if (isSuboptimal) {
+							beliefSucc.setType(MarkovStateType.MARKOVIAN);
+						} 
+					}*/
 					equivalentBeliefSucc = addBeliefState(beliefSucc);
-				
 					if (beliefState != equivalentBeliefSucc) {
 						targetMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
 					}
@@ -153,6 +172,26 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 			}
 			generatedSuccs = generatedSuccs.stream().filter(optimalSuccs::contains).collect(Collectors.toList());
+		}
+
+		if (optimalTransitionsSelector != null && !beliefState.isNondet()) {
+			List<BeliefState> suboptimalSuccs = new ArrayList<>();
+			for (BeliefState generatedSucc : generatedSuccs) {
+				boolean isSuboptimal = true;
+				for  (PODFTState belief : generatedSucc.mapStateToBelief.keySet()) {
+					if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
+						isSuboptimal = false;
+						break;
+					}
+				}
+				if (isSuboptimal) {
+					suboptimalSuccs.add(generatedSucc);
+					generatedSucc.setType(MarkovStateType.MARKOVIAN);
+					generatedSucc.getMapFailLabelToProb().put(FailLabel.FAILED, 1.0);
+					System.out.println(generatedSucc.getMapFailLabelToProb());
+				}
+			}
+			generatedSuccs.removeAll(suboptimalSuccs);
 		}
 		
 		return generatedSuccs;
@@ -350,5 +389,9 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		}
 		
 		return totalProb;
+	}
+	
+	public HashSet<BeliefState> getGoodStates() {
+		return goodStates;
 	}
 }

@@ -70,7 +70,7 @@ public class MatrixFactory implements IMatrixFactory {
 		for (MarkovState state : states) {
 			int index = mapStateToIndex.get(state);
 
-			if (state.isMarkovian() && (!invertEdgeDirection || !terminalStates.contains(state))) {
+			if (!state.isNondet() && (!invertEdgeDirection || !terminalStates.contains(state))) {
 				List<?> transitions = invertEdgeDirection ? ma.getSuccTransitions(state) : ma.getPredTransitions(state);
 				matrix.getStatePredIndices()[index] = new int[transitions.size()];
 				matrix.getStatePredRates()[index] = new double[transitions.size()];
@@ -88,6 +88,7 @@ public class MatrixFactory implements IMatrixFactory {
 		}
 		
 		// Make terminal states absorbing
+		System.out.println(terminalStates);
 		for (MarkovState terminalState : terminalStates) {
 			int index = mapStateToIndex.get(terminalState);
 			matrix.getDiagonal()[index] = 1;
