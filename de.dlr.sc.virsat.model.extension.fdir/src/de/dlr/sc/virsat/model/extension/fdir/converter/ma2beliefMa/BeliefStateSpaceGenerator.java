@@ -29,6 +29,7 @@ import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateObservationEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
 public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState> {
@@ -41,6 +42,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	private OptimalTransitionsSelector<BeliefState> optimalTransitionsSelector;
 	private HashSet<BeliefState> goodStates;
+	private HashSet<BeliefState> badStates;
 	
 	BeliefStateSpaceGenerator() {
 	}
@@ -48,6 +50,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	BeliefStateSpaceGenerator(OptimalTransitionsSelector<BeliefState> anOptimalTransitionsSelector) {
 		optimalTransitionsSelector = anOptimalTransitionsSelector;
 		goodStates = new HashSet<>();
+		badStates = new HashSet<>();
 	}
 	
 	/**
@@ -76,6 +79,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	@Override
 	public List<BeliefState> generateSuccs(BeliefState beliefState, SubMonitor monitor) {
+		System.out.println(beliefState.getIndex());
 		List<BeliefState> generatedSuccs = new ArrayList<>();
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 
@@ -86,12 +90,17 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			
 			BeliefState beliefSucc = new BeliefState(entry.getKey());
 			
-			if (beliefSucc.representant.isProbabilisic()) {
-				beliefSucc.setType(MarkovStateType.PROBABILISTIC);
-			}
+			beliefSucc.setType(beliefSucc.representant.getType());
 			
 			BeliefState equivalentBeliefSucc = null;
 			List<MarkovTransition<DFTState>> succTransitions = entry.getValue();
+			
+			if (beliefState.isProbabilisic()) {
+				Object event = succTransitions.iterator().next().getEvent();
+				if (event instanceof ObservationEvent && !(event instanceof ImmediateObservationEvent)) {
+					continue;
+				}
+			}
 			
 			if (!beliefState.isNondet()) {
 				Entry<Set<Object>, Boolean> observationEvent = beliefState.representant.extractObservationEvent(beliefSucc.representant, succTransitions);
@@ -99,49 +108,46 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				if (beliefState.isProbabilisic()) {
 					if (observationEvent.getKey().isEmpty()) {
 						double totalProb = 0;
-						HashSet<PODFTState> seenStates = new HashSet<>();
+						boolean backTransition = false;
+						/*HashSet<PODFTState> seenStates = new HashSet<>();
 						for (MarkovTransition<DFTState> transition : succTransitions) {
+							if (!beliefState.mapStateToBelief.containsKey(transition.getTo())) {
+								backTransition = false; 
+							}
 							PODFTState fromState = (PODFTState) transition.getFrom();
 							if (seenStates.add(fromState)) {
 								double prob = beliefState.mapStateToBelief.get(fromState);
 								totalProb += prob;
 							}
-						}
-						targetMa.addProbabilisticTransition(observationEvent, beliefState, targetMa.getPredTransitions(beliefState).iterator().next().getFrom(), totalProb);
-					} else {
-						double prob = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
-						/*if (optimalTransitionsSelector != null) {
-							boolean isSuboptimal = true;
-							for (PODFTState belief : beliefSucc.mapStateToBelief.keySet()) {
-								if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
-									isSuboptimal = false;
+						}*/
+						if (backTransition) {
+							targetMa.addProbabilisticTransition(observationEvent, beliefState, targetMa.getPredTransitions(beliefState).iterator().next().getFrom(), totalProb);
+						} else {
+							totalProb = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
+							beliefSucc.representant = beliefSucc.mapStateToBelief.keySet().iterator().next();
+							for (PODFTState candidate : beliefSucc.mapStateToBelief.keySet()) {
+								if (candidate.isProbabilisic()) {
+									beliefSucc.representant = candidate;
 									break;
 								}
 							}
-							if (isSuboptimal) {
-								beliefSucc.setType(MarkovStateType.MARKOVIAN);
-							}
-						}*/
+							beliefSucc.setType(beliefSucc.representant.getType());
 							equivalentBeliefSucc = addBeliefState(beliefSucc);
 							if (beliefState != equivalentBeliefSucc) {
-								targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, prob);
+								targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, totalProb);
 							}
+						}
+					} else {
+						System.out.println(succTransitions);
+						double prob = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
+						equivalentBeliefSucc = addBeliefState(beliefSucc);
+						if (beliefState != equivalentBeliefSucc) {
+							targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, prob);
+						}
 					}
 				} else {
 					double exitRate = beliefState.getTotalRate(entry.getValue());
-					fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
-					/*if (optimalTransitionsSelector != null) {
-						boolean isSuboptimal = true;
-						for (PODFTState belief : beliefSucc.mapStateToBelief.keySet()) {
-							if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
-								isSuboptimal = false;
-								break;
-							}
-						}
-						if (isSuboptimal) {
-							beliefSucc.setType(MarkovStateType.MARKOVIAN);
-						} 
-					}*/
+					exitRate = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
 					equivalentBeliefSucc = addBeliefState(beliefSucc);
 					if (beliefState != equivalentBeliefSucc) {
 						targetMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
@@ -157,8 +163,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				generatedSuccs.add(beliefSucc);
 			}
 			
-			if (optimalTransitionsSelector != null && !beliefState.isNondet() && equivalentBeliefSucc != null && goodStates.add(equivalentBeliefSucc) && !generatedSuccs.contains(equivalentBeliefSucc)) {
+			if (optimalTransitionsSelector != null && !beliefState.isNondet() && equivalentBeliefSucc != null && badStates.contains(equivalentBeliefSucc)) {
 				generatedSuccs.add(equivalentBeliefSucc);
+				equivalentBeliefSucc.getMapFailLabelToProb().clear();
+				badStates.remove(equivalentBeliefSucc);
+				goodStates.add(equivalentBeliefSucc);
 			}
 		}
 		
@@ -167,8 +176,17 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			List<MarkovTransition<BeliefState>> optimalTransitions = optimalTransitionsSelector.selectOptimalTransitions(targetMa, beliefState);
 			for (MarkovTransition<BeliefState> optimalTransition : optimalTransitions) {
 				optimalSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
-				if (goodStates.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo())) && !generatedSuccs.contains(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
+				goodStates.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
+				if (badStates.contains(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
 					generatedSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
+					beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()).getMapFailLabelToProb().clear();
+					badStates.remove(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
+				}
+			}
+			for (BeliefState generatedSucc : generatedSuccs) {
+				if (!goodStates.contains(generatedSucc)) {
+					generatedSucc.getMapFailLabelToProb().put(FailLabel.FAILED, 1.0);
+					badStates.add(generatedSucc);
 				}
 			}
 			generatedSuccs = generatedSuccs.stream().filter(optimalSuccs::contains).collect(Collectors.toList());
@@ -188,7 +206,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 					suboptimalSuccs.add(generatedSucc);
 					generatedSucc.setType(MarkovStateType.MARKOVIAN);
 					generatedSucc.getMapFailLabelToProb().put(FailLabel.FAILED, 1.0);
-					System.out.println(generatedSucc.getMapFailLabelToProb());
 				}
 			}
 			generatedSuccs.removeAll(suboptimalSuccs);
@@ -218,7 +235,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 					PODFTState representant = representantEntry.getKey();
 					if (representant.getObservedFailedNodes().equals(succState.getObservedFailedNodes()) 
 							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())
-							&& representant.getType().equals(succState.getType())) {
+							/*&& representant.getType().equals(succState.getType())*/) {
 						transitions = representantEntry.getValue();
 					}
 				}
@@ -264,7 +281,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param observationEvent the observation event
 	 * @param succTransitions the successor transitions
 	 */
-	private void fillMarkovianStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
+	private double fillMarkovianStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
 			double exitRate, Entry<Set<Object>, Boolean> observationEvent, List<MarkovTransition<DFTState>> succTransitions) {
 		boolean isInternalTransition = observationEvent.getKey().isEmpty();
 		
@@ -301,11 +318,58 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			}
 		}
 		
+		/*double totalExitProb = 0;
+		for (MarkovTransition<DFTState> transition : succTransitions) {
+			PODFTState fromState = (PODFTState) transition.getFrom();
+			PODFTState toState = (PODFTState) transition.getTo();
+			statesWithNoTransitions.remove(fromState);
+			
+			double oldProb = beliefState.mapStateToBelief.get(fromState);
+			double prob = oldProb * (oldProb * transition.getRate() / exitRate);
+			
+			if (isInternalTransition) {
+				double exitRateFromState = ma.getExitRateForState(fromState);
+				double time = 1 / transition.getRate();
+				double residueProb = oldProb;
+				
+				double remainProb = Math.exp(-exitRateFromState * time);
+				double exitProb = 1 - remainProb;
+				totalExitProb += exitProb;
+				residueProb *= remainProb;
+				prob *= exitProb;
+				
+				if (residueProb > 0) {
+					beliefSucc.addBelief(fromState, residueProb);
+				}
+			}
+		}
+		if (totalExitProb != 0) {
+			System.out.println(totalExitProb);
+			exitRate = exitRate / totalExitProb;
+		}
+		for (MarkovTransition<DFTState> transition : succTransitions) {
+			PODFTState fromState = (PODFTState) transition.getFrom();
+			PODFTState toState = (PODFTState) transition.getTo();
+			statesWithNoTransitions.remove(fromState);
+			
+			double oldProb = beliefState.mapStateToBelief.get(fromState);
+			double prob = oldProb * (oldProb * transition.getRate() / exitRate);
+			
+			if (prob > 0) {
+				if (isInternalTransition) {
+					toState = getTargetState(toState);
+				}
+				beliefSucc.addBelief(toState, prob);
+			}
+		}
+		*/
 		if (isInternalTransition) {
 			for (PODFTState state : statesWithNoTransitions) {
 				beliefSucc.addBelief(state, beliefState.mapStateToBelief.get(state));
 			}
 		}
+		
+		return exitRate;
 	}
 
 	/**
@@ -372,6 +436,9 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	private double fillProbabilisticStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
 			Entry<Set<Object>, Boolean> observationEvent, List<MarkovTransition<DFTState>> succTransitions) {
+		boolean isInternalTransition = observationEvent.getKey().isEmpty();
+		
+		HashSet<PODFTState> seenStates = new HashSet<>();
 		
 		double totalProb = 0;
 		for (MarkovTransition<DFTState> transition : succTransitions) {
@@ -382,16 +449,19 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			double prob = oldProb * transition.getRate();
 			totalProb += prob;
 			
-			if (prob > 0) {
+			if (isInternalTransition) {
+				if (seenStates.add(fromState)) {
+					beliefSucc.addBelief(fromState, oldProb);
+					totalProb += oldProb;
+					continue;
+				}
+			} else if (prob > 0) {
 				//toState = getTargetState(toState);
 				beliefSucc.addBelief(toState, prob);
 			}
+			totalProb += prob;
 		}
 		
 		return totalProb;
-	}
-	
-	public HashSet<BeliefState> getGoodStates() {
-		return goodStates;
 	}
 }

@@ -55,11 +55,26 @@ public class POSynthesizer extends ASynthesizer {
 		subMonitor = SubMonitor.convert(subMonitor, TICKS);
 		
 		// Build the actual belief ma
-		System.out.println(ma.toDot());
+		Path path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\ma.txt");
+		try {
+			Files.createFile(path);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE); 
+			PrintStream writer = new PrintStream(outFile)) {
+			writer.println(ma.toDot());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(ma.toDot());
 		System.out.println(ma.getStates().size());
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
 		//System.out.println(beliefMa.toDot());
-		Path path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\beliefMa.txt");
+		path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\beliefMa.txt");
 		try {
 			Files.createFile(path);
 		} catch (IOException e1) {

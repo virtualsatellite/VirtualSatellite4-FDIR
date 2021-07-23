@@ -31,6 +31,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IRepairableEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateFaultEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ImmediateObservationEvent;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.ObservationEvent;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
@@ -299,7 +300,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 			
-			if (markovSucc != null && hasImmediateEvents(succ)) {
+			if (/*(markovSucc != null || recoveryStrategy != null) && */hasImmediateEvents(succ)) {
 				for (IDFTEvent event : events) {
 					if (event.canOccur(succ)) {
 						if (event instanceof ImmediateObservationEvent) {
@@ -310,6 +311,8 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
 							}
+						} else if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
+							succ.setType(MarkovStateType.MARKOVIAN);
 						} else {
 							succ.setType(MarkovStateType.MARKOVIAN);
 						}
@@ -354,11 +357,11 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return the list of all events that can occur
 	 */
 	private List<IDFTEvent> getOccurableEvents(DFTState state) {
-		if (state.getFailLabels().contains(FailLabel.FAILED) 
+		/*if (state.getFailLabels().contains(FailLabel.FAILED) 
 				&& (!(state instanceof PODFTState) || state.getFailLabels().contains(FailLabel.OBSERVED))
 				&& state.isFaultTreeNodePermanent(ftHolder.getRoot())) {
 			return Collections.emptyList();
-		}
+		}*/
 		
 		List<IDFTEvent> occurableEvents = new ArrayList<>();		
 		if (occurableEvents.isEmpty()) {
