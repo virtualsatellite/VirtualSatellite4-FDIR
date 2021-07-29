@@ -146,13 +146,13 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
-			} else if (state.getFailLabels().contains(FailLabel.FAILED)) {
+			} else if (state.getMapFailLabelToProb().containsKey(FailLabel.FAILED)) { //&& state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1/*state.getFailLabels().contains(FailLabel.FAILED)*/) {
 				// To differentiate between fail states we also compute their MTTF
 				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
 				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
-					if (!toState.getFailLabels().contains(FailLabel.FAILED)) {
+					if (toState.getFailLabels().contains(FailLabel.FAILED) && toState.getMapFailLabelToProb().get(FailLabel.FAILED) != 1) {
 						double toValue = values[toState.getIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}

@@ -310,6 +310,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 							} else if (((ImmediateObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
+							} else if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
+								succ.setType(MarkovStateType.PROBABILISTIC);
+								break;
+							} else if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
+								succ.setType(MarkovStateType.PROBABILISTIC);
+								break;
 							}
 						} else if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
 							succ.setType(MarkovStateType.MARKOVIAN);

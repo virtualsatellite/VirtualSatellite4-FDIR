@@ -89,7 +89,7 @@ public class PODFTState extends DFTState {
 	 */
 	public boolean existsObserver(FaultTreeNode node, boolean allowDelay, boolean allowFailed) {
 		if (node instanceof MONITOR) {
-			return true; //true;
+			return true;
 		}
 		
 		List<FaultTreeNode> observers = ftHolder.getNodes(node, EdgeType.MONITOR);

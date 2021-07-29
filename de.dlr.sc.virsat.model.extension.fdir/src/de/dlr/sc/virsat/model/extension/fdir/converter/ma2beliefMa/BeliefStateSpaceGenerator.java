@@ -36,6 +36,9 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	private static final double EPSILON = 0.2;
 	
+	private static final double EULERECIPROCAL = Math.exp(-1);
+	private static final double COEULERECIPROCAL = 1 - EULERECIPROCAL;
+	
 	private MarkovAutomaton<DFTState> ma;
 	private PODFTState initialStateMa;
 	private BeliefStateEquivalence beliefStateEquivalence;
@@ -79,7 +82,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	@Override
 	public List<BeliefState> generateSuccs(BeliefState beliefState, SubMonitor monitor) {
-		System.out.println(beliefState.getIndex());
 		List<BeliefState> generatedSuccs = new ArrayList<>();
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 
@@ -235,7 +237,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 					PODFTState representant = representantEntry.getKey();
 					if (representant.getObservedFailedNodes().equals(succState.getObservedFailedNodes()) 
 							&& representant.getMapSpareToClaimedSpares().equals(succState.getMapSpareToClaimedSpares())
-							/*&& representant.getType().equals(succState.getType())*/) {
+							&& representant.getType().equals(succState.getType())) {
 						transitions = representantEntry.getValue();
 					}
 				}
@@ -285,9 +287,42 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			double exitRate, Entry<Set<Object>, Boolean> observationEvent, List<MarkovTransition<DFTState>> succTransitions) {
 		boolean isInternalTransition = observationEvent.getKey().isEmpty();
 		
-		Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
+		//Set<PODFTState> statesWithNoTransitions = new HashSet<>(beliefState.mapStateToBelief.keySet());
 		
-		for (MarkovTransition<DFTState> transition : succTransitions) {
+		if (isInternalTransition) {
+			for (Entry<PODFTState, Double> entry : beliefState.mapStateToBelief.entrySet()) {
+				beliefSucc.addBelief(entry.getKey(), entry.getValue() * EULERECIPROCAL);
+			}
+			for (MarkovTransition<DFTState> transition : succTransitions) {
+				PODFTState fromState = (PODFTState) transition.getFrom();
+				PODFTState toState = (PODFTState) transition.getTo();
+				
+				double oldProb = beliefState.mapStateToBelief.get(fromState);
+				double prob = oldProb * transition.getRate() / exitRate;
+				
+				prob *= COEULERECIPROCAL;
+				
+				if (prob > 0) {
+					toState = getTargetState(toState);
+					beliefSucc.addBelief(toState, prob);
+				}
+			}
+			return exitRate / COEULERECIPROCAL;
+		} else {
+			for (MarkovTransition<DFTState> transition : succTransitions) {
+				PODFTState fromState = (PODFTState) transition.getFrom();
+				PODFTState toState = (PODFTState) transition.getTo();
+				
+				double oldProb = beliefState.mapStateToBelief.get(fromState);
+				double prob = oldProb * (oldProb * transition.getRate() / exitRate);
+				
+				if (prob > 0) {
+					beliefSucc.addBelief(toState, prob);
+				}
+			}
+		}
+
+		/*for (MarkovTransition<DFTState> transition : succTransitions) {
 			PODFTState fromState = (PODFTState) transition.getFrom();
 			PODFTState toState = (PODFTState) transition.getTo();
 			statesWithNoTransitions.remove(fromState);
@@ -316,9 +351,9 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 				beliefSucc.addBelief(toState, prob);
 			}
-		}
-		
-		/*double totalExitProb = 0;
+		}*/
+		/*
+		double totalExitProb = 0;
 		for (MarkovTransition<DFTState> transition : succTransitions) {
 			PODFTState fromState = (PODFTState) transition.getFrom();
 			PODFTState toState = (PODFTState) transition.getTo();
@@ -361,13 +396,13 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 				beliefSucc.addBelief(toState, prob);
 			}
-		}
-		*/
-		if (isInternalTransition) {
+		}*/
+
+		/*if (isInternalTransition) {
 			for (PODFTState state : statesWithNoTransitions) {
 				beliefSucc.addBelief(state, beliefState.mapStateToBelief.get(state));
 			}
-		}
+		}*/
 		
 		return exitRate;
 	}
@@ -447,19 +482,17 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			
 			double oldProb = beliefState.mapStateToBelief.get(fromState);
 			double prob = oldProb * transition.getRate();
-			totalProb += prob;
 			
 			if (isInternalTransition) {
 				if (seenStates.add(fromState)) {
 					beliefSucc.addBelief(fromState, oldProb);
 					totalProb += oldProb;
-					continue;
 				}
 			} else if (prob > 0) {
 				//toState = getTargetState(toState);
 				beliefSucc.addBelief(toState, prob);
+				totalProb += prob;
 			}
-			totalProb += prob;
 		}
 		
 		return totalProb;
