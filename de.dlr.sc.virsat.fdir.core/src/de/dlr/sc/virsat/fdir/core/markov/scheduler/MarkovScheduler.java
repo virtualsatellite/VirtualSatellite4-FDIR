@@ -153,7 +153,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
 					if (toState.getFailLabels().contains(FailLabel.FAILED) && toState.getMapFailLabelToProb().get(FailLabel.FAILED) != 1) {
-						double toValue = values[toState.getIndex()];
+						double toValue = values[toState.getValuesIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}
 				}

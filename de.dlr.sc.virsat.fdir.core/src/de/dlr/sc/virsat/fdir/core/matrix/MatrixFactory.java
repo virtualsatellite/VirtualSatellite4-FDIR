@@ -65,6 +65,7 @@ public class MatrixFactory implements IMatrixFactory {
 		Map<MarkovState, Integer> mapStateToIndex = new HashMap<>();
 		for (int i = 0; i < states.size(); ++i) {
 			mapStateToIndex.put(states.get(i), i);
+			states.get(i).setValuesIndex(i);
 		}
 		
 		for (MarkovState state : states) {

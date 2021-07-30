@@ -25,6 +25,7 @@ public class MarkovState {
 	protected int index;
 	private MarkovStateType type = MarkovStateType.MARKOVIAN;
 	private Map<FailLabel, Double> mapFailLabelToProb = new HashMap<>();
+	protected int valuesIndex = -1;
 	
 	/**
 	 * Gets the index of this state
@@ -32,6 +33,18 @@ public class MarkovState {
 	 */
 	public int getIndex() {
 		return index;
+	}
+	
+	public void setValuesIndex(int valuesIndex) {
+		this.valuesIndex = valuesIndex;
+	}
+	
+	public int getValuesIndex() {
+		if (valuesIndex == -1) {
+			return getIndex();
+		} else {
+			return valuesIndex;
+		}
 	}
 	
 	/**
