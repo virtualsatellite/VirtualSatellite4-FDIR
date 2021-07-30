@@ -112,6 +112,14 @@ public class MarkovAutomaton<S extends MarkovState> {
 		mapStateToPredTransitions.put(state, new ArrayList<>());
 	}
 	
+	public void addState(S state, int index) {
+		state.index = index;
+		states.add(state);
+		
+		mapStateToSuccTransitions.put(state, new ArrayList<>());
+		mapStateToPredTransitions.put(state, new ArrayList<>());
+	}
+	
 	/**
 	 * Add a new markov transition to the automaton
 	 * @param event the transition event
@@ -196,12 +204,14 @@ public class MarkovAutomaton<S extends MarkovState> {
 		for (MarkovTransition<S> transition : succTransitions) {
 			List<MarkovTransition<S>> transitions = getTransitions(transition.getEvent());
 			transitions.remove(transition);
+			mapStateToPredTransitions.getOrDefault(transition.getTo(), Collections.emptyList()).remove(transition);
 		}
 		
 		List<MarkovTransition<S>> predTransitions = getPredTransitions(state);
 		for (MarkovTransition<S> transition : predTransitions) {
 			List<MarkovTransition<S>> transitions = getTransitions(transition.getEvent());
 			transitions.remove(transition);
+			mapStateToSuccTransitions.getOrDefault(transition.getFrom(), Collections.emptyList()).remove(transition);
 		}
 		
 		mapStateToSuccTransitions.remove(state);
