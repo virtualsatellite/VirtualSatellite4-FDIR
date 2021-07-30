@@ -37,7 +37,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantic
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.DFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.INodeSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics.NDSPARESemantics;
-import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.OptimalTransitionsSelector;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvider;
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;

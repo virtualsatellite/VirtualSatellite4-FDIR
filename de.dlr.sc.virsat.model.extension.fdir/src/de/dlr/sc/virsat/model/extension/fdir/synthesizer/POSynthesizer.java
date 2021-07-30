@@ -45,7 +45,7 @@ public class POSynthesizer extends ASynthesizer {
 
 	private static final int TICKS = 3;
 	
-	protected OptimalTransitionsSelector optimalTransitionsSelector = new OptimalTransitionsSelector<BeliefState>();
+	protected OptimalTransitionsSelector<BeliefState> optimalTransitionsSelector = new OptimalTransitionsSelector<BeliefState>();
 	
 	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter(optimalTransitionsSelector);
 	protected IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();

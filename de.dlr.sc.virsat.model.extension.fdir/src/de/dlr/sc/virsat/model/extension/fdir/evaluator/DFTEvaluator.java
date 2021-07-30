@@ -129,6 +129,7 @@ public class DFTEvaluator implements IFaultTreeEvaluator {
 		
 		if (modularization == null) {
 			MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(ftHolder.getRoot(), failableBasicEventsProvider, subMonitor.split(1));
+			System.out.println(ma.toDot());
 			statistics.maBuildStatistics.compose(dft2MaConverter.getMaBuilder().getStatistics());
 			
 			return modelCheck(ma, subMonitor.split(1), partitioning);

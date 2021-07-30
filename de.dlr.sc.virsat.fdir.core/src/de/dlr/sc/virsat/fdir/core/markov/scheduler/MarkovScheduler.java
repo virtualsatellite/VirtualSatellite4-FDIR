@@ -60,7 +60,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		Set<S> handledNonDetStates = new HashSet<>();
 		
 		Map<S, List<MarkovTransition<S>>> schedule = new HashMap<>();
-		int i = 0;
 		while (!toProcess.isEmpty()) {
 			S state = toProcess.poll();
 			

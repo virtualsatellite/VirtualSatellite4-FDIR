@@ -65,8 +65,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			if (node instanceof MONITOR && !ftHolder.getNodes(node, EdgeType.CHILD).isEmpty()) {
-					events.add(new ImmediateObservationEvent(node, true));	
-					events.add(new ImmediateObservationEvent(node, false));
+				events.add(new ImmediateObservationEvent(node, true));	
+				events.add(new ImmediateObservationEvent(node, false));
 			}
 			List<FaultTreeNode> monitors = ftHolder.getNodes(node, EdgeType.MONITOR);
 			double observationRate = 0;
@@ -167,7 +167,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 		for (DFTState state : stateUpdateResult.getSuccs()) {
 			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 				PODFTState poState = (PODFTState) state;
-				boolean isObserved = false;//poState.existsObserver(node, false, false);
+				boolean isObserved = false; 
+				//poState.existsObserver(node, false, false);
 				if (isObserved) {
 					anyObservation = true;
 					poState.setNodeFailObserved(node, state.hasFaultTreeNodeFailed(node));

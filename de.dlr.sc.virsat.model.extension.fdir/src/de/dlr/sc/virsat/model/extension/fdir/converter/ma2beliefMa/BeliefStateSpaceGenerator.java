@@ -122,31 +122,14 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 						beliefSucc.setType(beliefSucc.representant.getType());
 						equivalentBeliefSucc = addBeliefState(beliefSucc);
 						if (beliefState != equivalentBeliefSucc) {
-							if (badStates.containsKey(equivalentBeliefSucc)) {
-								generatedSuccs.add(equivalentBeliefSucc);
-								targetMa.addState(equivalentBeliefSucc, equivalentBeliefSucc.getIndex());
-								for (MarkovTransition<BeliefState> transition : badStates.get(equivalentBeliefSucc)) {
-									targetMa.addNondeterministicTransition(transition.getEvent(), transition.getFrom(), transition.getTo(), transition.getRate());
-								}
-								badStates.remove(equivalentBeliefSucc);
-								goodStates.add(equivalentBeliefSucc);
-							}
+							makeStateGood(equivalentBeliefSucc, generatedSuccs);
 							targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, totalProb);
 						}
 					} else {
-						System.out.println(succTransitions);
 						double prob = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
 						equivalentBeliefSucc = addBeliefState(beliefSucc);
 						if (beliefState != equivalentBeliefSucc) {
-							if (badStates.containsKey(equivalentBeliefSucc)) {
-								generatedSuccs.add(equivalentBeliefSucc);
-								targetMa.addState(equivalentBeliefSucc, equivalentBeliefSucc.getIndex());
-								for (MarkovTransition<BeliefState> transition : badStates.get(equivalentBeliefSucc)) {
-									targetMa.addNondeterministicTransition(transition.getEvent(), transition.getFrom(), transition.getTo(), transition.getRate());
-								}
-								badStates.remove(equivalentBeliefSucc);
-								goodStates.add(equivalentBeliefSucc);
-							}
+							makeStateGood(equivalentBeliefSucc, generatedSuccs);
 							targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, prob);
 						}
 					}
@@ -163,15 +146,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 					beliefSucc.setType(beliefSucc.representant.getType());
 					equivalentBeliefSucc = addBeliefState(beliefSucc);
 					if (beliefState != equivalentBeliefSucc) {
-						if (badStates.containsKey(equivalentBeliefSucc)) {
-							generatedSuccs.add(equivalentBeliefSucc);
-							targetMa.addState(equivalentBeliefSucc, equivalentBeliefSucc.getIndex());
-							for (MarkovTransition<BeliefState> transition : badStates.get(equivalentBeliefSucc)) {
-								targetMa.addNondeterministicTransition(transition.getEvent(), transition.getFrom(), transition.getTo(), transition.getRate());
-							}
-							badStates.remove(equivalentBeliefSucc);
-							goodStates.add(equivalentBeliefSucc);
-						}
+						makeStateGood(equivalentBeliefSucc, generatedSuccs);
 						targetMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
 					}
 				}
@@ -502,6 +477,14 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		return equivalentBeliefState;
 	}
 	
+	/**
+	 * Initializes the data of a successor of a probabilistic state
+	 * @author khan_ax
+	 * @param beliefState the current state
+	 * @param beliefSucc the successor
+	 * @param observationEvent the observation event
+	 * @param succTransitions the successor transitions
+	 */
 	private double fillProbabilisticStateSucc(BeliefState beliefState, BeliefState beliefSucc, 
 			Entry<Set<Object>, Boolean> observationEvent, List<MarkovTransition<DFTState>> succTransitions) {
 		boolean isInternalTransition = observationEvent.getKey().isEmpty();
@@ -529,5 +512,22 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		}
 		
 		return totalProb;
+	}
+	
+	/**
+	 * Makes a state a good if it is bad
+	 * @author khan_ax
+	 * @param state the bad state to be made good
+	 */
+	private void makeStateGood(BeliefState state, List<BeliefState> generatedSuccs) {
+		if (badStates.containsKey(state)) {
+			generatedSuccs.add(state);
+			targetMa.addState(state, state.getIndex());
+			for (MarkovTransition<BeliefState> transition : badStates.get(state)) {
+				targetMa.addNondeterministicTransition(transition.getEvent(), transition.getFrom(), transition.getTo(), transition.getRate());
+			}
+			badStates.remove(state);
+			goodStates.add(state);
+		}
 	}
 }

@@ -20,7 +20,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 /**
- * Implementation of Value Iteration algorithm for computing a optimal schedule on a given ma
+ * Selects the optimal transition groups for a given state in terms of fail probability
  * @author khan_ax
  *
  * @param <S>
@@ -28,6 +28,13 @@ import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 
 public class OptimalTransitionsSelector<S extends MarkovState> {
 	
+	/**
+	 * Selects the optimal transition groups for a given state in terms of fail probability
+	 * @author khan_ax
+	 * @param ma the markov automaton
+	 * @param state the state
+	 * @return the optimal transition groups of successor states
+	 */
 	public List<MarkovTransition<S>> selectOptimalTransitions(MarkovAutomaton<S> ma, S state) {
 		List<MarkovTransition<S>> bestTransitions = new ArrayList<>();
 		double bestTransitionProbFail = 1;

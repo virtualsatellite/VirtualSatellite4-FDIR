@@ -28,9 +28,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
-import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 
 /**
