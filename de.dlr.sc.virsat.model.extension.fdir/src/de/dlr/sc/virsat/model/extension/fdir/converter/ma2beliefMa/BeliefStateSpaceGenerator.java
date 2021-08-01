@@ -152,6 +152,14 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 			} else {
 				fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions);
+				beliefSucc.representant = beliefSucc.mapStateToBelief.keySet().iterator().next();
+				for (PODFTState candidate : beliefSucc.mapStateToBelief.keySet()) {
+					if (candidate.isProbabilisic()) {
+						beliefSucc.representant = candidate;
+						break;
+					}
+				}
+				beliefSucc.setType(beliefSucc.representant.getType());
 				equivalentBeliefSucc = addBeliefState(beliefSucc);
 				if (badStates.containsKey(equivalentBeliefSucc)) {
 					targetMa.addState(equivalentBeliefSucc, equivalentBeliefSucc.getIndex());

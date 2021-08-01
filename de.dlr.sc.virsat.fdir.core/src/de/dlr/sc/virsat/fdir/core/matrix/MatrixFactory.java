@@ -89,7 +89,6 @@ public class MatrixFactory implements IMatrixFactory {
 		}
 		
 		// Make terminal states absorbing
-		System.out.println(terminalStates);
 		for (MarkovState terminalState : terminalStates) {
 			int index = mapStateToIndex.get(terminalState);
 			matrix.getDiagonal()[index] = 1;

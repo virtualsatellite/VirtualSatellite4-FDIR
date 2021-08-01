@@ -10,6 +10,14 @@
 
 package de.dlr.sc.virsat.fdir.core.markov.scheduler;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +62,19 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery, SubMonitor subMonitor) {
 		results = computeValues(scheduleQuery.getMa(), scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric(), subMonitor);
-		System.out.println(results);
+		Path path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\results.txt");
+		try {
+			Files.createFile(path);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE); 
+			PrintStream writer = new PrintStream(outFile)) {
+			writer.println(results);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(scheduleQuery.getInitialState());
 		Set<S> handledNonDetStates = new HashSet<>();
@@ -145,7 +165,7 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
-			} else if (state.getMapFailLabelToProb().containsKey(FailLabel.FAILED)) { //&& state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1/*state.getFailLabels().contains(FailLabel.FAILED)*/) {
+			} else if (state.getMapFailLabelToProb().containsKey(FailLabel.FAILED) && state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1) { //&& state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1/*state.getFailLabels().contains(FailLabel.FAILED)*/) {
 				// To differentiate between fail states we also compute their MTTF
 				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
 				double exitRate = ma.getExitRateForState(state);

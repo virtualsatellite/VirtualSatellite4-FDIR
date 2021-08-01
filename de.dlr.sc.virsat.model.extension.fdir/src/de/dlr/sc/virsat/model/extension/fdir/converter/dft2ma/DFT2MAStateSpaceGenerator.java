@@ -41,8 +41,10 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.FailableBasicEventsProvid
 import de.dlr.sc.virsat.model.extension.fdir.model.BasicEvent;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAction;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.RecoveryStrategy;
+import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
@@ -133,13 +135,10 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		for (StateUpdate stateUpdate : stateUpdates) {
 			checkCancellation(monitor);
 			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
-			//Collections.sort(stateUpdateResult.getSuccs(), DFTState.MARKOVSTATE_COMPARATOR);
 			checkCancellation(monitor);
 			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
-		
-		//System.out.println(targetMa.toDot());
 		
 		return newSuccs;
 	}
@@ -300,25 +299,48 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 			
 			if (/*(markovSucc != null || recoveryStrategy != null) && */hasImmediateEvents(succ)) {
+				boolean lockFaults = false;
+				boolean lockTLE = false;
 				for (IDFTEvent event : events) {
 					if (event.canOccur(succ)) {
 						if (event instanceof ImmediateObservationEvent) {
+							if (!lockTLE && ((ImmediateObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
+								succ.setType(MarkovStateType.PROBABILISTIC);
+								lockFaults = true;
+							}
 							if (((ImmediateObservationEvent) event).isRepair()) {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
-							/*} else if (((ImmediateObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
-								succ.setType(MarkovStateType.PROBABILISTIC);
-								break;*/
-							} else if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
-								succ.setType(MarkovStateType.PROBABILISTIC);
-								break;
-							} else if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
+							}
+							if (markovSucc == null) {
+								boolean contains = ((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes());
+								if (!contains) {
+									succ.setType(MarkovStateType.PROBABILISTIC);
+									break;
+								}
+							}
+							if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
 							}
 						} else if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
 							succ.setType(MarkovStateType.MARKOVIAN);
-						} else {
+						} else if (event instanceof FaultEvent && ((FaultEvent) event).isRepair()) {
+							Set<FaultTreeNode> parents = ftHolder.getMapNodeToAllParents().get(event.getNodes().iterator().next());
+							boolean monitorExists = false;
+							for (FaultTreeNode node : parents) {
+								if (node instanceof MONITOR) {
+									monitorExists = true;
+									break;
+								}
+							}
+							if (!monitorExists) {
+								succ.setType(MarkovStateType.MARKOVIAN);
+								lockTLE = true;
+							} else {
+								continue;
+							}					
+						} else if (!lockFaults) {
 							succ.setType(MarkovStateType.MARKOVIAN);
 						}
 					}

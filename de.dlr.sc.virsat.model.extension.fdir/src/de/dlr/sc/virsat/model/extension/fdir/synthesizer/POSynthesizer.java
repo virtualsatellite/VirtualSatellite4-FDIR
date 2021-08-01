@@ -59,7 +59,6 @@ public class POSynthesizer extends ASynthesizer {
 		try {
 			Files.createFile(path);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -67,18 +66,14 @@ public class POSynthesizer extends ASynthesizer {
 			PrintStream writer = new PrintStream(outFile)) {
 			writer.println(ma.toDot());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//System.out.println(ma.toDot());
-		System.out.println(ma.getStates().size());
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
 		//System.out.println(beliefMa.toDot());
 		path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\beliefMa.txt");
 		try {
 			Files.createFile(path);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -86,7 +81,6 @@ public class POSynthesizer extends ASynthesizer {
 			PrintStream writer = new PrintStream(outFile)) {
 			writer.println(beliefMa.toDot());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
@@ -94,7 +88,6 @@ public class POSynthesizer extends ASynthesizer {
 		// Create the optimal schedule on the belief ma
 		ScheduleQuery<BeliefState> scheduleQuery = new ScheduleQuery<>(beliefMa, initialBeliefState);
 		Map<BeliefState, List<MarkovTransition<BeliefState>>> schedule = scheduler.computeOptimalScheduler(scheduleQuery, subMonitor.split(1));
-		System.out.println(beliefMa.getStates().size());
 		return new Schedule2RAConverter<>(beliefMa, concept).convert(schedule, initialBeliefState, subMonitor.split(1));
 	}
 	

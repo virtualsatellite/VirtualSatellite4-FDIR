@@ -199,9 +199,9 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			PODFTState poPred = (PODFTState) state;
 			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
-				if (poPred.existsObserver(node, false, false)) {
+				/*if (poPred.existsObserver(node, false, false)) {
 					observedNodes.add(node);
-				}
+				}*/
 			}
 		}
 		
