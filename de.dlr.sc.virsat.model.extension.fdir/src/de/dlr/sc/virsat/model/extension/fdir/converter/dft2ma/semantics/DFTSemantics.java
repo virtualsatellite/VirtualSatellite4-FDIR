@@ -48,6 +48,7 @@ public class DFTSemantics {
 	
 	protected Map<FaultTreeNodeType, INodeSemantics> mapTypeToSemantics = new EnumMap<>(FaultTreeNodeType.class);
 	protected boolean allowsRepairEvents = true;
+	protected boolean permanence = true;
 	
 	/**
 	 * Creates a standard DFT semantics
@@ -83,6 +84,14 @@ public class DFTSemantics {
 	 */
 	public void setAllowsRepairEvents(boolean allowsRepairEvents) {
 		this.allowsRepairEvents = allowsRepairEvents;
+	}
+	
+	/**
+	 * Configures whether the semantics should check permanence
+	 * @param permanence whether the semantics considers permanence
+	 */
+	public void setPermanence(boolean permanence) {
+		this.permanence = permanence;
 	}
 	
 	/**
@@ -207,9 +216,9 @@ public class DFTSemantics {
 	 */
 	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
-		/*if (stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
+		if (permanence && stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
 			return false;
-		}*/
+		}
 		
 		GenerationResult generationResult = new GenerationResult(stateUpdateResult.getBaseSucc(), stateUpdateResult.getMapStateToRecoveryActions());
 		FaultTreeHolder ftHolder = stateUpdate.getState().getFTHolder();

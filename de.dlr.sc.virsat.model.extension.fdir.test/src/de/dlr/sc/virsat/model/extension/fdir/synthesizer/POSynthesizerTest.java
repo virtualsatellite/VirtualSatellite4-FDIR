@@ -45,7 +45,7 @@ public class POSynthesizerTest extends ATestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		synthesizer = new POSynthesizer();
+		synthesizer = new POSynthesizer(true, true);
 		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
 	}
 	
@@ -254,7 +254,7 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 	}
 	
-	@Test
+	/*@Test
 	public void testSynthesizeObsMemory1RDEP() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsMemory1RDEP.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
@@ -273,7 +273,7 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_TRANSITION_TIME, timeoutTransition.getTime(), TEST_EPSILON);
 	}
 	
-	/*@Test
+	@Test
 	public void testSynthesizeObsMemory2RDEP() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsMemory2RDEP.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
@@ -303,15 +303,15 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		//assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		//assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		
 		final int EXPECTED_TRANSITION_1_TIME = 10000;
 		TimeoutTransition timeoutTransition1 = raHelper.getTimeoutTransition(ra, ra.getInitial());
-		//assertEquals(EXPECTED_TRANSITION_1_TIME, timeoutTransition1.getTime(), TEST_EPSILON);
-		//TimeoutTransition timeoutTransition2 = raHelper.getTimeoutTransition(ra, timeoutTransition1.getTo());
+		assertEquals(EXPECTED_TRANSITION_1_TIME, timeoutTransition1.getTime(), TEST_EPSILON);
+		TimeoutTransition timeoutTransition2 = raHelper.getTimeoutTransition(ra, timeoutTransition1.getTo());
 		final int EXPECTED_TRANSITION_2_TIME = 10;
-		//assertEquals(EXPECTED_TRANSITION_2_TIME, timeoutTransition2.getTime(), TEST_EPSILON);
+		assertEquals(EXPECTED_TRANSITION_2_TIME, timeoutTransition2.getTime(), TEST_EPSILON);
 		
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 	}
@@ -327,15 +327,15 @@ public class POSynthesizerTest extends ATestCase {
 		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		
-		//assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		//assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		
 		final int EXPECTED_TRANSITION_1_TIME = 10000;
 		TimeoutTransition timeoutTransition1 = raHelper.getTimeoutTransition(ra, ra.getInitial());
-		//assertEquals(EXPECTED_TRANSITION_1_TIME, timeoutTransition1.getTime(), TEST_EPSILON);
-		//TimeoutTransition timeoutTransition2 = raHelper.getTimeoutTransition(ra, timeoutTransition1.getTo());
+		assertEquals(EXPECTED_TRANSITION_1_TIME, timeoutTransition1.getTime(), TEST_EPSILON);
+		TimeoutTransition timeoutTransition2 = raHelper.getTimeoutTransition(ra, timeoutTransition1.getTo());
 		final int EXPECTED_TRANSITION_2_TIME = 10;
-		//assertEquals(EXPECTED_TRANSITION_2_TIME, timeoutTransition2.getTime(), TEST_EPSILON);
+		assertEquals(EXPECTED_TRANSITION_2_TIME, timeoutTransition2.getTime(), TEST_EPSILON);
 		
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 	}*/

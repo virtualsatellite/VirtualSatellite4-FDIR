@@ -40,15 +40,13 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 
 	private FaultTreeEvaluator ftEvaluator;
 	private MA2BeliefMAConverter ma2BeliefMAConverter;
-	private OptimalTransitionsSelector<BeliefState> optimalTransitionsSelector;
 
 	@Before
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(true, DELTA, TEST_EPSILON);
-		optimalTransitionsSelector = new OptimalTransitionsSelector<BeliefState>();
-		ma2BeliefMAConverter = new MA2BeliefMAConverter(optimalTransitionsSelector);
+		ma2BeliefMAConverter = new MA2BeliefMAConverter(true, true);
 	}
 	
 	protected DFT2MAConverter createDFT2MAConverter() {
@@ -66,7 +64,6 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) dft2maConverter.getMaBuilder().getInitialState(), null);
-		System.out.println(beliefMa.toDot());
 		
 		final double EXPECTED_MTTD = 0.75;
 		final double EXPECTED_STEADY_STATE_DETECTABILITY = 1;
@@ -92,7 +89,6 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) dft2maConverter.getMaBuilder().getInitialState(), null);
-		System.out.println(beliefMa.toDot());
 
 		final int EXPECTED_COUNT_STATES = 7;
 		final int EXPECTED_COUNT_TRANSITIONS = 6;
@@ -112,7 +108,6 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) dft2maConverter.getMaBuilder().getInitialState(), null);
-		System.out.println(beliefMa.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 13;
 		final int EXPECTED_COUNT_TRANSITIONS = 15;
@@ -137,7 +132,6 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) dft2maConverter.getMaBuilder().getInitialState(), null);
-		System.out.println(beliefMa.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 20;
 		final int EXPECTED_COUNT_TRANSITIONS = 26;
@@ -158,7 +152,6 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) dft2maConverter.getMaBuilder().getInitialState(), null);
-		System.out.println(beliefMa.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 16;
 		final int EXPECTED_COUNT_TRANSITIONS = 15;
@@ -182,7 +175,6 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) dft2maConverter.getMaBuilder().getInitialState(), null);
-		System.out.println(beliefMa.toDot());
 				
 		
 		assertEquals(EXPECTED_COUNT_STATES, beliefMa.getStates().size());

@@ -52,10 +52,21 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	BeliefStateSpaceGenerator() {
 	}
 	
-	BeliefStateSpaceGenerator(OptimalTransitionsSelector<BeliefState> anOptimalTransitionsSelector) {
-		optimalTransitionsSelector = anOptimalTransitionsSelector;
-		goodStates = new HashSet<>();
-		badStates = new HashMap<>();
+	
+	/**
+	 * Generates a BeliefStateSpaceGenerator
+	 * @param filterTransitions whether to filter non-deterministic transitions
+	 * @param simplifyFailStates whether to simplify fail states
+	 */
+	BeliefStateSpaceGenerator(boolean filterTransitions, boolean simplifyFailStates) {
+		if (filterTransitions) {
+			optimalTransitionsSelector = new OptimalTransitionsSelector<BeliefState>();
+			goodStates = new HashSet<>();
+			badStates = new HashMap<>();
+		}
+		if (simplifyFailStates) {
+			failStateSimplification = true;
+		}
 	}
 	
 	/**
@@ -86,7 +97,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	public List<BeliefState> generateSuccs(BeliefState beliefState, SubMonitor monitor) {
 		List<BeliefState> generatedSuccs = new ArrayList<>();
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
-
+		
 		for (Entry<PODFTState, List<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
 			// Eclipse trick for doing progress updates with unknown ending time
 			final int PROGRESS_COUNT = 100;
@@ -94,12 +105,14 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			
 			BeliefState beliefSucc = new BeliefState(entry.getKey());
 			
+			// Make sure type is up to date
 			beliefSucc.setType(beliefSucc.representant.getType());
 			
 			BeliefState equivalentBeliefSucc = null;
 			List<MarkovTransition<DFTState>> succTransitions = entry.getValue();
 			
 			if (beliefState.isProbabilisic()) {
+				// Markovian ObservationEvents do not take place when the state is Probabilistic
 				Object event = succTransitions.iterator().next().getEvent();
 				if (event instanceof ObservationEvent && !(event instanceof ImmediateObservationEvent)) {
 					continue;
@@ -111,11 +124,14 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				
 				if (beliefState.isProbabilisic()) {
 					if (observationEvent.getKey().isEmpty()) {
+						// Internal Transition
 						double totalProb = 0;
 						totalProb = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
+						// Make sure representant is up to date
 						beliefSucc.representant = beliefSucc.mapStateToBelief.keySet().iterator().next();
 						for (PODFTState candidate : beliefSucc.mapStateToBelief.keySet()) {
 							if (candidate.isProbabilisic()) {
+								// Probabilistic States can contain non-Probabilistic Beliefs and Probability take precedence
 								beliefSucc.representant = candidate;
 								break;
 							}
@@ -183,6 +199,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				optimalSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
 				goodStates.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
 				if (badStates.containsKey(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
+					// It is possible that a previously bad state is the best transition for this non-deterministic state
 					generatedSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
 					targetMa.addState(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()), beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()).getIndex());
 					for (MarkovTransition<BeliefState> transition : badStates.get(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
@@ -209,6 +226,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			for (BeliefState generatedSucc : generatedSuccs) {
 				boolean isSuboptimal = true;
 				for  (PODFTState belief : generatedSucc.mapStateToBelief.keySet()) {
+					// All Beliefs must be permanently failed in order for a BeliefState to be considered permanently failed
 					if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
 						isSuboptimal = false;
 						break;
@@ -217,6 +235,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				if (isSuboptimal) {
 					suboptimalSuccs.add(generatedSucc);
 					generatedSucc.setType(MarkovStateType.MARKOVIAN);
+					// It can be that the generatedSucc is non-deterministic, which normally do not have fail labels
 					generatedSucc.getMapFailLabelToProb().put(FailLabel.FAILED, 1.0);
 				}
 			}

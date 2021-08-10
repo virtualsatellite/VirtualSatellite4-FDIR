@@ -85,12 +85,13 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 					return false;
 				}
 			} else {
-				if (!state.hasFaultTreeNodeFailed(node) /*|| poState.isNodeFailObserved(node)*/) {
+				if (!state.hasFaultTreeNodeFailed(node)) {
 					return false;
 				}
 			}
 			
 			if (node instanceof MONITOR) {
+				// An observer can always observe itself
 				return true;
 			}
 			

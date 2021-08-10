@@ -67,6 +67,11 @@ public class BeliefStateEquivalence {
 		return state;
 	}
 	
+	
+	/**
+	 * Gets the number of states that the BeliefStateEquivalence has encountered.
+	 * @return the number of unique states in mapObservationsToBeliefStates
+	 */
 	public int getMapValuesSetSize() {
 		HashSet<BeliefState> set = new HashSet<>();
 		for (List<BeliefState> value : mapObservationsToBeliefStates.values()) {

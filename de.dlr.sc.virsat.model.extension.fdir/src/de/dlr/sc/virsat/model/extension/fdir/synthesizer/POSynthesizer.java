@@ -9,13 +9,6 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.synthesizer;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +25,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemantics;
 import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.BeliefState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.MA2BeliefMAConverter;
-import de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa.OptimalTransitionsSelector;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 
 /**
@@ -45,10 +37,15 @@ public class POSynthesizer extends ASynthesizer {
 
 	private static final int TICKS = 3;
 	
-	protected OptimalTransitionsSelector<BeliefState> optimalTransitionsSelector = new OptimalTransitionsSelector<BeliefState>();
-	
-	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter(optimalTransitionsSelector);
+	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
 	protected IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
+	
+	public POSynthesizer() {
+	}
+	
+	public POSynthesizer(boolean filterTransitions, boolean simplifyFailStates) {
+		ma2BeliefMAConverter = new MA2BeliefMAConverter(filterTransitions, simplifyFailStates);
+	}
 	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
@@ -56,7 +53,6 @@ public class POSynthesizer extends ASynthesizer {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
-		
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma
@@ -69,6 +65,7 @@ public class POSynthesizer extends ASynthesizer {
 	protected DFT2MAConverter createDFT2MAConverter() {
 		DFT2MAConverter dft2MaConverter = new DFT2MAConverter();
 		dft2MaConverter.getStateSpaceGenerator().setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
+		dft2MaConverter.getStateSpaceGenerator().setPermanence(false);
 		return dft2MaConverter;
 	}
 }

@@ -95,7 +95,7 @@ public class PODFTState extends DFTState {
 		List<FaultTreeNode> observers = ftHolder.getNodes(node, EdgeType.MONITOR);
 		for (FaultTreeNode observer : observers) {
 			if ((allowFailed || !hasFaultTreeNodeFailed(observer)) 
-					&& (allowDelay /*|| ((MONITOR) observer).getObservationRate() == 0*/)) {
+					&& (allowDelay)) {
 				return true;
 			}
 		}

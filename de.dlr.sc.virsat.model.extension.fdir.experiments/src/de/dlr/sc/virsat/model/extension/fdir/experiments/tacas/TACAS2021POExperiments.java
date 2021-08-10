@@ -21,8 +21,8 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 
 /**
- * A test case for benchmarking experiments
- * @author jord_ad
+ * A test case for benchmarking experiments with partial observability
+ * @author khan_ax
  *
  */
 public class TACAS2021POExperiments extends ASynthesizerExperiment {

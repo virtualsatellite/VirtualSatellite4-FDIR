@@ -112,6 +112,11 @@ public class MarkovAutomaton<S extends MarkovState> {
 		mapStateToPredTransitions.put(state, new ArrayList<>());
 	}
 	
+	/**
+	 * Adds a state to the state space with a specified index since reducing the state space can lead to duplicate indices
+	 * @param state the state to be added
+	 * @param index the index that should be assigned to the state
+	 */
 	public void addState(S state, int index) {
 		state.index = index;
 		states.add(state);

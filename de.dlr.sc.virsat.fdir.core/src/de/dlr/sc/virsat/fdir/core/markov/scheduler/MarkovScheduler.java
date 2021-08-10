@@ -144,13 +144,15 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
-			} else if (state.getMapFailLabelToProb().containsKey(FailLabel.FAILED) && state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1) { //&& state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1/*state.getFailLabels().contains(FailLabel.FAILED)*/) {
+			} else if (state.getMapFailLabelToProb().containsKey(FailLabel.FAILED) && state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1) {
 				// To differentiate between fail states we also compute their MTTF
+				// A fail state is one that contains the FAILED label with a probability of 100%
 				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
 				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
-					if (toState.getFailLabels().contains(FailLabel.FAILED) && toState.getMapFailLabelToProb().get(FailLabel.FAILED) != 1) {
+					if (!toState.getFailLabels().contains(FailLabel.FAILED) || toState.getMapFailLabelToProb().get(FailLabel.FAILED) != 1) {
+						// The toState should not be a fail state
 						double toValue = values[toState.getValuesIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}
@@ -183,9 +185,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double prob = transition.getRate();
 				MarkovState toState = transition.getTo();
 				double failProb = toState.getMapFailLabelToProb().getOrDefault(FailLabel.FAILED, 0d);
-				if (prob > 1) {
-					prob = 1;
-				}
+				// Due to rounding, the probability may be greater than 1. This leads to no transition being selected in the scheduler.
+				prob = Math.min(prob, 1);
 				transitionGroupProbFail += prob * failProb;
 				
 				double toValue = results.getOrDefault(toState, Double.NEGATIVE_INFINITY);

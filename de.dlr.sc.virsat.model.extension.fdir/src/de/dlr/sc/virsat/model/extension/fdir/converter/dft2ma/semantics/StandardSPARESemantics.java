@@ -48,7 +48,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 			if (spareGateOther != null && spareGateOther.equals(spareGate)) {
 				if (!currentClaimWorks && !state.hasFaultTreeNodeFailed(spare)) {
 					currentClaimWorks = true;
-
+					
 					if (!isSingleClaim()) {
 						performFree(spare, state, generationResult);
 					}

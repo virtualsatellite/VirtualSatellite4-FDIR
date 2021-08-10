@@ -25,9 +25,9 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
- * This class produces the experimental data for the AIAA Aerospace conference
- * in 2017.
- * @author muel_s8
+ * This class uses the experimental data for the AIAA Aerospace conference
+ * in 2017 with partial observability.
+ * @author khan_ax
  *
  */
 

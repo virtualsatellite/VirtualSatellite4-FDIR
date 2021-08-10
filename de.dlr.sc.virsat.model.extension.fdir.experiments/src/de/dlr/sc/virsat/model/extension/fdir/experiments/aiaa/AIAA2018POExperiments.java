@@ -28,9 +28,9 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
- * This class produces the experimental data for the Journal of Aerospace Information Systems (JAI AIAA)
- * in 2018.
- * @author muel_s8
+ * This class uses the experimental data for the Journal of Aerospace Information Systems (JAI AIAA)
+ * in 2018 with partial observability.
+ * @author khan_ax
  *
  */
 

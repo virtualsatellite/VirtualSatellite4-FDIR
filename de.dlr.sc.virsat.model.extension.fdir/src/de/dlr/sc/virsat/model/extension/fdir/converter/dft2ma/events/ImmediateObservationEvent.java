@@ -20,7 +20,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
 
 /**
- * This class represents an immediate single observation event (e.g. observation of failure or repair)
+ * This class represents an immediate observation event (e.g. observation of failure or repair)
  * @author khan_ax
  *
  */

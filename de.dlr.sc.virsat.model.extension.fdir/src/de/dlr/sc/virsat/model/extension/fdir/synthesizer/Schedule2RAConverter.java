@@ -135,6 +135,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 			}
 			
 			if (markovianTransition.getTo().isNondet()) {
+				// Markovian and Probabilistic states do not have best transition groups
 				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
 				MarkovTransition<S> representativeTransition = bestTransitionGroup.iterator().next();
 				
@@ -255,6 +256,7 @@ public class Schedule2RAConverter<S extends MarkovState> {
 		State fromRaState = getOrCreateRecoveryAutomatonState(ra, fromState);
 		State toRaState = getOrCreateRecoveryAutomatonState(ra, toState);
 		
+		// Probabilistic states do not generate time outs
 		Transition transition = isInternalTransition(markovianTransition) && !fromState.isProbabilisic()
 				? createTimeoutTransition(fromRaState, toRaState, 1 / markovianTransition.getRate())
 				: createFaultEventTransition(fromRaState, toRaState, event);

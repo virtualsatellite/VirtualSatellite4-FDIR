@@ -28,9 +28,9 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 
 /**
- * This class produces the experimental data for the Science of Computer Programming (SCP) Journal paper
- * in 2019.
- * @author muel_s8
+ * This class uses the experimental data for the Science of Computer Programming (SCP) Journal paper
+ * in 2019 with partial observability.
+ * @author khan_ax
  *
  */
 public class SCP2019POExperiments extends ASynthesizerExperiment {

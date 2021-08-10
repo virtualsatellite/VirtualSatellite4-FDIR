@@ -55,6 +55,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private FailableBasicEventsProvider failableBasicEventsProvider;
 	
 	private boolean allowsDontCareFailing = true;
+	private boolean permanence = true;
 
 	private Collection<IDFTEvent> events;
 	private FaultTreeHolder ftHolder;
@@ -111,6 +112,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<DFTState> newSuccs = new ArrayList<>();
 		List<IDFTEvent> occurableEvents = getOccurableEvents(state);
 		if (state.isProbabilisic() && occurableEvents.size() > 1) {
+			// ImmediateObservationEvents need to be grouped but ObservationEvents can either be repair or not. Repairs take priority.
 			IRepairableEvent representantEvent = (IRepairableEvent) occurableEvents.iterator().next();
 			boolean isRepair = representantEvent.isRepair();
 			List<FaultTreeNode> eventList = new ArrayList<>();
@@ -297,20 +299,23 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			succ.setType(hasImmediateEvents(succ) ? MarkovStateType.PROBABILISTIC : MarkovStateType.MARKOVIAN);
 			
-			if (/*(markovSucc != null || recoveryStrategy != null) && */hasImmediateEvents(succ)) {
-				boolean lockFaults = false;
+			if (hasImmediateEvents(succ)) {
+				// Sets the state to the correct type if there are Immediate Observations since they require an order
+				boolean lockNonObservations = false;
 				boolean lockTLE = false;
 				for (IDFTEvent event : events) {
 					if (event.canOccur(succ)) {
 						if (event instanceof ImmediateObservationEvent) {
-							if (!lockTLE && ((ImmediateObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
+							if (!lockTLE && ((ImmediateObservationEvent) event).getNodes().iterator().next().equals(ftHolder.getRoot())) {
+								// If observing the Top Level Event has not been locked and the Top Level Event is observed
 								succ.setType(MarkovStateType.PROBABILISTIC);
-								lockFaults = true;
+								lockNonObservations = true;
 							}
 							if (((ImmediateObservationEvent) event).isRepair()) {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
 							}
+							// If the observations provide information that was previously not known
 							if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
@@ -319,24 +324,28 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 								succ.setType(MarkovStateType.PROBABILISTIC);
 								break;
 							}
-						} else if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().getName().equals("tle")) {
+						} else if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().equals(ftHolder.getRoot())) {
+							// If the Top Level Event is observed
 							succ.setType(MarkovStateType.MARKOVIAN);
 						} else if (event instanceof FaultEvent && ((FaultEvent) event).isRepair()) {
+							// Checks whether the repair only affects an observer
 							Set<FaultTreeNode> parents = ftHolder.getMapNodeToAllParents().get(event.getNodes().iterator().next());
-							boolean monitorExists = false;
+							boolean nonMonitorExists = false;
 							for (FaultTreeNode node : parents) {
-								if (node instanceof MONITOR) {
-									monitorExists = true;
+								if (!node.getName().equals(event.getNodes().iterator().next().getName()) && !(node instanceof MONITOR)) {
+									// if there is a node other than the event's node that is not a monitor
+									nonMonitorExists = true;
 									break;
 								}
 							}
-							if (!monitorExists) {
+							if (nonMonitorExists) {
+								// Such a repair event takes priority over the Top Level Event
 								succ.setType(MarkovStateType.MARKOVIAN);
 								lockTLE = true;
 							} else {
 								continue;
 							}					
-						} else if (!lockFaults) {
+						} else if (!lockNonObservations) {
 							succ.setType(MarkovStateType.MARKOVIAN);
 						}
 					}
@@ -380,11 +389,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @return the list of all events that can occur
 	 */
 	private List<IDFTEvent> getOccurableEvents(DFTState state) {
-		/*if (state.getFailLabels().contains(FailLabel.FAILED) 
+		if (permanence && state.getFailLabels().contains(FailLabel.FAILED) 
 				&& (!(state instanceof PODFTState) || state.getFailLabels().contains(FailLabel.OBSERVED))
 				&& state.isFaultTreeNodePermanent(ftHolder.getRoot())) {
+			// We do not want permanence with partial observability
 			return Collections.emptyList();
-		}*/
+		}
 		
 		List<IDFTEvent> occurableEvents = new ArrayList<>();		
 		if (occurableEvents.isEmpty()) {
@@ -461,6 +471,14 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 */
 	public void setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
 		this.recoveryStrategy = recoveryStrategy;
+	}
+	
+	/**
+	 * Sets the node semantics for the converter
+	 * @param dftSemantics the node semantics of the dft nodes
+	 */
+	public void setPermanence(boolean permanence) {
+		this.permanence = permanence;
 	}
 	
 	/**

@@ -25,6 +25,7 @@ public class MarkovState {
 	protected int index;
 	private MarkovStateType type = MarkovStateType.MARKOVIAN;
 	private Map<FailLabel, Double> mapFailLabelToProb = new HashMap<>();
+	// Sentinel value that ensures the correct index is returned when accessing the mttf values array
 	protected int valuesIndex = -1;
 	
 	/**
@@ -35,10 +36,17 @@ public class MarkovState {
 		return index;
 	}
 	
+	/**
+	 * Sets the index of the mttf values array that corresponds to this state due to the mismatch between state index and array index when the state space is reduced
+	 * @param valuesIndex the index of the mttf values array that corresponds to this state
+	 */
 	public void setValuesIndex(int valuesIndex) {
 		this.valuesIndex = valuesIndex;
 	}
-	
+	/**
+	 * Gets the index of the mttf values array that corresponds to this state due to the mismatch between state index and array index when the state space is reduced
+	 * @return the index of the mttf values array that corresponds to this state
+	 */
 	public int getValuesIndex() {
 		if (valuesIndex == -1) {
 			return getIndex();
