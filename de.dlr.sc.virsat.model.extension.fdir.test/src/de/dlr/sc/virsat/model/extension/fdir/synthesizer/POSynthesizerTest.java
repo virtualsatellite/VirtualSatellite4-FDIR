@@ -424,4 +424,20 @@ public class POSynthesizerTest extends ATestCase {
 		// SSA computation isnt stable yet, at least guarantee that its non-zero
 		assertNotEquals(0, result.getSteadyStateAvailability(), TEST_EPSILON);
 	}
+	
+	@Test
+	public void testSynthesizeObsDelayedOr2Csp2ObsBE() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsDelayedOr2Csp2ObsBE.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		System.out.println(ra.toDot());
+		
+		final int EXPECTED_COUNT_STATES = 4;
+		final int EXPECTED_COUNT_TRANSITIONS = 8;
+		final double EXPECTED_MTTF = 0.7499999999999999;
+		
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+	}
 }
