@@ -46,7 +46,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	private OptimalTransitionsSelector<BeliefState> optimalTransitionsSelector;
 	private HashSet<BeliefState> goodStates;
-	private HashMap<BeliefState, List<MarkovTransition<BeliefState>>> badStates;
+	private HashSet<BeliefState> badStates;
 	private boolean failStateSimplification = false;
 	
 	BeliefStateSpaceGenerator() {
@@ -62,7 +62,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		if (filterTransitions) {
 			optimalTransitionsSelector = new OptimalTransitionsSelector<BeliefState>();
 			goodStates = new HashSet<>();
-			badStates = new HashMap<>();
+			badStates = new HashSet<>();
 		}
 		if (simplifyFailStates) {
 			failStateSimplification = true;
@@ -178,12 +178,6 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 				beliefSucc.setType(beliefSucc.representant.getType());
 				equivalentBeliefSucc = addBeliefState(beliefSucc);
-				if (optimalTransitionsSelector !=  null && badStates.containsKey(equivalentBeliefSucc)) {
-					targetMa.addState(equivalentBeliefSucc, equivalentBeliefSucc.getIndex());
-					for (MarkovTransition<BeliefState> transition : badStates.get(equivalentBeliefSucc)) {
-						targetMa.addNondeterministicTransition(transition.getEvent(), transition.getFrom(), transition.getTo(), transition.getRate());
-					}
-				}
 				addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
 			}
 			
@@ -198,24 +192,15 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			for (MarkovTransition<BeliefState> optimalTransition : optimalTransitions) {
 				optimalSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
 				goodStates.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
-				if (badStates.containsKey(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
+				if (badStates.contains(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
 					// It is possible that a previously bad state is the best transition for this non-deterministic state
 					generatedSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
-					targetMa.addState(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()), beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()).getIndex());
-					for (MarkovTransition<BeliefState> transition : badStates.get(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
-						targetMa.addNondeterministicTransition(transition.getEvent(), transition.getFrom(), transition.getTo(), transition.getRate());
-					}
 					badStates.remove(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
 				}
 			}
 			for (BeliefState generatedSucc : generatedSuccs) {
 				if (!goodStates.contains(generatedSucc)) {
-					if (badStates.containsKey(generatedSucc)) {
-						badStates.get(generatedSucc).addAll(targetMa.getPredTransitions(generatedSucc));
-					} else {
-						badStates.put(generatedSucc, targetMa.getPredTransitions(generatedSucc));
-					}
-					targetMa.removeState(generatedSucc);
+					badStates.add(generatedSucc);
 				}
 			}
 			generatedSuccs = generatedSuccs.stream().filter(optimalSuccs::contains).collect(Collectors.toList());
@@ -467,14 +452,19 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	 * @param state the bad state to be made good
 	 */
 	private void makeStateGood(BeliefState state, List<BeliefState> generatedSuccs) {
-		if (optimalTransitionsSelector != null && badStates.containsKey(state)) {
+		if (optimalTransitionsSelector != null && badStates.contains(state)) {
 			generatedSuccs.add(state);
-			targetMa.addState(state, state.getIndex());
-			for (MarkovTransition<BeliefState> transition : badStates.get(state)) {
-				targetMa.addNondeterministicTransition(transition.getEvent(), transition.getFrom(), transition.getTo(), transition.getRate());
-			}
 			badStates.remove(state);
 			goodStates.add(state);
+		}
+	}
+	
+	@Override
+	public void removeBadStates() {
+		if (optimalTransitionsSelector != null) {
+			for (BeliefState badState : badStates) {
+				targetMa.removeState(badState);
+			}
 		}
 	}
 }
