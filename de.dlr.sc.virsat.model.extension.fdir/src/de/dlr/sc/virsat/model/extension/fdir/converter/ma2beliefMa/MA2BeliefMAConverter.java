@@ -31,7 +31,6 @@ public class MA2BeliefMAConverter  extends A2MAConverter<BeliefState, BeliefStat
 	
 	public MA2BeliefMAConverter(OptimalTransitionsSelector<BeliefState> anOptimalTransitionSelector) {
 		optimalTransitionsSelector = anOptimalTransitionSelector;
-		System.out.println(optimalTransitionsSelector == null);
 		stateSpaceGenerator = createStateSpaceGenerator();
 	}
 	

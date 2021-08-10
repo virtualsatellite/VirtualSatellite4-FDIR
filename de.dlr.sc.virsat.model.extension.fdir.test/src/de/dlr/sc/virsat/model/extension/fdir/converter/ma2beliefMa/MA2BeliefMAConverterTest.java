@@ -184,10 +184,9 @@ public class MA2BeliefMAConverterTest extends ATestCase {
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) dft2maConverter.getMaBuilder().getInitialState(), null);
 		System.out.println(beliefMa.toDot());
 				
-		/*
-		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
-		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
-		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);*/
+		
+		assertEquals(EXPECTED_COUNT_STATES, beliefMa.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, beliefMa.getTransitions().size());
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 	}
 }

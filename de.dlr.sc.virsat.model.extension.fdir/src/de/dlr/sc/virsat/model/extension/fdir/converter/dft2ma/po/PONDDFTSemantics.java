@@ -196,13 +196,6 @@ public class PONDDFTSemantics extends DFTSemantics {
 			if (!(state instanceof PODFTState)) {
 				throw new IllegalArgumentException("Expected state of type PODFTState but got state " + state);
 			}
-			
-			PODFTState poPred = (PODFTState) state;
-			for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
-				/*if (poPred.existsObserver(node, false, false)) {
-					observedNodes.add(node);
-				}*/
-			}
 		}
 		
 		return observedNodes;

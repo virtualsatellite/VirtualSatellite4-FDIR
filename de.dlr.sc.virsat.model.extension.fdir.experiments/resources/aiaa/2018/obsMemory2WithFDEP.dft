@@ -1,0 +1,13 @@
+toplevel "System";
+"System" or "SPARE1" "SPARE2";
+"SPARE1" csp "Memory1" "Memory3" "Memory4";
+"SPARE2" csp "Memory2" "Memory3" "Memory4";
+"Memory1" lambda=1;
+"Memory2" lambda=1;
+"Memory3" lambda=5;
+"Memory4" lambda=0.1;
+"Power1" lambda=0.1;
+"Power2" lambda=0.1;
+"FDEP1" fdep "Power1" "Memory1" "Memory2";
+"FDEP2" fdep "Power2" "Memory3" "Memory4";
+"O" observer "System" obsRate=1;

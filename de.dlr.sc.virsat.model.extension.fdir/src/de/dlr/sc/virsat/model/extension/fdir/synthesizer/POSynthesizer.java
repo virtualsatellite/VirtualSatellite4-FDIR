@@ -55,34 +55,8 @@ public class POSynthesizer extends ASynthesizer {
 		subMonitor = SubMonitor.convert(subMonitor, TICKS);
 		
 		// Build the actual belief ma
-		Path path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\ma.txt");
-		try {
-			Files.createFile(path);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		
-		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE); 
-			PrintStream writer = new PrintStream(outFile)) {
-			writer.println(ma.toDot());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
-		//System.out.println(beliefMa.toDot());
-		path = Paths.get("C:\\Users\\khan_ax\\Desktop\\Automata\\beliefMa.txt");
-		try {
-			Files.createFile(path);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		
-		try (OutputStream outFile = Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE); 
-			PrintStream writer = new PrintStream(outFile)) {
-			writer.println(beliefMa.toDot());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma

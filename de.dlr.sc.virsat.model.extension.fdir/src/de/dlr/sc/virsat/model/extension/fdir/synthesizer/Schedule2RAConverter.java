@@ -133,22 +133,12 @@ public class Schedule2RAConverter<S extends MarkovState> {
 					continue;
 				}
 			}
-			/*
-			if (event instanceof ImmediateObservationEvent) {
-				mapMarkovStateToRaState.put(toState, getOrCreateRecoveryAutomatonState(ra, state));
-				nextStates.add(toState);
-				continue;
-			}*/
 			
 			if (markovianTransition.getTo().isNondet()) {
-				//System.out.print(state);
 				List<MarkovTransition<S>> bestTransitionGroup = schedule.getOrDefault(toState, Collections.emptyList());
-				//System.out.print(bestTransitionGroup);
-				//System.out.println(markovianTransition);
 				MarkovTransition<S> representativeTransition = bestTransitionGroup.iterator().next();
 				
 				Transition raTransition = createTransition(markovianTransition, representativeTransition);
-				//System.out.println(raTransition.getFrom() + " " +raTransition.getTo());
 				createdTransitions.add(raTransition);
 				
 				for (MarkovTransition<S> bestTransition : bestTransitionGroup) {
