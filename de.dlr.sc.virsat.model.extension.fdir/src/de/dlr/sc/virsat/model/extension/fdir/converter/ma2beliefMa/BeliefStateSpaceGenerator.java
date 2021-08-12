@@ -35,7 +35,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
 public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState> {
 	
-	private static final double EPSILON = 0.2;
+	private double EPSILON = 0.2;
 	
 	private static final double EULERECIPROCAL = Math.exp(-1);
 	private static final double COEULERECIPROCAL = 1 - EULERECIPROCAL;
@@ -67,6 +67,11 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		if (simplifyFailStates) {
 			failStateSimplification = true;
 		}
+	}
+	
+	BeliefStateSpaceGenerator(boolean filterTransitions, boolean simplifyFailStates, double epsilon) {
+		this(filterTransitions, simplifyFailStates);
+		EPSILON = epsilon;
 	}
 	
 	/**
@@ -128,14 +133,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 						double totalProb = 0;
 						totalProb = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
 						// Make sure representant is up to date
-						beliefSucc.representant = beliefSucc.mapStateToBelief.keySet().iterator().next();
-						for (PODFTState candidate : beliefSucc.mapStateToBelief.keySet()) {
-							if (candidate.isProbabilisic()) {
-								// Probabilistic States can contain non-Probabilistic Beliefs and Probability take precedence
-								beliefSucc.representant = candidate;
-								break;
-							}
-						}
+						beliefSucc.representant = getNewRepresentant(beliefSucc);
 						beliefSucc.setType(beliefSucc.representant.getType());
 						equivalentBeliefSucc = addBeliefState(beliefSucc);
 						if (beliefState != equivalentBeliefSucc) {
@@ -153,13 +151,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				} else {
 					double exitRate = beliefState.getTotalRate(entry.getValue());
 					exitRate = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
-					beliefSucc.representant = beliefSucc.mapStateToBelief.keySet().iterator().next();
-					for (PODFTState candidate : beliefSucc.mapStateToBelief.keySet()) {
-						if (candidate.isProbabilisic()) {
-							beliefSucc.representant = candidate;
-							break;
-						}
-					}
+					beliefSucc.representant = getNewRepresentant(beliefSucc);
 					beliefSucc.setType(beliefSucc.representant.getType());
 					equivalentBeliefSucc = addBeliefState(beliefSucc);
 					if (beliefState != equivalentBeliefSucc) {
@@ -169,13 +161,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				}
 			} else {
 				fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions);
-				beliefSucc.representant = beliefSucc.mapStateToBelief.keySet().iterator().next();
-				for (PODFTState candidate : beliefSucc.mapStateToBelief.keySet()) {
-					if (candidate.isProbabilisic()) {
-						beliefSucc.representant = candidate;
-						break;
-					}
-				}
+				beliefSucc.representant = getNewRepresentant(beliefSucc);
 				beliefSucc.setType(beliefSucc.representant.getType());
 				equivalentBeliefSucc = addBeliefState(beliefSucc);
 				addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
@@ -190,12 +176,13 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			List<BeliefState> optimalSuccs = new ArrayList<>();
 			List<MarkovTransition<BeliefState>> optimalTransitions = optimalTransitionsSelector.selectOptimalTransitions(targetMa, beliefState);
 			for (MarkovTransition<BeliefState> optimalTransition : optimalTransitions) {
-				optimalSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
-				goodStates.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
-				if (badStates.contains(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()))) {
+				BeliefState equivalentToState = beliefStateEquivalence.getEquivalentState(optimalTransition.getTo());
+				optimalSuccs.add(equivalentToState);
+				goodStates.add(equivalentToState);
+				if (badStates.contains(equivalentToState)) {
 					// It is possible that a previously bad state is the best transition for this non-deterministic state
-					generatedSuccs.add(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
-					badStates.remove(beliefStateEquivalence.getEquivalentState(optimalTransition.getTo()));
+					generatedSuccs.add(equivalentToState);
+					badStates.remove(equivalentToState);
 				}
 			}
 			for (BeliefState generatedSucc : generatedSuccs) {
@@ -466,5 +453,14 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				targetMa.removeState(badState);
 			}
 		}
+	}
+	private PODFTState getNewRepresentant(BeliefState beliefState) {
+		for (PODFTState candidate : beliefState.mapStateToBelief.keySet()) {
+			if (candidate.isProbabilisic()) {
+				// Probabilistic States can contain non-Probabilistic Beliefs and Probability take precedence
+				return candidate;
+			}
+		}
+		return beliefState.mapStateToBelief.keySet().iterator().next();
 	}
 }
