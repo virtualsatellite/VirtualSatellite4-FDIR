@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
 public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState> {
 	
-	private double EPSILON = 0.2;
+	private double epsilon = 0.2;
 	
 	private static final double EULERECIPROCAL = Math.exp(-1);
 	private static final double COEULERECIPROCAL = 1 - EULERECIPROCAL;
@@ -71,7 +70,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	
 	BeliefStateSpaceGenerator(boolean filterTransitions, boolean simplifyFailStates, double epsilon) {
 		this(filterTransitions, simplifyFailStates);
-		EPSILON = epsilon;
+		this.epsilon = epsilon;
 	}
 	
 	/**
@@ -87,7 +86,7 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 	@Override
 	public void init(MarkovAutomaton<BeliefState> targetMa) {
 		super.init(targetMa);
-		beliefStateEquivalence = new BeliefStateEquivalence(EPSILON);
+		beliefStateEquivalence = new BeliefStateEquivalence(epsilon);
 	}
 	
 	@Override
@@ -454,6 +453,12 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 			}
 		}
 	}
+	
+	/**
+	 * Returns a correct representant
+	 * @author khan_ax
+	 * @param beliefState the state for which a suitable representant is returned
+	 */
 	private PODFTState getNewRepresentant(BeliefState beliefState) {
 		for (PODFTState candidate : beliefState.mapStateToBelief.keySet()) {
 			if (candidate.isProbabilisic()) {

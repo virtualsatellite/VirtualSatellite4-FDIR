@@ -301,53 +301,40 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			if (hasImmediateEvents(succ)) {
 				// Sets the state to the correct type if there are Immediate Observations since they require an order
-				boolean lockNonObservations = false;
-				boolean lockTLE = false;
+				boolean lockNonRepairs = false;
+				boolean lockImmediateTLE = false;
+				boolean lockOldMarkovianObservations = false;
+				boolean lockOldImmediateObservations = false;
 				for (IDFTEvent event : events) {
-					if (event.canOccur(succ)) {
-						if (event instanceof ImmediateObservationEvent) {
-							if (!lockTLE && ((ImmediateObservationEvent) event).getNodes().iterator().next().equals(ftHolder.getRoot())) {
-								// If observing the Top Level Event has not been locked and the Top Level Event is observed
-								succ.setType(MarkovStateType.PROBABILISTIC);
-								lockNonObservations = true;
-							}
-							if (((ImmediateObservationEvent) event).isRepair()) {
-								succ.setType(MarkovStateType.PROBABILISTIC);
-								break;
-							}
-							// If the observations provide information that was previously not known
-							if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
-								succ.setType(MarkovStateType.PROBABILISTIC);
-								break;
-							}
-							if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(((ImmediateObservationEvent) event).getNodes())) {
-								succ.setType(MarkovStateType.PROBABILISTIC);
-								break;
-							}
-						} else if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().equals(ftHolder.getRoot())) {
-							// If the Top Level Event is observed
-							succ.setType(MarkovStateType.MARKOVIAN);
-						} else if (event instanceof FaultEvent && ((FaultEvent) event).isRepair()) {
-							// Checks whether the repair only affects an observer
-							Set<FaultTreeNode> parents = ftHolder.getMapNodeToAllParents().get(event.getNodes().iterator().next());
-							boolean nonMonitorExists = false;
-							for (FaultTreeNode node : parents) {
-								if (!node.getName().equals(event.getNodes().iterator().next().getName()) && !(node instanceof MONITOR)) {
-									// if there is a node other than the event's node that is not a monitor
-									nonMonitorExists = true;
-									break;
-								}
-							}
-							if (nonMonitorExists) {
-								// Such a repair event takes priority over the Top Level Event
-								succ.setType(MarkovStateType.MARKOVIAN);
-								lockTLE = true;
-							} else {
-								continue;
-							}					
-						} else if (!lockNonObservations) {
-							succ.setType(MarkovStateType.MARKOVIAN);
+					if (!event.canOccur(succ)) {
+						continue;
+					}
+					if (event instanceof ImmediateObservationEvent) {
+						ImmediateObservationEvent immediateObservationEvent = (ImmediateObservationEvent) event;
+						if (!lockImmediateTLE && immediateObservationEvent.getNodes().iterator().next().equals(ftHolder.getRoot())) {
+							// If observing the Top Level Event has not been locked and the Top Level Event is observed
+							succ.setType(MarkovStateType.PROBABILISTIC);
+							lockNonRepairs = true;
 						}
+						if (succIsProbabilistic(immediateObservationEvent, stateUpdate, markovSucc)) {
+							succ.setType(MarkovStateType.PROBABILISTIC);
+							break;
+						} else if (!lockOldImmediateObservations) {
+							succ.setType(MarkovStateType.PROBABILISTIC);
+							lockOldMarkovianObservations = true;
+						}
+					} else if (event instanceof FaultEvent && ((FaultEvent) event).isRepair()) {
+						// Checks whether the repair only affects an observer
+						if (nonMonitorParentExists(event)) {
+							// Such a repair event takes priority over the Top Level Event
+							succ.setType(MarkovStateType.MARKOVIAN);
+							lockImmediateTLE = true;
+						}
+					} else if (!lockNonRepairs && lockOldImmediateObservations(event, stateUpdate, markovSucc)) {
+						succ.setType(MarkovStateType.MARKOVIAN);
+						lockOldImmediateObservations = true;
+					} else if (!lockNonRepairs && !lockOldMarkovianObservations) {
+						succ.setType(MarkovStateType.MARKOVIAN);
 					}
 				}
 			}
@@ -487,5 +474,65 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 */
 	public DFTSemantics getDftSemantics() {
 		return semantics;
+	}
+	
+	/**
+	 * Checks whether the successor is required to be probabilistic or not
+	 * @param immediateObservationEvent the immediate observation event
+	 * @param stateUpdate the state update
+	 * @param markovSucc the intermediate non-deterministic state
+	 * @return whether the successor has to be probabilistic or not
+	 */
+	private boolean succIsProbabilistic(ImmediateObservationEvent immediateObservationEvent, StateUpdate stateUpdate, DFTState markovSucc) {
+		if (immediateObservationEvent.isRepair()) {
+			return true;
+		} else if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(immediateObservationEvent.getNodes())) {
+			// If the observations provide information that was previously not known
+			return true;
+		} else if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(immediateObservationEvent.getNodes())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Checks whether a non-MONITOR parent exists
+	 * @param event the IDFT event
+	 * @return whether the event's node has a non-MONITOR parent
+	 */
+	private boolean nonMonitorParentExists(IDFTEvent event) {
+		Set<FaultTreeNode> parents = ftHolder.getMapNodeToAllParents().get(event.getNodes().iterator().next());
+		for (FaultTreeNode node : parents) {
+			if (!node.getName().equals(event.getNodes().iterator().next().getName()) && !(node instanceof MONITOR)) {
+				// if there is a node other than the event's node that is not a monitor
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks whether the old immediate observations should be locked
+	 * @param immediateObservationEvent the immediate observation event
+	 * @param stateUpdate the state update
+	 * @param markovSucc the intermediate non-deterministic state
+	 * @return whether the successor can be Markovian and old immediate observations be locked
+	 */
+	private boolean lockOldImmediateObservations(IDFTEvent event, StateUpdate stateUpdate, DFTState markovSucc) {
+		if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().equals(ftHolder.getRoot())) {
+			// If the Top Level Event is observed
+			return true;
+		} else if (event instanceof FaultEvent) {
+			// If the event is just a Markovian Fault Event
+			return true;
+		} else if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(event.getNodes())) {
+			// If the observations provide information that was previously not known
+			return true;
+		} else if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(event.getNodes())) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
