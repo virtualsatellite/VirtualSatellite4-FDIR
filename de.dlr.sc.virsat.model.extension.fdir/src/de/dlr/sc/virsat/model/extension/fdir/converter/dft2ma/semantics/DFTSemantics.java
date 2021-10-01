@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.semantics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -47,6 +48,7 @@ public class DFTSemantics {
 	
 	protected Map<FaultTreeNodeType, INodeSemantics> mapTypeToSemantics = new EnumMap<>(FaultTreeNodeType.class);
 	protected boolean allowsRepairEvents = true;
+	protected boolean permanence = true;
 	
 	/**
 	 * Creates a standard DFT semantics
@@ -82,6 +84,14 @@ public class DFTSemantics {
 	 */
 	public void setAllowsRepairEvents(boolean allowsRepairEvents) {
 		this.allowsRepairEvents = allowsRepairEvents;
+	}
+	
+	/**
+	 * Configures whether the semantics should check permanence
+	 * @param permanence whether the semantics considers permanence
+	 */
+	public void setPermanence(boolean permanence) {
+		this.permanence = permanence;
 	}
 	
 	/**
@@ -136,7 +146,7 @@ public class DFTSemantics {
 	 */
 	public void propagateStateUpdate(StateUpdateResult stateUpdateResult) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
-		if (stateUpdate.getEvent().getNode() != null) {
+		if (stateUpdate.getEvent().getNodes() != null) {
 			Queue<FaultTreeNode> worklist = createWorklist(stateUpdate.getEvent(), stateUpdateResult.getBaseSucc());
 			propagateStateUpdate(stateUpdateResult, worklist);
 		}
@@ -151,10 +161,12 @@ public class DFTSemantics {
 	public Queue<FaultTreeNode> createWorklist(IDFTEvent event, DFTState baseSucc) {
 		FaultTreeHolder ftHolder = baseSucc.getFTHolder();
 		Queue<FaultTreeNode> worklist = new LinkedList<FaultTreeNode>();
-		if (event.getNode() instanceof BasicEvent) {
-			worklist.add(ftHolder.getFault((BasicEvent) event.getNode()));
-		} else {
-			worklist.addAll(ftHolder.getNodes(event.getNode(), EdgeType.PARENT));
+		for (FaultTreeNode node : event.getNodes()) {
+			if (node instanceof BasicEvent) {
+				worklist.add(ftHolder.getFault((BasicEvent) node));
+			} else {
+				worklist.addAll(ftHolder.getNodes(node, EdgeType.PARENT));
+			}
 		}
 		
 		if (baseSucc.getRecoveryStrategy() != null) {
@@ -204,7 +216,7 @@ public class DFTSemantics {
 	 */
 	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
-		if (stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
+		if (permanence && stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
 			return false;
 		}
 		
@@ -245,11 +257,13 @@ public class DFTSemantics {
 	 * @return the set of nodes that affect the recovery actions
 	 */
 	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdateResult stateUpdateResult) {
-		FaultTreeNode eventNode = stateUpdateResult.getStateUpdate().getEvent().getNode();
+		Collection<FaultTreeNode> eventNodes = stateUpdateResult.getStateUpdate().getEvent().getNodes();
 		
 		Set<FaultTreeNode> occuredBasicEvents = new HashSet<>();
-		if (eventNode instanceof BasicEvent) {
-			occuredBasicEvents.add(eventNode);
+		for (FaultTreeNode eventNode : eventNodes) {
+			if (eventNode instanceof BasicEvent) {
+				occuredBasicEvents.add(eventNode);
+			}
 		}
 		for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 			if (node instanceof BasicEvent) {

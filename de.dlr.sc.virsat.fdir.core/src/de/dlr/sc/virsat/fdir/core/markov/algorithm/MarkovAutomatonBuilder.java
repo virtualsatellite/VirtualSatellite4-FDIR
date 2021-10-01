@@ -54,6 +54,9 @@ public class MarkovAutomatonBuilder<S extends MarkovState> {
 			toProcess.addAll(generatedNewSuccs);
 		}
 		
+		// Removes the filtered-out states if any
+		stateSpaceGenerator.removeBadStates();
+		
 		statistics.maxStates = ma.getStates().size();
 		statistics.maxTransitions = ma.getTransitions().size();
 		statistics.time = System.currentTimeMillis() - startTime;

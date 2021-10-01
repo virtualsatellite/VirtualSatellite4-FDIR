@@ -35,6 +35,12 @@ public interface IDerivedMetricVisitor {
 	void visit(MeanTimeToDetection meanTimeToDetectionMetric);
 	
 	/**
+	 * Handle the case of a mean time to detection metric
+	 * @param meanTimeToDetectionMetric the mean time to detection metric
+	 */
+	void visit(MeanTimeToObservedFailure meanTimeToObservedFailureMetric);
+	
+	/**
 	 * Handle the case of a steady state detectability metric
 	 * @param steadyStateDetectability the mean time to detection metric
 	 */

@@ -24,6 +24,7 @@ public class FailLabelProvider {
 	public static final FailLabelProvider EMPTY_FAIL_LABEL_PROVIDER = new FailLabelProvider();
 	public static final FailLabelProvider SINGLETON_FAILED = new FailLabelProvider(FailLabel.FAILED);
 	public static final FailLabelProvider SINGLETON_OBSERVED = new FailLabelProvider(FailLabel.OBSERVED);
+	public static final FailLabelProvider FAILED_OBSERVED = new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED);
 	
 	/**
 	 * This enum lists the relevant fail labels

@@ -29,6 +29,7 @@ public class ModelCheckingResult {
 	private double steadyStateAvailability;
 	protected Set<Set<Object>> minCutSets = new HashSet<>();
 	private double meanTimeToDetection;
+	private double meanTimeToObservedFailure;
 	private double steadyStateDetectability;
 	protected List<Double> detectabiity = new ArrayList<>();
 	private long faultTolerance;
@@ -55,6 +56,14 @@ public class ModelCheckingResult {
 	 */
 	public void setMeanTimeToDetection(double meanTimeToDetection) {
 		this.meanTimeToDetection = meanTimeToDetection;
+	}
+	
+	/**
+	 * Sets the mean time to detection
+	 * @param meanTimeToDetection the mean time to detection
+	 */
+	public void setMeanTimeToObservedFailure(double meanTimeToObservedFailure) {
+		this.meanTimeToObservedFailure = meanTimeToObservedFailure;
 	}
 	
 	/**
@@ -111,6 +120,14 @@ public class ModelCheckingResult {
 	 */
 	public double getMeanTimeToDetection() {
 		return meanTimeToDetection;
+	}
+	
+	/**
+	 * Gets the mean time to detection
+	 * @return the mean time to detection
+	 */
+	public double getMeanTimeToObservedFailure() {
+		return meanTimeToObservedFailure;
 	}
 	
 	/**

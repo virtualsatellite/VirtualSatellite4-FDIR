@@ -42,4 +42,10 @@ public abstract class AStateSpaceGenerator<S extends MarkovState> {
 	 * @return the newly generated states
 	 */
 	public abstract List<S> generateSuccs(S state, SubMonitor monitor);
+	
+	/**
+	 * Removes the filtered-out states if any
+	 */
+	public void removeBadStates() {
+	}
 }

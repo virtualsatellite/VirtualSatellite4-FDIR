@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -65,8 +67,8 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 	}
 	
 	@Override
-	public FaultTreeNode getNode() {
-		return node;
+	public Collection<FaultTreeNode> getNodes() {
+		return Collections.singleton(node);
 	}
 	
 	@Override
@@ -86,6 +88,11 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 				if (!state.hasFaultTreeNodeFailed(node)) {
 					return false;
 				}
+			}
+			
+			if (node instanceof MONITOR) {
+				// An observer can always observe itself
+				return true;
 			}
 			
 			return poState.existsObserver(node, true, false);
