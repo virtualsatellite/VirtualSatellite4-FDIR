@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +64,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 	@Override
 	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
 		List<IDFTEvent> events = super.createEvents(ftHolder);
+		
+		events.add(new ImmediateObservationEvent(Collections.emptySet(), true));
 		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			if (node instanceof MONITOR && !ftHolder.getNodes(node, EdgeType.CHILD).isEmpty()) {

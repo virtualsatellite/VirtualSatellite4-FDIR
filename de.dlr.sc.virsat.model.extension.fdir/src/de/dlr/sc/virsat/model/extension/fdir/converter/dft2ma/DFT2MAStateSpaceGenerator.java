@@ -309,9 +309,14 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 					if (!event.canOccur(succ)) {
 						continue;
 					}
+					
+					if (event.getNodes().isEmpty() && stateUpdateResult.getMapStateToRecoveryActions().get(succ).isEmpty()) {
+						continue;
+					}
+					
 					if (event instanceof ImmediateObservationEvent) {
 						ImmediateObservationEvent immediateObservationEvent = (ImmediateObservationEvent) event;
-						if (!lockImmediateTLE && immediateObservationEvent.getNodes().iterator().next().equals(ftHolder.getRoot())) {
+						if (!lockImmediateTLE && ftHolder.getRoot().equals(immediateObservationEvent.getNode())) {
 							// If observing the Top Level Event has not been locked and the Top Level Event is observed
 							succ.setType(MarkovStateType.PROBABILISTIC);
 							lockNonRepairs = true;
@@ -402,7 +407,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 */
 	private boolean hasImmediateEvents(DFTState state) {
 		for (IDFTEvent event : events) {
-			if (event.isImmediate() && event.canOccur(state)) {
+			if (event.isImmediate() && !event.getNodes().isEmpty() && event.canOccur(state)) {
 				return true;
 			}
 		}

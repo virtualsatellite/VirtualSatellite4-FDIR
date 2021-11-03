@@ -34,7 +34,7 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 
 public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState> {
 	
-	private static final double DEFAULT_EPSILON = 0.2;
+	private static final double DEFAULT_EPSILON = Math.exp(-1);
 	private double epsilon = DEFAULT_EPSILON;
 	
 	private static final double EULERECIPROCAL = Math.exp(-1);

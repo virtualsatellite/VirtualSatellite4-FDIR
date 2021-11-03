@@ -41,6 +41,10 @@ public class ImmediateObservationEvent extends ObservationEvent {
 
 	@Override
 	public double getRate(DFTState state) {
+		if (nodes.isEmpty()) {
+			return 1;
+		}
+		
 		double rate = 0;
 		for (FaultTreeNode node : getNodes()) {
 			if (node instanceof MONITOR) {
@@ -64,6 +68,10 @@ public class ImmediateObservationEvent extends ObservationEvent {
 	@Override
 	public Collection<FaultTreeNode> getNodes() {
 		return nodes;
+	}
+	
+	public FaultTreeNode getNode() {
+		return nodes.isEmpty() ? null : nodes.iterator().next();
 	}
 	
 	@Override
