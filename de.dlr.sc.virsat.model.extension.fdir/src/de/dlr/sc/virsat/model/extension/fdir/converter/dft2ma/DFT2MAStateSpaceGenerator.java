@@ -494,14 +494,18 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	private boolean succIsProbabilistic(ImmediateObservationEvent immediateObservationEvent, StateUpdate stateUpdate, DFTState markovSucc) {
 		if (immediateObservationEvent.isRepair()) {
 			return true;
-		} else if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(immediateObservationEvent.getNodes())) {
+		}
+		
+		if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(immediateObservationEvent.getNodes())) {
 			// If the observations provide information that was previously not known
 			return true;
-		} else if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(immediateObservationEvent.getNodes())) {
-			return true;
-		} else {
-			return false;
 		}
+		
+		if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(immediateObservationEvent.getNodes())) {
+			return true;
+		} 
+			
+		return false;
 	}
 	
 	/**
@@ -531,16 +535,22 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		if (event instanceof ObservationEvent && ((ObservationEvent) event).getNodes().iterator().next().equals(ftHolder.getRoot())) {
 			// If the Top Level Event is observed
 			return true;
-		} else if (event instanceof FaultEvent) {
+		}
+		
+		if (event instanceof FaultEvent) {
 			// If the event is just a Markovian Fault Event
 			return true;
-		} else if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(event.getNodes())) {
+		}
+		
+		if (markovSucc == null && !((PODFTState) stateUpdate.getState()).getObservedFailedNodes().containsAll(event.getNodes())) {
 			// If the observations provide information that was previously not known
 			return true;
-		} else if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(event.getNodes())) {
+		} 
+		
+		if (markovSucc != null && !((PODFTState) markovSucc).getObservedFailedNodes().containsAll(event.getNodes())) {
 			return true;
-		} else {
-			return false;
-		}
+		} 
+		
+		return false;
 	}
 }
