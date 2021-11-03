@@ -107,15 +107,12 @@ public class PONDDFTSemantics extends DFTSemantics {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
-		anyObservation |= propagateObservations(stateUpdateResult);
-		
 		if (anyObservation && !hasRecoveryStrategy) {
 			Set<FaultTreeNode> nondetGates = getNondeterministicGates(ftHolder);
 			
 			worklist = new LinkedList<>(nondetGates);
 			stateUpdateResult.getChangedNodes().clear();
 			super.propagateStateUpdate(stateUpdateResult, worklist);
-			propagateObservations(stateUpdateResult);
 		}
 	}
 	
@@ -160,16 +157,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		
 		return false;
 	}
-	
-	/**
-	 * Handles a propagation step for the observability information
-	 * @param stateUpdateResult accumulator for saving results from the update
-	 * @return false always else MONITOR ImmediateObservationEvents are skipped
-	 */
-	private boolean propagateObservations(StateUpdateResult stateUpdateResult) {
-		return false;
-	}
-	
+
 	@Override
 	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdateResult stateUpdateResult) {
 		Set<FaultTreeNode> observedNodes = new HashSet<>();
