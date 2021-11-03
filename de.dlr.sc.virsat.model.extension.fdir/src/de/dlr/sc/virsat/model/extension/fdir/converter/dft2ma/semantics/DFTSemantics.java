@@ -260,11 +260,14 @@ public class DFTSemantics {
 		Collection<FaultTreeNode> eventNodes = stateUpdateResult.getStateUpdate().getEvent().getNodes();
 		
 		Set<FaultTreeNode> occuredBasicEvents = new HashSet<>();
-		for (FaultTreeNode eventNode : eventNodes) {
-			if (eventNode instanceof BasicEvent) {
-				occuredBasicEvents.add(eventNode);
+		if (eventNodes != null) {
+			for (FaultTreeNode eventNode : eventNodes) {
+				if (eventNode instanceof BasicEvent) {
+					occuredBasicEvents.add(eventNode);
+				}
 			}
 		}
+		
 		for (FaultTreeNode node : stateUpdateResult.getChangedNodes()) {
 			if (node instanceof BasicEvent) {
 				occuredBasicEvents.add(node);

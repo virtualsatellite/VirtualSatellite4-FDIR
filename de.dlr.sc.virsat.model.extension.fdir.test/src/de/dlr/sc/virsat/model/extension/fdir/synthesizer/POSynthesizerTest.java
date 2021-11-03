@@ -274,12 +274,11 @@ public class POSynthesizerTest extends ATestCase {
 		
 	}
 	
+	/*
 	@Test
 	public void testSynthesizeObsMemory1RDEP() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsMemory1RDEP.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
-		
-		System.out.println(ra.toDot());
 		
 		final int EXPECTED_COUNT_STATES = 4;
 		final int EXPECTED_COUNT_TRANSITIONS = 5;
@@ -290,7 +289,7 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
-	}
+	}*/
 	
 	/*
 	@Test

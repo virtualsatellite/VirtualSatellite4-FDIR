@@ -111,7 +111,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	public List<DFTState> generateSuccs(DFTState state, SubMonitor monitor) {
 		List<DFTState> newSuccs = new ArrayList<>();
 		List<IDFTEvent> occurableEvents = getOccurableEvents(state);
-		if (state.isProbabilisic() && occurableEvents.size() > 1) {
+		if (state.isProbabilisic() && occurableEvents.size() > 1 && occurableEvents.stream().allMatch(event -> event instanceof ImmediateObservationEvent)) {
 			// ImmediateObservationEvents need to be grouped but ObservationEvents can either be repair or not. Repairs take priority.
 			IRepairableEvent representantEvent = (IRepairableEvent) occurableEvents.iterator().next();
 			boolean isRepair = representantEvent.isRepair();
@@ -328,6 +328,9 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 							succ.setType(MarkovStateType.PROBABILISTIC);
 							lockOldMarkovianObservations = true;
 						}
+					} else if (event instanceof ImmediateFaultEvent) {
+						succ.setType(MarkovStateType.PROBABILISTIC);
+						break;
 					} else if (event instanceof FaultEvent && ((FaultEvent) event).isRepair()) {
 						// Checks whether the repair only affects an observer
 						if (nonMonitorParentExists(event)) {
@@ -425,7 +428,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		List<StateUpdate> stateUpdates = new ArrayList<>();
 		for (IDFTEvent event : occurableEvents) {
 			SymmetryReduction symmetryReduction = ftHolder.getStaticAnalysis().getSymmetryReduction();
-			int symmetryMultiplier = symmetryReduction != null ? symmetryReduction.getSymmetryMultiplier(event.getNodes().iterator().next(), state) : 1;
+			int symmetryMultiplier = (symmetryReduction != null  && event.getNodes() != null) ? symmetryReduction.getSymmetryMultiplier(event.getNodes().iterator().next(), state) : 1;
 			if (symmetryMultiplier != SymmetryReduction.SKIP_EVENT) {
 				StateUpdate stateUpdate = new StateUpdate(state, event, symmetryMultiplier);
 				stateUpdates.add(stateUpdate);
