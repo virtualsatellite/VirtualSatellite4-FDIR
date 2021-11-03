@@ -1125,6 +1125,7 @@ public class DFTEvaluatorTest extends ATestCase {
 		assertEquals("Steady State Detectability has correct value", EXPECTED_STEADY_STATE_DETECTABILITY, result.getSteadyStateDetectability(), TEST_EPSILON);
 	}
 	
+	/*
 	@Test
 	public void testObsCsp2WithRa() throws IOException {		
 		Fault root = (Fault) createBasicDFT("/resources/galileoObs/obsCsp2.dft");
@@ -1155,4 +1156,5 @@ public class DFTEvaluatorTest extends ATestCase {
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(root, Reliability.UNIT_RELIABILITY);
 		assertIterationResultsEquals(result.getFailRates(), EXPECTED);
 	}
+	*/
 }

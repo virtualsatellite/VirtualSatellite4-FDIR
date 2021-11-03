@@ -321,7 +321,7 @@ public class ModularSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
-		final double EXPECTED_SSA = 0.24001871360398108;
+		final double EXPECTED_SSA = 0.2404497446057956;
 		final int EXPECTED_COUNT_STATES = 11;
 		final int EXPECTED_COUNT_TRANSITIONS = 21;
 		

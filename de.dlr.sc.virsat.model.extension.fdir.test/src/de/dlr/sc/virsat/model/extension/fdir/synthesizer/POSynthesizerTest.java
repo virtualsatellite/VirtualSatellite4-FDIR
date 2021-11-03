@@ -179,10 +179,27 @@ public class POSynthesizerTest extends ATestCase {
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 	}
+
+	@Test
+	public void testSynthesizeObsOr2Csp2Shared() throws IOException {
+		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2Shared.dft");
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
+		
+		System.out.println(ra.toDot());
+		
+		final int EXPECTED_COUNT_STATES = 2;
+		final int EXPECTED_COUNT_TRANSITIONS = 2;
+		final double EXPECTED_MTTF = 0.6875;
+		
+		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
+		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+	}
 	
 	@Test
 	public void testSynthesizeObsOr2Csp2SharedDelayed() throws IOException {
-		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2SharedSafeSpareDelayed.dft");
+		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2SharedDelayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
 		
 		final int EXPECTED_COUNT_STATES = 2;
@@ -204,10 +221,10 @@ public class POSynthesizerTest extends ATestCase {
 		final int EXPECTED_COUNT_TRANSITIONS = 6;
 		final double EXPECTED_MTTF = 0.916666;
 		
-		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 	}
 	
 	@Test
@@ -230,6 +247,8 @@ public class POSynthesizerTest extends ATestCase {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsOr2Csp2ObsBEUnreliable.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
 		
+		System.out.println(ra.toDot());
+		
 		final int EXPECTED_COUNT_STATES = 12;
 		final int EXPECTED_COUNT_TRANSITIONS = 16;
 		final double EXPECTED_MTTF = 0.9166666666666665;
@@ -247,13 +266,16 @@ public class POSynthesizerTest extends ATestCase {
 		final int EXPECTED_COUNT_STATES = 17;
 		final int EXPECTED_COUNT_TRANSITIONS = 31;
 		final double EXPECTED_MTTF = 0.9166666350375646;
-		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
+		
 	}
 	
-	/*@Test
+	/*
+	@Test
 	public void testSynthesizeObsMemory1RDEP() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsMemory1RDEP.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
@@ -267,11 +289,9 @@ public class POSynthesizerTest extends ATestCase {
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
 		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
-		final int EXPECTED_TRANSITION_TIME = 10000;
-		TimeoutTransition timeoutTransition = raHelper.getTimeoutTransition(ra, ra.getInitial());
-		assertEquals(EXPECTED_TRANSITION_TIME, timeoutTransition.getTime(), TEST_EPSILON);
-	}
+	}*/
 	
+	/*
 	@Test
 	public void testSynthesizeObsMemory2RDEP() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsMemory2RDEP.dft");
@@ -428,15 +448,14 @@ public class POSynthesizerTest extends ATestCase {
 	public void testSynthesizeObsDelayedOr2Csp2ObsBE() throws IOException {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObs/obsDelayedOr2Csp2ObsBE.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
-		System.out.println(ra.toDot());
-		
-		final int EXPECTED_COUNT_STATES = 4;
-		final int EXPECTED_COUNT_TRANSITIONS = 8;
+
+		final int EXPECTED_COUNT_STATES = 8;
+		final int EXPECTED_COUNT_TRANSITIONS = 12;
 		final double EXPECTED_MTTF = 0.7499999999999999;
 		
-		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
-		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 		ftEvaluator.setRecoveryStrategy(new RecoveryStrategy(ra));
 		assertEquals(EXPECTED_MTTF, ftEvaluator.evaluateFaultTree(root).getMeanTimeToFailure(), TEST_EPSILON);
+		assertEquals(EXPECTED_COUNT_STATES, ra.getStates().size());
+		assertEquals(EXPECTED_COUNT_TRANSITIONS, ra.getTransitions().size());
 	}
 }

@@ -128,12 +128,12 @@ public class DFTState extends MarkovState {
 		
 		res += "\"";
 		
-		if (isFailState()) {
-			res += ", color=\"red\"";
+		if (isProbabilisic()) {
+			res += ", color=\"green\"";
 		} else if (isNondet()) {
 			res += ", color=\"blue\"";
-		} else if (isProbabilisic()) {
-			res += ", color=\"green\"";
+		} else if (isFailState()) {
+			res += ", color=\"red\"";
 		}
 		
 		res += "]";

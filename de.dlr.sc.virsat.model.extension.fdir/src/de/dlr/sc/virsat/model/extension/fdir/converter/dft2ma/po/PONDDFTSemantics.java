@@ -10,6 +10,7 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +65,8 @@ public class PONDDFTSemantics extends DFTSemantics {
 	public List<IDFTEvent> createEvents(FaultTreeHolder ftHolder) {
 		List<IDFTEvent> events = super.createEvents(ftHolder);
 		
+		events.add(new ImmediateObservationEvent(Collections.emptySet(), true));
+		
 		for (FaultTreeNode node : ftHolder.getNodes()) {
 			if (node instanceof MONITOR && !ftHolder.getNodes(node, EdgeType.CHILD).isEmpty()) {
 				// Monitor events are immediately observable
@@ -104,15 +107,12 @@ public class PONDDFTSemantics extends DFTSemantics {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
-		anyObservation |= propagateObservations(stateUpdateResult);
-		
 		if (anyObservation && !hasRecoveryStrategy) {
 			Set<FaultTreeNode> nondetGates = getNondeterministicGates(ftHolder);
 			
 			worklist = new LinkedList<>(nondetGates);
 			stateUpdateResult.getChangedNodes().clear();
 			super.propagateStateUpdate(stateUpdateResult, worklist);
-			propagateObservations(stateUpdateResult);
 		}
 	}
 	
@@ -157,16 +157,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 		
 		return false;
 	}
-	
-	/**
-	 * Handles a propagation step for the observability information
-	 * @param stateUpdateResult accumulator for saving results from the update
-	 * @return false always else MONITOR ImmediateObservationEvents are skipped
-	 */
-	private boolean propagateObservations(StateUpdateResult stateUpdateResult) {
-		return false;
-	}
-	
+
 	@Override
 	public Set<FaultTreeNode> extractRecoveryActionInput(StateUpdateResult stateUpdateResult) {
 		Set<FaultTreeNode> observedNodes = new HashSet<>();
