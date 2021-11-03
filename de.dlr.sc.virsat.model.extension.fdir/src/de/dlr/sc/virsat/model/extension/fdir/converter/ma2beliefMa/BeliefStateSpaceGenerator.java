@@ -128,43 +128,12 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 				Entry<Set<Object>, Boolean> observationEvent = beliefState.representant.extractObservationEvent(beliefSucc.representant, succTransitions);
 				
 				if (beliefState.isProbabilisic()) {
-					if (observationEvent.getKey().isEmpty()) {
-						// Internal Transition
-						double totalProb = 0;
-						totalProb = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
-						// Make sure representant is up to date
-						beliefSucc.representant = getNewRepresentant(beliefSucc);
-						beliefSucc.setType(beliefSucc.representant.getType());
-						equivalentBeliefSucc = addBeliefState(beliefSucc);
-						if (beliefState != equivalentBeliefSucc) {
-							makeStateGood(equivalentBeliefSucc, generatedSuccs);
-							targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, totalProb);
-						}
-					} else {
-						double prob = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
-						equivalentBeliefSucc = addBeliefState(beliefSucc);
-						if (beliefState != equivalentBeliefSucc) {
-							makeStateGood(equivalentBeliefSucc, generatedSuccs);
-							targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, prob);
-						}
-					}
+					equivalentBeliefSucc = generateProbabilisticSucc(beliefState, generatedSuccs, beliefSucc, succTransitions, observationEvent);
 				} else {
-					double exitRate = beliefState.getTotalRate(entry.getValue());
-					exitRate = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
-					beliefSucc.representant = getNewRepresentant(beliefSucc);
-					beliefSucc.setType(beliefSucc.representant.getType());
-					equivalentBeliefSucc = addBeliefState(beliefSucc);
-					if (beliefState != equivalentBeliefSucc) {
-						makeStateGood(equivalentBeliefSucc, generatedSuccs);
-						targetMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
-					}
+					equivalentBeliefSucc = generateMarkovianSucc(beliefState, generatedSuccs, entry, beliefSucc, succTransitions, observationEvent);
 				}
 			} else {
-				fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions);
-				beliefSucc.representant = getNewRepresentant(beliefSucc);
-				beliefSucc.setType(beliefSucc.representant.getType());
-				equivalentBeliefSucc = addBeliefState(beliefSucc);
-				addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
+				equivalentBeliefSucc = generateNondetSucc(beliefState, beliefSucc, succTransitions);
 			}
 			
 			if (beliefSucc == equivalentBeliefSucc) {
@@ -173,48 +142,148 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		}
 		
 		if (optimalTransitionsSelector != null && beliefState.isNondet()) {
-			List<BeliefState> optimalSuccs = new ArrayList<>();
-			List<MarkovTransition<BeliefState>> optimalTransitions = optimalTransitionsSelector.selectOptimalTransitions(targetMa, beliefState);
-			for (MarkovTransition<BeliefState> optimalTransition : optimalTransitions) {
-				BeliefState equivalentToState = beliefStateEquivalence.getEquivalentState(optimalTransition.getTo());
-				optimalSuccs.add(equivalentToState);
-				goodStates.add(equivalentToState);
-				if (badStates.contains(equivalentToState)) {
-					// It is possible that a previously bad state is the best transition for this non-deterministic state
-					generatedSuccs.add(equivalentToState);
-					badStates.remove(equivalentToState);
-				}
-			}
-			for (BeliefState generatedSucc : generatedSuccs) {
-				if (!goodStates.contains(generatedSucc)) {
-					badStates.add(generatedSucc);
-				}
-			}
-			generatedSuccs = generatedSuccs.stream().filter(optimalSuccs::contains).collect(Collectors.toList());
+			generatedSuccs = applyOptimalTransitionSelector(beliefState, generatedSuccs);
 		}
 
 		if (failStateSimplification && !beliefState.isNondet()) {
-			List<BeliefState> suboptimalSuccs = new ArrayList<>();
-			for (BeliefState generatedSucc : generatedSuccs) {
-				boolean isSuboptimal = true;
-				for  (PODFTState belief : generatedSucc.mapStateToBelief.keySet()) {
-					// All Beliefs must be permanently failed in order for a BeliefState to be considered permanently failed
-					if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
-						isSuboptimal = false;
-						break;
-					}
-				}
-				if (isSuboptimal) {
-					suboptimalSuccs.add(generatedSucc);
-					generatedSucc.setType(MarkovStateType.MARKOVIAN);
-					// It can be that the generatedSucc is non-deterministic, which normally do not have fail labels
-					generatedSucc.getMapFailLabelToProb().put(FailLabel.FAILED, 1.0);
-				}
-			}
-			generatedSuccs.removeAll(suboptimalSuccs);
+			performFailStateSimplification(generatedSuccs);
 		}
 		
 		return generatedSuccs;
+	}
+
+	/**
+	 * Removes unnecessary fail state choices from the list of generated successors
+	 * @param generatedSuccs the currently generated successors
+	 */
+	private void performFailStateSimplification(List<BeliefState> generatedSuccs) {
+		List<BeliefState> suboptimalSuccs = new ArrayList<>();
+		for (BeliefState generatedSucc : generatedSuccs) {
+			boolean isSuboptimal = true;
+			for  (PODFTState belief : generatedSucc.mapStateToBelief.keySet()) {
+				// All Beliefs must be permanently failed in order for a BeliefState to be considered permanently failed
+				if (!belief.isFaultTreeNodePermanent(belief.getFTHolder().getRoot())) {
+					isSuboptimal = false;
+					break;
+				}
+			}
+			if (isSuboptimal) {
+				suboptimalSuccs.add(generatedSucc);
+				generatedSucc.setType(MarkovStateType.MARKOVIAN);
+				// It can be that the generatedSucc is non-deterministic, which normally do not have fail labels
+				generatedSucc.getMapFailLabelToProb().put(FailLabel.FAILED, 1.0);
+			}
+		}
+		generatedSuccs.removeAll(suboptimalSuccs);
+	}
+
+	/**
+	 * Applies the optimal transition selector to the available nondet choices
+	 * @param beliefState the current belief state
+	 * @param generatedSuccs the generated successors
+	 * @return the successor states that pass the transition selector
+	 */
+	private List<BeliefState> applyOptimalTransitionSelector(BeliefState beliefState, List<BeliefState> generatedSuccs) {
+		List<BeliefState> optimalSuccs = new ArrayList<>();
+		List<MarkovTransition<BeliefState>> optimalTransitions = optimalTransitionsSelector.selectOptimalTransitions(targetMa, beliefState);
+		for (MarkovTransition<BeliefState> optimalTransition : optimalTransitions) {
+			BeliefState equivalentToState = beliefStateEquivalence.getEquivalentState(optimalTransition.getTo());
+			optimalSuccs.add(equivalentToState);
+			goodStates.add(equivalentToState);
+			if (badStates.contains(equivalentToState)) {
+				// It is possible that a previously bad state is the best transition for this non-deterministic state
+				generatedSuccs.add(equivalentToState);
+				badStates.remove(equivalentToState);
+			}
+		}
+		for (BeliefState generatedSucc : generatedSuccs) {
+			if (!goodStates.contains(generatedSucc)) {
+				badStates.add(generatedSucc);
+			}
+		}
+		generatedSuccs = generatedSuccs.stream().filter(optimalSuccs::contains).collect(Collectors.toList());
+		return generatedSuccs;
+	}
+
+
+	/**
+	 * Generates a nondeterministic successor state
+	 * @param beliefState the current belief state
+	 * @param beliefSucc the successor state to be filled with data
+	 * @param succTransitions the current successor transitions
+	 * @return the updated or an equivalent nondeterministic state
+	 */
+	private BeliefState generateNondetSucc(BeliefState beliefState, BeliefState beliefSucc,
+			List<MarkovTransition<DFTState>> succTransitions) {
+		BeliefState equivalentBeliefSucc;
+		fillNonDeterministicStateSucc(beliefState, beliefSucc, succTransitions);
+		beliefSucc.representant = getNewRepresentant(beliefSucc);
+		beliefSucc.setType(beliefSucc.representant.getType());
+		equivalentBeliefSucc = addBeliefState(beliefSucc);
+		addNondeterministicTransitions(succTransitions, beliefState, equivalentBeliefSucc);
+		return equivalentBeliefSucc;
+	}
+
+	/**
+	 * Generates a markovian successor
+	 * @param beliefState the current state
+	 * @param generatedSuccs the currently generated successors
+	 * @param entry the current list of markovian transitins in the MA
+	 * @param beliefSucc the successor belief state to be filled with data
+	 * @param succTransitions the generated successor transitions
+	 * @param observationEvent the observation event for triggering the Markovian successor
+	 * @return the generated belief state or an equivalent state
+	 */
+	private BeliefState generateMarkovianSucc(BeliefState beliefState, List<BeliefState> generatedSuccs,
+			Entry<PODFTState, List<MarkovTransition<DFTState>>> entry, BeliefState beliefSucc,
+			List<MarkovTransition<DFTState>> succTransitions, Entry<Set<Object>, Boolean> observationEvent) {
+		BeliefState equivalentBeliefSucc;
+		double exitRate = beliefState.getTotalRate(entry.getValue());
+		exitRate = fillMarkovianStateSucc(beliefState, beliefSucc, exitRate, observationEvent, succTransitions);
+		beliefSucc.representant = getNewRepresentant(beliefSucc);
+		beliefSucc.setType(beliefSucc.representant.getType());
+		equivalentBeliefSucc = addBeliefState(beliefSucc);
+		if (beliefState != equivalentBeliefSucc) {
+			makeStateGood(equivalentBeliefSucc, generatedSuccs);
+			targetMa.addMarkovianTransition(observationEvent, beliefState, equivalentBeliefSucc, exitRate);
+		}
+		return equivalentBeliefSucc;
+	}
+
+	/**
+	 * Generates a probablistic successor state
+	 * @param beliefState the current belief state
+	 * @param generatedSuccs the generated succesors
+	 * @param beliefSucc the successor state to be filled
+	 * @param succTransitions the generated successor transitions
+	 * @param observationEvent the observed event
+	 * @return the succesor belief state or an equivalent state
+	 */
+	private BeliefState generateProbabilisticSucc(BeliefState beliefState, List<BeliefState> generatedSuccs,
+			BeliefState beliefSucc, List<MarkovTransition<DFTState>> succTransitions,
+			Entry<Set<Object>, Boolean> observationEvent) {
+		BeliefState equivalentBeliefSucc;
+		if (observationEvent.getKey().isEmpty()) {
+			// Internal Transition
+			double totalProb = 0;
+			totalProb = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
+			// Make sure representant is up to date
+			beliefSucc.representant = getNewRepresentant(beliefSucc);
+			beliefSucc.setType(beliefSucc.representant.getType());
+			equivalentBeliefSucc = addBeliefState(beliefSucc);
+			if (beliefState != equivalentBeliefSucc) {
+				makeStateGood(equivalentBeliefSucc, generatedSuccs);
+				targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, totalProb);
+			}
+		} else {
+			double prob = fillProbabilisticStateSucc(beliefState, beliefSucc, observationEvent, succTransitions);
+			equivalentBeliefSucc = addBeliefState(beliefSucc);
+			if (beliefState != equivalentBeliefSucc) {
+				makeStateGood(equivalentBeliefSucc, generatedSuccs);
+				targetMa.addProbabilisticTransition(observationEvent, beliefState, equivalentBeliefSucc, prob);
+			}
+		}
+		return equivalentBeliefSucc;
 	}
 	
 	/**
