@@ -12,13 +12,16 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
+import javax.xml.bind.annotation.XmlAccessorType;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeArrayInstanceList;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import javax.xml.bind.annotation.XmlRootElement;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import javax.xml.bind.annotation.XmlAccessType;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
@@ -26,6 +29,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropert
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
+import javax.xml.bind.annotation.XmlElement;
 
 
 // *****************************************************************
@@ -40,6 +44,8 @@ import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
  * 
  * 
  */	
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AReliabilityAnalysis extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.ReliabilityAnalysis";
@@ -110,6 +116,7 @@ public abstract class AReliabilityAnalysis extends GenericCategory implements IB
 		return remainingMissionTime.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getRemainingMissionTimeBean() {
 		safeAccessRemainingMissionTime();
 		return remainingMissionTime;
@@ -146,6 +153,7 @@ public abstract class AReliabilityAnalysis extends GenericCategory implements IB
 		return timestep.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getTimestepBean() {
 		safeAccessTimestep();
 		return timestep;
@@ -182,6 +190,7 @@ public abstract class AReliabilityAnalysis extends GenericCategory implements IB
 		return reliability.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getReliabilityBean() {
 		safeAccessReliability();
 		return reliability;
@@ -218,6 +227,7 @@ public abstract class AReliabilityAnalysis extends GenericCategory implements IB
 		return meanTimeToFailure.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getMeanTimeToFailureBean() {
 		safeAccessMeanTimeToFailure();
 		return meanTimeToFailure;
@@ -233,7 +243,8 @@ public abstract class AReliabilityAnalysis extends GenericCategory implements IB
 			reliabilityCurveBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("reliabilityCurve"));
 		}
 	}
-		
+	
+	@XmlElement
 	public IBeanList<BeanPropertyFloat> getReliabilityCurveBean() {
 		safeAccessReliabilityCurveBean();
 		return reliabilityCurveBean;
