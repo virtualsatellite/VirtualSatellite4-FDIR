@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2019 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
+ * Copyright (c) 2008-2021 German Aerospace Center (DLR), Simulation and Software Technology, Germany.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -28,8 +28,8 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizer;
  */
 public class PhDExperiments extends ASynthesizerExperiment {
 	
-	private static final String EXPERIMENTS_SET = "phd";
-	private static final String EXPERIMENTS_PATH = "/resources/" + EXPERIMENTS_SET;
+	public static final String EXPERIMENTS_SET = "phd";
+	public static final String EXPERIMENTS_PATH = "/resources/" + EXPERIMENTS_SET;
 	private static final long BENCHMARK_TIME_SECONDS = 60 * 10;
 	
 	@Override
@@ -55,13 +55,13 @@ public class PhDExperiments extends ASynthesizerExperiment {
 	}
 	
 	@Test
-	public void experimentWithoutModulariter() throws Exception {
+	public void experimentWithoutModularizer() throws Exception {
 		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
 		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer", nonmodularSynthesizerSupplier);
 	}
 	
 	@Test
-	public void experimentRepairWithoutModulariter() throws Exception {
+	public void experimentRepairWithoutModularizer() throws Exception {
 		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-repair");
 		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutModularizer-repair", nonmodularSynthesizerSupplier);
 	}
@@ -74,20 +74,20 @@ public class PhDExperiments extends ASynthesizerExperiment {
 	
 	@Test
 	public void experimentPORepair() throws Exception {
-		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-po-repair");
-		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatistics-po-repair", poSynthesizerSupplier);
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-repair-po");
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatistics-repair-po", poSynthesizerSupplier);
 	}
 	
 	@Test
 	public void experimentPODelay() throws Exception {
-		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-po-delay");
 		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatistics-po-delay", poSynthesizerSupplier);
 	}
 	
 	@Test
 	public void experimentPORepairDelay() throws Exception {
-		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-po-delay-repair");
-		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatistics-po-delay-repair", poSynthesizerSupplier);
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-repair-po-delay");
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatistics-repair-po-delay", poSynthesizerSupplier);
 	}
 	
 }
