@@ -48,8 +48,6 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	
-	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 512;
-	
 	private DFTSemantics semantics = DFTSemantics.createNDDFTSemantics();
 	
 	private FailableBasicEventsProvider failableBasicEventsProvider;
@@ -104,8 +102,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		return initialState;
 	}
-	
-	private long maxMemory = Runtime.getRuntime().maxMemory();
 
 	@Override
 	public List<DFTState> generateSuccs(DFTState state, SubMonitor monitor) {
@@ -135,29 +131,13 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		
 		for (StateUpdate stateUpdate : stateUpdates) {
 			checkCancellation(monitor);
-			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
+			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate, monitor);
 			checkCancellation(monitor);
-			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
+			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult, monitor);
 			newSuccs.addAll(newSuccsStateUpdate);
 		}
 		
 		return newSuccs;
-	}
-	
-	/**
-	 * Checks if this long running operation should cancelled / has been cancelled
-	 * and gives user feedback that the operation is still running.
-	 * @param monitor a monitor
-	 */
-	private void checkCancellation(SubMonitor monitor) {
-		// Eclipse trick for doing progress updates with unknown ending time
-		final int PROGRESS_COUNT = 100;
-		monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-		
-		long freeMemory = maxMemory - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
-		if (freeMemory < MEMORY_THRESHOLD) {
-			throw new RuntimeException("Close to out of memory. Aborting so we can still maintain an operational state.");
-		}
 	}
 	
 	@Override
@@ -212,10 +192,10 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @param stateUpdateResult the result of the state update
 	 * @return all newly generated successor states
 	 */
-	private List<DFTState> handleStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult) {
+	private List<DFTState> handleStateUpdate(StateUpdate stateUpdate, StateUpdateResult stateUpdateResult, SubMonitor monitor) {
 		DFTState markovSucc = null;
 		if (recoveryStrategy != null) {			
-			synchronizeWithRecoveryStrategy(stateUpdateResult);
+			synchronizeWithRecoveryStrategy(stateUpdateResult, monitor);
 		} else if (stateUpdateResult.getSuccs().size() > 1) { 
 			// If we do not have a recovery strategy and either multiple successors
 			// or an obsertvation event for which we generally must provide the ability
@@ -241,7 +221,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			}
 		}
 		
-		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdateResult, markovSucc);
+		List<DFTState> newSuccs = handleGeneratedSuccs(stateUpdateResult, markovSucc, monitor);
 		return newSuccs;
 	}
 
@@ -252,7 +232,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @param stateUpdate the state update
 	 * @param stateUpdateResult the state update result
 	 */
-	private void synchronizeWithRecoveryStrategy(StateUpdateResult stateUpdateResult) {
+	private void synchronizeWithRecoveryStrategy(StateUpdateResult stateUpdateResult, SubMonitor monitor) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		DFTState state = stateUpdate.getState();
 		IDFTEvent event = stateUpdate.getEvent();
@@ -276,7 +256,7 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			
 			Queue<FaultTreeNode> worklist = semantics.createWorklist(event, newBaseSucc);
 			worklist.addAll(affectedNodes);
-			semantics.propagateStateUpdate(stateUpdateResult, worklist);
+			semantics.propagateStateUpdate(stateUpdateResult, worklist, monitor);
 		} else {
 			baseSucc.setRecoveryStrategy(recoveryStrategy);
 		}
@@ -288,11 +268,12 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	 * @param markovSucc the markovian intermediate state if available
 	 * @return the generated states that are really new
 	 */
-	private List<DFTState> handleGeneratedSuccs(StateUpdateResult stateUpdateResult, DFTState markovSucc) {
+	private List<DFTState> handleGeneratedSuccs(StateUpdateResult stateUpdateResult, DFTState markovSucc, SubMonitor monitor) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		List<DFTState> newSuccs = new ArrayList<>();
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
+			checkCancellation(monitor);
 			if (allowsDontCareFailing) {
 				succ.failDontCares(stateUpdateResult.getChangedNodes());
 			}

@@ -104,6 +104,8 @@ public class BeliefStateSpaceGenerator extends AStateSpaceGenerator<BeliefState>
 		Map<PODFTState, List<MarkovTransition<DFTState>>> mapObsertvationSetToTransitions = createMapRepresentantToTransitions(ma, beliefState);
 		
 		for (Entry<PODFTState, List<MarkovTransition<DFTState>>> entry : mapObsertvationSetToTransitions.entrySet()) {
+			checkCancellation(monitor);
+			
 			// Eclipse trick for doing progress updates with unknown ending time
 			final int PROGRESS_COUNT = 100;
 			monitor.setWorkRemaining(PROGRESS_COUNT).split(1);

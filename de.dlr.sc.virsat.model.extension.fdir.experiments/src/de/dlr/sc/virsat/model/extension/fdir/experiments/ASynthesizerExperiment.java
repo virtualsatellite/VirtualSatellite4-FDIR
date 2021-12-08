@@ -42,6 +42,8 @@ import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistic
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2DFTConversionResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.galileo.GalileoDFT2DFT;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
@@ -133,10 +135,10 @@ public class ASynthesizerExperiment {
 		for (String fileName : fileNames) {
 			Path path = Paths.get(parentFolder.toString(), fileName);
 			File suiteEntry = path.toFile();
-			benchmarkSuiteEntry(suiteEntry, synthesizerSupplier);
+			benchmarkSuiteEntry(suiteEntry, saveFileName, synthesizerSupplier);
 		}
 		
-		saveStatistics(saveFileName);
+		saveSummaryStatistics(saveFileName);
 		
 		System.out.println("Finished benchmark data " + saveFileName + ".");
 	}
@@ -145,15 +147,18 @@ public class ASynthesizerExperiment {
 	 * Benchmarks a single entry in a benchmark suite.
 	 * If the entry is a folder, recuresively calls itself.
 	 * @param entry the suite entry
+	 * @param saveFileName name of the save file
 	 * @param synthesizerSupplier a supplier for the synthesizer
 	 * @throws IOException exception
 	 */
-	protected void benchmarkSuiteEntry(File entry, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
+	protected void benchmarkSuiteEntry(File entry, String saveFileName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
 		if (entry.isDirectory()) {
 			File[] files = entry.listFiles();
 			for (File file : files) {
-				benchmarkSuiteEntry(file, synthesizerSupplier);
+				benchmarkSuiteEntry(file, saveFileName, synthesizerSupplier);
 			}
+			
+			saveSuiteEntryStatistics(saveFileName, entry.getName());
 		} else {
 			boolean runBenchmark = true;
 			while (runBenchmark) {
@@ -189,7 +194,9 @@ public class ASynthesizerExperiment {
 		Duration timeout = Duration.ofSeconds(timeoutSeconds);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		Fault fault = createDFT(dftPath);
-		SynthesisQuery query = new SynthesisQuery(fault);
+		DFT2BasicDFTConverter dft2BasicDFTConverter = new DFT2BasicDFTConverter();
+		DFT2DFTConversionResult result = dft2BasicDFTConverter.convert(fault);
+		SynthesisQuery query = new SynthesisQuery(result.getRoot());
 		
 		// Using the supplier we generate a fresh new synthesizer to avoid having
 		// previous data influence our measurements
@@ -213,12 +220,13 @@ public class ASynthesizerExperiment {
 		    handler.cancel(true);
 		    monitor.setCanceled(true);
 		    System.out.println("TIMEOUT.");
+		} finally {
+			executor.shutdownNow();
 		}
 		
 		// Terminate the possibily still ongoing benchmark.
 		// Since termination is a cooperative process, we may need to wait some time
 		// until the benchmarked synthesizer hits a point where it checks for cancellation
-		executor.shutdownNow();
 		while (!executor.isTerminated()) {
 			try {
 				executor.awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
@@ -307,7 +315,7 @@ public class ASynthesizerExperiment {
 	 * @throws IOException exception
 	 */
 	protected void saveStatistics(String filePathWithPrefix, String suffix, List<String> columns, Function<SynthesisStatistics, List<String>> getValues) throws IOException {
-		Path pathSynthesizer = Paths.get(filePathWithPrefix + "-" + suffix + ".txt");
+		Path pathSynthesizer = Paths.get(filePathWithPrefix, suffix + ".txt");
 		try (OutputStream outFile = Files.newOutputStream(pathSynthesizer, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			
@@ -321,15 +329,18 @@ public class ASynthesizerExperiment {
 		}
 	}
 	
+	protected String getResultsPath(String filePath) {
+		return "resources/results/" + filePath;
+	}
+	
 	/**
-	 * Write statistic to files
+	 * Write summary statistic to files
 	 * @param filePath the path
 	 * @throws IOException exception
 	 */
-	protected void saveStatistics(String filePath) throws IOException {
-		String filePathWithPrefix = "resources/results/" + filePath;
-		Path pathSummary = Paths.get(filePathWithPrefix + "-summary.txt");
-		Files.createDirectories(pathSummary.getParent());
+	protected void saveSummaryStatistics(String filePath) throws IOException {
+		String filePathWithPrefix = getResultsPath(filePath);
+		Path pathSummary = Paths.get(filePathWithPrefix, "summary.txt");
 		
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
@@ -340,7 +351,7 @@ public class ASynthesizerExperiment {
 			writer.print(TimeUnit.SECONDS.convert(totalSolveTime, TimeUnit.MILLISECONDS));
 		}
 		
-		Path pathFaultTree = Paths.get(filePathWithPrefix + "-fault-tree.txt");
+		Path pathFaultTree = Paths.get(filePathWithPrefix, "fault-tree.txt");
 		try (OutputStream outFile = Files.newOutputStream(pathFaultTree, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			
@@ -352,9 +363,21 @@ public class ASynthesizerExperiment {
 				writer.println(record);
 			}
 		}
+	}
+	
+	/**
+	 * Write statistic of a suite entry to files
+	 * @param filePath the path
+	 * @param suiteEntry the current suite entry
+	 * @throws IOException exception
+	 */
+	protected void saveSuiteEntryStatistics(String filePath, String suiteEntry) throws IOException {
+		String resultsPath = getResultsPath(filePath) + "/" + suiteEntry;
+		Path path = Paths.get(resultsPath);
+		Files.createDirectories(path);
 		
-		saveStatistics(filePathWithPrefix, "synthesizer", SynthesisStatistics.getColumns(), SynthesisStatistics::getValues);
-		saveStatistics(filePathWithPrefix, "ma-builder", MarkovAutomatonBuildStatistics.getColumns(), statistics -> statistics.maBuildStatistics.getValues());
-		saveStatistics(filePathWithPrefix, "ra-minimizer", MinimizationStatistics.getColumns(), statistics -> statistics.minimizationStatistics.getValues());
+		saveStatistics(resultsPath, "/synthesizer", SynthesisStatistics.getColumns(), SynthesisStatistics::getValues);
+		saveStatistics(resultsPath, "/ma-builder", MarkovAutomatonBuildStatistics.getColumns(), statistics -> statistics.maBuildStatistics.getValues());
+		saveStatistics(resultsPath, "/ra-minimizer", MinimizationStatistics.getColumns(), statistics -> statistics.minimizationStatistics.getValues());
 	}
 }

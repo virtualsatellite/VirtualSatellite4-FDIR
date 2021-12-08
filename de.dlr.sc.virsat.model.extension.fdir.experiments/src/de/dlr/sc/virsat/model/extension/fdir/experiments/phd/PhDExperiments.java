@@ -23,14 +23,14 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.POSynthesizer;
 
 /**
  * A test case for benchmarking experiments
- * @author jord_ad
+ * @author muel_s8
  *
  */
 public class PhDExperiments extends ASynthesizerExperiment {
 	
 	public static final String EXPERIMENTS_SET = "phd";
 	public static final String EXPERIMENTS_PATH = "/resources/" + EXPERIMENTS_SET;
-	private static final long BENCHMARK_TIME_SECONDS = 60 * 10;
+	private static final long BENCHMARK_TIME_SECONDS = 1;
 	
 	@Override
 	public void setUp() {
@@ -75,7 +75,7 @@ public class PhDExperiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentPORepair() throws Exception {
 		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet-repair-po");
-		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatistics-repair-po", poSynthesizerSupplier);
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatistics-po-repair", poSynthesizerSupplier);
 	}
 	
 	@Test

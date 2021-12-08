@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.IDFTEvent;
@@ -93,7 +95,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 	}
 	
 	@Override
-	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist, SubMonitor monitor) {
 		IDFTEvent event = stateUpdateResult.getStateUpdate().getEvent();
 		DFTState pred = stateUpdateResult.getStateUpdate().getState();
 		
@@ -103,7 +105,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 
 		if (!anyObservation || hasRecoveryStrategy) {
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(true);
-			super.propagateStateUpdate(stateUpdateResult, worklist);
+			super.propagateStateUpdate(stateUpdateResult, worklist, monitor);
 			((NDSPARESemantics) mapTypeToSemantics.get(FaultTreeNodeType.SPARE)).setPropagateWithoutActions(false);
 		}
 		
@@ -112,7 +114,7 @@ public class PONDDFTSemantics extends DFTSemantics {
 			
 			worklist = new LinkedList<>(nondetGates);
 			stateUpdateResult.getChangedNodes().clear();
-			super.propagateStateUpdate(stateUpdateResult, worklist);
+			super.propagateStateUpdate(stateUpdateResult, worklist, monitor);
 		}
 	}
 	
