@@ -33,9 +33,8 @@ import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
 /**
  * This class generates the partial observable fault trees from a benchmark set.
  * The rules are: 
- * - Make the TLE and all gates on depth 1 observable. 
- * - The root monitor is always immediately observable
- * - Use a uniform observation rate of 1 for all other MONITOR gates if there is an observation delay
+ * - Make all nodes until depth i - 1 immediately observable
+ * - Make all nodes on depth i observable with a uniform observation rate 1 / immediately observable
  * 
  * @author muel_s8
  *
@@ -45,34 +44,44 @@ public class POPhdExperimentsGenerator {
 
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
+	public static final int OBSERVATION_LEVELS = 5;
 	
 	@Test
 	public void generatePO() throws IOException {
-		generatePOExperimentSuite("/experimentSet", 0);
+		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
+			generatePOExperimentSuite("/experimentSet", i, 0);
+		}
 	}
 	
 	@Test
 	public void generatePODelayed() throws IOException {
-		generatePOExperimentSuite("/experimentSet", 1);
+		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
+			generatePOExperimentSuite("/experimentSet", i, 1);
+		}
 	}
 
 	@Test
 	public void generateRepairPO() throws IOException {
-		generatePOExperimentSuite("/experimentSet-repair", 0);
+		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
+			generatePOExperimentSuite("/experimentSet-repair", i, 0);
+		}
 	}
 	
 	@Test
 	public void generateRepairPODelayed() throws IOException {
-		generatePOExperimentSuite("/experimentSet-repair", 1);
+		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
+			generatePOExperimentSuite("/experimentSet-repair", i, 1);
+		}
 	}
 	
 	/**
 	 * Generates the PO experiments for the given experiment suite
 	 * 
 	 * @param experimentSuite the experiment suite
+	 * @param obsLevel level until which observations are possible
 	 * @throws IOException
 	 */
-	private void generatePOExperimentSuite(String experimentSuite, double obsRate) throws IOException {
+	private void generatePOExperimentSuite(String experimentSuite, double obsRate, int obsLevel) throws IOException {
 		String suffix = "-po";
 		if (obsRate > 0) {
 			suffix += "-delay";
@@ -94,7 +103,7 @@ public class POPhdExperimentsGenerator {
 				Path poPath = Paths.get(parentFolder.toString(), fileName + suffix);
 				File poSuiteEntry = poPath.toFile();
 				poSuiteEntry.mkdir();
-				generatePOExperimentSuiteEntry(suiteEntry, poSuiteEntry, obsRate);
+				generatePOExperimentSuiteEntry(suiteEntry, poSuiteEntry, obsRate, obsLevel);
 			}
 		}
 	}
@@ -104,13 +113,14 @@ public class POPhdExperimentsGenerator {
 	 * @param suiteEntry the original suit entry
 	 * @param poSuiteEntry the po suite directory
 	 * @param obsRate the observation rate
+	 * @param obsLevel level until which observations are possible
 	 * @throws IOException
 	 */
-	private void generatePOExperimentSuiteEntry(File suiteEntry, File poSuiteEntry, double obsRate) throws IOException {
+	private void generatePOExperimentSuiteEntry(File suiteEntry, File poSuiteEntry, double obsRate, int obsLevel) throws IOException {
 		if (suiteEntry.isDirectory()) {
 			File[] files = suiteEntry.listFiles();
 			for (File file : files) {
-				generatePOExperimentSuiteEntry(file, poSuiteEntry, obsRate);
+				generatePOExperimentSuiteEntry(file, poSuiteEntry, obsRate, obsLevel);
 			}
 		} else {
 			Path poPath = poSuiteEntry.toPath().resolve(suiteEntry.getName());
@@ -119,17 +129,23 @@ public class POPhdExperimentsGenerator {
 			Path platformPath = Paths.get(".\\").relativize(suiteEntry.toPath());
 			GalileoDft galileoDft = createGalileoDFT("/" + platformPath.toString());
 			
-			GalileoFaultTreeNode observer = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
-			observer.setName("O");
-			Observer observerConfig = DftFactory.eINSTANCE.createObserver();
-			observerConfig.setObservationRate(String.valueOf(obsRate));
-			observer.setType(observerConfig);
-			observerConfig.getObservables().add(galileoDft.getRoot());
-			galileoDft.getGates().add(observer);
+			// Observer observing all nodes to level obsLevel -1
+			GalileoFaultTreeNode obs1 = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
+			obs1.setName("O1");
+			Observer obs1Config = DftFactory.eINSTANCE.createObserver();
+			obs1Config.setObservationRate("0");
+			obs1.setType(obs1Config);
+			galileoDft.getGates().add(obs1);
+			
+			// Observer observing all nodes on obsLevel
+			GalileoFaultTreeNode obs2 = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
+			obs2.setName("O2");
+			Observer obs2Config = DftFactory.eINSTANCE.createObserver();
+			obs2Config.setObservationRate(String.valueOf(obsRate));
+			obs2.setType(obs2Config);
+			galileoDft.getGates().add(obs2);
 
-			for (GalileoFaultTreeNode child : galileoDft.getRoot().getChildren()) {
-				observerConfig.getObservables().add(child);
-			}
+			observeNode(obs1Config, obs2Config, galileoDft.getRoot(), 0, obsLevel);
 			
 			String targetPath = poFile.getAbsolutePath();
 			GalileoDFTWriter dftWriter = new GalileoDFTWriter(targetPath);
@@ -139,6 +155,25 @@ public class POPhdExperimentsGenerator {
 		}
 	}
 	
+	/**
+	 * Registers an observer for the current node
+	 * @param obs1Config a level - 1 observer
+	 * @param obs2Config a level observer
+	 * @param node the node to observe
+	 * @param currentObsLevel the current observation level
+	 * @param maxObsLevel the maximum observation level
+	 */
+	private void observeNode(Observer obs1Config, Observer obs2Config, GalileoFaultTreeNode node, int currentObsLevel, int maxObsLevel) {
+		if (currentObsLevel == maxObsLevel) {
+			obs2Config.getObservables().add(node);
+		} else {
+			obs1Config.getObservables().add(node);
+			for (GalileoFaultTreeNode child : node.getChildren()) {
+				observeNode(obs1Config, obs2Config, child, currentObsLevel + 1, maxObsLevel);
+			}
+		}
+	}
+
 	/**
 	 * Creates a GALILEO DFT from a locally available resource file.
 	 * @param resourcePath the path to the .dft file
