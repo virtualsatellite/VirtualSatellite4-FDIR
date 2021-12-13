@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.fdir.galileo.GalileoDFTWriter;
 import de.dlr.sc.virsat.fdir.galileo.dft.DftFactory;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoFaultTreeNode;
+import de.dlr.sc.virsat.fdir.galileo.dft.Named;
 import de.dlr.sc.virsat.fdir.galileo.dft.Observer;
 
 /**
@@ -44,33 +45,34 @@ public class POPhdExperimentsGenerator {
 
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
+	private static final String FILE_EXTENSION = ".dft";
 	public static final int OBSERVATION_LEVELS = 5;
 	
 	@Test
 	public void generatePO() throws IOException {
 		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
-			generatePOExperimentSuite("/experimentSet", i, 0);
+			generatePOExperimentSuite("/experimentSet", 0, i);
 		}
 	}
 	
 	@Test
 	public void generatePODelayed() throws IOException {
 		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
-			generatePOExperimentSuite("/experimentSet", i, 1);
+			generatePOExperimentSuite("/experimentSet", 1, i);
 		}
 	}
 
 	@Test
 	public void generateRepairPO() throws IOException {
 		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
-			generatePOExperimentSuite("/experimentSet-repair", i, 0);
+			generatePOExperimentSuite("/experimentSet-repair", 0, i);
 		}
 	}
 	
 	@Test
 	public void generateRepairPODelayed() throws IOException {
 		for (int i = 0; i < OBSERVATION_LEVELS; ++i) {
-			generatePOExperimentSuite("/experimentSet-repair", i, 1);
+			generatePOExperimentSuite("/experimentSet-repair", 1, i);
 		}
 	}
 	
@@ -86,6 +88,7 @@ public class POPhdExperimentsGenerator {
 		if (obsRate > 0) {
 			suffix += "-delay";
 		}
+		suffix += "-" + obsLevel;
 
 		String poExperimentSuite = experimentSuite + suffix;
 
@@ -145,9 +148,10 @@ public class POPhdExperimentsGenerator {
 			obs2.setType(obs2Config);
 			galileoDft.getGates().add(obs2);
 
-			observeNode(obs1Config, obs2Config, galileoDft.getRoot(), 0, obsLevel);
+			observeNode(obs1Config, obs2Config, galileoDft.getRoot(), galileoDft, 0, obsLevel);
 			
-			String targetPath = poFile.getAbsolutePath();
+			String name = poFile.getName().substring(0, poFile.getName().length() - FILE_EXTENSION.length()) + "-po-" + obsLevel + FILE_EXTENSION;
+			String targetPath = poFile.getParentFile().getAbsolutePath() + "/" + name;
 			GalileoDFTWriter dftWriter = new GalileoDFTWriter(targetPath);
 			dftWriter.write(galileoDft);
 			
@@ -160,16 +164,33 @@ public class POPhdExperimentsGenerator {
 	 * @param obs1Config a level - 1 observer
 	 * @param obs2Config a level observer
 	 * @param node the node to observe
+	 * @param galileoDFT the galileo dft
 	 * @param currentObsLevel the current observation level
 	 * @param maxObsLevel the maximum observation level
 	 */
-	private void observeNode(Observer obs1Config, Observer obs2Config, GalileoFaultTreeNode node, int currentObsLevel, int maxObsLevel) {
+	private void observeNode(Observer obs1Config, Observer obs2Config, GalileoFaultTreeNode node, GalileoDft galileoDFT, int currentObsLevel, int maxObsLevel) {
 		if (currentObsLevel == maxObsLevel) {
 			obs2Config.getObservables().add(node);
 		} else {
 			obs1Config.getObservables().add(node);
 			for (GalileoFaultTreeNode child : node.getChildren()) {
-				observeNode(obs1Config, obs2Config, child, currentObsLevel + 1, maxObsLevel);
+				observeNode(obs1Config, obs2Config, child, galileoDFT, currentObsLevel + 1, maxObsLevel);
+			}
+			
+			for (GalileoFaultTreeNode galileoFtn : galileoDFT.getGates()) {
+				if (galileoFtn.getType() instanceof Named) {
+					Named named = (Named) galileoFtn.getType();
+					if (named.getTypeName().contains("dep")) {
+						for (int i = 1; i < galileoFtn.getChildren().size(); ++i) {
+							GalileoFaultTreeNode child = galileoFtn.getChildren().get(i);
+							if (child.equals(node)) {
+								GalileoFaultTreeNode trigger = galileoFtn.getChildren().get(0);
+								observeNode(obs1Config, obs2Config, trigger, galileoDFT, currentObsLevel + 1, maxObsLevel);
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 	}

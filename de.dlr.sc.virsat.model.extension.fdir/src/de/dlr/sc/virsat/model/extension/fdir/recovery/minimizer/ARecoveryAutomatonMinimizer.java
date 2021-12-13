@@ -13,7 +13,6 @@ package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
@@ -26,7 +25,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 public abstract class ARecoveryAutomatonMinimizer {
 
-	private MinimizationStatistics statistics;
+	private MinimizationStatistics statistics = new MinimizationStatistics();
 
 	/**
 	 * Main method to override and perform the actual minimization
@@ -43,14 +42,14 @@ public abstract class ARecoveryAutomatonMinimizer {
 	 * @param root the root of the associated fault tree
 	 * @param subMonitor a monitor
 	 */
-	public void minimize(RecoveryAutomaton ra, FaultTreeNode root, SubMonitor subMonitor) {
+	public void minimize(RecoveryAutomaton ra, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		statistics = new MinimizationStatistics();
 		long startTime = System.currentTimeMillis();
 		statistics.time = IStatistics.TIMEOUT;
 		statistics.removedStates = ra.getStates().size();
 		statistics.removedTransitions = ra.getTransitions().size();
 		
-		minimize(new RecoveryAutomatonHolder(ra), new FaultTreeHolder(root), subMonitor);
+		minimize(new RecoveryAutomatonHolder(ra), ftHolder, subMonitor);
 		
 		statistics.time = System.currentTimeMillis() - startTime;
 		statistics.removedStates = statistics.removedStates - ra.getStates().size();

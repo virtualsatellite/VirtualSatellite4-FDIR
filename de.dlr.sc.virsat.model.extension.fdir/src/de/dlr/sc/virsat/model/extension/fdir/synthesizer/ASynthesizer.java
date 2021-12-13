@@ -16,10 +16,10 @@ import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverter;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
-import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * Abstract class providing some default implementations for the ISynthesizer interface.
@@ -44,13 +44,13 @@ public abstract class ASynthesizer implements ISynthesizer {
 		int steps = 1 + (minimizer != null ? 1 : 0);
 		subMonitor = SubMonitor.convert(subMonitor, steps);
 		
-		FaultTreeNode root  = synthesisQuery.getFTHolder().getRoot();
-		concept = root.getConcept();
+		FaultTreeHolder ftHolder = synthesisQuery.getFTHolder();
+		concept = ftHolder.getRoot().getConcept();
 		
-		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(root, subMonitor.split(1));
+		RecoveryAutomaton synthesizedRA = convertToRecoveryAutomaton(synthesisQuery.getFTHolder(), subMonitor.split(1));
 		
 		if (minimizer != null) {
-			minimizer.minimize(synthesizedRA, root, subMonitor.split(1));
+			minimizer.minimize(synthesizedRA, ftHolder, subMonitor.split(1));
 			statistics.minimizationStatistics.compose(minimizer.getStatistics());
 		}
 		
@@ -88,10 +88,10 @@ public abstract class ASynthesizer implements ISynthesizer {
 	 * @param subMonitor the progress monitor
 	 * @return the recovery automaton
 	 */
-	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeNode root, SubMonitor subMonitor) {
+	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		DFT2MAConverter dft2maConverter = createDFT2MAConverter();
-		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(root, null, subMonitor);
-		
+		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(ftHolder, null, subMonitor);
+
 		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2maConverter.getMaBuilder().getInitialState(), subMonitor);
 		
 		statistics.maBuildStatistics.compose(dft2maConverter.getMaBuilder().getStatistics());

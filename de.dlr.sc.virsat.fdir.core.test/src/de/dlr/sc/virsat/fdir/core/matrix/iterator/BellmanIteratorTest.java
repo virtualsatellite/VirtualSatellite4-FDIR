@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
 import static org.junit.Assert.assertArrayEquals;
 
+import org.eclipse.core.runtime.SubMonitor;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.matrix.IMatrix;
@@ -38,7 +39,7 @@ public class BellmanIteratorTest {
 		
 		final double[] EXPECTED_CONVERGENCE = { 0.1, 2.04, 2.6 };
 		final double EPS = 0.000001;
-		lpIterator.converge(EPS);
+		lpIterator.converge(EPS, SubMonitor.convert(null));
 		
 		assertArrayEquals(EXPECTED_CONVERGENCE, lpIterator.getValues(), EPS);
 	}

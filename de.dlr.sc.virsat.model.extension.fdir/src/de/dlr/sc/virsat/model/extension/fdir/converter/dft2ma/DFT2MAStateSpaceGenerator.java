@@ -23,7 +23,6 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.AStateSpaceGenerator;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryChecker;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.SymmetryReduction;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate.StateUpdateResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events.FaultEvent;
@@ -74,7 +73,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 			ftHolder.getStaticAnalysis().setSymmetryChecker(null);
 			allowsDontCareFailing = false;
 		} else {
-			ftHolder.getStaticAnalysis().setSymmetryChecker(new DFTSymmetryChecker());
 			allowsDontCareFailing = true;
 		}
 		

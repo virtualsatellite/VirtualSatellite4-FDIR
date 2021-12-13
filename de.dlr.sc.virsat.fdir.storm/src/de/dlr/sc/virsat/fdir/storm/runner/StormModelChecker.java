@@ -63,13 +63,13 @@ public class StormModelChecker implements IMarkovModelChecker {
 
 
 	@Override
-	public void visit(MeanTimeToFailure mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric, SubMonitor monitor) {
 		modelCheckingResult.setMeanTimeToFailure(resultExtracted.get(startIndex));
 		startIndex++;
 	}
 
 	@Override
-	public void visit(SteadyStateAvailability steadyStateavailabilityMetric) {
+	public void visit(SteadyStateAvailability steadyStateavailabilityMetric, SubMonitor monitor) {
 		modelCheckingResult.setSteadyStateAvailability(resultExtracted.get(startIndex));
 		startIndex++;
 	}
@@ -80,7 +80,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 	}
 	
 	@Override
-	public void visit(MinimumCutSet minimumCutSet) {
+	public void visit(MinimumCutSet minimumCutSet, SubMonitor monitor) {
 		
 	}
 
@@ -97,7 +97,7 @@ public class StormModelChecker implements IMarkovModelChecker {
 		try {
 			resultExtracted  = stormRunner.run();
 			for (IBaseMetric metric : modelCheckingQuery.getMetrics()) {
-				metric.accept(this, null);
+				metric.accept(this, subMonitor);
 			}
 
 		} catch (IOException | URISyntaxException e) {

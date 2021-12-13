@@ -28,6 +28,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelChecker;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingQuery;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider;
 import de.dlr.sc.virsat.fdir.core.metrics.FailLabelProvider.FailLabel;
 import de.dlr.sc.virsat.fdir.core.metrics.IBaseMetric;
@@ -240,5 +241,10 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 		}
 		
 		return false;
+	}
+
+	@Override
+	public ModelCheckingStatistics getStatistics() {
+		return modelChecker.getStatistics();
 	}
 }

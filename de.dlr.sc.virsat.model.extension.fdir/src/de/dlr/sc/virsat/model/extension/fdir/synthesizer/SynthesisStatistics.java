@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
 
@@ -29,6 +30,7 @@ public class SynthesisStatistics implements IStatistics {
 	public int maxModuleRaSize = NA;
 	public final MarkovAutomatonBuildStatistics maBuildStatistics = new MarkovAutomatonBuildStatistics();
 	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics();
+	public final ModelCheckingStatistics modelCheckingStatistics = new ModelCheckingStatistics();
 	//CHECKSTYLE:ON
 	
 	/**
@@ -39,6 +41,7 @@ public class SynthesisStatistics implements IStatistics {
 		this.maxModuleRaSize = Math.max(maxModuleRaSize, other.maxModuleRaSize);
 		this.maBuildStatistics.compose(other.maBuildStatistics);
 		this.minimizationStatistics.compose(other.minimizationStatistics);
+		this.modelCheckingStatistics.compose(other.modelCheckingStatistics);
 	}
 	
 	@Override
@@ -52,6 +55,7 @@ public class SynthesisStatistics implements IStatistics {
 		sb.append("\t* Largest Module RA:\t\t" 		+ getPrintValue(maxModuleRaSize) + "\n");
 		sb.append(maBuildStatistics);
 		sb.append(minimizationStatistics);
+		sb.append(modelCheckingStatistics);
 		return sb.toString();
 	}
 	

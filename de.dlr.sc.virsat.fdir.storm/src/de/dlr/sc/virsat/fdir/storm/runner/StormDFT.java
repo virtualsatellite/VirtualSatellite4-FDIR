@@ -89,7 +89,7 @@ public class StormDFT implements IStormProgram<Double> {
 		commandWithArgs.add("-symred");
 
 		metrics.stream().forEach(metric -> {
-			commandWithArgs.addAll(new MetricToStormArguments().toArguments(metric));
+			commandWithArgs.addAll(new MetricToStormArguments().toArguments(metric, SubMonitor.convert(null)));
 		});
 
 		return commandWithArgs.stream().toArray(String[]::new);
@@ -141,9 +141,9 @@ public class StormDFT implements IStormProgram<Double> {
 		 *            the metric
 		 * @return the command line arguments to compute the metric via storm
 		 */
-		public List<String> toArguments(IBaseMetric metric) {
+		public List<String> toArguments(IBaseMetric metric, SubMonitor subMonitor) {
 			stormArguments = new ArrayList<>();
-			metric.accept(this, null);
+			metric.accept(this, subMonitor);
 			return stormArguments;
 		}
 
@@ -156,7 +156,7 @@ public class StormDFT implements IStormProgram<Double> {
 		}
 
 		@Override
-		public void visit(MeanTimeToFailure mttfMetric) {
+		public void visit(MeanTimeToFailure mttfMetric, SubMonitor subMonitor) {
 			stormArguments.add("-mttf");
 		}
 
@@ -166,12 +166,12 @@ public class StormDFT implements IStormProgram<Double> {
 		}
 
 		@Override
-		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
+		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric, SubMonitor subMonitor) {
 			
 		}
 
 		@Override
-		public void visit(MinimumCutSet minimumCutSet) {
+		public void visit(MinimumCutSet minimumCutSet, SubMonitor subMonitor) {
 			
 		}
 	}

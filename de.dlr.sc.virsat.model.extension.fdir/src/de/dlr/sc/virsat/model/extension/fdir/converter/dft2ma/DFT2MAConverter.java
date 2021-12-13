@@ -39,7 +39,19 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, SubMonitor monitor) {
 		FaultTreeNode holderRoot = root instanceof BasicEvent ? root.getFault() : root;
 		FaultTreeHolder ftHolder = new FaultTreeHolder(holderRoot);
-		stateSpaceGenerator.configure(ftHolder, failableBasicEventsProvider);
+		return convert(ftHolder, failableBasicEventsProvider, monitor);
+	}
+	
+	/**
+	 * Converts a fault tree with the passed fault tree holder to a Markov automaton.
+	 * @param root a fault tree holder set on the root
+	 * @param failableBasicEventsProvider the nodes that need to fail
+	 * @param failLabelProvider the fail label criterion
+	 * @param monitor the monitor
+	 * @return the generated Markov automaton resulting from the conversion
+	 */
+	public MarkovAutomaton<DFTState> convert(FaultTreeHolder root, FailableBasicEventsProvider failableBasicEventsProvider, SubMonitor monitor) {
+		stateSpaceGenerator.configure(root, failableBasicEventsProvider);
 		MarkovAutomaton<DFTState> ma = maBuilder.build(stateSpaceGenerator, monitor);
 		return ma;
 	}

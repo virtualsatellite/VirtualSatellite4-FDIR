@@ -1,0 +1,21 @@
+toplevel "System";
+"System" or "FDEP" "CPU" "MOTORS" "PUMPS";
+"FDEP" fdep "TRIGGER" "P" "B";
+"TRIGGER" or "CS" "SS";
+"CPU" wsp "P" "B";
+"MOTORS" and "MOTOR" "MOTORC";
+"PUMPS" pand "PUMP1" "PUMP2";
+"PUMP1" csp "PA" "PS";
+"PUMP2" csp "PB" "PS";
+"O1" observer "System" "FDEP" "TRIGGER" "CS" "SS" "P" "B" "CPU" "MOTORS"
+"MOTOR" "MOTORC" "PUMPS" "PUMP1" "PA" "PS" "PUMP2" "PB" obsRate=0;
+"O2" observer "CS" "SS" obsRate=0.0;
+"P" lambda=4e-6 dorm=0 repair=4e-6;
+"B" lambda=4e-6 dorm=0.5 repair=4e-6;
+"CS" lambda=1e-6 dorm=0 repair=1e-6;
+"SS" lambda=2e-6 dorm=0 repair=2e-6;
+"MOTOR" lambda=5e-6 dorm=0 repair=5e-6;
+"MOTORC" lambda=1e-6 dorm=0 repair=1e-6;
+"PA" lambda=5e-6 dorm=0 repair=5e-6;
+"PB" lambda=5e-6 dorm=0 repair=5e-6;
+"PS" lambda=5e-6 dorm=0 repair=5e-6;

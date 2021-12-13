@@ -30,7 +30,10 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		subMonitor = SubMonitor.convert(subMonitor, minimizers.size());
 		for (ARecoveryAutomatonMinimizer minimizer : minimizers) {
+			int removedStates = raHolder.getRa().getStates().size();
 			minimizer.minimize(raHolder, ftHolder, subMonitor.split(1));
+			removedStates -= raHolder.getRa().getStates().size();
+			getStatistics().minimizers.merge(minimizer.getClass().getSimpleName(), removedStates, (v1, v2) -> v1 + v2);
 		}
 	}
 	

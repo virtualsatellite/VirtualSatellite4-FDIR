@@ -40,6 +40,7 @@ import org.junit.Before;
 import de.dlr.sc.virsat.concept.unittest.util.ConceptXmiLoader;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
@@ -49,9 +50,7 @@ import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
-import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
@@ -70,8 +69,6 @@ public class ASynthesizerExperiment {
 	private static final long DEFAULT_BENCHMARK_TIMEOUT_SECONDS = 30;
 	private static final long BENCHMARK_SLEEP = 1000;
 	
-	protected ModularSynthesizer synthesizer;
-	
 	protected Concept concept;
 	protected FaultTreeBuilder ftBuilder;
 	protected RecoveryAutomatonHelper raHelper;
@@ -79,18 +76,27 @@ public class ASynthesizerExperiment {
 	protected Map<String, SynthesisStatistics> mapBenchmarkToSynthesisStatistics = new TreeMap<>();
 	protected Map<String, FaultTreeStatistics> mapBenchmarkToFaultTreeStatistics = new TreeMap<>();
 	
+	protected Map<String, SynthesisStatistics> mapSuiteBenchmarkToSynthesisStatistics;
+	protected Map<String, FaultTreeStatistics> mapSuiteBenchmarkToFaultTreeStatistics;
+	
 	protected int countSolved;
 	protected int countTimeout;
 	protected int countOutOfMemory;
 	protected int countTotal;
 	protected long totalSolveTime;
 	
+	protected int countSuiteSolved;
+	protected int countSuiteTimeout;
+	protected int countSuiteOutOfMemory;
+	protected int countSuiteTotal;
+	protected long totalSuiteSolveTime;
+	private ISynthesizer benchmarkSynthesizer;
+	
 	@Before
 	public void setUp() {
 		concept = ConceptXmiLoader.loadConceptFromPlugin(PLUGIN_ID + "/concept/concept.xmi");
 		this.ftBuilder = new FaultTreeBuilder(concept);
 		this.raHelper = new RecoveryAutomatonHelper(concept);
-		this.synthesizer = new ModularSynthesizer();
 	}
 	
 	/**
@@ -153,10 +159,26 @@ public class ASynthesizerExperiment {
 	 */
 	protected void benchmarkSuiteEntry(File entry, String saveFileName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {
 		if (entry.isDirectory()) {
+			mapSuiteBenchmarkToFaultTreeStatistics = new TreeMap<>();
+			mapSuiteBenchmarkToSynthesisStatistics = new TreeMap<>();
+			countSuiteSolved = 0;
+			countSuiteTimeout = 0;
+			countSuiteOutOfMemory = 0;
+			countSuiteTotal = 0;
+			totalSuiteSolveTime = 0;
+			
 			File[] files = entry.listFiles();
 			for (File file : files) {
 				benchmarkSuiteEntry(file, saveFileName, synthesizerSupplier);
 			}
+			
+			mapBenchmarkToFaultTreeStatistics.putAll(mapSuiteBenchmarkToFaultTreeStatistics);
+			mapBenchmarkToSynthesisStatistics.putAll(mapBenchmarkToSynthesisStatistics);
+			countSolved += countSuiteTotal;
+			countTimeout += countSuiteTimeout;
+			countOutOfMemory += countSuiteOutOfMemory;
+			countTotal += countSuiteTotal;
+			totalSolveTime += totalSuiteSolveTime;
 			
 			saveSuiteEntryStatistics(saveFileName, entry.getName());
 		} else {
@@ -200,10 +222,22 @@ public class ASynthesizerExperiment {
 		
 		// Using the supplier we generate a fresh new synthesizer to avoid having
 		// previous data influence our measurements
-		ISynthesizer benchmarkSynthesizer = synthesizerSupplier.get();
+		benchmarkSynthesizer = synthesizerSupplier.get();
+		
+		// Optional query configurations from the experiment
+		configQuery(query);
 		
 		// Create a monitor so we can properly cancel the synthesis call
 		SubMonitor monitor = SubMonitor.convert(new NullProgressMonitor());
+		
+		// Reset all benchmark statistics
+		mapBenchmarkToFaultTreeStatistics = new TreeMap<>();
+		mapBenchmarkToSynthesisStatistics = new TreeMap<>();
+		countSolved = 0;
+		countTimeout = 0;
+		countOutOfMemory = 0;
+		countTotal = 0;
+		totalSolveTime = 0;
 		
 		// Execute the benchmark and handle timeout and out of memory events
 		final Future<?> handler = executor.submit(() -> {
@@ -212,7 +246,10 @@ public class ASynthesizerExperiment {
 		
 		try {
 		    handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-		    System.out.println("DONE.");
+		    System.out.println("DONE. "
+		    		+ "(" + benchmarkSynthesizer.getStatistics().time + "ms," 
+		    		+ benchmarkSynthesizer.getStatistics().maBuildStatistics.maxStates + " states"
+		    		+ ")");
 		} catch (ExecutionException e) {
 			benchmarkSynthesizer.getStatistics().time = IStatistics.OOM;
 			System.out.println("OUT OF MEMORY.");
@@ -242,22 +279,26 @@ public class ASynthesizerExperiment {
 		// Also mark the timeout and out of memory with special benchmark times depending on the benchmark timeout
 		// This way we can later properly display the data in graphs
 		
-		countTotal++;
+		countSuiteTotal++;
 		if (benchmarkSynthesizer.getStatistics().time == IStatistics.OOM) {
-			countOutOfMemory++;
+			countSuiteOutOfMemory++;
 			benchmarkSynthesizer.getStatistics().time = OUT_OF_MEMROY_FACTORY * TimeUnit.MILLISECONDS.convert(timeoutSeconds, TimeUnit.SECONDS);
 		} else if (benchmarkSynthesizer.getStatistics().time == IStatistics.TIMEOUT) {
-			countTimeout++;
+			countSuiteTimeout++;
 			benchmarkSynthesizer.getStatistics().time = TIMEOUT_FACTOR * TimeUnit.MILLISECONDS.convert(timeoutSeconds, TimeUnit.SECONDS);
 		} else {
-			countSolved++;
-			totalSolveTime += benchmarkSynthesizer.getStatistics().time;
+			countSuiteSolved++;
+			totalSuiteSolveTime += benchmarkSynthesizer.getStatistics().time;
 		}
 		
-		mapBenchmarkToSynthesisStatistics.put(benchmarkName, benchmarkSynthesizer.getStatistics());
-		mapBenchmarkToFaultTreeStatistics.put(benchmarkName, query.getFTHolder().getStatistics());
+		mapSuiteBenchmarkToSynthesisStatistics.put(benchmarkName, benchmarkSynthesizer.getStatistics());
+		mapSuiteBenchmarkToFaultTreeStatistics.put(benchmarkName, query.getFTHolder().getStatistics());
 	}
 	
+	protected void configQuery(SynthesisQuery query) {
+		// Override in experiment setup for special query configurations
+	}
+
 	/**
 	 * Sleep some to give the gc time to trigger, especially
  	 * if a out of memory exception just a occurred
@@ -322,7 +363,7 @@ public class ASynthesizerExperiment {
 			String header = "benchmarkName " + String.join(" ", columns);
 			writer.println(header);
 			
-			for (Entry<String, SynthesisStatistics> entry : mapBenchmarkToSynthesisStatistics.entrySet()) {
+			for (Entry<String, SynthesisStatistics> entry : mapSuiteBenchmarkToSynthesisStatistics.entrySet()) {
 				String record = entry.getKey() + " " + String.join(" ", getValues.apply(entry.getValue()));
 				writer.println(record);
 			}
@@ -364,6 +405,38 @@ public class ASynthesizerExperiment {
 			}
 		}
 	}
+
+	/**
+	 * Write summary statistic to files
+	 * @param filePath the path
+	 * @throws IOException exception
+	 */
+	protected void saveSummarySuiteEntryStatistics(String filePath) throws IOException {
+		String filePathWithPrefix = getResultsPath(filePath);
+		Path pathSummary = Paths.get(filePathWithPrefix, "summary.txt");
+		
+		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			PrintStream writer = new PrintStream(outFile)) {
+			writer.println("solved timeouts ooms solveTime");
+			writer.print(countSuiteSolved + "/" + countSuiteTotal + " ");
+			writer.print(countSuiteTimeout + " ");
+			writer.print(countSuiteOutOfMemory + " ");
+			writer.print(TimeUnit.SECONDS.convert(totalSuiteSolveTime, TimeUnit.MILLISECONDS));
+		}
+		
+		Path pathFaultTree = Paths.get(filePathWithPrefix, "fault-tree.txt");
+		try (OutputStream outFile = Files.newOutputStream(pathFaultTree, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			PrintStream writer = new PrintStream(outFile)) {
+			
+			String header = "benchmarkName " + String.join(" ", FaultTreeStatistics.getColumns());
+			writer.println(header);
+			
+			for (Entry<String, FaultTreeStatistics> entry : mapSuiteBenchmarkToFaultTreeStatistics.entrySet()) {
+				String record = entry.getKey() + " " + String.join(" ", entry.getValue().getValues());
+				writer.println(record);
+			}
+		}
+	}
 	
 	/**
 	 * Write statistic of a suite entry to files
@@ -372,12 +445,16 @@ public class ASynthesizerExperiment {
 	 * @throws IOException exception
 	 */
 	protected void saveSuiteEntryStatistics(String filePath, String suiteEntry) throws IOException {
-		String resultsPath = getResultsPath(filePath) + "/" + suiteEntry;
+		String suitePath = filePath + "/" + suiteEntry;
+		String resultsPath = getResultsPath(suitePath);
 		Path path = Paths.get(resultsPath);
 		Files.createDirectories(path);
 		
+		saveSummarySuiteEntryStatistics(suitePath);
+		
 		saveStatistics(resultsPath, "/synthesizer", SynthesisStatistics.getColumns(), SynthesisStatistics::getValues);
 		saveStatistics(resultsPath, "/ma-builder", MarkovAutomatonBuildStatistics.getColumns(), statistics -> statistics.maBuildStatistics.getValues());
-		saveStatistics(resultsPath, "/ra-minimizer", MinimizationStatistics.getColumns(), statistics -> statistics.minimizationStatistics.getValues());
+		saveStatistics(resultsPath, "/ra-minimizer", benchmarkSynthesizer.getStatistics().minimizationStatistics.getAllColumns(), statistics -> statistics.minimizationStatistics.getValues());
+		saveStatistics(resultsPath, "/model-checker", ModelCheckingStatistics.getColumns(), statistics -> statistics.modelCheckingStatistics.getValues());
 	}
 }

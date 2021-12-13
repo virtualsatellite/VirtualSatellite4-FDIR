@@ -237,7 +237,7 @@ public class ModularSynthesizerTest extends ATestCase {
 			0.9976596933453932, 
 			0.9962533670570343
 		};
-		final double EXPECTED_SSA = 0.6060612736223054;
+		final double EXPECTED_SSA = 0.6166838796754821;
 		
 		Fault fault = createDFT("/resources/galileoRepair/fdep1Csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
@@ -321,7 +321,7 @@ public class ModularSynthesizerTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoObsRepair/obsCsp2ObsRepair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
 		
-		final double EXPECTED_SSA = 0.2404497446057956;
+		final double EXPECTED_SSA = 0.24022610111424392;
 		final int EXPECTED_COUNT_STATES = 11;
 		final int EXPECTED_COUNT_TRANSITIONS = 21;
 		

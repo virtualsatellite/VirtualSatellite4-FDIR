@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.matrix.iterator;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 public interface IMatrixIterator {
 	/**
 	 * Iterate performs one update iteration.
@@ -47,14 +49,30 @@ public interface IMatrixIterator {
 	 * @param eps the precision
 	 * @return the converged values
 	 */
-	default double[] converge(double eps) {
+	default double[] converge(double eps, SubMonitor monitor) {
+		double doubleEps = eps * 2;
 		boolean convergence = false;
+		double lastChange = Double.POSITIVE_INFINITY;
+		int iteration = 0;
 		while (!convergence) {
+			monitor.checkCanceled();
 			iterate();
 			double change = getChangeSquared();
-			if (change < eps * eps || Double.isNaN(change)) {
+			
+			if (change < doubleEps * doubleEps || Double.isNaN(change)) {
 				convergence = true;
+			} else if (iteration > getValues().length) {
+				// If the change is still increasing after each value
+				// had a chance to be iterated at least once,
+				// then we are converged
+				if (change > lastChange) {
+					convergence = true;
+				} else {
+					lastChange = change;
+				}
 			}
+			
+			iteration++;
 		}
 		
 		return getValues();

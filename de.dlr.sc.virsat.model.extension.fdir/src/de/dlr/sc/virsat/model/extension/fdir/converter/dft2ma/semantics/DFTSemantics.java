@@ -195,7 +195,7 @@ public class DFTSemantics {
 		while (!worklist.isEmpty()) {
 			monitor.checkCanceled();
 			FaultTreeNode ftn = worklist.poll();
-			boolean hasChanged = propagateStateUpdateToNode(stateUpdateResult, ftn);
+			boolean hasChanged = propagateStateUpdateToNode(stateUpdateResult, ftn, monitor);
 			
 			if (hasChanged) {
 				changedNodes.add(ftn);
@@ -217,7 +217,7 @@ public class DFTSemantics {
 	 * @param node the node we want to check
 	 * @return true iff a change occurred in the update
 	 */
-	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node) {
+	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node, SubMonitor monitor) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		if (permanence && stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
 			return false;
@@ -231,6 +231,7 @@ public class DFTSemantics {
 		if (node instanceof BasicEvent) {
 			List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 			for (DFTState state : stateUpdateResult.getSuccs()) {
+				monitor.checkCanceled();
 				hasChanged |= state.handleUpdateTriggers(node, depTriggers);
 			}
 			
@@ -243,6 +244,7 @@ public class DFTSemantics {
 		}
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
+			monitor.checkCanceled();
 			hasChanged  |= nodeSemantics.handleUpdate(node, succ, stateUpdate.getState(), generationResult);
 		}
 		

@@ -400,7 +400,7 @@ public class POSynthesizerTest extends ATestCase {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsCsp2Repair1Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
 		
-		final double EXPECTED_SSA = 0.33333249815122734;
+		final double EXPECTED_SSA = 0.333331086340547;
 		final int EXPECTED_COUNT_STATES = 5;
 		final int EXPECTED_COUNT_TRANSITIONS = 9;
 		
@@ -418,7 +418,7 @@ public class POSynthesizerTest extends ATestCase {
 		FaultTreeNode root = createBasicDFT("/resources/galileoObsRepair/obsCsp2Repair2Delayed.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
 		
-		final double EXPECTED_SSA = 0.5464808947495139;
+		final double EXPECTED_SSA = 0.5465722589030457;
 		final int EXPECTED_COUNT_STATES = 9;
 		final int EXPECTED_COUNT_TRANSITIONS = 17;
 		

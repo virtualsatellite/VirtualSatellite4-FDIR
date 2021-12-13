@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 
 /**
  * Interface for schedulers on markov automata
@@ -34,4 +35,10 @@ public interface IMarkovScheduler<S extends MarkovState> {
 	 * @return the schedule
 	 */
 	Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery, SubMonitor subMonitor);
+
+	/**
+	 * Gets the model checking statistics for the last optimization query
+	 * @return the model checking statistics
+	 */
+	ModelCheckingStatistics getStatistics();
 }

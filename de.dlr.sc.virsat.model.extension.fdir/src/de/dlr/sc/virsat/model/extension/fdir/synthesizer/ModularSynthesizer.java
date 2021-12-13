@@ -91,6 +91,7 @@ public class ModularSynthesizer implements ISynthesizer {
 	private RecoveryAutomaton synthesizeModule(SynthesisQuery synthesisQuery, FaultTreeNode moduleRoot, Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator, SubMonitor subMonitor) {
 		SynthesisQuery delegateSynthesisQuery = new SynthesisQuery(moduleRoot);
 		delegateSynthesisQuery.setObjectiveMetric(synthesisQuery.getObjectiveMetric());
+		delegateSynthesisQuery.getFTHolder().getStaticAnalysis().setSymmetryChecker(synthesisQuery.getFTHolder().getStaticAnalysis().getSymmetryChecker());
 		RecoveryAutomaton synthesizedRA = delegateSynthesizer.synthesize(delegateSynthesisQuery, subMonitor);
 		statistics.compose(delegateSynthesizer.getStatistics());
 		statistics.maxModuleSize = Math.max(statistics.maxModuleSize, mapGeneratedToGenerator.size());
