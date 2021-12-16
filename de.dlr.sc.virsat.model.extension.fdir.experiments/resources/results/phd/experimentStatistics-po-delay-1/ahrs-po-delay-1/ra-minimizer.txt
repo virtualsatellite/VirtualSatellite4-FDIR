@@ -1,0 +1,3 @@
+benchmarkName time removedStates removedTransitions
+AHRS-1-po-1.dft 110 66 252 0 0 0 66
+AHRS-2-po-1.dft N/A N/A N/A

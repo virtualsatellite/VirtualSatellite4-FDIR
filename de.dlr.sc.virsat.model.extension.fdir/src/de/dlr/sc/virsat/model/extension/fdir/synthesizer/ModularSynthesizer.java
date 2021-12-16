@@ -77,6 +77,7 @@ public class ModularSynthesizer implements ISynthesizer {
 		}
 		
 		statistics.time = System.currentTimeMillis() - startTime;
+		statistics.raSize = synthesizedRA.getStates().size();
 		return synthesizedRA;
 	}
 

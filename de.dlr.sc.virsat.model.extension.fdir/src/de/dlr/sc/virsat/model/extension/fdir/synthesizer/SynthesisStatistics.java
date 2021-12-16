@@ -28,6 +28,7 @@ public class SynthesisStatistics implements IStatistics {
 	public int countTrimmedModules = NA;
 	public int maxModuleSize = NA;
 	public int maxModuleRaSize = NA;
+	public int raSize = NA;
 	public final MarkovAutomatonBuildStatistics maBuildStatistics = new MarkovAutomatonBuildStatistics();
 	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics();
 	public final ModelCheckingStatistics modelCheckingStatistics = new ModelCheckingStatistics();
@@ -60,12 +61,12 @@ public class SynthesisStatistics implements IStatistics {
 	}
 	
 	public static List<String> getColumns() {
-		return Arrays.asList("time", "countModules", "countTrimmedModules", "maxModuleSize", "maxModuleRaSize");
+		return Arrays.asList("time", "countModules", "countTrimmedModules", "maxModuleSize", "maxModuleRaSize", "raSize");
 	}
 	
 	@Override
 	public List<String> getValues() {
 		return Arrays.asList(getPrintValue(time), getPrintValue(countModules), getPrintValue(countTrimmedModules), 
-				getPrintValue(maxModuleSize), getPrintValue(maxModuleRaSize));
+				getPrintValue(maxModuleSize), getPrintValue(maxModuleRaSize), getPrintValue(raSize));
 	}
 }

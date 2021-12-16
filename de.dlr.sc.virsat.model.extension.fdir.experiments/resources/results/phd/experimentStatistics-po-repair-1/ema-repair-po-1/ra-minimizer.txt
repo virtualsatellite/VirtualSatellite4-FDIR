@@ -1,0 +1,2 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+EMA-repair-po-1.dft 12 14 23 0 1 2 11

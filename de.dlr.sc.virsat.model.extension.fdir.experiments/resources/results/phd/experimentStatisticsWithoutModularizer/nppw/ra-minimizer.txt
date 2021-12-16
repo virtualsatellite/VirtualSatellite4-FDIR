@@ -1,0 +1,2 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+nppwp.dft 11 20 34 0 0 0 20

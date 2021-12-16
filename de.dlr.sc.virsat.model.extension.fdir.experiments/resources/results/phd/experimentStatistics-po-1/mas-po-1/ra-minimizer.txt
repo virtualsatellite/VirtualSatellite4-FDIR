@@ -1,0 +1,3 @@
+benchmarkName time removedStates removedTransitions
+MAS-2-po-1.dft N/A N/A N/A
+MAS-po-1.dft N/A N/A N/A

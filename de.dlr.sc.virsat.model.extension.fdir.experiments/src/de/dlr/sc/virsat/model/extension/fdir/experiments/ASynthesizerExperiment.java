@@ -136,6 +136,12 @@ public class ASynthesizerExperiment {
 	protected void benchmark(File suite, String filePath, String saveFileName, Supplier<ISynthesizer> synthesizerSupplier) throws IOException {	
 		System.out.println("Creating benchmark data " + saveFileName + ".");
 		
+		countSolved = 0;
+		countTimeout = 0;
+		countOutOfMemory = 0;
+		countTotal = 0;
+		totalSolveTime = 0;
+		
 		List<String> fileNames = Files.readAllLines(suite.toPath());
 		File parentFolder = suite.getParentFile();
 		for (String fileName : fileNames) {
@@ -233,11 +239,6 @@ public class ASynthesizerExperiment {
 		// Reset all benchmark statistics
 		mapBenchmarkToFaultTreeStatistics = new TreeMap<>();
 		mapBenchmarkToSynthesisStatistics = new TreeMap<>();
-		countSolved = 0;
-		countTimeout = 0;
-		countOutOfMemory = 0;
-		countTotal = 0;
-		totalSolveTime = 0;
 		
 		// Execute the benchmark and handle timeout and out of memory events
 		final Future<?> handler = executor.submit(() -> {

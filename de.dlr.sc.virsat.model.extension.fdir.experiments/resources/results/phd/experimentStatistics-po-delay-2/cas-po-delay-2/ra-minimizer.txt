@@ -1,0 +1,3 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+CAS-po-2.dft 50 59 199 0 1 0 58
+DCAS-po-2.dft 47 70 197 0 2 1 67

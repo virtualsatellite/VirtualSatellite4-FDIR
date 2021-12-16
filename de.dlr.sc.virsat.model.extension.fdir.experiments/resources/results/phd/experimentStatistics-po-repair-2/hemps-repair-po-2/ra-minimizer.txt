@@ -1,0 +1,2 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+hemps-repair-po-2.dft 1845 260 894 0 0 0 260

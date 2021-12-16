@@ -1,0 +1,3 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+AHRS-1-po-1.dft 57 67 208 0 0 0 67
+AHRS-2-po-1.dft 29 34 131 0 0 0 34

@@ -1,0 +1,2 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
+nppwp-po-3.dft 6306 2 1 26 17

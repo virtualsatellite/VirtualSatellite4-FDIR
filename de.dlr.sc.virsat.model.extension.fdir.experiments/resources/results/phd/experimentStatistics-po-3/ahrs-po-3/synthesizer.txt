@@ -1,0 +1,3 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
+AHRS-1-po-3.dft 54 2 1 17 3
+AHRS-2-po-3.dft 106 2 1 22 1

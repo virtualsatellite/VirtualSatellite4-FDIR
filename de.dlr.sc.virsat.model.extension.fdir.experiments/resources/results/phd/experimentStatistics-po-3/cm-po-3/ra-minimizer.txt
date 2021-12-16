@@ -1,0 +1,55 @@
+benchmarkName time removedStates removedTransitions
+cm_1_1_10_dp_x-po-3.dft 30 64 120 0 8 0 56
+cm_1_1_10_sp_x-po-3.dft 11 24 45 0 3 0 21
+cm_1_1_11_dp_x-po-3.dft 13 24 45 0 3 0 21
+cm_1_1_11_sp_x-po-3.dft 15 32 60 0 4 0 28
+cm_1_1_12_dp_x-po-3.dft 44 96 180 0 12 0 84
+cm_1_1_12_sp_x-po-3.dft 14 24 45 0 3 0 21
+cm_1_1_13_sp_x-po-3.dft 5 8 15 0 1 0 7
+cm_1_1_14_sp_x-po-3.dft 4 8 15 0 1 0 7
+cm_1_1_2_dp_x-po-3.dft 417 364 884 0 2 4 358
+cm_1_1_2_sp_x-po-3.dft 304 201 511 0 2 6 193
+cm_1_1_3_dp_x-po-3.dft 2348 1114 3063 0 3 19 1092
+cm_1_1_3_sp_x-po-3.dft 3287 1119 3283 0 3 45 1071
+cm_1_1_4_dp_x-po-3.dft 8 16 30 0 2 0 14
+cm_1_1_4_sp_x-po-3.dft 7 16 30 0 2 0 14
+cm_1_1_5_dp_x-po-3.dft 12 24 45 0 3 0 21
+cm_1_1_5_sp_x-po-3.dft 16 32 60 0 4 0 28
+cm_1_1_6_dp_x-po-3.dft 8 16 30 0 2 0 14
+cm_1_1_6_sp_x-po-3.dft 21 48 90 0 6 0 42
+cm_1_1_7_dp_x-po-3.dft 26 56 105 0 7 0 49
+cm_1_1_7_sp_x-po-3.dft 33 56 105 0 7 0 49
+cm_1_1_8_dp_x-po-3.dft 19 40 75 0 5 0 35
+cm_1_1_8_sp_x-po-3.dft 28 64 120 0 8 0 56
+cm_1_1_9_dp_x-po-3.dft N/A N/A N/A
+cm_1_1_9_sp_x-po-3.dft 33 72 135 0 9 0 63
+cm_2_1_2_dp_x-po-3.dft N/A N/A N/A
+cm_2_1_2_sp_x-po-3.dft N/A N/A N/A
+cm_2_1_3_dp_x-po-3.dft N/A N/A N/A
+cm_2_1_3_sp_x-po-3.dft N/A N/A N/A
+cm_2_1_4_dp_x-po-3.dft N/A N/A N/A
+cm_2_1_4_sp_x-po-3.dft N/A N/A N/A
+cm_2_2_2_dp_x-po-3.dft N/A N/A N/A
+cm_2_2_2_sp_x-po-3.dft N/A N/A N/A
+cm_2_2_3_dp_x-po-3.dft N/A N/A N/A
+cm_2_2_3_sp_x-po-3.dft N/A N/A N/A
+cm_2_2_4_dp_x-po-3.dft N/A N/A N/A
+cm_2_2_4_sp_x-po-3.dft N/A N/A N/A
+cm_3_1_2_dp_x-po-3.dft N/A N/A N/A
+cm_3_1_2_sp_x-po-3.dft N/A N/A N/A
+cm_3_1_3_dp_x-po-3.dft N/A N/A N/A
+cm_3_1_3_sp_x-po-3.dft N/A N/A N/A
+cm_3_1_4_dp_x-po-3.dft N/A N/A N/A
+cm_3_1_4_sp_x-po-3.dft N/A N/A N/A
+cm_3_2_2_dp_x-po-3.dft N/A N/A N/A
+cm_3_2_2_sp_x-po-3.dft N/A N/A N/A
+cm_3_2_3_dp_x-po-3.dft N/A N/A N/A
+cm_3_2_3_sp_x-po-3.dft N/A N/A N/A
+cm_3_2_4_dp_x-po-3.dft N/A N/A N/A
+cm_3_2_4_sp_x-po-3.dft N/A N/A N/A
+cm_3_3_2_dp_x-po-3.dft N/A N/A N/A
+cm_3_3_2_sp_x-po-3.dft N/A N/A N/A
+cm_3_3_3_dp_x-po-3.dft N/A N/A N/A
+cm_3_3_3_sp_x-po-3.dft N/A N/A N/A
+cm_3_3_4_dp_x-po-3.dft N/A N/A N/A
+cm_3_3_4_sp_x-po-3.dft N/A N/A N/A

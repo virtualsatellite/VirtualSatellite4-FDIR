@@ -1,0 +1,9 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
+vgs_1-repair-po-0.dft 1583 2 2 N/A N/A
+vgs_2-repair-po-0.dft 1372 2 2 N/A N/A
+vgs_3-repair-po-0.dft 895 2 2 N/A N/A
+vgs_4-repair-po-0.dft 120000 2 1 N/A N/A
+vgs_5-repair-po-0.dft 977 2 2 N/A N/A
+vgs_6-repair-po-0.dft 1149 2 2 N/A N/A
+vgs_7-repair-po-0.dft 2088 2 2 N/A N/A
+vgs_8-repair-po-0.dft 2775 2 2 N/A N/A

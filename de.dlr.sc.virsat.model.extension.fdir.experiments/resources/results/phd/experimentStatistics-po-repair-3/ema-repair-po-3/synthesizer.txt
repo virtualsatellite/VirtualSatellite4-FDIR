@@ -1,0 +1,2 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
+EMA-repair-po-3.dft 281 21 19 13 17

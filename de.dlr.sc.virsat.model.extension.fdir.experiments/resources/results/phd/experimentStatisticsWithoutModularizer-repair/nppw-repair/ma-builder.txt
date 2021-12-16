@@ -1,0 +1,2 @@
+benchmarkName time maxStates maxTransitions
+nppwp-repair.dft 51 2736 10492

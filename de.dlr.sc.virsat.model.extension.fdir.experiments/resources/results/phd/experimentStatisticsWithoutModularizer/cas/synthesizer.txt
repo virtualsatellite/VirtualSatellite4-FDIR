@@ -1,0 +1,3 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
+CAS.dft 746 1 N/A 28 20
+DCAS.dft 2232 1 N/A 32 20

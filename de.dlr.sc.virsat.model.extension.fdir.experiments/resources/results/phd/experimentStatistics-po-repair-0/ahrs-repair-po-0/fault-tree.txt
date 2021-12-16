@@ -1,0 +1,3 @@
+benchmarkName countNodes dynamic repair partialObservable FAULT AND OR VOTE SPARE POR_I PAND_I SAND POR PAND BASIC_EVENT FDEP RDEP PDEP MONITOR DELAY SEQ
+AHRS-1-repair-po-0.dft 19 true true true 7 0 0 1 2 0 0 0 0 0 6 2 0 0 1 0 0
+AHRS-2-repair-po-0.dft 24 true true true 9 0 0 1 2 0 0 0 0 0 8 3 0 0 1 0 0

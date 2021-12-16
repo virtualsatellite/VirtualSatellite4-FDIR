@@ -1,0 +1,3 @@
+benchmarkName time
+AHRS-1.dft 18
+AHRS-2.dft 36

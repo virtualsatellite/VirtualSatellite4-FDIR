@@ -1,0 +1,9 @@
+benchmarkName time
+vgs_1-repair-po-0.dft 0
+vgs_2-repair-po-0.dft 0
+vgs_3-repair-po-0.dft 0
+vgs_4-repair-po-0.dft 0
+vgs_5-repair-po-0.dft 0
+vgs_6-repair-po-0.dft 0
+vgs_7-repair-po-0.dft 0
+vgs_8-repair-po-0.dft 0

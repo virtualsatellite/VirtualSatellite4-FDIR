@@ -1,0 +1,2 @@
+benchmarkName time maxStates maxTransitions
+nppwp-po-1.dft 87 2228 6150
