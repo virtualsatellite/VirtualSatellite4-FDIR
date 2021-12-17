@@ -180,7 +180,7 @@ public class ASynthesizerExperiment {
 			
 			mapBenchmarkToFaultTreeStatistics.putAll(mapSuiteBenchmarkToFaultTreeStatistics);
 			mapBenchmarkToSynthesisStatistics.putAll(mapBenchmarkToSynthesisStatistics);
-			countSolved += countSuiteTotal;
+			countSolved += countSuiteSolved;
 			countTimeout += countSuiteTimeout;
 			countOutOfMemory += countSuiteOutOfMemory;
 			countTotal += countSuiteTotal;
