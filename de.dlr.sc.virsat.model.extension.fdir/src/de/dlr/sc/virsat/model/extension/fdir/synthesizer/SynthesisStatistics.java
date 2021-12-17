@@ -15,6 +15,7 @@ import java.util.List;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
 
 /**
@@ -30,7 +31,7 @@ public class SynthesisStatistics implements IStatistics {
 	public int maxModuleRaSize = NA;
 	public int raSize = NA;
 	public final MarkovAutomatonBuildStatistics maBuildStatistics = new MarkovAutomatonBuildStatistics();
-	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics();
+	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics(ComposedMinimizer.createDefaultMinimizer());
 	public final ModelCheckingStatistics modelCheckingStatistics = new ModelCheckingStatistics();
 	//CHECKSTYLE:ON
 	

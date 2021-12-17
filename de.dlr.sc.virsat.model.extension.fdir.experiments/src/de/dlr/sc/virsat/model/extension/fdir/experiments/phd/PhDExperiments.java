@@ -30,7 +30,7 @@ public class PhDExperiments extends ASynthesizerExperiment {
 	
 	public static final String EXPERIMENTS_SET = "phd";
 	public static final String EXPERIMENTS_PATH = "/resources/" + EXPERIMENTS_SET;
-	private static final long BENCHMARK_TIME_SECONDS = 60;
+	private static final long BENCHMARK_TIME_SECONDS = 1;
 	
 	@Override
 	public void setUp() {

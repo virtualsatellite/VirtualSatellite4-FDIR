@@ -10,6 +10,9 @@
 
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
@@ -25,7 +28,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
 public abstract class ARecoveryAutomatonMinimizer {
 
-	private MinimizationStatistics statistics = new MinimizationStatistics();
+	private MinimizationStatistics statistics = new MinimizationStatistics(this);
 
 	/**
 	 * Main method to override and perform the actual minimization
@@ -37,13 +40,21 @@ public abstract class ARecoveryAutomatonMinimizer {
 	protected abstract void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor);
 	
 	/**
+	 * Gets the name of all minimization procedures relevant for statistics purposes
+	 * @return the name of minimization procedures that should be distinguished in the statistics
+	 */
+	protected List<String> getMinimizerNames() {
+		return Collections.singletonList(this.getClass().getSimpleName());
+	}
+	
+	/**
 	 * Main interface minimization method
 	 * @param ra the recovery automaton to be minimized
 	 * @param root the root of the associated fault tree
 	 * @param subMonitor a monitor
 	 */
 	public void minimize(RecoveryAutomaton ra, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
-		statistics = new MinimizationStatistics();
+		statistics = new MinimizationStatistics(this);
 		long startTime = System.currentTimeMillis();
 		statistics.time = IStatistics.TIMEOUT;
 		statistics.removedStates = ra.getStates().size();

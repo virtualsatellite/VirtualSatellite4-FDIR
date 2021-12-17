@@ -32,6 +32,12 @@ public class MinimizationStatistics implements IStatistics {
 	public Map<String, Integer> minimizers = new TreeMap<>();
 	//CHECKSTYLE:ON
 	
+	public MinimizationStatistics(ARecoveryAutomatonMinimizer minimizer) {
+		for (String name : minimizer.getMinimizerNames()) {
+			minimizers.put(name, NA);
+		}
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -51,7 +57,7 @@ public class MinimizationStatistics implements IStatistics {
 		removedStates = composeAdd(removedStates, other.removedStates);
 		removedTransitions = composeAdd(removedTransitions, other.removedTransitions);
 		for (Entry<String, Integer> entry : other.minimizers.entrySet()) {
-			minimizers.merge(entry.getKey(), entry.getValue(), (v1, v2) -> v1 + v2);
+			minimizers.merge(entry.getKey(), entry.getValue(), (v1, v2) -> v1 == NA ? v2 : v1 + v2);
 		}
 	}
 	
