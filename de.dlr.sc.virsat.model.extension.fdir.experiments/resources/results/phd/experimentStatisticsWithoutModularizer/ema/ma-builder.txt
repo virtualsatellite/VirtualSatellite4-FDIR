@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-EMA.dft 63 438 2016
+EMA.dft 29 438 2016

@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-EMA.dft 2 9 12
+EMA.dft 1 9 12

@@ -1,5 +1,5 @@
 benchmarkName time maxStates maxTransitions
-hecs_1_1.dft 66 1491 8420
+hecs_1_1.dft 36 1491 8420
 hecs_2_1.dft N/A N/A N/A
 hecs_2_2.dft N/A N/A N/A
 hecs_3_1.dft N/A N/A N/A

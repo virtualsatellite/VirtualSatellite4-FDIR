@@ -7,10 +7,10 @@ cm_1_1_12_dp_x.dft 0
 cm_1_1_12_sp_x.dft 0
 cm_1_1_13_sp_x.dft 0
 cm_1_1_14_sp_x.dft 0
-cm_1_1_2_dp_x.dft 88
-cm_1_1_2_sp_x.dft 27
+cm_1_1_2_dp_x.dft 67
+cm_1_1_2_sp_x.dft 13
 cm_1_1_3_dp_x.dft 0
-cm_1_1_3_sp_x.dft 0
+cm_1_1_3_sp_x.dft 726
 cm_1_1_4_dp_x.dft 0
 cm_1_1_4_sp_x.dft 0
 cm_1_1_5_dp_x.dft 0

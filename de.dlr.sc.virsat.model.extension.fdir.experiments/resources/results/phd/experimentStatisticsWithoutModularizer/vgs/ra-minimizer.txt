@@ -1,9 +1,9 @@
-benchmarkName time removedStates removedTransitions
-vgs_1.dft N/A N/A N/A
-vgs_2.dft N/A N/A N/A
-vgs_3.dft N/A N/A N/A
-vgs_4.dft N/A N/A N/A
-vgs_5.dft N/A N/A N/A
-vgs_6.dft N/A N/A N/A
-vgs_7.dft N/A N/A N/A
-vgs_8.dft N/A N/A N/A
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+vgs_1.dft N/A N/A N/A N/A N/A N/A N/A
+vgs_2.dft N/A N/A N/A N/A N/A N/A N/A
+vgs_3.dft N/A N/A N/A N/A N/A N/A N/A
+vgs_4.dft N/A N/A N/A N/A N/A N/A N/A
+vgs_5.dft N/A N/A N/A N/A N/A N/A N/A
+vgs_6.dft N/A N/A N/A N/A N/A N/A N/A
+vgs_7.dft N/A N/A N/A N/A N/A N/A N/A
+vgs_8.dft N/A N/A N/A N/A N/A N/A N/A

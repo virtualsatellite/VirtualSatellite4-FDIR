@@ -1,3 +1,3 @@
 benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
-MAS-2.dft N/A N/A N/A
-MAS.dft 45 33 48 0 0 7 26
+MAS-2.dft 972 619 1678 0 1 50 568
+MAS.dft N/A N/A N/A N/A N/A N/A N/A

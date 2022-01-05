@@ -7,10 +7,10 @@ cm_1_1_12_dp_x.dft N/A N/A N/A
 cm_1_1_12_sp_x.dft N/A N/A N/A
 cm_1_1_13_sp_x.dft N/A N/A N/A
 cm_1_1_14_sp_x.dft N/A N/A N/A
-cm_1_1_2_dp_x.dft 211 9936 37927
-cm_1_1_2_sp_x.dft 87 3320 12226
+cm_1_1_2_dp_x.dft 169 9936 37927
+cm_1_1_2_sp_x.dft 51 3320 12226
 cm_1_1_3_dp_x.dft N/A N/A N/A
-cm_1_1_3_sp_x.dft N/A N/A N/A
+cm_1_1_3_sp_x.dft 1746 86776 357244
 cm_1_1_4_dp_x.dft N/A N/A N/A
 cm_1_1_4_sp_x.dft N/A N/A N/A
 cm_1_1_5_dp_x.dft N/A N/A N/A

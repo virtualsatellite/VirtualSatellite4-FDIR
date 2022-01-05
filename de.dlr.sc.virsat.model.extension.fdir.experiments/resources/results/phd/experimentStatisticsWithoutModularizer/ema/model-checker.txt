@@ -1,2 +1,2 @@
 benchmarkName time
-EMA.dft 2
+EMA.dft 1
