@@ -110,15 +110,54 @@ toplevel "System";
 "BSF_1" and "BUS_11" "BUS_12";
 "IF_1" or "HW_1" "SW_1";
 "F1_1" fdep "MIU1_1" "M_1_1" "M_1_2" "M_1_3" "M_1_4" "M_1_5";
-"O1" observer "System" "controller" "sensors" "barriers" obsRate=0;
-"O2" observer "PSF_1" "MSF_1" "BSF_1" "IF_1" "sensor_1" "sensor_2" "sensor_3"
-"sensor_4" "sensor_5" "sensor_6" "sensor_7" "sensor_8" "sensor_9" "sensor_10"
-"sensor_11" "sensor_12" "sensor_13" "sensor_14" "sensor_15" "sensor_16"
-"sensor_17" "sensor_18" "sensor_19" "sensor_20" "barrier_1" "barrier_2"
-"barrier_3" "barrier_4" "barrier_5" "barrier_6" "barrier_7" "barrier_8"
-"barrier_9" "barrier_10" "barrier_11" "barrier_12" "barrier_13" "barrier_14"
-"barrier_15" "barrier_16" "barrier_17" "barrier_18" "barrier_19" "barrier_20"
-obsRate=0.0;
+"System-OBS" observer "System" obsRate=0.0;
+"controller-OBS" observer "controller" obsRate=0.0;
+"PSF_1-OBS" observer "PSF_1" obsRate=0.0;
+"MSF_1-OBS" observer "MSF_1" obsRate=0.0;
+"BSF_1-OBS" observer "BSF_1" obsRate=0.0;
+"IF_1-OBS" observer "IF_1" obsRate=0.0;
+"sensors-OBS" observer "sensors" obsRate=0.0;
+"sensor_1-OBS" observer "sensor_1" obsRate=0.0;
+"sensor_2-OBS" observer "sensor_2" obsRate=0.0;
+"sensor_3-OBS" observer "sensor_3" obsRate=0.0;
+"sensor_4-OBS" observer "sensor_4" obsRate=0.0;
+"sensor_5-OBS" observer "sensor_5" obsRate=0.0;
+"sensor_6-OBS" observer "sensor_6" obsRate=0.0;
+"sensor_7-OBS" observer "sensor_7" obsRate=0.0;
+"sensor_8-OBS" observer "sensor_8" obsRate=0.0;
+"sensor_9-OBS" observer "sensor_9" obsRate=0.0;
+"sensor_10-OBS" observer "sensor_10" obsRate=0.0;
+"sensor_11-OBS" observer "sensor_11" obsRate=0.0;
+"sensor_12-OBS" observer "sensor_12" obsRate=0.0;
+"sensor_13-OBS" observer "sensor_13" obsRate=0.0;
+"sensor_14-OBS" observer "sensor_14" obsRate=0.0;
+"sensor_15-OBS" observer "sensor_15" obsRate=0.0;
+"sensor_16-OBS" observer "sensor_16" obsRate=0.0;
+"sensor_17-OBS" observer "sensor_17" obsRate=0.0;
+"sensor_18-OBS" observer "sensor_18" obsRate=0.0;
+"sensor_19-OBS" observer "sensor_19" obsRate=0.0;
+"sensor_20-OBS" observer "sensor_20" obsRate=0.0;
+"barriers-OBS" observer "barriers" obsRate=0.0;
+"barrier_1-OBS" observer "barrier_1" obsRate=0.0;
+"barrier_2-OBS" observer "barrier_2" obsRate=0.0;
+"barrier_3-OBS" observer "barrier_3" obsRate=0.0;
+"barrier_4-OBS" observer "barrier_4" obsRate=0.0;
+"barrier_5-OBS" observer "barrier_5" obsRate=0.0;
+"barrier_6-OBS" observer "barrier_6" obsRate=0.0;
+"barrier_7-OBS" observer "barrier_7" obsRate=0.0;
+"barrier_8-OBS" observer "barrier_8" obsRate=0.0;
+"barrier_9-OBS" observer "barrier_9" obsRate=0.0;
+"barrier_10-OBS" observer "barrier_10" obsRate=0.0;
+"barrier_11-OBS" observer "barrier_11" obsRate=0.0;
+"barrier_12-OBS" observer "barrier_12" obsRate=0.0;
+"barrier_13-OBS" observer "barrier_13" obsRate=0.0;
+"barrier_14-OBS" observer "barrier_14" obsRate=0.0;
+"barrier_15-OBS" observer "barrier_15" obsRate=0.0;
+"barrier_16-OBS" observer "barrier_16" obsRate=0.0;
+"barrier_17-OBS" observer "barrier_17" obsRate=0.0;
+"barrier_18-OBS" observer "barrier_18" obsRate=0.0;
+"barrier_19-OBS" observer "barrier_19" obsRate=0.0;
+"barrier_20-OBS" observer "barrier_20" obsRate=0.0;
 "network_1" lambda=0.03 dorm=0 repair=0.03;
 "sA_1" lambda=0.05 dorm=0 repair=0.05;
 "sB_1" lambda=0.05 dorm=0 repair=0.05;

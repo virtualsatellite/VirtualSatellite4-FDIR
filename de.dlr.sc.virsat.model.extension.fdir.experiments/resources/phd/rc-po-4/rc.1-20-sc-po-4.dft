@@ -63,25 +63,158 @@ toplevel "System";
 "barrier_20" or "switch_20" "motors_20";
 "motors_20" wsp "mP_20" "mS_20";
 "switch_20" pand "sw_20" "mP_20";
-"O1" observer "System" "controller" "sensor_1" "sA_1" "network_1" "sB_1"
-"sC_1" "sD_1" "barriers" "barrier_1" "switch_1" "motors_1" "barrier_2"
-"switch_2" "motors_2" "barrier_3" "switch_3" "motors_3" "barrier_4" "switch_4"
-"motors_4" "barrier_5" "switch_5" "motors_5" "barrier_6" "switch_6" "motors_6"
-"barrier_7" "switch_7" "motors_7" "barrier_8" "switch_8" "motors_8"
-"barrier_9" "switch_9" "motors_9" "barrier_10" "switch_10" "motors_10"
-"barrier_11" "switch_11" "motors_11" "barrier_12" "switch_12" "motors_12"
-"barrier_13" "switch_13" "motors_13" "barrier_14" "switch_14" "motors_14"
-"barrier_15" "switch_15" "motors_15" "barrier_16" "switch_16" "motors_16"
-"barrier_17" "switch_17" "motors_17" "barrier_18" "switch_18" "motors_18"
-"barrier_19" "switch_19" "motors_19" "barrier_20" "switch_20" "motors_20"
-obsRate=0;
-"O2" observer "sw_1" "mP_1" "mS_1" "sw_2" "mP_2" "mS_2" "sw_3" "mP_3" "mS_3"
-"sw_4" "mP_4" "mS_4" "sw_5" "mP_5" "mS_5" "sw_6" "mP_6" "mS_6" "sw_7" "mP_7"
-"mS_7" "sw_8" "mP_8" "mS_8" "sw_9" "mP_9" "mS_9" "sw_10" "mP_10" "mS_10"
-"sw_11" "mP_11" "mS_11" "sw_12" "mP_12" "mS_12" "sw_13" "mP_13" "mS_13"
-"sw_14" "mP_14" "mS_14" "sw_15" "mP_15" "mS_15" "sw_16" "mP_16" "mS_16"
-"sw_17" "mP_17" "mS_17" "sw_18" "mP_18" "mS_18" "sw_19" "mP_19" "mS_19"
-"sw_20" "mP_20" "mS_20" obsRate=0.0;
+"System-OBS" observer "System" obsRate=0.0;
+"controller-OBS" observer "controller" obsRate=0.0;
+"sensor_1-OBS" observer "sensor_1" obsRate=0.0;
+"sA_1-OBS" observer "sA_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"sB_1-OBS" observer "sB_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"sC_1-OBS" observer "sC_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"sD_1-OBS" observer "sD_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"barriers-OBS" observer "barriers" obsRate=0.0;
+"barrier_1-OBS" observer "barrier_1" obsRate=0.0;
+"switch_1-OBS" observer "switch_1" obsRate=0.0;
+"sw_1-OBS" observer "sw_1" obsRate=0.0;
+"mP_1-OBS" observer "mP_1" obsRate=0.0;
+"motors_1-OBS" observer "motors_1" obsRate=0.0;
+"mP_1-OBS" observer "mP_1" obsRate=0.0;
+"mS_1-OBS" observer "mS_1" obsRate=0.0;
+"barrier_2-OBS" observer "barrier_2" obsRate=0.0;
+"switch_2-OBS" observer "switch_2" obsRate=0.0;
+"sw_2-OBS" observer "sw_2" obsRate=0.0;
+"mP_2-OBS" observer "mP_2" obsRate=0.0;
+"motors_2-OBS" observer "motors_2" obsRate=0.0;
+"mP_2-OBS" observer "mP_2" obsRate=0.0;
+"mS_2-OBS" observer "mS_2" obsRate=0.0;
+"barrier_3-OBS" observer "barrier_3" obsRate=0.0;
+"switch_3-OBS" observer "switch_3" obsRate=0.0;
+"sw_3-OBS" observer "sw_3" obsRate=0.0;
+"mP_3-OBS" observer "mP_3" obsRate=0.0;
+"motors_3-OBS" observer "motors_3" obsRate=0.0;
+"mP_3-OBS" observer "mP_3" obsRate=0.0;
+"mS_3-OBS" observer "mS_3" obsRate=0.0;
+"barrier_4-OBS" observer "barrier_4" obsRate=0.0;
+"switch_4-OBS" observer "switch_4" obsRate=0.0;
+"sw_4-OBS" observer "sw_4" obsRate=0.0;
+"mP_4-OBS" observer "mP_4" obsRate=0.0;
+"motors_4-OBS" observer "motors_4" obsRate=0.0;
+"mP_4-OBS" observer "mP_4" obsRate=0.0;
+"mS_4-OBS" observer "mS_4" obsRate=0.0;
+"barrier_5-OBS" observer "barrier_5" obsRate=0.0;
+"switch_5-OBS" observer "switch_5" obsRate=0.0;
+"sw_5-OBS" observer "sw_5" obsRate=0.0;
+"mP_5-OBS" observer "mP_5" obsRate=0.0;
+"motors_5-OBS" observer "motors_5" obsRate=0.0;
+"mP_5-OBS" observer "mP_5" obsRate=0.0;
+"mS_5-OBS" observer "mS_5" obsRate=0.0;
+"barrier_6-OBS" observer "barrier_6" obsRate=0.0;
+"switch_6-OBS" observer "switch_6" obsRate=0.0;
+"sw_6-OBS" observer "sw_6" obsRate=0.0;
+"mP_6-OBS" observer "mP_6" obsRate=0.0;
+"motors_6-OBS" observer "motors_6" obsRate=0.0;
+"mP_6-OBS" observer "mP_6" obsRate=0.0;
+"mS_6-OBS" observer "mS_6" obsRate=0.0;
+"barrier_7-OBS" observer "barrier_7" obsRate=0.0;
+"switch_7-OBS" observer "switch_7" obsRate=0.0;
+"sw_7-OBS" observer "sw_7" obsRate=0.0;
+"mP_7-OBS" observer "mP_7" obsRate=0.0;
+"motors_7-OBS" observer "motors_7" obsRate=0.0;
+"mP_7-OBS" observer "mP_7" obsRate=0.0;
+"mS_7-OBS" observer "mS_7" obsRate=0.0;
+"barrier_8-OBS" observer "barrier_8" obsRate=0.0;
+"switch_8-OBS" observer "switch_8" obsRate=0.0;
+"sw_8-OBS" observer "sw_8" obsRate=0.0;
+"mP_8-OBS" observer "mP_8" obsRate=0.0;
+"motors_8-OBS" observer "motors_8" obsRate=0.0;
+"mP_8-OBS" observer "mP_8" obsRate=0.0;
+"mS_8-OBS" observer "mS_8" obsRate=0.0;
+"barrier_9-OBS" observer "barrier_9" obsRate=0.0;
+"switch_9-OBS" observer "switch_9" obsRate=0.0;
+"sw_9-OBS" observer "sw_9" obsRate=0.0;
+"mP_9-OBS" observer "mP_9" obsRate=0.0;
+"motors_9-OBS" observer "motors_9" obsRate=0.0;
+"mP_9-OBS" observer "mP_9" obsRate=0.0;
+"mS_9-OBS" observer "mS_9" obsRate=0.0;
+"barrier_10-OBS" observer "barrier_10" obsRate=0.0;
+"switch_10-OBS" observer "switch_10" obsRate=0.0;
+"sw_10-OBS" observer "sw_10" obsRate=0.0;
+"mP_10-OBS" observer "mP_10" obsRate=0.0;
+"motors_10-OBS" observer "motors_10" obsRate=0.0;
+"mP_10-OBS" observer "mP_10" obsRate=0.0;
+"mS_10-OBS" observer "mS_10" obsRate=0.0;
+"barrier_11-OBS" observer "barrier_11" obsRate=0.0;
+"switch_11-OBS" observer "switch_11" obsRate=0.0;
+"sw_11-OBS" observer "sw_11" obsRate=0.0;
+"mP_11-OBS" observer "mP_11" obsRate=0.0;
+"motors_11-OBS" observer "motors_11" obsRate=0.0;
+"mP_11-OBS" observer "mP_11" obsRate=0.0;
+"mS_11-OBS" observer "mS_11" obsRate=0.0;
+"barrier_12-OBS" observer "barrier_12" obsRate=0.0;
+"switch_12-OBS" observer "switch_12" obsRate=0.0;
+"sw_12-OBS" observer "sw_12" obsRate=0.0;
+"mP_12-OBS" observer "mP_12" obsRate=0.0;
+"motors_12-OBS" observer "motors_12" obsRate=0.0;
+"mP_12-OBS" observer "mP_12" obsRate=0.0;
+"mS_12-OBS" observer "mS_12" obsRate=0.0;
+"barrier_13-OBS" observer "barrier_13" obsRate=0.0;
+"switch_13-OBS" observer "switch_13" obsRate=0.0;
+"sw_13-OBS" observer "sw_13" obsRate=0.0;
+"mP_13-OBS" observer "mP_13" obsRate=0.0;
+"motors_13-OBS" observer "motors_13" obsRate=0.0;
+"mP_13-OBS" observer "mP_13" obsRate=0.0;
+"mS_13-OBS" observer "mS_13" obsRate=0.0;
+"barrier_14-OBS" observer "barrier_14" obsRate=0.0;
+"switch_14-OBS" observer "switch_14" obsRate=0.0;
+"sw_14-OBS" observer "sw_14" obsRate=0.0;
+"mP_14-OBS" observer "mP_14" obsRate=0.0;
+"motors_14-OBS" observer "motors_14" obsRate=0.0;
+"mP_14-OBS" observer "mP_14" obsRate=0.0;
+"mS_14-OBS" observer "mS_14" obsRate=0.0;
+"barrier_15-OBS" observer "barrier_15" obsRate=0.0;
+"switch_15-OBS" observer "switch_15" obsRate=0.0;
+"sw_15-OBS" observer "sw_15" obsRate=0.0;
+"mP_15-OBS" observer "mP_15" obsRate=0.0;
+"motors_15-OBS" observer "motors_15" obsRate=0.0;
+"mP_15-OBS" observer "mP_15" obsRate=0.0;
+"mS_15-OBS" observer "mS_15" obsRate=0.0;
+"barrier_16-OBS" observer "barrier_16" obsRate=0.0;
+"switch_16-OBS" observer "switch_16" obsRate=0.0;
+"sw_16-OBS" observer "sw_16" obsRate=0.0;
+"mP_16-OBS" observer "mP_16" obsRate=0.0;
+"motors_16-OBS" observer "motors_16" obsRate=0.0;
+"mP_16-OBS" observer "mP_16" obsRate=0.0;
+"mS_16-OBS" observer "mS_16" obsRate=0.0;
+"barrier_17-OBS" observer "barrier_17" obsRate=0.0;
+"switch_17-OBS" observer "switch_17" obsRate=0.0;
+"sw_17-OBS" observer "sw_17" obsRate=0.0;
+"mP_17-OBS" observer "mP_17" obsRate=0.0;
+"motors_17-OBS" observer "motors_17" obsRate=0.0;
+"mP_17-OBS" observer "mP_17" obsRate=0.0;
+"mS_17-OBS" observer "mS_17" obsRate=0.0;
+"barrier_18-OBS" observer "barrier_18" obsRate=0.0;
+"switch_18-OBS" observer "switch_18" obsRate=0.0;
+"sw_18-OBS" observer "sw_18" obsRate=0.0;
+"mP_18-OBS" observer "mP_18" obsRate=0.0;
+"motors_18-OBS" observer "motors_18" obsRate=0.0;
+"mP_18-OBS" observer "mP_18" obsRate=0.0;
+"mS_18-OBS" observer "mS_18" obsRate=0.0;
+"barrier_19-OBS" observer "barrier_19" obsRate=0.0;
+"switch_19-OBS" observer "switch_19" obsRate=0.0;
+"sw_19-OBS" observer "sw_19" obsRate=0.0;
+"mP_19-OBS" observer "mP_19" obsRate=0.0;
+"motors_19-OBS" observer "motors_19" obsRate=0.0;
+"mP_19-OBS" observer "mP_19" obsRate=0.0;
+"mS_19-OBS" observer "mS_19" obsRate=0.0;
+"barrier_20-OBS" observer "barrier_20" obsRate=0.0;
+"switch_20-OBS" observer "switch_20" obsRate=0.0;
+"sw_20-OBS" observer "sw_20" obsRate=0.0;
+"mP_20-OBS" observer "mP_20" obsRate=0.0;
+"motors_20-OBS" observer "motors_20" obsRate=0.0;
+"mP_20-OBS" observer "mP_20" obsRate=0.0;
+"mS_20-OBS" observer "mS_20" obsRate=0.0;
 "network_1" lambda=0.03 dorm=0;
 "sA_1" lambda=0.05 dorm=0;
 "sB_1" lambda=0.05 dorm=0;

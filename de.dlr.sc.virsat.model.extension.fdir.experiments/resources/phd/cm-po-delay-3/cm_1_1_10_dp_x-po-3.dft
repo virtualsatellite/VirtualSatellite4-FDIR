@@ -42,13 +42,49 @@ toplevel "System_1";
 "MEMORY10_1" wsp "M10_1" "MS1_1";
 "PROC10_1" or "P10_1" "PS1";
 "PS1" and "PS1_1" "PS1_2";
-"O1" observer "System_1" "BUS1" "CM1" "CM1_1" "CM2_1" "CM3_1" "CM4_1" "CM5_1"
-"CM6_1" "CM7_1" "CM8_1" "CM9_1" "CM10_1" obsRate=0;
-"O2" observer "DISK1_1" "PROC1_1" "MEMORY1_1" "DISK2_1" "PROC2_1" "MEMORY2_1"
-"DISK3_1" "PROC3_1" "MEMORY3_1" "DISK4_1" "PROC4_1" "MEMORY4_1" "DISK5_1"
-"PROC5_1" "MEMORY5_1" "DISK6_1" "PROC6_1" "MEMORY6_1" "DISK7_1" "PROC7_1"
-"MEMORY7_1" "DISK8_1" "PROC8_1" "MEMORY8_1" "DISK9_1" "PROC9_1" "MEMORY9_1"
-"DISK10_1" "PROC10_1" "MEMORY10_1" obsRate=1.0;
+"System_1-OBS" observer "System_1" obsRate=1.0;
+"BUS1-OBS" observer "BUS1" obsRate=1.0;
+"CM1-OBS" observer "CM1" obsRate=1.0;
+"CM1_1-OBS" observer "CM1_1" obsRate=1.0;
+"DISK1_1-OBS" observer "DISK1_1" obsRate=0.0;
+"PROC1_1-OBS" observer "PROC1_1" obsRate=0.0;
+"MEMORY1_1-OBS" observer "MEMORY1_1" obsRate=0.0;
+"CM2_1-OBS" observer "CM2_1" obsRate=1.0;
+"DISK2_1-OBS" observer "DISK2_1" obsRate=0.0;
+"PROC2_1-OBS" observer "PROC2_1" obsRate=0.0;
+"MEMORY2_1-OBS" observer "MEMORY2_1" obsRate=0.0;
+"CM3_1-OBS" observer "CM3_1" obsRate=1.0;
+"DISK3_1-OBS" observer "DISK3_1" obsRate=0.0;
+"PROC3_1-OBS" observer "PROC3_1" obsRate=0.0;
+"MEMORY3_1-OBS" observer "MEMORY3_1" obsRate=0.0;
+"CM4_1-OBS" observer "CM4_1" obsRate=1.0;
+"DISK4_1-OBS" observer "DISK4_1" obsRate=0.0;
+"PROC4_1-OBS" observer "PROC4_1" obsRate=0.0;
+"MEMORY4_1-OBS" observer "MEMORY4_1" obsRate=0.0;
+"CM5_1-OBS" observer "CM5_1" obsRate=1.0;
+"DISK5_1-OBS" observer "DISK5_1" obsRate=0.0;
+"PROC5_1-OBS" observer "PROC5_1" obsRate=0.0;
+"MEMORY5_1-OBS" observer "MEMORY5_1" obsRate=0.0;
+"CM6_1-OBS" observer "CM6_1" obsRate=1.0;
+"DISK6_1-OBS" observer "DISK6_1" obsRate=0.0;
+"PROC6_1-OBS" observer "PROC6_1" obsRate=0.0;
+"MEMORY6_1-OBS" observer "MEMORY6_1" obsRate=0.0;
+"CM7_1-OBS" observer "CM7_1" obsRate=1.0;
+"DISK7_1-OBS" observer "DISK7_1" obsRate=0.0;
+"PROC7_1-OBS" observer "PROC7_1" obsRate=0.0;
+"MEMORY7_1-OBS" observer "MEMORY7_1" obsRate=0.0;
+"CM8_1-OBS" observer "CM8_1" obsRate=1.0;
+"DISK8_1-OBS" observer "DISK8_1" obsRate=0.0;
+"PROC8_1-OBS" observer "PROC8_1" obsRate=0.0;
+"MEMORY8_1-OBS" observer "MEMORY8_1" obsRate=0.0;
+"CM9_1-OBS" observer "CM9_1" obsRate=1.0;
+"DISK9_1-OBS" observer "DISK9_1" obsRate=0.0;
+"PROC9_1-OBS" observer "PROC9_1" obsRate=0.0;
+"MEMORY9_1-OBS" observer "MEMORY9_1" obsRate=0.0;
+"CM10_1-OBS" observer "CM10_1" obsRate=1.0;
+"DISK10_1-OBS" observer "DISK10_1" obsRate=0.0;
+"PROC10_1-OBS" observer "PROC10_1" obsRate=0.0;
+"MEMORY10_1-OBS" observer "MEMORY10_1" obsRate=0.0;
 "BUS1" lambda=0.0002 dorm=0;
 "P1_1" lambda=0.05 dorm=0;
 "D1_11" lambda=8.0 dorm=0;

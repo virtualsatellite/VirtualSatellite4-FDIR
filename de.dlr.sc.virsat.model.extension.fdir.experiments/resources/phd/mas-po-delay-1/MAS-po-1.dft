@@ -30,9 +30,13 @@ toplevel "System";
 "Path_SW" csp "Path_SW_Full" "Path_SW_Min";
 "One_Proc" or "Path_Gen" "SO";
 "Minimize" fdep "One_Proc" "SO_SW_Full" "Path_SW_Full";
-"O1" observer "System" obsRate=0;
-"O2" observer "Module_DB" "Module_MM" "Module_VMB" "Module_M" "Module_VMS"
-"Loss" obsRate=1.0;
+"System-OBS" observer "System" obsRate=1.0;
+"Module_DB-OBS" observer "Module_DB" obsRate=0.0;
+"Module_MM-OBS" observer "Module_MM" obsRate=0.0;
+"Module_VMB-OBS" observer "Module_VMB" obsRate=0.0;
+"Module_M-OBS" observer "Module_M" obsRate=0.0;
+"Module_VMS-OBS" observer "Module_VMS" obsRate=0.0;
+"Loss-OBS" observer "Loss" obsRate=0.0;
 "DB_Bus_1" lambda=0.00001;
 "DB_Bus_2" lambda=0.00001;
 "DB_Bus_3" lambda=0.00001;

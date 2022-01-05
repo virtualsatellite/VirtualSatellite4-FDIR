@@ -30,16 +30,71 @@ toplevel "System";
 "Path_SW" csp "Path_SW_Full" "Path_SW_Min";
 "One_Proc" or "Path_Gen" "SO";
 "Minimize" fdep "One_Proc" "SO_SW_Full" "Path_SW_Full";
-"O1" observer "System" "Module_DB" "DB_Bus_1" "DB_Bus_2" "DB_Bus_3"
-"Module_MM" "MM_Bus_1" "MM_Bus_2" "MM_Bus_3" "Module_VMB" "VMB_Bus_1"
-"VMB_Bus_2" "Module_M" "Mem_1" "Mem_2" "Module_VMS" "Veh_Mgt_1"
-"Vehicle_Mgmt_1a" "Vehicle_Mgmt_1b" "Veh_Mgt_2" "Vehicle_Mgmt_2a"
-"Vehicle_Mgmt_2b" "Loss" "Crew" "Crew_1a" "Crew_1b" "Both_Proc" "Path_Gen"
-"SO" "Software" "SO_SW" "Path_SW" "Sys_Mgt" "Sys_Mgt_1a" "Sys_Mgt_1b"
-obsRate=0;
-"O2" observer "VM_1a" "VM_S1" "VM_S2" "VM_1b" "VM_2a" "VM_2b" "C1a" "S1" "S2"
-"C1b" "Path_Gen_1a" "Path_Gen_1b" "SO_1a_CSP" "SO_1b_CSP" "SO_SW_Full"
-"SO_SW_Min" "Path_SW_Full" "Path_SW_Min" "Sys_1a" "Sys_1b" obsRate=1.0;
+"System-OBS" observer "System" obsRate=1.0;
+"Module_DB-OBS" observer "Module_DB" obsRate=1.0;
+"DB_Bus_1-OBS" observer "DB_Bus_1" obsRate=1.0;
+"DB_Bus_2-OBS" observer "DB_Bus_2" obsRate=1.0;
+"DB_Bus_3-OBS" observer "DB_Bus_3" obsRate=1.0;
+"Module_MM-OBS" observer "Module_MM" obsRate=1.0;
+"MM_Bus_1-OBS" observer "MM_Bus_1" obsRate=1.0;
+"MM_Bus_2-OBS" observer "MM_Bus_2" obsRate=1.0;
+"MM_Bus_3-OBS" observer "MM_Bus_3" obsRate=1.0;
+"Module_VMB-OBS" observer "Module_VMB" obsRate=1.0;
+"VMB_Bus_1-OBS" observer "VMB_Bus_1" obsRate=1.0;
+"VMB_Bus_2-OBS" observer "VMB_Bus_2" obsRate=1.0;
+"Module_M-OBS" observer "Module_M" obsRate=1.0;
+"Mem_1-OBS" observer "Mem_1" obsRate=1.0;
+"Mem_2-OBS" observer "Mem_2" obsRate=1.0;
+"Module_VMS-OBS" observer "Module_VMS" obsRate=1.0;
+"Veh_Mgt_1-OBS" observer "Veh_Mgt_1" obsRate=1.0;
+"Vehicle_Mgmt_1a-OBS" observer "Vehicle_Mgmt_1a" obsRate=1.0;
+"VM_1a-OBS" observer "VM_1a" obsRate=0.0;
+"VM_S1-OBS" observer "VM_S1" obsRate=0.0;
+"VM_S2-OBS" observer "VM_S2" obsRate=0.0;
+"Vehicle_Mgmt_1b-OBS" observer "Vehicle_Mgmt_1b" obsRate=1.0;
+"VM_1b-OBS" observer "VM_1b" obsRate=0.0;
+"VM_S1-OBS" observer "VM_S1" obsRate=0.0;
+"VM_S2-OBS" observer "VM_S2" obsRate=0.0;
+"Veh_Mgt_2-OBS" observer "Veh_Mgt_2" obsRate=1.0;
+"Vehicle_Mgmt_2a-OBS" observer "Vehicle_Mgmt_2a" obsRate=1.0;
+"VM_2a-OBS" observer "VM_2a" obsRate=0.0;
+"VM_S1-OBS" observer "VM_S1" obsRate=0.0;
+"VM_S2-OBS" observer "VM_S2" obsRate=0.0;
+"Vehicle_Mgmt_2b-OBS" observer "Vehicle_Mgmt_2b" obsRate=1.0;
+"VM_2b-OBS" observer "VM_2b" obsRate=0.0;
+"VM_S1-OBS" observer "VM_S1" obsRate=0.0;
+"VM_S2-OBS" observer "VM_S2" obsRate=0.0;
+"Loss-OBS" observer "Loss" obsRate=1.0;
+"Crew-OBS" observer "Crew" obsRate=1.0;
+"Crew_1a-OBS" observer "Crew_1a" obsRate=1.0;
+"C1a-OBS" observer "C1a" obsRate=0.0;
+"S1-OBS" observer "S1" obsRate=0.0;
+"S2-OBS" observer "S2" obsRate=0.0;
+"Crew_1b-OBS" observer "Crew_1b" obsRate=1.0;
+"C1b-OBS" observer "C1b" obsRate=0.0;
+"S1-OBS" observer "S1" obsRate=0.0;
+"S2-OBS" observer "S2" obsRate=0.0;
+"Both_Proc-OBS" observer "Both_Proc" obsRate=1.0;
+"Path_Gen-OBS" observer "Path_Gen" obsRate=1.0;
+"Path_Gen_1a-OBS" observer "Path_Gen_1a" obsRate=0.0;
+"Path_Gen_1b-OBS" observer "Path_Gen_1b" obsRate=0.0;
+"SO-OBS" observer "SO" obsRate=1.0;
+"SO_1a_CSP-OBS" observer "SO_1a_CSP" obsRate=0.0;
+"SO_1b_CSP-OBS" observer "SO_1b_CSP" obsRate=0.0;
+"Software-OBS" observer "Software" obsRate=1.0;
+"SO_SW-OBS" observer "SO_SW" obsRate=1.0;
+"SO_SW_Full-OBS" observer "SO_SW_Full" obsRate=0.0;
+"SO_SW_Min-OBS" observer "SO_SW_Min" obsRate=0.0;
+"Path_SW-OBS" observer "Path_SW" obsRate=1.0;
+"Path_SW_Full-OBS" observer "Path_SW_Full" obsRate=0.0;
+"Path_SW_Min-OBS" observer "Path_SW_Min" obsRate=0.0;
+"Sys_Mgt-OBS" observer "Sys_Mgt" obsRate=1.0;
+"Sys_Mgt_1a-OBS" observer "Sys_Mgt_1a" obsRate=1.0;
+"Sys_1a-OBS" observer "Sys_1a" obsRate=0.0;
+"S2-OBS" observer "S2" obsRate=0.0;
+"Sys_Mgt_1b-OBS" observer "Sys_Mgt_1b" obsRate=1.0;
+"Sys_1b-OBS" observer "Sys_1b" obsRate=0.0;
+"S1-OBS" observer "S1" obsRate=0.0;
 "DB_Bus_1" lambda=0.00001;
 "DB_Bus_2" lambda=0.00001;
 "DB_Bus_3" lambda=0.00001;

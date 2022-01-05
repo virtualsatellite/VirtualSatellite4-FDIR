@@ -26,13 +26,47 @@ toplevel "System";
 "Min_Version_Failure" and "PG-CSP" "SO-CSP";
 "PG-CSP" csp "FullPathGen" "MinPathGen";
 "SO-CSP" csp "FullSO" "MinSO";
-"O1" observer "System" "BGDataBus" "MMBus" "VMBus" "Memory" "Processors"
-"VMProcessors" "CrewStn" "SysMgt" "Full_Version_Failure" "Min_Version_Failure"
-obsRate=0;
-"O2" observer "DB1" "DB2" "DB3" "MMB1" "MMB2" "MMB3" "VMB1" "VMB2" "M1" "M2"
-"CSP1" "CSP2" "CSP3" "CSP4" "CSP5" "CSP6" "CSP7" "CSP8" "VMCSP1" "VMCSP2"
-"VMCSP3" "VMCSP4" "CS1" "CS2" "SM1" "SM2" "FullPathGen" "FullSO" "PG-CSP"
-"SO-CSP" obsRate=0.0;
+"System-OBS" observer "System" obsRate=0.0;
+"BGDataBus-OBS" observer "BGDataBus" obsRate=0.0;
+"DB1-OBS" observer "DB1" obsRate=0.0;
+"DB2-OBS" observer "DB2" obsRate=0.0;
+"DB3-OBS" observer "DB3" obsRate=0.0;
+"MMBus-OBS" observer "MMBus" obsRate=0.0;
+"MMB1-OBS" observer "MMB1" obsRate=0.0;
+"MMB2-OBS" observer "MMB2" obsRate=0.0;
+"MMB3-OBS" observer "MMB3" obsRate=0.0;
+"VMBus-OBS" observer "VMBus" obsRate=0.0;
+"VMB1-OBS" observer "VMB1" obsRate=0.0;
+"VMB2-OBS" observer "VMB2" obsRate=0.0;
+"Memory-OBS" observer "Memory" obsRate=0.0;
+"M1-OBS" observer "M1" obsRate=0.0;
+"M2-OBS" observer "M2" obsRate=0.0;
+"Processors-OBS" observer "Processors" obsRate=0.0;
+"CSP1-OBS" observer "CSP1" obsRate=0.0;
+"CSP2-OBS" observer "CSP2" obsRate=0.0;
+"CSP3-OBS" observer "CSP3" obsRate=0.0;
+"CSP4-OBS" observer "CSP4" obsRate=0.0;
+"CSP5-OBS" observer "CSP5" obsRate=0.0;
+"CSP6-OBS" observer "CSP6" obsRate=0.0;
+"CSP7-OBS" observer "CSP7" obsRate=0.0;
+"CSP8-OBS" observer "CSP8" obsRate=0.0;
+"VMProcessors-OBS" observer "VMProcessors" obsRate=0.0;
+"VMCSP1-OBS" observer "VMCSP1" obsRate=0.0;
+"VMCSP2-OBS" observer "VMCSP2" obsRate=0.0;
+"VMCSP3-OBS" observer "VMCSP3" obsRate=0.0;
+"VMCSP4-OBS" observer "VMCSP4" obsRate=0.0;
+"CrewStn-OBS" observer "CrewStn" obsRate=0.0;
+"CS1-OBS" observer "CS1" obsRate=0.0;
+"CS2-OBS" observer "CS2" obsRate=0.0;
+"SysMgt-OBS" observer "SysMgt" obsRate=0.0;
+"SM1-OBS" observer "SM1" obsRate=0.0;
+"SM2-OBS" observer "SM2" obsRate=0.0;
+"Full_Version_Failure-OBS" observer "Full_Version_Failure" obsRate=0.0;
+"FullPathGen-OBS" observer "FullPathGen" obsRate=0.0;
+"FullSO-OBS" observer "FullSO" obsRate=0.0;
+"Min_Version_Failure-OBS" observer "Min_Version_Failure" obsRate=0.0;
+"PG-CSP-OBS" observer "PG-CSP" obsRate=0.0;
+"SO-CSP-OBS" observer "SO-CSP" obsRate=0.0;
 "DB1" lambda=0.00001;
 "DB2" lambda=0.00001;
 "DB3" lambda=0.00001;

@@ -9,10 +9,24 @@ toplevel "System";
 "barrier_2" or "switch_2" "motors_2";
 "motors_2" wsp "mP_2" "mS_2";
 "switch_2" pand "sw_2" "mP_2";
-"O1" observer "System" "controller" "sensor_1" "sA_1" "sB_1" "sC_1" "sD_1"
-"barriers" "barrier_1" "barrier_2" obsRate=0;
-"O2" observer "network_1" "switch_1" "motors_1" "switch_2" "motors_2"
-obsRate=0.0;
+"System-OBS" observer "System" obsRate=0.0;
+"controller-OBS" observer "controller" obsRate=0.0;
+"sensor_1-OBS" observer "sensor_1" obsRate=0.0;
+"sA_1-OBS" observer "sA_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"sB_1-OBS" observer "sB_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"sC_1-OBS" observer "sC_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"sD_1-OBS" observer "sD_1" obsRate=0.0;
+"network_1-OBS" observer "network_1" obsRate=0.0;
+"barriers-OBS" observer "barriers" obsRate=0.0;
+"barrier_1-OBS" observer "barrier_1" obsRate=0.0;
+"switch_1-OBS" observer "switch_1" obsRate=0.0;
+"motors_1-OBS" observer "motors_1" obsRate=0.0;
+"barrier_2-OBS" observer "barrier_2" obsRate=0.0;
+"switch_2-OBS" observer "switch_2" obsRate=0.0;
+"motors_2-OBS" observer "motors_2" obsRate=0.0;
 "network_1" lambda=0.03 dorm=0;
 "sA_1" lambda=0.05 dorm=0;
 "sB_1" lambda=0.05 dorm=0;

@@ -56,9 +56,15 @@ toplevel "System";
 "MSF_8" 3of5 "M_8_1" "M_8_2" "M_8_3" "M_8_4" "M_8_5";
 "BSF_8" and "BUS_81" "BUS_82";
 "IF_8" or "HW_8" "SW_8";
-"O1" observer "System" obsRate=0;
-"O2" observer "System_1" "System_2" "System_3" "System_4" "System_5"
-"System_6" "System_7" "System_8" obsRate=0.0;
+"System-OBS" observer "System" obsRate=0.0;
+"System_1-OBS" observer "System_1" obsRate=0.0;
+"System_2-OBS" observer "System_2" obsRate=0.0;
+"System_3-OBS" observer "System_3" obsRate=0.0;
+"System_4-OBS" observer "System_4" obsRate=0.0;
+"System_5-OBS" observer "System_5" obsRate=0.0;
+"System_6-OBS" observer "System_6" obsRate=0.0;
+"System_7-OBS" observer "System_7" obsRate=0.0;
+"System_8-OBS" observer "System_8" obsRate=0.0;
 "A_11" lambda=1.0e-4 dorm=0;
 "A_12" lambda=1.0e-4 dorm=0;
 "A_1S" lambda=1.0e-4 dorm=0;

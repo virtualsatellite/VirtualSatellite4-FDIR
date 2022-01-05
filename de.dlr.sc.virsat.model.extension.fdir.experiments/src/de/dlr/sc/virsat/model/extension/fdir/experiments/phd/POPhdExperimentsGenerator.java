@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -131,24 +132,8 @@ public class POPhdExperimentsGenerator {
 			
 			Path platformPath = Paths.get(".\\").relativize(suiteEntry.toPath());
 			GalileoDft galileoDft = createGalileoDFT("/" + platformPath.toString());
-			
-			// Observer observing all nodes to level obsLevel -1
-			GalileoFaultTreeNode obs1 = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
-			obs1.setName("O1");
-			Observer obs1Config = DftFactory.eINSTANCE.createObserver();
-			obs1Config.setObservationRate("0");
-			obs1.setType(obs1Config);
-			galileoDft.getGates().add(obs1);
-			
-			// Observer observing all nodes on obsLevel
-			GalileoFaultTreeNode obs2 = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
-			obs2.setName("O2");
-			Observer obs2Config = DftFactory.eINSTANCE.createObserver();
-			obs2Config.setObservationRate(String.valueOf(obsRate));
-			obs2.setType(obs2Config);
-			galileoDft.getGates().add(obs2);
 
-			observeNode(obs1Config, obs2Config, galileoDft.getRoot(), galileoDft, 0, obsLevel);
+			observeNode(galileoDft.getRoot(), galileoDft, obsRate, 0, obsLevel);
 			
 			String name = poFile.getName().substring(0, poFile.getName().length() - FILE_EXTENSION.length()) + "-po-" + obsLevel + FILE_EXTENSION;
 			String targetPath = poFile.getParentFile().getAbsolutePath() + "/" + name;
@@ -161,23 +146,32 @@ public class POPhdExperimentsGenerator {
 	
 	/**
 	 * Registers an observer for the current node
-	 * @param obs1Config a level - 1 observer
-	 * @param obs2Config a level observer
 	 * @param node the node to observe
 	 * @param galileoDFT the galileo dft
 	 * @param currentObsLevel the current observation level
 	 * @param maxObsLevel the maximum observation level
 	 */
-	private void observeNode(Observer obs1Config, Observer obs2Config, GalileoFaultTreeNode node, GalileoDft galileoDFT, int currentObsLevel, int maxObsLevel) {
+	private void observeNode(GalileoFaultTreeNode node, GalileoDft galileoDFT, double obsRate, int currentObsLevel, int maxObsLevel) {
+		GalileoFaultTreeNode obs = DftFactory.eINSTANCE.createGalileoFaultTreeNode();
+		obs.setName(node.getName() + "-OBS");
+		Observer obsConfig = DftFactory.eINSTANCE.createObserver();
+		obs.setType(obsConfig);
+		galileoDFT.getGates().add(obs);
+		obsConfig.getObservables().add(node);
+		
 		if (currentObsLevel == maxObsLevel) {
-			obs2Config.getObservables().add(node);
-		} else {
-			obs1Config.getObservables().add(node);
+			// Observer observing all nodes to level obsLevel -1
+			obsConfig.setObservationRate("0.0");
+		} else {			
+			// Observer observing all nodes on obsLevel
+			obsConfig.setObservationRate(String.valueOf(obsRate));
+
 			for (GalileoFaultTreeNode child : node.getChildren()) {
-				observeNode(obs1Config, obs2Config, child, galileoDFT, currentObsLevel + 1, maxObsLevel);
+				observeNode(child, galileoDFT, obsRate, currentObsLevel + 1, maxObsLevel);
 			}
 			
-			for (GalileoFaultTreeNode galileoFtn : galileoDFT.getGates()) {
+			List<GalileoFaultTreeNode> gates = new ArrayList<>(galileoDFT.getGates());
+			for (GalileoFaultTreeNode galileoFtn : gates) {
 				if (galileoFtn.getType() instanceof Named) {
 					Named named = (Named) galileoFtn.getType();
 					if (named.getTypeName().contains("dep")) {
@@ -185,7 +179,7 @@ public class POPhdExperimentsGenerator {
 							GalileoFaultTreeNode child = galileoFtn.getChildren().get(i);
 							if (child.equals(node)) {
 								GalileoFaultTreeNode trigger = galileoFtn.getChildren().get(0);
-								observeNode(obs1Config, obs2Config, trigger, galileoDFT, currentObsLevel + 1, maxObsLevel);
+								observeNode(trigger, galileoDFT, obsRate, currentObsLevel + 1, maxObsLevel);
 								break;
 							}
 						}
