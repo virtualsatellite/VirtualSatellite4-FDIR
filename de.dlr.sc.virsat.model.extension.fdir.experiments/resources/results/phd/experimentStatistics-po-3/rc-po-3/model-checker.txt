@@ -1,6 +1,6 @@
 benchmarkName time
 rc.1-1-hc-po-3.dft 0
-rc.1-1-sc-po-3.dft 1
+rc.1-1-sc-po-3.dft 0
 rc.1-10-hc-po-3.dft 0
 rc.1-10-sc-po-3.dft 0
 rc.1-15-hc-po-3.dft 0

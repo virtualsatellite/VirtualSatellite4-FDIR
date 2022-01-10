@@ -1,2 +1,2 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-nppwp-po-1.dft 1051 2 1 26 3
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+nppwp-po-1.dft 828 2 1 27 3 3

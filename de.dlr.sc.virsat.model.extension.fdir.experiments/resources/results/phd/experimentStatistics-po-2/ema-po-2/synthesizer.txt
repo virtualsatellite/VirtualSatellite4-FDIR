@@ -1,2 +1,2 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-EMA-po-2.dft 162 9 7 13 1
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+EMA-po-2.dft 156 9 7 25 1 1

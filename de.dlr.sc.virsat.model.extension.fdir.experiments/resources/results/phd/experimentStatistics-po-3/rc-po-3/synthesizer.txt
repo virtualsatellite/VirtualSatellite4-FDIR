@@ -1,69 +1,69 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-rc.1-1-hc-po-3.dft 183 23 21 11 2
-rc.1-1-sc-po-3.dft 50 15 14 10 1
-rc.1-10-hc-po-3.dft 1287 33 22 12 2
-rc.1-10-sc-po-3.dft 952 25 15 12 1
-rc.1-15-hc-po-3.dft 2166 38 22 12 2
-rc.1-15-sc-po-3.dft 1834 30 15 12 1
-rc.1-2-hc-po-3.dft 293 25 22 12 2
-rc.1-2-sc-po-3.dft 127 17 15 12 1
-rc.1-20-hc-po-3.dft 3256 43 22 12 2
-rc.1-20-sc-po-3.dft 2637 35 15 12 1
-rc.1-25-hc-po-3.dft 4563 48 22 12 2
-rc.1-25-sc-po-3.dft 3837 40 15 12 1
-rc.1-3-hc-po-3.dft 390 26 22 12 2
-rc.1-3-sc-po-3.dft 199 18 15 12 1
-rc.1-30-hc-po-3.dft 6241 53 22 12 2
-rc.1-30-sc-po-3.dft 5234 45 15 12 1
-rc.1-4-hc-po-3.dft 489 27 22 12 2
-rc.1-4-sc-po-3.dft 272 19 15 12 1
-rc.1-5-hc-po-3.dft 606 28 22 12 2
-rc.1-5-sc-po-3.dft 364 20 15 12 1
-rc.10-1-hc-po-3.dft 1053 23 21 11 2
-rc.10-1-sc-po-3.dft 667 15 14 10 1
-rc.10-10-hc-po-3.dft 2878 33 22 12 2
-rc.10-10-sc-po-3.dft 2282 25 15 12 1
-rc.15-1-hc-po-3.dft 1814 28 26 11 2
-rc.15-1-sc-po-3.dft 1320 20 19 10 1
-rc.15-15-hc-po-3.dft 5608 43 27 12 2
-rc.15-15-sc-po-3.dft 4766 35 20 12 1
-rc.2-1-hc-po-3.dft 253 15 13 11 2
-rc.2-1-sc-po-3.dft 84 7 6 10 1
-rc.2-2-hc-po-3.dft 366 17 14 12 2
-rc.2-2-sc-po-3.dft 175 9 7 12 1
-rc.2-3-hc-po-3.dft 480 18 14 12 2
-rc.2-3-sc-po-3.dft 253 10 7 12 1
-rc.2-4-hc-po-3.dft 584 19 14 12 2
-rc.2-4-sc-po-3.dft 338 11 7 12 1
-rc.20-1-hc-po-3.dft 2828 33 31 11 2
-rc.20-1-sc-po-3.dft 2235 25 24 10 1
-rc.20-20-hc-po-3.dft 9211 53 32 12 2
-rc.20-20-sc-po-3.dft 8233 45 25 12 1
-rc.25-1-hc-po-3.dft 4053 38 36 11 2
-rc.25-1-sc-po-3.dft 3703 30 29 10 1
-rc.25-25-hc-po-3.dft 13873 63 37 12 2
-rc.25-25-sc-po-3.dft 12428 55 30 12 1
-rc.3-1-hc-po-3.dft 316 16 14 11 2
-rc.3-1-sc-po-3.dft 127 8 7 10 1
-rc.3-2-hc-po-3.dft 440 18 15 12 2
-rc.3-2-sc-po-3.dft 225 10 8 12 1
-rc.3-3-hc-po-3.dft 557 19 15 12 2
-rc.3-3-sc-po-3.dft 318 11 8 12 1
-rc.3-4-hc-po-3.dft 677 20 15 12 2
-rc.3-4-sc-po-3.dft 415 12 8 12 1
-rc.30-1-hc-po-3.dft 5538 43 41 11 2
-rc.30-1-sc-po-3.dft 4666 35 34 10 1
-rc.30-30-hc-po-3.dft 19334 73 42 12 2
-rc.30-30-sc-po-3.dft 17566 65 35 12 1
-rc.4-1-hc-po-3.dft 390 17 15 11 2
-rc.4-1-sc-po-3.dft 178 9 8 10 1
-rc.4-2-hc-po-3.dft 531 19 16 12 2
-rc.4-2-sc-po-3.dft 287 11 9 12 1
-rc.4-3-hc-po-3.dft 643 20 16 12 2
-rc.4-3-sc-po-3.dft 388 12 9 12 1
-rc.4-4-hc-po-3.dft 780 21 16 12 2
-rc.4-4-sc-po-3.dft 490 13 9 12 1
-rc.5-1-hc-po-3.dft 479 18 16 11 2
-rc.5-1-sc-po-3.dft 237 10 9 10 1
-rc.5-5-hc-po-3.dft 1048 23 17 12 2
-rc.5-5-sc-po-3.dft 701 15 10 12 1
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+rc.1-1-hc-po-3.dft 215 23 21 42 2 2
+rc.1-1-sc-po-3.dft 71 15 14 10 1 1
+rc.1-10-hc-po-3.dft 1588 33 22 67 2 2
+rc.1-10-sc-po-3.dft 1113 25 15 52 1 1
+rc.1-15-hc-po-3.dft 2776 38 22 82 2 2
+rc.1-15-sc-po-3.dft 2085 30 15 67 1 1
+rc.1-2-hc-po-3.dft 343 25 22 43 2 2
+rc.1-2-sc-po-3.dft 158 17 15 28 1 1
+rc.1-20-hc-po-3.dft 4284 43 22 97 2 2
+rc.1-20-sc-po-3.dft 3408 35 15 82 1 1
+rc.1-25-hc-po-3.dft 6079 48 22 112 2 2
+rc.1-25-sc-po-3.dft 5041 40 15 97 1 1
+rc.1-3-hc-po-3.dft 466 26 22 46 2 2
+rc.1-3-sc-po-3.dft 242 18 15 31 1 1
+rc.1-30-hc-po-3.dft 8142 53 22 127 2 2
+rc.1-30-sc-po-3.dft 6697 45 15 112 1 1
+rc.1-4-hc-po-3.dft 573 27 22 49 2 2
+rc.1-4-sc-po-3.dft 312 19 15 34 1 1
+rc.1-5-hc-po-3.dft 740 28 22 52 2 2
+rc.1-5-sc-po-3.dft 428 20 15 37 1 1
+rc.10-1-hc-po-3.dft 1000 23 21 84 2 2
+rc.10-1-sc-po-3.dft 607 15 14 10 1 1
+rc.10-10-hc-po-3.dft 3295 33 22 109 2 2
+rc.10-10-sc-po-3.dft 2575 25 15 94 1 1
+rc.15-1-hc-po-3.dft 1701 28 26 109 2 2
+rc.15-1-sc-po-3.dft 1181 20 19 10 1 1
+rc.15-15-hc-po-3.dft 6443 43 27 149 2 2
+rc.15-15-sc-po-3.dft 5530 35 20 134 1 1
+rc.2-1-hc-po-3.dft 266 15 13 44 2 2
+rc.2-1-sc-po-3.dft 101 7 6 10 1 1
+rc.2-2-hc-po-3.dft 422 17 14 45 2 2
+rc.2-2-sc-po-3.dft 196 9 7 30 1 1
+rc.2-3-hc-po-3.dft 532 18 14 48 2 2
+rc.2-3-sc-po-3.dft 278 10 7 33 1 1
+rc.2-4-hc-po-3.dft 657 19 14 51 2 2
+rc.2-4-sc-po-3.dft 373 11 7 36 1 1
+rc.20-1-hc-po-3.dft 2546 33 31 134 2 2
+rc.20-1-sc-po-3.dft 1930 25 24 10 1 1
+rc.20-20-hc-po-3.dft 11241 53 32 189 2 2
+rc.20-20-sc-po-3.dft 9400 45 25 174 1 1
+rc.25-1-hc-po-3.dft 3643 38 36 159 2 2
+rc.25-1-sc-po-3.dft 2886 30 29 10 1 1
+rc.25-25-hc-po-3.dft 16016 63 37 229 2 2
+rc.25-25-sc-po-3.dft 14347 55 30 214 1 1
+rc.3-1-hc-po-3.dft 332 16 14 49 2 2
+rc.3-1-sc-po-3.dft 135 8 7 10 1 1
+rc.3-2-hc-po-3.dft 478 18 15 50 2 2
+rc.3-2-sc-po-3.dft 246 10 8 35 1 1
+rc.3-3-hc-po-3.dft 603 19 15 53 2 2
+rc.3-3-sc-po-3.dft 338 11 8 38 1 1
+rc.3-4-hc-po-3.dft 753 20 15 56 2 2
+rc.3-4-sc-po-3.dft 438 12 8 41 1 1
+rc.30-1-hc-po-3.dft 4886 43 41 184 2 2
+rc.30-1-sc-po-3.dft 4088 35 34 10 1 1
+rc.30-30-hc-po-3.dft 22319 73 42 269 2 2
+rc.30-30-sc-po-3.dft 20531 65 35 254 1 1
+rc.4-1-hc-po-3.dft 389 17 15 54 2 2
+rc.4-1-sc-po-3.dft 178 9 8 10 1 1
+rc.4-2-hc-po-3.dft 557 19 16 55 2 2
+rc.4-2-sc-po-3.dft 304 11 9 40 1 1
+rc.4-3-hc-po-3.dft 709 20 16 58 2 2
+rc.4-3-sc-po-3.dft 408 12 9 43 1 1
+rc.4-4-hc-po-3.dft 857 21 16 61 2 2
+rc.4-4-sc-po-3.dft 528 13 9 46 1 1
+rc.5-1-hc-po-3.dft 470 18 16 59 2 2
+rc.5-1-sc-po-3.dft 229 10 9 10 1 1
+rc.5-5-hc-po-3.dft 1191 23 17 69 2 2
+rc.5-5-sc-po-3.dft 757 15 10 54 1 1

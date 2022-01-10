@@ -1,55 +1,55 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-cm_1_1_10_dp_x-po-4.dft 120000 35 24 5 1
-cm_1_1_10_sp_x-po-4.dft 120000 35 24 5 1
-cm_1_1_11_dp_x-po-4.dft 120000 38 26 5 1
-cm_1_1_11_sp_x-po-4.dft 180000 38 26 N/A N/A
-cm_1_1_12_dp_x-po-4.dft 120000 41 28 5 1
-cm_1_1_12_sp_x-po-4.dft 120000 41 28 5 1
-cm_1_1_13_sp_x-po-4.dft 120000 44 30 5 1
-cm_1_1_14_sp_x-po-4.dft 120000 47 32 5 1
-cm_1_1_2_dp_x-po-4.dft 108 11 8 32 3
-cm_1_1_2_sp_x-po-4.dft 97 11 8 29 3
-cm_1_1_3_dp_x-po-4.dft 181 14 10 44 5
-cm_1_1_3_sp_x-po-4.dft 206 14 10 41 5
-cm_1_1_4_dp_x-po-4.dft 582 17 12 58 37
-cm_1_1_4_sp_x-po-4.dft 478 17 12 55 38
-cm_1_1_5_dp_x-po-4.dft 880 20 14 70 75
-cm_1_1_5_sp_x-po-4.dft 860 20 14 67 69
-cm_1_1_6_dp_x-po-4.dft 10065 23 16 84 723
-cm_1_1_6_sp_x-po-4.dft 9584 23 16 81 713
-cm_1_1_7_dp_x-po-4.dft 47264 26 18 96 1680
-cm_1_1_7_sp_x-po-4.dft 48718 26 18 93 1667
-cm_1_1_8_dp_x-po-4.dft 120000 29 20 5 1
-cm_1_1_8_sp_x-po-4.dft 120000 29 20 5 1
-cm_1_1_9_dp_x-po-4.dft 120000 32 22 5 1
-cm_1_1_9_sp_x-po-4.dft 120000 32 22 5 1
-cm_2_1_2_dp_x-po-4.dft 3556 12 6 34 33
-cm_2_1_2_sp_x-po-4.dft 2149 12 6 31 54
-cm_2_1_3_dp_x-po-4.dft 43881 14 6 46 233
-cm_2_1_3_sp_x-po-4.dft 41643 14 6 43 386
-cm_2_1_4_dp_x-po-4.dft 120000 16 6 7 1
-cm_2_1_4_sp_x-po-4.dft 120000 16 6 7 1
-cm_2_2_2_dp_x-po-4.dft 2314 12 6 34 33
-cm_2_2_2_sp_x-po-4.dft 1815 12 6 31 54
-cm_2_2_3_dp_x-po-4.dft 43125 14 6 46 233
-cm_2_2_3_sp_x-po-4.dft 41302 14 6 43 382
-cm_2_2_4_dp_x-po-4.dft 120000 16 6 7 1
-cm_2_2_4_sp_x-po-4.dft 120000 16 6 N/A N/A
-cm_3_1_2_dp_x-po-4.dft 6285 17 8 34 33
-cm_3_1_2_sp_x-po-4.dft 23791 17 8 31 54
-cm_3_1_3_dp_x-po-4.dft 120000 20 8 46 233
-cm_3_1_3_sp_x-po-4.dft 120000 20 8 43 386
-cm_3_1_4_dp_x-po-4.dft 120000 23 8 7 1
-cm_3_1_4_sp_x-po-4.dft 120000 23 8 7 1
-cm_3_2_2_dp_x-po-4.dft 6422 17 8 34 33
-cm_3_2_2_sp_x-po-4.dft 23615 17 8 31 54
-cm_3_2_3_dp_x-po-4.dft 120000 20 8 46 233
-cm_3_2_3_sp_x-po-4.dft 120000 20 8 43 382
-cm_3_2_4_dp_x-po-4.dft 120000 23 8 7 1
-cm_3_2_4_sp_x-po-4.dft 120000 23 8 7 1
-cm_3_3_2_dp_x-po-4.dft 6246 17 8 34 33
-cm_3_3_2_sp_x-po-4.dft 23809 17 8 31 54
-cm_3_3_3_dp_x-po-4.dft 120000 20 8 46 233
-cm_3_3_3_sp_x-po-4.dft 120000 20 8 43 386
-cm_3_3_4_dp_x-po-4.dft 120000 23 8 7 1
-cm_3_3_4_sp_x-po-4.dft 120000 23 8 7 1
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+cm_1_1_10_dp_x-po-4.dft 1200000 35 24 5 1 N/A
+cm_1_1_10_sp_x-po-4.dft 1200000 35 24 5 1 N/A
+cm_1_1_11_dp_x-po-4.dft 1200000 38 26 5 1 N/A
+cm_1_1_11_sp_x-po-4.dft 1200000 38 26 5 1 N/A
+cm_1_1_12_dp_x-po-4.dft 1200000 41 28 5 1 N/A
+cm_1_1_12_sp_x-po-4.dft 1200000 41 28 5 1 N/A
+cm_1_1_13_sp_x-po-4.dft 1200000 44 30 5 1 N/A
+cm_1_1_14_sp_x-po-4.dft 1200000 47 32 5 1 N/A
+cm_1_1_2_dp_x-po-4.dft 143 11 8 32 3 3
+cm_1_1_2_sp_x-po-4.dft 115 11 8 29 3 3
+cm_1_1_3_dp_x-po-4.dft 208 14 10 44 5 5
+cm_1_1_3_sp_x-po-4.dft 206 14 10 41 5 5
+cm_1_1_4_dp_x-po-4.dft 454 17 12 58 37 37
+cm_1_1_4_sp_x-po-4.dft 427 17 12 55 36 36
+cm_1_1_5_dp_x-po-4.dft 835 20 14 70 81 81
+cm_1_1_5_sp_x-po-4.dft 831 20 14 67 68 68
+cm_1_1_6_dp_x-po-4.dft 8104 23 16 84 728 728
+cm_1_1_6_sp_x-po-4.dft 8002 23 16 81 719 719
+cm_1_1_7_dp_x-po-4.dft 34076 26 18 96 1674 1674
+cm_1_1_7_sp_x-po-4.dft 33633 26 18 93 1669 1669
+cm_1_1_8_dp_x-po-4.dft 1200000 29 20 N/A N/A N/A
+cm_1_1_8_sp_x-po-4.dft 1200000 29 20 5 1 N/A
+cm_1_1_9_dp_x-po-4.dft 1200000 32 22 5 1 N/A
+cm_1_1_9_sp_x-po-4.dft 1200000 32 22 N/A N/A N/A
+cm_2_1_2_dp_x-po-4.dft 2240 12 6 55 33 289
+cm_2_1_2_sp_x-po-4.dft 1584 12 6 52 54 1024
+cm_2_1_3_dp_x-po-4.dft 33939 14 6 75 233 8649
+cm_2_1_3_sp_x-po-4.dft 32905 14 6 72 386 25921
+cm_2_1_4_dp_x-po-4.dft 1200000 16 6 44 1 N/A
+cm_2_1_4_sp_x-po-4.dft 1200000 16 6 44 1 N/A
+cm_2_2_2_dp_x-po-4.dft 1907 12 6 55 33 289
+cm_2_2_2_sp_x-po-4.dft 1590 12 6 52 54 1024
+cm_2_2_3_dp_x-po-4.dft 33853 14 6 75 233 8649
+cm_2_2_3_sp_x-po-4.dft 33322 14 6 72 386 25921
+cm_2_2_4_dp_x-po-4.dft 1200000 16 6 44 1 N/A
+cm_2_2_4_sp_x-po-4.dft 1200000 16 6 N/A N/A N/A
+cm_3_1_2_dp_x-po-4.dft 4991 17 8 66 33 4913
+cm_3_1_2_sp_x-po-4.dft 17020 17 8 63 54 32768
+cm_3_1_3_dp_x-po-4.dft 1800000 20 8 90 233 N/A
+cm_3_1_3_sp_x-po-4.dft 1800000 20 8 87 386 N/A
+cm_3_1_4_dp_x-po-4.dft 1200000 23 8 63 1 N/A
+cm_3_1_4_sp_x-po-4.dft 1200000 23 8 N/A N/A N/A
+cm_3_2_2_dp_x-po-4.dft 4952 17 8 66 33 4913
+cm_3_2_2_sp_x-po-4.dft 17833 17 8 63 54 32768
+cm_3_2_3_dp_x-po-4.dft 1800000 20 8 90 233 N/A
+cm_3_2_3_sp_x-po-4.dft 1800000 20 8 87 386 N/A
+cm_3_2_4_dp_x-po-4.dft 1200000 23 8 N/A N/A N/A
+cm_3_2_4_sp_x-po-4.dft 1200000 23 8 63 1 N/A
+cm_3_3_2_dp_x-po-4.dft 4948 17 8 66 33 4913
+cm_3_3_2_sp_x-po-4.dft 16759 17 8 63 54 32768
+cm_3_3_3_dp_x-po-4.dft 1800000 20 8 90 233 N/A
+cm_3_3_3_sp_x-po-4.dft 1800000 20 8 87 386 N/A
+cm_3_3_4_dp_x-po-4.dft 1200000 23 8 63 1 N/A
+cm_3_3_4_sp_x-po-4.dft 1200000 23 8 63 1 N/A
