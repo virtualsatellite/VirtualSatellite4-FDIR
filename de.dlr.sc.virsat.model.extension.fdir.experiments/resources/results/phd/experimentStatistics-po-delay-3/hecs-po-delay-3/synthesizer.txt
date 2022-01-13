@@ -1,18 +1,18 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-hecs_1_1-po-3.dft 10922 15 14 11 2
-hecs_2_1-po-3.dft 437 12 10 11 4
-hecs_2_2-po-3.dft 436 12 10 11 4
-hecs_3_1-po-3.dft 770 17 14 11 4
-hecs_3_3-po-3.dft 767 17 14 11 4
-hecs_4_1-po-3.dft 1217 22 18 11 4
-hecs_4_2-po-3.dft 1203 22 18 11 4
-hecs_4_3-po-3.dft 1214 22 18 11 4
-hecs_4_4-po-3.dft 1212 22 18 11 4
-hecs_5_1-po-3.dft 1951 27 22 11 4
-hecs_5_5-po-3.dft 1943 27 22 11 4
-hecs_6_1-po-3.dft 3833 32 26 11 4
-hecs_6_6-po-3.dft 3827 32 26 11 4
-hecs_7_1-po-3.dft 10779 37 30 11 4
-hecs_7_7-po-3.dft 10964 37 30 11 4
-hecs_8_1-po-3.dft 45229 42 34 11 4
-hecs_8_8-po-3.dft 44903 42 34 11 4
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+hecs_1_1-po-3.dft 94 2 1 9 2 2
+hecs_2_1-po-3.dft 15406 25 24 97 25 25
+hecs_2_2-po-3.dft 1578 25 24 97 18 18
+hecs_3_1-po-3.dft 1200000 37 36 N/A N/A N/A
+hecs_3_3-po-3.dft 1200000 37 36 N/A N/A N/A
+hecs_4_1-po-3.dft 1200000 49 48 N/A N/A N/A
+hecs_4_2-po-3.dft 1200000 49 48 N/A N/A N/A
+hecs_4_3-po-3.dft 1200000 49 48 N/A N/A N/A
+hecs_4_4-po-3.dft 1200000 49 48 N/A N/A N/A
+hecs_5_1-po-3.dft 1200000 61 60 N/A N/A N/A
+hecs_5_5-po-3.dft 1200000 61 60 N/A N/A N/A
+hecs_6_1-po-3.dft 1200000 73 72 N/A N/A N/A
+hecs_6_6-po-3.dft 1200000 73 72 N/A N/A N/A
+hecs_7_1-po-3.dft 1200000 85 84 N/A N/A N/A
+hecs_7_7-po-3.dft 1200000 85 84 N/A N/A N/A
+hecs_8_1-po-3.dft 1200000 97 96 N/A N/A N/A
+hecs_8_8-po-3.dft 1200000 97 96 N/A N/A N/A

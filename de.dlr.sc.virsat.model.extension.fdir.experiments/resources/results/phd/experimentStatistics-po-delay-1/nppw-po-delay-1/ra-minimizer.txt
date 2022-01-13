@@ -1,2 +1,2 @@
-benchmarkName time removedStates removedTransitions
-nppwp-po-1.dft N/A N/A N/A
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+nppwp-po-1.dft 62 71 170 0 0 2 69

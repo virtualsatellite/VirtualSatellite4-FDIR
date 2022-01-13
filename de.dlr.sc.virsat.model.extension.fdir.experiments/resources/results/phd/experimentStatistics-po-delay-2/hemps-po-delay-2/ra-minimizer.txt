@@ -1,2 +1,2 @@
 benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
-hemps-po-2.dft 39 43 109 0 0 0 43
+hemps-po-2.dft 16 42 114 0 0 0 42

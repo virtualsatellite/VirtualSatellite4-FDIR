@@ -32,12 +32,12 @@ rc.2-1-sc-po-4.dft 0
 rc.2-2-hc-po-4.dft 0
 rc.2-2-sc-po-4.dft 0
 rc.2-3-hc-po-4.dft 0
-rc.2-3-sc-po-4.dft 0
+rc.2-3-sc-po-4.dft 15
 rc.2-4-hc-po-4.dft 0
 rc.2-4-sc-po-4.dft 0
 rc.20-1-hc-po-4.dft 0
 rc.20-1-sc-po-4.dft 0
-rc.20-20-hc-po-4.dft 0
+rc.20-20-hc-po-4.dft 15
 rc.20-20-sc-po-4.dft 0
 rc.25-1-hc-po-4.dft 0
 rc.25-1-sc-po-4.dft 0

@@ -1,3 +1,3 @@
 benchmarkName time maxStates maxTransitions
-CAS-po-3.dft 33 415 808
-DCAS-po-3.dft 29 298 574
+CAS-po-3.dft N/A N/A N/A
+DCAS-po-3.dft 0 32 40

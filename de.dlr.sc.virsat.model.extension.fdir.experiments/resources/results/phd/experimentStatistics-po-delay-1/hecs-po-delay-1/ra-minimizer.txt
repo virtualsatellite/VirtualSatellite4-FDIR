@@ -1,18 +1,18 @@
-benchmarkName time removedStates removedTransitions
-hecs_1_1-po-1.dft N/A N/A N/A
-hecs_2_1-po-1.dft N/A N/A N/A
-hecs_2_2-po-1.dft N/A N/A N/A
-hecs_3_1-po-1.dft N/A N/A N/A
-hecs_3_3-po-1.dft N/A N/A N/A
-hecs_4_1-po-1.dft N/A N/A N/A
-hecs_4_2-po-1.dft N/A N/A N/A
-hecs_4_3-po-1.dft N/A N/A N/A
-hecs_4_4-po-1.dft N/A N/A N/A
-hecs_5_1-po-1.dft N/A N/A N/A
-hecs_5_5-po-1.dft N/A N/A N/A
-hecs_6_1-po-1.dft N/A N/A N/A
-hecs_6_6-po-1.dft N/A N/A N/A
-hecs_7_1-po-1.dft N/A N/A N/A
-hecs_7_7-po-1.dft N/A N/A N/A
-hecs_8_1-po-1.dft N/A N/A N/A
-hecs_8_8-po-1.dft N/A N/A N/A
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+hecs_1_1-po-1.dft 0 6 11 0 1 0 5
+hecs_2_1-po-1.dft 94 180 360 0 0 4 176
+hecs_2_2-po-1.dft 94 180 360 0 0 4 176
+hecs_3_1-po-1.dft 141 270 540 0 0 6 264
+hecs_3_3-po-1.dft 140 270 540 0 0 6 264
+hecs_4_1-po-1.dft 172 360 720 0 0 8 352
+hecs_4_2-po-1.dft 187 360 720 0 0 8 352
+hecs_4_3-po-1.dft 188 360 720 0 0 8 352
+hecs_4_4-po-1.dft 171 360 720 0 0 8 352
+hecs_5_1-po-1.dft 266 450 900 0 0 10 440
+hecs_5_5-po-1.dft 280 450 900 0 0 10 440
+hecs_6_1-po-1.dft 263 540 1080 0 0 12 528
+hecs_6_6-po-1.dft 266 540 1080 0 0 12 528
+hecs_7_1-po-1.dft 280 630 1260 0 0 14 616
+hecs_7_7-po-1.dft 312 630 1260 0 0 14 616
+hecs_8_1-po-1.dft 405 720 1440 0 0 16 704
+hecs_8_8-po-1.dft 374 720 1440 0 0 16 704
