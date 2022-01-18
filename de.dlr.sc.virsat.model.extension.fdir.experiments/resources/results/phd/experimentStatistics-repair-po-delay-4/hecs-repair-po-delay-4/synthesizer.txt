@@ -1,18 +1,18 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-hecs_1_1-repair-po-4.dft 242 15 14 9 15
-hecs_2_1-repair-po-4.dft 120000 30 28 N/A N/A
-hecs_2_2-repair-po-4.dft 120000 30 28 N/A N/A
-hecs_3_1-repair-po-4.dft 120000 44 41 N/A N/A
-hecs_3_3-repair-po-4.dft 120000 44 41 N/A N/A
-hecs_4_1-repair-po-4.dft 120000 58 54 N/A N/A
-hecs_4_2-repair-po-4.dft 120000 58 54 N/A N/A
-hecs_4_3-repair-po-4.dft 120000 58 54 N/A N/A
-hecs_4_4-repair-po-4.dft 120000 58 54 N/A N/A
-hecs_5_1-repair-po-4.dft 120000 72 67 N/A N/A
-hecs_5_5-repair-po-4.dft 120000 72 67 N/A N/A
-hecs_6_1-repair-po-4.dft 120000 86 80 N/A N/A
-hecs_6_6-repair-po-4.dft 120000 86 80 N/A N/A
-hecs_7_1-repair-po-4.dft 120000 100 93 N/A N/A
-hecs_7_7-repair-po-4.dft 120000 100 93 N/A N/A
-hecs_8_1-repair-po-4.dft 120000 114 106 N/A N/A
-hecs_8_8-repair-po-4.dft 120000 114 106 N/A N/A
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+hecs_1_1-repair-po-4.dft 1200000 1 0 N/A N/A N/A
+hecs_2_1-repair-po-4.dft 282 3 1 9 15 225
+hecs_2_2-repair-po-4.dft 296 3 1 9 15 225
+hecs_3_1-repair-po-4.dft 1198 4 1 9 15 3375
+hecs_3_3-repair-po-4.dft 1157 4 1 9 15 3375
+hecs_4_1-repair-po-4.dft 15501 5 1 9 15 50625
+hecs_4_2-repair-po-4.dft 15453 5 1 9 15 50625
+hecs_4_3-repair-po-4.dft 15282 5 1 9 15 50625
+hecs_4_4-repair-po-4.dft 15782 5 1 9 15 50625
+hecs_5_1-repair-po-4.dft 295858 6 1 9 15 759375
+hecs_5_5-repair-po-4.dft 1800000 6 1 9 15 N/A
+hecs_6_1-repair-po-4.dft 1800000 7 1 9 15 N/A
+hecs_6_6-repair-po-4.dft 1800000 7 1 9 15 N/A
+hecs_7_1-repair-po-4.dft 1800000 8 1 9 15 N/A
+hecs_7_7-repair-po-4.dft 1800000 8 1 9 15 N/A
+hecs_8_1-repair-po-4.dft 1800000 9 1 9 15 N/A
+hecs_8_8-repair-po-4.dft 1800000 9 1 9 15 N/A

@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-nppwp-repair.dft 50 1680 6395
+nppwp-repair.dft 16 1680 6395

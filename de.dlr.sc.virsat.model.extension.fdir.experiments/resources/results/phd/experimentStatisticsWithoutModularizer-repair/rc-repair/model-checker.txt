@@ -1,6 +1,6 @@
 benchmarkName time
 rc.1-1-hc-repair.dft 0
-rc.1-1-sc-repair.dft 20
+rc.1-1-sc-repair.dft 31
 rc.1-10-hc-repair.dft 0
 rc.1-10-sc-repair.dft 0
 rc.1-15-hc-repair.dft 0

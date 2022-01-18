@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-EMA-repair.dft 2 64 190
+EMA-repair.dft 0 64 190

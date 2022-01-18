@@ -1,2 +1,2 @@
-benchmarkName time removedStates removedTransitions
-nppwp-repair-po-4.dft N/A N/A N/A
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+nppwp-repair-po-4.dft N/A N/A N/A N/A N/A N/A N/A

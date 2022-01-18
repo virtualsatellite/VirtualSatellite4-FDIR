@@ -2,7 +2,7 @@ benchmarkName time maxStates maxTransitions
 vgs_1-repair.dft N/A N/A N/A
 vgs_2-repair.dft N/A N/A N/A
 vgs_3-repair.dft N/A N/A N/A
-vgs_4-repair.dft N/A N/A N/A
+vgs_4-repair.dft 422 10401 108774
 vgs_5-repair.dft N/A N/A N/A
 vgs_6-repair.dft N/A N/A N/A
 vgs_7-repair.dft N/A N/A N/A

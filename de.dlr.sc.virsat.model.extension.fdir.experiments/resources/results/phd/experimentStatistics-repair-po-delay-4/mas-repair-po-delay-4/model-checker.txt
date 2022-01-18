@@ -1,3 +1,3 @@
 benchmarkName time
-MAS-2-repair-po-4.dft 8
+MAS-2-repair-po-4.dft 0
 MAS-repair-po-4.dft 0

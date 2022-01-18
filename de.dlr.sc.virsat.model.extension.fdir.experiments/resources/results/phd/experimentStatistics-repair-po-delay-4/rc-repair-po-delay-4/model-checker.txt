@@ -10,14 +10,14 @@ rc.1-2-sc-repair-po-4.dft 0
 rc.1-20-hc-repair-po-4.dft 0
 rc.1-20-sc-repair-po-4.dft 0
 rc.1-25-hc-repair-po-4.dft 0
-rc.1-25-sc-repair-po-4.dft 0
+rc.1-25-sc-repair-po-4.dft 15
 rc.1-3-hc-repair-po-4.dft 0
 rc.1-3-sc-repair-po-4.dft 0
 rc.1-30-hc-repair-po-4.dft 0
 rc.1-30-sc-repair-po-4.dft 0
 rc.1-4-hc-repair-po-4.dft 0
 rc.1-4-sc-repair-po-4.dft 0
-rc.1-5-hc-repair-po-4.dft 0
+rc.1-5-hc-repair-po-4.dft 16
 rc.1-5-sc-repair-po-4.dft 0
 rc.10-1-hc-repair-po-4.dft 0
 rc.10-1-sc-repair-po-4.dft 0
@@ -52,7 +52,7 @@ rc.3-3-sc-repair-po-4.dft 0
 rc.3-4-hc-repair-po-4.dft 0
 rc.3-4-sc-repair-po-4.dft 0
 rc.30-1-hc-repair-po-4.dft 0
-rc.30-1-sc-repair-po-4.dft 1
+rc.30-1-sc-repair-po-4.dft 0
 rc.30-30-hc-repair-po-4.dft 0
 rc.30-30-sc-repair-po-4.dft 0
 rc.4-1-hc-repair-po-4.dft 0
@@ -63,7 +63,7 @@ rc.4-3-hc-repair-po-4.dft 0
 rc.4-3-sc-repair-po-4.dft 0
 rc.4-4-hc-repair-po-4.dft 0
 rc.4-4-sc-repair-po-4.dft 0
-rc.5-1-hc-repair-po-4.dft 1
+rc.5-1-hc-repair-po-4.dft 0
 rc.5-1-sc-repair-po-4.dft 0
 rc.5-5-hc-repair-po-4.dft 0
 rc.5-5-sc-repair-po-4.dft 0

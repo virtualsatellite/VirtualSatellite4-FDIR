@@ -1,2 +1,2 @@
 benchmarkName time
-EMA-repair.dft 1
+EMA-repair.dft 0
