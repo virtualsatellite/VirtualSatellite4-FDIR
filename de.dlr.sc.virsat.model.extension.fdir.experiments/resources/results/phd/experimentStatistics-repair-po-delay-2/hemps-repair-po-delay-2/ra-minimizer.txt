@@ -1,2 +1,2 @@
-benchmarkName time removedStates removedTransitions
-hemps-repair-po-2.dft N/A N/A N/A
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+hemps-repair-po-2.dft 797 232 1083 0 0 0 232

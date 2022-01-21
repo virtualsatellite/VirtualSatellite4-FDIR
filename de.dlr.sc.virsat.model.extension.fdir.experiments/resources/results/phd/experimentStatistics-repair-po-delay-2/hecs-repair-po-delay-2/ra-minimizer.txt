@@ -1,18 +1,18 @@
-benchmarkName time removedStates removedTransitions
-hecs_1_1-repair-po-2.dft 660 91 525 0 0 0 91
-hecs_2_1-repair-po-2.dft N/A N/A N/A
-hecs_2_2-repair-po-2.dft N/A N/A N/A
-hecs_3_1-repair-po-2.dft N/A N/A N/A
-hecs_3_3-repair-po-2.dft N/A N/A N/A
-hecs_4_1-repair-po-2.dft N/A N/A N/A
-hecs_4_2-repair-po-2.dft N/A N/A N/A
-hecs_4_3-repair-po-2.dft N/A N/A N/A
-hecs_4_4-repair-po-2.dft N/A N/A N/A
-hecs_5_1-repair-po-2.dft N/A N/A N/A
-hecs_5_5-repair-po-2.dft N/A N/A N/A
-hecs_6_1-repair-po-2.dft N/A N/A N/A
-hecs_6_6-repair-po-2.dft N/A N/A N/A
-hecs_7_1-repair-po-2.dft N/A N/A N/A
-hecs_7_7-repair-po-2.dft N/A N/A N/A
-hecs_8_1-repair-po-2.dft N/A N/A N/A
-hecs_8_8-repair-po-2.dft N/A N/A N/A
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+hecs_1_1-repair-po-2.dft 47 24 97 0 0 3 21
+hecs_2_1-repair-po-2.dft 48 72 154 0 0 14 58
+hecs_2_2-repair-po-2.dft 64 72 153 0 0 14 58
+hecs_3_1-repair-po-2.dft 77 106 228 0 0 19 87
+hecs_3_3-repair-po-2.dft 95 108 228 0 0 21 87
+hecs_4_1-repair-po-2.dft 62 145 307 0 0 29 116
+hecs_4_2-repair-po-2.dft 64 143 306 0 0 27 116
+hecs_4_3-repair-po-2.dft 62 144 305 0 0 28 116
+hecs_4_4-repair-po-2.dft 78 144 305 0 0 28 116
+hecs_5_1-repair-po-2.dft 141 179 383 0 0 34 145
+hecs_5_5-repair-po-2.dft 139 180 384 0 0 35 145
+hecs_6_1-repair-po-2.dft 171 215 458 0 0 41 174
+hecs_6_6-repair-po-2.dft 171 217 460 0 0 43 174
+hecs_7_1-repair-po-2.dft 155 251 532 0 0 48 203
+hecs_7_7-repair-po-2.dft 188 253 537 0 0 50 203
+hecs_8_1-repair-po-2.dft 203 288 614 0 0 56 232
+hecs_8_8-repair-po-2.dft 202 288 612 0 0 56 232

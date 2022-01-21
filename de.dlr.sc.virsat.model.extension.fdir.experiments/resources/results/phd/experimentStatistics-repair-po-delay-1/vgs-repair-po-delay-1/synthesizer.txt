@@ -1,9 +1,9 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-vgs_1-repair-po-1.dft 1609 2 2 N/A N/A
-vgs_2-repair-po-1.dft 1422 2 2 N/A N/A
-vgs_3-repair-po-1.dft 929 2 2 N/A N/A
-vgs_4-repair-po-1.dft 120000 2 1 N/A N/A
-vgs_5-repair-po-1.dft 1608 2 2 N/A N/A
-vgs_6-repair-po-1.dft 1210 2 2 N/A N/A
-vgs_7-repair-po-1.dft 2177 2 2 N/A N/A
-vgs_8-repair-po-1.dft 2923 2 2 N/A N/A
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+vgs_1-repair-po-1.dft 1140 2 2 N/A N/A 1
+vgs_2-repair-po-1.dft 1031 2 2 N/A N/A 1
+vgs_3-repair-po-1.dft 672 2 2 N/A N/A 1
+vgs_4-repair-po-1.dft 1200000 1 0 N/A N/A N/A
+vgs_5-repair-po-1.dft 720 2 2 N/A N/A 1
+vgs_6-repair-po-1.dft 874 2 2 N/A N/A 1
+vgs_7-repair-po-1.dft 1563 2 2 N/A N/A 1
+vgs_8-repair-po-1.dft 2031 2 2 N/A N/A 1
