@@ -1,2 +1,2 @@
 benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
-EMA-repair-po-4.dft 62 0 4 0 0 0 0
+EMA-repair-po-4.dft 46 0 4 0 0 0 0

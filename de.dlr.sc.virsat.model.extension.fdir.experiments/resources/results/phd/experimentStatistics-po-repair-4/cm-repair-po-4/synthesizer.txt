@@ -1,55 +1,55 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-cm_1_1_10_dp_x-repair-po-4.dft 120000 35 24 5 6
-cm_1_1_10_sp_x-repair-po-4.dft 120000 35 24 5 6
-cm_1_1_11_dp_x-repair-po-4.dft 120000 38 26 5 6
-cm_1_1_11_sp_x-repair-po-4.dft 120000 38 26 5 6
-cm_1_1_12_dp_x-repair-po-4.dft 120000 41 28 5 6
-cm_1_1_12_sp_x-repair-po-4.dft 120000 41 28 5 6
-cm_1_1_13_sp_x-repair-po-4.dft 120000 44 30 5 6
-cm_1_1_14_sp_x-repair-po-4.dft 120000 47 32 5 6
-cm_1_1_2_dp_x-repair-po-4.dft 301 11 8 32 15
-cm_1_1_2_sp_x-repair-po-4.dft 282 11 8 29 15
-cm_1_1_3_dp_x-repair-po-4.dft 6097 14 10 44 62
-cm_1_1_3_sp_x-repair-po-4.dft 7277 14 10 41 62
-cm_1_1_4_dp_x-repair-po-4.dft 120000 17 12 58 809
-cm_1_1_4_sp_x-repair-po-4.dft 120000 17 12 55 809
-cm_1_1_5_dp_x-repair-po-4.dft 120000 20 14 70 2577
-cm_1_1_5_sp_x-repair-po-4.dft 120000 20 14 67 2577
-cm_1_1_6_dp_x-repair-po-4.dft 120000 23 16 5 6
-cm_1_1_6_sp_x-repair-po-4.dft 120000 23 16 5 6
-cm_1_1_7_dp_x-repair-po-4.dft 120000 26 18 5 6
-cm_1_1_7_sp_x-repair-po-4.dft 120000 26 18 5 6
-cm_1_1_8_dp_x-repair-po-4.dft 120000 29 20 5 6
-cm_1_1_8_sp_x-repair-po-4.dft 120000 29 20 5 6
-cm_1_1_9_dp_x-repair-po-4.dft 120000 32 22 5 6
-cm_1_1_9_sp_x-repair-po-4.dft 120000 32 22 5 6
-cm_2_1_2_dp_x-repair-po-4.dft 120000 12 6 34 2253
-cm_2_1_2_sp_x-repair-po-4.dft 120000 12 6 31 667
-cm_2_1_3_dp_x-repair-po-4.dft 120000 14 6 7 11
-cm_2_1_3_sp_x-repair-po-4.dft 120000 14 6 N/A N/A
-cm_2_1_4_dp_x-repair-po-4.dft 120000 16 6 N/A N/A
-cm_2_1_4_sp_x-repair-po-4.dft 120000 16 6 7 11
-cm_2_2_2_dp_x-repair-po-4.dft 120000 12 6 34 2253
-cm_2_2_2_sp_x-repair-po-4.dft 120000 12 6 31 667
-cm_2_2_3_dp_x-repair-po-4.dft 120000 14 6 N/A N/A
-cm_2_2_3_sp_x-repair-po-4.dft 120000 14 6 7 11
-cm_2_2_4_dp_x-repair-po-4.dft 120000 16 6 N/A N/A
-cm_2_2_4_sp_x-repair-po-4.dft 120000 16 6 N/A N/A
-cm_3_1_2_dp_x-repair-po-4.dft 120000 17 8 34 2253
-cm_3_1_2_sp_x-repair-po-4.dft 120000 17 8 31 667
-cm_3_1_3_dp_x-repair-po-4.dft 120000 20 8 7 10
-cm_3_1_3_sp_x-repair-po-4.dft 120000 20 8 7 10
-cm_3_1_4_dp_x-repair-po-4.dft 120000 23 8 7 11
-cm_3_1_4_sp_x-repair-po-4.dft 120000 23 8 7 11
-cm_3_2_2_dp_x-repair-po-4.dft 120000 17 8 34 2269
-cm_3_2_2_sp_x-repair-po-4.dft 120000 17 8 31 667
-cm_3_2_3_dp_x-repair-po-4.dft 120000 20 8 N/A N/A
-cm_3_2_3_sp_x-repair-po-4.dft 120000 20 8 N/A N/A
-cm_3_2_4_dp_x-repair-po-4.dft 120000 23 8 7 10
-cm_3_2_4_sp_x-repair-po-4.dft 120000 23 8 N/A N/A
-cm_3_3_2_dp_x-repair-po-4.dft 120000 17 8 34 2253
-cm_3_3_2_sp_x-repair-po-4.dft 120000 17 8 31 667
-cm_3_3_3_dp_x-repair-po-4.dft 120000 20 8 7 10
-cm_3_3_3_sp_x-repair-po-4.dft 120000 20 8 N/A N/A
-cm_3_3_4_dp_x-repair-po-4.dft 120000 23 8 7 10
-cm_3_3_4_sp_x-repair-po-4.dft 120000 23 8 7 11
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+cm_1_1_10_dp_x-repair-po-4.dft 1200000 35 24 5 6 N/A
+cm_1_1_10_sp_x-repair-po-4.dft 1200000 35 24 5 6 N/A
+cm_1_1_11_dp_x-repair-po-4.dft 1200000 38 26 5 6 N/A
+cm_1_1_11_sp_x-repair-po-4.dft 1200000 38 26 N/A N/A N/A
+cm_1_1_12_dp_x-repair-po-4.dft 1200000 41 28 5 6 N/A
+cm_1_1_12_sp_x-repair-po-4.dft 1200000 41 28 5 6 N/A
+cm_1_1_13_sp_x-repair-po-4.dft 1200000 44 30 5 6 N/A
+cm_1_1_14_sp_x-repair-po-4.dft 1200000 47 32 5 6 N/A
+cm_1_1_2_dp_x-repair-po-4.dft 292 11 8 32 15 540
+cm_1_1_2_sp_x-repair-po-4.dft 251 11 8 29 15 540
+cm_1_1_3_dp_x-repair-po-4.dft 4270 14 10 44 62 13392
+cm_1_1_3_sp_x-repair-po-4.dft 4199 14 10 41 62 13392
+cm_1_1_4_dp_x-repair-po-4.dft 1800000 17 12 58 809 N/A
+cm_1_1_4_sp_x-repair-po-4.dft 527932 17 12 55 809 1048464
+cm_1_1_5_dp_x-repair-po-4.dft 1800000 20 14 70 2577 N/A
+cm_1_1_5_sp_x-repair-po-4.dft 1200000 20 14 67 2577 N/A
+cm_1_1_6_dp_x-repair-po-4.dft 1200000 23 16 N/A N/A N/A
+cm_1_1_6_sp_x-repair-po-4.dft 1200000 23 16 5 6 N/A
+cm_1_1_7_dp_x-repair-po-4.dft 1200000 26 18 5 6 N/A
+cm_1_1_7_sp_x-repair-po-4.dft 1200000 26 18 5 6 N/A
+cm_1_1_8_dp_x-repair-po-4.dft 1200000 29 20 5 6 N/A
+cm_1_1_8_sp_x-repair-po-4.dft 1200000 29 20 5 6 N/A
+cm_1_1_9_dp_x-repair-po-4.dft 1800000 32 22 5 6 N/A
+cm_1_1_9_sp_x-repair-po-4.dft 1800000 32 22 5 6 N/A
+cm_2_1_2_dp_x-repair-po-4.dft 1800000 12 6 55 2269 N/A
+cm_2_1_2_sp_x-repair-po-4.dft 1800000 12 6 52 667 N/A
+cm_2_1_3_dp_x-repair-po-4.dft 1800000 14 6 36 11 N/A
+cm_2_1_3_sp_x-repair-po-4.dft 1800000 14 6 N/A N/A N/A
+cm_2_1_4_dp_x-repair-po-4.dft 1200000 16 6 44 10 N/A
+cm_2_1_4_sp_x-repair-po-4.dft 1200000 16 6 44 11 N/A
+cm_2_2_2_dp_x-repair-po-4.dft 1800000 12 6 55 2269 N/A
+cm_2_2_2_sp_x-repair-po-4.dft 1800000 12 6 52 667 N/A
+cm_2_2_3_dp_x-repair-po-4.dft 1800000 14 6 N/A N/A N/A
+cm_2_2_3_sp_x-repair-po-4.dft 1800000 14 6 36 11 N/A
+cm_2_2_4_dp_x-repair-po-4.dft 1200000 16 6 44 10 N/A
+cm_2_2_4_sp_x-repair-po-4.dft 1200000 16 6 44 11 N/A
+cm_3_1_2_dp_x-repair-po-4.dft 1200000 17 8 66 2269 N/A
+cm_3_1_2_sp_x-repair-po-4.dft 1800000 17 8 39 10 N/A
+cm_3_1_3_dp_x-repair-po-4.dft 1800000 20 8 51 11 N/A
+cm_3_1_3_sp_x-repair-po-4.dft 1800000 20 8 51 11 N/A
+cm_3_1_4_dp_x-repair-po-4.dft 1200000 23 8 63 11 N/A
+cm_3_1_4_sp_x-repair-po-4.dft 1200000 23 8 63 11 N/A
+cm_3_2_2_dp_x-repair-po-4.dft 1800000 17 8 66 2269 N/A
+cm_3_2_2_sp_x-repair-po-4.dft 1800000 17 8 63 667 N/A
+cm_3_2_3_dp_x-repair-po-4.dft 1800000 20 8 51 11 N/A
+cm_3_2_3_sp_x-repair-po-4.dft 1800000 20 8 51 11 N/A
+cm_3_2_4_dp_x-repair-po-4.dft 1200000 23 8 63 10 N/A
+cm_3_2_4_sp_x-repair-po-4.dft 1200000 23 8 63 11 N/A
+cm_3_3_2_dp_x-repair-po-4.dft 1200000 17 8 66 2269 N/A
+cm_3_3_2_sp_x-repair-po-4.dft 1800000 17 8 39 11 N/A
+cm_3_3_3_dp_x-repair-po-4.dft 1800000 20 8 51 11 N/A
+cm_3_3_3_sp_x-repair-po-4.dft 1800000 20 8 51 11 N/A
+cm_3_3_4_dp_x-repair-po-4.dft 1200000 23 8 63 11 N/A
+cm_3_3_4_sp_x-repair-po-4.dft 1200000 23 8 N/A N/A N/A

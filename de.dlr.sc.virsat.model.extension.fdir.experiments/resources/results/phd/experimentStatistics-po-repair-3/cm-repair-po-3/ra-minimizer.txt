@@ -1,55 +1,55 @@
-benchmarkName time removedStates removedTransitions
-cm_1_1_10_dp_x-repair-po-3.dft 131 77 164 0 0 49 28
-cm_1_1_10_sp_x-repair-po-3.dft 113 66 141 0 0 42 24
-cm_1_1_11_dp_x-repair-po-3.dft 57 31 69 0 0 19 12
-cm_1_1_11_sp_x-repair-po-3.dft 22 11 24 0 0 7 4
-cm_1_1_12_dp_x-repair-po-3.dft 171 98 210 0 0 62 36
-cm_1_1_12_sp_x-repair-po-3.dft 190 109 231 0 0 69 40
-cm_1_1_13_sp_x-repair-po-3.dft 246 140 303 0 0 88 52
-cm_1_1_14_sp_x-repair-po-3.dft 245 140 304 0 0 88 52
-cm_1_1_2_dp_x-repair-po-3.dft 16290 456 3199 0 0 23 433
-cm_1_1_2_sp_x-repair-po-3.dft 4443 492 3108 0 0 17 475
-cm_1_1_3_dp_x-repair-po-3.dft N/A N/A N/A
-cm_1_1_3_sp_x-repair-po-3.dft N/A N/A N/A
-cm_1_1_4_dp_x-repair-po-3.dft 19 11 23 0 0 7 4
-cm_1_1_4_sp_x-repair-po-3.dft N/A N/A N/A
-cm_1_1_5_dp_x-repair-po-3.dft N/A N/A N/A
-cm_1_1_5_sp_x-repair-po-3.dft 74 44 92 0 0 28 16
-cm_1_1_6_dp_x-repair-po-3.dft 59 32 70 0 0 20 12
-cm_1_1_6_sp_x-repair-po-3.dft 114 64 138 0 0 40 24
-cm_1_1_7_dp_x-repair-po-3.dft 55 32 71 0 0 20 12
-cm_1_1_7_sp_x-repair-po-3.dft 98 51 115 0 0 31 20
-cm_1_1_8_dp_x-repair-po-3.dft 76 42 94 0 0 26 16
-cm_1_1_8_sp_x-repair-po-3.dft N/A N/A N/A
-cm_1_1_9_dp_x-repair-po-3.dft 118 66 140 0 0 42 24
-cm_1_1_9_sp_x-repair-po-3.dft 138 74 163 0 0 46 28
-cm_2_1_2_dp_x-repair-po-3.dft N/A N/A N/A
-cm_2_1_2_sp_x-repair-po-3.dft N/A N/A N/A
-cm_2_1_3_dp_x-repair-po-3.dft N/A N/A N/A
-cm_2_1_3_sp_x-repair-po-3.dft N/A N/A N/A
-cm_2_1_4_dp_x-repair-po-3.dft N/A N/A N/A
-cm_2_1_4_sp_x-repair-po-3.dft N/A N/A N/A
-cm_2_2_2_dp_x-repair-po-3.dft N/A N/A N/A
-cm_2_2_2_sp_x-repair-po-3.dft N/A N/A N/A
-cm_2_2_3_dp_x-repair-po-3.dft N/A N/A N/A
-cm_2_2_3_sp_x-repair-po-3.dft N/A N/A N/A
-cm_2_2_4_dp_x-repair-po-3.dft N/A N/A N/A
-cm_2_2_4_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_1_2_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_1_2_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_1_3_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_1_3_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_1_4_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_1_4_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_2_2_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_2_2_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_2_3_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_2_3_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_2_4_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_2_4_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_3_2_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_3_2_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_3_3_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_3_3_sp_x-repair-po-3.dft N/A N/A N/A
-cm_3_3_4_dp_x-repair-po-3.dft N/A N/A N/A
-cm_3_3_4_sp_x-repair-po-3.dft N/A N/A N/A
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+cm_1_1_10_dp_x-repair-po-3.dft 92 75 162 0 0 47 28
+cm_1_1_10_sp_x-repair-po-3.dft 26 21 46 0 0 13 8
+cm_1_1_11_dp_x-repair-po-3.dft 39 33 71 0 0 21 12
+cm_1_1_11_sp_x-repair-po-3.dft 122 99 211 0 0 63 36
+cm_1_1_12_dp_x-repair-po-3.dft 107 84 186 0 0 52 32
+cm_1_1_12_sp_x-repair-po-3.dft 158 130 281 0 0 82 48
+cm_1_1_13_sp_x-repair-po-3.dft 13 10 23 0 0 6 4
+cm_1_1_14_sp_x-repair-po-3.dft 117 97 210 0 0 61 36
+cm_1_1_2_dp_x-repair-po-3.dft 11330 457 3198 0 0 24 433
+cm_1_1_2_sp_x-repair-po-3.dft 3094 500 3158 0 0 16 484
+cm_1_1_3_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_1_1_3_sp_x-repair-po-3.dft 39 32 70 0 0 20 12
+cm_1_1_4_dp_x-repair-po-3.dft 13 11 24 0 0 7 4
+cm_1_1_4_sp_x-repair-po-3.dft 13 11 24 0 0 7 4
+cm_1_1_5_dp_x-repair-po-3.dft 53 43 93 0 0 27 16
+cm_1_1_5_sp_x-repair-po-3.dft 14 10 23 0 0 6 4
+cm_1_1_6_dp_x-repair-po-3.dft 66 55 116 0 0 35 20
+cm_1_1_6_sp_x-repair-po-3.dft 12 11 24 0 0 7 4
+cm_1_1_7_dp_x-repair-po-3.dft 65 53 117 0 0 33 20
+cm_1_1_7_sp_x-repair-po-3.dft 92 75 163 0 0 47 28
+cm_1_1_8_dp_x-repair-po-3.dft 26 21 47 0 0 13 8
+cm_1_1_8_sp_x-repair-po-3.dft 14 11 23 0 0 7 4
+cm_1_1_9_dp_x-repair-po-3.dft 106 86 187 0 0 54 32
+cm_1_1_9_sp_x-repair-po-3.dft 43 32 69 0 0 20 12
+cm_2_1_2_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_1_2_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_1_3_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_1_3_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_1_4_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_1_4_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_2_2_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_2_2_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_2_3_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_2_3_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_2_4_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_2_2_4_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_1_2_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_1_2_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_1_3_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_1_3_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_1_4_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_1_4_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_2_2_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_2_2_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_2_3_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_2_3_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_2_4_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_2_4_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_3_2_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_3_2_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_3_3_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_3_3_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_3_4_dp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A
+cm_3_3_4_sp_x-repair-po-3.dft N/A N/A N/A N/A N/A N/A N/A

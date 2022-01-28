@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-hemps-repair-po-2.dft 25 418 815
+hemps-repair-po-2.dft 8 418 815

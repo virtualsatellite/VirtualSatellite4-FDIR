@@ -1,69 +1,69 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-rc.1-1-hc-repair-po-3.dft 331 23 21 11 44
-rc.1-1-sc-repair-po-3.dft 57 15 14 10 6
-rc.1-10-hc-repair-po-3.dft 120000 33 22 12 44
-rc.1-10-sc-repair-po-3.dft 120000 25 15 12 23
-rc.1-15-hc-repair-po-3.dft 120000 38 22 12 44
-rc.1-15-sc-repair-po-3.dft 120000 30 15 12 23
-rc.1-2-hc-repair-po-3.dft 813 25 22 12 44
-rc.1-2-sc-repair-po-3.dft 334 17 15 12 23
-rc.1-20-hc-repair-po-3.dft 120000 43 22 12 44
-rc.1-20-sc-repair-po-3.dft 120000 35 15 12 23
-rc.1-25-hc-repair-po-3.dft 120000 48 22 12 44
-rc.1-25-sc-repair-po-3.dft 120000 40 15 12 23
-rc.1-3-hc-repair-po-3.dft 3295 26 22 12 44
-rc.1-3-sc-repair-po-3.dft 648 18 15 12 23
-rc.1-30-hc-repair-po-3.dft 120000 53 22 12 44
-rc.1-30-sc-repair-po-3.dft 120000 45 15 12 23
-rc.1-4-hc-repair-po-3.dft 30509 27 22 12 44
-rc.1-4-sc-repair-po-3.dft 2549 19 15 12 23
-rc.1-5-hc-repair-po-3.dft 120000 28 22 12 44
-rc.1-5-sc-repair-po-3.dft 23704 20 15 12 23
-rc.10-1-hc-repair-po-3.dft 1254 23 21 11 44
-rc.10-1-sc-repair-po-3.dft 706 15 14 10 6
-rc.10-10-hc-repair-po-3.dft 120000 33 22 12 44
-rc.10-10-sc-repair-po-3.dft 120000 25 15 12 23
-rc.15-1-hc-repair-po-3.dft 1991 28 26 11 44
-rc.15-1-sc-repair-po-3.dft 1356 20 19 10 6
-rc.15-15-hc-repair-po-3.dft 120000 43 27 12 44
-rc.15-15-sc-repair-po-3.dft 120000 35 20 12 23
-rc.2-1-hc-repair-po-3.dft 393 15 13 11 44
-rc.2-1-sc-repair-po-3.dft 91 7 6 10 6
-rc.2-2-hc-repair-po-3.dft 895 17 14 12 44
-rc.2-2-sc-repair-po-3.dft 383 9 7 12 23
-rc.2-3-hc-repair-po-3.dft 3288 18 14 12 44
-rc.2-3-sc-repair-po-3.dft 699 10 7 12 23
-rc.2-4-hc-repair-po-3.dft 30379 19 14 12 44
-rc.2-4-sc-repair-po-3.dft 2560 11 7 12 23
-rc.20-1-hc-repair-po-3.dft 3016 33 31 11 44
-rc.20-1-sc-repair-po-3.dft 2246 25 24 10 6
-rc.20-20-hc-repair-po-3.dft 120000 53 32 12 44
-rc.20-20-sc-repair-po-3.dft 120000 45 25 12 23
-rc.25-1-hc-repair-po-3.dft 4293 38 36 11 44
-rc.25-1-sc-repair-po-3.dft 3378 30 29 10 6
-rc.25-25-hc-repair-po-3.dft 120000 63 37 12 44
-rc.25-25-sc-repair-po-3.dft 120000 55 30 12 23
-rc.3-1-hc-repair-po-3.dft 463 16 14 11 44
-rc.3-1-sc-repair-po-3.dft 139 8 7 10 6
-rc.3-2-hc-repair-po-3.dft 972 18 15 12 44
-rc.3-2-sc-repair-po-3.dft 433 10 8 12 23
-rc.3-3-hc-repair-po-3.dft 3354 19 15 12 44
-rc.3-3-sc-repair-po-3.dft 766 11 8 12 23
-rc.3-4-hc-repair-po-3.dft 30430 20 15 12 44
-rc.3-4-sc-repair-po-3.dft 2627 12 8 12 23
-rc.30-1-hc-repair-po-3.dft 5757 43 41 11 44
-rc.30-1-sc-repair-po-3.dft 4728 35 34 10 6
-rc.30-30-hc-repair-po-3.dft 120000 73 42 12 44
-rc.30-30-sc-repair-po-3.dft 120000 65 35 12 23
-rc.4-1-hc-repair-po-3.dft 539 17 15 11 44
-rc.4-1-sc-repair-po-3.dft 183 9 8 10 6
-rc.4-2-hc-repair-po-3.dft 1055 19 16 12 44
-rc.4-2-sc-repair-po-3.dft 487 11 9 12 23
-rc.4-3-hc-repair-po-3.dft 3580 20 16 12 44
-rc.4-3-sc-repair-po-3.dft 828 12 9 12 23
-rc.4-4-hc-repair-po-3.dft 32865 21 16 12 44
-rc.4-4-sc-repair-po-3.dft 2701 13 9 12 23
-rc.5-1-hc-repair-po-3.dft 628 18 16 11 44
-rc.5-1-sc-repair-po-3.dft 241 10 9 10 6
-rc.5-5-hc-repair-po-3.dft 120000 23 17 12 44
-rc.5-5-sc-repair-po-3.dft 23419 15 10 12 23
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+rc.1-1-hc-repair-po-3.dft 314 23 21 42 44 66
+rc.1-1-sc-repair-po-3.dft 75 15 14 10 6 6
+rc.1-10-hc-repair-po-3.dft 1800000 33 22 67 44 N/A
+rc.1-10-sc-repair-po-3.dft 1800000 25 15 52 23 N/A
+rc.1-15-hc-repair-po-3.dft 1800000 38 22 82 44 N/A
+rc.1-15-sc-repair-po-3.dft 1800000 30 15 67 23 N/A
+rc.1-2-hc-repair-po-3.dft 700 25 22 43 44 891
+rc.1-2-sc-repair-po-3.dft 295 17 15 28 23 81
+rc.1-20-hc-repair-po-3.dft 1800000 43 22 97 44 N/A
+rc.1-20-sc-repair-po-3.dft 1800000 35 15 82 23 N/A
+rc.1-25-hc-repair-po-3.dft 1800000 48 22 112 44 N/A
+rc.1-25-sc-repair-po-3.dft 1800000 40 15 97 23 N/A
+rc.1-3-hc-repair-po-3.dft 1800000 26 22 46 44 N/A
+rc.1-3-sc-repair-po-3.dft 535 18 15 31 23 729
+rc.1-30-hc-repair-po-3.dft 1800000 53 22 127 44 N/A
+rc.1-30-sc-repair-po-3.dft 1800000 45 15 112 23 N/A
+rc.1-4-hc-repair-po-3.dft 1800000 27 22 49 23 N/A
+rc.1-4-sc-repair-po-3.dft 1828 19 15 34 23 6561
+rc.1-5-hc-repair-po-3.dft 213875 28 22 52 44 649539
+rc.1-5-sc-repair-po-3.dft 15617 20 15 37 23 59049
+rc.10-1-hc-repair-po-3.dft 1099 23 21 84 44 66
+rc.10-1-sc-repair-po-3.dft 609 15 14 10 6 6
+rc.10-10-hc-repair-po-3.dft 1800000 33 22 109 44 N/A
+rc.10-10-sc-repair-po-3.dft 1800000 25 15 94 23 N/A
+rc.15-1-hc-repair-po-3.dft 2359 28 26 109 44 66
+rc.15-1-sc-repair-po-3.dft 1162 20 19 10 6 6
+rc.15-15-hc-repair-po-3.dft 1800000 43 27 149 44 N/A
+rc.15-15-sc-repair-po-3.dft 1800000 35 20 134 23 N/A
+rc.2-1-hc-repair-po-3.dft 371 15 13 44 44 66
+rc.2-1-sc-repair-po-3.dft 105 7 6 10 6 6
+rc.2-2-hc-repair-po-3.dft 766 17 14 45 44 891
+rc.2-2-sc-repair-po-3.dft 333 9 7 30 23 81
+rc.2-3-hc-repair-po-3.dft 2477 18 14 48 44 8019
+rc.2-3-sc-repair-po-3.dft 575 10 7 33 23 729
+rc.2-4-hc-repair-po-3.dft 19383 19 14 51 44 72171
+rc.2-4-sc-repair-po-3.dft 1930 11 7 36 23 6561
+rc.20-1-hc-repair-po-3.dft 2784 33 31 134 44 66
+rc.20-1-sc-repair-po-3.dft 1972 25 24 10 6 6
+rc.20-20-hc-repair-po-3.dft 1800000 53 32 189 44 N/A
+rc.20-20-sc-repair-po-3.dft 1800000 45 25 174 23 N/A
+rc.25-1-hc-repair-po-3.dft 3759 38 36 159 44 66
+rc.25-1-sc-repair-po-3.dft 2927 30 29 10 6 6
+rc.25-25-hc-repair-po-3.dft 1800000 63 37 229 44 N/A
+rc.25-25-sc-repair-po-3.dft 1800000 55 30 214 23 N/A
+rc.3-1-hc-repair-po-3.dft 430 16 14 49 44 66
+rc.3-1-sc-repair-po-3.dft 139 8 7 10 6 6
+rc.3-2-hc-repair-po-3.dft 843 18 15 50 44 891
+rc.3-2-sc-repair-po-3.dft 382 10 8 35 23 81
+rc.3-3-hc-repair-po-3.dft 2657 19 15 53 44 8019
+rc.3-3-sc-repair-po-3.dft 641 11 8 38 23 729
+rc.3-4-hc-repair-po-3.dft 19494 20 15 56 44 72171
+rc.3-4-sc-repair-po-3.dft 1948 12 8 41 23 6561
+rc.30-1-hc-repair-po-3.dft 5034 43 41 184 44 66
+rc.30-1-sc-repair-po-3.dft 4027 35 34 10 6 6
+rc.30-30-hc-repair-po-3.dft 1800000 73 42 269 44 N/A
+rc.30-30-sc-repair-po-3.dft 1800000 65 35 254 23 N/A
+rc.4-1-hc-repair-po-3.dft 494 17 15 54 44 66
+rc.4-1-sc-repair-po-3.dft 182 9 8 10 6 6
+rc.4-2-hc-repair-po-3.dft 926 19 16 55 44 891
+rc.4-2-sc-repair-po-3.dft 442 11 9 40 23 81
+rc.4-3-hc-repair-po-3.dft 2615 20 16 58 44 8019
+rc.4-3-sc-repair-po-3.dft 712 12 9 43 23 729
+rc.4-4-hc-repair-po-3.dft 19480 21 16 61 44 72171
+rc.4-4-sc-repair-po-3.dft 2080 13 9 46 23 6561
+rc.5-1-hc-repair-po-3.dft 575 18 16 59 44 66
+rc.5-1-sc-repair-po-3.dft 233 10 9 10 6 6
+rc.5-5-hc-repair-po-3.dft 230808 23 17 69 44 649539
+rc.5-5-sc-repair-po-3.dft 15722 15 10 54 23 59049

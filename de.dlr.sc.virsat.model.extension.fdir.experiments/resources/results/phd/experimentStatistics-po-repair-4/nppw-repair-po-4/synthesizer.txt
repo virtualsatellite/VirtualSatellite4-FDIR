@@ -1,2 +1,2 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-nppwp-repair-po-4.dft 51117 2 1 26 1494
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+nppwp-repair-po-4.dft 32826 2 1 40 1494 1494

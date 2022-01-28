@@ -1,2 +1,2 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-hemps-repair-po-2.dft 3652 7 6 17 236
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+hemps-repair-po-2.dft 1079 7 6 25 236 236
