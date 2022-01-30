@@ -91,10 +91,9 @@ public abstract class ASynthesizer implements ISynthesizer {
 	private RecoveryAutomaton convertToRecoveryAutomaton(FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		DFT2MAConverter dft2maConverter = createDFT2MAConverter();
 		MarkovAutomaton<DFTState> ma = dft2maConverter.convert(ftHolder, null, subMonitor);
-
-		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2maConverter.getMaBuilder().getInitialState(), subMonitor);
-		
 		statistics.maBuildStatistics.compose(dft2maConverter.getMaBuilder().getStatistics());
+		
+		RecoveryAutomaton ra = convertToRecoveryAutomaton(ma, dft2maConverter.getMaBuilder().getInitialState(), subMonitor);
 		return ra;
 	}
 	

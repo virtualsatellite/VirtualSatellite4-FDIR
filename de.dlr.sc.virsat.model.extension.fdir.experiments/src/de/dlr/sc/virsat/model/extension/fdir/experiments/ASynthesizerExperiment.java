@@ -418,8 +418,9 @@ public class ASynthesizerExperiment {
 		
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
-			writer.println("solved timeouts ooms solveTime");
-			writer.print(countSuiteSolved + "/" + countSuiteTotal + " ");
+			writer.println("solved total timeouts ooms solveTime");
+			writer.print(countSuiteSolved);
+			writer.print(countSuiteTotal);
 			writer.print(countSuiteTimeout + " ");
 			writer.print(countSuiteOutOfMemory + " ");
 			writer.print(TimeUnit.SECONDS.convert(totalSuiteSolveTime, TimeUnit.MILLISECONDS));
