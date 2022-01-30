@@ -1,2 +1,2 @@
 solved timeouts ooms solveTime
-0/68 67 1 0
+0/68 56 12 0

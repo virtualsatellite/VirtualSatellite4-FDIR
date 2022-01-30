@@ -1,5 +1,5 @@
 benchmarkName time maxStates maxTransitions
-hecs_1_1-repair-po-1.dft 0 60 132
+hecs_1_1-repair-po-1.dft 0 205 379
 hecs_2_1-repair-po-1.dft N/A N/A N/A
 hecs_2_2-repair-po-1.dft N/A N/A N/A
 hecs_3_1-repair-po-1.dft N/A N/A N/A

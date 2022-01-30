@@ -1,2 +1,2 @@
-benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize
-EMA-repair-po-1.dft 120000 4 2 13 6
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+EMA-repair-po-1.dft 1200000 4 2 16 6 N/A
