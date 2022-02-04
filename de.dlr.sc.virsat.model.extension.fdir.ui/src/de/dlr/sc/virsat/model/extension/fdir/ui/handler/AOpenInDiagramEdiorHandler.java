@@ -27,6 +27,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import de.dlr.sc.virsat.graphiti.util.DiagramHelper;
+import de.dlr.sc.virsat.model.concept.types.category.BeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.project.resources.VirSatResourceSet;
@@ -65,8 +66,9 @@ public abstract class AOpenInDiagramEdiorHandler extends AEditingDomainCommandHa
 		VirSatResourceSet resourceSet = ed.getResourceSet();
 		
 		String diagramName = ca.getUuid().toString();
-		
-		StructuralElementInstance sei = (StructuralElementInstance) ca.eContainer();
+		BeanCategoryAssignment beanCa = new BeanCategoryAssignment();
+		beanCa.setTypeInstance(ca);
+		StructuralElementInstance sei = beanCa.getParent().getStructuralElementInstance();
 		IFolder documentsFolder = VirSatProjectCommons.getDocumentFolder(sei);
 	
 		IFile diagramFile = documentsFolder.getFile(diagramName + "." +  getExtension());
