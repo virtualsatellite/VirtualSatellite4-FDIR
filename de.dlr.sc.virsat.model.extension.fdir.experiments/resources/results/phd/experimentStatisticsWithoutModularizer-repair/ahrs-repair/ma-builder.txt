@@ -1,3 +1,3 @@
 benchmarkName time maxStates maxTransitions
-AHRS-1-repair.dft 31 506 1466
-AHRS-2-repair.dft 297 6118 27856
+AHRS-1-repair.dft 15 506 1466
+AHRS-2-repair.dft 218 6118 27856

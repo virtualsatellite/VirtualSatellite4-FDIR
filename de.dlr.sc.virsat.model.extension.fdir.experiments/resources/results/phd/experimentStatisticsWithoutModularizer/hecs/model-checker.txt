@@ -1,5 +1,5 @@
 benchmarkName time
-hecs_1_1.dft 4
+hecs_1_1.dft 0
 hecs_2_1.dft 0
 hecs_2_2.dft 0
 hecs_3_1.dft 0

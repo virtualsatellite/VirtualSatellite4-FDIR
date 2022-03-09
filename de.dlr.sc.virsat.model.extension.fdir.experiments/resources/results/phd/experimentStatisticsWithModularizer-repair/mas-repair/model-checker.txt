@@ -1,3 +1,3 @@
 benchmarkName time
-MAS-2-repair.dft 953
-MAS-repair.dft 0
+MAS-2-repair.dft 16
+MAS-repair.dft 875

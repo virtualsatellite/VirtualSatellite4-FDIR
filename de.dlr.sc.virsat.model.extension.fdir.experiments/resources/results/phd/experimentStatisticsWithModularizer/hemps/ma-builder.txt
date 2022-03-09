@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-hemps.dft 1 40 63
+hemps.dft 0 40 63

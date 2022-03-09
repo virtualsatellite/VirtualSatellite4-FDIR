@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-nppwp-po-3.dft 828 8227 22549
+nppwp-po-3.dft 4516 18787 48819

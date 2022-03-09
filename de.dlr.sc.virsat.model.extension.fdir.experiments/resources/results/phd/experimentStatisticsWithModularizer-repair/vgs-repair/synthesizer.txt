@@ -1,9 +1,9 @@
 benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
-vgs_1-repair.dft 1078 82 82 N/A N/A 1
-vgs_2-repair.dft 984 79 79 N/A N/A 1
-vgs_3-repair.dft 641 68 68 N/A N/A 1
-vgs_4-repair.dft 202835 7 6 153 10 10
-vgs_5-repair.dft 672 61 61 N/A N/A 1
-vgs_6-repair.dft 781 74 74 N/A N/A 1
-vgs_7-repair.dft 1438 117 117 N/A N/A 1
-vgs_8-repair.dft 1844 138 138 N/A N/A 1
+vgs_1-repair.dft 1062 82 82 nan nan 1
+vgs_2-repair.dft 919 79 79 nan nan 1
+vgs_3-repair.dft 641 68 68 nan nan 1
+vgs_4-repair.dft 208128 7 6 153 10 10
+vgs_5-repair.dft 656 61 61 nan nan 1
+vgs_6-repair.dft 796 74 74 nan nan 1
+vgs_7-repair.dft 1375 117 117 nan nan 1
+vgs_8-repair.dft 1859 138 138 nan nan 1

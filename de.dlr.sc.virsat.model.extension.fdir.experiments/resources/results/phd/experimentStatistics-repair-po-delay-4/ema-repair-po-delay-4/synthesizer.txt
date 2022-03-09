@@ -1,2 +1,2 @@
 benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
-EMA-repair-po-4.dft 1200000 3 1 11 17 N/A
+EMA-repair-po-4.dft 1200000 3 1 11 17 nan

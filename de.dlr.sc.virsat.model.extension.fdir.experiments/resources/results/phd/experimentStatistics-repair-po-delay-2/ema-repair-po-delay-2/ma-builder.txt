@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-EMA-repair-po-2.dft N/A N/A N/A
+EMA-repair-po-2.dft 9 160 302

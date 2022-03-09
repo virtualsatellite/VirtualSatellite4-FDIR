@@ -1,2 +1,2 @@
 benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
-hemps-po-1.dft 94 5 4 19 2 2
+hemps-po-1.dft 109 5 4 19 2 2

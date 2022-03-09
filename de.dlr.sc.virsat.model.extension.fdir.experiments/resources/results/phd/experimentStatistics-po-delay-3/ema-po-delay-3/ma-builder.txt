@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-EMA-po-3.dft N/A N/A N/A
+EMA-po-3.dft 688 3674 10189

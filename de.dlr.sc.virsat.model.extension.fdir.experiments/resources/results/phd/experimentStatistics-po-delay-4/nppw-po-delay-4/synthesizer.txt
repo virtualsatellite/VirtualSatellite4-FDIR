@@ -1,2 +1,2 @@
 benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
-nppwp-po-4.dft 1200000 1 0 N/A N/A N/A
+nppwp-po-4.dft 1200000 1 0 nan nan nan

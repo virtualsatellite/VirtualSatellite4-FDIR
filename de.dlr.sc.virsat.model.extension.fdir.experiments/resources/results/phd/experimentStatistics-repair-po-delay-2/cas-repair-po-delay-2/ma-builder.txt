@@ -1,3 +1,3 @@
 benchmarkName time maxStates maxTransitions
-CAS-repair-po-2.dft 390 3720 8698
-DCAS-repair-po-2.dft N/A N/A N/A
+CAS-repair-po-2.dft 885 7990 20424
+DCAS-repair-po-2.dft nan nan nan

@@ -1,2 +1,2 @@
 benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
-nppwp-repair.dft 4372 1 N/A 25 1065 1065
+nppwp-repair.dft 4375 1 nan 25 1065 1065

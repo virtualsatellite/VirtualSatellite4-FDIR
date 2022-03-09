@@ -1,2 +1,2 @@
 benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
-nppwp-po-2.dft 62 71 217 0 1 0 70
+nppwp-po-2.dft 63 71 217 0 1 0 70

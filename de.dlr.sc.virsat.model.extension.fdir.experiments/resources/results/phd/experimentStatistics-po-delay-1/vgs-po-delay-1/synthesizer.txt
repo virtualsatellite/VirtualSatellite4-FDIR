@@ -1,9 +1,9 @@
 benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
-vgs_1-po-1.dft 1125 2 2 N/A N/A 1
-vgs_2-po-1.dft 1031 2 2 N/A N/A 1
-vgs_3-po-1.dft 640 2 2 N/A N/A 1
-vgs_4-po-1.dft 1200000 1 0 N/A N/A N/A
-vgs_5-po-1.dft 718 2 2 N/A N/A 1
-vgs_6-po-1.dft 887 2 2 N/A N/A 1
-vgs_7-po-1.dft 1516 2 2 N/A N/A 1
-vgs_8-po-1.dft 1969 2 2 N/A N/A 1
+vgs_1-po-1.dft 1137 2 2 nan nan 1
+vgs_2-po-1.dft 984 2 2 nan nan 1
+vgs_3-po-1.dft 656 2 2 nan nan 1
+vgs_4-po-1.dft 1200000 1 0 nan nan nan
+vgs_5-po-1.dft 735 2 2 nan nan 1
+vgs_6-po-1.dft 828 2 2 nan nan 1
+vgs_7-po-1.dft 1484 2 2 nan nan 1
+vgs_8-po-1.dft 2000 2 2 nan nan 1

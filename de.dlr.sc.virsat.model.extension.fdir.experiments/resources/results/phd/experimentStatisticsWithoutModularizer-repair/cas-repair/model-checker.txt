@@ -1,3 +1,3 @@
 benchmarkName time
-CAS-repair.dft 281
+CAS-repair.dft 250
 DCAS-repair.dft 0

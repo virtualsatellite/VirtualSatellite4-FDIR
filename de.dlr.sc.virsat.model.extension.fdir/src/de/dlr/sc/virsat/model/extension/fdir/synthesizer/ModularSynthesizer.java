@@ -27,6 +27,8 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.IModularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 
 public class ModularSynthesizer implements ISynthesizer {
 	protected DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
@@ -38,6 +40,8 @@ public class ModularSynthesizer implements ISynthesizer {
 	
 	protected SynthesisStatistics statistics;
 	protected Concept concept;
+	
+	protected ARecoveryAutomatonMinimizer minimizer;
 	
 	@Override
 	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
@@ -74,6 +78,11 @@ public class ModularSynthesizer implements ISynthesizer {
 		} else {
 			statistics.countModules = 1;
 			synthesizedRA = synthesizeModule(synthesisQuery, fault, conversionResult.getMapGeneratedToGenerator(), subMonitor.split(1));
+		}
+		
+		if (minimizer != null) {
+			minimizer.minimize(synthesizedRA, synthesisQuery.getFTHolder(), subMonitor.split(1));
+			statistics.minimizationStatistics.compose(minimizer.getStatistics());
 		}
 		
 		statistics.time = System.currentTimeMillis() - startTime;
@@ -131,5 +140,13 @@ public class ModularSynthesizer implements ISynthesizer {
 	public ModularSynthesizer setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
 		this.ftTrimmer = ftTrimmer;
 		return this;
+	}
+	
+	public DelegateSynthesizer getDelegateSynthesizer() {
+		return delegateSynthesizer;
+	}
+	
+	public void setMinimizer(ARecoveryAutomatonMinimizer minimizer) {
+		this.minimizer = minimizer;
 	}
 }

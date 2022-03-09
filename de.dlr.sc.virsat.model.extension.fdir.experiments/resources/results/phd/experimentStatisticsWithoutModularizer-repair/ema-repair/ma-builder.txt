@@ -1,2 +1,2 @@
 benchmarkName time maxStates maxTransitions
-EMA-repair.dft N/A N/A N/A
+EMA-repair.dft nan nan nan

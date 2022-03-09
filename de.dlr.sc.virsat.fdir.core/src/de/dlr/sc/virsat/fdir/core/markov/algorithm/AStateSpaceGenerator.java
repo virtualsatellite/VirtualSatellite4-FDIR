@@ -18,7 +18,7 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
 public abstract class AStateSpaceGenerator<S extends MarkovState> {
 	
-	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 1024;
+	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 1024 * 2;
 	
 	protected MarkovAutomaton<S> targetMa;
 	

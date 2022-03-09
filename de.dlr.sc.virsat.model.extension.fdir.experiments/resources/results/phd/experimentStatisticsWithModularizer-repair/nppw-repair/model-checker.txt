@@ -1,2 +1,2 @@
 benchmarkName time
-nppwp-repair.dft 172
+nppwp-repair.dft 156

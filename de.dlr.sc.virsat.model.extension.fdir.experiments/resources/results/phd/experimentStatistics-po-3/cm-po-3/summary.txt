@@ -1,2 +1,2 @@
-solved timeouts ooms solveTime
-4/54 50 0 24
+solved total timeouts ooms solveTime
+45450 0 23

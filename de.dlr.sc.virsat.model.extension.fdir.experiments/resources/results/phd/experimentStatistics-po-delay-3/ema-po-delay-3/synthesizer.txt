@@ -1,2 +1,2 @@
 benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
-EMA-po-3.dft 1200000 15 13 N/A N/A N/A
+EMA-po-3.dft 584033 15 13 81 108 174

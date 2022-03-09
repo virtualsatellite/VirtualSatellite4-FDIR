@@ -1,2 +1,2 @@
 benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
-EMA.dft 5 2 4 0 0 0 2
+EMA.dft 0 2 4 0 0 0 2

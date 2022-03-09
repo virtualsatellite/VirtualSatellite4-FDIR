@@ -17,6 +17,12 @@ import java.util.function.Supplier;
 import org.junit.Test;
 
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.CleanMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.FinalStateMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.OrthogonalPartitionRefinementMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.PartitionRefinementMinimizer;
+import de.dlr.sc.virsat.model.extension.fdir.synthesizer.BasicSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ISynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.ModularSynthesizer;
 import de.dlr.sc.virsat.model.extension.fdir.synthesizer.SynthesisQuery;
@@ -50,6 +56,38 @@ public class PhDExperiments extends ASynthesizerExperiment {
 	public void experimentWithModularizer() throws Exception {
 		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
 		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithModularizer", modularSynthesizerSupplier);
+	}
+	
+	@Test
+	public void experimentWithoutFailReduction() throws Exception {
+		Supplier<ISynthesizer> supplier = () -> {
+			ModularSynthesizer synthesizer = new ModularSynthesizer();
+			BasicSynthesizer basicSynthesizer = (BasicSynthesizer) synthesizer.getDelegateSynthesizer().getBasicSynthesizer();
+			
+			ComposedMinimizer composedMinimizer = new ComposedMinimizer();
+			composedMinimizer.addMinimizer(new PartitionRefinementMinimizer());
+			composedMinimizer.addMinimizer(new OrthogonalPartitionRefinementMinimizer());
+			composedMinimizer.addMinimizer(new CleanMinimizer());
+			
+			basicSynthesizer.setMinimizer(composedMinimizer);
+			return synthesizer;
+		};
+		
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsWithoutFailReduction", supplier);
+	}
+	
+	@Test
+	public void experimentPostCompositionReduction() throws Exception {
+		Supplier<ISynthesizer> supplier = () -> {
+			ModularSynthesizer synthesizer = new ModularSynthesizer();
+			ComposedMinimizer composedMinimizer = ComposedMinimizer.createDefaultMinimizer();
+			synthesizer.setMinimizer(composedMinimizer);
+			return synthesizer;
+		};
+		
+		File experimentSet = new File("." + EXPERIMENTS_PATH + "/experimentSet");
+		benchmark(experimentSet, EXPERIMENTS_PATH, EXPERIMENTS_SET + "/experimentStatisticsPostCompositionReduction", supplier);
 	}
 	
 	@Test

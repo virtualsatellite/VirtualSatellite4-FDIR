@@ -1,3 +1,3 @@
 benchmarkName time
-CAS.dft 10
-DCAS.dft 13
+CAS.dft 0
+DCAS.dft 16
