@@ -35,6 +35,7 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 	 * @param failableBasicEventsProvider the nodes that need to fail
 	 * @param failLabelProvider the fail label criterion
 	 * @param monitor the monitor
+	 * @parm bisimulationFlag Bydefault the flag is set to false 
 	 * @return the generated Markov automaton resulting from the conversion
 	 */
 	public MarkovAutomaton<DFTState> convert(FaultTreeNode root, FailableBasicEventsProvider failableBasicEventsProvider, SubMonitor monitor) {

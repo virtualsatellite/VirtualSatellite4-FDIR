@@ -87,7 +87,9 @@ public class MarkovAutomaton<S extends MarkovState> {
 		List<Object> stateLabels = new ArrayList<Object>();
 		List<MarkovTransition<S>> stateOutgoingTransitions = getSuccTransitions(state);
 		for (MarkovTransition<S> stateOutgoingTransition : stateOutgoingTransitions) {
-			stateLabels.add(stateOutgoingTransition.getEvent());
+			if (!stateLabels.contains(stateOutgoingTransition.getEvent())) {
+				stateLabels.add(stateOutgoingTransition.getEvent());
+			}
 		}
 		return stateLabels;
 	}
@@ -108,7 +110,6 @@ public class MarkovAutomaton<S extends MarkovState> {
 		return stateRates;
 	}
 	
-
 	/**
 	 * outputs the list of events to a state from its predecessors
 	 * 

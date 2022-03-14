@@ -45,6 +45,7 @@ import de.dlr.sc.virsat.model.extension.fdir.synthesizer.Schedule2RAConverterTes
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolderTest;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHelperTest;
 import de.dlr.sc.virsat.model.extension.fdir.validator.FaultValidatorTest;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.BisimulationTest;
 import junit.framework.JUnit4TestAdapter;
 
 /**
@@ -86,7 +87,8 @@ import junit.framework.JUnit4TestAdapter;
 		FDIRExpressionEvaluatorTest.class,
 		FDIRExpressionExtensionTest.class,
 		FaultTreeTrimmerTest.class,
-		FaultValidatorTest.class
+		FaultValidatorTest.class,
+		BisimulationTest.class
 		})
 
 public class AllTests {

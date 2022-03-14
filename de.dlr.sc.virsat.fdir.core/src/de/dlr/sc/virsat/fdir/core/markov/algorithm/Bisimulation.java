@@ -116,11 +116,11 @@ public class Bisimulation<S extends MarkovState> {
 		List<Object> stateRates = new ArrayList<Object>();
 		List<Object> blockLabels = new ArrayList<Object>();
 		List<Object> blockRates = new ArrayList<Object>();
-		
 		boolean isequal;
+		
+		stateLabels = ma.getSuccEvents(state);
         stateRates = ma.getSuccRates(state);
-	    stateLabels = ma.getSuccEvents(state);
-        blockRates = ma.getSuccRates(block.iterator().next());
+	    blockRates = ma.getSuccRates(block.iterator().next());
 		blockLabels = ma.getSuccEvents(block.iterator().next());
 		if (stateRates.isEmpty() && blockRates.isEmpty()) {
 			isequal = blockLabels.equals(stateLabels);
@@ -134,7 +134,6 @@ public class Bisimulation<S extends MarkovState> {
 	 * createInitialBlocks() method and further refines them
 	 */
 	public void refineBlocks(Set<Set<S>> blocks, SubMonitor subMonitor) {
-		long startTime1 = System.currentTimeMillis();
 		Queue<Set<S>> blocksToProcess = new LinkedList<>(blocks);
 		while (!blocksToProcess.isEmpty()) {
 			final int PROGRESS_COUNT = 100;
@@ -155,8 +154,6 @@ public class Bisimulation<S extends MarkovState> {
 				}
 			}
 		}
-		long endTime1 = System.currentTimeMillis();
-		System.out.println("The total time for refinement of blocks is : " + (endTime1 - startTime1) + "milliseconds");
 	}
 
 	/**
@@ -265,10 +262,9 @@ public class Bisimulation<S extends MarkovState> {
 	 */
 	public void mergeBlocks(Set<Set<S>> blocks, SubMonitor subMonitor) {
 		double rate = 0;
-		
+
 		final int PROGRESS_COUNT = 100;
 		subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
-		long startTime = System.currentTimeMillis();
 		for (Set<S> block : blocks) {
 			S state = block.iterator().next();
 			List<MarkovTransition<S>> stateOutgoingTransitions = ma.getSuccTransitions(state);
@@ -293,11 +289,8 @@ public class Bisimulation<S extends MarkovState> {
 				}
 			}
 		}
-		long endTime = System.currentTimeMillis();
-		System.out.println("The time taken for adding new transitions is : " + (endTime - startTime) + "milliseconds");
 		Queue<Set<S>> blocksToProcess = new LinkedList<>(blocks);
-		
-		long startTime2 = System.currentTimeMillis();
+
 		while (!blocksToProcess.isEmpty()) {
 			Set<S> block = blocksToProcess.poll();
 			S state = block.iterator().next();
@@ -307,22 +300,12 @@ public class Bisimulation<S extends MarkovState> {
 			}
 			block.add(state);
 		}
-//		for (Set<S> block : blocks) {
-//			S state = block.iterator().next();
-//			ma.removeInvalidTransitions(state);
-//			ma.removeDuplicateTransitions(state);
-//		}
 		for (int i = 0; i < ma.getStates().size(); i++) {
 			S state = ma.getStates().get(i);
-     		ma.removeInvalidTransitions(state);
+			ma.removeInvalidTransitions(state);
 			ma.removeDuplicateTransitions(state);
 			state.setIndex(i);
 		}
-		long endTime2 = System.currentTimeMillis();
-		System.out.println("The time taken for deleting states and transitions is : " + (endTime2 - startTime2)  + "milliseconds");
-		
-
-
 	}
 	
 
@@ -345,14 +328,8 @@ public class Bisimulation<S extends MarkovState> {
 	 */
 	public void computeQuotient(SubMonitor subMonitor) {
 		subMonitor = SubMonitor.convert(subMonitor);
-		long startTime1 = System.currentTimeMillis();
 		Set<Set<S>> equivalenceClasses = computeEquivalenceClasses(subMonitor);
-		long endTime1 = System.currentTimeMillis();
-		System.out.println("The time taken for equivalence classes is : " + (endTime1 - startTime1) + "millisecs");
-		long startTime2 = System.currentTimeMillis();
 		mergeBlocks(equivalenceClasses, subMonitor);
-		long endTime2 = System.currentTimeMillis();
-		System.out.println("The time taken for merging is : " + (endTime2 - startTime2) + "millisecs");
 	}
 	
 }
