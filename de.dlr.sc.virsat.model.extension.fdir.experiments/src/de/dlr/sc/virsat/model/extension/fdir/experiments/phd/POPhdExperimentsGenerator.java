@@ -47,7 +47,7 @@ public class POPhdExperimentsGenerator {
 	private static final String PLUGIN_ID = "de.dlr.sc.virsat.model.extension.fdir";
 	private static final String FRAGMENT_ID = PLUGIN_ID + ".experiments";
 	private static final String FILE_EXTENSION = ".dft";
-	public static final int OBSERVATION_LEVELS = 5;
+	public static final int OBSERVATION_LEVELS = 6;
 	
 	@Test
 	public void generatePO() throws IOException {
