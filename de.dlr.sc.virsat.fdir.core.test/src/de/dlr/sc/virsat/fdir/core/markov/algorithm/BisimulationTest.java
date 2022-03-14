@@ -23,14 +23,17 @@ import org.junit.Test;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
+import org.eclipse.core.runtime.SubMonitor;
+
 
 /**
- * Test Class for Bisimulation
+ * Test Class for Bisimulation of state type S that extends MarkovState
  * 
  * @author rama_vi
  *
  */
 public class BisimulationTest {
+	SubMonitor subMonitor;
 
 	@Test
 	/**
@@ -51,15 +54,15 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("a", bisimilar1, successor);
 		ma.addNondeterministicTransition("a", bisimilar2, successor);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1, bisimilar2))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor))));
 
 		ma.addNondeterministicTransition("b", bisimilar1, successor);
 
-		equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar2))));
@@ -86,15 +89,15 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("a", bisimilar1, successor1);
 		ma.addNondeterministicTransition("a", bisimilar1, successor2);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor1, successor2))));
 
 		ma.addNondeterministicTransition("b", successor1, bisimilar1);
 
-		equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor1))));
@@ -123,15 +126,15 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("a", bisimilar1, successor1);
 		ma.addNondeterministicTransition("a", bisimilar2, successor2);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1, bisimilar2))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor1, successor2))));
 
 		ma.addNondeterministicTransition("b", bisimilar1, successor1);
 
-		equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar2))));
@@ -162,8 +165,8 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("b", successor1, bisimilar1);
 		ma.addNondeterministicTransition("b", successor2, successor2);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar2))));
@@ -201,8 +204,8 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("c", successor3, bisimilar2);
 		ma.addNondeterministicTransition("d", successor4, successor4);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar2))));
@@ -235,8 +238,8 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("a", b1, s2);
 		ma.addNondeterministicTransition("a", b2, s3);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses(subMonitor);
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(b1, b2))));
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(s1, s2, s3))));
 	}
@@ -274,8 +277,8 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("c", s1, s4);
 		ma.addNondeterministicTransition("c", s2, s5);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		bisimulation.computeQuotient();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		bisimulation.computeQuotient(subMonitor);
 
 		List<MarkovState> states = ma.getStates();
 		final int expectedStates = 3;
@@ -326,8 +329,8 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("c", s1, t1);
 		ma.addNondeterministicTransition("c", s2, t2);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		bisimulation.computeQuotient();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		bisimulation.computeQuotient(subMonitor);
 
 		List<MarkovState> states = ma.getStates();
 		int statesCount = states.size();
@@ -367,8 +370,8 @@ public class BisimulationTest {
 		ma.addNondeterministicTransition("a", b, s1);
 		ma.addNondeterministicTransition("b", b, s2);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		bisimulation.computeQuotient();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		bisimulation.computeQuotient(subMonitor);
 
 		List<MarkovState> states = ma.getStates();
 		int statesCount = states.size();
@@ -396,8 +399,8 @@ public class BisimulationTest {
 		ma.addProbabilisticTransition("a", b1, s1, 1);
 		ma.addProbabilisticTransition("a", b2, s1, 0);
 		
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses(subMonitor);
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(b1))));
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(b2))));
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(s1))));	
@@ -420,8 +423,8 @@ public class BisimulationTest {
 		ma.addProbabilisticTransition("a", bisimilar1, successor2, 0);
 		ma.addProbabilisticTransition("a", successor1, successor3, 0);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(bisimilar1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(successor1))));
@@ -457,8 +460,8 @@ public class BisimulationTest {
 		ma.addProbabilisticTransition("c", s1, s4, 0);
 		ma.addProbabilisticTransition("c", s2, s5, 0);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 		
 		
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(s0))));
@@ -466,7 +469,7 @@ public class BisimulationTest {
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(s2))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(s3, s4, s5, s6))));
 		
-		bisimulation.computeQuotient();
+		bisimulation.computeQuotient(subMonitor);
 
 		List<MarkovState> states = ma.getStates();
 		final int expectedStates = 4;
@@ -498,8 +501,8 @@ public class BisimulationTest {
 		ma.addMarkovianTransition("a", b1, s1, 1);
 		ma.addMarkovianTransition("a", b2, s1, 2);
 		
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceclasses = bisimulation.computeEquivalenceClasses(subMonitor);
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(b1))));
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(b2))));
 		assertTrue(equivalenceclasses.contains(new HashSet<>(Arrays.asList(s1))));
@@ -535,15 +538,15 @@ public class BisimulationTest {
 		ma.addMarkovianTransition("c", s1, s4, 0);
 		ma.addMarkovianTransition("c", s2, s5, 0);
 
-		Bisimulation bisimulation = new Bisimulation(ma);
-		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses();
+		Bisimulation<MarkovState> bisimulation = new Bisimulation<>(ma);
+		Set<Set<MarkovState>> equivalenceClasses = bisimulation.computeEquivalenceClasses(subMonitor);
 		
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(s0))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(s1))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(s2))));
 		assertTrue(equivalenceClasses.contains(new HashSet<>(Arrays.asList(s3, s4, s5, s6))));
 		
-		bisimulation.computeQuotient();
+		bisimulation.computeQuotient(subMonitor);
 
 		List<MarkovState> states = ma.getStates();
 		final int expectedStates = 4;

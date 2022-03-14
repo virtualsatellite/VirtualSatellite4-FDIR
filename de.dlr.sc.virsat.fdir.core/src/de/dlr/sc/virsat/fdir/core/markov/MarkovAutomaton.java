@@ -91,6 +91,23 @@ public class MarkovAutomaton<S extends MarkovState> {
 		}
 		return stateLabels;
 	}
+	
+	/**
+	 * outputs the list of rates from a state to its successors
+	 * @param state
+	 * @return list of rates
+	 */
+	public List<Object> getSuccRates(S state) {
+		List<Object> stateRates = new ArrayList<Object>();
+		List<MarkovTransition<S>> stateOutgoingTransitions = getSuccTransitions(state);
+		for (MarkovTransition<S> stateOutgoingTransition : stateOutgoingTransitions) {
+			if (state.isProbabilisic() || state.isMarkovian()) {
+				stateRates.add(stateOutgoingTransition.getRate());
+			}
+		}
+		return stateRates;
+	}
+	
 
 	/**
 	 * outputs the list of events to a state from its predecessors

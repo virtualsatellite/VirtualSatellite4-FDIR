@@ -37,6 +37,14 @@ public class MarkovState {
 	}
 	
 	/**
+	 * Sets the index to the state when in between states get merged due to Bismilulation
+	 * @param i
+	 */
+	public void setIndex(int i) {
+		this.index = i;
+	}
+	
+	/**
 	 * Sets the index of the mttf values array that corresponds to this state due to the mismatch between state index and array index when the state space is reduced
 	 * @param valuesIndex the index of the mttf values array that corresponds to this state
 	 */
