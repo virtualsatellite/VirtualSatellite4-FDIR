@@ -18,15 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-
-
-import org.eclipse.core.runtime.SubMonitor;
-
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomaton;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
-
-
 
 
 /**
@@ -64,12 +58,10 @@ public class Bisimulation<S extends MarkovState> {
 	 * 
 	 * @return blocks
 	 */
-	protected Set<Set<S>> createInitialBlocks(SubMonitor subMonitor) {
+	protected Set<Set<S>> createInitialBlocks() {
 		Set<Set<S>> blocks = new HashSet<>();
 		mapStateToBlock = new HashMap<>();
 		for (S state : ma.getStates()) {
-			final int PROGRESS_COUNT = 100;
-			subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 			Set<S> block = getBlock(state, blocks);
 			if (!blocks.remove(block)) {
 				block = new HashSet<>();
@@ -127,11 +119,9 @@ public class Bisimulation<S extends MarkovState> {
 	 * @param blocks takes as input the blocks created from the
 	 * createInitialBlocks() method and further refines them
 	 */
-	public void refineBlocks(Set<Set<S>> blocks, SubMonitor subMonitor) {
+	public void refineBlocks(Set<Set<S>> blocks) {
 		Queue<Set<S>> blocksToProcess = new LinkedList<>(blocks);
 		while (!blocksToProcess.isEmpty()) {
-			final int PROGRESS_COUNT = 100;
-			subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 			Set<S> block = blocksToProcess.poll();
 			if (block.size() <= 1) {
 				continue;
@@ -254,11 +244,9 @@ public class Bisimulation<S extends MarkovState> {
 	 * @param blocks the equivalence class blocks that are to be merged are given as
 	 *               input
 	 */
-	public void mergeBlocks(Set<Set<S>> blocks, SubMonitor subMonitor) {
+	public void mergeBlocks(Set<Set<S>> blocks) {
 		double rate = 0;
 
-		final int PROGRESS_COUNT = 100;
-		subMonitor.setWorkRemaining(PROGRESS_COUNT).split(1);
 		for (Set<S> block : blocks) {
 			S state = block.iterator().next();
 			List<MarkovTransition<S>> stateOutgoingTransitions = ma.getSuccTransitions(state);
@@ -310,10 +298,8 @@ public class Bisimulation<S extends MarkovState> {
 	 * @return the computed block partitions
 	 */
 	public Set<Set<S>> computeEquivalenceClasses() {
-		SubMonitor subMonitor = null;
-		subMonitor = SubMonitor.convert(subMonitor);
-		Set<Set<S>> blocks = createInitialBlocks(subMonitor);
-		refineBlocks(blocks, subMonitor);
+		Set<Set<S>> blocks = createInitialBlocks();
+		refineBlocks(blocks);
 		return blocks;
 	}
 
@@ -322,10 +308,8 @@ public class Bisimulation<S extends MarkovState> {
 	 * equivalence Class are contracted into Single State
 	 */
 	public void computeQuotient() {
-		SubMonitor subMonitor = null;
-		subMonitor = SubMonitor.convert(subMonitor);
 		Set<Set<S>> equivalenceClasses = computeEquivalenceClasses();
-		mergeBlocks(equivalenceClasses, subMonitor);
+		mergeBlocks(equivalenceClasses);
 	}
 	
 }
