@@ -54,10 +54,9 @@ public class Bisimulation<S extends MarkovState> {
 	/**
 	 * Computes Equivalence Classes and quotient
 	 */
-	public void minimize(SubMonitor subMonitor) {
-		subMonitor = SubMonitor.convert(subMonitor);
-		computeEquivalenceClasses(subMonitor);
-		computeQuotient(subMonitor);
+	public void minimize() {
+		computeEquivalenceClasses();
+		computeQuotient();
 	}
 
 	/**
@@ -310,7 +309,8 @@ public class Bisimulation<S extends MarkovState> {
 	 * 
 	 * @return the computed block partitions
 	 */
-	public Set<Set<S>> computeEquivalenceClasses(SubMonitor subMonitor) {
+	public Set<Set<S>> computeEquivalenceClasses() {
+		SubMonitor subMonitor = null;
 		subMonitor = SubMonitor.convert(subMonitor);
 		Set<Set<S>> blocks = createInitialBlocks(subMonitor);
 		refineBlocks(blocks, subMonitor);
@@ -321,9 +321,10 @@ public class Bisimulation<S extends MarkovState> {
 	 * Computes Quotient of the equivalence Classes. Basically all the States in an
 	 * equivalence Class are contracted into Single State
 	 */
-	public void computeQuotient(SubMonitor subMonitor) {
+	public void computeQuotient() {
+		SubMonitor subMonitor = null;
 		subMonitor = SubMonitor.convert(subMonitor);
-		Set<Set<S>> equivalenceClasses = computeEquivalenceClasses(subMonitor);
+		Set<Set<S>> equivalenceClasses = computeEquivalenceClasses();
 		mergeBlocks(equivalenceClasses, subMonitor);
 	}
 	

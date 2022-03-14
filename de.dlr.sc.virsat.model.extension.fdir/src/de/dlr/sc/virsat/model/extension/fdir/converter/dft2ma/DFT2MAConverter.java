@@ -46,7 +46,7 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 		boolean bisimulationFlag = false;
 		if (bisimulationFlag) {
 			Bisimulation<DFTState> bisimulation = new Bisimulation<>(ma);
-			bisimulation.computeQuotient(monitor);
+			bisimulation.computeQuotient();
 		}
 		
 		return ma;
