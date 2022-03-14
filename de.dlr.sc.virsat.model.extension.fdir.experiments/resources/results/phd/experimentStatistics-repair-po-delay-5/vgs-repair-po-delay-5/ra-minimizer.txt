@@ -1,0 +1,9 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+vgs_1-repair-po-5.dft nan nan nan nan nan nan nan
+vgs_2-repair-po-5.dft nan nan nan nan nan nan nan
+vgs_3-repair-po-5.dft nan nan nan nan nan nan nan
+vgs_4-repair-po-5.dft nan nan nan nan nan nan nan
+vgs_5-repair-po-5.dft nan nan nan nan nan nan nan
+vgs_6-repair-po-5.dft nan nan nan nan nan nan nan
+vgs_7-repair-po-5.dft nan nan nan nan nan nan nan
+vgs_8-repair-po-5.dft nan nan nan nan nan nan nan

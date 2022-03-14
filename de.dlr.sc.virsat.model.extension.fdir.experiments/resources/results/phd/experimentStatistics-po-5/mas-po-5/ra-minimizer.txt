@@ -1,0 +1,3 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+MAS-2-po-5.dft 884 611 1653 0 1 42 568
+MAS-po-5.dft 36 33 48 0 0 7 26
