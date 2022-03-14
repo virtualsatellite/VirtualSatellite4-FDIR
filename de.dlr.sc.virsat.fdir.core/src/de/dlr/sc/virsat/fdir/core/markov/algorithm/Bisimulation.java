@@ -11,7 +11,6 @@
 package de.dlr.sc.virsat.fdir.core.markov.algorithm;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -112,16 +111,12 @@ public class Bisimulation<S extends MarkovState> {
 	 * @return boolean outputs true or false
 	 */
 	protected boolean belongsToBlock(Set<S> block, S state) {
-		List<Object> stateLabels = new ArrayList<Object>();		
-		List<Object> stateRates = new ArrayList<Object>();
-		List<Object> blockLabels = new ArrayList<Object>();
-		List<Object> blockRates = new ArrayList<Object>();
 		boolean isequal;
 		
-		stateLabels = ma.getSuccEvents(state);
-        stateRates = ma.getSuccRates(state);
-	    blockRates = ma.getSuccRates(block.iterator().next());
-		blockLabels = ma.getSuccEvents(block.iterator().next());
+		List<Object> stateLabels = ma.getSuccEvents(state);
+		List<Object> stateRates = ma.getSuccRates(state);
+		List<Object> blockRates = ma.getSuccRates(block.iterator().next());
+		List<Object> blockLabels = ma.getSuccEvents(block.iterator().next());
 		if (stateRates.isEmpty() && blockRates.isEmpty()) {
 			isequal = blockLabels.equals(stateLabels);
 		}
