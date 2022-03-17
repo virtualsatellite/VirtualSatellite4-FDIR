@@ -18,6 +18,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingResult;
 import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
+import de.dlr.sc.virsat.model.concept.types.category.BeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
@@ -99,7 +100,9 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		subMonitor.subTask("Creating Data Model");
 		
 		double delta = getTimestepBean().getValueToBaseUnit();
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) fault.getTypeInstance().eContainer());
+		BeanCategoryAssignment beanCa = new BeanCategoryAssignment();
+		beanCa.setTypeInstance(fault.getTypeInstance());
+		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) beanCa.getParent().getStructuralElementInstance());
 		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, delta, EPS);
 
