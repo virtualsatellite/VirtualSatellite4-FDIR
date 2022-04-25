@@ -20,7 +20,6 @@ import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
 import de.dlr.sc.virsat.fdir.core.metrics.Reliability;
 import de.dlr.sc.virsat.model.concept.types.category.BeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
-import de.dlr.sc.virsat.model.concept.types.structural.BeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.concept.types.structural.IBeanStructuralElementInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.APropertyInstance;
@@ -30,7 +29,6 @@ import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 // * Import Statements
 // *****************************************************************
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
-import de.dlr.sc.virsat.model.dvlm.structural.StructuralElementInstance;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 
 // *****************************************************************
@@ -100,10 +98,7 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 		subMonitor.subTask("Creating Data Model");
 		
 		double delta = getTimestepBean().getValueToBaseUnit();
-		BeanCategoryAssignment beanCa = new BeanCategoryAssignment();
-		beanCa.setTypeInstance(fault.getTypeInstance());
-		IBeanStructuralElementInstance parent = new BeanStructuralElementInstance((StructuralElementInstance) beanCa.getParent().getStructuralElementInstance());
-		RecoveryAutomaton ra = parent.getFirst(RecoveryAutomaton.class);
+		RecoveryAutomaton ra = getRecoveryAutomaton(fault);
 		FaultTreeEvaluator ftEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, delta, EPS);
 
 		double maxTime = getRemainingMissionTimeBean().getValueToBaseUnit();
@@ -127,6 +122,19 @@ public class ReliabilityAnalysis extends AReliabilityAnalysis {
 				}
 			}
 		};
+	}
+	
+	/**
+	 * Gets the recovery automaton that should be used for determining
+	 * the reliability.
+	 * @param fault the fault under analysis
+	 * @return the recovery automaton
+	 */
+	protected RecoveryAutomaton getRecoveryAutomaton(FaultTreeNode fault) {
+		BeanCategoryAssignment beanCa = new BeanCategoryAssignment();
+		beanCa.setTypeInstance(fault.getTypeInstance());
+		IBeanStructuralElementInstance parent = fault.getParent();
+		return parent.getFirst(RecoveryAutomaton.class);
 	}
 
 	/**

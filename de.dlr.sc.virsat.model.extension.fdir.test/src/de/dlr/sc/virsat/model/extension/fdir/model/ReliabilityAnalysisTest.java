@@ -71,7 +71,12 @@ public class ReliabilityAnalysisTest extends AReliabilityAnalysisTest {
 	public void testPerform() {
 		StructuralElement se = StructuralFactory.eINSTANCE.createStructuralElement();
 		StructuralElementInstance sei = new StructuralInstantiator().generateInstance(se, "System");
-		ReliabilityAnalysis reliabilityAnalysis = new ReliabilityAnalysis(concept);
+		ReliabilityAnalysis reliabilityAnalysis = new ReliabilityAnalysis(concept) {
+			@Override
+			protected RecoveryAutomaton getRecoveryAutomaton(FaultTreeNode fault) {
+				return null;
+			}
+		};
 		reliabilityAnalysis.setRemainingMissionTime(1);
 		final double TEST_DELTA = 0.1;
 		reliabilityAnalysis.setTimestep(TEST_DELTA);

@@ -42,7 +42,14 @@ public class StandardSPARESemantics implements INodeSemantics {
 		List<FaultTreeNode> children = ftHolder.getNodes(spareGate, EdgeType.CHILD);
 		
 		boolean hasPrimaryFailed = hasPrimaryFailed(state, children);
-		boolean currentClaimWorks = !hasPrimaryFailed;
+		boolean isClaiming = false;
+		for (FaultTreeNode spare : spares) {
+			FaultTreeNode spareGateOther = state.getMapSpareToClaimedSpares().get(spare);
+			if (spareGateOther != null && spareGateOther.equals(spareGate)) {
+				isClaiming = true;
+			}
+		}
+		boolean currentClaimWorks = !isClaiming && !hasPrimaryFailed;
 		for (FaultTreeNode spare : spares) {
 			FaultTreeNode spareGateOther = state.getMapSpareToClaimedSpares().get(spare);
 			if (spareGateOther != null && spareGateOther.equals(spareGate)) {
@@ -94,7 +101,7 @@ public class StandardSPARESemantics implements INodeSemantics {
 	 */
 	protected boolean hasPrimaryFailed(DFTState state, List<FaultTreeNode> children) {
 		for (FaultTreeNode child : children) {
-			if (!state.hasFaultTreeNodeFailed(child) && state.isNodeActive(child)) {
+			if (!state.hasFaultTreeNodeFailed(child) && state.isNodeActive(child.getFault())) {
 				return false;
 			}
 		}
