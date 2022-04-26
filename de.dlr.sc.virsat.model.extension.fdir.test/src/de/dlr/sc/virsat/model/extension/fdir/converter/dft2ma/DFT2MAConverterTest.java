@@ -70,7 +70,7 @@ public class DFT2MAConverterTest extends ATestCase {
 		Fault fault = createDFT("/resources/galileoRepair/transientToPermanentConversion.dft");
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
-		final int EXPECTED_COUNT_STATES = 3;
+		final int EXPECTED_COUNT_STATES = 4;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 	}
 	
@@ -80,8 +80,8 @@ public class DFT2MAConverterTest extends ATestCase {
 		
 		MarkovAutomaton<DFTState> ma = dft2MaConverter.convert(fault);
 		
-		final int EXPECTED_COUNT_STATES = 4;
-		final int EXPECTED_COUNT_TRANSITIONS = 7;
+		final int EXPECTED_COUNT_STATES = 6;
+		final int EXPECTED_COUNT_TRANSITIONS = 11;
 		assertEquals(EXPECTED_COUNT_STATES, ma.getStates().size());
 		assertEquals(EXPECTED_COUNT_TRANSITIONS, ma.getTransitions().size());
 	}

@@ -109,7 +109,6 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 
 	@Override
 	public List<DFTState> generateSuccs(DFTState state, SubMonitor monitor) {
-		List<DFTState> newSuccs = new ArrayList<>();
 		List<IDFTEvent> occurableEvents = getOccurableEvents(state);
 		if (state.isProbabilisic() && occurableEvents.size() > 1 && occurableEvents.stream().allMatch(event -> event instanceof ImmediateObservationEvent)) {
 			// ImmediateObservationEvents need to be grouped but ObservationEvents can either be repair or not. Repairs take priority.
@@ -133,15 +132,28 @@ public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 		}
 		List<StateUpdate> stateUpdates = getStateUpdates(state, occurableEvents);
 		
+		List<DFTState> newSuccs = new ArrayList<>();
 		for (StateUpdate stateUpdate : stateUpdates) {
-			checkCancellation(monitor);
-			StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
-			checkCancellation(monitor);
-			List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
-			newSuccs.addAll(newSuccsStateUpdate);
+			performStateUpdate(state, monitor, stateUpdate, newSuccs);
 		}
 		
 		return newSuccs;
+	}
+	
+	/**
+	 * Performs a single state update by taking the base state and the state update to generate
+	 * a set of new states.
+	 * @param state the base state
+	 * @param monitor the monitor
+	 * @param stateUpdate the update to be performed
+	 * @param newSuccs collector for newly generated states
+	 */
+	private void performStateUpdate(DFTState state, SubMonitor monitor, StateUpdate stateUpdate, List<DFTState> newSuccs) {
+		checkCancellation(monitor);
+		StateUpdateResult stateUpdateResult = semantics.performUpdate(stateUpdate);
+		checkCancellation(monitor);
+		List<DFTState> newSuccsStateUpdate = handleStateUpdate(stateUpdate, stateUpdateResult);
+		newSuccs.addAll(newSuccsStateUpdate);
 	}
 	
 	/**
