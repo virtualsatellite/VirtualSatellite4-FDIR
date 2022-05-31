@@ -12,25 +12,31 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
-import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
-import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyBeanList;
-import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
-import de.dlr.sc.virsat.model.concept.list.IBeanList;
-import de.dlr.sc.virsat.model.dvlm.categories.Category;
-import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ReferencePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyReference;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyInstanceList;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.common.command.Command;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.UnitValuePropertyInstance;
+import de.dlr.sc.virsat.model.dvlm.json.ABeanObjectAdapter;
 import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
+import javax.xml.bind.annotation.XmlAccessorType;
+import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
+import de.dlr.sc.virsat.model.concept.list.TypeSafeReferencePropertyBeanList;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import javax.xml.bind.annotation.XmlRootElement;
+import de.dlr.sc.virsat.model.concept.list.IBeanList;
+import de.dlr.sc.virsat.model.dvlm.categories.Category;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import javax.xml.bind.annotation.XmlAccessType;
+import org.eclipse.emf.common.command.Command;
+import javax.xml.bind.annotation.XmlElement;
 
 
 // *****************************************************************
@@ -45,6 +51,8 @@ import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
  * 
  * 
  */	
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class ACutSet extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.CutSet";
@@ -134,6 +142,8 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		failure.setTypeInstance(propertyInstance);
 	}
 	
+	@XmlElement(nillable = true)
+	@XmlJavaTypeAdapter(ABeanObjectAdapter.class)
 	public Fault getFailure() {
 		safeAccessFailure();
 		return failure.getValue();
@@ -178,6 +188,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 			}
 		}
 		
+		@XmlElement
 		public IBeanList<BeanPropertyReference<BasicEvent>> getBasicEventsBean() {
 			safeAccessBasicEventsBean();
 			return basicEventsBean;
@@ -214,6 +225,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		return severity.getEnumValue();
 	}
 	
+	@XmlElement
 	public BeanPropertyEnum getSeverityBean() {
 		safeAccessSeverity();
 		return severity;
@@ -250,6 +262,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		return probability.getEnumValue();
 	}
 	
+	@XmlElement
 	public BeanPropertyEnum getProbabilityBean() {
 		safeAccessProbability();
 		return probability;
@@ -286,6 +299,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		return detection.getEnumValue();
 	}
 	
+	@XmlElement
 	public BeanPropertyEnum getDetectionBean() {
 		safeAccessDetection();
 		return detection;
@@ -322,6 +336,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		return criticality.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getCriticalityBean() {
 		safeAccessCriticality();
 		return criticality;
@@ -358,6 +373,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		return meanTimeToFailure.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getMeanTimeToFailureBean() {
 		safeAccessMeanTimeToFailure();
 		return meanTimeToFailure;
@@ -394,6 +410,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		return steadyStateDetectability.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getSteadyStateDetectabilityBean() {
 		safeAccessSteadyStateDetectability();
 		return steadyStateDetectability;
@@ -430,6 +447,7 @@ public abstract class ACutSet extends GenericCategory implements IBeanCategoryAs
 		return meanTimeToDetection.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getMeanTimeToDetectionBean() {
 		safeAccessMeanTimeToDetection();
 		return meanTimeToDetection;

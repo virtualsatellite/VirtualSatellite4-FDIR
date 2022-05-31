@@ -12,16 +12,19 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
+import javax.xml.bind.annotation.XmlAccessorType;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyEnum;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ValuePropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.EnumUnitPropertyInstance;
+import javax.xml.bind.annotation.XmlRootElement;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyString;
+import javax.xml.bind.annotation.XmlAccessType;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
@@ -30,6 +33,7 @@ import de.dlr.sc.virsat.model.dvlm.categories.CategoryAssignment;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ComposedPropertyInstance;
+import javax.xml.bind.annotation.XmlElement;
 
 
 // *****************************************************************
@@ -44,6 +48,8 @@ import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ComposedProperty
  * 
  * 
  */	
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AFault extends FaultEvent implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.Fault";
@@ -123,6 +129,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		return detail.getValue();
 	}
 	
+	@XmlElement
 	public BeanPropertyString getDetailBean() {
 		safeAccessDetail();
 		return detail;
@@ -152,6 +159,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		}
 	}
 	
+	@XmlElement
 	public IBeanList<BeanPropertyComposed<BasicEvent>> getBasicEventsBean() {
 		safeAccessBasicEventsBean();
 		return basicEventsBean;
@@ -188,6 +196,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		return severity.getEnumValue();
 	}
 	
+	@XmlElement
 	public BeanPropertyEnum getSeverityBean() {
 		safeAccessSeverity();
 		return severity;
@@ -205,6 +214,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		}
 	}
 	
+	@XmlElement(nillable = true)
 	public FaultTree getFaultTree() {
 		safeAccessFaultTree();
 		return faultTree.getValue();
@@ -239,6 +249,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		}
 	}
 	
+	@XmlElement
 	public IBeanList<BeanPropertyComposed<ReliabilityAnalysis>> getReliabilityAnalysisBean() {
 		safeAccessReliabilityAnalysisBean();
 		return reliabilityAnalysisBean;
@@ -268,6 +279,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		}
 	}
 	
+	@XmlElement
 	public IBeanList<BeanPropertyComposed<AvailabilityAnalysis>> getAvailabilityAnalysisBean() {
 		safeAccessAvailabilityAnalysisBean();
 		return availabilityAnalysisBean;
@@ -297,6 +309,7 @@ public abstract class AFault extends FaultEvent implements IBeanCategoryAssignme
 		}
 	}
 	
+	@XmlElement
 	public IBeanList<BeanPropertyComposed<DetectabilityAnalysis>> getDetectabilityAnalysisBean() {
 		safeAccessDetectabilityAnalysisBean();
 		return detectabilityAnalysisBean;
