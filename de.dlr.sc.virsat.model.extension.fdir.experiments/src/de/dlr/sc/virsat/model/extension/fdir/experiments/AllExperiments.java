@@ -27,11 +27,11 @@ import junit.framework.JUnit4TestAdapter;
 @RunWith(Suite.class)
 
 @SuiteClasses({ 
-		AIAA2017Experiments.class,
-		AIAA2018Experiments.class,
-		FTSCS2018Experiments.class,
-		SCP2019Experiments.class
-		})
+	AIAA2017Experiments.class,
+	AIAA2018Experiments.class,
+	FTSCS2018Experiments.class,
+	SCP2019Experiments.class
+})
 
 public class AllExperiments {
 

@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  de.dlr.sc.virsat.test,
  de.dlr.sc.virsat.fdir.core,
  de.dlr.sc.virsat.fdir.storm
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Import-Package: de.dlr.sc.virsat.model.extension.fdir.test,
  de.dlr.sc.virsat.fdir.core.test,

@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.osgi,
  org.objectweb.asm;bundle-version="[8.0.0,8.1.0)";resolution:=optional,
  org.eclipse.xtext.xbase,
  org.eclipse.xtend.lib;bundle-version="2.14.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.dlr.sc.virsat.fdir.galileo.dft.impl,
  de.dlr.sc.virsat.fdir.galileo.validation,
  de.dlr.sc.virsat.fdir.galileo.generator,
