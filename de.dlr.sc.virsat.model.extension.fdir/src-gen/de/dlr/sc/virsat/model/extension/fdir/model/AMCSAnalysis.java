@@ -12,12 +12,15 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
+import javax.xml.bind.annotation.XmlAccessorType;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import javax.xml.bind.annotation.XmlRootElement;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import javax.xml.bind.annotation.XmlAccessType;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
@@ -28,6 +31,7 @@ import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyInt;
+import javax.xml.bind.annotation.XmlElement;
 
 
 // *****************************************************************
@@ -42,6 +46,8 @@ import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyInt;
  * 
  * 
  */	
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AMCSAnalysis extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.MCSAnalysis";
@@ -110,6 +116,7 @@ public abstract class AMCSAnalysis extends GenericCategory implements IBeanCateg
 		return maxMinimumCutSetSize.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyInt getMaxMinimumCutSetSizeBean() {
 		safeAccessMaxMinimumCutSetSize();
 		return maxMinimumCutSetSize;
@@ -146,6 +153,7 @@ public abstract class AMCSAnalysis extends GenericCategory implements IBeanCateg
 		return faultTolerance.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyInt getFaultToleranceBean() {
 		safeAccessFaultTolerance();
 		return faultTolerance;
@@ -175,6 +183,7 @@ public abstract class AMCSAnalysis extends GenericCategory implements IBeanCateg
 		}
 	}
 	
+	@XmlElement
 	public IBeanList<BeanPropertyComposed<CutSet>> getMinimumCutSetsBean() {
 		safeAccessMinimumCutSetsBean();
 		return minimumCutSetsBean;
