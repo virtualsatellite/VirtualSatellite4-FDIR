@@ -2,7 +2,7 @@ toplevel "tle";
 "tle" and "A" "PAND1" "PAND2";
 "PAND1" pand "B" "C";
 "PAND2" pand "D" "E";
-"A" lambda=1.8;
+"A" lambda=11;
 "B" lambda=1.6;
 "C" lambda=1.4;
 "D" lambda=2;

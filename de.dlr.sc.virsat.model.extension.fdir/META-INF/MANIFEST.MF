@@ -16,8 +16,10 @@ Require-Bundle: org.eclipse.core.runtime,
  de.dlr.sc.virsat.model.edit;visibility:=reexport,
  org.eclipse.graphiti.mm,
  org.eclipse.graphiti.ui,
- org.eclipse.swt
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+ org.eclipse.swt,
+ javax.annotation,
+ jakarta.xml.bind
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true
 Export-Package: de.dlr.sc.virsat.model.extension.fdir,

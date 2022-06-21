@@ -12,13 +12,16 @@ package de.dlr.sc.virsat.model.extension.fdir.model;
 // *****************************************************************
 // * Import Statements
 // *****************************************************************
+import javax.xml.bind.annotation.XmlAccessorType;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeArrayInstanceList;
 import de.dlr.sc.virsat.model.concept.types.category.IBeanCategoryAssignment;
 import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
+import javax.xml.bind.annotation.XmlRootElement;
 import de.dlr.sc.virsat.model.dvlm.categories.util.CategoryInstantiator;
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
 import de.dlr.sc.virsat.model.dvlm.categories.Category;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
+import javax.xml.bind.annotation.XmlAccessType;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.common.command.Command;
@@ -29,6 +32,7 @@ import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyFloat;
 import de.dlr.sc.virsat.model.concept.list.TypeSafeComposedPropertyInstanceList;
 import de.dlr.sc.virsat.model.concept.types.property.BeanPropertyComposed;
 import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
+import javax.xml.bind.annotation.XmlElement;
 
 
 // *****************************************************************
@@ -43,6 +47,8 @@ import de.dlr.sc.virsat.model.ext.core.model.GenericCategory;
  * 
  * 
  */	
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AFDIRParameters extends GenericCategory implements IBeanCategoryAssignment {
 
 	public static final String FULL_QUALIFIED_CATEGORY_NAME = "de.dlr.sc.virsat.model.extension.fdir.FDIRParameters";
@@ -113,6 +119,7 @@ public abstract class AFDIRParameters extends GenericCategory implements IBeanCa
 		return missionTime.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getMissionTimeBean() {
 		safeAccessMissionTime();
 		return missionTime;
@@ -149,6 +156,7 @@ public abstract class AFDIRParameters extends GenericCategory implements IBeanCa
 		return timestep.isSet();
 	}
 	
+	@XmlElement
 	public BeanPropertyFloat getTimestepBean() {
 		safeAccessTimestep();
 		return timestep;
@@ -164,7 +172,8 @@ public abstract class AFDIRParameters extends GenericCategory implements IBeanCa
 			probabilityLevelsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("probabilityLevels"));
 		}
 	}
-		
+	
+	@XmlElement
 	public IBeanList<BeanPropertyFloat> getProbabilityLevelsBean() {
 		safeAccessProbabilityLevelsBean();
 		return probabilityLevelsBean;
@@ -180,7 +189,8 @@ public abstract class AFDIRParameters extends GenericCategory implements IBeanCa
 			detectionLevelsBean.setArrayInstance((ArrayInstance) helper.getPropertyInstance("detectionLevels"));
 		}
 	}
-		
+	
+	@XmlElement
 	public IBeanList<BeanPropertyFloat> getDetectionLevelsBean() {
 		safeAccessDetectionLevelsBean();
 		return detectionLevelsBean;
@@ -210,6 +220,7 @@ public abstract class AFDIRParameters extends GenericCategory implements IBeanCa
 		}
 	}
 	
+	@XmlElement
 	public IBeanList<BeanPropertyComposed<CriticalityMatrix>> getCriticalityMatricesBean() {
 		safeAccessCriticalityMatricesBean();
 		return criticalityMatricesBean;

@@ -9,8 +9,6 @@
  */
 package de.dlr.sc.virsat.fdir.galileo.ide;
 
-import de.dlr.sc.virsat.fdir.galileo.ide.AbstractDftIdeModule;
-
 /**
  * Use this class to register ide components.
  */

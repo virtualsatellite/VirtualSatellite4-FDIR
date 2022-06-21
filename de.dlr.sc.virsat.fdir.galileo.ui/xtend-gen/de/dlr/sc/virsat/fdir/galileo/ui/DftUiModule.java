@@ -9,7 +9,6 @@
  */
 package de.dlr.sc.virsat.fdir.galileo.ui;
 
-import de.dlr.sc.virsat.fdir.galileo.ui.AbstractDftUiModule;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor;
 
