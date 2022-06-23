@@ -48,7 +48,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 public class DFT2MAStateSpaceGenerator extends AStateSpaceGenerator<DFTState> {
 	
-	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 512;
+	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 64;
 	
 	private DFTSemantics semantics = DFTSemantics.createNDDFTSemantics();
 	
