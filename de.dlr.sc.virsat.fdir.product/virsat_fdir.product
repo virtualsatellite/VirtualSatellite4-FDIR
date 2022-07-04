@@ -107,7 +107,6 @@ Germany
       <feature id="org.eclipse.rcp"/>
       <feature id="org.eclipse.equinox.p2.rcp.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
       <feature id="org.eclipse.emf.workspace"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.emf.databinding"/>
@@ -152,7 +151,6 @@ Germany
       <feature id="org.eclipse.elk.feature"/>
       <feature id="org.eclipse.elk.graphiti.feature"/>
       <feature id="org.eclipse.elk.ui.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature" installMode="root"/>
       <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.birt" installMode="root"/>
       <feature id="org.eclipse.birt.report.designer.editor.xml.wtp" installMode="root"/>
@@ -163,9 +161,9 @@ Germany
       <feature id="org.polarion.eclipse.team.svn.connector.svnkit18" installMode="root"/>
       <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
       <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
-      <feature id="org.eclipse.jgit.ssh.jsch" installMode="root"/>
       <feature id="de.dlr.sc.virsat.model.ext.core.feature" installMode="root"/>
       <feature id="org.eclipse.xtext.ui" installMode="root"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature" installMode="root"/>
    </features>
 
    <configurations>
