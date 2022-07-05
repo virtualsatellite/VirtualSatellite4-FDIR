@@ -12,6 +12,17 @@ This user manual describes how to use the Software Virtual Satellite 4 FDIR (Vir
 The software is an extension to Virtual Satellite 4 CORE, for a guide on how to use Virtual Satellite in general,
 please refer to the Virtual Satellite 4 CORE Manual.
 
+VirSat4 FDIR can be used both as a standalone application, in which case only a limited number of modeling concepts relevant
+for modeling FDIR are available.
+Alternatively, the FDIR concept can be installed into any other application based on VirSat4 CORE.
+For installing the FDIR concept into a VirSat4 application, please refer to the link:https://docs.oracle.com/javame/dev-tools/jme-sdk-3.4/ecl/html/setup_eclipseenv.htm[Eclipse installation guide for installing software extensions]
+using the update-site 
+
+https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-FDIR/release/{revnumber}.
+
+Final note: Like any other VirSat4 application, VirSat4 FDIR can also open data models created in a different VirSat4 application.
+E.g. it is possible to create a data model in VirSat4 CORE and open it with VirSat4 FDIR.
+
 == Purpose
 
 VirSat4 FDIR focuses on modeling Fault Detection, Isolation, and Recovery.
