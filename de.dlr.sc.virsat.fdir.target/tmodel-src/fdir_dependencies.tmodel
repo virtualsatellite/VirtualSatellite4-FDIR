@@ -3,7 +3,7 @@ TargetLibrary fdir_dependencies {
 		Unit org.mandas.docker-client version 3.2.1.v20200519-1937;
 	}
 
-	RepositoryLocation Birt url "https://sourceforge.net/projects/birt/files/release/4.16.0/" {
+	RepositoryLocation Birt url "https://download.eclipse.org/birt/update-site/4.9.0/" {
 		Unit org.eclipse.birt.feature.group version newest;
 	}
 	
