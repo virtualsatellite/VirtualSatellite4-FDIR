@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -201,8 +203,8 @@ public class FaultEvent implements IDFTEvent, IRepairableEvent {
 	}
 
 	@Override
-	public FaultTreeNode getNode() {
-		return be;
+	public Collection<FaultTreeNode> getNodes() {
+		return Collections.singleton(be);
 	}
 	
 

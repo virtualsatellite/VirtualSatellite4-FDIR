@@ -23,10 +23,6 @@ by German Aerospace Center (DLR e.V.)
    </license>
 
    <includes
-         id="de.dlr.sc.virsat.graphiti.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.elk.algorithms.feature"
          version="0.0.0"/>
 

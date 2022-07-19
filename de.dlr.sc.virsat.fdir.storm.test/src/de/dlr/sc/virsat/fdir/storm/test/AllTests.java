@@ -33,17 +33,17 @@ import junit.framework.JUnit4TestAdapter;
 @RunWith(Suite.class)
 
 @SuiteClasses({ 
-		DockerHelperTest.class,
-		StormDFTTest.class,
-		InstanceFileGeneratorTest.class,
-		ExplicitDRNFileWriterTest.class,
-		ExplicitPropFileWriterTest.class,
-		StormModelCheckerTest.class,
-		StormTest.class,
-		StormRunnerTest.class,
-		StormSchedulerTest.class,
-		StormRunnerFactoryTest.class
-		})
+	DockerHelperTest.class,
+	StormDFTTest.class,
+	InstanceFileGeneratorTest.class,
+	ExplicitDRNFileWriterTest.class,
+	ExplicitPropFileWriterTest.class,
+	StormModelCheckerTest.class,
+	StormTest.class,
+	StormRunnerTest.class,
+	StormSchedulerTest.class,
+	StormRunnerFactoryTest.class
+})
 
 public class AllTests {
 

@@ -9,8 +9,11 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import de.dlr.sc.virsat.fdir.core.markov.MarkovStateType;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PODFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
@@ -65,8 +68,8 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 	}
 	
 	@Override
-	public FaultTreeNode getNode() {
-		return node;
+	public Collection<FaultTreeNode> getNodes() {
+		return Collections.singleton(node);
 	}
 	
 	@Override
@@ -77,6 +80,10 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 	@Override
 	public boolean canOccur(DFTState state) {
 		if (state instanceof PODFTState) {
+			if (node == null) {
+				return state.getType() == MarkovStateType.MARKOVIAN;
+			}
+			
 			PODFTState poState = (PODFTState) state;
 			if (isRepair) {
 				if (state.hasFaultTreeNodeFailed(node) || !poState.isNodeFailObserved(node))  {
@@ -86,6 +93,11 @@ public class ObservationEvent implements IDFTEvent, IRepairableEvent {
 				if (!state.hasFaultTreeNodeFailed(node)) {
 					return false;
 				}
+			}
+			
+			if (node instanceof MONITOR) {
+				// An observer can always observe itself
+				return true;
 			}
 			
 			return poState.existsObserver(node, true, false);

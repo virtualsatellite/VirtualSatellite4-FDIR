@@ -1,0 +1,14 @@
+toplevel "System";
+"System" and "OR1" "OR2";
+"OR1" or "PAND1" "SPARE1";
+"PAND1" pand "B1" "B2";
+"SPARE1" csp "B2" "B3";
+"OR2" or "PAND2" "SPARE2";
+"PAND2" pand "B4" "B5";
+"SPARE2" csp "B5" "B3";
+"B1" lambda=0.1;
+"B2" lambda=5;
+"B3" lambda=5;
+"B4" lambda=0.1;
+"B5" lambda=5;
+"O" observer "System" obsRate=1;

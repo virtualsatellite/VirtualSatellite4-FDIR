@@ -112,7 +112,7 @@ public class FaultTreeEvaluator implements IFaultTreeEvaluator {
 			for (Object object : minimumCutSet) {
 				if (object instanceof FaultEvent) {
 					FaultEvent fe = (FaultEvent) object;
-					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNode());
+					BasicEvent originalBe = (BasicEvent) mapGeneratedToGenerator.get(fe.getNodes().iterator().next());
 					originalMiniumCutSet.add(originalBe);
 				}
 			}

@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.fdir.galileo.tests;
 
 import com.google.inject.Inject;
 import de.dlr.sc.virsat.fdir.galileo.dft.GalileoDft;
-import de.dlr.sc.virsat.fdir.galileo.tests.DftInjectorProvider;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.XtextRunner;

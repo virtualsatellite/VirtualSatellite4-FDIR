@@ -10,7 +10,7 @@ toplevel "tle";
 "SPAREGATE" wsp "M" "N";
 "PAND8" pand "I" "J";
 "PAND9" pand "K" "L";
-"A" lambda=1.8;
+"A" lambda=11;
 "B" lambda=1.6;
 "C" lambda=1.4;
 "D" lambda=2;

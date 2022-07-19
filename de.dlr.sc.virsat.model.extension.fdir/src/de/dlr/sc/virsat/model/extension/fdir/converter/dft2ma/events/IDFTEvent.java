@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Collection;
 import java.util.Comparator;
 
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
@@ -45,7 +46,7 @@ public interface IDFTEvent {
 	 * Gets the related DFT node
 	 * @return the related dft node
 	 */
-	FaultTreeNode getNode();
+	Collection<FaultTreeNode> getNodes();
 	
 	/**
 	 * Checks if the given event is an immediate events.

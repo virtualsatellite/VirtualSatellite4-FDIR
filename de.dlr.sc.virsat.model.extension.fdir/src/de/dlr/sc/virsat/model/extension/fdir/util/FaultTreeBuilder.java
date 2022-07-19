@@ -9,6 +9,7 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -397,7 +398,7 @@ public class FaultTreeBuilder {
 		} else {
 			try {
 				CategoryAssignment copyCa = EcoreUtil.copy(ftnode.getTypeInstance());
-				FaultTreeNode copyBean = ftnode.getClass().newInstance();
+				FaultTreeNode copyBean = ftnode.getClass().getDeclaredConstructor().newInstance();
 				copyBean.setTypeInstance(copyCa);
 				
 				if (copyBean instanceof BasicEvent) {
@@ -407,7 +408,7 @@ public class FaultTreeBuilder {
 				}
 				
 				return copyBean;
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.getPluginId(), "Failed to copy a fault tree node!", e));
 				return null;
 			}

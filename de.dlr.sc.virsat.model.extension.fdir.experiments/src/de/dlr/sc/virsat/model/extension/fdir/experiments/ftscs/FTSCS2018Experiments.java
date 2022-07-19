@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverter;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.FaultTreeEvaluator;
 import de.dlr.sc.virsat.model.extension.fdir.experiments.ASynthesizerExperiment;
 import de.dlr.sc.virsat.model.extension.fdir.model.Fault;
@@ -38,10 +39,12 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 	@Test
 	public void experimentMultiProcessorSystem() throws Exception {
 		Fault fault = createDFT("/resources/ftscs/cm1.dft");
+		DFT2BasicDFTConverter dft2BasicDFTConverter = new DFT2BasicDFTConverter();
+		FaultTreeNode system = dft2BasicDFTConverter.convert(fault).getRoot();
 		
 		BasicSynthesizer synthesizer = new BasicSynthesizer();
 		synthesizer.setMinimizer(null);
-		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(fault), null);
+		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(system), null);
 		System.out.println("Original #states: " + ra.getStates().size());
 		System.out.println("Original #transitions: " + ra.getTransitions().size());
 		saveRA(ra, "ftscs/mcs/original");
@@ -89,10 +92,10 @@ public class FTSCS2018Experiments extends ASynthesizerExperiment {
 		
 		final float DELTA = 0.01f;
 		FaultTreeEvaluator unminimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(ra, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		unminimizedEvaluator.evaluateFaultTree(fault);
+		unminimizedEvaluator.evaluateFaultTree(system);
 		
 		FaultTreeEvaluator minimizedEvaluator = FaultTreeEvaluator.createDefaultFaultTreeEvaluator(composedMinimized, DELTA, FaultTreeEvaluator.DEFAULT_EPS);
-		minimizedEvaluator.evaluateFaultTree(fault);
+		minimizedEvaluator.evaluateFaultTree(system);
 	}
 	
 	@Test

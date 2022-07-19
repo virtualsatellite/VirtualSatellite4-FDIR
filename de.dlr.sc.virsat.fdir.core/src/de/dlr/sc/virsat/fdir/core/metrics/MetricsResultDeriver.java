@@ -88,6 +88,12 @@ public class MetricsResultDeriver {
 			double derivedMTTD = meanTimeToDetectionMetric.derive(resultUnobservedFailure.getMeanTimeToFailure(), resultObservedFailure.getMeanTimeToFailure());
 			derivedResult.setMeanTimeToDetection(derivedMTTD);
 		}
+		
+		@Override
+		public void visit(MeanTimeToObservedFailure meanTimeToObservedFailureMetric) {
+			ModelCheckingResult resultObservedFailure = baseResults.get(new FailLabelProvider(FailLabel.FAILED, FailLabel.OBSERVED));
+			derivedResult.setMeanTimeToObservedFailure(resultObservedFailure.getMeanTimeToFailure());
+		}
 	
 		@Override
 		public void visit(SteadyStateDetectability steadyStateDetectability) {

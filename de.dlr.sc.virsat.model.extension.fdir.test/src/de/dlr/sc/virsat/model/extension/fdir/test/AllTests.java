@@ -24,7 +24,6 @@ import de.dlr.sc.virsat.model.extension.fdir.converter.dft.analysis.DFTSymmetryC
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2dft.DFT2BasicDFTConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFT2MAConverterTest;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTStateTest;
-import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po.PONDDFTSemanticsTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTEvaluatorTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.DFTMetricsComposerTest;
 import de.dlr.sc.virsat.model.extension.fdir.evaluator.StormEvaluatorTest;
@@ -56,40 +55,39 @@ import junit.framework.JUnit4TestAdapter;
 @RunWith(Suite.class)
 
 @SuiteClasses({ 
-		DFT2BasicDFTConverterTest.class, 
-		DFT2MAConverterTest.class, 
-		DFTStateTest.class,
-		DFTSymmetryCheckerTest.class,
-		GalileoDFT2DFTTest.class,
-		BasicSynthesizerTest.class,
-		POSynthesizerTest.class,
-		DelegateSynthesizerTest.class,
-		ModularSynthesizerTest.class,
-		Schedule2RAConverterTest.class,
-		DFT2GalileoDFTTest.class,
-		OrthogonalPartitionRefinementMinimizerTest.class,
-		PartitionRefinementMinimizerTest.class,
-		FinalStateMinimizerTest.class,
-		CleanMinimizerTest.class,
-		ComposedMinimizerTest.class,
-		StormEvaluatorTest.class,
-		DFTEvaluatorTest.class,
-		DFTMetricsComposerTest.class,
-		FaultTreePreferencesTest.class,
-		FaultTreeHolderTest.class,
-		PONDDFTSemanticsTest.class,
-		ModularizerTest.class,
-		ModuleTest.class,
-		RecoveryAutomatonHelperTest.class,
-		ParallelComposerTest.class,
-		OpClassifyPLTest.class,
-		OpClassifyDLTest.class,
-		FDIRParametersGetterTest.class,
-		FDIRExpressionEvaluatorTest.class,
-		FDIRExpressionExtensionTest.class,
-		FaultTreeTrimmerTest.class,
-		FaultValidatorTest.class
-		})
+	DFT2BasicDFTConverterTest.class, 
+	DFT2MAConverterTest.class, 
+	DFTStateTest.class,
+	DFTSymmetryCheckerTest.class,
+	GalileoDFT2DFTTest.class,
+	BasicSynthesizerTest.class,
+	POSynthesizerTest.class,
+	DelegateSynthesizerTest.class,
+	ModularSynthesizerTest.class,
+	Schedule2RAConverterTest.class,
+	DFT2GalileoDFTTest.class,
+	OrthogonalPartitionRefinementMinimizerTest.class,
+	PartitionRefinementMinimizerTest.class,
+	FinalStateMinimizerTest.class,
+	CleanMinimizerTest.class,
+	ComposedMinimizerTest.class,
+	StormEvaluatorTest.class,
+	DFTEvaluatorTest.class,
+	DFTMetricsComposerTest.class,
+	FaultTreePreferencesTest.class,
+	FaultTreeHolderTest.class,
+	ModularizerTest.class,
+	ModuleTest.class,
+	RecoveryAutomatonHelperTest.class,
+	ParallelComposerTest.class,
+	OpClassifyPLTest.class,
+	OpClassifyDLTest.class,
+	FDIRParametersGetterTest.class,
+	FDIRExpressionEvaluatorTest.class,
+	FDIRExpressionExtensionTest.class,
+	FaultTreeTrimmerTest.class,
+	FaultValidatorTest.class
+})
 
 public class AllTests {
 

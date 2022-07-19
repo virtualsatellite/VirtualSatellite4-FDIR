@@ -40,6 +40,13 @@ public class POSynthesizer extends ASynthesizer {
 	protected MA2BeliefMAConverter ma2BeliefMAConverter = new MA2BeliefMAConverter();
 	protected IMarkovScheduler<BeliefState> scheduler = new MarkovScheduler<>();
 	
+	public POSynthesizer() {
+	}
+	
+	public POSynthesizer(boolean filterTransitions, boolean simplifyFailStates) {
+		ma2BeliefMAConverter = new MA2BeliefMAConverter(filterTransitions, simplifyFailStates);
+	}
+	
 	@Override
 	protected RecoveryAutomaton convertToRecoveryAutomaton(MarkovAutomaton<DFTState> ma, DFTState initialMa, SubMonitor subMonitor) {
 		subMonitor = SubMonitor.convert(subMonitor, TICKS);
@@ -58,6 +65,7 @@ public class POSynthesizer extends ASynthesizer {
 	protected DFT2MAConverter createDFT2MAConverter() {
 		DFT2MAConverter dft2MaConverter = new DFT2MAConverter();
 		dft2MaConverter.getStateSpaceGenerator().setSemantics(PONDDFTSemantics.createPONDDFTSemantics());
+		dft2MaConverter.getStateSpaceGenerator().setPermanence(false);
 		return dft2MaConverter;
 	}
 }

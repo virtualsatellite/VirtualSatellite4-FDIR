@@ -41,7 +41,6 @@ public class DFT2MAConverter extends A2MAConverter<DFTState, DFT2MAStateSpaceGen
 		FaultTreeHolder ftHolder = new FaultTreeHolder(holderRoot);
 		stateSpaceGenerator.configure(ftHolder, failableBasicEventsProvider);
 		MarkovAutomaton<DFTState> ma = maBuilder.build(stateSpaceGenerator, monitor);
-		
 		return ma;
 	}
 	

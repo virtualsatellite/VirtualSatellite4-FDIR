@@ -16,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovAutomatonTest;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransitionTest;
 import de.dlr.sc.virsat.fdir.core.markov.StronglyConnectedComponentTest;
+import de.dlr.sc.virsat.fdir.core.markov.algorithm.BisimulationTest;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuilderTest;
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.StronglyConnectedComponentFinderTest;
 import de.dlr.sc.virsat.fdir.core.markov.modelchecker.MarkovModelCheckerTest;
@@ -50,7 +51,8 @@ import junit.framework.JUnit4TestAdapter;
 	MarkovAutomatonValueIteratorTest.class,
 	SPSIteratorTest.class,
 	SSAIteratorTest.class,
-	MetricsResultDeriverTest.class
+	MetricsResultDeriverTest.class,
+	BisimulationTest.class
 	})
 
 public class AllTests {
