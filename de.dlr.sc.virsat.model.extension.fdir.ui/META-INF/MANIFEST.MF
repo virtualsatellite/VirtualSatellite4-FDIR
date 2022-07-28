@@ -30,7 +30,8 @@ Require-Bundle: de.dlr.sc.virsat.model,
  com.google.guava,
  org.eclipse.core.jobs,
  de.dlr.sc.virsat.model.ext.core,
- de.dlr.sc.virsat.fdir.core
+ de.dlr.sc.virsat.fdir.core,
+ de.dlr.sc.virsat.model.extension.requirements.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: German Aerospace Center (DLR)
