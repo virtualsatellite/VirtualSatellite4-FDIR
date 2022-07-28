@@ -12,6 +12,7 @@ New Features:
 	Migrated to Eclipse 2022-03 - #455 Feature
 	Expanded FDIR manual - #456 Documentation
 	Upgraded to BIRT 4.19 - #459 Feature
+	Added requirements verification methods to Analysis categories - #449 Feature
 	
 Fixed Bug:
 	Fixed error when opening a diagram when a Fault is a composed property - #443 Bug
