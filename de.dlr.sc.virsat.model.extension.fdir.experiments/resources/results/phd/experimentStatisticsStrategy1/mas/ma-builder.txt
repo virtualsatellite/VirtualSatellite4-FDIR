@@ -1,0 +1,3 @@
+benchmarkName time maxStates maxTransitions
+MAS-2.dft 125614 598212 3156285
+MAS.dft nan nan nan

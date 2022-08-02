@@ -1,0 +1,9 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+vgs_1.dft 1203 83 83 nan nan 1
+vgs_2.dft 1031 79 79 nan nan 1
+vgs_3.dft 656 68 68 nan nan 1
+vgs_4.dft 1187 7 6 153 8 8
+vgs_5.dft 735 61 61 nan nan 1
+vgs_6.dft 844 74 74 nan nan 1
+vgs_7.dft 1547 117 117 nan nan 1
+vgs_8.dft 2063 138 138 nan nan 1
