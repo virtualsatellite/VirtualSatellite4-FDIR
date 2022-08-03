@@ -11,6 +11,7 @@ package de.dlr.sc.virsat.model.extension.fdir.converter.ma2beliefMa;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,5 +65,18 @@ public class BeliefStateEquivalence {
 		states.add(state);
 		
 		return state;
+	}
+	
+	
+	/**
+	 * Gets the number of states that the BeliefStateEquivalence has encountered.
+	 * @return the number of unique states in mapObservationsToBeliefStates
+	 */
+	public int getMapValuesSetSize() {
+		HashSet<BeliefState> set = new HashSet<>();
+		for (List<BeliefState> value : mapObservationsToBeliefStates.values()) {
+			set.addAll(value);
+		}
+		return set.size();
 	}
 }

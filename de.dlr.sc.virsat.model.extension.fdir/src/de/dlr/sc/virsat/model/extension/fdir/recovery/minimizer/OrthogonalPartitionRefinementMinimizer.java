@@ -22,8 +22,12 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.SubMonitor;
 
+import de.dlr.sc.virsat.model.dvlm.categories.Category;
+import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
+import de.dlr.sc.virsat.model.dvlm.concepts.util.ActiveConceptHelper;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultEventTransition;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
+import de.dlr.sc.virsat.model.extension.fdir.model.MONITOR;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
 import de.dlr.sc.virsat.model.extension.fdir.model.Transition;
 import de.dlr.sc.virsat.model.extension.fdir.util.EdgeType;
@@ -66,6 +70,9 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 	 * This is to ensure that observable events which can occur more than once are correctly handled
 	 */
 	private Set<FaultTreeNode> computeRepeatedEvents() {
+		Concept concept = raHolder.getRa().getConcept();
+		Category monitorCategory = ActiveConceptHelper.getCategory(concept, MONITOR.FULL_QUALIFIED_CATEGORY_NAME);
+		
 		Set<FaultTreeNode> repeatedEvents = new HashSet<>();
 		for (Transition transition : raHolder.getRa().getTransitions()) {
 			if (transition instanceof FaultEventTransition) {
@@ -81,7 +88,7 @@ public class OrthogonalPartitionRefinementMinimizer extends APartitionRefinement
 					for (FaultTreeNode guard : transitionHolder.getGuards()) {
 						if (ftHolder != null) {
 							List<FaultTreeNode> monitors = ftHolder.getNodes(guard, EdgeType.MONITOR);
-							if (monitors.isEmpty()) {
+							if (!guard.getTypeInstance().getType().equals(monitorCategory) && monitors.isEmpty()) {
 								isRepeated = false;
 								break;
 							}

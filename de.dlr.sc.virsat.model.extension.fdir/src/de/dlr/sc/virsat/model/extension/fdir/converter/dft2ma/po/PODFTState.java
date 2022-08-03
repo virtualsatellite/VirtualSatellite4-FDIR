@@ -10,7 +10,10 @@
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.po;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -41,14 +44,6 @@ public class PODFTState extends DFTState {
 	public PODFTState(FaultTreeHolder ftHolder) {
 		super(ftHolder);
 		observedFailed = new BitSet(ftHolder.getNodes().size());
-	}
-	
-	/**
-	 * Gets the data structure holding the observation information
-	 * @return the data structure holding the observation information
-	 */
-	public BitSet getObservedFailed() {
-		return observedFailed;
 	}
 	
 	/**
@@ -100,7 +95,7 @@ public class PODFTState extends DFTState {
 		List<FaultTreeNode> observers = ftHolder.getNodes(node, EdgeType.MONITOR);
 		for (FaultTreeNode observer : observers) {
 			if ((allowFailed || !hasFaultTreeNodeFailed(observer)) 
-					&& (allowDelay || ((MONITOR) observer).getObservationRate() == 0)) {
+					&& (allowDelay)) {
 				return true;
 			}
 		}
@@ -119,7 +114,9 @@ public class PODFTState extends DFTState {
 	
 	@Override
 	public String getLabel() {
-		return super.getLabel() + " | O" + getObservedFailedNodes().toString();
+		List<FaultTreeNode> observedFailedNodes = new ArrayList<>(getObservedFailedNodes());
+		Collections.sort(observedFailedNodes, Comparator.comparing(Object::toString));
+		return super.getLabel() + " | O" + observedFailedNodes.toString();
 	}
 	
 	@Override
@@ -156,7 +153,7 @@ public class PODFTState extends DFTState {
 		Object event = representantTransition.getEvent();
 		if (event instanceof ObservationEvent) {
 			ObservationEvent obsEvent = (ObservationEvent) event;
-			observationSet.add(obsEvent.getNode());
+			observationSet.addAll(obsEvent.getNodes());
 			Entry<Set<Object>, Boolean> observationEvent = new SimpleEntry<>(observationSet, obsEvent.isRepair());
 			return observationEvent;
 		}

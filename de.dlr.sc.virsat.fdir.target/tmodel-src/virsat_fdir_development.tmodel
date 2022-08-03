@@ -2,7 +2,7 @@ Target virsat_fdir_development extends virsat_windows {
 	Import core_development 
 	Import fdir_dependencies
 
-	RepositoryLocation VirSat4CoreDevelopment url "https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/development/"{	
+	ReferencedTarget RepositoryLocation VirSat4CoreDevelopment url "https://sourceforge.net/projects/virtualsatellite/files/VirtualSatellite4-Core/development/"{	
 		Unit de.dlr.sc.virsat.target.feature.feature.group version newest;
 	}
 }

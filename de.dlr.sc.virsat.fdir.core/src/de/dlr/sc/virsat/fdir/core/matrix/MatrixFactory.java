@@ -65,12 +65,15 @@ public class MatrixFactory implements IMatrixFactory {
 		Map<MarkovState, Integer> mapStateToIndex = new HashMap<>();
 		for (int i = 0; i < states.size(); ++i) {
 			mapStateToIndex.put(states.get(i), i);
+			// If the state space is reduced, there may be a mismatch between the indices of the state and the arrays. So, we assign the index of the array to the state.
+			states.get(i).setValuesIndex(i);
 		}
 		
 		for (MarkovState state : states) {
 			int index = mapStateToIndex.get(state);
 
-			if (state.isMarkovian() && (!invertEdgeDirection || !terminalStates.contains(state))) {
+			// The state may be either Markovian or Probabilistic
+			if (!state.isNondet() && (!invertEdgeDirection || !terminalStates.contains(state))) {
 				List<?> transitions = invertEdgeDirection ? ma.getSuccTransitions(state) : ma.getPredTransitions(state);
 				matrix.getStatePredIndices()[index] = new int[transitions.size()];
 				matrix.getStatePredRates()[index] = new double[transitions.size()];

@@ -2036,6 +2036,16 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionReliabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uISnippetTableRequirementVerificationsLowerLimitVerification"
+		      section="de.dlr.sc.virsat.model.extension.requirements.ui.Section.Verifications"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRequirementVerificationsLowerLimitVerification">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uISnippetTableRequirementVerificationsLowerLimitVerification"
+		      section="de.dlr.sc.virsat.model.extension.requirements.ui.Section.Verifications"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRequirementVerificationsLowerLimitVerification">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetReliabilityAnalysisReliabilityCurve"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableReliabilityAnalysisReliabilityCurve">
@@ -2049,6 +2059,16 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetAvailabilityAnalysis"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionAvailabilityAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uISnippetTableRequirementVerificationsLowerLimitVerification"
+		      section="de.dlr.sc.virsat.model.extension.requirements.ui.Section.Verifications"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRequirementVerificationsLowerLimitVerification">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uISnippetTableRequirementVerificationsLowerLimitVerification"
+		      section="de.dlr.sc.virsat.model.extension.requirements.ui.Section.Verifications"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRequirementVerificationsLowerLimitVerification">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetAvailabilityAnalysisAvailabilityCurve"
@@ -2066,6 +2086,16 @@
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionDetectabilityAnalysis">
 		</uiSnippet>
 		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uISnippetTableRequirementVerificationsLowerLimitVerification"
+		      section="de.dlr.sc.virsat.model.extension.requirements.ui.Section.Verifications"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRequirementVerificationsLowerLimitVerification">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uISnippetTableRequirementVerificationsUpperLimitVerification"
+		      section="de.dlr.sc.virsat.model.extension.requirements.ui.Section.Verifications"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRequirementVerificationsUpperLimitVerification">
+		</uiSnippet>
+		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetDetectabilityAnalysisDetectabilityCurve"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableDetectabilityAnalysisDetectabilityCurve">
@@ -2079,6 +2109,11 @@
 		      id="de.dlr.sc.virsat.model.extension.fdir.section.uiSnippetMCSAnalysis"
 		      section="de.dlr.sc.virsat.model.extension.fdir.ui.Section"
 		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetSectionMCSAnalysis">
+		</uiSnippet>
+		<uiSnippet
+		      id="de.dlr.sc.virsat.model.extension.fdir.table.uISnippetTableRequirementVerificationsUpperLimitVerification"
+		      section="de.dlr.sc.virsat.model.extension.requirements.ui.Section.Verifications"
+		      snippet="de.dlr.sc.virsat.model.extension.fdir.ui.snippet.UiSnippetTableRequirementVerificationsUpperLimitVerification">
 		</uiSnippet>
 		<uiSnippet
 		      id="de.dlr.sc.virsat.model.extension.fdir.table.uiSnippetMCSAnalysisMinimumCutSetsCutSet"

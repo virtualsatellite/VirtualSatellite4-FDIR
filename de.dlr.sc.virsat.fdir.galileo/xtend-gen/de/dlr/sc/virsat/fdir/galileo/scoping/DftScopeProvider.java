@@ -9,8 +9,6 @@
  */
 package de.dlr.sc.virsat.fdir.galileo.scoping;
 
-import de.dlr.sc.virsat.fdir.galileo.scoping.AbstractDftScopeProvider;
-
 /**
  * This class contains custom scoping description.
  * 

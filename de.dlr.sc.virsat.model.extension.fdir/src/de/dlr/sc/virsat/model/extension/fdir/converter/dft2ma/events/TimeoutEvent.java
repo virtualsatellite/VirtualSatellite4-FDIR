@@ -9,6 +9,8 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.events;
 
+import java.util.Collection;
+
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNode;
 import de.dlr.sc.virsat.model.extension.fdir.model.State;
@@ -51,7 +53,7 @@ public class TimeoutEvent implements IDFTEvent {
 	}
 
 	@Override
-	public FaultTreeNode getNode() {
+	public Collection<FaultTreeNode> getNodes() {
 		return null;
 	}
 	

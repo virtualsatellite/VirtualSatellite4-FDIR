@@ -75,6 +75,15 @@ public class MetricsStateDeriver {
 		}
 		
 		@Override
+		public void visit(MeanTimeToObservedFailure meanTimeToObservedFailureMetric) {
+			Map<IMetric, Map<MarkovState, ?>> mapMetricToResultsObserved = baseResults.get(FailLabelProvider.FAILED_OBSERVED);
+			
+			Map<MarkovState, Double> mttfResultsObserved = (Map<MarkovState, Double>) mapMetricToResultsObserved.get(MeanTimeToFailure.MTTF);
+			Map<MarkovState, Double> mttdResults = new HashMap<>(mttfResultsObserved);
+			derivedResults.put(meanTimeToObservedFailureMetric, mttdResults);
+		}
+		
+		@Override
 		public void visit(FaultTolerance faultTolerance) {
 			Map<IMetric, Map<MarkovState, ?>> mapMetricToResultsFailed = baseResults.get(FailLabelProvider.SINGLETON_FAILED);
 			

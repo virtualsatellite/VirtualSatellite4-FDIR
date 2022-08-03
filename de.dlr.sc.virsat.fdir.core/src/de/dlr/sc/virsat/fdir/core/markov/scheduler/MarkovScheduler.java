@@ -54,7 +54,6 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 	@Override
 	public Map<S, List<MarkovTransition<S>>> computeOptimalScheduler(ScheduleQuery<S> scheduleQuery, SubMonitor subMonitor) {
 		results = computeValues(scheduleQuery.getMa(), scheduleQuery.getInitialState(), scheduleQuery.getObjectiveMetric(), subMonitor);
-		
 		Queue<S> toProcess = new LinkedList<>();
 		toProcess.offer(scheduleQuery.getInitialState());
 		Set<S> handledNonDetStates = new HashSet<>();
@@ -145,14 +144,16 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 			double value = values[i];		
 			if (Double.isNaN(value)) {
 				value = Double.POSITIVE_INFINITY;
-			} else if (state.getFailLabels().contains(FailLabel.FAILED)) {
+			} else if (state.getMapFailLabelToProb().containsKey(FailLabel.FAILED) && state.getMapFailLabelToProb().get(FailLabel.FAILED) == 1) {
 				// To differentiate between fail states we also compute their MTTF
+				// A fail state is one that contains the FAILED label with a probability of 100%
 				List<MarkovTransition<S>> succTransitions = ma.getSuccTransitions(state);
 				double exitRate = ma.getExitRateForState(state);
 				for (MarkovTransition<S> transition : succTransitions) {
 					MarkovState toState = transition.getTo();
-					if (!toState.getFailLabels().contains(FailLabel.FAILED)) {
-						double toValue = values[toState.getIndex()];
+					if (!toState.getFailLabels().contains(FailLabel.FAILED) || toState.getMapFailLabelToProb().get(FailLabel.FAILED) != 1) {
+						// The toState should not be a fail state
+						double toValue = values[toState.getValuesIndex()];
 						value += toValue * transition.getRate() / exitRate;
 					}
 				}
@@ -184,6 +185,8 @@ public class MarkovScheduler<S extends MarkovState> implements IMarkovScheduler<
 				double prob = transition.getRate();
 				MarkovState toState = transition.getTo();
 				double failProb = toState.getMapFailLabelToProb().getOrDefault(FailLabel.FAILED, 0d);
+				// Due to rounding, the probability may be greater than 1. This leads to no transition being selected in the scheduler.
+				prob = Math.min(prob, 1);
 				transitionGroupProbFail += prob * failProb;
 				
 				double toValue = results.getOrDefault(toState, Double.NEGATIVE_INFINITY);

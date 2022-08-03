@@ -9,8 +9,6 @@
  */
 package de.dlr.sc.virsat.fdir.galileo.validation;
 
-import de.dlr.sc.virsat.fdir.galileo.validation.AbstractDftValidator;
-
 /**
  * This class contains custom validation rules.
  * 

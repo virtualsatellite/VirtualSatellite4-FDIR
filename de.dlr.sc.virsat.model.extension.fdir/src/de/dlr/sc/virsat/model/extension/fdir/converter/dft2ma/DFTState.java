@@ -128,12 +128,12 @@ public class DFTState extends MarkovState {
 		
 		res += "\"";
 		
-		if (isFailState()) {
-			res += ", color=\"red\"";
+		if (isProbabilisic()) {
+			res += ", color=\"green\"";
 		} else if (isNondet()) {
 			res += ", color=\"blue\"";
-		} else if (isProbabilisic()) {
-			res += ", color=\"green\"";
+		} else if (isFailState()) {
+			res += ", color=\"red\"";
 		}
 		
 		res += "]";
@@ -268,7 +268,7 @@ public class DFTState extends MarkovState {
 	 * @return true iff the node is active
 	 */
 	public boolean isNodeActive(FaultTreeNode node) {
-		return activeFaults.contains(node);
+		return activeFaults.contains(node.getFault());
 	}
 	
 	/**
@@ -312,7 +312,9 @@ public class DFTState extends MarkovState {
 			if (node instanceof ADEP && ftHolder.getNodes(child, EdgeType.PARENT).size() > 1) {
 				continue;
 			}
-			if (!activeFaults.contains(child)) {
+			if (activation && !activeFaults.contains(child)) {
+				setNodeActivation(child, activation);
+			} else if (!activation && activeFaults.contains(child)) {
 				setNodeActivation(child, activation);
 			}
 		}

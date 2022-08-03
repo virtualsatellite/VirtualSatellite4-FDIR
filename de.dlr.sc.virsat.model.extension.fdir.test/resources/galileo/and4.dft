@@ -1,6 +1,6 @@
 toplevel "tle";
 "tle" and "A" "B" "C" "D";
-"A" lambda=1.8;
+"A" lambda=11;
 "B" lambda=1.6;
 "C" lambda=2.4;
 "D" lambda=3.9;

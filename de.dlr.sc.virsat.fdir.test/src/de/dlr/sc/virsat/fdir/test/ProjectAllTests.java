@@ -20,12 +20,12 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 
 @Suite.SuiteClasses({
-		de.dlr.sc.virsat.fdir.galileo.tests.AllTests.class,
-		de.dlr.sc.virsat.fdir.core.test.AllTests.class,
-		de.dlr.sc.virsat.fdir.storm.test.AllTests.class,
-		de.dlr.sc.virsat.model.extension.fdir.test.AllTests.class,
-		de.dlr.sc.virsat.model.extension.fdir.test.AllTestsGen.class,
-	})
+	de.dlr.sc.virsat.fdir.galileo.tests.AllTests.class,
+	de.dlr.sc.virsat.fdir.core.test.AllTests.class,
+	de.dlr.sc.virsat.fdir.storm.test.AllTests.class,
+	de.dlr.sc.virsat.model.extension.fdir.test.AllTests.class,
+	de.dlr.sc.virsat.model.extension.fdir.test.AllTestsGen.class,
+})
 
 /**
  * Test Class

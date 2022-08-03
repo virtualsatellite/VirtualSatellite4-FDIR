@@ -48,12 +48,12 @@ public class BeliefState extends MarkovState {
 				.collect(Collectors.joining(","));
 		
 		String label = index + " [label=\"[" + index + " " + beliefs + "]\"";
-		if (getFailProb() > 0) {
-			label += ", color=\"red\"";
-		} else if (isNondet()) {
+		if (isNondet()) {
 			label += ", color=\"blue\"";
 		} else if (isProbabilisic()) {
 			label += ", color=\"green\"";
+		} else if (getFailProb() > 0) {
+			label += ", color=\"red\"";
 		}
 		label += "]";
 		

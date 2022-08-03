@@ -13,7 +13,7 @@
 		<relativePath>../maven/pom.xml</relativePath>
 		<groupId>de.dlr.sc.virsat.fdir</groupId>
 		<artifactId>de.dlr.sc.virsat.fdir.parent</artifactId>
-		<version>4.13.0-SNAPSHOT</version>
+		<version>4.15.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>de.dlr.sc.virsat.model.extension.fdir.feature</artifactId>

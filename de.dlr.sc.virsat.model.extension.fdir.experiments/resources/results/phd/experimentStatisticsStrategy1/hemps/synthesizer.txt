@@ -1,0 +1,2 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+hemps.dft 94 12 11 15 3 3

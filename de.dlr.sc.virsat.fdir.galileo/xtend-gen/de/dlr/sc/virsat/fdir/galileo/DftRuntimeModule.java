@@ -11,7 +11,6 @@ package de.dlr.sc.virsat.fdir.galileo;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
-import de.dlr.sc.virsat.fdir.galileo.AbstractDftRuntimeModule;
 import de.dlr.sc.virsat.fdir.galileo.formatting.DftFormatter;
 import org.eclipse.xtext.formatting.IFormatter;
 import org.eclipse.xtext.scoping.IScopeProvider;

@@ -7,8 +7,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "VirSat DLR FDIR Concept"  version 1.2
+Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "VirSat DLR FDIR Concept"  version 1.3
 {
+	
+	Import de.dlr.sc.virsat.model.extension.requirements.*;
 	
 	/* Components for describing the fault model */
 	
@@ -217,8 +219,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Cardinality 1;
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
-		FloatProperty reliability quantityKind "Dimensionless" unit "Percent";
-		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour";
+		FloatProperty reliability quantityKind "Dimensionless" unit "Percent" verification LowerLimitVerification;
+		FloatProperty meanTimeToFailure quantityKind "Time" unit "Hour" verification LowerLimitVerification;
 		FloatProperty reliabilityCurve[] quantityKind "Dimensionless" unit "Percent";
 		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
@@ -229,8 +231,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Cardinality 1;
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
-		FloatProperty availability quantityKind "Dimensionless" unit "Percent";
-		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent";
+		FloatProperty availability quantityKind "Dimensionless" unit "Percent" verification LowerLimitVerification;
+		FloatProperty steadyStateAvailability quantityKind "Dimensionless" unit "Percent" verification LowerLimitVerification;
 		FloatProperty availabilityCurve[] quantityKind "Dimensionless" unit "Percent";
 		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
@@ -242,8 +244,8 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		FloatProperty remainingMissionTime quantityKind "Time" unit "Hour";
 		FloatProperty timestep quantityKind "Time" unit "Hour" default 0.1;
 		FloatProperty detectability quantityKind "Dimensionless" unit "Percent";
-		FloatProperty steadyStateDetectability quantityKind "Dimensionless" unit "Percent";
-		FloatProperty meanTimeToDetection quantityKind "Time" unit "Hour";
+		FloatProperty steadyStateDetectability quantityKind "Dimensionless" unit "Percent" verification LowerLimitVerification;
+		FloatProperty meanTimeToDetection quantityKind "Time" unit "Hour" verification UpperLimitVerification;
 		FloatProperty detectabilityCurve[] quantityKind "Dimensionless" unit "Percent";
 		
 		Ref: remainingMissionTime = FDIRParameters.missionTime;
@@ -254,7 +256,7 @@ Concept de.dlr.sc.virsat.model.extension.fdir displayname "FDIR" description "Vi
 		Applicable For All;
 		Cardinality 1;
 		IntProperty maxMinimumCutSetSize default 0 unit "No Unit";
-		IntProperty faultTolerance unit "No Unit";
+		IntProperty faultTolerance unit "No Unit" verification UpperLimitVerification;
 		Type minimumCutSets[] of Category CutSet;
 	}
 	

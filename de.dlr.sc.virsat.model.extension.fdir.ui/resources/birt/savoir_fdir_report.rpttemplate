@@ -15,7 +15,7 @@
             <property name="dataType">string</property>
             <property name="distinct">true</property>
             <simple-property-list name="defaultValue">
-                <value type="constant">MMX</value>
+                <value type="constant">ConfigurationTree</value>
             </simple-property-list>
             <list-property name="selectionList"/>
             <property name="paramType">simple</property>
@@ -221,10 +221,10 @@ return true;]]></method>
 	
 	// Create some +++ symbols to indicate the level of nesting
 	prefix = "";
-	parent = element.getParentSeiBean();
+	parent = element.getParent();
 	while (parent != null) {
 		prefix += "-";
-		parent = parent.getParentSeiBean();
+		parent = parent.getParent();
 	}
 	
 	if (prefix != "") {
