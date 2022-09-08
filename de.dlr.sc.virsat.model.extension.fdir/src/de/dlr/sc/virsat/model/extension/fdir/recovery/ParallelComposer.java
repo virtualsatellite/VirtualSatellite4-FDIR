@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.model.concept.list.IBeanList;
+import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ArrayInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.ComposedPropertyInstance;
 import de.dlr.sc.virsat.model.dvlm.categories.propertyinstances.PropertyinstancesFactory;
 import de.dlr.sc.virsat.model.dvlm.concepts.Concept;
@@ -139,8 +140,10 @@ public class ParallelComposer {
 					
 					// Low level add to the transitions to avoid bean overhead
 					ComposedPropertyInstance cpi = PropertyinstancesFactory.eINSTANCE.createComposedPropertyInstance();
+					ArrayInstance ai = result.getTransitionsBean().getArrayInstance();
 					cpi.setTypeInstance(copiedTransition.getTypeInstance());
-					result.getTransitionsBean().getArrayInstance().getArrayInstances().add(cpi);
+					cpi.setType(ai.getType());
+					ai.getArrayInstances().add(cpi);
 				}
 				
 				currRA++;
@@ -159,14 +162,16 @@ public class ParallelComposer {
 	 */
 	private State createNewState(RecoveryAutomaton ra, List<Integer> pos, Map<RecoveryAutomaton, IBeanList<State>> mapRAtoState) {			
 		State newState = new State(concept);
-		newState.setName(pos.stream().map(Object::toString).collect(Collectors.joining()));
+		newState.setName("q_" + pos.stream().map(Object::toString).collect(Collectors.joining()));
 		mapStateToPos.put(newState, pos);
 		mapPosToState.put(pos, newState);
 		
-		// Low level add to the transitions to avoid bean overhead
+		// Low level add to the state to avoid bean overhead
+		ArrayInstance ai = mapRAtoState.get(ra).getArrayInstance();
 		ComposedPropertyInstance cpi = PropertyinstancesFactory.eINSTANCE.createComposedPropertyInstance();
 		cpi.setTypeInstance(newState.getTypeInstance());
-		mapRAtoState.get(ra).getArrayInstance().getArrayInstances().add(cpi);
+		cpi.setType(ai.getType());
+		ai.getArrayInstances().add(cpi);
 		return newState;
 	}
 	
