@@ -63,7 +63,7 @@ public class SPSIteratorTest {
 		
 		final double EPS = 0.0000001;
 		final double[] INITIAL_DISTRIBUTION = { 1, 0, 0};
-		final double[] EXPECTED_VALUES = { 0, 0.2 * Math.exp(-1), 0.8 + 0.2 * (1 - Math.exp(-1)) };
+		final double[] EXPECTED_VALUES = {  Math.exp(-1), 0.2 * Math.exp(-1), 1 - 1.2 * Math.exp(-1) };
 		
 		SPSIterator spsIterator = new SPSIterator(matrix, INITIAL_DISTRIBUTION, ma, EPS);
 		spsIterator.iterate();

@@ -108,10 +108,10 @@ public class ParallelComposerTest extends ATestCase {
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 
-		State r0 = rahelp.getState(result, "00");
-		State r1 = rahelp.getState(result, "01");
-		State r2 = rahelp.getState(result, "10");
-		State r3 = rahelp.getState(result, "11");
+		State r0 = rahelp.getState(result, "q_00");
+		State r1 = rahelp.getState(result, "q_01");
+		State r2 = rahelp.getState(result, "q_10");
+		State r3 = rahelp.getState(result, "q_11");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r0, r2));
@@ -154,12 +154,12 @@ public class ParallelComposerTest extends ATestCase {
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 		
-		State r0 = rahelp.getState(result, "00");
-		State r1 = rahelp.getState(result, "01");
-		State r2 = rahelp.getState(result, "02");
-		State r3 = rahelp.getState(result, "10");
-		State r4 = rahelp.getState(result, "11");
-		State r5 = rahelp.getState(result, "12");
+		State r0 = rahelp.getState(result, "q_00");
+		State r1 = rahelp.getState(result, "q_01");
+		State r2 = rahelp.getState(result, "q_02");
+		State r3 = rahelp.getState(result, "q_10");
+		State r4 = rahelp.getState(result, "q_11");
+		State r5 = rahelp.getState(result, "q_12");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r1, r2));
@@ -206,14 +206,14 @@ public class ParallelComposerTest extends ATestCase {
 		assertEquals(NUM_STATES, result.getStates().size());
 		assertEquals(NUM_TRANSITIONS, result.getTransitions().size());
 		
-		State r0 = rahelp.getState(result, "000");
-		State r1 = rahelp.getState(result, "001");
-		State r2 = rahelp.getState(result, "010");
-		State r3 = rahelp.getState(result, "011");
-		State r4 = rahelp.getState(result, "100");
-		State r5 = rahelp.getState(result, "101");
-		State r6 = rahelp.getState(result, "110");
-		State r7 = rahelp.getState(result, "111");
+		State r0 = rahelp.getState(result, "q_000");
+		State r1 = rahelp.getState(result, "q_001");
+		State r2 = rahelp.getState(result, "q_010");
+		State r3 = rahelp.getState(result, "q_011");
+		State r4 = rahelp.getState(result, "q_100");
+		State r5 = rahelp.getState(result, "q_101");
+		State r6 = rahelp.getState(result, "q_110");
+		State r7 = rahelp.getState(result, "q_111");
 		
 		assertTrue(rahelp.isConnected(result, r0, r1));
 		assertTrue(rahelp.isConnected(result, r0, r2));
