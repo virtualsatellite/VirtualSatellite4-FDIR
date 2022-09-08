@@ -118,8 +118,14 @@ public  class ClaimAction extends AClaimAction {
 		}
 		
 		state.getMapSpareToClaimedSpares().put(claimSpare, spareGate);
+		
+		// Activate the spare
 		state.setNodeActivation(claimSpare, true);
 		state.setNodeActivations(state.getFTHolder().getNodes(spareGate, EdgeType.CHILD), false);
+		
+		// Deactivate the primary
+		List<FaultTreeNode> primaries = state.getFTHolder().getNodes(spareGate, EdgeType.CHILD);
+		state.setNodeActivations(primaries, false);
 	}
 	
 	@Override

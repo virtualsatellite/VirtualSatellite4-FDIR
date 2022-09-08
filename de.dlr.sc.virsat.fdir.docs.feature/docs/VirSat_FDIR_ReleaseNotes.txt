@@ -3,6 +3,29 @@ VirSat FDIR Release Notes
 
 VirSat FDIR is based on VirSat Core. Please don't forget to read the Release Notes of VirSat Core as well!
 
+Release 4.15.0 (28th July 2022)
+----------------------------------
+
+New Features:
+	Improved partial observability semantics - #434 Feature
+	Migrated to Java 11 - #450 Feature
+	Migrated to Eclipse 2022-03 - #455 Feature
+	Expanded FDIR manual - #456 Documentation
+	Upgraded to BIRT 4.19 - #459 Feature
+	Added requirements verification methods to Analysis categories - #449 Feature
+	
+Fixed Bug:
+	Fixed error when opening a diagram when a Fault is a composed property - #443 Bug
+
+Release 4.13.0 (29th April 2021)
+----------------------------------
+
+New Features:
+	Symmetry reduction for non-deterministic Fault Trees - #402 Feature
+
+Fixed Bug:
+	Basic event failure rate does not updated - #417 Bug
+
 Release 4.12.1 (9th October 2020)
 ----------------------------------
 

@@ -12,16 +12,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dlr.sc.virsat.fdir</groupId>
 	<artifactId>de.dlr.sc.virsat.fdir.parent</artifactId>
-	<version>4.13.0-SNAPSHOT</version>
+	<version>4.15.0-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho-version>1.7.0</tycho-version>
-		<tycho-extras-version>1.4.0</tycho-extras-version>
+		<tycho-version>2.6.0</tycho-version>
+		<tycho-extras-version>2.6.0</tycho-extras-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<build.version>4.13.0</build.version>
+		<build.version>4.15.0</build.version>
 		<build.qualifier>'t'yyyyMMddHHmm</build.qualifier>
 		<build.folder.target>../builds</build.folder.target>
 		<build.folder.p2>p2</build.folder.p2>
@@ -82,9 +82,9 @@
 				<build.deploy.release>true</build.deploy.release>
 				<target.platform.name>virsat_fdir_release</target.platform.name>
 				<build.qualifier>'r'yyyyMMddHHmm</build.qualifier>
-				<build.folder.type>release/${build.version}/${TRAVIS_BUILD_NUMBER}</build.folder.type>
-				<build.file.win32>VirSat_FDIR_Release_${build.version}_${TRAVIS_BUILD_NUMBER}_Win32.zip</build.file.win32>
-				<build.file.linux>VirSat_FDIR_Release_${build.version}_${TRAVIS_BUILD_NUMBER}_Linux.tar.gz</build.file.linux>
+				<build.folder.type>release/${build.version}/${env.GITHUB_SHA}</build.folder.type>
+				<build.file.win32>VirSat_FDIR_Release_${build.version}_${env.GITHUB_SHA}_Win32.zip</build.file.win32>
+				<build.file.linux>VirSat_FDIR_Release_${build.version}_${env.GITHUB_SHA}_Linux.tar.gz</build.file.linux>
 			</properties>
 		</profile>
 		<profile>
@@ -129,12 +129,12 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
-						<version>3.1.1</version>
+						<version>3.1.2</version>
 						<dependencies>
 							<dependency>
 								<groupId>com.puppycrawl.tools</groupId>
 								<artifactId>checkstyle</artifactId>
-								<version>8.26</version>
+								<version>9.1</version>
 							</dependency>
 						</dependencies>
 						<executions>
@@ -182,6 +182,19 @@
 							<trimStackTrace>false</trimStackTrace>
 							<!-- <argLine>-ea -Xms256m -Xmx512m -javaagent:%USERPROFILE%\.m2\repository\org\jacoco\org.jacoco.agent\0.7.4.201502262128\org.jacoco.agent-0.7.4.201502262128-runtime.jar=destfile='${sonar.jacoco.reportPath}',append=true</argLine> -->
 							<useUIHarness>false</useUIHarness>
+							<appArgLine>-Dfile.encoding=UTF-8</appArgLine>
+							<!-- <argLine>-ea -Xms256m -Xmx512m -javaagent:%USERPROFILE%\.m2\repository\org\jacoco\org.jacoco.agent\0.7.4.201502262128\org.jacoco.agent-0.7.4.201502262128-runtime.jar=destfile='${sonar.jacoco.reportPath}',append=true</argLine> -->
+							<useUIHarness>false</useUIHarness>
+							<!--  Setup the osgi data and workspace directory. Otherwise the workspace will be placed
+								in the plugins target directory, thus creating a repository within a repository (git from
+								the source code). UI tests will then sometimes believe that the project is already connected
+								to a VCS but in fact isn't. -->
+							<osgiDataDirectory>${basedir}/../../surefire-work/${project.artifactId}/data</osgiDataDirectory>
+							<work>${basedir}/../../surefire-work/${project.artifactId}/work</work>
+							<excludes>
+								<exclude>**/AllTests</exclude>
+								<exclude>**/AllTestsGen</exclude>
+							</excludes>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -269,7 +282,7 @@
 						<artifact>
 							<groupId>de.dlr.sc.virsat.fdir</groupId>
 							<artifactId>de.dlr.sc.virsat.fdir.target</artifactId>
-							<version>4.13.0-SNAPSHOT</version>
+							<version>4.15.0-SNAPSHOT</version>
 							<classifier>${target.platform.name}</classifier>
 						</artifact>
 					</target>

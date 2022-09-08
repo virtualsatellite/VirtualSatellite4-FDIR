@@ -21,6 +21,7 @@ import junit.framework.JUnit4TestAdapter;
 
 import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.ClaimActionTest;
+import de.dlr.sc.virsat.model.extension.fdir.migrator.Migrator1v3Test;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomatonTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.PANDTest;
 import de.dlr.sc.virsat.model.extension.fdir.model.MONITORTest;
@@ -109,6 +110,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.ReliabilityAnalysisTest;
 	Migrator1v0Test.class,
 	Migrator1v1Test.class,
 	Migrator1v2Test.class,
+	Migrator1v3Test.class,
 	FdirValidatorTest.class,
 				})
 

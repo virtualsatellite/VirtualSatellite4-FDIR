@@ -2,6 +2,6 @@ toplevel "tle";
 "tle" or "AND1" "AND2";
 "AND1" and "A" "B";
 "AND2" and "B" "C";
-"A" lambda=1.8;
+"A" lambda=11;
 "B" lambda=1.6;
 "C" lambda=1.4;

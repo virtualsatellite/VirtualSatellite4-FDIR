@@ -41,7 +41,7 @@ import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
  */
 public class ParallelComposer {
 	
-	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 512;
+	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 64;
 	
 	private Map<State, List<Integer>> mapStateToPos;
 	private Map<List<Integer>, State> mapPosToState;

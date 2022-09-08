@@ -28,7 +28,6 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
-import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 
 public class ModularSynthesizer implements ISynthesizer {
 	protected DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();

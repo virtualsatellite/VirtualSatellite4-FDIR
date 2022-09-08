@@ -221,14 +221,14 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2Or() throws IOException {
 		final double[] EXPECTED = {
-			0.0239907,
-			0.0479276,
-			0.0717616,
-			0.0954485,
-			0.118949,
-			0.142226
+			0.02532847266939927,
+			0.052794093192215556,
+			0.08172696921426538,
+			0.11158393353610345,
+			0.14192722187648468,
+			0.17240656056962675
 		};
-		final double EXPECTEDMTTF = 0.315681444;
+		final double EXPECTEDMTTF = 0.25796019900497513;
 		Fault fault = createDFT("/resources/galileo/and2or.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -239,14 +239,14 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd3() throws IOException {
 		final double[] EXPECTED = {
-			6.7e-06,
-			5.22e-05,
-			0.0001711,
-			0.0003942,
-			0.0007483,
-			0.0012567
+			3.920900429205324E-5,
+			2.914777575457325E-4,
+			9.151151309622725E-4,
+			0.002020012637176403,
+			0.0036779856461228544,
+			0.00593117985355073
 		};
-		final double EXPECTEDMTTF = 0.9874231;
+		final double EXPECTEDMTTF = 0.7952504792057031;
 		Fault fault = createDFT("/resources/galileo/and3.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -271,14 +271,14 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd4() throws IOException {
 		final double[] EXPECTED = {
-			3e-07,
-			3.9e-06,
-			1.89e-05,
-			5.69e-05,
-			0.0001326,
-			0.0002622
+			1.4997166042919186E-6,
+			2.187120067711269E-5,
+			1.0104226040290975E-4,
+			2.9177226075340247E-4,
+			6.51611584633482E-4,
+			0.0012374705942086114
 		};
-		final double EXPECTEDMTTF = 1.011779;
+		final double EXPECTEDMTTF = 0.8360800554930002;
 		Fault fault = createDFT("/resources/galileo/and4.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -289,12 +289,12 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd3Or() throws IOException {
 		final double[] EXPECTED = {
-			0.0029994,
-			0.0060126,
-			0.00906,
-			0.01216
+			0.003018421842551532,
+			0.006152735303755488,
+			0.009496574400909005,
+			0.013115791534797555
 		};
-		final double EXPECTEDMTTF = 0.92780513;
+		final double EXPECTEDMTTF = 0.8136868883870609;
 		Fault fault = createDFT("/resources/galileo/and3or.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -305,12 +305,12 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2OrAnd2() throws IOException {
 		final double[] EXPECTED = {
-			0.0003248,
-			0.0012786,
-			0.0028313,
-			0.0049536
+			0.0016949674450077619,
+			0.00638350453470431,
+			0.013536636952941643,
+			0.02270325117077101
 		};
-		final double EXPECTEDMTTF = 0.7770698;
+		final double EXPECTEDMTTF = 0.5680015174644983;
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -345,12 +345,12 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateOr2AndOr2() throws IOException {
 		final double[] EXPECTED = {
-			0.0005635,
-			0.0021976,
-			0.0048215,
-			0.0083593
+			0.0019955374771626613,
+			0.007446373240431989,
+			0.01565075798273344,
+			0.02602566168627768
 		};
-		final double EXPECTEDMTTF = 0.686274;
+		final double EXPECTEDMTTF = 0.5976703035526566;
 		Fault fault = createDFT("/resources/galileo/or2AndOr2.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -361,12 +361,12 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateAnd2OrAnd2Shared() throws IOException {
 		final double[] EXPECTED = {
-			0.0004999,
-			0.0019524,
-			0.0042899,
-			0.0074485
+			0.0018510744607693273,
+			0.006917216098492631,
+			0.014558790213328142,
+			0.02424242324518659
 		};
-		final double EXPECTEDMTTF = 0.7291666;
+		final double EXPECTEDMTTF = 0.6342165898617511;
 		Fault fault = createDFT("/resources/galileo/and2OrAnd2Shared.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -391,12 +391,12 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateVote2Of3() throws IOException {
 		final double[] EXPECTED = {
-			0.000744,
-			0.002898,
-			0.0063507,
-			0.0109973
+			0.0032762495829358937,
+			0.012198267980220546,
+			0.02557771116879078,
+			0.04242666705170822
 		};
-		final double EXPECTEDMTTF = 0.5232843;
+		final double EXPECTEDMTTF = 0.3504864311315924;
 		Fault fault = createDFT("/resources/galileo/vote2Of3.dft");
 		
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault);
@@ -407,10 +407,10 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluatePand2() throws IOException {
 		final double[] EXPECTED = {
-			0.0001416,
-			0.0005572,
-			0.0012331,
-			0.0021562
+			8.396446156247064E-4,
+			0.0032070354533667,
+			0.006895482848319595,
+			0.011723176070014626
 		};
 		final double EXPECTEDMTTF = Double.POSITIVE_INFINITY;
 		Fault fault = createDFT("/resources/galileo/pand2.dft");
@@ -423,10 +423,10 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluatePand3() throws IOException {
 		final double[] EXPECTED = {
-			7e-07,
-			5.5e-06,
-			1.81e-05,
-			4.19e-05
+			4.200320022081323E-6,
+			3.2097014908424465E-5,
+			1.035352474528835E-4,
+			2.3469657124829978E-4
 		};
 		final double EXPECTEDMTTF = Double.POSITIVE_INFINITY;
 		Fault fault = createDFT("/resources/galileo/pand3.dft");
@@ -455,10 +455,10 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluatePor2() throws IOException {
 		final double[] EXPECTED = {
-			0.0176974,
-			0.0348032,
-			0.0513372,
-			0.0673186
+			0.10335211788749374,
+			0.19446887946361813,
+			0.27479876925995406,
+			0.3456187927448795
 		};
 		final double EXPECTEDMTTF = Double.POSITIVE_INFINITY;
 		Fault fault = createDFT("/resources/galileo/por2.dft");

@@ -2,7 +2,7 @@
 <feature
       id="de.dlr.sc.virsat.fdir.storm.feature"
       label="VirSat STORM Feature"
-      version="4.13.0.qualifier"
+      version="4.15.0.qualifier"
       provider-name="DLR (German Aerospace Center)"
       plugin="de.dlr.sc.virsat.fdir.branding.ui"
       license-feature="de.dlr.sc.virsat.fdir.license.feature">
@@ -206,13 +206,6 @@ by German Aerospace Center (DLR e.V.)
 
    <plugin
          id="org.glassfish.jersey.media.jersey-media-json-jackson"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.objectweb.asm.analysis"
          download-size="0"
          install-size="0"
          version="0.0.0"

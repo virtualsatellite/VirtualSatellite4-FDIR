@@ -2,7 +2,7 @@ toplevel "tle";
 "tle" and "OR1" "OR2";
 "OR1" or "A" "B";
 "OR2" or "C" "D";
-"A" lambda=1.8;
+"A" lambda=11;
 "B" lambda=1.6;
 "C" lambda=1.4;
 "D" lambda=0.3;

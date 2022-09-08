@@ -9,8 +9,6 @@
  */
 package de.dlr.sc.virsat.fdir.galileo;
 
-import de.dlr.sc.virsat.fdir.galileo.DftStandaloneSetupGenerated;
-
 /**
  * Initialization support for running Xtext languages without Equinox extension registry.
  */

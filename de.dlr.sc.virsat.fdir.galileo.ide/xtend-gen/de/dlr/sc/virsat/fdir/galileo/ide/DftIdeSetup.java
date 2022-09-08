@@ -13,7 +13,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import de.dlr.sc.virsat.fdir.galileo.DftRuntimeModule;
 import de.dlr.sc.virsat.fdir.galileo.DftStandaloneSetup;
-import de.dlr.sc.virsat.fdir.galileo.ide.DftIdeModule;
 import org.eclipse.xtext.util.Modules2;
 
 /**
