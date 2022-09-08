@@ -1,0 +1,2 @@
+benchmarkName time maxStates maxTransitions
+EMA-po-3.dft 0 118 173

@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SubMonitor;
+
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.DFTState;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.GenerationResult;
 import de.dlr.sc.virsat.model.extension.fdir.converter.dft2ma.StateUpdate;
@@ -131,10 +133,10 @@ public class DFTSemantics {
 	 * @param stateUpdate the state update to execute
 	 * @return the result of the state update
 	 */
-	public StateUpdateResult performUpdate(StateUpdate stateUpdate) {
+	public StateUpdateResult performUpdate(StateUpdate stateUpdate, SubMonitor monitor) {
 		StateUpdateResult stateUpdateResult = stateUpdate.createResultContainer();
 		stateUpdate.getEvent().execute(stateUpdateResult.getBaseSucc());
-		propagateStateUpdate(stateUpdateResult);
+		propagateStateUpdate(stateUpdateResult, monitor);
 		
 		return stateUpdateResult;
 	}
@@ -144,11 +146,11 @@ public class DFTSemantics {
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void propagateStateUpdate(StateUpdateResult stateUpdateResult) {
+	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, SubMonitor monitor) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		if (stateUpdate.getEvent().getNodes() != null) {
 			Queue<FaultTreeNode> worklist = createWorklist(stateUpdate.getEvent(), stateUpdateResult.getBaseSucc());
-			propagateStateUpdate(stateUpdateResult, worklist);
+			propagateStateUpdate(stateUpdateResult, worklist, monitor);
 		}
 	}
 	
@@ -186,13 +188,14 @@ public class DFTSemantics {
 	 * @param stateUpdateResult accumulator for saving results from the update, including the propagation
 	 * @return the list of updated nodes
 	 */
-	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist) {
+	public void propagateStateUpdate(StateUpdateResult stateUpdateResult, Queue<FaultTreeNode> worklist, SubMonitor monitor) {
 		List<FaultTreeNode> changedNodes = new ArrayList<>();
 		FaultTreeHolder ftHolder = stateUpdateResult.getStateUpdate().getState().getFTHolder();
 		
 		while (!worklist.isEmpty()) {
+			monitor.checkCanceled();
 			FaultTreeNode ftn = worklist.poll();
-			boolean hasChanged = propagateStateUpdateToNode(stateUpdateResult, ftn);
+			boolean hasChanged = propagateStateUpdateToNode(stateUpdateResult, ftn, monitor);
 			
 			if (hasChanged) {
 				changedNodes.add(ftn);
@@ -214,7 +217,7 @@ public class DFTSemantics {
 	 * @param node the node we want to check
 	 * @return true iff a change occurred in the update
 	 */
-	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node) {
+	private boolean propagateStateUpdateToNode(StateUpdateResult stateUpdateResult, FaultTreeNode node, SubMonitor monitor) {
 		StateUpdate stateUpdate = stateUpdateResult.getStateUpdate();
 		if (permanence && stateUpdate.getState().isFaultTreeNodePermanent(node) && !node.getFaultTreeNodeType().equals(FaultTreeNodeType.SEQ)) {
 			return false;
@@ -228,6 +231,7 @@ public class DFTSemantics {
 		if (node instanceof BasicEvent) {
 			List<FaultTreeNode> depTriggers = ftHolder.getNodes(node, EdgeType.DEP);
 			for (DFTState state : stateUpdateResult.getSuccs()) {
+				monitor.checkCanceled();
 				hasChanged |= state.handleUpdateTriggers(node, depTriggers);
 			}
 			
@@ -240,6 +244,7 @@ public class DFTSemantics {
 		}
 		
 		for (DFTState succ : stateUpdateResult.getSuccs()) {
+			monitor.checkCanceled();
 			hasChanged  |= nodeSemantics.handleUpdate(node, succ, stateUpdate.getState(), generationResult);
 		}
 		

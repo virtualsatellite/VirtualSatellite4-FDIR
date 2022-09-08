@@ -10,10 +10,13 @@
 package de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.SubMonitor;
 
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 import de.dlr.sc.virsat.model.extension.fdir.util.RecoveryAutomatonHolder;
 
@@ -27,10 +30,29 @@ public class ComposedMinimizer extends ARecoveryAutomatonMinimizer {
 	private List<ARecoveryAutomatonMinimizer> minimizers = new ArrayList<>();
 	
 	@Override
+	protected List<String> getMinimizerNames() {
+		if (minimizers != null) {
+			return minimizers.stream()
+					.flatMap(m -> m.getMinimizerNames().stream())
+					.distinct()	
+					.collect(Collectors.toList());
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
+	
+	@Override
 	protected void minimize(RecoveryAutomatonHolder raHolder, FaultTreeHolder ftHolder, SubMonitor subMonitor) {
 		subMonitor = SubMonitor.convert(subMonitor, minimizers.size());
+		
 		for (ARecoveryAutomatonMinimizer minimizer : minimizers) {
+			int removedStates = raHolder.getRa().getStates().size();
 			minimizer.minimize(raHolder, ftHolder, subMonitor.split(1));
+			removedStates -= raHolder.getRa().getStates().size();
+			getStatistics().minimizers.merge(minimizer.getClass().getSimpleName(), removedStates, 
+				(v1, v2) -> v1 == IStatistics.NA ? v2 : v1 + v2
+			);
 		}
 	}
 	

@@ -67,12 +67,12 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	}
 
 	@Override
-	public void visit(MeanTimeToFailure mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric, SubMonitor subMonitor) {
 		printWriter.println("Tmax=? [F \"" + FAILED_STATE + "\"];");
 	}
 
 	@Override
-	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
+	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric, SubMonitor subMonitor) {
 		printWriter.println("Rmin=? [LRA];");
 	}
 
@@ -81,7 +81,7 @@ public class ExplicitPropertiesWriter implements IExplicitFileWriter, IBaseMetri
 	}
 
 	@Override
-	public void visit(MinimumCutSet minimumCutSet) {
+	public void visit(MinimumCutSet minimumCutSet, SubMonitor subMonitor) {
 	}
 
 }

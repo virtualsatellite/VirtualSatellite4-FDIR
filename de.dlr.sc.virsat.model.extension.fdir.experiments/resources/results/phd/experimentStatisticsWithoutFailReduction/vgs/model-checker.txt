@@ -1,0 +1,9 @@
+benchmarkName time
+vgs_1.dft 0
+vgs_2.dft 0
+vgs_3.dft 0
+vgs_4.dft 0
+vgs_5.dft 0
+vgs_6.dft 0
+vgs_7.dft 0
+vgs_8.dft 0

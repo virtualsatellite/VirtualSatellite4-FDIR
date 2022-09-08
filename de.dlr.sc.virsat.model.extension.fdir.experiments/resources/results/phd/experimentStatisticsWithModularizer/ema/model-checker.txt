@@ -1,0 +1,2 @@
+benchmarkName time
+EMA.dft 0

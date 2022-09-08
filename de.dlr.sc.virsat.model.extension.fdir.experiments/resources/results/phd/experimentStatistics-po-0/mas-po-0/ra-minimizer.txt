@@ -1,0 +1,3 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+MAS-2-po-0.dft nan nan nan nan nan nan nan
+MAS-po-0.dft nan nan nan nan nan nan nan

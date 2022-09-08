@@ -1,0 +1,2 @@
+benchmarkName countNodes dynamic repair partialObservable FAULT AND OR VOTE SPARE POR_I PAND_I SAND POR PAND BASIC_EVENT FDEP RDEP PDEP MONITOR DELAY SEQ
+hemps-po-2.dft 45 true false true 11 0 0 9 2 0 0 0 2 0 10 1 0 0 10 0 0

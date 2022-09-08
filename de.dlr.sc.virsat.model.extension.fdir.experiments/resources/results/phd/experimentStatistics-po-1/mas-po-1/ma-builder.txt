@@ -1,0 +1,3 @@
+benchmarkName time maxStates maxTransitions
+MAS-2-po-1.dft 46882 28351 154390
+MAS-po-1.dft 300595 65219 346755

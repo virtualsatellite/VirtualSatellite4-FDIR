@@ -1,0 +1,3 @@
+benchmarkName time removedStates removedTransitions CleanMinimizer FinalStateMinimizer OrthogonalPartitionRefinementMinimizer PartitionRefinementMinimizer
+AHRS-1-repair-po-0.dft 703 727 1629 0 0 31 696
+AHRS-2-repair-po-0.dft 0 5 5 0 0 0 5

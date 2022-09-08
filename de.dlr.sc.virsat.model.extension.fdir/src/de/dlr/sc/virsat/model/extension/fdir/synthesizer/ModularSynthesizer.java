@@ -27,6 +27,7 @@ import de.dlr.sc.virsat.model.extension.fdir.modularizer.IModularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Modularizer;
 import de.dlr.sc.virsat.model.extension.fdir.modularizer.Module;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.ParallelComposer;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ARecoveryAutomatonMinimizer;
 
 public class ModularSynthesizer implements ISynthesizer {
 	protected DFT2BasicDFTConverter dft2BasicDFT = new DFT2BasicDFTConverter();
@@ -38,6 +39,8 @@ public class ModularSynthesizer implements ISynthesizer {
 	
 	protected SynthesisStatistics statistics;
 	protected Concept concept;
+	
+	protected ARecoveryAutomatonMinimizer minimizer;
 	
 	@Override
 	public RecoveryAutomaton synthesize(SynthesisQuery synthesisQuery, SubMonitor subMonitor) {
@@ -76,7 +79,13 @@ public class ModularSynthesizer implements ISynthesizer {
 			synthesizedRA = synthesizeModule(synthesisQuery, fault, conversionResult.getMapGeneratedToGenerator(), subMonitor.split(1));
 		}
 		
+		if (minimizer != null) {
+			minimizer.minimize(synthesizedRA, synthesisQuery.getFTHolder(), subMonitor.split(1));
+			statistics.minimizationStatistics.compose(minimizer.getStatistics());
+		}
+		
 		statistics.time = System.currentTimeMillis() - startTime;
+		statistics.raSize = synthesizedRA.getStates().size();
 		return synthesizedRA;
 	}
 
@@ -91,6 +100,7 @@ public class ModularSynthesizer implements ISynthesizer {
 	private RecoveryAutomaton synthesizeModule(SynthesisQuery synthesisQuery, FaultTreeNode moduleRoot, Map<FaultTreeNode, FaultTreeNode> mapGeneratedToGenerator, SubMonitor subMonitor) {
 		SynthesisQuery delegateSynthesisQuery = new SynthesisQuery(moduleRoot);
 		delegateSynthesisQuery.setObjectiveMetric(synthesisQuery.getObjectiveMetric());
+		delegateSynthesisQuery.getFTHolder().getStaticAnalysis().setSymmetryChecker(synthesisQuery.getFTHolder().getStaticAnalysis().getSymmetryChecker());
 		RecoveryAutomaton synthesizedRA = delegateSynthesizer.synthesize(delegateSynthesisQuery, subMonitor);
 		statistics.compose(delegateSynthesizer.getStatistics());
 		statistics.maxModuleSize = Math.max(statistics.maxModuleSize, mapGeneratedToGenerator.size());
@@ -129,5 +139,13 @@ public class ModularSynthesizer implements ISynthesizer {
 	public ModularSynthesizer setFaultTreeTrimmer(FaultTreeTrimmer ftTrimmer) {
 		this.ftTrimmer = ftTrimmer;
 		return this;
+	}
+	
+	public DelegateSynthesizer getDelegateSynthesizer() {
+		return delegateSynthesizer;
+	}
+	
+	public void setMinimizer(ARecoveryAutomatonMinimizer minimizer) {
+		this.minimizer = minimizer;
 	}
 }

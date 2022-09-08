@@ -81,7 +81,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.9991436794433161, 
 			0.9985025233486501
 		};
-		final double EXPECTED_SSA = 0.5000005000000001;
+		final double EXPECTED_SSA = 0.5000028225146348;
 		
 		FaultTreeNode root = createBasicDFT("/resources/galileoRepair/csp2Repair1.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);
@@ -129,7 +129,7 @@ public class BasicSynthesizerTest extends ATestCase {
 			0.999147902777298, 
 			0.9985123259997293
 		};
-		final double EXPECTED_SSA = 0.6470577570952566;
+		final double EXPECTED_SSA = 0.6345776031434186;
 		
 		FaultTreeNode root = createBasicDFT("/resources/galileoRepair/csp2Repair2BadSpare.dft");
 		RecoveryAutomaton ra = synthesizer.synthesize(new SynthesisQuery(root), null);

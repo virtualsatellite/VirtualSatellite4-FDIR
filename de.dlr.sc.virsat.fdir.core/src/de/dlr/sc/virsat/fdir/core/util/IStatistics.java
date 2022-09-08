@@ -25,7 +25,7 @@ public interface IStatistics {
 	 */
 	default String getPrintValue(long value) {
 		if (value == NA) {
-			return "N/A";
+			return "nan";
 		} else {
 			return String.valueOf(value);
 		}

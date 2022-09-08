@@ -40,7 +40,7 @@ public class MeanTimeToFailure implements IQuantitativeMetric, IBaseMetric, IDer
 	
 	@Override
 	public void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor) {
-		visitor.visit(this);
+		visitor.visit(this, subMonitor);
 	}
 	
 	@Override

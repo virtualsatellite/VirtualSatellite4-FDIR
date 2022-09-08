@@ -161,14 +161,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	}
 	
 	@Override
-	public void visit(MeanTimeToFailure mttfMetric) {
+	public void visit(MeanTimeToFailure mttfMetric, SubMonitor monitor) {
 		if (mttfBellmanMatrix == null) {
 			mttfBellmanMatrix = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), modelCheckingQuery.getFailStates(), true);
 		}
 		
 		IMatrixIterator mxIterator = mttfMetric.iterator(mttfBellmanMatrix, modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), modelCheckingQuery.getFailLabelProvider());
 		
-		probabilityDistribution = mxIterator.converge(eps);
+		probabilityDistribution = mxIterator.converge(eps, monitor);
 		if (Double.isInfinite(mxIterator.getOldValues()[0])) {
 			probabilityDistribution[0] = Double.POSITIVE_INFINITY;
 		}
@@ -199,7 +199,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 	}
 
 	@Override
-	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
+	public void visit(SteadyStateAvailability steadyStateAvailabilityMetric, SubMonitor monitor) {
 		StronglyConnectedComponentFinder<? extends MarkovState> sccFinder = new StronglyConnectedComponentFinder<>(modelCheckingQuery.getMa());
 		List<StronglyConnectedComponent> sccs = sccFinder.getStronglyConnectedComponents();
 		List<StronglyConnectedComponent> endSCCs = sccFinder.getStronglyConnectedEndComponents(sccs);
@@ -210,7 +210,7 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		for (StronglyConnectedComponent endSCC : endSCCs) {
 			IMatrix bellmanMatrixSCC = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), endSCC.getStates(), Collections.emptySet(), true);
 			IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(bellmanMatrixSCC, modelCheckingQuery.getMa(), endSCC.getStates(), modelCheckingQuery.getFailLabelProvider());
-			probabilityDistribution = mtxIterator.converge(eps);
+			probabilityDistribution = mtxIterator.converge(eps, monitor);
 			if (!Double.isFinite(probabilityDistribution[0])) {
 				probabilityDistribution[0] = 1;
 			}
@@ -222,14 +222,14 @@ public class MarkovModelChecker implements IMarkovModelChecker {
 		
 		IMatrix transitionMatrixToEndSCCs = matrixFactory.createBellmanMatrix(modelCheckingQuery.getMa(), modelCheckingQuery.getMa().getStates(), endSCCStates, true);
 		IMatrixIterator mtxIterator = steadyStateAvailabilityMetric.iterator(transitionMatrixToEndSCCs, modelCheckingQuery.getMa(), ssas);
-		probabilityDistribution = mtxIterator.converge(eps);
+		probabilityDistribution = mtxIterator.converge(eps, monitor);
 		
 		double ssa = 1 - probabilityDistribution[0];
 		modelCheckingResult.setSteadyStateAvailability(ssa);
 	}
 
 	@Override
-	public void visit(MinimumCutSet minimumCutSet) {
+	public void visit(MinimumCutSet minimumCutSet, SubMonitor monitor) {
 		// Construct the minimum cut sets as follows:
 		// MinCuts(s) = UNION_{(s, a, s')} ( {a} \cross MinCuts(s') )
 		// MinCuts(f) = \emptyset for any fail state f

@@ -9,13 +9,18 @@
  *******************************************************************************/
 package de.dlr.sc.virsat.fdir.core.markov.modelchecker;
 
+import java.util.Arrays;
+import java.util.List;
+
+import de.dlr.sc.virsat.fdir.core.util.IStatistics;
+
 /**
  * This class holds statistical data for a call to the model checker
  * @author muel_s8
  *
  */
 
-public class ModelCheckingStatistics {
+public class ModelCheckingStatistics implements IStatistics {
 	// CHECKSTYLE:OFF
 	public long time;
 	// CHECKSTYLE:ON
@@ -34,5 +39,14 @@ public class ModelCheckingStatistics {
 	 */
 	public void compose(ModelCheckingStatistics other) {
 		this.time += other.time;
+	}
+	
+	public static List<String> getColumns() {
+		return Arrays.asList("time");
+	}
+	
+	@Override
+	public List<String> getValues() {
+		return Arrays.asList(getPrintValue(time));
 	}
 }

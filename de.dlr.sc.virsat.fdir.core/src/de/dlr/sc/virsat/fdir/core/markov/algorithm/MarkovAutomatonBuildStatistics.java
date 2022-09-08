@@ -47,6 +47,18 @@ public class MarkovAutomatonBuildStatistics implements IStatistics {
 		maxTransitions = Math.max(maxTransitions, other.maxTransitions);
 	}
 	
+	/**
+	 * Strictly add composes the states spaces statistics.
+	 * Use when both automata are need to be in memory.
+	 * (For example for the POFT construction)
+	 * @param other the statistics of another call to the converter 
+	 */
+	public void composePlus(MarkovAutomatonBuildStatistics other) {
+		time = composeAdd(time, other.time);
+		maxStates = composeAdd(maxStates, other.maxStates);
+		maxTransitions = composeAdd(maxTransitions, other.maxTransitions);
+	}
+	
 	public static List<String> getColumns() {
 		return Arrays.asList("time", "maxStates", "maxTransitions");
 	}

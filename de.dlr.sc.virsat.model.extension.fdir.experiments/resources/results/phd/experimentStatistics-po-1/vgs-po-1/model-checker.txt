@@ -1,0 +1,9 @@
+benchmarkName time
+vgs_1-po-1.dft 0
+vgs_2-po-1.dft 0
+vgs_3-po-1.dft 0
+vgs_4-po-1.dft 0
+vgs_5-po-1.dft 0
+vgs_6-po-1.dft 0
+vgs_7-po-1.dft 0
+vgs_8-po-1.dft 0

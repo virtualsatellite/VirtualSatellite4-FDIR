@@ -91,7 +91,9 @@ public class MarkovAutomatonValueIterator<S extends MarkovState> extends Decorat
 				}
 			}
 			
-			delegateProbabilisticUpdate(mapStateToIndex, mapStateToIndex.get(nondeterministicState), bestValue, bestTransitionGroup);
+			if (bestTransitionGroup != null) {
+				delegateProbabilisticUpdate(mapStateToIndex, mapStateToIndex.get(nondeterministicState), bestValue, bestTransitionGroup);
+			}
 		}
 		
 		for (S probabilisticState : probabilisticStates) {

@@ -1,0 +1,3 @@
+benchmarkName time maxStates maxTransitions
+MAS-2-repair.dft 0 128 320
+MAS-repair.dft 235 4356 27984

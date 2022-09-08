@@ -72,18 +72,6 @@ public class SPSIterator extends AMatrixIterator {
 	 * Performs one update iteration
 	 */
 	public void iterate() {
-		for (MarkovState probabilisticState : probabilisticStates) {
-			int indexFrom = probabilisticState.getIndex();
-			List<?> succTransitions = ma.getSuccTransitions(probabilisticState);
-			for (Object succTransition : succTransitions) {
-				MarkovTransition<?> markovTransition = (MarkovTransition<?>) succTransition;
-				MarkovState stateTo = (MarkovState) markovTransition.getTo();
-				int indexTo = stateTo.getIndex();
-				vsum[indexTo] += vsum[indexFrom] * markovTransition.getRate();
-			}
-			vsum[indexFrom] = 0;
-		}
-		
 		double b = calcManhattanNorm();
 		double c = 0;
 		
@@ -105,6 +93,8 @@ public class SPSIterator extends AMatrixIterator {
 			double[] tmp = vpro;
 			vpro = vprotmp;
 			vprotmp = tmp;
+			
+			probabilisticIteration();
 			
 			for (int i = 0; i < vpro.length; i++) {
 				vpro[i] = vpro[i] / j;
@@ -136,6 +126,32 @@ public class SPSIterator extends AMatrixIterator {
 		}
 	}
 	
+	/**
+	 * Propagate immediate probabilistic mass as far as possible
+	 */
+	private void probabilisticIteration() {
+		boolean immediateTransfer = true;
+		while (immediateTransfer) {
+			immediateTransfer = false;
+			for (MarkovState probabilisticState : probabilisticStates) {
+				int indexFrom = probabilisticState.getIndex();
+				List<?> succTransitions = ma.getSuccTransitions(probabilisticState);
+				for (Object succTransition : succTransitions) {
+					if (vpro[indexFrom] != 0) {
+						MarkovTransition<?> markovTransition = (MarkovTransition<?>) succTransition;
+						MarkovState stateTo = (MarkovState) markovTransition.getTo();
+						int indexTo = stateTo.getIndex();
+						vpro[indexTo] += vpro[indexFrom] * markovTransition.getRate();
+						immediateTransfer = true;
+					}
+				}
+				if (succTransitions.size() > 0) {
+					vpro[indexFrom] = 0;
+				}
+			}			
+		}
+	}
+
 	/**
 	 * @return returns the Manhattan Norm of vector
 	 */

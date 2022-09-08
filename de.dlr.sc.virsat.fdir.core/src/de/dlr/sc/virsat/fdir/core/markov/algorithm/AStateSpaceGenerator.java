@@ -18,6 +18,8 @@ import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 
 public abstract class AStateSpaceGenerator<S extends MarkovState> {
 	
+	private static final long MEMORY_THRESHOLD = 1024 * 1024 * 1024 * 2;
+	
 	protected MarkovAutomaton<S> targetMa;
 	
 	/**
@@ -47,5 +49,23 @@ public abstract class AStateSpaceGenerator<S extends MarkovState> {
 	 * Removes the filtered-out states if any
 	 */
 	public void removeBadStates() {
+	}
+	
+	private long maxMemory = Runtime.getRuntime().maxMemory();
+	
+	/**
+	 * Checks if this long running operation should cancelled / has been cancelled
+	 * and gives user feedback that the operation is still running.
+	 * @param monitor a monitor
+	 */
+	protected void checkCancellation(SubMonitor monitor) {
+		// Eclipse trick for doing progress updates with unknown ending time
+		final int PROGRESS_COUNT = 100;
+		monitor.setWorkRemaining(PROGRESS_COUNT).split(1);
+		
+		long freeMemory = maxMemory - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
+		if (freeMemory < MEMORY_THRESHOLD) {
+			throw new RuntimeException("Close to out of memory. Aborting so we can still maintain an operational state.");
+		}
 	}
 }

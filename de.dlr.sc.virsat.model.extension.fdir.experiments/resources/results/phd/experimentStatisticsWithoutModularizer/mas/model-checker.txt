@@ -1,0 +1,3 @@
+benchmarkName time
+MAS-2.dft 0
+MAS.dft 0

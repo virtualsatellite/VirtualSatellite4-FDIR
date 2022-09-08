@@ -386,9 +386,8 @@ public class ASynthesizerExperiment {
 		
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
-			writer.println("solved total timeouts ooms solveTime");
-			writer.print(countSolved + " ");
-			writer.print(countTotal + " ");
+			writer.println("solved timeouts ooms solveTime");
+			writer.print(countSolved + "/" + countTotal + " ");
 			writer.print(countTimeout + " ");
 			writer.print(countOutOfMemory + " ");
 			writer.print(TimeUnit.SECONDS.convert(totalSolveTime, TimeUnit.MILLISECONDS));
@@ -420,11 +419,24 @@ public class ASynthesizerExperiment {
 		try (OutputStream outFile = Files.newOutputStream(pathSummary, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			PrintStream writer = new PrintStream(outFile)) {
 			writer.println("solved total timeouts ooms solveTime");
-			writer.print(countSuiteSolved + " ");
-			writer.print(countSuiteTotal + " ");
+			writer.print(countSuiteSolved);
+			writer.print(countSuiteTotal);
 			writer.print(countSuiteTimeout + " ");
 			writer.print(countSuiteOutOfMemory + " ");
 			writer.print(TimeUnit.SECONDS.convert(totalSuiteSolveTime, TimeUnit.MILLISECONDS));
+		}
+		
+		Path pathFaultTree = Paths.get(filePathWithPrefix, "fault-tree.txt");
+		try (OutputStream outFile = Files.newOutputStream(pathFaultTree, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			PrintStream writer = new PrintStream(outFile)) {
+			
+			String header = "benchmarkName " + String.join(" ", FaultTreeStatistics.getColumns());
+			writer.println(header);
+			
+			for (Entry<String, FaultTreeStatistics> entry : mapSuiteBenchmarkToFaultTreeStatistics.entrySet()) {
+				String record = entry.getKey() + " " + String.join(" ", entry.getValue().getValues());
+				writer.println(record);
+			}
 		}
 	}
 	

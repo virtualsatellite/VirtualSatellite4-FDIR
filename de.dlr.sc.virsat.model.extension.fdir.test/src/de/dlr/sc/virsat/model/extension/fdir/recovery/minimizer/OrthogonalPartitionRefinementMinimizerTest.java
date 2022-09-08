@@ -22,6 +22,7 @@ import de.dlr.sc.virsat.model.extension.fdir.model.FaultTreeNodeType;
 import de.dlr.sc.virsat.model.extension.fdir.model.RecoveryAutomaton;
 import de.dlr.sc.virsat.model.extension.fdir.test.ATestCase;
 import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeBuilder;
+import de.dlr.sc.virsat.model.extension.fdir.util.FaultTreeHolder;
 
 /**
  * This class tests the OrthogonalPartitionRefinementMinimizer
@@ -213,7 +214,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignAction(transition12, action.copy());
 		
 		RecoveryAutomaton raCopy = raHelper.copyRA(ra);
-		minimizer.minimize(raCopy, fault, null);
+		minimizer.minimize(raCopy, new FaultTreeHolder(fault), null);
 		
 		assertEquals(RESULTING_STATES, raCopy.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS, raCopy.getTransitions().size());
@@ -227,7 +228,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		ftBuilder.connectObserver(fault, fault1, monitor);
 		
 		raCopy = raHelper.copyRA(ra);
-		minimizer.minimize(raCopy, fault, null);
+		minimizer.minimize(raCopy, new FaultTreeHolder(fault), null);
 		
 		assertEquals(RESULTING_STATES_PO, raCopy.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS_PO, raCopy.getTransitions().size());
@@ -239,7 +240,7 @@ public class OrthogonalPartitionRefinementMinimizerTest extends ATestCase {
 		raHelper.assignInputs(transition01, monitor);
 		
 		raCopy = raHelper.copyRA(ra);
-		minimizer.minimize(raCopy, fault, null);
+		minimizer.minimize(raCopy, new FaultTreeHolder(fault), null);
 		
 		assertEquals(RESULTING_STATES_FAILED_MONITOR, raCopy.getStates().size());
 		assertEquals(RESULTING_TRANSITIONS_FAILED_MONITOR, raCopy.getTransitions().size());

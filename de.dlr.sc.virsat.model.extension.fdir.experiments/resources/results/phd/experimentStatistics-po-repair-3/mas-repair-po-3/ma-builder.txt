@@ -1,0 +1,3 @@
+benchmarkName time maxStates maxTransitions
+MAS-2-repair-po-3.dft 163 3200 23404
+MAS-repair-po-3.dft N/A N/A N/A

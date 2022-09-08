@@ -46,4 +46,12 @@ public class DelegateSynthesizer implements ISynthesizer {
 	public SynthesisStatistics getStatistics() {
 		return delegate.getStatistics();
 	}
+	
+	public ISynthesizer getBasicSynthesizer() {
+		return basicSynthesizer;
+	}
+	
+	public ISynthesizer getPoSynthesizer() {
+		return poSynthesizer;
+	}
 }

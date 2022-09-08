@@ -1,0 +1,3 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+MAS-2-po-3.dft 144588 24 21 95 185 1850
+MAS-po-3.dft 1200000 18 16 54 17 nan

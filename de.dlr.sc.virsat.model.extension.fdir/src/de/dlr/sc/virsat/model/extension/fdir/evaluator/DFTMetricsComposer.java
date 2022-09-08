@@ -129,7 +129,7 @@ public class DFTMetricsComposer {
 		}
 
 		@Override
-		public void visit(MeanTimeToFailure mttfMetric) {
+		public void visit(MeanTimeToFailure mttfMetric, SubMonitor subMonitor) {
 			throw new UnsupportedOperationException("MTTF is not composable!");
 		}
 
@@ -140,7 +140,7 @@ public class DFTMetricsComposer {
 		}
 
 		@Override
-		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric) {
+		public void visit(SteadyStateAvailability steadyStateAvailabilityMetric, SubMonitor subMonitor) {
 			double[] childSteadyStateAvailabilities = new double[subModuleResults.size()];
 			
 			for (int j = 0; j < subModuleResults.size(); ++j) {
@@ -153,7 +153,7 @@ public class DFTMetricsComposer {
 		}
 
 		@Override
-		public void visit(MinimumCutSet minimumCutSet) {
+		public void visit(MinimumCutSet minimumCutSet, SubMonitor subMonitor) {
 			if (k == 1) {
 				for (ModelCheckingResult subModuleResult : subModuleResults) {
 					composedResult.getMinCutSets().addAll(subModuleResult.getMinCutSets());

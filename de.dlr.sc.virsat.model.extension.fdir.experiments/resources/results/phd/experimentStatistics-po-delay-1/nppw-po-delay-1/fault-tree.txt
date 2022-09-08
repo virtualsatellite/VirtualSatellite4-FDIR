@@ -1,0 +1,2 @@
+benchmarkName countNodes dynamic repair partialObservable FAULT AND OR VOTE SPARE POR_I PAND_I SAND POR PAND BASIC_EVENT FDEP RDEP PDEP MONITOR DELAY SEQ
+nppwp-po-1.dft 28 true false true 8 0 0 5 3 0 0 0 1 0 7 1 0 0 3 0 0

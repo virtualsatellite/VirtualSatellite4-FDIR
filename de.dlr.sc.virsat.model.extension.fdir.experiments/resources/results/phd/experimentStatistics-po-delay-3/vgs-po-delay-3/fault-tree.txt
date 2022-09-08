@@ -1,0 +1,9 @@
+benchmarkName countNodes dynamic repair partialObservable FAULT AND OR VOTE SPARE POR_I PAND_I SAND POR PAND BASIC_EVENT FDEP RDEP PDEP MONITOR DELAY SEQ
+vgs_1-po-3.dft 269 true false true 74 0 0 40 0 0 0 0 0 0 73 15 0 0 57 0 10
+vgs_2-po-3.dft 259 true false true 68 0 0 40 0 0 0 0 0 0 67 13 0 0 61 0 10
+vgs_3-po-3.dft 220 true false true 55 0 0 31 0 0 0 0 0 0 54 11 0 0 61 0 8
+vgs_4-po-3.dft 225 true false true 55 0 0 32 1 0 0 0 1 0 54 11 0 0 63 0 8
+vgs_5-po-3.dft 225 true false true 56 0 0 34 0 0 0 0 0 0 55 13 0 0 61 0 6
+vgs_6-po-3.dft 237 true false true 62 0 0 37 0 0 0 0 0 0 61 13 0 0 56 0 8
+vgs_7-po-3.dft 323 true false true 88 0 0 50 0 0 0 0 0 0 87 16 0 0 68 0 14
+vgs_8-po-3.dft 362 true false true 100 0 0 59 0 0 0 0 0 0 99 16 0 0 68 0 20

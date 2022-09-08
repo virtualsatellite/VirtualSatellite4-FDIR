@@ -53,6 +53,7 @@ public class POSynthesizer extends ASynthesizer {
 		
 		// Build the actual belief ma
 		MarkovAutomaton<BeliefState> beliefMa = ma2BeliefMAConverter.convert(ma, (PODFTState) initialMa, subMonitor.split(1));
+		statistics.maBuildStatistics.composePlus(ma2BeliefMAConverter.getMaBuilder().getStatistics());
 		BeliefState initialBeliefState = ma2BeliefMAConverter.getMaBuilder().getInitialState();
 		
 		// Create the optimal schedule on the belief ma

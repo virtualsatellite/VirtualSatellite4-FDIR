@@ -1,0 +1,3 @@
+benchmarkName time countModules countTrimmedModules maxModuleSize maxModuleRaSize raSize
+CAS-po-5.dft 140 9 7 27 3 3
+DCAS-po-5.dft 227 7 4 31 2 2

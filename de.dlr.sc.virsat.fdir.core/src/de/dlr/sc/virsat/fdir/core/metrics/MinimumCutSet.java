@@ -37,7 +37,7 @@ public class MinimumCutSet implements IQualitativeMetric, IBaseMetric {
 	
 	@Override
 	public void accept(IBaseMetricVisitor visitor, SubMonitor subMonitor) {
-		visitor.visit(this);
+		visitor.visit(this, subMonitor);
 	}
 	
 	/**

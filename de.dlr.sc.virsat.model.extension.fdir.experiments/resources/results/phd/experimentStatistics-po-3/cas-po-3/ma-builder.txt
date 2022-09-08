@@ -1,0 +1,3 @@
+benchmarkName time maxStates maxTransitions
+CAS-po-3.dft 0 37 43
+DCAS-po-3.dft 0 32 40

@@ -30,7 +30,7 @@ public interface IBaseMetricVisitor {
 	 * Handle the case of a mean time to failure metric
 	 * @param mttfMetric the mttf metric
 	 */
-	void visit(MeanTimeToFailure mttfMetric);
+	void visit(MeanTimeToFailure mttfMetric, SubMonitor subMonitor);
 	
 	/**
 	 * Handle the case of a point availability metric
@@ -43,11 +43,11 @@ public interface IBaseMetricVisitor {
 	 * Handle the case of a steadyStateAvailabilityMetric metric
 	 * @param steadyStateAvailabilityMetric the steadyStateAvailabilityMetric
 	 */
-	void visit(SteadyStateAvailability steadyStateAvailabilityMetric);
+	void visit(SteadyStateAvailability steadyStateAvailabilityMetric, SubMonitor subMonitor);
 
 	/**
 	 * Handle the case of a minimum cut set metric
 	 * @param minimumCutSet the minimum cut set metric
 	 */
-	void visit(MinimumCutSet minimumCutSet);
+	void visit(MinimumCutSet minimumCutSet, SubMonitor subMonitor);
 }

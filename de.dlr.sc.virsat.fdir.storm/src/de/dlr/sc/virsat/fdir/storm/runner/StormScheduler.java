@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import de.dlr.sc.virsat.fdir.core.markov.MarkovState;
 import de.dlr.sc.virsat.fdir.core.markov.MarkovTransition;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.IMarkovScheduler;
 import de.dlr.sc.virsat.fdir.core.markov.scheduler.ScheduleQuery;
 import de.dlr.sc.virsat.fdir.core.metrics.MeanTimeToFailure;
@@ -75,5 +76,10 @@ public class StormScheduler implements IMarkovScheduler<MarkovState> {
 		}
 		
 		return storm.extractSchedule();
+	}
+
+	@Override
+	public ModelCheckingStatistics getStatistics() {
+		return new ModelCheckingStatistics();
 	}
 }

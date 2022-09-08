@@ -1,0 +1,3 @@
+benchmarkName time maxStates maxTransitions
+AHRS-1-po-1.dft 15 919 1778
+AHRS-2-po-1.dft 2453 12728 35955

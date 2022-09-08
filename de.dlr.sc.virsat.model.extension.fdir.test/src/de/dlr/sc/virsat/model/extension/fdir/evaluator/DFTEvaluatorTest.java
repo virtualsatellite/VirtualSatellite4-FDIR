@@ -901,7 +901,7 @@ public class DFTEvaluatorTest extends ATestCase {
 	@Test
 	public void testEvaluateDelay1Repair() throws IOException {
 		final double EXPECTEDMTTF = 15.999998884932491;
-		final double EXPECTEDSSA = 0.8885081639540016;
+		final double EXPECTEDSSA = 0.8694779116465863;
 		
 		Fault fault = createDFT("/resources/galileoRepair/delay1Repair.dft");
 		ModelCheckingResult result = ftEvaluator.evaluateFaultTree(fault, MeanTimeToFailure.MTTF, SteadyStateAvailability.SSA);

@@ -1,0 +1,3 @@
+benchmarkName time maxStates maxTransitions
+MAS-2.dft nan nan nan
+MAS.dft nan nan nan

@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.dlr.sc.virsat.fdir.core.markov.algorithm.MarkovAutomatonBuildStatistics;
+import de.dlr.sc.virsat.fdir.core.markov.modelchecker.ModelCheckingStatistics;
 import de.dlr.sc.virsat.fdir.core.util.IStatistics;
+import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.ComposedMinimizer;
 import de.dlr.sc.virsat.model.extension.fdir.recovery.minimizer.MinimizationStatistics;
 
 /**
@@ -27,8 +29,10 @@ public class SynthesisStatistics implements IStatistics {
 	public int countTrimmedModules = NA;
 	public int maxModuleSize = NA;
 	public int maxModuleRaSize = NA;
+	public int raSize = NA;
 	public final MarkovAutomatonBuildStatistics maBuildStatistics = new MarkovAutomatonBuildStatistics();
-	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics();
+	public final MinimizationStatistics minimizationStatistics = new MinimizationStatistics(ComposedMinimizer.createDefaultMinimizer());
+	public final ModelCheckingStatistics modelCheckingStatistics = new ModelCheckingStatistics();
 	//CHECKSTYLE:ON
 	
 	/**
@@ -39,6 +43,7 @@ public class SynthesisStatistics implements IStatistics {
 		this.maxModuleRaSize = Math.max(maxModuleRaSize, other.maxModuleRaSize);
 		this.maBuildStatistics.compose(other.maBuildStatistics);
 		this.minimizationStatistics.compose(other.minimizationStatistics);
+		this.modelCheckingStatistics.compose(other.modelCheckingStatistics);
 	}
 	
 	@Override
@@ -52,16 +57,17 @@ public class SynthesisStatistics implements IStatistics {
 		sb.append("\t* Largest Module RA:\t\t" 		+ getPrintValue(maxModuleRaSize) + "\n");
 		sb.append(maBuildStatistics);
 		sb.append(minimizationStatistics);
+		sb.append(modelCheckingStatistics);
 		return sb.toString();
 	}
 	
 	public static List<String> getColumns() {
-		return Arrays.asList("time", "countModules", "countTrimmedModules", "maxModuleSize", "maxModuleRaSize");
+		return Arrays.asList("time", "countModules", "countTrimmedModules", "maxModuleSize", "maxModuleRaSize", "raSize");
 	}
 	
 	@Override
 	public List<String> getValues() {
 		return Arrays.asList(getPrintValue(time), getPrintValue(countModules), getPrintValue(countTrimmedModules), 
-				getPrintValue(maxModuleSize), getPrintValue(maxModuleRaSize));
+				getPrintValue(maxModuleSize), getPrintValue(maxModuleRaSize), getPrintValue(raSize));
 	}
 }

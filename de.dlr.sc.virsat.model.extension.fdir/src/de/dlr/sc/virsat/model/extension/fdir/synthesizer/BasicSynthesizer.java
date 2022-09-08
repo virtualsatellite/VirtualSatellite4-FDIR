@@ -49,6 +49,7 @@ public class BasicSynthesizer extends ASynthesizer {
 			symmetryReduction.createSymmetricTransitions(ra);
 		}
 		
+		getStatistics().modelCheckingStatistics.compose(scheduler.getStatistics());
 		return ra;
 	}
 

@@ -1,0 +1,2 @@
+benchmarkName time maxStates maxTransitions
+EMA.dft 0 9 12
