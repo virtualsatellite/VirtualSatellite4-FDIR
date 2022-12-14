@@ -158,7 +158,7 @@ Germany
       <feature id="de.dlr.sc.virsat.excel.feature" installMode="root"/>
       <feature id="de.dlr.sc.virsat.fdir.storm.feature" installMode="root"/>
       <feature id="org.polarion.eclipse.team.svn.connector" installMode="root"/>
-      <feature id="org.polarion.eclipse.team.svn.connector.svnkit18" installMode="root"/>
+      <feature id="org.polarion.eclipse.team.svn.connector.svnkit1_10:" installMode="root"/>
       <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
       <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
       <feature id="de.dlr.sc.virsat.model.ext.core.feature" installMode="root"/>
