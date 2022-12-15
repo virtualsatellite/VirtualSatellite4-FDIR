@@ -81,7 +81,15 @@ public class BasicEventAddFeature extends VirSatAddShapeFeature {
 			if (Objects.equals(bo, addedBasicEvent)) {
 				return false;
 			}
-		}	
+		}
+		
+		// Check if there exists a picogram mapped to the parent fault in the diagram
+		Fault[] faults = { addedBasicEvent.getFault() };
+		PictogramElement[] pes = getFeatureProvider().getDiagramTypeProvider().getNotificationService().calculateRelatedPictogramElements(faults);
+		if (pes.length == 0) {
+			// If not, then we disallow adding the BE since it would have no fault to be associated to
+			return false;
+		}
 		
 		return super.canAdd(context) && isDiagramContainer;
 	}
