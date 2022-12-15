@@ -83,6 +83,8 @@ public class SPSIterator extends AMatrixIterator {
 			b = 1;
 		}
 		
+		probabilisticIteration(vsum);
+		
 		for (int i = 0; i < vsum.length; ++i) {
 			vpro[i] = vsum[i];
 		}
@@ -94,7 +96,7 @@ public class SPSIterator extends AMatrixIterator {
 			vpro = vprotmp;
 			vprotmp = tmp;
 			
-			probabilisticIteration();
+			probabilisticIteration(vpro);
 			
 			for (int i = 0; i < vpro.length; i++) {
 				vpro[i] = vpro[i] / j;
@@ -128,8 +130,9 @@ public class SPSIterator extends AMatrixIterator {
 	
 	/**
 	 * Propagate immediate probabilistic mass as far as possible
+	 * @param distribution 
 	 */
-	private void probabilisticIteration() {
+	private void probabilisticIteration(double[] distribution) {
 		boolean immediateTransfer = true;
 		while (immediateTransfer) {
 			immediateTransfer = false;
@@ -137,16 +140,16 @@ public class SPSIterator extends AMatrixIterator {
 				int indexFrom = probabilisticState.getIndex();
 				List<?> succTransitions = ma.getSuccTransitions(probabilisticState);
 				for (Object succTransition : succTransitions) {
-					if (vpro[indexFrom] != 0) {
+					if (distribution[indexFrom] != 0) {
 						MarkovTransition<?> markovTransition = (MarkovTransition<?>) succTransition;
 						MarkovState stateTo = (MarkovState) markovTransition.getTo();
 						int indexTo = stateTo.getIndex();
-						vpro[indexTo] += vpro[indexFrom] * markovTransition.getRate();
+						distribution[indexTo] += distribution[indexFrom] * markovTransition.getRate();
 						immediateTransfer = true;
 					}
 				}
 				if (succTransitions.size() > 0) {
-					vpro[indexFrom] = 0;
+					distribution[indexFrom] = 0;
 				}
 			}			
 		}
